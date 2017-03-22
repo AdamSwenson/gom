@@ -93,7 +93,7 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
         console.log( 'itemNav ready ', this.type );
     },
 };

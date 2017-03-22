@@ -30,6 +30,13 @@ const state = {
     indexMap: new Map()
 };
 
+const isItemsEmpty = (state) => {
+    if(state.items.length >0){
+        return false;
+    }
+    return true;
+}
+
 const helpers = {
     getItemFromPayload( state, payload ){
         if ( typeof payload.id != 'undefined' ) {
@@ -282,6 +289,8 @@ const getters = {
      * @param payload Object containing Item identifier
      */
     getItem: ( state, getters, payload ) => {
+        if(isItemsEmpty(state)) return false;
+
         let {index, id} = payload;
         //room for other ways of finding index
         if ( typeof id != 'undefined' ) {

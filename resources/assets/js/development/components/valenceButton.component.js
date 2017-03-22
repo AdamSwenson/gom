@@ -41,7 +41,7 @@ export default{
          * This sends the actual request(s)
          */
         sendRequest: function () {
-            return this.$dispatch( 'please-change-valence', this.valence );
+            return this.$store.dispatch( 'please-change-valence', this.valence );
         }
     }
 }

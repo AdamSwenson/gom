@@ -33,7 +33,7 @@ module.exports = {
          * who it belongs to
          */
         requestSettingsDisplay: function(){
-            this.$dispatch('display-settings');
+            this.$store.dispatch('display-settings');
         }
     },
 
@@ -41,6 +41,6 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
     },
 };

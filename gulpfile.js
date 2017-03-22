@@ -1,8 +1,7 @@
 var elixir = require( 'laravel-elixir' );
 //todo This needs to be enabled!!!!! Turned off because one package it depends on was killing gulp
 require('laravel-elixir-images');
-require('laravel-elixir-vue')
-
+require('laravel-elixir-vueify')
 require('laravel-elixir-webpack-official')
 
 

@@ -8,7 +8,7 @@
                    id="privateName"
                    name="privateName"
                    aria-describedby="basic-addon1"
-                   placeholder="{{ placeHolders.privateName }}"
+                   v-bind:placeholder="placeHolders.privateName"
                    v-model="privateName"
             >
             <span class="input-group-addon"
@@ -63,15 +63,15 @@
              */
             privateName: {
                 get: function () {
-                    this.$store.getters.getActiveExamObj().name;
+//                    this.$store.getters.getActiveExamObj().name;
                     //if not set return placeholder
                     // return this.placeHolders.privateName;
                 },
                 set: function () {
-                    let exam = this.$store.getters.getActiveExamObj();
+//                    let exam = this.$store.getters.getActiveExamObj();
                     //store the name in the data object
 
-                    this.$store.dispatch(aTypes.updateExam, Payload({ obj: exam } ));
+//                    this.$store.dispatch(aTypes.updateExam, Payload({ obj: exam } ));
 
 
                 },
@@ -102,7 +102,7 @@
 
         events: {},
 
-        ready: function () {
+        mounted: function () {
             console.log( 'exam-name ready' );
         },
     }

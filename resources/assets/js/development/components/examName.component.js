@@ -69,7 +69,7 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
         console.log( 'exam-name ready' );
     },
 };

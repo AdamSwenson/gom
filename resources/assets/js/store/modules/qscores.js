@@ -18,6 +18,13 @@ const state = {
 
 };
 
+const isScoresEmpty = (state)=>{
+    if(Object.keys(state.questionScores).length > 0 ){
+        return false;
+    }
+return true;
+};
+
 const mutations = {
 
     /**
@@ -99,6 +106,8 @@ const getters = {
      * @param questionIndex
      */
     getQuestionScore( state, getters, rootState, studentIndex, questionIndex ) {
+        if(isScoresEmpty(state)) { return false; }
+
         return state.questionScores[ studentIndex ][ questionIndex ];
     },
 

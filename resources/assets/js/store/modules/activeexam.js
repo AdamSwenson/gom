@@ -91,15 +91,19 @@ const actions = {
 const getters = {
 
     getActiveExamId: ( state, getters, payload ) => {
-        return state.activeExam.id;
+     return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
     },
 
     getActiveExamIndex: ( state, getters, payload ) => {
-        return state.activeExam.index;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.index : false;
+        // return state.activeExam.index;
     },
 
     getActiveExamObj: ( state, getters ) => {
-        return state.activeExam;
+        return typeof state.activeExam != 'undefined' ? state.activeExam : false;
+        // return state.activeExam;
     }
 
 };

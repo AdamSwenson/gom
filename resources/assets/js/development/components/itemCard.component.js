@@ -34,6 +34,10 @@ module.exports = {
     },
 
     computed: {
+        divId : function(){
+            return "item-card-" + this.index
+        },
+
         /**
          * Returns the bootstrap class for the depth
          */
@@ -102,10 +106,9 @@ module.exports = {
     events: {
         'display-settings': function () {
             console.log( 'itemName', 'CAUGHT', 'display-settings', this.index );
-            this.$broadcast( 'display-settings' );
-        },
+          },
     },
 
-    ready: function () {
+    mounted: function () {
     },
 };

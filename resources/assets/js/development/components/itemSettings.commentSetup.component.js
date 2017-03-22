@@ -89,7 +89,7 @@ module.exports = {
         }
     },
 
-    ready: function () {
+    mounted: function () {
         //push a comment into the item
 
     },

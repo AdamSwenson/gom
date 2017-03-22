@@ -103,7 +103,7 @@ module.exports = {
          */
         togglePublic: function () {
             console.log( 'CALLED', 'togglePublic' );
-            this.$dispatch( 'toggle-public' );
+            this.$store.dispatch( 'toggle-public' );
         },
 
 
@@ -113,6 +113,6 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
     },
 };

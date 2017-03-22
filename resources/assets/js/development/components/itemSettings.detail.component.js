@@ -86,6 +86,6 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
     },
 };

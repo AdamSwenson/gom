@@ -23,6 +23,13 @@ const state = {
 
 };
 
+const isElementCommentsEmpty = (state) => {
+    if(Object.keys(state.elementComments).length > 0){
+        return false;
+    }
+    return true;
+}
+
 const mutations = {
     /**
      * Update the text of an element comment
@@ -138,7 +145,10 @@ const getters = {
      * @returns {*}
      */
     getElementComment: ( state, getters, rootState, studentIndex, elementIndex ) => {
-        return state.elementComments[ studentIndex ][ elementIndex ];
+        if ( isElementCommentsEmpty(state) ){ return false; };
+
+            return state.elementComments[ studentIndex ][ elementIndex ];
+
     },
 
 
@@ -153,6 +163,8 @@ const getters = {
      * @returns {*}
      */
     getCommentText: ( state, getters, rootState, studentIndex, elementIndex, valence ) => {
+        if ( isElementCommentsEmpty(state) ){ return false; };
+
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
         let comment = state.elementComments[ studentIndex ][ elementIndex ];
@@ -198,6 +210,8 @@ const getters = {
      * @private
      */
     getStoredCommentText: ( state, getters, rootState, studentIndex, elementIndex ) => {
+        if ( isElementCommentsEmpty(state) ){ return false; };
+
         return state.elementComments[ studentIndex ][ elementIndex ];
     }
 

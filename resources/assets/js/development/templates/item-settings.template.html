@@ -1,18 +1,23 @@
-<div class="well well-sm" v-show="hidden">
+<div class="well well-sm"
+     v-show="hidden">
 
     <slot name="settingsBody">
-
+x
         <div>
-            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
-
             <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs"
+                role="tablist">
                 <li role="presentation"
                     v-for="tab in tabs">
-                    <a href="#{{tab}}{{index}}"
-                       aria-controls="{{tab}}{{index}}"
+                    <a v-bind:href="'#' + tab + index"
+                       v-bind:aria-controls="tab + index"
                        role="tab"
-                       data-toggle="tab">{{ tab | capitalize }}</a>
+                       data-toggle="tab"
+                    >
+                        <span class="tabTitle">
+                            {{ tab }}
+                        </span>
+                    </a>
                 </li>
             </ul>
 
@@ -21,35 +26,35 @@
 
                 <div role="tabpanel"
                      class="tab-pane active"
-                     id="details{{index}}"
+                     v-bind:id="'details' + index"
                 >
                     <item-settings-detail :index="index"></item-settings-detail>
                 </div>
 
                 <div role="tabpanel"
                      class="tab-pane  "
-                     id="comments{{index}}"
+                     v-bind:id="'comments' + index"
                 >
                     <item-settings-comment-setup :index="index"></item-settings-comment-setup>
                 </div>
 
                 <div role="tabpanel"
                      class="tab-pane "
-                     id="stats{{index}}"
+                     v-bind:id="'stats' + index"
                 >
                     <p>Stats here</p>
                 </div>
 
                 <div role="tabpanel"
                      class="tab-pane "
-                     id="history{{index}}"
+                     v-bind:id="'history' + index"
                 >
                     <p>Which exams clones of this item have been used on</p>
                 </div>
 
                 <div role="tabpanel"
                      class="tab-pane fade"
-                     id="notes{{index}}"
+                     v-bind:id="'notes' + index"
                 >
                     <p>Notes to self about item</p>
                 </div>
@@ -61,8 +66,4 @@
     </slot>
 
     <slot name="controlsArea"></slot>
-    <!--<item-settings-element item="item"></item-settings-element>-->
-    <!--<item-settings-question :item="item"></item-settings-question>-->
-
-    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->
 </div>

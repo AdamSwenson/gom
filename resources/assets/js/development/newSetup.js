@@ -9,13 +9,21 @@ window.jQuery = jQuery;
 
 require( 'bootstrap' );
 // var bootbox = require( 'bootbox' );
-
 import 'babel-polyfill'
+
+//Vue libraries
 import Vue from 'vue'
-import Router from 'vue-router'
-import App from './components/setupApp.vue.js'
+
+// Vue router
+//import Router from 'vue-router'
+// install router
+// Vue.use(Router)
+
+// Vuex store
+//this calls use vuex in addition to exposing all the modules
 import store from '../store'
 
+//Components
 import examName from './components/examName.component'
 import examProperties from './components/exam.properties.vue'
 import propsDashboard from './components/propsDashboard.component'
@@ -36,6 +44,7 @@ import valenceButton from './components/valenceButton.component'
 import deleteButton from './components/deleteItemButton.component'
 import depthControl from './components/depthControl.component'
 
+//Other folks' libraries
 var draggable = require('vuedraggable');
 
 
@@ -59,11 +68,6 @@ Vue.component('depth-control', depthControl)
 
 Vue.component('draggable', draggable)
 
-
-
-// install router
-// Vue.use(Router)
-
 new Vue( {
     el: '#app',
 
@@ -75,32 +79,7 @@ new Vue( {
     //so temp doing import manually above
   //  render: h => h( App ),
 
-    ready: function () {
+    mounted: function () {
         console.log( 'newSetup ready', this );
     },
 } )
-
-// routing
-// var router = new Router()
-
-// router.map({
-//     // '/news/:page': {
-//     //     component: NewsView
-//     // },
-//     // '/user/:id': {
-//     //     component: UserView
-//     // },
-//     // '/item/:id': {
-//     //     component: ItemView
-//     // }
-// })
-//
-// router.beforeEach(function () {
-//     window.scrollTo(0, 0)
-// })
-//
-// router.redirect({
-// //    '*': '/news/1'
-// })
-
-// router.start(App, '#app')

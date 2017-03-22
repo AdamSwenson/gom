@@ -4,7 +4,7 @@
         <ul id='card-list' class="list-group">
             <li
                     class="item-cards list-group-item handle"
-                    v-for="(index, item) in items"
+                    v-for="(item, index) in items"
             >
                 <item-card :index="item.index" :id="item.id"></item-card>
             </li>

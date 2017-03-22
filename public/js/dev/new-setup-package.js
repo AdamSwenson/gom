@@ -1,4 +1,1395 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+module.exports = require('./lib/axios');
+},{"./lib/axios":3}],2:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var utils = require('./../utils');
+var settle = require('./../core/settle');
+var buildURL = require('./../helpers/buildURL');
+var parseHeaders = require('./../helpers/parseHeaders');
+var isURLSameOrigin = require('./../helpers/isURLSameOrigin');
+var createError = require('../core/createError');
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || require('./../helpers/btoa');
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if (process.env.NODE_ENV !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED'));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = require('./../helpers/cookies');
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        if (request.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+}).call(this,require('_process'))
+},{"../core/createError":9,"./../core/settle":12,"./../helpers/btoa":16,"./../helpers/buildURL":17,"./../helpers/cookies":19,"./../helpers/isURLSameOrigin":21,"./../helpers/parseHeaders":23,"./../utils":25,"_process":336}],3:[function(require,module,exports){
+'use strict';
+
+var utils = require('./utils');
+var bind = require('./helpers/bind');
+var Axios = require('./core/Axios');
+var defaults = require('./defaults');
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(instanceConfig) {
+  return createInstance(utils.merge(defaults, instanceConfig));
+};
+
+// Expose Cancel & CancelToken
+axios.Cancel = require('./cancel/Cancel');
+axios.CancelToken = require('./cancel/CancelToken');
+axios.isCancel = require('./cancel/isCancel');
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = require('./helpers/spread');
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports.default = axios;
+
+},{"./cancel/Cancel":4,"./cancel/CancelToken":5,"./cancel/isCancel":6,"./core/Axios":7,"./defaults":14,"./helpers/bind":15,"./helpers/spread":24,"./utils":25}],4:[function(require,module,exports){
+'use strict';
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+},{}],5:[function(require,module,exports){
+'use strict';
+
+var Cancel = require('./Cancel');
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+},{"./Cancel":4}],6:[function(require,module,exports){
+'use strict';
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+},{}],7:[function(require,module,exports){
+'use strict';
+
+var defaults = require('./../defaults');
+var utils = require('./../utils');
+var InterceptorManager = require('./InterceptorManager');
+var dispatchRequest = require('./dispatchRequest');
+var isAbsoluteURL = require('./../helpers/isAbsoluteURL');
+var combineURLs = require('./../helpers/combineURLs');
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = utils.merge({
+      url: arguments[0]
+    }, arguments[1]);
+  }
+
+  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
+
+  // Hook up interceptors middleware
+  var chain = [dispatchRequest, undefined];
+  var promise = Promise.resolve(config);
+
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    chain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    chain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  while (chain.length) {
+    promise = promise.then(chain.shift(), chain.shift());
+  }
+
+  return promise;
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+},{"./../defaults":14,"./../helpers/combineURLs":18,"./../helpers/isAbsoluteURL":20,"./../utils":25,"./InterceptorManager":8,"./dispatchRequest":10}],8:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+},{"./../utils":25}],9:[function(require,module,exports){
+'use strict';
+
+var enhanceError = require('./enhanceError');
+
+/**
+ * Create an Error with the specified message, config, error code, and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ @ @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, response);
+};
+
+},{"./enhanceError":11}],10:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+var transformData = require('./transformData');
+var isCancel = require('../cancel/isCancel');
+var defaults = require('../defaults');
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData(
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers || {}
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData(
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData(
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+},{"../cancel/isCancel":6,"../defaults":14,"./../utils":25,"./transformData":13}],11:[function(require,module,exports){
+'use strict';
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ @ @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+  error.response = response;
+  return error;
+};
+
+},{}],12:[function(require,module,exports){
+'use strict';
+
+var createError = require('./createError');
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  // Note: status is not exposed by XDomainRequest
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response
+    ));
+  }
+};
+
+},{"./createError":9}],13:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn(data, headers);
+  });
+
+  return data;
+};
+
+},{"./../utils":25}],14:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var utils = require('./utils');
+var normalizeHeaderName = require('./helpers/normalizeHeaderName');
+
+var PROTECTION_PREFIX = /^\)\]\}',?\n/;
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = require('./adapters/xhr');
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = require('./adapters/http');
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      data = data.replace(PROTECTION_PREFIX, '');
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMehtodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+}).call(this,require('_process'))
+},{"./adapters/http":2,"./adapters/xhr":2,"./helpers/normalizeHeaderName":22,"./utils":25,"_process":336}],15:[function(require,module,exports){
+'use strict';
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+},{}],16:[function(require,module,exports){
+'use strict';
+
+// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+function E() {
+  this.message = 'String contains an invalid character';
+}
+E.prototype = new Error;
+E.prototype.code = 5;
+E.prototype.name = 'InvalidCharacterError';
+
+function btoa(input) {
+  var str = String(input);
+  var output = '';
+  for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars;
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+  ) {
+    charCode = str.charCodeAt(idx += 3 / 4);
+    if (charCode > 0xFF) {
+      throw new E();
+    }
+    block = block << 8 | charCode;
+  }
+  return output;
+}
+
+module.exports = btoa;
+
+},{}],17:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%40/gi, '@').
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      }
+
+      if (!utils.isArray(val)) {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+},{"./../utils":25}],18:[function(require,module,exports){
+'use strict';
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '');
+};
+
+},{}],19:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        var cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })()
+);
+
+},{"./../utils":25}],20:[function(require,module,exports){
+'use strict';
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+},{}],21:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    var msie = /(msie|trident)/i.test(navigator.userAgent);
+    var urlParsingNode = document.createElement('a');
+    var originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      var href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                  urlParsingNode.pathname :
+                  '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })()
+);
+
+},{"./../utils":25}],22:[function(require,module,exports){
+'use strict';
+
+var utils = require('../utils');
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+},{"../utils":25}],23:[function(require,module,exports){
+'use strict';
+
+var utils = require('./../utils');
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+    }
+  });
+
+  return parsed;
+};
+
+},{"./../utils":25}],24:[function(require,module,exports){
+'use strict';
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+},{}],25:[function(require,module,exports){
+'use strict';
+
+var bind = require('./helpers/bind');
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  typeof document.createElement -> undefined
+ */
+function isStandardBrowserEnv() {
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined' &&
+    typeof document.createElement === 'function'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object' && !isArray(obj)) {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+},{"./helpers/bind":15}],26:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -29,694 +1420,7 @@ define(String.prototype, "padRight", "".padEnd);
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"core-js/fn/regexp/escape":17,"core-js/shim":310,"regenerator-runtime/runtime":2}],2:[function(require,module,exports){
-(function (process,global){
-/**
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
- * additional grant of patent rights can be found in the PATENTS file in
- * the same directory.
- */
-
-!(function(global) {
-  "use strict";
-
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  var inModule = typeof module === "object";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    if (inModule) {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
-
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
-  }
-  runtime.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
-  var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
-    return this;
-  };
-
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
-  }
-
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] =
-    GeneratorFunction.displayName = "GeneratorFunction";
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
-        return this._invoke(method, arg);
-      };
-    });
-  }
-
-  runtime.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  runtime.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      if (!(toStringTagSymbol in genFun)) {
-        genFun[toStringTagSymbol] = "GeneratorFunction";
-      }
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  runtime.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return Promise.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return Promise.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration. If the Promise is rejected, however, the
-          // result for this iteration will be rejected with the same
-          // reason. Note that rejections of yielded Promises are not
-          // thrown back into the generator function, as is the case
-          // when an awaited Promise is rejected. This difference in
-          // behavior between yield and await is important, because it
-          // allows the consumer to decide what to do with the yielded
-          // rejection (swallow it and continue, manually .throw it back
-          // into the generator, abandon iteration, whatever). With
-          // await, by contrast, there is no opportunity to examine the
-          // rejection reason outside the generator function, so the
-          // only option is to throw it from the await expression, and
-          // let the generator function handle the exception.
-          result.value = unwrapped;
-          resolve(result);
-        }, reject);
-      }
-    }
-
-    if (typeof process === "object" && process.domain) {
-      invoke = process.domain.bind(invoke);
-    }
-
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new Promise(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-  runtime.AsyncIterator = AsyncIterator;
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList)
-    );
-
-    return runtime.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          if (method === "return" ||
-              (method === "throw" && delegate.iterator[method] === undefined)) {
-            // A return or throw (when the delegate iterator has no throw
-            // method) always terminates the yield* loop.
-            context.delegate = null;
-
-            // If the delegate iterator has a return method, give it a
-            // chance to clean up.
-            var returnMethod = delegate.iterator["return"];
-            if (returnMethod) {
-              var record = tryCatch(returnMethod, delegate.iterator, arg);
-              if (record.type === "throw") {
-                // If the return method threw an exception, let that
-                // exception prevail over the original return or throw.
-                method = "throw";
-                arg = record.arg;
-                continue;
-              }
-            }
-
-            if (method === "return") {
-              // Continue with the outer return, now that the delegate
-              // iterator has been terminated.
-              continue;
-            }
-          }
-
-          var record = tryCatch(
-            delegate.iterator[method],
-            delegate.iterator,
-            arg
-          );
-
-          if (record.type === "throw") {
-            context.delegate = null;
-
-            // Like returning generator.throw(uncaught), but without the
-            // overhead of an extra function call.
-            method = "throw";
-            arg = record.arg;
-            continue;
-          }
-
-          // Delegate generator ran and handled its own exceptions so
-          // regardless of what the method was, we continue as if it is
-          // "next" with an undefined arg.
-          method = "next";
-          arg = undefined;
-
-          var info = record.arg;
-          if (info.done) {
-            context[delegate.resultName] = info.value;
-            context.next = delegate.nextLoc;
-          } else {
-            state = GenStateSuspendedYield;
-            return info;
-          }
-
-          context.delegate = null;
-        }
-
-        if (method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = arg;
-
-        } else if (method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw arg;
-          }
-
-          if (context.dispatchException(arg)) {
-            // If the dispatched exception was caught by a catch block,
-            // then let that catch block handle the exception normally.
-            method = "next";
-            arg = undefined;
-          }
-
-        } else if (method === "return") {
-          context.abrupt("return", arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          var info = {
-            value: record.arg,
-            done: context.done
-          };
-
-          if (record.arg === ContinueSentinel) {
-            if (context.delegate && method === "next") {
-              // Deliberately forget the last sent value so that we don't
-              // accidentally pass it on to the delegate.
-              arg = undefined;
-            }
-          } else {
-            return info;
-          }
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(arg) call above.
-          method = "throw";
-          arg = record.arg;
-        }
-      }
-    };
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  Gp[toStringTagSymbol] = "Generator";
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  runtime.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  runtime.values = values;
-
-  function doneResult() {
-    return { value: undefined, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined;
-      this.done = false;
-      this.delegate = null;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-        return !!caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.next = finallyEntry.finallyLoc;
-      } else {
-        this.complete(record);
-      }
-
-      return ContinueSentinel;
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = record.arg;
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      return ContinueSentinel;
-    }
-  };
-})(
-  // Among the various tricks for obtaining a reference to the global
-  // object, this seems to be the most reliable technique that does not
-  // use indirect eval (which violates Content Security Policy).
-  typeof global === "object" ? global :
-  typeof window === "object" ? window :
-  typeof self === "object" ? self : this
-);
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":312}],3:[function(require,module,exports){
+},{"core-js/fn/regexp/escape":41,"core-js/shim":334,"regenerator-runtime/runtime":337}],27:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -1703,7 +2407,7 @@ define(String.prototype, "padRight", "".padEnd);
   return exports;
 }));
 
-},{"jquery":311}],4:[function(require,module,exports){
+},{"jquery":335}],28:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1717,7 +2421,7 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":5,"../../js/alert.js":6,"../../js/button.js":7,"../../js/carousel.js":8,"../../js/collapse.js":9,"../../js/dropdown.js":10,"../../js/modal.js":11,"../../js/popover.js":12,"../../js/scrollspy.js":13,"../../js/tab.js":14,"../../js/tooltip.js":15,"../../js/transition.js":16}],5:[function(require,module,exports){
+},{"../../js/affix.js":29,"../../js/alert.js":30,"../../js/button.js":31,"../../js/carousel.js":32,"../../js/collapse.js":33,"../../js/dropdown.js":34,"../../js/modal.js":35,"../../js/popover.js":36,"../../js/scrollspy.js":37,"../../js/tab.js":38,"../../js/tooltip.js":39,"../../js/transition.js":40}],29:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
@@ -1737,8 +2441,8 @@ require('../../js/affix.js')
     this.options = $.extend({}, Affix.DEFAULTS, options)
 
     this.$target = $(this.options.target)
-      .on('scroll.bs.affix.data-_api', $.proxy(this.checkPosition, this))
-      .on('click.bs.affix.data-_api',  $.proxy(this.checkPositionWithEventLoop, this))
+      .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
+      .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
 
     this.$element     = $(element)
     this.affixed      = null
@@ -1881,7 +2585,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
@@ -1973,11 +2677,11 @@ require('../../js/affix.js')
   // ALERT DATA-API
   // ==============
 
-  $(document).on('click.bs.alert.data-_api', dismiss, Alert.prototype.close)
+  $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
@@ -2087,7 +2791,7 @@ require('../../js/affix.js')
   // ===============
 
   $(document)
-    .on('click.bs.button.data-_api', '[data-toggle^="button"]', function (e) {
+    .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
       if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
@@ -2098,13 +2802,13 @@ require('../../js/affix.js')
         else $btn.find('input:visible,button:visible').first().trigger('focus')
       }
     })
-    .on('focus.bs.button.data-_api blur.bs.button.data-_api', '[data-toggle^="button"]', function (e) {
+    .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
     })
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
@@ -2331,8 +3035,8 @@ require('../../js/affix.js')
   }
 
   $(document)
-    .on('click.bs.carousel.data-_api', '[data-slide]', clickHandler)
-    .on('click.bs.carousel.data-_api', '[data-slide-to]', clickHandler)
+    .on('click.bs.carousel.data-api', '[data-slide]', clickHandler)
+    .on('click.bs.carousel.data-api', '[data-slide-to]', clickHandler)
 
   $(window).on('load', function () {
     $('[data-ride="carousel"]').each(function () {
@@ -2343,7 +3047,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
@@ -2543,7 +3247,7 @@ require('../../js/affix.js')
   // COLLAPSE DATA-API
   // =================
 
-  $(document).on('click.bs.collapse.data-_api', '[data-toggle="collapse"]', function (e) {
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
     var $this   = $(this)
 
     if (!$this.attr('data-target')) e.preventDefault()
@@ -2557,7 +3261,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
@@ -2716,15 +3420,15 @@ require('../../js/affix.js')
   // ===================================
 
   $(document)
-    .on('click.bs.dropdown.data-_api', clearMenus)
-    .on('click.bs.dropdown.data-_api', '.dropdown form', function (e) { e.stopPropagation() })
-    .on('click.bs.dropdown.data-_api', toggle, Dropdown.prototype.toggle)
-    .on('keydown.bs.dropdown.data-_api', toggle, Dropdown.prototype.keydown)
-    .on('keydown.bs.dropdown.data-_api', '.dropdown-menu', Dropdown.prototype.keydown)
+    .on('click.bs.dropdown.data-api', clearMenus)
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
@@ -3046,7 +3750,7 @@ require('../../js/affix.js')
   // MODAL DATA-API
   // ==============
 
-  $(document).on('click.bs.modal.data-_api', '[data-toggle="modal"]', function (e) {
+  $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
     var $this   = $(this)
     var href    = $this.attr('href')
     var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7
@@ -3065,7 +3769,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
@@ -3175,7 +3879,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
@@ -3340,7 +4044,7 @@ require('../../js/affix.js')
   // SCROLLSPY DATA-API
   // ==================
 
-  $(window).on('load.bs.scrollspy.data-_api', function () {
+  $(window).on('load.bs.scrollspy.data-api', function () {
     $('[data-spy="scroll"]').each(function () {
       var $spy = $(this)
       Plugin.call($spy, $spy.data())
@@ -3349,7 +4053,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
@@ -3501,12 +4205,12 @@ require('../../js/affix.js')
   }
 
   $(document)
-    .on('click.bs.tab.data-_api', '[data-toggle="tab"]', clickHandler)
-    .on('click.bs.tab.data-_api', '[data-toggle="pill"]', clickHandler)
+    .on('click.bs.tab.data-api', '[data-toggle="tab"]', clickHandler)
+    .on('click.bs.tab.data-api', '[data-toggle="pill"]', clickHandler)
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
@@ -4028,7 +4732,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
@@ -4089,21 +4793,21 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],17:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 require('../../modules/core.regexp.escape');
 module.exports = require('../../modules/_core').RegExp.escape;
-},{"../../modules/_core":38,"../../modules/core.regexp.escape":134}],18:[function(require,module,exports){
+},{"../../modules/_core":62,"../../modules/core.regexp.escape":158}],42:[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
-},{}],19:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var cof = require('./_cof');
 module.exports = function(it, msg){
   if(typeof it != 'number' && cof(it) != 'Number')throw TypeError(msg);
   return +it;
 };
-},{"./_cof":33}],20:[function(require,module,exports){
+},{"./_cof":57}],44:[function(require,module,exports){
 // 22.1.3.31 Array.prototype[@@unscopables]
 var UNSCOPABLES = require('./_wks')('unscopables')
   , ArrayProto  = Array.prototype;
@@ -4111,19 +4815,19 @@ if(ArrayProto[UNSCOPABLES] == undefined)require('./_hide')(ArrayProto, UNSCOPABL
 module.exports = function(key){
   ArrayProto[UNSCOPABLES][key] = true;
 };
-},{"./_hide":55,"./_wks":132}],21:[function(require,module,exports){
+},{"./_hide":79,"./_wks":156}],45:[function(require,module,exports){
 module.exports = function(it, Constructor, name, forbiddenField){
   if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
     throw TypeError(name + ': incorrect invocation!');
   } return it;
 };
-},{}],22:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var isObject = require('./_is-object');
 module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":64}],23:[function(require,module,exports){
+},{"./_is-object":88}],47:[function(require,module,exports){
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 'use strict';
 var toObject = require('./_to-object')
@@ -4150,7 +4854,7 @@ module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0,
     from += inc;
   } return O;
 };
-},{"./_to-index":120,"./_to-length":123,"./_to-object":124}],24:[function(require,module,exports){
+},{"./_to-index":144,"./_to-length":147,"./_to-object":148}],48:[function(require,module,exports){
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 'use strict';
 var toObject = require('./_to-object')
@@ -4166,7 +4870,7 @@ module.exports = function fill(value /*, start = 0, end = @length */){
   while(endPos > index)O[index++] = value;
   return O;
 };
-},{"./_to-index":120,"./_to-length":123,"./_to-object":124}],25:[function(require,module,exports){
+},{"./_to-index":144,"./_to-length":147,"./_to-object":148}],49:[function(require,module,exports){
 var forOf = require('./_for-of');
 
 module.exports = function(iter, ITERATOR){
@@ -4175,7 +4879,7 @@ module.exports = function(iter, ITERATOR){
   return result;
 };
 
-},{"./_for-of":52}],26:[function(require,module,exports){
+},{"./_for-of":76}],50:[function(require,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject')
@@ -4197,7 +4901,7 @@ module.exports = function(IS_INCLUDES){
     } return !IS_INCLUDES && -1;
   };
 };
-},{"./_to-index":120,"./_to-iobject":122,"./_to-length":123}],27:[function(require,module,exports){
+},{"./_to-index":144,"./_to-iobject":146,"./_to-length":147}],51:[function(require,module,exports){
 // 0 -> Array#forEach
 // 1 -> Array#map
 // 2 -> Array#filter
@@ -4242,7 +4946,7 @@ module.exports = function(TYPE, $create){
     return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
   };
 };
-},{"./_array-species-create":30,"./_ctx":40,"./_iobject":60,"./_to-length":123,"./_to-object":124}],28:[function(require,module,exports){
+},{"./_array-species-create":54,"./_ctx":64,"./_iobject":84,"./_to-length":147,"./_to-object":148}],52:[function(require,module,exports){
 var aFunction = require('./_a-function')
   , toObject  = require('./_to-object')
   , IObject   = require('./_iobject')
@@ -4271,7 +4975,7 @@ module.exports = function(that, callbackfn, aLen, memo, isRight){
   }
   return memo;
 };
-},{"./_a-function":18,"./_iobject":60,"./_to-length":123,"./_to-object":124}],29:[function(require,module,exports){
+},{"./_a-function":42,"./_iobject":84,"./_to-length":147,"./_to-object":148}],53:[function(require,module,exports){
 var isObject = require('./_is-object')
   , isArray  = require('./_is-array')
   , SPECIES  = require('./_wks')('species');
@@ -4288,14 +4992,14 @@ module.exports = function(original){
     }
   } return C === undefined ? Array : C;
 };
-},{"./_is-array":62,"./_is-object":64,"./_wks":132}],30:[function(require,module,exports){
+},{"./_is-array":86,"./_is-object":88,"./_wks":156}],54:[function(require,module,exports){
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
 var speciesConstructor = require('./_array-species-constructor');
 
 module.exports = function(original, length){
   return new (speciesConstructor(original))(length);
 };
-},{"./_array-species-constructor":29}],31:[function(require,module,exports){
+},{"./_array-species-constructor":53}],55:[function(require,module,exports){
 'use strict';
 var aFunction  = require('./_a-function')
   , isObject   = require('./_is-object')
@@ -4320,7 +5024,7 @@ module.exports = Function.bind || function bind(that /*, args... */){
   if(isObject(fn.prototype))bound.prototype = fn.prototype;
   return bound;
 };
-},{"./_a-function":18,"./_invoke":59,"./_is-object":64}],32:[function(require,module,exports){
+},{"./_a-function":42,"./_invoke":83,"./_is-object":88}],56:[function(require,module,exports){
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = require('./_cof')
   , TAG = require('./_wks')('toStringTag')
@@ -4344,13 +5048,13 @@ module.exports = function(it){
     // ES3 arguments fallback
     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
 };
-},{"./_cof":33,"./_wks":132}],33:[function(require,module,exports){
+},{"./_cof":57,"./_wks":156}],57:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
-},{}],34:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 'use strict';
 var dP          = require('./_object-dp').f
   , create      = require('./_object-create')
@@ -4493,7 +5197,7 @@ module.exports = {
     setSpecies(NAME);
   }
 };
-},{"./_an-instance":21,"./_ctx":40,"./_defined":42,"./_descriptors":43,"./_for-of":52,"./_iter-define":68,"./_iter-step":70,"./_meta":77,"./_object-create":81,"./_object-dp":82,"./_redefine-all":101,"./_set-species":106}],35:[function(require,module,exports){
+},{"./_an-instance":45,"./_ctx":64,"./_defined":66,"./_descriptors":67,"./_for-of":76,"./_iter-define":92,"./_iter-step":94,"./_meta":101,"./_object-create":105,"./_object-dp":106,"./_redefine-all":125,"./_set-species":130}],59:[function(require,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var classof = require('./_classof')
   , from    = require('./_array-from-iterable');
@@ -4503,7 +5207,7 @@ module.exports = function(NAME){
     return from(this);
   };
 };
-},{"./_array-from-iterable":25,"./_classof":32}],36:[function(require,module,exports){
+},{"./_array-from-iterable":49,"./_classof":56}],60:[function(require,module,exports){
 'use strict';
 var redefineAll       = require('./_redefine-all')
   , getWeak           = require('./_meta').getWeak
@@ -4587,7 +5291,7 @@ module.exports = {
   },
   ufstore: uncaughtFrozenStore
 };
-},{"./_an-instance":21,"./_an-object":22,"./_array-methods":27,"./_for-of":52,"./_has":54,"./_is-object":64,"./_meta":77,"./_redefine-all":101}],37:[function(require,module,exports){
+},{"./_an-instance":45,"./_an-object":46,"./_array-methods":51,"./_for-of":76,"./_has":78,"./_is-object":88,"./_meta":101,"./_redefine-all":125}],61:[function(require,module,exports){
 'use strict';
 var global            = require('./_global')
   , $export           = require('./_export')
@@ -4673,10 +5377,10 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 
   return C;
 };
-},{"./_an-instance":21,"./_export":47,"./_fails":49,"./_for-of":52,"./_global":53,"./_inherit-if-required":58,"./_is-object":64,"./_iter-detect":69,"./_meta":77,"./_redefine":102,"./_redefine-all":101,"./_set-to-string-tag":107}],38:[function(require,module,exports){
+},{"./_an-instance":45,"./_export":71,"./_fails":73,"./_for-of":76,"./_global":77,"./_inherit-if-required":82,"./_is-object":88,"./_iter-detect":93,"./_meta":101,"./_redefine":126,"./_redefine-all":125,"./_set-to-string-tag":131}],62:[function(require,module,exports){
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],39:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 'use strict';
 var $defineProperty = require('./_object-dp')
   , createDesc      = require('./_property-desc');
@@ -4685,7 +5389,7 @@ module.exports = function(object, index, value){
   if(index in object)$defineProperty.f(object, index, createDesc(0, value));
   else object[index] = value;
 };
-},{"./_object-dp":82,"./_property-desc":100}],40:[function(require,module,exports){
+},{"./_object-dp":106,"./_property-desc":124}],64:[function(require,module,exports){
 // optional / simple context binding
 var aFunction = require('./_a-function');
 module.exports = function(fn, that, length){
@@ -4706,7 +5410,7 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./_a-function":18}],41:[function(require,module,exports){
+},{"./_a-function":42}],65:[function(require,module,exports){
 'use strict';
 var anObject    = require('./_an-object')
   , toPrimitive = require('./_to-primitive')
@@ -4716,18 +5420,18 @@ module.exports = function(hint){
   if(hint !== 'string' && hint !== NUMBER && hint !== 'default')throw TypeError('Incorrect hint');
   return toPrimitive(anObject(this), hint != NUMBER);
 };
-},{"./_an-object":22,"./_to-primitive":125}],42:[function(require,module,exports){
+},{"./_an-object":46,"./_to-primitive":149}],66:[function(require,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],43:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_fails":49}],44:[function(require,module,exports){
+},{"./_fails":73}],68:[function(require,module,exports){
 var isObject = require('./_is-object')
   , document = require('./_global').document
   // in old IE typeof document.createElement is 'object'
@@ -4735,12 +5439,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":53,"./_is-object":64}],45:[function(require,module,exports){
+},{"./_global":77,"./_is-object":88}],69:[function(require,module,exports){
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
-},{}],46:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 // all enumerable object keys, includes symbols
 var getKeys = require('./_object-keys')
   , gOPS    = require('./_object-gops')
@@ -4756,7 +5460,7 @@ module.exports = function(it){
     while(symbols.length > i)if(isEnum.call(it, key = symbols[i++]))result.push(key);
   } return result;
 };
-},{"./_object-gops":88,"./_object-keys":91,"./_object-pie":92}],47:[function(require,module,exports){
+},{"./_object-gops":112,"./_object-keys":115,"./_object-pie":116}],71:[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , hide      = require('./_hide')
@@ -4800,7 +5504,7 @@ $export.W = 32;  // wrap
 $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library` 
 module.exports = $export;
-},{"./_core":38,"./_ctx":40,"./_global":53,"./_hide":55,"./_redefine":102}],48:[function(require,module,exports){
+},{"./_core":62,"./_ctx":64,"./_global":77,"./_hide":79,"./_redefine":126}],72:[function(require,module,exports){
 var MATCH = require('./_wks')('match');
 module.exports = function(KEY){
   var re = /./;
@@ -4813,7 +5517,7 @@ module.exports = function(KEY){
     } catch(f){ /* empty */ }
   } return true;
 };
-},{"./_wks":132}],49:[function(require,module,exports){
+},{"./_wks":156}],73:[function(require,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -4821,7 +5525,7 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],50:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 var hide     = require('./_hide')
   , redefine = require('./_redefine')
@@ -4850,7 +5554,7 @@ module.exports = function(KEY, length, exec){
     );
   }
 };
-},{"./_defined":42,"./_fails":49,"./_hide":55,"./_redefine":102,"./_wks":132}],51:[function(require,module,exports){
+},{"./_defined":66,"./_fails":73,"./_hide":79,"./_redefine":126,"./_wks":156}],75:[function(require,module,exports){
 'use strict';
 // 21.2.5.3 get RegExp.prototype.flags
 var anObject = require('./_an-object');
@@ -4864,7 +5568,7 @@ module.exports = function(){
   if(that.sticky)     result += 'y';
   return result;
 };
-},{"./_an-object":22}],52:[function(require,module,exports){
+},{"./_an-object":46}],76:[function(require,module,exports){
 var ctx         = require('./_ctx')
   , call        = require('./_iter-call')
   , isArrayIter = require('./_is-array-iter')
@@ -4890,17 +5594,17 @@ var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
 };
 exports.BREAK  = BREAK;
 exports.RETURN = RETURN;
-},{"./_an-object":22,"./_ctx":40,"./_is-array-iter":61,"./_iter-call":66,"./_to-length":123,"./core.get-iterator-method":133}],53:[function(require,module,exports){
+},{"./_an-object":46,"./_ctx":64,"./_is-array-iter":85,"./_iter-call":90,"./_to-length":147,"./core.get-iterator-method":157}],77:[function(require,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],54:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function(it, key){
   return hasOwnProperty.call(it, key);
 };
-},{}],55:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function(object, key, value){
@@ -4909,13 +5613,13 @@ module.exports = require('./_descriptors') ? function(object, key, value){
   object[key] = value;
   return object;
 };
-},{"./_descriptors":43,"./_object-dp":82,"./_property-desc":100}],56:[function(require,module,exports){
+},{"./_descriptors":67,"./_object-dp":106,"./_property-desc":124}],80:[function(require,module,exports){
 module.exports = require('./_global').document && document.documentElement;
-},{"./_global":53}],57:[function(require,module,exports){
+},{"./_global":77}],81:[function(require,module,exports){
 module.exports = !require('./_descriptors') && !require('./_fails')(function(){
   return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_descriptors":43,"./_dom-create":44,"./_fails":49}],58:[function(require,module,exports){
+},{"./_descriptors":67,"./_dom-create":68,"./_fails":73}],82:[function(require,module,exports){
 var isObject       = require('./_is-object')
   , setPrototypeOf = require('./_set-proto').set;
 module.exports = function(that, target, C){
@@ -4924,7 +5628,7 @@ module.exports = function(that, target, C){
     setPrototypeOf(that, P);
   } return that;
 };
-},{"./_is-object":64,"./_set-proto":105}],59:[function(require,module,exports){
+},{"./_is-object":88,"./_set-proto":129}],83:[function(require,module,exports){
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
 module.exports = function(fn, args, that){
   var un = that === undefined;
@@ -4941,13 +5645,13 @@ module.exports = function(fn, args, that){
                       : fn.call(that, args[0], args[1], args[2], args[3]);
   } return              fn.apply(that, args);
 };
-},{}],60:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = require('./_cof');
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
-},{"./_cof":33}],61:[function(require,module,exports){
+},{"./_cof":57}],85:[function(require,module,exports){
 // check on default Array iterator
 var Iterators  = require('./_iterators')
   , ITERATOR   = require('./_wks')('iterator')
@@ -4956,24 +5660,24 @@ var Iterators  = require('./_iterators')
 module.exports = function(it){
   return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 };
-},{"./_iterators":71,"./_wks":132}],62:[function(require,module,exports){
+},{"./_iterators":95,"./_wks":156}],86:[function(require,module,exports){
 // 7.2.2 IsArray(argument)
 var cof = require('./_cof');
 module.exports = Array.isArray || function isArray(arg){
   return cof(arg) == 'Array';
 };
-},{"./_cof":33}],63:[function(require,module,exports){
+},{"./_cof":57}],87:[function(require,module,exports){
 // 20.1.2.3 Number.isInteger(number)
 var isObject = require('./_is-object')
   , floor    = Math.floor;
 module.exports = function isInteger(it){
   return !isObject(it) && isFinite(it) && floor(it) === it;
 };
-},{"./_is-object":64}],64:[function(require,module,exports){
+},{"./_is-object":88}],88:[function(require,module,exports){
 module.exports = function(it){
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
-},{}],65:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 // 7.2.8 IsRegExp(argument)
 var isObject = require('./_is-object')
   , cof      = require('./_cof')
@@ -4982,7 +5686,7 @@ module.exports = function(it){
   var isRegExp;
   return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : cof(it) == 'RegExp');
 };
-},{"./_cof":33,"./_is-object":64,"./_wks":132}],66:[function(require,module,exports){
+},{"./_cof":57,"./_is-object":88,"./_wks":156}],90:[function(require,module,exports){
 // call something on iterator step with safe closing on error
 var anObject = require('./_an-object');
 module.exports = function(iterator, fn, value, entries){
@@ -4995,7 +5699,7 @@ module.exports = function(iterator, fn, value, entries){
     throw e;
   }
 };
-},{"./_an-object":22}],67:[function(require,module,exports){
+},{"./_an-object":46}],91:[function(require,module,exports){
 'use strict';
 var create         = require('./_object-create')
   , descriptor     = require('./_property-desc')
@@ -5009,7 +5713,7 @@ module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
   setToStringTag(Constructor, NAME + ' Iterator');
 };
-},{"./_hide":55,"./_object-create":81,"./_property-desc":100,"./_set-to-string-tag":107,"./_wks":132}],68:[function(require,module,exports){
+},{"./_hide":79,"./_object-create":105,"./_property-desc":124,"./_set-to-string-tag":131,"./_wks":156}],92:[function(require,module,exports){
 'use strict';
 var LIBRARY        = require('./_library')
   , $export        = require('./_export')
@@ -5080,7 +5784,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
   }
   return methods;
 };
-},{"./_export":47,"./_has":54,"./_hide":55,"./_iter-create":67,"./_iterators":71,"./_library":73,"./_object-gpo":89,"./_redefine":102,"./_set-to-string-tag":107,"./_wks":132}],69:[function(require,module,exports){
+},{"./_export":71,"./_has":78,"./_hide":79,"./_iter-create":91,"./_iterators":95,"./_library":97,"./_object-gpo":113,"./_redefine":126,"./_set-to-string-tag":131,"./_wks":156}],93:[function(require,module,exports){
 var ITERATOR     = require('./_wks')('iterator')
   , SAFE_CLOSING = false;
 
@@ -5102,13 +5806,13 @@ module.exports = function(exec, skipClosing){
   } catch(e){ /* empty */ }
   return safe;
 };
-},{"./_wks":132}],70:[function(require,module,exports){
+},{"./_wks":156}],94:[function(require,module,exports){
 module.exports = function(done, value){
   return {value: value, done: !!done};
 };
-},{}],71:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 module.exports = {};
-},{}],72:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 var getKeys   = require('./_object-keys')
   , toIObject = require('./_to-iobject');
 module.exports = function(object, el){
@@ -5119,9 +5823,9 @@ module.exports = function(object, el){
     , key;
   while(length > index)if(O[key = keys[index++]] === el)return key;
 };
-},{"./_object-keys":91,"./_to-iobject":122}],73:[function(require,module,exports){
+},{"./_object-keys":115,"./_to-iobject":146}],97:[function(require,module,exports){
 module.exports = false;
-},{}],74:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 // 20.2.2.14 Math.expm1(x)
 var $expm1 = Math.expm1;
 module.exports = (!$expm1
@@ -5132,17 +5836,17 @@ module.exports = (!$expm1
 ) ? function expm1(x){
   return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
 } : $expm1;
-},{}],75:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 // 20.2.2.20 Math.log1p(x)
 module.exports = Math.log1p || function log1p(x){
   return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
 };
-},{}],76:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 // 20.2.2.28 Math.sign(x)
 module.exports = Math.sign || function sign(x){
   return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
 };
-},{}],77:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 var META     = require('./_uid')('meta')
   , isObject = require('./_is-object')
   , has      = require('./_has')
@@ -5196,7 +5900,7 @@ var meta = module.exports = {
   getWeak:  getWeak,
   onFreeze: onFreeze
 };
-},{"./_fails":49,"./_has":54,"./_is-object":64,"./_object-dp":82,"./_uid":129}],78:[function(require,module,exports){
+},{"./_fails":73,"./_has":78,"./_is-object":88,"./_object-dp":106,"./_uid":153}],102:[function(require,module,exports){
 var Map     = require('./es6.map')
   , $export = require('./_export')
   , shared  = require('./_shared')('metadata')
@@ -5248,7 +5952,7 @@ module.exports = {
   key: toMetaKey,
   exp: exp
 };
-},{"./_export":47,"./_shared":109,"./es6.map":164,"./es6.weak-map":270}],79:[function(require,module,exports){
+},{"./_export":71,"./_shared":133,"./es6.map":188,"./es6.weak-map":294}],103:[function(require,module,exports){
 var global    = require('./_global')
   , macrotask = require('./_task').set
   , Observer  = global.MutationObserver || global.WebKitMutationObserver
@@ -5317,7 +6021,7 @@ module.exports = function(){
     } last = task;
   };
 };
-},{"./_cof":33,"./_global":53,"./_task":119}],80:[function(require,module,exports){
+},{"./_cof":57,"./_global":77,"./_task":143}],104:[function(require,module,exports){
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys  = require('./_object-keys')
@@ -5351,7 +6055,7 @@ module.exports = !$assign || require('./_fails')(function(){
     while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
   } return T;
 } : $assign;
-},{"./_fails":49,"./_iobject":60,"./_object-gops":88,"./_object-keys":91,"./_object-pie":92,"./_to-object":124}],81:[function(require,module,exports){
+},{"./_fails":73,"./_iobject":84,"./_object-gops":112,"./_object-keys":115,"./_object-pie":116,"./_to-object":148}],105:[function(require,module,exports){
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject    = require('./_an-object')
   , dPs         = require('./_object-dps')
@@ -5394,7 +6098,7 @@ module.exports = Object.create || function create(O, Properties){
   return Properties === undefined ? result : dPs(result, Properties);
 };
 
-},{"./_an-object":22,"./_dom-create":44,"./_enum-bug-keys":45,"./_html":56,"./_object-dps":83,"./_shared-key":108}],82:[function(require,module,exports){
+},{"./_an-object":46,"./_dom-create":68,"./_enum-bug-keys":69,"./_html":80,"./_object-dps":107,"./_shared-key":132}],106:[function(require,module,exports){
 var anObject       = require('./_an-object')
   , IE8_DOM_DEFINE = require('./_ie8-dom-define')
   , toPrimitive    = require('./_to-primitive')
@@ -5411,7 +6115,7 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   if('value' in Attributes)O[P] = Attributes.value;
   return O;
 };
-},{"./_an-object":22,"./_descriptors":43,"./_ie8-dom-define":57,"./_to-primitive":125}],83:[function(require,module,exports){
+},{"./_an-object":46,"./_descriptors":67,"./_ie8-dom-define":81,"./_to-primitive":149}],107:[function(require,module,exports){
 var dP       = require('./_object-dp')
   , anObject = require('./_an-object')
   , getKeys  = require('./_object-keys');
@@ -5425,7 +6129,7 @@ module.exports = require('./_descriptors') ? Object.defineProperties : function 
   while(length > i)dP.f(O, P = keys[i++], Properties[P]);
   return O;
 };
-},{"./_an-object":22,"./_descriptors":43,"./_object-dp":82,"./_object-keys":91}],84:[function(require,module,exports){
+},{"./_an-object":46,"./_descriptors":67,"./_object-dp":106,"./_object-keys":115}],108:[function(require,module,exports){
 // Forced replacement prototype accessors methods
 module.exports = require('./_library')|| !require('./_fails')(function(){
   var K = Math.random();
@@ -5433,7 +6137,7 @@ module.exports = require('./_library')|| !require('./_fails')(function(){
   __defineSetter__.call(null, K, function(){ /* empty */});
   delete require('./_global')[K];
 });
-},{"./_fails":49,"./_global":53,"./_library":73}],85:[function(require,module,exports){
+},{"./_fails":73,"./_global":77,"./_library":97}],109:[function(require,module,exports){
 var pIE            = require('./_object-pie')
   , createDesc     = require('./_property-desc')
   , toIObject      = require('./_to-iobject')
@@ -5450,7 +6154,7 @@ exports.f = require('./_descriptors') ? gOPD : function getOwnPropertyDescriptor
   } catch(e){ /* empty */ }
   if(has(O, P))return createDesc(!pIE.f.call(O, P), O[P]);
 };
-},{"./_descriptors":43,"./_has":54,"./_ie8-dom-define":57,"./_object-pie":92,"./_property-desc":100,"./_to-iobject":122,"./_to-primitive":125}],86:[function(require,module,exports){
+},{"./_descriptors":67,"./_has":78,"./_ie8-dom-define":81,"./_object-pie":116,"./_property-desc":124,"./_to-iobject":146,"./_to-primitive":149}],110:[function(require,module,exports){
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = require('./_to-iobject')
   , gOPN      = require('./_object-gopn').f
@@ -5471,7 +6175,7 @@ module.exports.f = function getOwnPropertyNames(it){
   return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
 };
 
-},{"./_object-gopn":87,"./_to-iobject":122}],87:[function(require,module,exports){
+},{"./_object-gopn":111,"./_to-iobject":146}],111:[function(require,module,exports){
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys      = require('./_object-keys-internal')
   , hiddenKeys = require('./_enum-bug-keys').concat('length', 'prototype');
@@ -5479,9 +6183,9 @@ var $keys      = require('./_object-keys-internal')
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
   return $keys(O, hiddenKeys);
 };
-},{"./_enum-bug-keys":45,"./_object-keys-internal":90}],88:[function(require,module,exports){
+},{"./_enum-bug-keys":69,"./_object-keys-internal":114}],112:[function(require,module,exports){
 exports.f = Object.getOwnPropertySymbols;
-},{}],89:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has         = require('./_has')
   , toObject    = require('./_to-object')
@@ -5495,7 +6199,7 @@ module.exports = Object.getPrototypeOf || function(O){
     return O.constructor.prototype;
   } return O instanceof Object ? ObjectProto : null;
 };
-},{"./_has":54,"./_shared-key":108,"./_to-object":124}],90:[function(require,module,exports){
+},{"./_has":78,"./_shared-key":132,"./_to-object":148}],114:[function(require,module,exports){
 var has          = require('./_has')
   , toIObject    = require('./_to-iobject')
   , arrayIndexOf = require('./_array-includes')(false)
@@ -5513,7 +6217,7 @@ module.exports = function(object, names){
   }
   return result;
 };
-},{"./_array-includes":26,"./_has":54,"./_shared-key":108,"./_to-iobject":122}],91:[function(require,module,exports){
+},{"./_array-includes":50,"./_has":78,"./_shared-key":132,"./_to-iobject":146}],115:[function(require,module,exports){
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = require('./_object-keys-internal')
   , enumBugKeys = require('./_enum-bug-keys');
@@ -5521,9 +6225,9 @@ var $keys       = require('./_object-keys-internal')
 module.exports = Object.keys || function keys(O){
   return $keys(O, enumBugKeys);
 };
-},{"./_enum-bug-keys":45,"./_object-keys-internal":90}],92:[function(require,module,exports){
+},{"./_enum-bug-keys":69,"./_object-keys-internal":114}],116:[function(require,module,exports){
 exports.f = {}.propertyIsEnumerable;
-},{}],93:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 // most Object methods by ES6 should accept primitives
 var $export = require('./_export')
   , core    = require('./_core')
@@ -5534,7 +6238,7 @@ module.exports = function(KEY, exec){
   exp[KEY] = exec(fn);
   $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
 };
-},{"./_core":38,"./_export":47,"./_fails":49}],94:[function(require,module,exports){
+},{"./_core":62,"./_export":71,"./_fails":73}],118:[function(require,module,exports){
 var getKeys   = require('./_object-keys')
   , toIObject = require('./_to-iobject')
   , isEnum    = require('./_object-pie').f;
@@ -5551,7 +6255,7 @@ module.exports = function(isEntries){
     } return result;
   };
 };
-},{"./_object-keys":91,"./_object-pie":92,"./_to-iobject":122}],95:[function(require,module,exports){
+},{"./_object-keys":115,"./_object-pie":116,"./_to-iobject":146}],119:[function(require,module,exports){
 // all object keys, includes non-enumerable and symbols
 var gOPN     = require('./_object-gopn')
   , gOPS     = require('./_object-gops')
@@ -5562,7 +6266,7 @@ module.exports = Reflect && Reflect.ownKeys || function ownKeys(it){
     , getSymbols = gOPS.f;
   return getSymbols ? keys.concat(getSymbols(it)) : keys;
 };
-},{"./_an-object":22,"./_global":53,"./_object-gopn":87,"./_object-gops":88}],96:[function(require,module,exports){
+},{"./_an-object":46,"./_global":77,"./_object-gopn":111,"./_object-gops":112}],120:[function(require,module,exports){
 var $parseFloat = require('./_global').parseFloat
   , $trim       = require('./_string-trim').trim;
 
@@ -5571,7 +6275,7 @@ module.exports = 1 / $parseFloat(require('./_string-ws') + '-0') !== -Infinity ?
     , result = $parseFloat(string);
   return result === 0 && string.charAt(0) == '-' ? -0 : result;
 } : $parseFloat;
-},{"./_global":53,"./_string-trim":117,"./_string-ws":118}],97:[function(require,module,exports){
+},{"./_global":77,"./_string-trim":141,"./_string-ws":142}],121:[function(require,module,exports){
 var $parseInt = require('./_global').parseInt
   , $trim     = require('./_string-trim').trim
   , ws        = require('./_string-ws')
@@ -5581,7 +6285,7 @@ module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? f
   var string = $trim(String(str), 3);
   return $parseInt(string, (radix >>> 0) || (hex.test(string) ? 16 : 10));
 } : $parseInt;
-},{"./_global":53,"./_string-trim":117,"./_string-ws":118}],98:[function(require,module,exports){
+},{"./_global":77,"./_string-trim":141,"./_string-ws":142}],122:[function(require,module,exports){
 'use strict';
 var path      = require('./_path')
   , invoke    = require('./_invoke')
@@ -5605,9 +6309,9 @@ module.exports = function(/* ...pargs */){
     return invoke(fn, args, that);
   };
 };
-},{"./_a-function":18,"./_invoke":59,"./_path":99}],99:[function(require,module,exports){
+},{"./_a-function":42,"./_invoke":83,"./_path":123}],123:[function(require,module,exports){
 module.exports = require('./_global');
-},{"./_global":53}],100:[function(require,module,exports){
+},{"./_global":77}],124:[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -5616,13 +6320,13 @@ module.exports = function(bitmap, value){
     value       : value
   };
 };
-},{}],101:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 var redefine = require('./_redefine');
 module.exports = function(target, src, safe){
   for(var key in src)redefine(target, key, src[key], safe);
   return target;
 };
-},{"./_redefine":102}],102:[function(require,module,exports){
+},{"./_redefine":126}],126:[function(require,module,exports){
 var global    = require('./_global')
   , hide      = require('./_hide')
   , has       = require('./_has')
@@ -5655,7 +6359,7 @@ require('./_core').inspectSource = function(it){
 })(Function.prototype, TO_STRING, function toString(){
   return typeof this == 'function' && this[SRC] || $toString.call(this);
 });
-},{"./_core":38,"./_global":53,"./_has":54,"./_hide":55,"./_uid":129}],103:[function(require,module,exports){
+},{"./_core":62,"./_global":77,"./_has":78,"./_hide":79,"./_uid":153}],127:[function(require,module,exports){
 module.exports = function(regExp, replace){
   var replacer = replace === Object(replace) ? function(part){
     return replace[part];
@@ -5664,12 +6368,12 @@ module.exports = function(regExp, replace){
     return String(it).replace(regExp, replacer);
   };
 };
-},{}],104:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 // 7.2.9 SameValue(x, y)
 module.exports = Object.is || function is(x, y){
   return x === y ? x !== 0 || 1 / x === 1 / y : x != x && y != y;
 };
-},{}],105:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
 var isObject = require('./_is-object')
@@ -5695,7 +6399,7 @@ module.exports = {
     }({}, false) : undefined),
   check: check
 };
-},{"./_an-object":22,"./_ctx":40,"./_is-object":64,"./_object-gopd":85}],106:[function(require,module,exports){
+},{"./_an-object":46,"./_ctx":64,"./_is-object":88,"./_object-gopd":109}],130:[function(require,module,exports){
 'use strict';
 var global      = require('./_global')
   , dP          = require('./_object-dp')
@@ -5709,7 +6413,7 @@ module.exports = function(KEY){
     get: function(){ return this; }
   });
 };
-},{"./_descriptors":43,"./_global":53,"./_object-dp":82,"./_wks":132}],107:[function(require,module,exports){
+},{"./_descriptors":67,"./_global":77,"./_object-dp":106,"./_wks":156}],131:[function(require,module,exports){
 var def = require('./_object-dp').f
   , has = require('./_has')
   , TAG = require('./_wks')('toStringTag');
@@ -5717,20 +6421,20 @@ var def = require('./_object-dp').f
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 };
-},{"./_has":54,"./_object-dp":82,"./_wks":132}],108:[function(require,module,exports){
+},{"./_has":78,"./_object-dp":106,"./_wks":156}],132:[function(require,module,exports){
 var shared = require('./_shared')('keys')
   , uid    = require('./_uid');
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
-},{"./_shared":109,"./_uid":129}],109:[function(require,module,exports){
+},{"./_shared":133,"./_uid":153}],133:[function(require,module,exports){
 var global = require('./_global')
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
 module.exports = function(key){
   return store[key] || (store[key] = {});
 };
-},{"./_global":53}],110:[function(require,module,exports){
+},{"./_global":77}],134:[function(require,module,exports){
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
 var anObject  = require('./_an-object')
   , aFunction = require('./_a-function')
@@ -5739,7 +6443,7 @@ module.exports = function(O, D){
   var C = anObject(O).constructor, S;
   return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
 };
-},{"./_a-function":18,"./_an-object":22,"./_wks":132}],111:[function(require,module,exports){
+},{"./_a-function":42,"./_an-object":46,"./_wks":156}],135:[function(require,module,exports){
 var fails = require('./_fails');
 
 module.exports = function(method, arg){
@@ -5747,7 +6451,7 @@ module.exports = function(method, arg){
     arg ? method.call(null, function(){}, 1) : method.call(null);
   });
 };
-},{"./_fails":49}],112:[function(require,module,exports){
+},{"./_fails":73}],136:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , defined   = require('./_defined');
 // true  -> String#at
@@ -5765,7 +6469,7 @@ module.exports = function(TO_STRING){
       : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
   };
 };
-},{"./_defined":42,"./_to-integer":121}],113:[function(require,module,exports){
+},{"./_defined":66,"./_to-integer":145}],137:[function(require,module,exports){
 // helper for String#{startsWith, endsWith, includes}
 var isRegExp = require('./_is-regexp')
   , defined  = require('./_defined');
@@ -5774,7 +6478,7 @@ module.exports = function(that, searchString, NAME){
   if(isRegExp(searchString))throw TypeError('String#' + NAME + " doesn't accept regex!");
   return String(defined(that));
 };
-},{"./_defined":42,"./_is-regexp":65}],114:[function(require,module,exports){
+},{"./_defined":66,"./_is-regexp":89}],138:[function(require,module,exports){
 var $export = require('./_export')
   , fails   = require('./_fails')
   , defined = require('./_defined')
@@ -5794,7 +6498,7 @@ module.exports = function(NAME, exec){
     return test !== test.toLowerCase() || test.split('"').length > 3;
   }), 'String', O);
 };
-},{"./_defined":42,"./_export":47,"./_fails":49}],115:[function(require,module,exports){
+},{"./_defined":66,"./_export":71,"./_fails":73}],139:[function(require,module,exports){
 // https://github.com/tc39/proposal-string-pad-start-end
 var toLength = require('./_to-length')
   , repeat   = require('./_string-repeat')
@@ -5812,7 +6516,7 @@ module.exports = function(that, maxLength, fillString, left){
   return left ? stringFiller + S : S + stringFiller;
 };
 
-},{"./_defined":42,"./_string-repeat":116,"./_to-length":123}],116:[function(require,module,exports){
+},{"./_defined":66,"./_string-repeat":140,"./_to-length":147}],140:[function(require,module,exports){
 'use strict';
 var toInteger = require('./_to-integer')
   , defined   = require('./_defined');
@@ -5825,7 +6529,7 @@ module.exports = function repeat(count){
   for(;n > 0; (n >>>= 1) && (str += str))if(n & 1)res += str;
   return res;
 };
-},{"./_defined":42,"./_to-integer":121}],117:[function(require,module,exports){
+},{"./_defined":66,"./_to-integer":145}],141:[function(require,module,exports){
 var $export = require('./_export')
   , defined = require('./_defined')
   , fails   = require('./_fails')
@@ -5856,10 +6560,10 @@ var trim = exporter.trim = function(string, TYPE){
 };
 
 module.exports = exporter;
-},{"./_defined":42,"./_export":47,"./_fails":49,"./_string-ws":118}],118:[function(require,module,exports){
+},{"./_defined":66,"./_export":71,"./_fails":73,"./_string-ws":142}],142:[function(require,module,exports){
 module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
   '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-},{}],119:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 var ctx                = require('./_ctx')
   , invoke             = require('./_invoke')
   , html               = require('./_html')
@@ -5935,7 +6639,7 @@ module.exports = {
   set:   setTask,
   clear: clearTask
 };
-},{"./_cof":33,"./_ctx":40,"./_dom-create":44,"./_global":53,"./_html":56,"./_invoke":59}],120:[function(require,module,exports){
+},{"./_cof":57,"./_ctx":64,"./_dom-create":68,"./_global":77,"./_html":80,"./_invoke":83}],144:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , max       = Math.max
   , min       = Math.min;
@@ -5943,34 +6647,34 @@ module.exports = function(index, length){
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
-},{"./_to-integer":121}],121:[function(require,module,exports){
+},{"./_to-integer":145}],145:[function(require,module,exports){
 // 7.1.4 ToInteger
 var ceil  = Math.ceil
   , floor = Math.floor;
 module.exports = function(it){
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
-},{}],122:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = require('./_iobject')
   , defined = require('./_defined');
 module.exports = function(it){
   return IObject(defined(it));
 };
-},{"./_defined":42,"./_iobject":60}],123:[function(require,module,exports){
+},{"./_defined":66,"./_iobject":84}],147:[function(require,module,exports){
 // 7.1.15 ToLength
 var toInteger = require('./_to-integer')
   , min       = Math.min;
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
-},{"./_to-integer":121}],124:[function(require,module,exports){
+},{"./_to-integer":145}],148:[function(require,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = require('./_defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./_defined":42}],125:[function(require,module,exports){
+},{"./_defined":66}],149:[function(require,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -5983,7 +6687,7 @@ module.exports = function(it, S){
   if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
   throw TypeError("Can't convert object to primitive value");
 };
-},{"./_is-object":64}],126:[function(require,module,exports){
+},{"./_is-object":88}],150:[function(require,module,exports){
 'use strict';
 if(require('./_descriptors')){
   var LIBRARY             = require('./_library')
@@ -6463,7 +7167,7 @@ if(require('./_descriptors')){
     if(!LIBRARY && !CORRECT_ITER_NAME)hide(TypedArrayPrototype, ITERATOR, $iterator);
   };
 } else module.exports = function(){ /* empty */ };
-},{"./_an-instance":21,"./_array-copy-within":23,"./_array-fill":24,"./_array-includes":26,"./_array-methods":27,"./_classof":32,"./_ctx":40,"./_descriptors":43,"./_export":47,"./_fails":49,"./_global":53,"./_has":54,"./_hide":55,"./_is-array-iter":61,"./_is-object":64,"./_iter-detect":69,"./_iterators":71,"./_library":73,"./_object-create":81,"./_object-dp":82,"./_object-gopd":85,"./_object-gopn":87,"./_object-gpo":89,"./_property-desc":100,"./_redefine-all":101,"./_same-value":104,"./_set-species":106,"./_species-constructor":110,"./_to-index":120,"./_to-integer":121,"./_to-length":123,"./_to-object":124,"./_to-primitive":125,"./_typed":128,"./_typed-buffer":127,"./_uid":129,"./_wks":132,"./core.get-iterator-method":133,"./es6.array.iterator":145}],127:[function(require,module,exports){
+},{"./_an-instance":45,"./_array-copy-within":47,"./_array-fill":48,"./_array-includes":50,"./_array-methods":51,"./_classof":56,"./_ctx":64,"./_descriptors":67,"./_export":71,"./_fails":73,"./_global":77,"./_has":78,"./_hide":79,"./_is-array-iter":85,"./_is-object":88,"./_iter-detect":93,"./_iterators":95,"./_library":97,"./_object-create":105,"./_object-dp":106,"./_object-gopd":109,"./_object-gopn":111,"./_object-gpo":113,"./_property-desc":124,"./_redefine-all":125,"./_same-value":128,"./_set-species":130,"./_species-constructor":134,"./_to-index":144,"./_to-integer":145,"./_to-length":147,"./_to-object":148,"./_to-primitive":149,"./_typed":152,"./_typed-buffer":151,"./_uid":153,"./_wks":156,"./core.get-iterator-method":157,"./es6.array.iterator":169}],151:[function(require,module,exports){
 'use strict';
 var global         = require('./_global')
   , DESCRIPTORS    = require('./_descriptors')
@@ -6737,7 +7441,7 @@ setToStringTag($DataView, DATA_VIEW);
 hide($DataView[PROTOTYPE], $typed.VIEW, true);
 exports[ARRAY_BUFFER] = $ArrayBuffer;
 exports[DATA_VIEW] = $DataView;
-},{"./_an-instance":21,"./_array-fill":24,"./_descriptors":43,"./_fails":49,"./_global":53,"./_hide":55,"./_library":73,"./_object-dp":82,"./_object-gopn":87,"./_redefine-all":101,"./_set-to-string-tag":107,"./_to-integer":121,"./_to-length":123,"./_typed":128}],128:[function(require,module,exports){
+},{"./_an-instance":45,"./_array-fill":48,"./_descriptors":67,"./_fails":73,"./_global":77,"./_hide":79,"./_library":97,"./_object-dp":106,"./_object-gopn":111,"./_redefine-all":125,"./_set-to-string-tag":131,"./_to-integer":145,"./_to-length":147,"./_typed":152}],152:[function(require,module,exports){
 var global = require('./_global')
   , hide   = require('./_hide')
   , uid    = require('./_uid')
@@ -6764,13 +7468,13 @@ module.exports = {
   TYPED:  TYPED,
   VIEW:   VIEW
 };
-},{"./_global":53,"./_hide":55,"./_uid":129}],129:[function(require,module,exports){
+},{"./_global":77,"./_hide":79,"./_uid":153}],153:[function(require,module,exports){
 var id = 0
   , px = Math.random();
 module.exports = function(key){
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
-},{}],130:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 var global         = require('./_global')
   , core           = require('./_core')
   , LIBRARY        = require('./_library')
@@ -6780,9 +7484,9 @@ module.exports = function(name){
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
   if(name.charAt(0) != '_' && !(name in $Symbol))defineProperty($Symbol, name, {value: wksExt.f(name)});
 };
-},{"./_core":38,"./_global":53,"./_library":73,"./_object-dp":82,"./_wks-ext":131}],131:[function(require,module,exports){
+},{"./_core":62,"./_global":77,"./_library":97,"./_object-dp":106,"./_wks-ext":155}],155:[function(require,module,exports){
 exports.f = require('./_wks');
-},{"./_wks":132}],132:[function(require,module,exports){
+},{"./_wks":156}],156:[function(require,module,exports){
 var store      = require('./_shared')('wks')
   , uid        = require('./_uid')
   , Symbol     = require('./_global').Symbol
@@ -6794,7 +7498,7 @@ var $exports = module.exports = function(name){
 };
 
 $exports.store = store;
-},{"./_global":53,"./_shared":109,"./_uid":129}],133:[function(require,module,exports){
+},{"./_global":77,"./_shared":133,"./_uid":153}],157:[function(require,module,exports){
 var classof   = require('./_classof')
   , ITERATOR  = require('./_wks')('iterator')
   , Iterators = require('./_iterators');
@@ -6803,21 +7507,21 @@ module.exports = require('./_core').getIteratorMethod = function(it){
     || it['@@iterator']
     || Iterators[classof(it)];
 };
-},{"./_classof":32,"./_core":38,"./_iterators":71,"./_wks":132}],134:[function(require,module,exports){
+},{"./_classof":56,"./_core":62,"./_iterators":95,"./_wks":156}],158:[function(require,module,exports){
 // https://github.com/benjamingr/RexExp.escape
 var $export = require('./_export')
   , $re     = require('./_replacer')(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 
 $export($export.S, 'RegExp', {escape: function escape(it){ return $re(it); }});
 
-},{"./_export":47,"./_replacer":103}],135:[function(require,module,exports){
+},{"./_export":71,"./_replacer":127}],159:[function(require,module,exports){
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 var $export = require('./_export');
 
 $export($export.P, 'Array', {copyWithin: require('./_array-copy-within')});
 
 require('./_add-to-unscopables')('copyWithin');
-},{"./_add-to-unscopables":20,"./_array-copy-within":23,"./_export":47}],136:[function(require,module,exports){
+},{"./_add-to-unscopables":44,"./_array-copy-within":47,"./_export":71}],160:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $every  = require('./_array-methods')(4);
@@ -6828,14 +7532,14 @@ $export($export.P + $export.F * !require('./_strict-method')([].every, true), 'A
     return $every(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],137:[function(require,module,exports){
+},{"./_array-methods":51,"./_export":71,"./_strict-method":135}],161:[function(require,module,exports){
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 var $export = require('./_export');
 
 $export($export.P, 'Array', {fill: require('./_array-fill')});
 
 require('./_add-to-unscopables')('fill');
-},{"./_add-to-unscopables":20,"./_array-fill":24,"./_export":47}],138:[function(require,module,exports){
+},{"./_add-to-unscopables":44,"./_array-fill":48,"./_export":71}],162:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $filter = require('./_array-methods')(2);
@@ -6846,7 +7550,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].filter, true), '
     return $filter(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],139:[function(require,module,exports){
+},{"./_array-methods":51,"./_export":71,"./_strict-method":135}],163:[function(require,module,exports){
 'use strict';
 // 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
 var $export = require('./_export')
@@ -6861,7 +7565,7 @@ $export($export.P + $export.F * forced, 'Array', {
   }
 });
 require('./_add-to-unscopables')(KEY);
-},{"./_add-to-unscopables":20,"./_array-methods":27,"./_export":47}],140:[function(require,module,exports){
+},{"./_add-to-unscopables":44,"./_array-methods":51,"./_export":71}],164:[function(require,module,exports){
 'use strict';
 // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
 var $export = require('./_export')
@@ -6876,7 +7580,7 @@ $export($export.P + $export.F * forced, 'Array', {
   }
 });
 require('./_add-to-unscopables')(KEY);
-},{"./_add-to-unscopables":20,"./_array-methods":27,"./_export":47}],141:[function(require,module,exports){
+},{"./_add-to-unscopables":44,"./_array-methods":51,"./_export":71}],165:[function(require,module,exports){
 'use strict';
 var $export  = require('./_export')
   , $forEach = require('./_array-methods')(0)
@@ -6888,7 +7592,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
     return $forEach(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],142:[function(require,module,exports){
+},{"./_array-methods":51,"./_export":71,"./_strict-method":135}],166:[function(require,module,exports){
 'use strict';
 var ctx            = require('./_ctx')
   , $export        = require('./_export')
@@ -6927,7 +7631,7 @@ $export($export.S + $export.F * !require('./_iter-detect')(function(iter){ Array
   }
 });
 
-},{"./_create-property":39,"./_ctx":40,"./_export":47,"./_is-array-iter":61,"./_iter-call":66,"./_iter-detect":69,"./_to-length":123,"./_to-object":124,"./core.get-iterator-method":133}],143:[function(require,module,exports){
+},{"./_create-property":63,"./_ctx":64,"./_export":71,"./_is-array-iter":85,"./_iter-call":90,"./_iter-detect":93,"./_to-length":147,"./_to-object":148,"./core.get-iterator-method":157}],167:[function(require,module,exports){
 'use strict';
 var $export       = require('./_export')
   , $indexOf      = require('./_array-includes')(false)
@@ -6943,12 +7647,12 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !require('./_strict-method')($
       : $indexOf(this, searchElement, arguments[1]);
   }
 });
-},{"./_array-includes":26,"./_export":47,"./_strict-method":111}],144:[function(require,module,exports){
+},{"./_array-includes":50,"./_export":71,"./_strict-method":135}],168:[function(require,module,exports){
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 var $export = require('./_export');
 
 $export($export.S, 'Array', {isArray: require('./_is-array')});
-},{"./_export":47,"./_is-array":62}],145:[function(require,module,exports){
+},{"./_export":71,"./_is-array":86}],169:[function(require,module,exports){
 'use strict';
 var addToUnscopables = require('./_add-to-unscopables')
   , step             = require('./_iter-step')
@@ -6983,7 +7687,7 @@ Iterators.Arguments = Iterators.Array;
 addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
-},{"./_add-to-unscopables":20,"./_iter-define":68,"./_iter-step":70,"./_iterators":71,"./_to-iobject":122}],146:[function(require,module,exports){
+},{"./_add-to-unscopables":44,"./_iter-define":92,"./_iter-step":94,"./_iterators":95,"./_to-iobject":146}],170:[function(require,module,exports){
 'use strict';
 // 22.1.3.13 Array.prototype.join(separator)
 var $export   = require('./_export')
@@ -6996,7 +7700,7 @@ $export($export.P + $export.F * (require('./_iobject') != Object || !require('./
     return arrayJoin.call(toIObject(this), separator === undefined ? ',' : separator);
   }
 });
-},{"./_export":47,"./_iobject":60,"./_strict-method":111,"./_to-iobject":122}],147:[function(require,module,exports){
+},{"./_export":71,"./_iobject":84,"./_strict-method":135,"./_to-iobject":146}],171:[function(require,module,exports){
 'use strict';
 var $export       = require('./_export')
   , toIObject     = require('./_to-iobject')
@@ -7019,7 +7723,7 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !require('./_strict-method')($
     return -1;
   }
 });
-},{"./_export":47,"./_strict-method":111,"./_to-integer":121,"./_to-iobject":122,"./_to-length":123}],148:[function(require,module,exports){
+},{"./_export":71,"./_strict-method":135,"./_to-integer":145,"./_to-iobject":146,"./_to-length":147}],172:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $map    = require('./_array-methods')(1);
@@ -7030,7 +7734,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].map, true), 'Arr
     return $map(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],149:[function(require,module,exports){
+},{"./_array-methods":51,"./_export":71,"./_strict-method":135}],173:[function(require,module,exports){
 'use strict';
 var $export        = require('./_export')
   , createProperty = require('./_create-property');
@@ -7050,7 +7754,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
     return result;
   }
 });
-},{"./_create-property":39,"./_export":47,"./_fails":49}],150:[function(require,module,exports){
+},{"./_create-property":63,"./_export":71,"./_fails":73}],174:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $reduce = require('./_array-reduce');
@@ -7061,7 +7765,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].reduceRight, tru
     return $reduce(this, callbackfn, arguments.length, arguments[1], true);
   }
 });
-},{"./_array-reduce":28,"./_export":47,"./_strict-method":111}],151:[function(require,module,exports){
+},{"./_array-reduce":52,"./_export":71,"./_strict-method":135}],175:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $reduce = require('./_array-reduce');
@@ -7072,7 +7776,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].reduce, true), '
     return $reduce(this, callbackfn, arguments.length, arguments[1], false);
   }
 });
-},{"./_array-reduce":28,"./_export":47,"./_strict-method":111}],152:[function(require,module,exports){
+},{"./_array-reduce":52,"./_export":71,"./_strict-method":135}],176:[function(require,module,exports){
 'use strict';
 var $export    = require('./_export')
   , html       = require('./_html')
@@ -7101,7 +7805,7 @@ $export($export.P + $export.F * require('./_fails')(function(){
     return cloned;
   }
 });
-},{"./_cof":33,"./_export":47,"./_fails":49,"./_html":56,"./_to-index":120,"./_to-length":123}],153:[function(require,module,exports){
+},{"./_cof":57,"./_export":71,"./_fails":73,"./_html":80,"./_to-index":144,"./_to-length":147}],177:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $some   = require('./_array-methods')(3);
@@ -7112,7 +7816,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].some, true), 'Ar
     return $some(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],154:[function(require,module,exports){
+},{"./_array-methods":51,"./_export":71,"./_strict-method":135}],178:[function(require,module,exports){
 'use strict';
 var $export   = require('./_export')
   , aFunction = require('./_a-function')
@@ -7136,14 +7840,14 @@ $export($export.P + $export.F * (fails(function(){
       : $sort.call(toObject(this), aFunction(comparefn));
   }
 });
-},{"./_a-function":18,"./_export":47,"./_fails":49,"./_strict-method":111,"./_to-object":124}],155:[function(require,module,exports){
+},{"./_a-function":42,"./_export":71,"./_fails":73,"./_strict-method":135,"./_to-object":148}],179:[function(require,module,exports){
 require('./_set-species')('Array');
-},{"./_set-species":106}],156:[function(require,module,exports){
+},{"./_set-species":130}],180:[function(require,module,exports){
 // 20.3.3.1 / 15.9.4.4 Date.now()
 var $export = require('./_export');
 
 $export($export.S, 'Date', {now: function(){ return new Date().getTime(); }});
-},{"./_export":47}],157:[function(require,module,exports){
+},{"./_export":71}],181:[function(require,module,exports){
 'use strict';
 // 20.3.4.36 / 15.9.5.43 Date.prototype.toISOString()
 var $export = require('./_export')
@@ -7172,7 +7876,7 @@ $export($export.P + $export.F * (fails(function(){
       ':' + lz(d.getUTCSeconds()) + '.' + (m > 99 ? m : '0' + lz(m)) + 'Z';
   }
 });
-},{"./_export":47,"./_fails":49}],158:[function(require,module,exports){
+},{"./_export":71,"./_fails":73}],182:[function(require,module,exports){
 'use strict';
 var $export     = require('./_export')
   , toObject    = require('./_to-object')
@@ -7187,12 +7891,12 @@ $export($export.P + $export.F * require('./_fails')(function(){
     return typeof pv == 'number' && !isFinite(pv) ? null : O.toISOString();
   }
 });
-},{"./_export":47,"./_fails":49,"./_to-object":124,"./_to-primitive":125}],159:[function(require,module,exports){
+},{"./_export":71,"./_fails":73,"./_to-object":148,"./_to-primitive":149}],183:[function(require,module,exports){
 var TO_PRIMITIVE = require('./_wks')('toPrimitive')
   , proto        = Date.prototype;
 
 if(!(TO_PRIMITIVE in proto))require('./_hide')(proto, TO_PRIMITIVE, require('./_date-to-primitive'));
-},{"./_date-to-primitive":41,"./_hide":55,"./_wks":132}],160:[function(require,module,exports){
+},{"./_date-to-primitive":65,"./_hide":79,"./_wks":156}],184:[function(require,module,exports){
 var DateProto    = Date.prototype
   , INVALID_DATE = 'Invalid Date'
   , TO_STRING    = 'toString'
@@ -7204,12 +7908,12 @@ if(new Date(NaN) + '' != INVALID_DATE){
     return value === value ? $toString.call(this) : INVALID_DATE;
   });
 }
-},{"./_redefine":102}],161:[function(require,module,exports){
+},{"./_redefine":126}],185:[function(require,module,exports){
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 var $export = require('./_export');
 
 $export($export.P, 'Function', {bind: require('./_bind')});
-},{"./_bind":31,"./_export":47}],162:[function(require,module,exports){
+},{"./_bind":55,"./_export":71}],186:[function(require,module,exports){
 'use strict';
 var isObject       = require('./_is-object')
   , getPrototypeOf = require('./_object-gpo')
@@ -7223,7 +7927,7 @@ if(!(HAS_INSTANCE in FunctionProto))require('./_object-dp').f(FunctionProto, HAS
   while(O = getPrototypeOf(O))if(this.prototype === O)return true;
   return false;
 }});
-},{"./_is-object":64,"./_object-dp":82,"./_object-gpo":89,"./_wks":132}],163:[function(require,module,exports){
+},{"./_is-object":88,"./_object-dp":106,"./_object-gpo":113,"./_wks":156}],187:[function(require,module,exports){
 var dP         = require('./_object-dp').f
   , createDesc = require('./_property-desc')
   , has        = require('./_has')
@@ -7249,7 +7953,7 @@ NAME in FProto || require('./_descriptors') && dP(FProto, NAME, {
     }
   }
 });
-},{"./_descriptors":43,"./_has":54,"./_object-dp":82,"./_property-desc":100}],164:[function(require,module,exports){
+},{"./_descriptors":67,"./_has":78,"./_object-dp":106,"./_property-desc":124}],188:[function(require,module,exports){
 'use strict';
 var strong = require('./_collection-strong');
 
@@ -7267,7 +7971,7 @@ module.exports = require('./_collection')('Map', function(get){
     return strong.def(this, key === 0 ? 0 : key, value);
   }
 }, strong, true);
-},{"./_collection":37,"./_collection-strong":34}],165:[function(require,module,exports){
+},{"./_collection":61,"./_collection-strong":58}],189:[function(require,module,exports){
 // 20.2.2.3 Math.acosh(x)
 var $export = require('./_export')
   , log1p   = require('./_math-log1p')
@@ -7286,7 +7990,7 @@ $export($export.S + $export.F * !($acosh
       : log1p(x - 1 + sqrt(x - 1) * sqrt(x + 1));
   }
 });
-},{"./_export":47,"./_math-log1p":75}],166:[function(require,module,exports){
+},{"./_export":71,"./_math-log1p":99}],190:[function(require,module,exports){
 // 20.2.2.5 Math.asinh(x)
 var $export = require('./_export')
   , $asinh  = Math.asinh;
@@ -7297,7 +8001,7 @@ function asinh(x){
 
 // Tor Browser bug: Math.asinh(0) -> -0 
 $export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', {asinh: asinh});
-},{"./_export":47}],167:[function(require,module,exports){
+},{"./_export":71}],191:[function(require,module,exports){
 // 20.2.2.7 Math.atanh(x)
 var $export = require('./_export')
   , $atanh  = Math.atanh;
@@ -7308,7 +8012,7 @@ $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
     return (x = +x) == 0 ? x : Math.log((1 + x) / (1 - x)) / 2;
   }
 });
-},{"./_export":47}],168:[function(require,module,exports){
+},{"./_export":71}],192:[function(require,module,exports){
 // 20.2.2.9 Math.cbrt(x)
 var $export = require('./_export')
   , sign    = require('./_math-sign');
@@ -7318,7 +8022,7 @@ $export($export.S, 'Math', {
     return sign(x = +x) * Math.pow(Math.abs(x), 1 / 3);
   }
 });
-},{"./_export":47,"./_math-sign":76}],169:[function(require,module,exports){
+},{"./_export":71,"./_math-sign":100}],193:[function(require,module,exports){
 // 20.2.2.11 Math.clz32(x)
 var $export = require('./_export');
 
@@ -7327,7 +8031,7 @@ $export($export.S, 'Math', {
     return (x >>>= 0) ? 31 - Math.floor(Math.log(x + 0.5) * Math.LOG2E) : 32;
   }
 });
-},{"./_export":47}],170:[function(require,module,exports){
+},{"./_export":71}],194:[function(require,module,exports){
 // 20.2.2.12 Math.cosh(x)
 var $export = require('./_export')
   , exp     = Math.exp;
@@ -7337,13 +8041,13 @@ $export($export.S, 'Math', {
     return (exp(x = +x) + exp(-x)) / 2;
   }
 });
-},{"./_export":47}],171:[function(require,module,exports){
+},{"./_export":71}],195:[function(require,module,exports){
 // 20.2.2.14 Math.expm1(x)
 var $export = require('./_export')
   , $expm1  = require('./_math-expm1');
 
 $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', {expm1: $expm1});
-},{"./_export":47,"./_math-expm1":74}],172:[function(require,module,exports){
+},{"./_export":71,"./_math-expm1":98}],196:[function(require,module,exports){
 // 20.2.2.16 Math.fround(x)
 var $export   = require('./_export')
   , sign      = require('./_math-sign')
@@ -7370,7 +8074,7 @@ $export($export.S, 'Math', {
     return $sign * result;
   }
 });
-},{"./_export":47,"./_math-sign":76}],173:[function(require,module,exports){
+},{"./_export":71,"./_math-sign":100}],197:[function(require,module,exports){
 // 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
 var $export = require('./_export')
   , abs     = Math.abs;
@@ -7396,7 +8100,7 @@ $export($export.S, 'Math', {
     return larg === Infinity ? Infinity : larg * Math.sqrt(sum);
   }
 });
-},{"./_export":47}],174:[function(require,module,exports){
+},{"./_export":71}],198:[function(require,module,exports){
 // 20.2.2.18 Math.imul(x, y)
 var $export = require('./_export')
   , $imul   = Math.imul;
@@ -7414,7 +8118,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
     return 0 | xl * yl + ((UINT16 & xn >>> 16) * yl + xl * (UINT16 & yn >>> 16) << 16 >>> 0);
   }
 });
-},{"./_export":47,"./_fails":49}],175:[function(require,module,exports){
+},{"./_export":71,"./_fails":73}],199:[function(require,module,exports){
 // 20.2.2.21 Math.log10(x)
 var $export = require('./_export');
 
@@ -7423,12 +8127,12 @@ $export($export.S, 'Math', {
     return Math.log(x) / Math.LN10;
   }
 });
-},{"./_export":47}],176:[function(require,module,exports){
+},{"./_export":71}],200:[function(require,module,exports){
 // 20.2.2.20 Math.log1p(x)
 var $export = require('./_export');
 
 $export($export.S, 'Math', {log1p: require('./_math-log1p')});
-},{"./_export":47,"./_math-log1p":75}],177:[function(require,module,exports){
+},{"./_export":71,"./_math-log1p":99}],201:[function(require,module,exports){
 // 20.2.2.22 Math.log2(x)
 var $export = require('./_export');
 
@@ -7437,12 +8141,12 @@ $export($export.S, 'Math', {
     return Math.log(x) / Math.LN2;
   }
 });
-},{"./_export":47}],178:[function(require,module,exports){
+},{"./_export":71}],202:[function(require,module,exports){
 // 20.2.2.28 Math.sign(x)
 var $export = require('./_export');
 
 $export($export.S, 'Math', {sign: require('./_math-sign')});
-},{"./_export":47,"./_math-sign":76}],179:[function(require,module,exports){
+},{"./_export":71,"./_math-sign":100}],203:[function(require,module,exports){
 // 20.2.2.30 Math.sinh(x)
 var $export = require('./_export')
   , expm1   = require('./_math-expm1')
@@ -7458,7 +8162,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
       : (exp(x - 1) - exp(-x - 1)) * (Math.E / 2);
   }
 });
-},{"./_export":47,"./_fails":49,"./_math-expm1":74}],180:[function(require,module,exports){
+},{"./_export":71,"./_fails":73,"./_math-expm1":98}],204:[function(require,module,exports){
 // 20.2.2.33 Math.tanh(x)
 var $export = require('./_export')
   , expm1   = require('./_math-expm1')
@@ -7471,7 +8175,7 @@ $export($export.S, 'Math', {
     return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp(x) + exp(-x));
   }
 });
-},{"./_export":47,"./_math-expm1":74}],181:[function(require,module,exports){
+},{"./_export":71,"./_math-expm1":98}],205:[function(require,module,exports){
 // 20.2.2.34 Math.trunc(x)
 var $export = require('./_export');
 
@@ -7480,7 +8184,7 @@ $export($export.S, 'Math', {
     return (it > 0 ? Math.floor : Math.ceil)(it);
   }
 });
-},{"./_export":47}],182:[function(require,module,exports){
+},{"./_export":71}],206:[function(require,module,exports){
 'use strict';
 var global            = require('./_global')
   , has               = require('./_has')
@@ -7550,12 +8254,12 @@ if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
   proto.constructor = $Number;
   require('./_redefine')(global, NUMBER, $Number);
 }
-},{"./_cof":33,"./_descriptors":43,"./_fails":49,"./_global":53,"./_has":54,"./_inherit-if-required":58,"./_object-create":81,"./_object-dp":82,"./_object-gopd":85,"./_object-gopn":87,"./_redefine":102,"./_string-trim":117,"./_to-primitive":125}],183:[function(require,module,exports){
+},{"./_cof":57,"./_descriptors":67,"./_fails":73,"./_global":77,"./_has":78,"./_inherit-if-required":82,"./_object-create":105,"./_object-dp":106,"./_object-gopd":109,"./_object-gopn":111,"./_redefine":126,"./_string-trim":141,"./_to-primitive":149}],207:[function(require,module,exports){
 // 20.1.2.1 Number.EPSILON
 var $export = require('./_export');
 
 $export($export.S, 'Number', {EPSILON: Math.pow(2, -52)});
-},{"./_export":47}],184:[function(require,module,exports){
+},{"./_export":71}],208:[function(require,module,exports){
 // 20.1.2.2 Number.isFinite(number)
 var $export   = require('./_export')
   , _isFinite = require('./_global').isFinite;
@@ -7565,12 +8269,12 @@ $export($export.S, 'Number', {
     return typeof it == 'number' && _isFinite(it);
   }
 });
-},{"./_export":47,"./_global":53}],185:[function(require,module,exports){
+},{"./_export":71,"./_global":77}],209:[function(require,module,exports){
 // 20.1.2.3 Number.isInteger(number)
 var $export = require('./_export');
 
 $export($export.S, 'Number', {isInteger: require('./_is-integer')});
-},{"./_export":47,"./_is-integer":63}],186:[function(require,module,exports){
+},{"./_export":71,"./_is-integer":87}],210:[function(require,module,exports){
 // 20.1.2.4 Number.isNaN(number)
 var $export = require('./_export');
 
@@ -7579,7 +8283,7 @@ $export($export.S, 'Number', {
     return number != number;
   }
 });
-},{"./_export":47}],187:[function(require,module,exports){
+},{"./_export":71}],211:[function(require,module,exports){
 // 20.1.2.5 Number.isSafeInteger(number)
 var $export   = require('./_export')
   , isInteger = require('./_is-integer')
@@ -7590,27 +8294,27 @@ $export($export.S, 'Number', {
     return isInteger(number) && abs(number) <= 0x1fffffffffffff;
   }
 });
-},{"./_export":47,"./_is-integer":63}],188:[function(require,module,exports){
+},{"./_export":71,"./_is-integer":87}],212:[function(require,module,exports){
 // 20.1.2.6 Number.MAX_SAFE_INTEGER
 var $export = require('./_export');
 
 $export($export.S, 'Number', {MAX_SAFE_INTEGER: 0x1fffffffffffff});
-},{"./_export":47}],189:[function(require,module,exports){
+},{"./_export":71}],213:[function(require,module,exports){
 // 20.1.2.10 Number.MIN_SAFE_INTEGER
 var $export = require('./_export');
 
 $export($export.S, 'Number', {MIN_SAFE_INTEGER: -0x1fffffffffffff});
-},{"./_export":47}],190:[function(require,module,exports){
+},{"./_export":71}],214:[function(require,module,exports){
 var $export     = require('./_export')
   , $parseFloat = require('./_parse-float');
 // 20.1.2.12 Number.parseFloat(string)
 $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', {parseFloat: $parseFloat});
-},{"./_export":47,"./_parse-float":96}],191:[function(require,module,exports){
+},{"./_export":71,"./_parse-float":120}],215:[function(require,module,exports){
 var $export   = require('./_export')
   , $parseInt = require('./_parse-int');
 // 20.1.2.13 Number.parseInt(string, radix)
 $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', {parseInt: $parseInt});
-},{"./_export":47,"./_parse-int":97}],192:[function(require,module,exports){
+},{"./_export":71,"./_parse-int":121}],216:[function(require,module,exports){
 'use strict';
 var $export      = require('./_export')
   , toInteger    = require('./_to-integer')
@@ -7724,7 +8428,7 @@ $export($export.P + $export.F * (!!$toFixed && (
     } return m;
   }
 });
-},{"./_a-number-value":19,"./_export":47,"./_fails":49,"./_string-repeat":116,"./_to-integer":121}],193:[function(require,module,exports){
+},{"./_a-number-value":43,"./_export":71,"./_fails":73,"./_string-repeat":140,"./_to-integer":145}],217:[function(require,module,exports){
 'use strict';
 var $export      = require('./_export')
   , $fails       = require('./_fails')
@@ -7743,24 +8447,24 @@ $export($export.P + $export.F * ($fails(function(){
     return precision === undefined ? $toPrecision.call(that) : $toPrecision.call(that, precision); 
   }
 });
-},{"./_a-number-value":19,"./_export":47,"./_fails":49}],194:[function(require,module,exports){
+},{"./_a-number-value":43,"./_export":71,"./_fails":73}],218:[function(require,module,exports){
 // 19.1.3.1 Object.assign(target, source)
 var $export = require('./_export');
 
 $export($export.S + $export.F, 'Object', {assign: require('./_object-assign')});
-},{"./_export":47,"./_object-assign":80}],195:[function(require,module,exports){
+},{"./_export":71,"./_object-assign":104}],219:[function(require,module,exports){
 var $export = require('./_export')
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 $export($export.S, 'Object', {create: require('./_object-create')});
-},{"./_export":47,"./_object-create":81}],196:[function(require,module,exports){
+},{"./_export":71,"./_object-create":105}],220:[function(require,module,exports){
 var $export = require('./_export');
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
 $export($export.S + $export.F * !require('./_descriptors'), 'Object', {defineProperties: require('./_object-dps')});
-},{"./_descriptors":43,"./_export":47,"./_object-dps":83}],197:[function(require,module,exports){
+},{"./_descriptors":67,"./_export":71,"./_object-dps":107}],221:[function(require,module,exports){
 var $export = require('./_export');
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
 $export($export.S + $export.F * !require('./_descriptors'), 'Object', {defineProperty: require('./_object-dp').f});
-},{"./_descriptors":43,"./_export":47,"./_object-dp":82}],198:[function(require,module,exports){
+},{"./_descriptors":67,"./_export":71,"./_object-dp":106}],222:[function(require,module,exports){
 // 19.1.2.5 Object.freeze(O)
 var isObject = require('./_is-object')
   , meta     = require('./_meta').onFreeze;
@@ -7770,7 +8474,7 @@ require('./_object-sap')('freeze', function($freeze){
     return $freeze && isObject(it) ? $freeze(meta(it)) : it;
   };
 });
-},{"./_is-object":64,"./_meta":77,"./_object-sap":93}],199:[function(require,module,exports){
+},{"./_is-object":88,"./_meta":101,"./_object-sap":117}],223:[function(require,module,exports){
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
 var toIObject                 = require('./_to-iobject')
   , $getOwnPropertyDescriptor = require('./_object-gopd').f;
@@ -7780,12 +8484,12 @@ require('./_object-sap')('getOwnPropertyDescriptor', function(){
     return $getOwnPropertyDescriptor(toIObject(it), key);
   };
 });
-},{"./_object-gopd":85,"./_object-sap":93,"./_to-iobject":122}],200:[function(require,module,exports){
+},{"./_object-gopd":109,"./_object-sap":117,"./_to-iobject":146}],224:[function(require,module,exports){
 // 19.1.2.7 Object.getOwnPropertyNames(O)
 require('./_object-sap')('getOwnPropertyNames', function(){
   return require('./_object-gopn-ext').f;
 });
-},{"./_object-gopn-ext":86,"./_object-sap":93}],201:[function(require,module,exports){
+},{"./_object-gopn-ext":110,"./_object-sap":117}],225:[function(require,module,exports){
 // 19.1.2.9 Object.getPrototypeOf(O)
 var toObject        = require('./_to-object')
   , $getPrototypeOf = require('./_object-gpo');
@@ -7795,7 +8499,7 @@ require('./_object-sap')('getPrototypeOf', function(){
     return $getPrototypeOf(toObject(it));
   };
 });
-},{"./_object-gpo":89,"./_object-sap":93,"./_to-object":124}],202:[function(require,module,exports){
+},{"./_object-gpo":113,"./_object-sap":117,"./_to-object":148}],226:[function(require,module,exports){
 // 19.1.2.11 Object.isExtensible(O)
 var isObject = require('./_is-object');
 
@@ -7804,7 +8508,7 @@ require('./_object-sap')('isExtensible', function($isExtensible){
     return isObject(it) ? $isExtensible ? $isExtensible(it) : true : false;
   };
 });
-},{"./_is-object":64,"./_object-sap":93}],203:[function(require,module,exports){
+},{"./_is-object":88,"./_object-sap":117}],227:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./_is-object');
 
@@ -7813,7 +8517,7 @@ require('./_object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./_is-object":64,"./_object-sap":93}],204:[function(require,module,exports){
+},{"./_is-object":88,"./_object-sap":117}],228:[function(require,module,exports){
 // 19.1.2.13 Object.isSealed(O)
 var isObject = require('./_is-object');
 
@@ -7822,11 +8526,11 @@ require('./_object-sap')('isSealed', function($isSealed){
     return isObject(it) ? $isSealed ? $isSealed(it) : false : true;
   };
 });
-},{"./_is-object":64,"./_object-sap":93}],205:[function(require,module,exports){
+},{"./_is-object":88,"./_object-sap":117}],229:[function(require,module,exports){
 // 19.1.3.10 Object.is(value1, value2)
 var $export = require('./_export');
 $export($export.S, 'Object', {is: require('./_same-value')});
-},{"./_export":47,"./_same-value":104}],206:[function(require,module,exports){
+},{"./_export":71,"./_same-value":128}],230:[function(require,module,exports){
 // 19.1.2.14 Object.keys(O)
 var toObject = require('./_to-object')
   , $keys    = require('./_object-keys');
@@ -7836,7 +8540,7 @@ require('./_object-sap')('keys', function(){
     return $keys(toObject(it));
   };
 });
-},{"./_object-keys":91,"./_object-sap":93,"./_to-object":124}],207:[function(require,module,exports){
+},{"./_object-keys":115,"./_object-sap":117,"./_to-object":148}],231:[function(require,module,exports){
 // 19.1.2.15 Object.preventExtensions(O)
 var isObject = require('./_is-object')
   , meta     = require('./_meta').onFreeze;
@@ -7846,7 +8550,7 @@ require('./_object-sap')('preventExtensions', function($preventExtensions){
     return $preventExtensions && isObject(it) ? $preventExtensions(meta(it)) : it;
   };
 });
-},{"./_is-object":64,"./_meta":77,"./_object-sap":93}],208:[function(require,module,exports){
+},{"./_is-object":88,"./_meta":101,"./_object-sap":117}],232:[function(require,module,exports){
 // 19.1.2.17 Object.seal(O)
 var isObject = require('./_is-object')
   , meta     = require('./_meta').onFreeze;
@@ -7856,11 +8560,11 @@ require('./_object-sap')('seal', function($seal){
     return $seal && isObject(it) ? $seal(meta(it)) : it;
   };
 });
-},{"./_is-object":64,"./_meta":77,"./_object-sap":93}],209:[function(require,module,exports){
+},{"./_is-object":88,"./_meta":101,"./_object-sap":117}],233:[function(require,module,exports){
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export = require('./_export');
 $export($export.S, 'Object', {setPrototypeOf: require('./_set-proto').set});
-},{"./_export":47,"./_set-proto":105}],210:[function(require,module,exports){
+},{"./_export":71,"./_set-proto":129}],234:[function(require,module,exports){
 'use strict';
 // 19.1.3.6 Object.prototype.toString()
 var classof = require('./_classof')
@@ -7871,17 +8575,17 @@ if(test + '' != '[object z]'){
     return '[object ' + classof(this) + ']';
   }, true);
 }
-},{"./_classof":32,"./_redefine":102,"./_wks":132}],211:[function(require,module,exports){
+},{"./_classof":56,"./_redefine":126,"./_wks":156}],235:[function(require,module,exports){
 var $export     = require('./_export')
   , $parseFloat = require('./_parse-float');
 // 18.2.4 parseFloat(string)
 $export($export.G + $export.F * (parseFloat != $parseFloat), {parseFloat: $parseFloat});
-},{"./_export":47,"./_parse-float":96}],212:[function(require,module,exports){
+},{"./_export":71,"./_parse-float":120}],236:[function(require,module,exports){
 var $export   = require('./_export')
   , $parseInt = require('./_parse-int');
 // 18.2.5 parseInt(string, radix)
 $export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
-},{"./_export":47,"./_parse-int":97}],213:[function(require,module,exports){
+},{"./_export":71,"./_parse-int":121}],237:[function(require,module,exports){
 'use strict';
 var LIBRARY            = require('./_library')
   , global             = require('./_global')
@@ -8181,7 +8885,7 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
     return capability.promise;
   }
 });
-},{"./_a-function":18,"./_an-instance":21,"./_classof":32,"./_core":38,"./_ctx":40,"./_export":47,"./_for-of":52,"./_global":53,"./_is-object":64,"./_iter-detect":69,"./_library":73,"./_microtask":79,"./_redefine-all":101,"./_set-species":106,"./_set-to-string-tag":107,"./_species-constructor":110,"./_task":119,"./_wks":132}],214:[function(require,module,exports){
+},{"./_a-function":42,"./_an-instance":45,"./_classof":56,"./_core":62,"./_ctx":64,"./_export":71,"./_for-of":76,"./_global":77,"./_is-object":88,"./_iter-detect":93,"./_library":97,"./_microtask":103,"./_redefine-all":125,"./_set-species":130,"./_set-to-string-tag":131,"./_species-constructor":134,"./_task":143,"./_wks":156}],238:[function(require,module,exports){
 // 26.1.1 Reflect.apply(target, thisArgument, argumentsList)
 var $export   = require('./_export')
   , aFunction = require('./_a-function')
@@ -8198,7 +8902,7 @@ $export($export.S + $export.F * !require('./_fails')(function(){
     return rApply ? rApply(T, thisArgument, L) : fApply.call(T, thisArgument, L);
   }
 });
-},{"./_a-function":18,"./_an-object":22,"./_export":47,"./_fails":49,"./_global":53}],215:[function(require,module,exports){
+},{"./_a-function":42,"./_an-object":46,"./_export":71,"./_fails":73,"./_global":77}],239:[function(require,module,exports){
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
 var $export    = require('./_export')
   , create     = require('./_object-create')
@@ -8246,7 +8950,7 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
     return isObject(result) ? result : instance;
   }
 });
-},{"./_a-function":18,"./_an-object":22,"./_bind":31,"./_export":47,"./_fails":49,"./_global":53,"./_is-object":64,"./_object-create":81}],216:[function(require,module,exports){
+},{"./_a-function":42,"./_an-object":46,"./_bind":55,"./_export":71,"./_fails":73,"./_global":77,"./_is-object":88,"./_object-create":105}],240:[function(require,module,exports){
 // 26.1.3 Reflect.defineProperty(target, propertyKey, attributes)
 var dP          = require('./_object-dp')
   , $export     = require('./_export')
@@ -8269,7 +8973,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
     }
   }
 });
-},{"./_an-object":22,"./_export":47,"./_fails":49,"./_object-dp":82,"./_to-primitive":125}],217:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_fails":73,"./_object-dp":106,"./_to-primitive":149}],241:[function(require,module,exports){
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
 var $export  = require('./_export')
   , gOPD     = require('./_object-gopd').f
@@ -8281,7 +8985,7 @@ $export($export.S, 'Reflect', {
     return desc && !desc.configurable ? false : delete target[propertyKey];
   }
 });
-},{"./_an-object":22,"./_export":47,"./_object-gopd":85}],218:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_object-gopd":109}],242:[function(require,module,exports){
 'use strict';
 // 26.1.5 Reflect.enumerate(target)
 var $export  = require('./_export')
@@ -8308,7 +9012,7 @@ $export($export.S, 'Reflect', {
     return new Enumerate(target);
   }
 });
-},{"./_an-object":22,"./_export":47,"./_iter-create":67}],219:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_iter-create":91}],243:[function(require,module,exports){
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
 var gOPD     = require('./_object-gopd')
   , $export  = require('./_export')
@@ -8319,7 +9023,7 @@ $export($export.S, 'Reflect', {
     return gOPD.f(anObject(target), propertyKey);
   }
 });
-},{"./_an-object":22,"./_export":47,"./_object-gopd":85}],220:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_object-gopd":109}],244:[function(require,module,exports){
 // 26.1.8 Reflect.getPrototypeOf(target)
 var $export  = require('./_export')
   , getProto = require('./_object-gpo')
@@ -8330,7 +9034,7 @@ $export($export.S, 'Reflect', {
     return getProto(anObject(target));
   }
 });
-},{"./_an-object":22,"./_export":47,"./_object-gpo":89}],221:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_object-gpo":113}],245:[function(require,module,exports){
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
 var gOPD           = require('./_object-gopd')
   , getPrototypeOf = require('./_object-gpo')
@@ -8352,7 +9056,7 @@ function get(target, propertyKey/*, receiver*/){
 }
 
 $export($export.S, 'Reflect', {get: get});
-},{"./_an-object":22,"./_export":47,"./_has":54,"./_is-object":64,"./_object-gopd":85,"./_object-gpo":89}],222:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_has":78,"./_is-object":88,"./_object-gopd":109,"./_object-gpo":113}],246:[function(require,module,exports){
 // 26.1.9 Reflect.has(target, propertyKey)
 var $export = require('./_export');
 
@@ -8361,7 +9065,7 @@ $export($export.S, 'Reflect', {
     return propertyKey in target;
   }
 });
-},{"./_export":47}],223:[function(require,module,exports){
+},{"./_export":71}],247:[function(require,module,exports){
 // 26.1.10 Reflect.isExtensible(target)
 var $export       = require('./_export')
   , anObject      = require('./_an-object')
@@ -8373,12 +9077,12 @@ $export($export.S, 'Reflect', {
     return $isExtensible ? $isExtensible(target) : true;
   }
 });
-},{"./_an-object":22,"./_export":47}],224:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71}],248:[function(require,module,exports){
 // 26.1.11 Reflect.ownKeys(target)
 var $export = require('./_export');
 
 $export($export.S, 'Reflect', {ownKeys: require('./_own-keys')});
-},{"./_export":47,"./_own-keys":95}],225:[function(require,module,exports){
+},{"./_export":71,"./_own-keys":119}],249:[function(require,module,exports){
 // 26.1.12 Reflect.preventExtensions(target)
 var $export            = require('./_export')
   , anObject           = require('./_an-object')
@@ -8395,7 +9099,7 @@ $export($export.S, 'Reflect', {
     }
   }
 });
-},{"./_an-object":22,"./_export":47}],226:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71}],250:[function(require,module,exports){
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
 var $export  = require('./_export')
   , setProto = require('./_set-proto');
@@ -8411,7 +9115,7 @@ if(setProto)$export($export.S, 'Reflect', {
     }
   }
 });
-},{"./_export":47,"./_set-proto":105}],227:[function(require,module,exports){
+},{"./_export":71,"./_set-proto":129}],251:[function(require,module,exports){
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
 var dP             = require('./_object-dp')
   , gOPD           = require('./_object-gopd')
@@ -8443,7 +9147,7 @@ function set(target, propertyKey, V/*, receiver*/){
 }
 
 $export($export.S, 'Reflect', {set: set});
-},{"./_an-object":22,"./_export":47,"./_has":54,"./_is-object":64,"./_object-dp":82,"./_object-gopd":85,"./_object-gpo":89,"./_property-desc":100}],228:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_has":78,"./_is-object":88,"./_object-dp":106,"./_object-gopd":109,"./_object-gpo":113,"./_property-desc":124}],252:[function(require,module,exports){
 var global            = require('./_global')
   , inheritIfRequired = require('./_inherit-if-required')
   , dP                = require('./_object-dp').f
@@ -8487,13 +9191,13 @@ if(require('./_descriptors') && (!CORRECT_NEW || require('./_fails')(function(){
 }
 
 require('./_set-species')('RegExp');
-},{"./_descriptors":43,"./_fails":49,"./_flags":51,"./_global":53,"./_inherit-if-required":58,"./_is-regexp":65,"./_object-dp":82,"./_object-gopn":87,"./_redefine":102,"./_set-species":106,"./_wks":132}],229:[function(require,module,exports){
+},{"./_descriptors":67,"./_fails":73,"./_flags":75,"./_global":77,"./_inherit-if-required":82,"./_is-regexp":89,"./_object-dp":106,"./_object-gopn":111,"./_redefine":126,"./_set-species":130,"./_wks":156}],253:[function(require,module,exports){
 // 21.2.5.3 get RegExp.prototype.flags()
 if(require('./_descriptors') && /./g.flags != 'g')require('./_object-dp').f(RegExp.prototype, 'flags', {
   configurable: true,
   get: require('./_flags')
 });
-},{"./_descriptors":43,"./_flags":51,"./_object-dp":82}],230:[function(require,module,exports){
+},{"./_descriptors":67,"./_flags":75,"./_object-dp":106}],254:[function(require,module,exports){
 // @@match logic
 require('./_fix-re-wks')('match', 1, function(defined, MATCH, $match){
   // 21.1.3.11 String.prototype.match(regexp)
@@ -8504,7 +9208,7 @@ require('./_fix-re-wks')('match', 1, function(defined, MATCH, $match){
     return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[MATCH](String(O));
   }, $match];
 });
-},{"./_fix-re-wks":50}],231:[function(require,module,exports){
+},{"./_fix-re-wks":74}],255:[function(require,module,exports){
 // @@replace logic
 require('./_fix-re-wks')('replace', 2, function(defined, REPLACE, $replace){
   // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
@@ -8517,7 +9221,7 @@ require('./_fix-re-wks')('replace', 2, function(defined, REPLACE, $replace){
       : $replace.call(String(O), searchValue, replaceValue);
   }, $replace];
 });
-},{"./_fix-re-wks":50}],232:[function(require,module,exports){
+},{"./_fix-re-wks":74}],256:[function(require,module,exports){
 // @@search logic
 require('./_fix-re-wks')('search', 1, function(defined, SEARCH, $search){
   // 21.1.3.15 String.prototype.search(regexp)
@@ -8528,7 +9232,7 @@ require('./_fix-re-wks')('search', 1, function(defined, SEARCH, $search){
     return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[SEARCH](String(O));
   }, $search];
 });
-},{"./_fix-re-wks":50}],233:[function(require,module,exports){
+},{"./_fix-re-wks":74}],257:[function(require,module,exports){
 // @@split logic
 require('./_fix-re-wks')('split', 2, function(defined, SPLIT, $split){
   'use strict';
@@ -8599,7 +9303,7 @@ require('./_fix-re-wks')('split', 2, function(defined, SPLIT, $split){
     return fn !== undefined ? fn.call(separator, O, limit) : $split.call(String(O), separator, limit);
   }, $split];
 });
-},{"./_fix-re-wks":50,"./_is-regexp":65}],234:[function(require,module,exports){
+},{"./_fix-re-wks":74,"./_is-regexp":89}],258:[function(require,module,exports){
 'use strict';
 require('./es6.regexp.flags');
 var anObject    = require('./_an-object')
@@ -8625,7 +9329,7 @@ if(require('./_fails')(function(){ return $toString.call({source: 'a', flags: 'b
     return $toString.call(this);
   });
 }
-},{"./_an-object":22,"./_descriptors":43,"./_fails":49,"./_flags":51,"./_redefine":102,"./es6.regexp.flags":229}],235:[function(require,module,exports){
+},{"./_an-object":46,"./_descriptors":67,"./_fails":73,"./_flags":75,"./_redefine":126,"./es6.regexp.flags":253}],259:[function(require,module,exports){
 'use strict';
 var strong = require('./_collection-strong');
 
@@ -8638,7 +9342,7 @@ module.exports = require('./_collection')('Set', function(get){
     return strong.def(this, value = value === 0 ? 0 : value, value);
   }
 }, strong);
-},{"./_collection":37,"./_collection-strong":34}],236:[function(require,module,exports){
+},{"./_collection":61,"./_collection-strong":58}],260:[function(require,module,exports){
 'use strict';
 // B.2.3.2 String.prototype.anchor(name)
 require('./_string-html')('anchor', function(createHTML){
@@ -8646,7 +9350,7 @@ require('./_string-html')('anchor', function(createHTML){
     return createHTML(this, 'a', 'name', name);
   }
 });
-},{"./_string-html":114}],237:[function(require,module,exports){
+},{"./_string-html":138}],261:[function(require,module,exports){
 'use strict';
 // B.2.3.3 String.prototype.big()
 require('./_string-html')('big', function(createHTML){
@@ -8654,7 +9358,7 @@ require('./_string-html')('big', function(createHTML){
     return createHTML(this, 'big', '', '');
   }
 });
-},{"./_string-html":114}],238:[function(require,module,exports){
+},{"./_string-html":138}],262:[function(require,module,exports){
 'use strict';
 // B.2.3.4 String.prototype.blink()
 require('./_string-html')('blink', function(createHTML){
@@ -8662,7 +9366,7 @@ require('./_string-html')('blink', function(createHTML){
     return createHTML(this, 'blink', '', '');
   }
 });
-},{"./_string-html":114}],239:[function(require,module,exports){
+},{"./_string-html":138}],263:[function(require,module,exports){
 'use strict';
 // B.2.3.5 String.prototype.bold()
 require('./_string-html')('bold', function(createHTML){
@@ -8670,7 +9374,7 @@ require('./_string-html')('bold', function(createHTML){
     return createHTML(this, 'b', '', '');
   }
 });
-},{"./_string-html":114}],240:[function(require,module,exports){
+},{"./_string-html":138}],264:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $at     = require('./_string-at')(false);
@@ -8680,7 +9384,7 @@ $export($export.P, 'String', {
     return $at(this, pos);
   }
 });
-},{"./_export":47,"./_string-at":112}],241:[function(require,module,exports){
+},{"./_export":71,"./_string-at":136}],265:[function(require,module,exports){
 // 21.1.3.6 String.prototype.endsWith(searchString [, endPosition])
 'use strict';
 var $export   = require('./_export')
@@ -8701,7 +9405,7 @@ $export($export.P + $export.F * require('./_fails-is-regexp')(ENDS_WITH), 'Strin
       : that.slice(end - search.length, end) === search;
   }
 });
-},{"./_export":47,"./_fails-is-regexp":48,"./_string-context":113,"./_to-length":123}],242:[function(require,module,exports){
+},{"./_export":71,"./_fails-is-regexp":72,"./_string-context":137,"./_to-length":147}],266:[function(require,module,exports){
 'use strict';
 // B.2.3.6 String.prototype.fixed()
 require('./_string-html')('fixed', function(createHTML){
@@ -8709,7 +9413,7 @@ require('./_string-html')('fixed', function(createHTML){
     return createHTML(this, 'tt', '', '');
   }
 });
-},{"./_string-html":114}],243:[function(require,module,exports){
+},{"./_string-html":138}],267:[function(require,module,exports){
 'use strict';
 // B.2.3.7 String.prototype.fontcolor(color)
 require('./_string-html')('fontcolor', function(createHTML){
@@ -8717,7 +9421,7 @@ require('./_string-html')('fontcolor', function(createHTML){
     return createHTML(this, 'font', 'color', color);
   }
 });
-},{"./_string-html":114}],244:[function(require,module,exports){
+},{"./_string-html":138}],268:[function(require,module,exports){
 'use strict';
 // B.2.3.8 String.prototype.fontsize(size)
 require('./_string-html')('fontsize', function(createHTML){
@@ -8725,7 +9429,7 @@ require('./_string-html')('fontsize', function(createHTML){
     return createHTML(this, 'font', 'size', size);
   }
 });
-},{"./_string-html":114}],245:[function(require,module,exports){
+},{"./_string-html":138}],269:[function(require,module,exports){
 var $export        = require('./_export')
   , toIndex        = require('./_to-index')
   , fromCharCode   = String.fromCharCode
@@ -8749,7 +9453,7 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
     } return res.join('');
   }
 });
-},{"./_export":47,"./_to-index":120}],246:[function(require,module,exports){
+},{"./_export":71,"./_to-index":144}],270:[function(require,module,exports){
 // 21.1.3.7 String.prototype.includes(searchString, position = 0)
 'use strict';
 var $export  = require('./_export')
@@ -8762,7 +9466,7 @@ $export($export.P + $export.F * require('./_fails-is-regexp')(INCLUDES), 'String
       .indexOf(searchString, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
-},{"./_export":47,"./_fails-is-regexp":48,"./_string-context":113}],247:[function(require,module,exports){
+},{"./_export":71,"./_fails-is-regexp":72,"./_string-context":137}],271:[function(require,module,exports){
 'use strict';
 // B.2.3.9 String.prototype.italics()
 require('./_string-html')('italics', function(createHTML){
@@ -8770,7 +9474,7 @@ require('./_string-html')('italics', function(createHTML){
     return createHTML(this, 'i', '', '');
   }
 });
-},{"./_string-html":114}],248:[function(require,module,exports){
+},{"./_string-html":138}],272:[function(require,module,exports){
 'use strict';
 var $at  = require('./_string-at')(true);
 
@@ -8788,7 +9492,7 @@ require('./_iter-define')(String, 'String', function(iterated){
   this._i += point.length;
   return {value: point, done: false};
 });
-},{"./_iter-define":68,"./_string-at":112}],249:[function(require,module,exports){
+},{"./_iter-define":92,"./_string-at":136}],273:[function(require,module,exports){
 'use strict';
 // B.2.3.10 String.prototype.link(url)
 require('./_string-html')('link', function(createHTML){
@@ -8796,7 +9500,7 @@ require('./_string-html')('link', function(createHTML){
     return createHTML(this, 'a', 'href', url);
   }
 });
-},{"./_string-html":114}],250:[function(require,module,exports){
+},{"./_string-html":138}],274:[function(require,module,exports){
 var $export   = require('./_export')
   , toIObject = require('./_to-iobject')
   , toLength  = require('./_to-length');
@@ -8815,14 +9519,14 @@ $export($export.S, 'String', {
     } return res.join('');
   }
 });
-},{"./_export":47,"./_to-iobject":122,"./_to-length":123}],251:[function(require,module,exports){
+},{"./_export":71,"./_to-iobject":146,"./_to-length":147}],275:[function(require,module,exports){
 var $export = require('./_export');
 
 $export($export.P, 'String', {
   // 21.1.3.13 String.prototype.repeat(count)
   repeat: require('./_string-repeat')
 });
-},{"./_export":47,"./_string-repeat":116}],252:[function(require,module,exports){
+},{"./_export":71,"./_string-repeat":140}],276:[function(require,module,exports){
 'use strict';
 // B.2.3.11 String.prototype.small()
 require('./_string-html')('small', function(createHTML){
@@ -8830,7 +9534,7 @@ require('./_string-html')('small', function(createHTML){
     return createHTML(this, 'small', '', '');
   }
 });
-},{"./_string-html":114}],253:[function(require,module,exports){
+},{"./_string-html":138}],277:[function(require,module,exports){
 // 21.1.3.18 String.prototype.startsWith(searchString [, position ])
 'use strict';
 var $export     = require('./_export')
@@ -8849,7 +9553,7 @@ $export($export.P + $export.F * require('./_fails-is-regexp')(STARTS_WITH), 'Str
       : that.slice(index, index + search.length) === search;
   }
 });
-},{"./_export":47,"./_fails-is-regexp":48,"./_string-context":113,"./_to-length":123}],254:[function(require,module,exports){
+},{"./_export":71,"./_fails-is-regexp":72,"./_string-context":137,"./_to-length":147}],278:[function(require,module,exports){
 'use strict';
 // B.2.3.12 String.prototype.strike()
 require('./_string-html')('strike', function(createHTML){
@@ -8857,7 +9561,7 @@ require('./_string-html')('strike', function(createHTML){
     return createHTML(this, 'strike', '', '');
   }
 });
-},{"./_string-html":114}],255:[function(require,module,exports){
+},{"./_string-html":138}],279:[function(require,module,exports){
 'use strict';
 // B.2.3.13 String.prototype.sub()
 require('./_string-html')('sub', function(createHTML){
@@ -8865,7 +9569,7 @@ require('./_string-html')('sub', function(createHTML){
     return createHTML(this, 'sub', '', '');
   }
 });
-},{"./_string-html":114}],256:[function(require,module,exports){
+},{"./_string-html":138}],280:[function(require,module,exports){
 'use strict';
 // B.2.3.14 String.prototype.sup()
 require('./_string-html')('sup', function(createHTML){
@@ -8873,7 +9577,7 @@ require('./_string-html')('sup', function(createHTML){
     return createHTML(this, 'sup', '', '');
   }
 });
-},{"./_string-html":114}],257:[function(require,module,exports){
+},{"./_string-html":138}],281:[function(require,module,exports){
 'use strict';
 // 21.1.3.25 String.prototype.trim()
 require('./_string-trim')('trim', function($trim){
@@ -8881,7 +9585,7 @@ require('./_string-trim')('trim', function($trim){
     return $trim(this, 3);
   };
 });
-},{"./_string-trim":117}],258:[function(require,module,exports){
+},{"./_string-trim":141}],282:[function(require,module,exports){
 'use strict';
 // ECMAScript 6 symbols shim
 var global         = require('./_global')
@@ -9117,7 +9821,7 @@ setToStringTag($Symbol, 'Symbol');
 setToStringTag(Math, 'Math', true);
 // 24.3.3 JSON[@@toStringTag]
 setToStringTag(global.JSON, 'JSON', true);
-},{"./_an-object":22,"./_descriptors":43,"./_enum-keys":46,"./_export":47,"./_fails":49,"./_global":53,"./_has":54,"./_hide":55,"./_is-array":62,"./_keyof":72,"./_library":73,"./_meta":77,"./_object-create":81,"./_object-dp":82,"./_object-gopd":85,"./_object-gopn":87,"./_object-gopn-ext":86,"./_object-gops":88,"./_object-keys":91,"./_object-pie":92,"./_property-desc":100,"./_redefine":102,"./_set-to-string-tag":107,"./_shared":109,"./_to-iobject":122,"./_to-primitive":125,"./_uid":129,"./_wks":132,"./_wks-define":130,"./_wks-ext":131}],259:[function(require,module,exports){
+},{"./_an-object":46,"./_descriptors":67,"./_enum-keys":70,"./_export":71,"./_fails":73,"./_global":77,"./_has":78,"./_hide":79,"./_is-array":86,"./_keyof":96,"./_library":97,"./_meta":101,"./_object-create":105,"./_object-dp":106,"./_object-gopd":109,"./_object-gopn":111,"./_object-gopn-ext":110,"./_object-gops":112,"./_object-keys":115,"./_object-pie":116,"./_property-desc":124,"./_redefine":126,"./_set-to-string-tag":131,"./_shared":133,"./_to-iobject":146,"./_to-primitive":149,"./_uid":153,"./_wks":156,"./_wks-define":154,"./_wks-ext":155}],283:[function(require,module,exports){
 'use strict';
 var $export      = require('./_export')
   , $typed       = require('./_typed')
@@ -9164,66 +9868,66 @@ $export($export.P + $export.U + $export.F * require('./_fails')(function(){
 });
 
 require('./_set-species')(ARRAY_BUFFER);
-},{"./_an-object":22,"./_export":47,"./_fails":49,"./_global":53,"./_is-object":64,"./_set-species":106,"./_species-constructor":110,"./_to-index":120,"./_to-length":123,"./_typed":128,"./_typed-buffer":127}],260:[function(require,module,exports){
+},{"./_an-object":46,"./_export":71,"./_fails":73,"./_global":77,"./_is-object":88,"./_set-species":130,"./_species-constructor":134,"./_to-index":144,"./_to-length":147,"./_typed":152,"./_typed-buffer":151}],284:[function(require,module,exports){
 var $export = require('./_export');
 $export($export.G + $export.W + $export.F * !require('./_typed').ABV, {
   DataView: require('./_typed-buffer').DataView
 });
-},{"./_export":47,"./_typed":128,"./_typed-buffer":127}],261:[function(require,module,exports){
+},{"./_export":71,"./_typed":152,"./_typed-buffer":151}],285:[function(require,module,exports){
 require('./_typed-array')('Float32', 4, function(init){
   return function Float32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],262:[function(require,module,exports){
+},{"./_typed-array":150}],286:[function(require,module,exports){
 require('./_typed-array')('Float64', 8, function(init){
   return function Float64Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],263:[function(require,module,exports){
+},{"./_typed-array":150}],287:[function(require,module,exports){
 require('./_typed-array')('Int16', 2, function(init){
   return function Int16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],264:[function(require,module,exports){
+},{"./_typed-array":150}],288:[function(require,module,exports){
 require('./_typed-array')('Int32', 4, function(init){
   return function Int32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],265:[function(require,module,exports){
+},{"./_typed-array":150}],289:[function(require,module,exports){
 require('./_typed-array')('Int8', 1, function(init){
   return function Int8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],266:[function(require,module,exports){
+},{"./_typed-array":150}],290:[function(require,module,exports){
 require('./_typed-array')('Uint16', 2, function(init){
   return function Uint16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],267:[function(require,module,exports){
+},{"./_typed-array":150}],291:[function(require,module,exports){
 require('./_typed-array')('Uint32', 4, function(init){
   return function Uint32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],268:[function(require,module,exports){
+},{"./_typed-array":150}],292:[function(require,module,exports){
 require('./_typed-array')('Uint8', 1, function(init){
   return function Uint8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":126}],269:[function(require,module,exports){
+},{"./_typed-array":150}],293:[function(require,module,exports){
 require('./_typed-array')('Uint8', 1, function(init){
   return function Uint8ClampedArray(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 }, true);
-},{"./_typed-array":126}],270:[function(require,module,exports){
+},{"./_typed-array":150}],294:[function(require,module,exports){
 'use strict';
 var each         = require('./_array-methods')(0)
   , redefine     = require('./_redefine')
@@ -9280,7 +9984,7 @@ if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
     });
   });
 }
-},{"./_array-methods":27,"./_collection":37,"./_collection-weak":36,"./_is-object":64,"./_meta":77,"./_object-assign":80,"./_redefine":102}],271:[function(require,module,exports){
+},{"./_array-methods":51,"./_collection":61,"./_collection-weak":60,"./_is-object":88,"./_meta":101,"./_object-assign":104,"./_redefine":126}],295:[function(require,module,exports){
 'use strict';
 var weak = require('./_collection-weak');
 
@@ -9293,7 +9997,7 @@ require('./_collection')('WeakSet', function(get){
     return weak.def(this, value, true);
   }
 }, weak, false, true);
-},{"./_collection":37,"./_collection-weak":36}],272:[function(require,module,exports){
+},{"./_collection":61,"./_collection-weak":60}],296:[function(require,module,exports){
 'use strict';
 // https://github.com/tc39/Array.prototype.includes
 var $export   = require('./_export')
@@ -9306,7 +10010,7 @@ $export($export.P, 'Array', {
 });
 
 require('./_add-to-unscopables')('includes');
-},{"./_add-to-unscopables":20,"./_array-includes":26,"./_export":47}],273:[function(require,module,exports){
+},{"./_add-to-unscopables":44,"./_array-includes":50,"./_export":71}],297:[function(require,module,exports){
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
 var $export   = require('./_export')
   , microtask = require('./_microtask')()
@@ -9319,7 +10023,7 @@ $export($export.G, {
     microtask(domain ? domain.bind(fn) : fn);
   }
 });
-},{"./_cof":33,"./_export":47,"./_global":53,"./_microtask":79}],274:[function(require,module,exports){
+},{"./_cof":57,"./_export":71,"./_global":77,"./_microtask":103}],298:[function(require,module,exports){
 // https://github.com/ljharb/proposal-is-error
 var $export = require('./_export')
   , cof     = require('./_cof');
@@ -9329,12 +10033,12 @@ $export($export.S, 'Error', {
     return cof(it) === 'Error';
   }
 });
-},{"./_cof":33,"./_export":47}],275:[function(require,module,exports){
+},{"./_cof":57,"./_export":71}],299:[function(require,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = require('./_export');
 
 $export($export.P + $export.R, 'Map', {toJSON: require('./_collection-to-json')('Map')});
-},{"./_collection-to-json":35,"./_export":47}],276:[function(require,module,exports){
+},{"./_collection-to-json":59,"./_export":71}],300:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -9346,7 +10050,7 @@ $export($export.S, 'Math', {
     return $x1 + (y1 >>> 0) + (($x0 & $y0 | ($x0 | $y0) & ~($x0 + $y0 >>> 0)) >>> 31) | 0;
   }
 });
-},{"./_export":47}],277:[function(require,module,exports){
+},{"./_export":71}],301:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -9363,7 +10067,7 @@ $export($export.S, 'Math', {
     return u1 * v1 + (t >> 16) + ((u0 * v1 >>> 0) + (t & UINT16) >> 16);
   }
 });
-},{"./_export":47}],278:[function(require,module,exports){
+},{"./_export":71}],302:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -9375,7 +10079,7 @@ $export($export.S, 'Math', {
     return $x1 - (y1 >>> 0) - ((~$x0 & $y0 | ~($x0 ^ $y0) & $x0 - $y0 >>> 0) >>> 31) | 0;
   }
 });
-},{"./_export":47}],279:[function(require,module,exports){
+},{"./_export":71}],303:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -9392,7 +10096,7 @@ $export($export.S, 'Math', {
     return u1 * v1 + (t >>> 16) + ((u0 * v1 >>> 0) + (t & UINT16) >>> 16);
   }
 });
-},{"./_export":47}],280:[function(require,module,exports){
+},{"./_export":71}],304:[function(require,module,exports){
 'use strict';
 var $export         = require('./_export')
   , toObject        = require('./_to-object')
@@ -9405,7 +10109,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     $defineProperty.f(toObject(this), P, {get: aFunction(getter), enumerable: true, configurable: true});
   }
 });
-},{"./_a-function":18,"./_descriptors":43,"./_export":47,"./_object-dp":82,"./_object-forced-pam":84,"./_to-object":124}],281:[function(require,module,exports){
+},{"./_a-function":42,"./_descriptors":67,"./_export":71,"./_object-dp":106,"./_object-forced-pam":108,"./_to-object":148}],305:[function(require,module,exports){
 'use strict';
 var $export         = require('./_export')
   , toObject        = require('./_to-object')
@@ -9418,7 +10122,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     $defineProperty.f(toObject(this), P, {set: aFunction(setter), enumerable: true, configurable: true});
   }
 });
-},{"./_a-function":18,"./_descriptors":43,"./_export":47,"./_object-dp":82,"./_object-forced-pam":84,"./_to-object":124}],282:[function(require,module,exports){
+},{"./_a-function":42,"./_descriptors":67,"./_export":71,"./_object-dp":106,"./_object-forced-pam":108,"./_to-object":148}],306:[function(require,module,exports){
 // https://github.com/tc39/proposal-object-values-entries
 var $export  = require('./_export')
   , $entries = require('./_object-to-array')(true);
@@ -9428,7 +10132,7 @@ $export($export.S, 'Object', {
     return $entries(it);
   }
 });
-},{"./_export":47,"./_object-to-array":94}],283:[function(require,module,exports){
+},{"./_export":71,"./_object-to-array":118}],307:[function(require,module,exports){
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
 var $export        = require('./_export')
   , ownKeys        = require('./_own-keys')
@@ -9448,7 +10152,7 @@ $export($export.S, 'Object', {
     return result;
   }
 });
-},{"./_create-property":39,"./_export":47,"./_object-gopd":85,"./_own-keys":95,"./_to-iobject":122}],284:[function(require,module,exports){
+},{"./_create-property":63,"./_export":71,"./_object-gopd":109,"./_own-keys":119,"./_to-iobject":146}],308:[function(require,module,exports){
 'use strict';
 var $export                  = require('./_export')
   , toObject                 = require('./_to-object')
@@ -9467,7 +10171,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     } while(O = getPrototypeOf(O));
   }
 });
-},{"./_descriptors":43,"./_export":47,"./_object-forced-pam":84,"./_object-gopd":85,"./_object-gpo":89,"./_to-object":124,"./_to-primitive":125}],285:[function(require,module,exports){
+},{"./_descriptors":67,"./_export":71,"./_object-forced-pam":108,"./_object-gopd":109,"./_object-gpo":113,"./_to-object":148,"./_to-primitive":149}],309:[function(require,module,exports){
 'use strict';
 var $export                  = require('./_export')
   , toObject                 = require('./_to-object')
@@ -9486,7 +10190,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     } while(O = getPrototypeOf(O));
   }
 });
-},{"./_descriptors":43,"./_export":47,"./_object-forced-pam":84,"./_object-gopd":85,"./_object-gpo":89,"./_to-object":124,"./_to-primitive":125}],286:[function(require,module,exports){
+},{"./_descriptors":67,"./_export":71,"./_object-forced-pam":108,"./_object-gopd":109,"./_object-gpo":113,"./_to-object":148,"./_to-primitive":149}],310:[function(require,module,exports){
 // https://github.com/tc39/proposal-object-values-entries
 var $export = require('./_export')
   , $values = require('./_object-to-array')(false);
@@ -9496,7 +10200,7 @@ $export($export.S, 'Object', {
     return $values(it);
   }
 });
-},{"./_export":47,"./_object-to-array":94}],287:[function(require,module,exports){
+},{"./_export":71,"./_object-to-array":118}],311:[function(require,module,exports){
 'use strict';
 // https://github.com/zenparsing/es-observable
 var $export     = require('./_export')
@@ -9696,7 +10400,7 @@ hide($Observable.prototype, OBSERVABLE, function(){ return this; });
 $export($export.G, {Observable: $Observable});
 
 require('./_set-species')('Observable');
-},{"./_a-function":18,"./_an-instance":21,"./_an-object":22,"./_core":38,"./_export":47,"./_for-of":52,"./_global":53,"./_hide":55,"./_microtask":79,"./_redefine-all":101,"./_set-species":106,"./_wks":132}],288:[function(require,module,exports){
+},{"./_a-function":42,"./_an-instance":45,"./_an-object":46,"./_core":62,"./_export":71,"./_for-of":76,"./_global":77,"./_hide":79,"./_microtask":103,"./_redefine-all":125,"./_set-species":130,"./_wks":156}],312:[function(require,module,exports){
 var metadata                  = require('./_metadata')
   , anObject                  = require('./_an-object')
   , toMetaKey                 = metadata.key
@@ -9705,7 +10409,7 @@ var metadata                  = require('./_metadata')
 metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue, target, targetKey){
   ordinaryDefineOwnMetadata(metadataKey, metadataValue, anObject(target), toMetaKey(targetKey));
 }});
-},{"./_an-object":22,"./_metadata":78}],289:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102}],313:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , toMetaKey              = metadata.key
@@ -9721,7 +10425,7 @@ metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, ta
   targetMetadata['delete'](targetKey);
   return !!targetMetadata.size || store['delete'](target);
 }});
-},{"./_an-object":22,"./_metadata":78}],290:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102}],314:[function(require,module,exports){
 var Set                     = require('./es6.set')
   , from                    = require('./_array-from-iterable')
   , metadata                = require('./_metadata')
@@ -9741,7 +10445,7 @@ var ordinaryMetadataKeys = function(O, P){
 metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */){
   return ordinaryMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 }});
-},{"./_an-object":22,"./_array-from-iterable":25,"./_metadata":78,"./_object-gpo":89,"./es6.set":235}],291:[function(require,module,exports){
+},{"./_an-object":46,"./_array-from-iterable":49,"./_metadata":102,"./_object-gpo":113,"./es6.set":259}],315:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , getPrototypeOf         = require('./_object-gpo')
@@ -9759,7 +10463,7 @@ var ordinaryGetMetadata = function(MetadataKey, O, P){
 metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKey */){
   return ordinaryGetMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":22,"./_metadata":78,"./_object-gpo":89}],292:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102,"./_object-gpo":113}],316:[function(require,module,exports){
 var metadata                = require('./_metadata')
   , anObject                = require('./_an-object')
   , ordinaryOwnMetadataKeys = metadata.keys
@@ -9768,7 +10472,7 @@ var metadata                = require('./_metadata')
 metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetKey */){
   return ordinaryOwnMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 }});
-},{"./_an-object":22,"./_metadata":78}],293:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102}],317:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , ordinaryGetOwnMetadata = metadata.get
@@ -9778,7 +10482,7 @@ metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, ta
   return ordinaryGetOwnMetadata(metadataKey, anObject(target)
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":22,"./_metadata":78}],294:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102}],318:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , getPrototypeOf         = require('./_object-gpo')
@@ -9795,7 +10499,7 @@ var ordinaryHasMetadata = function(MetadataKey, O, P){
 metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKey */){
   return ordinaryHasMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":22,"./_metadata":78,"./_object-gpo":89}],295:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102,"./_object-gpo":113}],319:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , ordinaryHasOwnMetadata = metadata.has
@@ -9805,7 +10509,7 @@ metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, ta
   return ordinaryHasOwnMetadata(metadataKey, anObject(target)
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":22,"./_metadata":78}],296:[function(require,module,exports){
+},{"./_an-object":46,"./_metadata":102}],320:[function(require,module,exports){
 var metadata                  = require('./_metadata')
   , anObject                  = require('./_an-object')
   , aFunction                 = require('./_a-function')
@@ -9821,12 +10525,12 @@ metadata.exp({metadata: function metadata(metadataKey, metadataValue){
     );
   };
 }});
-},{"./_a-function":18,"./_an-object":22,"./_metadata":78}],297:[function(require,module,exports){
+},{"./_a-function":42,"./_an-object":46,"./_metadata":102}],321:[function(require,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = require('./_export');
 
 $export($export.P + $export.R, 'Set', {toJSON: require('./_collection-to-json')('Set')});
-},{"./_collection-to-json":35,"./_export":47}],298:[function(require,module,exports){
+},{"./_collection-to-json":59,"./_export":71}],322:[function(require,module,exports){
 'use strict';
 // https://github.com/mathiasbynens/String.prototype.at
 var $export = require('./_export')
@@ -9837,7 +10541,7 @@ $export($export.P, 'String', {
     return $at(this, pos);
   }
 });
-},{"./_export":47,"./_string-at":112}],299:[function(require,module,exports){
+},{"./_export":71,"./_string-at":136}],323:[function(require,module,exports){
 'use strict';
 // https://tc39.github.io/String.prototype.matchAll/
 var $export     = require('./_export')
@@ -9868,7 +10572,7 @@ $export($export.P, 'String', {
     return new $RegExpStringIterator(rx, S);
   }
 });
-},{"./_defined":42,"./_export":47,"./_flags":51,"./_is-regexp":65,"./_iter-create":67,"./_to-length":123}],300:[function(require,module,exports){
+},{"./_defined":66,"./_export":71,"./_flags":75,"./_is-regexp":89,"./_iter-create":91,"./_to-length":147}],324:[function(require,module,exports){
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = require('./_export')
@@ -9879,7 +10583,7 @@ $export($export.P, 'String', {
     return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, false);
   }
 });
-},{"./_export":47,"./_string-pad":115}],301:[function(require,module,exports){
+},{"./_export":71,"./_string-pad":139}],325:[function(require,module,exports){
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = require('./_export')
@@ -9890,7 +10594,7 @@ $export($export.P, 'String', {
     return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, true);
   }
 });
-},{"./_export":47,"./_string-pad":115}],302:[function(require,module,exports){
+},{"./_export":71,"./_string-pad":139}],326:[function(require,module,exports){
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
 require('./_string-trim')('trimLeft', function($trim){
@@ -9898,7 +10602,7 @@ require('./_string-trim')('trimLeft', function($trim){
     return $trim(this, 1);
   };
 }, 'trimStart');
-},{"./_string-trim":117}],303:[function(require,module,exports){
+},{"./_string-trim":141}],327:[function(require,module,exports){
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
 require('./_string-trim')('trimRight', function($trim){
@@ -9906,16 +10610,16 @@ require('./_string-trim')('trimRight', function($trim){
     return $trim(this, 2);
   };
 }, 'trimEnd');
-},{"./_string-trim":117}],304:[function(require,module,exports){
+},{"./_string-trim":141}],328:[function(require,module,exports){
 require('./_wks-define')('asyncIterator');
-},{"./_wks-define":130}],305:[function(require,module,exports){
+},{"./_wks-define":154}],329:[function(require,module,exports){
 require('./_wks-define')('observable');
-},{"./_wks-define":130}],306:[function(require,module,exports){
+},{"./_wks-define":154}],330:[function(require,module,exports){
 // https://github.com/ljharb/proposal-global
 var $export = require('./_export');
 
 $export($export.S, 'System', {global: require('./_global')});
-},{"./_export":47,"./_global":53}],307:[function(require,module,exports){
+},{"./_export":71,"./_global":77}],331:[function(require,module,exports){
 var $iterators    = require('./es6.array.iterator')
   , redefine      = require('./_redefine')
   , global        = require('./_global')
@@ -9938,14 +10642,14 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
     for(key in $iterators)if(!proto[key])redefine(proto, key, $iterators[key], true);
   }
 }
-},{"./_global":53,"./_hide":55,"./_iterators":71,"./_redefine":102,"./_wks":132,"./es6.array.iterator":145}],308:[function(require,module,exports){
+},{"./_global":77,"./_hide":79,"./_iterators":95,"./_redefine":126,"./_wks":156,"./es6.array.iterator":169}],332:[function(require,module,exports){
 var $export = require('./_export')
   , $task   = require('./_task');
 $export($export.G + $export.B, {
   setImmediate:   $task.set,
   clearImmediate: $task.clear
 });
-},{"./_export":47,"./_task":119}],309:[function(require,module,exports){
+},{"./_export":71,"./_task":143}],333:[function(require,module,exports){
 // ie9- setTimeout & setInterval additional parameters fix
 var global     = require('./_global')
   , $export    = require('./_export')
@@ -9966,7 +10670,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
   setTimeout:  wrap(global.setTimeout),
   setInterval: wrap(global.setInterval)
 });
-},{"./_export":47,"./_global":53,"./_invoke":59,"./_partial":98}],310:[function(require,module,exports){
+},{"./_export":71,"./_global":77,"./_invoke":83,"./_partial":122}],334:[function(require,module,exports){
 require('./modules/es6.symbol');
 require('./modules/es6.object.create');
 require('./modules/es6.object.define-property');
@@ -10143,7 +10847,7 @@ require('./modules/web.timers');
 require('./modules/web.immediate');
 require('./modules/web.dom.iterable');
 module.exports = require('./modules/_core');
-},{"./modules/_core":38,"./modules/es6.array.copy-within":135,"./modules/es6.array.every":136,"./modules/es6.array.fill":137,"./modules/es6.array.filter":138,"./modules/es6.array.find":140,"./modules/es6.array.find-index":139,"./modules/es6.array.for-each":141,"./modules/es6.array.from":142,"./modules/es6.array.index-of":143,"./modules/es6.array.is-array":144,"./modules/es6.array.iterator":145,"./modules/es6.array.join":146,"./modules/es6.array.last-index-of":147,"./modules/es6.array.map":148,"./modules/es6.array.of":149,"./modules/es6.array.reduce":151,"./modules/es6.array.reduce-right":150,"./modules/es6.array.slice":152,"./modules/es6.array.some":153,"./modules/es6.array.sort":154,"./modules/es6.array.species":155,"./modules/es6.date.now":156,"./modules/es6.date.to-iso-string":157,"./modules/es6.date.to-json":158,"./modules/es6.date.to-primitive":159,"./modules/es6.date.to-string":160,"./modules/es6.function.bind":161,"./modules/es6.function.has-instance":162,"./modules/es6.function.name":163,"./modules/es6.map":164,"./modules/es6.math.acosh":165,"./modules/es6.math.asinh":166,"./modules/es6.math.atanh":167,"./modules/es6.math.cbrt":168,"./modules/es6.math.clz32":169,"./modules/es6.math.cosh":170,"./modules/es6.math.expm1":171,"./modules/es6.math.fround":172,"./modules/es6.math.hypot":173,"./modules/es6.math.imul":174,"./modules/es6.math.log10":175,"./modules/es6.math.log1p":176,"./modules/es6.math.log2":177,"./modules/es6.math.sign":178,"./modules/es6.math.sinh":179,"./modules/es6.math.tanh":180,"./modules/es6.math.trunc":181,"./modules/es6.number.constructor":182,"./modules/es6.number.epsilon":183,"./modules/es6.number.is-finite":184,"./modules/es6.number.is-integer":185,"./modules/es6.number.is-nan":186,"./modules/es6.number.is-safe-integer":187,"./modules/es6.number.max-safe-integer":188,"./modules/es6.number.min-safe-integer":189,"./modules/es6.number.parse-float":190,"./modules/es6.number.parse-int":191,"./modules/es6.number.to-fixed":192,"./modules/es6.number.to-precision":193,"./modules/es6.object.assign":194,"./modules/es6.object.create":195,"./modules/es6.object.define-properties":196,"./modules/es6.object.define-property":197,"./modules/es6.object.freeze":198,"./modules/es6.object.get-own-property-descriptor":199,"./modules/es6.object.get-own-property-names":200,"./modules/es6.object.get-prototype-of":201,"./modules/es6.object.is":205,"./modules/es6.object.is-extensible":202,"./modules/es6.object.is-frozen":203,"./modules/es6.object.is-sealed":204,"./modules/es6.object.keys":206,"./modules/es6.object.prevent-extensions":207,"./modules/es6.object.seal":208,"./modules/es6.object.set-prototype-of":209,"./modules/es6.object.to-string":210,"./modules/es6.parse-float":211,"./modules/es6.parse-int":212,"./modules/es6.promise":213,"./modules/es6.reflect.apply":214,"./modules/es6.reflect.construct":215,"./modules/es6.reflect.define-property":216,"./modules/es6.reflect.delete-property":217,"./modules/es6.reflect.enumerate":218,"./modules/es6.reflect.get":221,"./modules/es6.reflect.get-own-property-descriptor":219,"./modules/es6.reflect.get-prototype-of":220,"./modules/es6.reflect.has":222,"./modules/es6.reflect.is-extensible":223,"./modules/es6.reflect.own-keys":224,"./modules/es6.reflect.prevent-extensions":225,"./modules/es6.reflect.set":227,"./modules/es6.reflect.set-prototype-of":226,"./modules/es6.regexp.constructor":228,"./modules/es6.regexp.flags":229,"./modules/es6.regexp.match":230,"./modules/es6.regexp.replace":231,"./modules/es6.regexp.search":232,"./modules/es6.regexp.split":233,"./modules/es6.regexp.to-string":234,"./modules/es6.set":235,"./modules/es6.string.anchor":236,"./modules/es6.string.big":237,"./modules/es6.string.blink":238,"./modules/es6.string.bold":239,"./modules/es6.string.code-point-at":240,"./modules/es6.string.ends-with":241,"./modules/es6.string.fixed":242,"./modules/es6.string.fontcolor":243,"./modules/es6.string.fontsize":244,"./modules/es6.string.from-code-point":245,"./modules/es6.string.includes":246,"./modules/es6.string.italics":247,"./modules/es6.string.iterator":248,"./modules/es6.string.link":249,"./modules/es6.string.raw":250,"./modules/es6.string.repeat":251,"./modules/es6.string.small":252,"./modules/es6.string.starts-with":253,"./modules/es6.string.strike":254,"./modules/es6.string.sub":255,"./modules/es6.string.sup":256,"./modules/es6.string.trim":257,"./modules/es6.symbol":258,"./modules/es6.typed.array-buffer":259,"./modules/es6.typed.data-view":260,"./modules/es6.typed.float32-array":261,"./modules/es6.typed.float64-array":262,"./modules/es6.typed.int16-array":263,"./modules/es6.typed.int32-array":264,"./modules/es6.typed.int8-array":265,"./modules/es6.typed.uint16-array":266,"./modules/es6.typed.uint32-array":267,"./modules/es6.typed.uint8-array":268,"./modules/es6.typed.uint8-clamped-array":269,"./modules/es6.weak-map":270,"./modules/es6.weak-set":271,"./modules/es7.array.includes":272,"./modules/es7.asap":273,"./modules/es7.error.is-error":274,"./modules/es7.map.to-json":275,"./modules/es7.math.iaddh":276,"./modules/es7.math.imulh":277,"./modules/es7.math.isubh":278,"./modules/es7.math.umulh":279,"./modules/es7.object.define-getter":280,"./modules/es7.object.define-setter":281,"./modules/es7.object.entries":282,"./modules/es7.object.get-own-property-descriptors":283,"./modules/es7.object.lookup-getter":284,"./modules/es7.object.lookup-setter":285,"./modules/es7.object.values":286,"./modules/es7.observable":287,"./modules/es7.reflect.define-metadata":288,"./modules/es7.reflect.delete-metadata":289,"./modules/es7.reflect.get-metadata":291,"./modules/es7.reflect.get-metadata-keys":290,"./modules/es7.reflect.get-own-metadata":293,"./modules/es7.reflect.get-own-metadata-keys":292,"./modules/es7.reflect.has-metadata":294,"./modules/es7.reflect.has-own-metadata":295,"./modules/es7.reflect.metadata":296,"./modules/es7.set.to-json":297,"./modules/es7.string.at":298,"./modules/es7.string.match-all":299,"./modules/es7.string.pad-end":300,"./modules/es7.string.pad-start":301,"./modules/es7.string.trim-left":302,"./modules/es7.string.trim-right":303,"./modules/es7.symbol.async-iterator":304,"./modules/es7.symbol.observable":305,"./modules/es7.system.global":306,"./modules/web.dom.iterable":307,"./modules/web.immediate":308,"./modules/web.timers":309}],311:[function(require,module,exports){
+},{"./modules/_core":62,"./modules/es6.array.copy-within":159,"./modules/es6.array.every":160,"./modules/es6.array.fill":161,"./modules/es6.array.filter":162,"./modules/es6.array.find":164,"./modules/es6.array.find-index":163,"./modules/es6.array.for-each":165,"./modules/es6.array.from":166,"./modules/es6.array.index-of":167,"./modules/es6.array.is-array":168,"./modules/es6.array.iterator":169,"./modules/es6.array.join":170,"./modules/es6.array.last-index-of":171,"./modules/es6.array.map":172,"./modules/es6.array.of":173,"./modules/es6.array.reduce":175,"./modules/es6.array.reduce-right":174,"./modules/es6.array.slice":176,"./modules/es6.array.some":177,"./modules/es6.array.sort":178,"./modules/es6.array.species":179,"./modules/es6.date.now":180,"./modules/es6.date.to-iso-string":181,"./modules/es6.date.to-json":182,"./modules/es6.date.to-primitive":183,"./modules/es6.date.to-string":184,"./modules/es6.function.bind":185,"./modules/es6.function.has-instance":186,"./modules/es6.function.name":187,"./modules/es6.map":188,"./modules/es6.math.acosh":189,"./modules/es6.math.asinh":190,"./modules/es6.math.atanh":191,"./modules/es6.math.cbrt":192,"./modules/es6.math.clz32":193,"./modules/es6.math.cosh":194,"./modules/es6.math.expm1":195,"./modules/es6.math.fround":196,"./modules/es6.math.hypot":197,"./modules/es6.math.imul":198,"./modules/es6.math.log10":199,"./modules/es6.math.log1p":200,"./modules/es6.math.log2":201,"./modules/es6.math.sign":202,"./modules/es6.math.sinh":203,"./modules/es6.math.tanh":204,"./modules/es6.math.trunc":205,"./modules/es6.number.constructor":206,"./modules/es6.number.epsilon":207,"./modules/es6.number.is-finite":208,"./modules/es6.number.is-integer":209,"./modules/es6.number.is-nan":210,"./modules/es6.number.is-safe-integer":211,"./modules/es6.number.max-safe-integer":212,"./modules/es6.number.min-safe-integer":213,"./modules/es6.number.parse-float":214,"./modules/es6.number.parse-int":215,"./modules/es6.number.to-fixed":216,"./modules/es6.number.to-precision":217,"./modules/es6.object.assign":218,"./modules/es6.object.create":219,"./modules/es6.object.define-properties":220,"./modules/es6.object.define-property":221,"./modules/es6.object.freeze":222,"./modules/es6.object.get-own-property-descriptor":223,"./modules/es6.object.get-own-property-names":224,"./modules/es6.object.get-prototype-of":225,"./modules/es6.object.is":229,"./modules/es6.object.is-extensible":226,"./modules/es6.object.is-frozen":227,"./modules/es6.object.is-sealed":228,"./modules/es6.object.keys":230,"./modules/es6.object.prevent-extensions":231,"./modules/es6.object.seal":232,"./modules/es6.object.set-prototype-of":233,"./modules/es6.object.to-string":234,"./modules/es6.parse-float":235,"./modules/es6.parse-int":236,"./modules/es6.promise":237,"./modules/es6.reflect.apply":238,"./modules/es6.reflect.construct":239,"./modules/es6.reflect.define-property":240,"./modules/es6.reflect.delete-property":241,"./modules/es6.reflect.enumerate":242,"./modules/es6.reflect.get":245,"./modules/es6.reflect.get-own-property-descriptor":243,"./modules/es6.reflect.get-prototype-of":244,"./modules/es6.reflect.has":246,"./modules/es6.reflect.is-extensible":247,"./modules/es6.reflect.own-keys":248,"./modules/es6.reflect.prevent-extensions":249,"./modules/es6.reflect.set":251,"./modules/es6.reflect.set-prototype-of":250,"./modules/es6.regexp.constructor":252,"./modules/es6.regexp.flags":253,"./modules/es6.regexp.match":254,"./modules/es6.regexp.replace":255,"./modules/es6.regexp.search":256,"./modules/es6.regexp.split":257,"./modules/es6.regexp.to-string":258,"./modules/es6.set":259,"./modules/es6.string.anchor":260,"./modules/es6.string.big":261,"./modules/es6.string.blink":262,"./modules/es6.string.bold":263,"./modules/es6.string.code-point-at":264,"./modules/es6.string.ends-with":265,"./modules/es6.string.fixed":266,"./modules/es6.string.fontcolor":267,"./modules/es6.string.fontsize":268,"./modules/es6.string.from-code-point":269,"./modules/es6.string.includes":270,"./modules/es6.string.italics":271,"./modules/es6.string.iterator":272,"./modules/es6.string.link":273,"./modules/es6.string.raw":274,"./modules/es6.string.repeat":275,"./modules/es6.string.small":276,"./modules/es6.string.starts-with":277,"./modules/es6.string.strike":278,"./modules/es6.string.sub":279,"./modules/es6.string.sup":280,"./modules/es6.string.trim":281,"./modules/es6.symbol":282,"./modules/es6.typed.array-buffer":283,"./modules/es6.typed.data-view":284,"./modules/es6.typed.float32-array":285,"./modules/es6.typed.float64-array":286,"./modules/es6.typed.int16-array":287,"./modules/es6.typed.int32-array":288,"./modules/es6.typed.int8-array":289,"./modules/es6.typed.uint16-array":290,"./modules/es6.typed.uint32-array":291,"./modules/es6.typed.uint8-array":292,"./modules/es6.typed.uint8-clamped-array":293,"./modules/es6.weak-map":294,"./modules/es6.weak-set":295,"./modules/es7.array.includes":296,"./modules/es7.asap":297,"./modules/es7.error.is-error":298,"./modules/es7.map.to-json":299,"./modules/es7.math.iaddh":300,"./modules/es7.math.imulh":301,"./modules/es7.math.isubh":302,"./modules/es7.math.umulh":303,"./modules/es7.object.define-getter":304,"./modules/es7.object.define-setter":305,"./modules/es7.object.entries":306,"./modules/es7.object.get-own-property-descriptors":307,"./modules/es7.object.lookup-getter":308,"./modules/es7.object.lookup-setter":309,"./modules/es7.object.values":310,"./modules/es7.observable":311,"./modules/es7.reflect.define-metadata":312,"./modules/es7.reflect.delete-metadata":313,"./modules/es7.reflect.get-metadata":315,"./modules/es7.reflect.get-metadata-keys":314,"./modules/es7.reflect.get-own-metadata":317,"./modules/es7.reflect.get-own-metadata-keys":316,"./modules/es7.reflect.has-metadata":318,"./modules/es7.reflect.has-own-metadata":319,"./modules/es7.reflect.metadata":320,"./modules/es7.set.to-json":321,"./modules/es7.string.at":322,"./modules/es7.string.match-all":323,"./modules/es7.string.pad-end":324,"./modules/es7.string.pad-start":325,"./modules/es7.string.trim-left":326,"./modules/es7.string.trim-right":327,"./modules/es7.symbol.async-iterator":328,"./modules/es7.symbol.observable":329,"./modules/es7.system.global":330,"./modules/web.dom.iterable":331,"./modules/web.immediate":332,"./modules/web.timers":333}],335:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -14712,7 +15416,7 @@ jQuery.event = {
 			// If event changes its type, use the special event handlers for the changed type
 			special = jQuery.event.special[ type ] || {};
 
-			// If selector defined, determine special event _api type, otherwise given type
+			// If selector defined, determine special event api type, otherwise given type
 			type = ( selector ? special.delegateType : special.bindType ) || type;
 
 			// Update special based on newly reset type
@@ -19959,7 +20663,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],312:[function(require,module,exports){
+},{}],336:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19971,25 +20675,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -20010,6 +20729,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -20121,7 +20845,734 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],313:[function(require,module,exports){
+},{}],337:[function(require,module,exports){
+(function (process,global){
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  runtime.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration. If the Promise is rejected, however, the
+          // result for this iteration will be rejected with the same
+          // reason. Note that rejections of yielded Promises are not
+          // thrown back into the generator function, as is the case
+          // when an awaited Promise is rejected. This difference in
+          // behavior between yield and await is important, because it
+          // allows the consumer to decide what to do with the yielded
+          // rejection (swallow it and continue, manually .throw it back
+          // into the generator, abandon iteration, whatever). With
+          // await, by contrast, there is no opportunity to examine the
+          // rejection reason outside the generator function, so the
+          // only option is to throw it from the await expression, and
+          // let the generator function handle the exception.
+          result.value = unwrapped;
+          resolve(result);
+        }, reject);
+      }
+    }
+
+    if (typeof process === "object" && process.domain) {
+      invoke = process.domain.bind(invoke);
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  runtime.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        if (delegate.iterator.return) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof global === "object" ? global :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":336}],338:[function(require,module,exports){
 /**!
  * Sortable
  * @author	RubaXa   <trash@rubaxa.org>
@@ -21604,2590 +23055,678 @@ process.umask = function() { return 0; };
 	return Sortable;
 });
 
-},{}],314:[function(require,module,exports){
-(function (process){
+},{}],339:[function(require,module,exports){
+"use strict";var _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(o){return typeof o}:function(o){return o&&"function"==typeof Symbol&&o.constructor===Symbol&&o!==Symbol.prototype?"symbol":typeof o};!function(){function o(e,t){if(!o.installed){if(!t)return void console.error("You have to install axios");e.axios=t,Object.defineProperties(e.prototype,{axios:{get:function(){return t}},$http:{get:function(){return t}}})}}"object"==("undefined"==typeof exports?"undefined":_typeof(exports))?module.exports=o:"function"==typeof define&&define.amd?define([],function(){return o}):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
+},{}],340:[function(require,module,exports){
+var Vue // late bind
+var map = Object.create(null)
+var shimmed = false
+var isBrowserify = false
+
 /**
-  * vue-router v2.2.1
-  * (c) 2017 Evan You
-  * @license MIT
-  */
-'use strict';
+ * Determine compatibility and apply patch.
+ *
+ * @param {Function} vue
+ * @param {Boolean} browserify
+ */
 
-/*  */
+exports.install = function (vue, browserify) {
+  if (shimmed) return
+  shimmed = true
 
-function assert (condition, message) {
-  if (!condition) {
-    throw new Error(("[vue-router] " + message))
-  }
-}
+  Vue = vue
+  isBrowserify = browserify
 
-function warn (condition, message) {
-  if (!condition) {
-    typeof console !== 'undefined' && console.warn(("[vue-router] " + message));
-  }
-}
-
-var View = {
-  name: 'router-view',
-  functional: true,
-  props: {
-    name: {
-      type: String,
-      default: 'default'
-    }
-  },
-  render: function render (h, ref) {
-    var props = ref.props;
-    var children = ref.children;
-    var parent = ref.parent;
-    var data = ref.data;
-
-    data.routerView = true;
-
-    var name = props.name;
-    var route = parent.$route;
-    var cache = parent._routerViewCache || (parent._routerViewCache = {});
-
-    // determine current view depth, also check to see if the tree
-    // has been toggled inactive but kept-alive.
-    var depth = 0;
-    var inactive = false;
-    while (parent) {
-      if (parent.$vnode && parent.$vnode.data.routerView) {
-        depth++;
-      }
-      if (parent._inactive) {
-        inactive = true;
-      }
-      parent = parent.$parent;
-    }
-    data.routerViewDepth = depth;
-
-    // render previous view if the tree is inactive and kept-alive
-    if (inactive) {
-      return h(cache[name], data, children)
-    }
-
-    var matched = route.matched[depth];
-    // render empty node if no matched route
-    if (!matched) {
-      cache[name] = null;
-      return h()
-    }
-
-    var component = cache[name] = matched.components[name];
-
-    // inject instance registration hooks
-    var hooks = data.hook || (data.hook = {});
-    hooks.init = function (vnode) {
-      matched.instances[name] = vnode.child;
-    };
-    hooks.prepatch = function (oldVnode, vnode) {
-      matched.instances[name] = vnode.child;
-    };
-    hooks.destroy = function (vnode) {
-      if (matched.instances[name] === vnode.child) {
-        matched.instances[name] = undefined;
-      }
-    };
-
-    // resolve props
-    data.props = resolveProps(route, matched.props && matched.props[name]);
-
-    return h(component, data, children)
-  }
-};
-
-function resolveProps (route, config) {
-  switch (typeof config) {
-    case 'undefined':
-      return
-    case 'object':
-      return config
-    case 'function':
-      return config(route)
-    case 'boolean':
-      return config ? route.params : undefined
-    default:
-      warn(false, ("props in \"" + (route.path) + "\" is a " + (typeof config) + ", expecting an object, function or boolean."));
-  }
-}
-
-/*  */
-
-var encodeReserveRE = /[!'()*]/g;
-var encodeReserveReplacer = function (c) { return '%' + c.charCodeAt(0).toString(16); };
-var commaRE = /%2C/g;
-
-// fixed encodeURIComponent which is more comformant to RFC3986:
-// - escapes [!'()*]
-// - preserve commas
-var encode = function (str) { return encodeURIComponent(str)
-  .replace(encodeReserveRE, encodeReserveReplacer)
-  .replace(commaRE, ','); };
-
-var decode = decodeURIComponent;
-
-function resolveQuery (
-  query,
-  extraQuery
-) {
-  if ( extraQuery === void 0 ) extraQuery = {};
-
-  if (query) {
-    var parsedQuery;
-    try {
-      parsedQuery = parseQuery(query);
-    } catch (e) {
-      process.env.NODE_ENV !== 'production' && warn(false, e.message);
-      parsedQuery = {};
-    }
-    for (var key in extraQuery) {
-      parsedQuery[key] = extraQuery[key];
-    }
-    return parsedQuery
-  } else {
-    return extraQuery
-  }
-}
-
-function parseQuery (query) {
-  var res = {};
-
-  query = query.trim().replace(/^(\?|#|&)/, '');
-
-  if (!query) {
-    return res
-  }
-
-  query.split('&').forEach(function (param) {
-    var parts = param.replace(/\+/g, ' ').split('=');
-    var key = decode(parts.shift());
-    var val = parts.length > 0
-      ? decode(parts.join('='))
-      : null;
-
-    if (res[key] === undefined) {
-      res[key] = val;
-    } else if (Array.isArray(res[key])) {
-      res[key].push(val);
-    } else {
-      res[key] = [res[key], val];
-    }
-  });
-
-  return res
-}
-
-function stringifyQuery (obj) {
-  var res = obj ? Object.keys(obj).map(function (key) {
-    var val = obj[key];
-
-    if (val === undefined) {
-      return ''
-    }
-
-    if (val === null) {
-      return encode(key)
-    }
-
-    if (Array.isArray(val)) {
-      var result = [];
-      val.slice().forEach(function (val2) {
-        if (val2 === undefined) {
-          return
-        }
-        if (val2 === null) {
-          result.push(encode(key));
-        } else {
-          result.push(encode(key) + '=' + encode(val2));
-        }
-      });
-      return result.join('&')
-    }
-
-    return encode(key) + '=' + encode(val)
-  }).filter(function (x) { return x.length > 0; }).join('&') : null;
-  return res ? ("?" + res) : ''
-}
-
-/*  */
-
-var trailingSlashRE = /\/?$/;
-
-function createRoute (
-  record,
-  location,
-  redirectedFrom
-) {
-  var route = {
-    name: location.name || (record && record.name),
-    meta: (record && record.meta) || {},
-    path: location.path || '/',
-    hash: location.hash || '',
-    query: location.query || {},
-    params: location.params || {},
-    fullPath: getFullPath(location),
-    matched: record ? formatMatch(record) : []
-  };
-  if (redirectedFrom) {
-    route.redirectedFrom = getFullPath(redirectedFrom);
-  }
-  return Object.freeze(route)
-}
-
-// the starting route that represents the initial state
-var START = createRoute(null, {
-  path: '/'
-});
-
-function formatMatch (record) {
-  var res = [];
-  while (record) {
-    res.unshift(record);
-    record = record.parent;
-  }
-  return res
-}
-
-function getFullPath (ref) {
-  var path = ref.path;
-  var query = ref.query; if ( query === void 0 ) query = {};
-  var hash = ref.hash; if ( hash === void 0 ) hash = '';
-
-  return (path || '/') + stringifyQuery(query) + hash
-}
-
-function isSameRoute (a, b) {
-  if (b === START) {
-    return a === b
-  } else if (!b) {
-    return false
-  } else if (a.path && b.path) {
-    return (
-      a.path.replace(trailingSlashRE, '') === b.path.replace(trailingSlashRE, '') &&
-      a.hash === b.hash &&
-      isObjectEqual(a.query, b.query)
+  exports.compatible = !!Vue.internalDirectives
+  if (!exports.compatible) {
+    console.warn(
+      '[HMR] vue-loader hot reload is only compatible with ' +
+      'Vue.js 1.0.0+.'
     )
-  } else if (a.name && b.name) {
-    return (
-      a.name === b.name &&
-      a.hash === b.hash &&
-      isObjectEqual(a.query, b.query) &&
-      isObjectEqual(a.params, b.params)
-    )
-  } else {
-    return false
-  }
-}
-
-function isObjectEqual (a, b) {
-  if ( a === void 0 ) a = {};
-  if ( b === void 0 ) b = {};
-
-  var aKeys = Object.keys(a);
-  var bKeys = Object.keys(b);
-  if (aKeys.length !== bKeys.length) {
-    return false
-  }
-  return aKeys.every(function (key) { return String(a[key]) === String(b[key]); })
-}
-
-function isIncludedRoute (current, target) {
-  return (
-    current.path.replace(trailingSlashRE, '/').indexOf(
-      target.path.replace(trailingSlashRE, '/')
-    ) === 0 &&
-    (!target.hash || current.hash === target.hash) &&
-    queryIncludes(current.query, target.query)
-  )
-}
-
-function queryIncludes (current, target) {
-  for (var key in target) {
-    if (!(key in current)) {
-      return false
-    }
-  }
-  return true
-}
-
-/*  */
-
-// work around weird flow bug
-var toTypes = [String, Object];
-var eventTypes = [String, Array];
-
-var Link = {
-  name: 'router-link',
-  props: {
-    to: {
-      type: toTypes,
-      required: true
-    },
-    tag: {
-      type: String,
-      default: 'a'
-    },
-    exact: Boolean,
-    append: Boolean,
-    replace: Boolean,
-    activeClass: String,
-    event: {
-      type: eventTypes,
-      default: 'click'
-    }
-  },
-  render: function render (h) {
-    var this$1 = this;
-
-    var router = this.$router;
-    var current = this.$route;
-    var ref = router.resolve(this.to, current, this.append);
-    var location = ref.location;
-    var route = ref.route;
-    var href = ref.href;
-    var classes = {};
-    var activeClass = this.activeClass || router.options.linkActiveClass || 'router-link-active';
-    var compareTarget = location.path ? createRoute(null, location) : route;
-    classes[activeClass] = this.exact
-      ? isSameRoute(current, compareTarget)
-      : isIncludedRoute(current, compareTarget);
-
-    var handler = function (e) {
-      if (guardEvent(e)) {
-        if (this$1.replace) {
-          router.replace(location);
-        } else {
-          router.push(location);
-        }
-      }
-    };
-
-    var on = { click: guardEvent };
-    if (Array.isArray(this.event)) {
-      this.event.forEach(function (e) { on[e] = handler; });
-    } else {
-      on[this.event] = handler;
-    }
-
-    var data = {
-      class: classes
-    };
-
-    if (this.tag === 'a') {
-      data.on = on;
-      data.attrs = { href: href };
-    } else {
-      // find the first <a> child and apply listener and href
-      var a = findAnchor(this.$slots.default);
-      if (a) {
-        // in case the <a> is a static node
-        a.isStatic = false;
-        var extend = _Vue.util.extend;
-        var aData = a.data = extend({}, a.data);
-        aData.on = on;
-        var aAttrs = a.data.attrs = extend({}, a.data.attrs);
-        aAttrs.href = href;
-      } else {
-        // doesn't have <a> child, apply listener to self
-        data.on = on;
-      }
-    }
-
-    return h(this.tag, data, this.$slots.default)
-  }
-};
-
-function guardEvent (e) {
-  // don't redirect with control keys
-  if (e.metaKey || e.ctrlKey || e.shiftKey) { return }
-  // don't redirect when preventDefault called
-  if (e.defaultPrevented) { return }
-  // don't redirect on right click
-  if (e.button !== undefined && e.button !== 0) { return }
-  // don't redirect if `target="_blank"`
-  if (e.target && e.target.getAttribute) {
-    var target = e.target.getAttribute('target');
-    if (/\b_blank\b/i.test(target)) { return }
-  }
-  // this may be a Weex event which doesn't have this method
-  if (e.preventDefault) {
-    e.preventDefault();
-  }
-  return true
-}
-
-function findAnchor (children) {
-  if (children) {
-    var child;
-    for (var i = 0; i < children.length; i++) {
-      child = children[i];
-      if (child.tag === 'a') {
-        return child
-      }
-      if (child.children && (child = findAnchor(child.children))) {
-        return child
-      }
-    }
-  }
-}
-
-var _Vue;
-
-function install (Vue) {
-  if (install.installed) { return }
-  install.installed = true;
-
-  _Vue = Vue;
-
-  Object.defineProperty(Vue.prototype, '$router', {
-    get: function get () { return this.$root._router }
-  });
-
-  Object.defineProperty(Vue.prototype, '$route', {
-    get: function get () { return this.$root._route }
-  });
-
-  Vue.mixin({
-    beforeCreate: function beforeCreate () {
-      if (this.$options.router) {
-        this._router = this.$options.router;
-        this._router.init(this);
-        Vue.util.defineReactive(this, '_route', this._router.history.current);
-      }
-    }
-  });
-
-  Vue.component('router-view', View);
-  Vue.component('router-link', Link);
-
-  var strats = Vue.config.optionMergeStrategies;
-  // use the same hook merging strategy for route hooks
-  strats.beforeRouteEnter = strats.beforeRouteLeave = strats.created;
-}
-
-/*  */
-
-var inBrowser = typeof window !== 'undefined';
-
-/*  */
-
-function resolvePath (
-  relative,
-  base,
-  append
-) {
-  if (relative.charAt(0) === '/') {
-    return relative
-  }
-
-  if (relative.charAt(0) === '?' || relative.charAt(0) === '#') {
-    return base + relative
-  }
-
-  var stack = base.split('/');
-
-  // remove trailing segment if:
-  // - not appending
-  // - appending to trailing slash (last segment is empty)
-  if (!append || !stack[stack.length - 1]) {
-    stack.pop();
-  }
-
-  // resolve relative path
-  var segments = relative.replace(/^\//, '').split('/');
-  for (var i = 0; i < segments.length; i++) {
-    var segment = segments[i];
-    if (segment === '.') {
-      continue
-    } else if (segment === '..') {
-      stack.pop();
-    } else {
-      stack.push(segment);
-    }
-  }
-
-  // ensure leading slash
-  if (stack[0] !== '') {
-    stack.unshift('');
-  }
-
-  return stack.join('/')
-}
-
-function parsePath (path) {
-  var hash = '';
-  var query = '';
-
-  var hashIndex = path.indexOf('#');
-  if (hashIndex >= 0) {
-    hash = path.slice(hashIndex);
-    path = path.slice(0, hashIndex);
-  }
-
-  var queryIndex = path.indexOf('?');
-  if (queryIndex >= 0) {
-    query = path.slice(queryIndex + 1);
-    path = path.slice(0, queryIndex);
-  }
-
-  return {
-    path: path,
-    query: query,
-    hash: hash
-  }
-}
-
-function cleanPath (path) {
-  return path.replace(/\/\//g, '/')
-}
-
-/*  */
-
-function createRouteMap (
-  routes,
-  oldPathMap,
-  oldNameMap
-) {
-  var pathMap = oldPathMap || Object.create(null);
-  var nameMap = oldNameMap || Object.create(null);
-
-  routes.forEach(function (route) {
-    addRouteRecord(pathMap, nameMap, route);
-  });
-
-  return {
-    pathMap: pathMap,
-    nameMap: nameMap
-  }
-}
-
-function addRouteRecord (
-  pathMap,
-  nameMap,
-  route,
-  parent,
-  matchAs
-) {
-  var path = route.path;
-  var name = route.name;
-  if (process.env.NODE_ENV !== 'production') {
-    assert(path != null, "\"path\" is required in a route configuration.");
-    assert(
-      typeof route.component !== 'string',
-      "route config \"component\" for path: " + (String(path || name)) + " cannot be a " +
-      "string id. Use an actual component instead."
-    );
-  }
-
-  var record = {
-    path: normalizePath(path, parent),
-    components: route.components || { default: route.component },
-    instances: {},
-    name: name,
-    parent: parent,
-    matchAs: matchAs,
-    redirect: route.redirect,
-    beforeEnter: route.beforeEnter,
-    meta: route.meta || {},
-    props: route.props == null
-      ? {}
-      : route.components
-        ? route.props
-        : { default: route.props }
-  };
-
-  if (route.children) {
-    // Warn if route is named and has a default child route.
-    // If users navigate to this route by name, the default child will
-    // not be rendered (GH Issue #629)
-    if (process.env.NODE_ENV !== 'production') {
-      if (route.name && route.children.some(function (child) { return /^\/?$/.test(child.path); })) {
-        warn(
-          false,
-          "Named Route '" + (route.name) + "' has a default child route. " +
-          "When navigating to this named route (:to=\"{name: '" + (route.name) + "'\"), " +
-          "the default child route will not be rendered. Remove the name from " +
-          "this route and use the name of the default child route for named " +
-          "links instead."
-        );
-      }
-    }
-    route.children.forEach(function (child) {
-      var childMatchAs = matchAs
-        ? cleanPath((matchAs + "/" + (child.path)))
-        : undefined;
-      addRouteRecord(pathMap, nameMap, child, record, childMatchAs);
-    });
-  }
-
-  if (route.alias !== undefined) {
-    if (Array.isArray(route.alias)) {
-      route.alias.forEach(function (alias) {
-        var aliasRoute = {
-          path: alias,
-          children: route.children
-        };
-        addRouteRecord(pathMap, nameMap, aliasRoute, parent, record.path);
-      });
-    } else {
-      var aliasRoute = {
-        path: route.alias,
-        children: route.children
-      };
-      addRouteRecord(pathMap, nameMap, aliasRoute, parent, record.path);
-    }
-  }
-
-  if (!pathMap[record.path]) {
-    pathMap[record.path] = record;
-  }
-
-  if (name) {
-    if (!nameMap[name]) {
-      nameMap[name] = record;
-    } else if (process.env.NODE_ENV !== 'production' && !matchAs) {
-      warn(
-        false,
-        "Duplicate named routes definition: " +
-        "{ name: \"" + name + "\", path: \"" + (record.path) + "\" }"
-      );
-    }
-  }
-}
-
-function normalizePath (path, parent) {
-  path = path.replace(/\/$/, '');
-  if (path[0] === '/') { return path }
-  if (parent == null) { return path }
-  return cleanPath(((parent.path) + "/" + path))
-}
-
-var index$1 = Array.isArray || function (arr) {
-  return Object.prototype.toString.call(arr) == '[object Array]';
-};
-
-var isarray = index$1;
-
-/**
- * Expose `pathToRegexp`.
- */
-var index = pathToRegexp;
-var parse_1 = parse;
-var compile_1 = compile;
-var tokensToFunction_1 = tokensToFunction;
-var tokensToRegExp_1 = tokensToRegExp;
-
-/**
- * The main path matching regexp utility.
- *
- * @type {RegExp}
- */
-var PATH_REGEXP = new RegExp([
-  // Match escaped characters that would otherwise appear in future matches.
-  // This allows the user to escape special characters that won't transform.
-  '(\\\\.)',
-  // Match Express-style parameters and un-named parameters with a prefix
-  // and optional suffixes. Matches appear as:
-  //
-  // "/:test(\\d+)?" => ["/", "test", "\d+", undefined, "?", undefined]
-  // "/route(\\d+)"  => [undefined, undefined, undefined, "\d+", undefined, undefined]
-  // "/*"            => ["/", undefined, undefined, undefined, undefined, "*"]
-  '([\\/.])?(?:(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?|(\\*))'
-].join('|'), 'g');
-
-/**
- * Parse a string for the raw tokens.
- *
- * @param  {string}  str
- * @param  {Object=} options
- * @return {!Array}
- */
-function parse (str, options) {
-  var tokens = [];
-  var key = 0;
-  var index = 0;
-  var path = '';
-  var defaultDelimiter = options && options.delimiter || '/';
-  var res;
-
-  while ((res = PATH_REGEXP.exec(str)) != null) {
-    var m = res[0];
-    var escaped = res[1];
-    var offset = res.index;
-    path += str.slice(index, offset);
-    index = offset + m.length;
-
-    // Ignore already escaped sequences.
-    if (escaped) {
-      path += escaped[1];
-      continue
-    }
-
-    var next = str[index];
-    var prefix = res[2];
-    var name = res[3];
-    var capture = res[4];
-    var group = res[5];
-    var modifier = res[6];
-    var asterisk = res[7];
-
-    // Push the current path onto the tokens.
-    if (path) {
-      tokens.push(path);
-      path = '';
-    }
-
-    var partial = prefix != null && next != null && next !== prefix;
-    var repeat = modifier === '+' || modifier === '*';
-    var optional = modifier === '?' || modifier === '*';
-    var delimiter = res[2] || defaultDelimiter;
-    var pattern = capture || group;
-
-    tokens.push({
-      name: name || key++,
-      prefix: prefix || '',
-      delimiter: delimiter,
-      optional: optional,
-      repeat: repeat,
-      partial: partial,
-      asterisk: !!asterisk,
-      pattern: pattern ? escapeGroup(pattern) : (asterisk ? '.*' : '[^' + escapeString(delimiter) + ']+?')
-    });
-  }
-
-  // Match any characters still remaining.
-  if (index < str.length) {
-    path += str.substr(index);
-  }
-
-  // If the path exists, push it onto the end.
-  if (path) {
-    tokens.push(path);
-  }
-
-  return tokens
-}
-
-/**
- * Compile a string to a template function for the path.
- *
- * @param  {string}             str
- * @param  {Object=}            options
- * @return {!function(Object=, Object=)}
- */
-function compile (str, options) {
-  return tokensToFunction(parse(str, options))
-}
-
-/**
- * Prettier encoding of URI path segments.
- *
- * @param  {string}
- * @return {string}
- */
-function encodeURIComponentPretty (str) {
-  return encodeURI(str).replace(/[\/?#]/g, function (c) {
-    return '%' + c.charCodeAt(0).toString(16).toUpperCase()
-  })
-}
-
-/**
- * Encode the asterisk parameter. Similar to `pretty`, but allows slashes.
- *
- * @param  {string}
- * @return {string}
- */
-function encodeAsterisk (str) {
-  return encodeURI(str).replace(/[?#]/g, function (c) {
-    return '%' + c.charCodeAt(0).toString(16).toUpperCase()
-  })
-}
-
-/**
- * Expose a method for transforming tokens into the path function.
- */
-function tokensToFunction (tokens) {
-  // Compile all the tokens into regexps.
-  var matches = new Array(tokens.length);
-
-  // Compile all the patterns before compilation.
-  for (var i = 0; i < tokens.length; i++) {
-    if (typeof tokens[i] === 'object') {
-      matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$');
-    }
-  }
-
-  return function (obj, opts) {
-    var path = '';
-    var data = obj || {};
-    var options = opts || {};
-    var encode = options.pretty ? encodeURIComponentPretty : encodeURIComponent;
-
-    for (var i = 0; i < tokens.length; i++) {
-      var token = tokens[i];
-
-      if (typeof token === 'string') {
-        path += token;
-
-        continue
-      }
-
-      var value = data[token.name];
-      var segment;
-
-      if (value == null) {
-        if (token.optional) {
-          // Prepend partial segment prefixes.
-          if (token.partial) {
-            path += token.prefix;
-          }
-
-          continue
-        } else {
-          throw new TypeError('Expected "' + token.name + '" to be defined')
-        }
-      }
-
-      if (isarray(value)) {
-        if (!token.repeat) {
-          throw new TypeError('Expected "' + token.name + '" to not repeat, but received `' + JSON.stringify(value) + '`')
-        }
-
-        if (value.length === 0) {
-          if (token.optional) {
-            continue
-          } else {
-            throw new TypeError('Expected "' + token.name + '" to not be empty')
-          }
-        }
-
-        for (var j = 0; j < value.length; j++) {
-          segment = encode(value[j]);
-
-          if (!matches[i].test(segment)) {
-            throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '", but received `' + JSON.stringify(segment) + '`')
-          }
-
-          path += (j === 0 ? token.prefix : token.delimiter) + segment;
-        }
-
-        continue
-      }
-
-      segment = token.asterisk ? encodeAsterisk(value) : encode(value);
-
-      if (!matches[i].test(segment)) {
-        throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"')
-      }
-
-      path += token.prefix + segment;
-    }
-
-    return path
-  }
-}
-
-/**
- * Escape a regular expression string.
- *
- * @param  {string} str
- * @return {string}
- */
-function escapeString (str) {
-  return str.replace(/([.+*?=^!:${}()[\]|\/\\])/g, '\\$1')
-}
-
-/**
- * Escape the capturing group by escaping special characters and meaning.
- *
- * @param  {string} group
- * @return {string}
- */
-function escapeGroup (group) {
-  return group.replace(/([=!:$\/()])/g, '\\$1')
-}
-
-/**
- * Attach the keys as a property of the regexp.
- *
- * @param  {!RegExp} re
- * @param  {Array}   keys
- * @return {!RegExp}
- */
-function attachKeys (re, keys) {
-  re.keys = keys;
-  return re
-}
-
-/**
- * Get the flags for a regexp from the options.
- *
- * @param  {Object} options
- * @return {string}
- */
-function flags (options) {
-  return options.sensitive ? '' : 'i'
-}
-
-/**
- * Pull out keys from a regexp.
- *
- * @param  {!RegExp} path
- * @param  {!Array}  keys
- * @return {!RegExp}
- */
-function regexpToRegexp (path, keys) {
-  // Use a negative lookahead to match only capturing groups.
-  var groups = path.source.match(/\((?!\?)/g);
-
-  if (groups) {
-    for (var i = 0; i < groups.length; i++) {
-      keys.push({
-        name: i,
-        prefix: null,
-        delimiter: null,
-        optional: false,
-        repeat: false,
-        partial: false,
-        asterisk: false,
-        pattern: null
-      });
-    }
-  }
-
-  return attachKeys(path, keys)
-}
-
-/**
- * Transform an array into a regexp.
- *
- * @param  {!Array}  path
- * @param  {Array}   keys
- * @param  {!Object} options
- * @return {!RegExp}
- */
-function arrayToRegexp (path, keys, options) {
-  var parts = [];
-
-  for (var i = 0; i < path.length; i++) {
-    parts.push(pathToRegexp(path[i], keys, options).source);
-  }
-
-  var regexp = new RegExp('(?:' + parts.join('|') + ')', flags(options));
-
-  return attachKeys(regexp, keys)
-}
-
-/**
- * Create a path regexp from string input.
- *
- * @param  {string}  path
- * @param  {!Array}  keys
- * @param  {!Object} options
- * @return {!RegExp}
- */
-function stringToRegexp (path, keys, options) {
-  return tokensToRegExp(parse(path, options), keys, options)
-}
-
-/**
- * Expose a function for taking tokens and returning a RegExp.
- *
- * @param  {!Array}          tokens
- * @param  {(Array|Object)=} keys
- * @param  {Object=}         options
- * @return {!RegExp}
- */
-function tokensToRegExp (tokens, keys, options) {
-  if (!isarray(keys)) {
-    options = /** @type {!Object} */ (keys || options);
-    keys = [];
-  }
-
-  options = options || {};
-
-  var strict = options.strict;
-  var end = options.end !== false;
-  var route = '';
-
-  // Iterate over the tokens and create our regexp string.
-  for (var i = 0; i < tokens.length; i++) {
-    var token = tokens[i];
-
-    if (typeof token === 'string') {
-      route += escapeString(token);
-    } else {
-      var prefix = escapeString(token.prefix);
-      var capture = '(?:' + token.pattern + ')';
-
-      keys.push(token);
-
-      if (token.repeat) {
-        capture += '(?:' + prefix + capture + ')*';
-      }
-
-      if (token.optional) {
-        if (!token.partial) {
-          capture = '(?:' + prefix + '(' + capture + '))?';
-        } else {
-          capture = prefix + '(' + capture + ')?';
-        }
-      } else {
-        capture = prefix + '(' + capture + ')';
-      }
-
-      route += capture;
-    }
-  }
-
-  var delimiter = escapeString(options.delimiter || '/');
-  var endsWithDelimiter = route.slice(-delimiter.length) === delimiter;
-
-  // In non-strict mode we allow a slash at the end of match. If the path to
-  // match already ends with a slash, we remove it for consistency. The slash
-  // is valid at the end of a path match, not in the middle. This is important
-  // in non-ending mode, where "/test/" shouldn't match "/test//route".
-  if (!strict) {
-    route = (endsWithDelimiter ? route.slice(0, -delimiter.length) : route) + '(?:' + delimiter + '(?=$))?';
-  }
-
-  if (end) {
-    route += '$';
-  } else {
-    // In non-ending mode, we need the capturing groups to match as much as
-    // possible by using a positive lookahead to the end or next path segment.
-    route += strict && endsWithDelimiter ? '' : '(?=' + delimiter + '|$)';
-  }
-
-  return attachKeys(new RegExp('^' + route, flags(options)), keys)
-}
-
-/**
- * Normalize the given path string, returning a regular expression.
- *
- * An empty array can be passed in for the keys, which will hold the
- * placeholder key descriptions. For example, using `/user/:id`, `keys` will
- * contain `[{ name: 'id', delimiter: '/', optional: false, repeat: false }]`.
- *
- * @param  {(string|RegExp|Array)} path
- * @param  {(Array|Object)=}       keys
- * @param  {Object=}               options
- * @return {!RegExp}
- */
-function pathToRegexp (path, keys, options) {
-  if (!isarray(keys)) {
-    options = /** @type {!Object} */ (keys || options);
-    keys = [];
-  }
-
-  options = options || {};
-
-  if (path instanceof RegExp) {
-    return regexpToRegexp(path, /** @type {!Array} */ (keys))
-  }
-
-  if (isarray(path)) {
-    return arrayToRegexp(/** @type {!Array} */ (path), /** @type {!Array} */ (keys), options)
-  }
-
-  return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
-}
-
-index.parse = parse_1;
-index.compile = compile_1;
-index.tokensToFunction = tokensToFunction_1;
-index.tokensToRegExp = tokensToRegExp_1;
-
-/*  */
-
-var regexpCache = Object.create(null);
-
-function getRouteRegex (path) {
-  var hit = regexpCache[path];
-  var keys, regexp;
-
-  if (hit) {
-    keys = hit.keys;
-    regexp = hit.regexp;
-  } else {
-    keys = [];
-    regexp = index(path, keys);
-    regexpCache[path] = { keys: keys, regexp: regexp };
-  }
-
-  return { keys: keys, regexp: regexp }
-}
-
-var regexpCompileCache = Object.create(null);
-
-function fillParams (
-  path,
-  params,
-  routeMsg
-) {
-  try {
-    var filler =
-      regexpCompileCache[path] ||
-      (regexpCompileCache[path] = index.compile(path));
-    return filler(params || {}, { pretty: true })
-  } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
-      warn(false, ("missing param for " + routeMsg + ": " + (e.message)));
-    }
-    return ''
-  }
-}
-
-/*  */
-
-function normalizeLocation (
-  raw,
-  current,
-  append
-) {
-  var next = typeof raw === 'string' ? { path: raw } : raw;
-  // named target
-  if (next.name || next._normalized) {
-    return next
-  }
-
-  // relative params
-  if (!next.path && next.params && current) {
-    next = assign({}, next);
-    next._normalized = true;
-    var params = assign(assign({}, current.params), next.params);
-    if (current.name) {
-      next.name = current.name;
-      next.params = params;
-    } else if (current.matched) {
-      var rawPath = current.matched[current.matched.length - 1].path;
-      next.path = fillParams(rawPath, params, ("path " + (current.path)));
-    } else if (process.env.NODE_ENV !== 'production') {
-      warn(false, "relative params navigation requires a current route.");
-    }
-    return next
-  }
-
-  var parsedPath = parsePath(next.path || '');
-  var basePath = (current && current.path) || '/';
-  var path = parsedPath.path
-    ? resolvePath(parsedPath.path, basePath, append || next.append)
-    : (current && current.path) || '/';
-  var query = resolveQuery(parsedPath.query, next.query);
-  var hash = next.hash || parsedPath.hash;
-  if (hash && hash.charAt(0) !== '#') {
-    hash = "#" + hash;
-  }
-
-  return {
-    _normalized: true,
-    path: path,
-    query: query,
-    hash: hash
-  }
-}
-
-function assign (a, b) {
-  for (var key in b) {
-    a[key] = b[key];
-  }
-  return a
-}
-
-/*  */
-
-function createMatcher (routes) {
-  var ref = createRouteMap(routes);
-  var pathMap = ref.pathMap;
-  var nameMap = ref.nameMap;
-
-  function addRoutes (routes) {
-    createRouteMap(routes, pathMap, nameMap);
-  }
-
-  function match (
-    raw,
-    currentRoute,
-    redirectedFrom
-  ) {
-    var location = normalizeLocation(raw, currentRoute);
-    var name = location.name;
-
-    if (name) {
-      var record = nameMap[name];
-      if (process.env.NODE_ENV !== 'production') {
-        warn(record, ("Route with name '" + name + "' does not exist"));
-      }
-      var paramNames = getRouteRegex(record.path).keys
-        .filter(function (key) { return !key.optional; })
-        .map(function (key) { return key.name; });
-
-      if (typeof location.params !== 'object') {
-        location.params = {};
-      }
-
-      if (currentRoute && typeof currentRoute.params === 'object') {
-        for (var key in currentRoute.params) {
-          if (!(key in location.params) && paramNames.indexOf(key) > -1) {
-            location.params[key] = currentRoute.params[key];
-          }
-        }
-      }
-
-      if (record) {
-        location.path = fillParams(record.path, location.params, ("named route \"" + name + "\""));
-        return _createRoute(record, location, redirectedFrom)
-      }
-    } else if (location.path) {
-      location.params = {};
-      for (var path in pathMap) {
-        if (matchRoute(path, location.params, location.path)) {
-          return _createRoute(pathMap[path], location, redirectedFrom)
-        }
-      }
-    }
-    // no match
-    return _createRoute(null, location)
-  }
-
-  function redirect (
-    record,
-    location
-  ) {
-    var originalRedirect = record.redirect;
-    var redirect = typeof originalRedirect === 'function'
-        ? originalRedirect(createRoute(record, location))
-        : originalRedirect;
-
-    if (typeof redirect === 'string') {
-      redirect = { path: redirect };
-    }
-
-    if (!redirect || typeof redirect !== 'object') {
-      process.env.NODE_ENV !== 'production' && warn(
-        false, ("invalid redirect option: " + (JSON.stringify(redirect)))
-      );
-      return _createRoute(null, location)
-    }
-
-    var re = redirect;
-    var name = re.name;
-    var path = re.path;
-    var query = location.query;
-    var hash = location.hash;
-    var params = location.params;
-    query = re.hasOwnProperty('query') ? re.query : query;
-    hash = re.hasOwnProperty('hash') ? re.hash : hash;
-    params = re.hasOwnProperty('params') ? re.params : params;
-
-    if (name) {
-      // resolved named direct
-      var targetRecord = nameMap[name];
-      if (process.env.NODE_ENV !== 'production') {
-        assert(targetRecord, ("redirect failed: named route \"" + name + "\" not found."));
-      }
-      return match({
-        _normalized: true,
-        name: name,
-        query: query,
-        hash: hash,
-        params: params
-      }, undefined, location)
-    } else if (path) {
-      // 1. resolve relative redirect
-      var rawPath = resolveRecordPath(path, record);
-      // 2. resolve params
-      var resolvedPath = fillParams(rawPath, params, ("redirect route with path \"" + rawPath + "\""));
-      // 3. rematch with existing query and hash
-      return match({
-        _normalized: true,
-        path: resolvedPath,
-        query: query,
-        hash: hash
-      }, undefined, location)
-    } else {
-      warn(false, ("invalid redirect option: " + (JSON.stringify(redirect))));
-      return _createRoute(null, location)
-    }
-  }
-
-  function alias (
-    record,
-    location,
-    matchAs
-  ) {
-    var aliasedPath = fillParams(matchAs, location.params, ("aliased route with path \"" + matchAs + "\""));
-    var aliasedMatch = match({
-      _normalized: true,
-      path: aliasedPath
-    });
-    if (aliasedMatch) {
-      var matched = aliasedMatch.matched;
-      var aliasedRecord = matched[matched.length - 1];
-      location.params = aliasedMatch.params;
-      return _createRoute(aliasedRecord, location)
-    }
-    return _createRoute(null, location)
-  }
-
-  function _createRoute (
-    record,
-    location,
-    redirectedFrom
-  ) {
-    if (record && record.redirect) {
-      return redirect(record, redirectedFrom || location)
-    }
-    if (record && record.matchAs) {
-      return alias(record, location, record.matchAs)
-    }
-    return createRoute(record, location, redirectedFrom)
-  }
-
-  return {
-    match: match,
-    addRoutes: addRoutes
-  }
-}
-
-function matchRoute (
-  path,
-  params,
-  pathname
-) {
-  var ref = getRouteRegex(path);
-  var regexp = ref.regexp;
-  var keys = ref.keys;
-  var m = pathname.match(regexp);
-
-  if (!m) {
-    return false
-  } else if (!params) {
-    return true
-  }
-
-  for (var i = 1, len = m.length; i < len; ++i) {
-    var key = keys[i - 1];
-    var val = typeof m[i] === 'string' ? decodeURIComponent(m[i]) : m[i];
-    if (key) { params[key.name] = val; }
-  }
-
-  return true
-}
-
-function resolveRecordPath (path, record) {
-  return resolvePath(path, record.parent ? record.parent.path : '/', true)
-}
-
-/*  */
-
-
-var positionStore = Object.create(null);
-
-function setupScroll () {
-  window.addEventListener('popstate', function (e) {
-    saveScrollPosition();
-    if (e.state && e.state.key) {
-      setStateKey(e.state.key);
-    }
-  });
-}
-
-function handleScroll (
-  router,
-  to,
-  from,
-  isPop
-) {
-  if (!router.app) {
     return
   }
 
-  var behavior = router.options.scrollBehavior;
-  if (!behavior) {
-    return
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    assert(typeof behavior === 'function', "scrollBehavior must be a function");
-  }
-
-  // wait until re-render finishes before scrolling
-  router.app.$nextTick(function () {
-    var position = getScrollPosition();
-    var shouldScroll = behavior(to, from, isPop ? position : null);
-    if (!shouldScroll) {
-      return
-    }
-    var isObject = typeof shouldScroll === 'object';
-    if (isObject && typeof shouldScroll.selector === 'string') {
-      var el = document.querySelector(shouldScroll.selector);
-      if (el) {
-        position = getElementPosition(el);
-      } else if (isValidPosition(shouldScroll)) {
-        position = normalizePosition(shouldScroll);
-      }
-    } else if (isObject && isValidPosition(shouldScroll)) {
-      position = normalizePosition(shouldScroll);
-    }
-
-    if (position) {
-      window.scrollTo(position.x, position.y);
-    }
-  });
-}
-
-function saveScrollPosition () {
-  var key = getStateKey();
-  if (key) {
-    positionStore[key] = {
-      x: window.pageXOffset,
-      y: window.pageYOffset
-    };
+  // patch view directive
+  patchView(Vue.internalDirectives.component)
+  console.log('[HMR] Vue component hot reload shim applied.')
+  // shim router-view if present
+  var routerView = Vue.elementDirective('router-view')
+  if (routerView) {
+    patchView(routerView)
+    console.log('[HMR] vue-router <router-view> hot reload shim applied.')
   }
 }
 
-function getScrollPosition () {
-  var key = getStateKey();
-  if (key) {
-    return positionStore[key]
-  }
-}
+/**
+ * Shim the view directive (component or router-view).
+ *
+ * @param {Object} View
+ */
 
-function getElementPosition (el) {
-  var docRect = document.documentElement.getBoundingClientRect();
-  var elRect = el.getBoundingClientRect();
-  return {
-    x: elRect.left - docRect.left,
-    y: elRect.top - docRect.top
-  }
-}
-
-function isValidPosition (obj) {
-  return isNumber(obj.x) || isNumber(obj.y)
-}
-
-function normalizePosition (obj) {
-  return {
-    x: isNumber(obj.x) ? obj.x : window.pageXOffset,
-    y: isNumber(obj.y) ? obj.y : window.pageYOffset
-  }
-}
-
-function isNumber (v) {
-  return typeof v === 'number'
-}
-
-/*  */
-
-var supportsPushState = inBrowser && (function () {
-  var ua = window.navigator.userAgent;
-
-  if (
-    (ua.indexOf('Android 2.') !== -1 || ua.indexOf('Android 4.0') !== -1) &&
-    ua.indexOf('Mobile Safari') !== -1 &&
-    ua.indexOf('Chrome') === -1 &&
-    ua.indexOf('Windows Phone') === -1
-  ) {
-    return false
-  }
-
-  return window.history && 'pushState' in window.history
-})();
-
-// use User Timing _api (if present) for more accurate key precision
-var Time = inBrowser && window.performance && window.performance.now
-  ? window.performance
-  : Date;
-
-var _key = genKey();
-
-function genKey () {
-  return Time.now().toFixed(3)
-}
-
-function getStateKey () {
-  return _key
-}
-
-function setStateKey (key) {
-  _key = key;
-}
-
-function pushState (url, replace) {
-  saveScrollPosition();
-  // try...catch the pushState call to get around Safari
-  // DOM Exception 18 where it limits to 100 pushState calls
-  var history = window.history;
-  try {
-    if (replace) {
-      history.replaceState({ key: _key }, '', url);
-    } else {
-      _key = genKey();
-      history.pushState({ key: _key }, '', url);
-    }
-  } catch (e) {
-    window.location[replace ? 'replace' : 'assign'](url);
-  }
-}
-
-function replaceState (url) {
-  pushState(url, true);
-}
-
-/*  */
-
-function runQueue (queue, fn, cb) {
-  var step = function (index) {
-    if (index >= queue.length) {
-      cb();
-    } else {
-      if (queue[index]) {
-        fn(queue[index], function () {
-          step(index + 1);
-        });
-      } else {
-        step(index + 1);
+function patchView (View) {
+  var unbuild = View.unbuild
+  View.unbuild = function (defer) {
+    if (!this.hotUpdating) {
+      var prevComponent = this.childVM && this.childVM.constructor
+      removeView(prevComponent, this)
+      // defer = true means we are transitioning to a new
+      // Component. Register this new component to the list.
+      if (defer) {
+        addView(this.Component, this)
       }
     }
-  };
-  step(0);
+    // call original
+    return unbuild.call(this, defer)
+  }
 }
 
-/*  */
+/**
+ * Add a component view to a Component's hot list
+ *
+ * @param {Function} Component
+ * @param {Directive} view - view directive instance
+ */
 
-
-var History = function History (router, base) {
-  this.router = router;
-  this.base = normalizeBase(base);
-  // start with a route object that stands for "nowhere"
-  this.current = START;
-  this.pending = null;
-  this.ready = false;
-  this.readyCbs = [];
-};
-
-History.prototype.listen = function listen (cb) {
-  this.cb = cb;
-};
-
-History.prototype.onReady = function onReady (cb) {
-  if (this.ready) {
-    cb();
-  } else {
-    this.readyCbs.push(cb);
-  }
-};
-
-History.prototype.transitionTo = function transitionTo (location, onComplete, onAbort) {
-    var this$1 = this;
-
-  var route = this.router.match(location, this.current);
-  this.confirmTransition(route, function () {
-    this$1.updateRoute(route);
-    onComplete && onComplete(route);
-    this$1.ensureURL();
-
-    // fire ready cbs once
-    if (!this$1.ready) {
-      this$1.ready = true;
-      this$1.readyCbs.forEach(function (cb) {
-        cb(route);
-      });
-    }
-  }, onAbort);
-};
-
-History.prototype.confirmTransition = function confirmTransition (route, onComplete, onAbort) {
-    var this$1 = this;
-
-  var current = this.current;
-  var abort = function () { onAbort && onAbort(); };
-  if (
-    isSameRoute(route, current) &&
-    // in the case the route map has been dynamically appended to
-    route.matched.length === current.matched.length
-  ) {
-    this.ensureURL();
-    return abort()
-  }
-
-  var ref = resolveQueue(this.current.matched, route.matched);
-    var updated = ref.updated;
-    var deactivated = ref.deactivated;
-    var activated = ref.activated;
-
-  var queue = [].concat(
-    // in-component leave guards
-    extractLeaveGuards(deactivated),
-    // global before hooks
-    this.router.beforeHooks,
-    // in-component update hooks
-    extractUpdateHooks(updated),
-    // in-config enter guards
-    activated.map(function (m) { return m.beforeEnter; }),
-    // async components
-    resolveAsyncComponents(activated)
-  );
-
-  this.pending = route;
-  var iterator = function (hook, next) {
-    if (this$1.pending !== route) {
-      return abort()
-    }
-    hook(route, current, function (to) {
-      if (to === false) {
-        // next(false) -> abort navigation, ensure current URL
-        this$1.ensureURL(true);
-        abort();
-      } else if (typeof to === 'string' || typeof to === 'object') {
-        // next('/') or next({ path: '/' }) -> redirect
-        (typeof to === 'object' && to.replace) ? this$1.replace(to) : this$1.push(to);
-        abort();
-      } else {
-        // confirm transition and pass on the value
-        next(to);
+function addView (Component, view) {
+  var id = Component && Component.options.hotID
+  if (id) {
+    if (!map[id]) {
+      map[id] = {
+        Component: Component,
+        views: [],
+        instances: []
       }
-    });
-  };
+    }
+    map[id].views.push(view)
+  }
+}
 
-  runQueue(queue, iterator, function () {
-    var postEnterCbs = [];
-    var isValid = function () { return this$1.current === route; };
-    var enterGuards = extractEnterGuards(activated, postEnterCbs, isValid);
-    // wait until async components are resolved before
-    // extracting in-component enter guards
-    runQueue(enterGuards, iterator, function () {
-      if (this$1.pending !== route) {
-        return abort()
-      }
-      this$1.pending = null;
-      onComplete(route);
-      if (this$1.router.app) {
-        this$1.router.app.$nextTick(function () {
-          postEnterCbs.forEach(function (cb) { return cb(); });
-        });
-      }
-    });
-  });
-};
+/**
+ * Remove a component view from a Component's hot list
+ *
+ * @param {Function} Component
+ * @param {Directive} view - view directive instance
+ */
 
-History.prototype.updateRoute = function updateRoute (route) {
-  var prev = this.current;
-  this.current = route;
-  this.cb && this.cb(route);
-  this.router.afterHooks.forEach(function (hook) {
-    hook && hook(route, prev);
-  });
-};
+function removeView (Component, view) {
+  var id = Component && Component.options.hotID
+  if (id) {
+    map[id].views.$remove(view)
+  }
+}
 
-function normalizeBase (base) {
-  if (!base) {
-    if (inBrowser) {
-      // respect <base> tag
-      var baseEl = document.querySelector('base');
-      base = baseEl ? baseEl.getAttribute('href') : '/';
-    } else {
-      base = '/';
+/**
+ * Create a record for a hot module, which keeps track of its construcotr,
+ * instnaces and views (component directives or router-views).
+ *
+ * @param {String} id
+ * @param {Object} options
+ */
+
+exports.createRecord = function (id, options) {
+  if (typeof options === 'function') {
+    options = options.options
+  }
+  if (typeof options.el !== 'string' && typeof options.data !== 'object') {
+    makeOptionsHot(id, options)
+    map[id] = {
+      Component: null,
+      views: [],
+      instances: []
     }
   }
-  // make sure there's the starting slash
-  if (base.charAt(0) !== '/') {
-    base = '/' + base;
-  }
-  // remove trailing slash
-  return base.replace(/\/$/, '')
 }
 
-function resolveQueue (
-  current,
-  next
-) {
-  var i;
-  var max = Math.max(current.length, next.length);
-  for (i = 0; i < max; i++) {
-    if (current[i] !== next[i]) {
-      break
+/**
+ * Make a Component options object hot.
+ *
+ * @param {String} id
+ * @param {Object} options
+ */
+
+function makeOptionsHot (id, options) {
+  options.hotID = id
+  injectHook(options, 'created', function () {
+    var record = map[id]
+    if (!record.Component) {
+      record.Component = this.constructor
     }
-  }
-  return {
-    updated: next.slice(0, i),
-    activated: next.slice(i),
-    deactivated: current.slice(i)
-  }
-}
-
-function extractGuards (
-  records,
-  name,
-  bind,
-  reverse
-) {
-  var guards = flatMapComponents(records, function (def, instance, match, key) {
-    var guard = extractGuard(def, name);
-    if (guard) {
-      return Array.isArray(guard)
-        ? guard.map(function (guard) { return bind(guard, instance, match, key); })
-        : bind(guard, instance, match, key)
-    }
-  });
-  return flatten(reverse ? guards.reverse() : guards)
-}
-
-function extractGuard (
-  def,
-  key
-) {
-  if (typeof def !== 'function') {
-    // extend now so that global mixins are applied.
-    def = _Vue.extend(def);
-  }
-  return def.options[key]
-}
-
-function extractLeaveGuards (deactivated) {
-  return extractGuards(deactivated, 'beforeRouteLeave', bindGuard, true)
-}
-
-function extractUpdateHooks (updated) {
-  return extractGuards(updated, 'beforeRouteUpdate', bindGuard)
-}
-
-function bindGuard (guard, instance) {
-  return function boundRouteGuard () {
-    return guard.apply(instance, arguments)
-  }
-}
-
-function extractEnterGuards (
-  activated,
-  cbs,
-  isValid
-) {
-  return extractGuards(activated, 'beforeRouteEnter', function (guard, _, match, key) {
-    return bindEnterGuard(guard, match, key, cbs, isValid)
+    record.instances.push(this)
+  })
+  injectHook(options, 'beforeDestroy', function () {
+    map[id].instances.$remove(this)
   })
 }
 
-function bindEnterGuard (
-  guard,
-  match,
-  key,
-  cbs,
-  isValid
-) {
-  return function routeEnterGuard (to, from, next) {
-    return guard(to, from, function (cb) {
-      next(cb);
-      if (typeof cb === 'function') {
-        cbs.push(function () {
-          // #750
-          // if a router-view is wrapped with an out-in transition,
-          // the instance may not have been registered at this time.
-          // we will need to poll for registration until current route
-          // is no longer valid.
-          poll(cb, match.instances, key, isValid);
-        });
+/**
+ * Inject a hook to a hot reloadable component so that
+ * we can keep track of it.
+ *
+ * @param {Object} options
+ * @param {String} name
+ * @param {Function} hook
+ */
+
+function injectHook (options, name, hook) {
+  var existing = options[name]
+  options[name] = existing
+    ? Array.isArray(existing)
+      ? existing.concat(hook)
+      : [existing, hook]
+    : [hook]
+}
+
+/**
+ * Update a hot component.
+ *
+ * @param {String} id
+ * @param {Object|null} newOptions
+ * @param {String|null} newTemplate
+ */
+
+exports.update = function (id, newOptions, newTemplate) {
+  var record = map[id]
+  // force full-reload if an instance of the component is active but is not
+  // managed by a view
+  if (!record || (record.instances.length && !record.views.length)) {
+    console.log('[HMR] Root or manually-mounted instance modified. Full reload may be required.')
+    if (!isBrowserify) {
+      window.location.reload()
+    } else {
+      // browserify-hmr somehow sends incomplete bundle if we reload here
+      return
+    }
+  }
+  if (!isBrowserify) {
+    // browserify-hmr already logs this
+    console.log('[HMR] Updating component: ' + format(id))
+  }
+  var Component = record.Component
+  // update constructor
+  if (newOptions) {
+    // in case the user exports a constructor
+    Component = record.Component = typeof newOptions === 'function'
+      ? newOptions
+      : Vue.extend(newOptions)
+    makeOptionsHot(id, Component.options)
+  }
+  if (newTemplate) {
+    Component.options.template = newTemplate
+  }
+  // handle recursive lookup
+  if (Component.options.name) {
+    Component.options.components[Component.options.name] = Component
+  }
+  // reset constructor cached linker
+  Component.linker = null
+  // reload all views
+  record.views.forEach(function (view) {
+    updateView(view, Component)
+  })
+  // flush devtools
+  if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
+    window.__VUE_DEVTOOLS_GLOBAL_HOOK__.emit('flush')
+  }
+}
+
+/**
+ * Update a component view instance
+ *
+ * @param {Directive} view
+ * @param {Function} Component
+ */
+
+function updateView (view, Component) {
+  if (!view._bound) {
+    return
+  }
+  view.Component = Component
+  view.hotUpdating = true
+  // disable transitions
+  view.vm._isCompiled = false
+  // save state
+  var state = extractState(view.childVM)
+  // remount, make sure to disable keep-alive
+  var keepAlive = view.keepAlive
+  view.keepAlive = false
+  view.mountComponent()
+  view.keepAlive = keepAlive
+  // restore state
+  restoreState(view.childVM, state, true)
+  // re-eanble transitions
+  view.vm._isCompiled = true
+  view.hotUpdating = false
+}
+
+/**
+ * Extract state from a Vue instance.
+ *
+ * @param {Vue} vm
+ * @return {Object}
+ */
+
+function extractState (vm) {
+  return {
+    cid: vm.constructor.cid,
+    data: vm.$data,
+    children: vm.$children.map(extractState)
+  }
+}
+
+/**
+ * Restore state to a reloaded Vue instance.
+ *
+ * @param {Vue} vm
+ * @param {Object} state
+ */
+
+function restoreState (vm, state, isRoot) {
+  var oldAsyncConfig
+  if (isRoot) {
+    // set Vue into sync mode during state rehydration
+    oldAsyncConfig = Vue.config.async
+    Vue.config.async = false
+  }
+  // actual restore
+  if (isRoot || !vm._props) {
+    vm.$data = state.data
+  } else {
+    Object.keys(state.data).forEach(function (key) {
+      if (!vm._props[key]) {
+        // for non-root, only restore non-props fields
+        vm.$data[key] = state.data[key]
       }
     })
   }
-}
-
-function poll (
-  cb, // somehow flow cannot infer this is a function
-  instances,
-  key,
-  isValid
-) {
-  if (instances[key]) {
-    cb(instances[key]);
-  } else if (isValid()) {
-    setTimeout(function () {
-      poll(cb, instances, key, isValid);
-    }, 16);
-  }
-}
-
-function resolveAsyncComponents (matched) {
-  return flatMapComponents(matched, function (def, _, match, key) {
-    // if it's a function and doesn't have Vue options attached,
-    // assume it's an async component resolve function.
-    // we are not using Vue's default async resolving mechanism because
-    // we want to halt the navigation until the incoming component has been
-    // resolved.
-    if (typeof def === 'function' && !def.options) {
-      return function (to, from, next) {
-        var resolve = once(function (resolvedDef) {
-          match.components[key] = resolvedDef;
-          next();
-        });
-
-        var reject = once(function (reason) {
-          warn(false, ("Failed to resolve async component " + key + ": " + reason));
-          next(false);
-        });
-
-        var res = def(resolve, reject);
-        if (res && typeof res.then === 'function') {
-          res.then(resolve, reject);
-        }
-      }
-    }
+  // verify child consistency
+  var hasSameChildren = vm.$children.every(function (c, i) {
+    return state.children[i] && state.children[i].cid === c.constructor.cid
   })
-}
-
-function flatMapComponents (
-  matched,
-  fn
-) {
-  return flatten(matched.map(function (m) {
-    return Object.keys(m.components).map(function (key) { return fn(
-      m.components[key],
-      m.instances[key],
-      m, key
-    ); })
-  }))
-}
-
-function flatten (arr) {
-  return Array.prototype.concat.apply([], arr)
-}
-
-// in Webpack 2, require.ensure now also returns a Promise
-// so the resolve/reject functions may get called an extra time
-// if the user uses an arrow function shorthand that happens to
-// return that Promise.
-function once (fn) {
-  var called = false;
-  return function () {
-    if (called) { return }
-    called = true;
-    return fn.apply(this, arguments)
-  }
-}
-
-/*  */
-
-
-var HTML5History = (function (History$$1) {
-  function HTML5History (router, base) {
-    var this$1 = this;
-
-    History$$1.call(this, router, base);
-
-    var expectScroll = router.options.scrollBehavior;
-
-    if (expectScroll) {
-      setupScroll();
-    }
-
-    window.addEventListener('popstate', function (e) {
-      this$1.transitionTo(getLocation(this$1.base), function (route) {
-        if (expectScroll) {
-          handleScroll(router, route, this$1.current, true);
-        }
-      });
-    });
-  }
-
-  if ( History$$1 ) HTML5History.__proto__ = History$$1;
-  HTML5History.prototype = Object.create( History$$1 && History$$1.prototype );
-  HTML5History.prototype.constructor = HTML5History;
-
-  HTML5History.prototype.go = function go (n) {
-    window.history.go(n);
-  };
-
-  HTML5History.prototype.push = function push (location, onComplete, onAbort) {
-    var this$1 = this;
-
-    this.transitionTo(location, function (route) {
-      pushState(cleanPath(this$1.base + route.fullPath));
-      handleScroll(this$1.router, route, this$1.current, false);
-      onComplete && onComplete(route);
-    }, onAbort);
-  };
-
-  HTML5History.prototype.replace = function replace (location, onComplete, onAbort) {
-    var this$1 = this;
-
-    this.transitionTo(location, function (route) {
-      replaceState(cleanPath(this$1.base + route.fullPath));
-      handleScroll(this$1.router, route, this$1.current, false);
-      onComplete && onComplete(route);
-    }, onAbort);
-  };
-
-  HTML5History.prototype.ensureURL = function ensureURL (push) {
-    if (getLocation(this.base) !== this.current.fullPath) {
-      var current = cleanPath(this.base + this.current.fullPath);
-      push ? pushState(current) : replaceState(current);
-    }
-  };
-
-  HTML5History.prototype.getCurrentLocation = function getCurrentLocation () {
-    return getLocation(this.base)
-  };
-
-  return HTML5History;
-}(History));
-
-function getLocation (base) {
-  var path = window.location.pathname;
-  if (base && path.indexOf(base) === 0) {
-    path = path.slice(base.length);
-  }
-  return (path || '/') + window.location.search + window.location.hash
-}
-
-/*  */
-
-
-var HashHistory = (function (History$$1) {
-  function HashHistory (router, base, fallback) {
-    History$$1.call(this, router, base);
-    // check history fallback deeplinking
-    if (fallback && checkFallback(this.base)) {
-      return
-    }
-    ensureSlash();
-  }
-
-  if ( History$$1 ) HashHistory.__proto__ = History$$1;
-  HashHistory.prototype = Object.create( History$$1 && History$$1.prototype );
-  HashHistory.prototype.constructor = HashHistory;
-
-  // this is delayed until the app mounts
-  // to avoid the hashchange listener being fired too early
-  HashHistory.prototype.setupListeners = function setupListeners () {
-    var this$1 = this;
-
-    window.addEventListener('hashchange', function () {
-      if (!ensureSlash()) {
-        return
-      }
-      this$1.transitionTo(getHash(), function (route) {
-        replaceHash(route.fullPath);
-      });
-    });
-  };
-
-  HashHistory.prototype.push = function push (location, onComplete, onAbort) {
-    this.transitionTo(location, function (route) {
-      pushHash(route.fullPath);
-      onComplete && onComplete(route);
-    }, onAbort);
-  };
-
-  HashHistory.prototype.replace = function replace (location, onComplete, onAbort) {
-    this.transitionTo(location, function (route) {
-      replaceHash(route.fullPath);
-      onComplete && onComplete(route);
-    }, onAbort);
-  };
-
-  HashHistory.prototype.go = function go (n) {
-    window.history.go(n);
-  };
-
-  HashHistory.prototype.ensureURL = function ensureURL (push) {
-    var current = this.current.fullPath;
-    if (getHash() !== current) {
-      push ? pushHash(current) : replaceHash(current);
-    }
-  };
-
-  HashHistory.prototype.getCurrentLocation = function getCurrentLocation () {
-    return getHash()
-  };
-
-  return HashHistory;
-}(History));
-
-function checkFallback (base) {
-  var location = getLocation(base);
-  if (!/^\/#/.test(location)) {
-    window.location.replace(
-      cleanPath(base + '/#' + location)
-    );
-    return true
-  }
-}
-
-function ensureSlash () {
-  var path = getHash();
-  if (path.charAt(0) === '/') {
-    return true
-  }
-  replaceHash('/' + path);
-  return false
-}
-
-function getHash () {
-  // We can't use window.location.hash here because it's not
-  // consistent across browsers - Firefox will pre-decode it!
-  var href = window.location.href;
-  var index = href.indexOf('#');
-  return index === -1 ? '' : href.slice(index + 1)
-}
-
-function pushHash (path) {
-  window.location.hash = path;
-}
-
-function replaceHash (path) {
-  var i = window.location.href.indexOf('#');
-  window.location.replace(
-    window.location.href.slice(0, i >= 0 ? i : 0) + '#' + path
-  );
-}
-
-/*  */
-
-
-var AbstractHistory = (function (History$$1) {
-  function AbstractHistory (router, base) {
-    History$$1.call(this, router, base);
-    this.stack = [];
-    this.index = -1;
-  }
-
-  if ( History$$1 ) AbstractHistory.__proto__ = History$$1;
-  AbstractHistory.prototype = Object.create( History$$1 && History$$1.prototype );
-  AbstractHistory.prototype.constructor = AbstractHistory;
-
-  AbstractHistory.prototype.push = function push (location, onComplete, onAbort) {
-    var this$1 = this;
-
-    this.transitionTo(location, function (route) {
-      this$1.stack = this$1.stack.slice(0, this$1.index + 1).concat(route);
-      this$1.index++;
-      onComplete && onComplete(route);
-    }, onAbort);
-  };
-
-  AbstractHistory.prototype.replace = function replace (location, onComplete, onAbort) {
-    var this$1 = this;
-
-    this.transitionTo(location, function (route) {
-      this$1.stack = this$1.stack.slice(0, this$1.index).concat(route);
-      onComplete && onComplete(route);
-    }, onAbort);
-  };
-
-  AbstractHistory.prototype.go = function go (n) {
-    var this$1 = this;
-
-    var targetIndex = this.index + n;
-    if (targetIndex < 0 || targetIndex >= this.stack.length) {
-      return
-    }
-    var route = this.stack[targetIndex];
-    this.confirmTransition(route, function () {
-      this$1.index = targetIndex;
-      this$1.updateRoute(route);
-    });
-  };
-
-  AbstractHistory.prototype.getCurrentLocation = function getCurrentLocation () {
-    var current = this.stack[this.stack.length - 1];
-    return current ? current.fullPath : '/'
-  };
-
-  AbstractHistory.prototype.ensureURL = function ensureURL () {
-    // noop
-  };
-
-  return AbstractHistory;
-}(History));
-
-/*  */
-
-var VueRouter = function VueRouter (options) {
-  if ( options === void 0 ) options = {};
-
-  this.app = null;
-  this.apps = [];
-  this.options = options;
-  this.beforeHooks = [];
-  this.afterHooks = [];
-  this.matcher = createMatcher(options.routes || []);
-
-  var mode = options.mode || 'hash';
-  this.fallback = mode === 'history' && !supportsPushState;
-  if (this.fallback) {
-    mode = 'hash';
-  }
-  if (!inBrowser) {
-    mode = 'abstract';
-  }
-  this.mode = mode;
-
-  switch (mode) {
-    case 'history':
-      this.history = new HTML5History(this, options.base);
-      break
-    case 'hash':
-      this.history = new HashHistory(this, options.base, this.fallback);
-      break
-    case 'abstract':
-      this.history = new AbstractHistory(this, options.base);
-      break
-    default:
-      if (process.env.NODE_ENV !== 'production') {
-        assert(false, ("invalid mode: " + mode));
-      }
-  }
-};
-
-var prototypeAccessors = { currentRoute: {} };
-
-VueRouter.prototype.match = function match (
-  raw,
-  current,
-  redirectedFrom
-) {
-  return this.matcher.match(raw, current, redirectedFrom)
-};
-
-prototypeAccessors.currentRoute.get = function () {
-  return this.history && this.history.current
-};
-
-VueRouter.prototype.init = function init (app /* Vue component instance */) {
-    var this$1 = this;
-
-  process.env.NODE_ENV !== 'production' && assert(
-    install.installed,
-    "not installed. Make sure to call `Vue.use(VueRouter)` " +
-    "before creating root instance."
-  );
-
-  this.apps.push(app);
-
-  // main app already initialized.
-  if (this.app) {
-    return
-  }
-
-  this.app = app;
-
-  var history = this.history;
-
-  if (history instanceof HTML5History) {
-    history.transitionTo(history.getCurrentLocation());
-  } else if (history instanceof HashHistory) {
-    var setupHashListener = function () {
-      history.setupListeners();
-    };
-    history.transitionTo(
-      history.getCurrentLocation(),
-      setupHashListener,
-      setupHashListener
-    );
-  }
-
-  history.listen(function (route) {
-    this$1.apps.forEach(function (app) {
-      app._route = route;
-    });
-  });
-};
-
-VueRouter.prototype.beforeEach = function beforeEach (fn) {
-  this.beforeHooks.push(fn);
-};
-
-VueRouter.prototype.afterEach = function afterEach (fn) {
-  this.afterHooks.push(fn);
-};
-
-VueRouter.prototype.onReady = function onReady (cb) {
-  this.history.onReady(cb);
-};
-
-VueRouter.prototype.push = function push (location, onComplete, onAbort) {
-  this.history.push(location, onComplete, onAbort);
-};
-
-VueRouter.prototype.replace = function replace (location, onComplete, onAbort) {
-  this.history.replace(location, onComplete, onAbort);
-};
-
-VueRouter.prototype.go = function go (n) {
-  this.history.go(n);
-};
-
-VueRouter.prototype.back = function back () {
-  this.go(-1);
-};
-
-VueRouter.prototype.forward = function forward () {
-  this.go(1);
-};
-
-VueRouter.prototype.getMatchedComponents = function getMatchedComponents (to) {
-  var route = to
-    ? this.resolve(to).route
-    : this.currentRoute;
-  if (!route) {
-    return []
-  }
-  return [].concat.apply([], route.matched.map(function (m) {
-    return Object.keys(m.components).map(function (key) {
-      return m.components[key]
+  if (hasSameChildren) {
+    // rehydrate children
+    vm.$children.forEach(function (c, i) {
+      restoreState(c, state.children[i])
     })
-  }))
-};
-
-VueRouter.prototype.resolve = function resolve (
-  to,
-  current,
-  append
-) {
-  var location = normalizeLocation(to, current || this.history.current, append);
-  var route = this.match(location, current);
-  var fullPath = route.redirectedFrom || route.fullPath;
-  var base = this.history.base;
-  var href = createHref(base, fullPath, this.mode);
-  return {
-    location: location,
-    route: route,
-    href: href,
-    // for backwards compat
-    normalizedTo: location,
-    resolved: route
   }
-};
-
-VueRouter.prototype.addRoutes = function addRoutes (routes) {
-  this.matcher.addRoutes(routes);
-  if (this.history.current !== START) {
-    this.history.transitionTo(this.history.getCurrentLocation());
+  if (isRoot) {
+    Vue.config.async = oldAsyncConfig
   }
-};
-
-Object.defineProperties( VueRouter.prototype, prototypeAccessors );
-
-function createHref (base, fullPath, mode) {
-  var path = mode === 'hash' ? '#' + fullPath : fullPath;
-  return base ? cleanPath(base + '/' + path) : path
 }
 
-VueRouter.install = install;
-VueRouter.version = '2.2.1';
-
-if (inBrowser && window.Vue) {
-  window.Vue.use(VueRouter);
+function format (id) {
+  var match = id.match(/[^\/]+\.vue$/)
+  return match ? match[0] : id
 }
 
-module.exports = VueRouter;
-
-}).call(this,require('_process'))
-},{"_process":312}],315:[function(require,module,exports){
-(function (process){
+},{}],341:[function(require,module,exports){
+(function (process,global){
 /*!
- * Vue.js v1.0.28
- * (c) 2016 Evan You
+ * Vue.js v2.2.4
+ * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
 'use strict';
 
-function set(obj, key, val) {
-  if (hasOwn(obj, key)) {
-    obj[key] = val;
-    return;
-  }
-  if (obj._isVue) {
-    set(obj._data, key, val);
-    return;
-  }
-  var ob = obj.__ob__;
-  if (!ob) {
-    obj[key] = val;
-    return;
-  }
-  ob.convert(key, val);
-  ob.dep.notify();
-  if (ob.vms) {
-    var i = ob.vms.length;
-    while (i--) {
-      var vm = ob.vms[i];
-      vm._proxy(key);
-      vm._digest();
-    }
-  }
-  return val;
+/*  */
+
+/**
+ * Convert a value to a string that is actually rendered.
+ */
+function _toString (val) {
+  return val == null
+    ? ''
+    : typeof val === 'object'
+      ? JSON.stringify(val, null, 2)
+      : String(val)
 }
 
 /**
- * Delete a property and trigger change if necessary.
- *
- * @param {Object} obj
- * @param {String} key
+ * Convert a input value to a number for persistence.
+ * If the conversion fails, return original string.
  */
+function toNumber (val) {
+  var n = parseFloat(val);
+  return isNaN(n) ? val : n
+}
 
-function del(obj, key) {
-  if (!hasOwn(obj, key)) {
-    return;
+/**
+ * Make a map and return a function for checking if a key
+ * is in that map.
+ */
+function makeMap (
+  str,
+  expectsLowerCase
+) {
+  var map = Object.create(null);
+  var list = str.split(',');
+  for (var i = 0; i < list.length; i++) {
+    map[list[i]] = true;
   }
-  delete obj[key];
-  var ob = obj.__ob__;
-  if (!ob) {
-    if (obj._isVue) {
-      delete obj._data[key];
-      obj._digest();
-    }
-    return;
-  }
-  ob.dep.notify();
-  if (ob.vms) {
-    var i = ob.vms.length;
-    while (i--) {
-      var vm = ob.vms[i];
-      vm._unproxy(key);
-      vm._digest();
+  return expectsLowerCase
+    ? function (val) { return map[val.toLowerCase()]; }
+    : function (val) { return map[val]; }
+}
+
+/**
+ * Check if a tag is a built-in tag.
+ */
+var isBuiltInTag = makeMap('slot,component', true);
+
+/**
+ * Remove an item from an array
+ */
+function remove (arr, item) {
+  if (arr.length) {
+    var index = arr.indexOf(item);
+    if (index > -1) {
+      return arr.splice(index, 1)
     }
   }
 }
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
 /**
  * Check whether the object has the property.
- *
- * @param {Object} obj
- * @param {String} key
- * @return {Boolean}
  */
-
-function hasOwn(obj, key) {
-  return hasOwnProperty.call(obj, key);
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasOwn (obj, key) {
+  return hasOwnProperty.call(obj, key)
 }
 
 /**
- * Check if an expression is a literal value.
- *
- * @param {String} exp
- * @return {Boolean}
+ * Check if value is primitive
  */
-
-var literalValueRE = /^\s?(true|false|-?[\d\.]+|'[^']*'|"[^"]*")\s?$/;
-
-function isLiteral(exp) {
-  return literalValueRE.test(exp);
+function isPrimitive (value) {
+  return typeof value === 'string' || typeof value === 'number'
 }
 
 /**
- * Check if a string starts with $ or _
- *
- * @param {String} str
- * @return {Boolean}
+ * Create a cached version of a pure function.
  */
-
-function isReserved(str) {
-  var c = (str + '').charCodeAt(0);
-  return c === 0x24 || c === 0x5F;
-}
-
-/**
- * Guard text output, make sure undefined outputs
- * empty string
- *
- * @param {*} value
- * @return {String}
- */
-
-function _toString(value) {
-  return value == null ? '' : value.toString();
-}
-
-/**
- * Check and convert possible numeric strings to numbers
- * before setting back to data
- *
- * @param {*} value
- * @return {*|Number}
- */
-
-function toNumber(value) {
-  if (typeof value !== 'string') {
-    return value;
-  } else {
-    var parsed = Number(value);
-    return isNaN(parsed) ? value : parsed;
-  }
-}
-
-/**
- * Convert string boolean literals into real booleans.
- *
- * @param {*} value
- * @return {*|Boolean}
- */
-
-function toBoolean(value) {
-  return value === 'true' ? true : value === 'false' ? false : value;
-}
-
-/**
- * Strip quotes from a string
- *
- * @param {String} str
- * @return {String | false}
- */
-
-function stripQuotes(str) {
-  var a = str.charCodeAt(0);
-  var b = str.charCodeAt(str.length - 1);
-  return a === b && (a === 0x22 || a === 0x27) ? str.slice(1, -1) : str;
+function cached (fn) {
+  var cache = Object.create(null);
+  return (function cachedFn (str) {
+    var hit = cache[str];
+    return hit || (cache[str] = fn(str))
+  })
 }
 
 /**
  * Camelize a hyphen-delimited string.
- *
- * @param {String} str
- * @return {String}
  */
-
 var camelizeRE = /-(\w)/g;
+var camelize = cached(function (str) {
+  return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
+});
 
-function camelize(str) {
-  return str.replace(camelizeRE, toUpper);
-}
-
-function toUpper(_, c) {
-  return c ? c.toUpperCase() : '';
-}
+/**
+ * Capitalize a string.
+ */
+var capitalize = cached(function (str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+});
 
 /**
  * Hyphenate a camelCase string.
- *
- * @param {String} str
- * @return {String}
  */
-
 var hyphenateRE = /([^-])([A-Z])/g;
-
-function hyphenate(str) {
-  return str.replace(hyphenateRE, '$1-$2').replace(hyphenateRE, '$1-$2').toLowerCase();
-}
-
-/**
- * Converts hyphen/underscore/slash delimitered names into
- * camelized classNames.
- *
- * e.g. my-component => MyComponent
- *      some_else    => SomeElse
- *      some/comp    => SomeComp
- *
- * @param {String} str
- * @return {String}
- */
-
-var classifyRE = /(?:^|[-_\/])(\w)/g;
-
-function classify(str) {
-  return str.replace(classifyRE, toUpper);
-}
+var hyphenate = cached(function (str) {
+  return str
+    .replace(hyphenateRE, '$1-$2')
+    .replace(hyphenateRE, '$1-$2')
+    .toLowerCase()
+});
 
 /**
  * Simple bind, faster than native
- *
- * @param {Function} fn
- * @param {Object} ctx
- * @return {Function}
  */
-
-function bind(fn, ctx) {
-  return function (a) {
+function bind (fn, ctx) {
+  function boundFn (a) {
     var l = arguments.length;
-    return l ? l > 1 ? fn.apply(ctx, arguments) : fn.call(ctx, a) : fn.call(ctx);
-  };
+    return l
+      ? l > 1
+        ? fn.apply(ctx, arguments)
+        : fn.call(ctx, a)
+      : fn.call(ctx)
+  }
+  // record original fn length
+  boundFn._length = fn.length;
+  return boundFn
 }
 
 /**
  * Convert an Array-like object to a real Array.
- *
- * @param {Array-like} list
- * @param {Number} [start] - start index
- * @return {Array}
  */
-
-function toArray(list, start) {
+function toArray (list, start) {
   start = start || 0;
   var i = list.length - start;
   var ret = new Array(i);
   while (i--) {
     ret[i] = list[i + start];
   }
-  return ret;
+  return ret
 }
 
 /**
  * Mix properties into target object.
- *
- * @param {Object} to
- * @param {Object} from
  */
-
-function extend(to, from) {
-  var keys = Object.keys(from);
-  var i = keys.length;
-  while (i--) {
-    to[keys[i]] = from[keys[i]];
+function extend (to, _from) {
+  for (var key in _from) {
+    to[key] = _from[key];
   }
-  return to;
+  return to
 }
 
 /**
  * Quick object check - this is primarily used to tell
  * Objects from primitive values when we know the value
  * is a JSON-compliant type.
- *
- * @param {*} obj
- * @return {Boolean}
  */
-
-function isObject(obj) {
-  return obj !== null && typeof obj === 'object';
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
 }
 
 /**
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
- *
- * @param {*} obj
- * @return {Boolean}
  */
-
 var toString = Object.prototype.toString;
 var OBJECT_STRING = '[object Object]';
-
-function isPlainObject(obj) {
-  return toString.call(obj) === OBJECT_STRING;
+function isPlainObject (obj) {
+  return toString.call(obj) === OBJECT_STRING
 }
 
 /**
- * Array type check.
- *
- * @param {*} obj
- * @return {Boolean}
+ * Merge an Array of Objects into a single Object.
+ */
+function toObject (arr) {
+  var res = {};
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i]) {
+      extend(res, arr[i]);
+    }
+  }
+  return res
+}
+
+/**
+ * Perform no operation.
+ */
+function noop () {}
+
+/**
+ * Always return false.
+ */
+var no = function () { return false; };
+
+/**
+ * Return same value
+ */
+var identity = function (_) { return _; };
+
+/**
+ * Generate a static keys string from compiler modules.
  */
 
-var isArray = Array.isArray;
+
+/**
+ * Check if two values are loosely equal - that is,
+ * if they are plain objects, do they have the same shape?
+ */
+function looseEqual (a, b) {
+  var isObjectA = isObject(a);
+  var isObjectB = isObject(b);
+  if (isObjectA && isObjectB) {
+    try {
+      return JSON.stringify(a) === JSON.stringify(b)
+    } catch (e) {
+      // possible circular reference
+      return a === b
+    }
+  } else if (!isObjectA && !isObjectB) {
+    return String(a) === String(b)
+  } else {
+    return false
+  }
+}
+
+function looseIndexOf (arr, val) {
+  for (var i = 0; i < arr.length; i++) {
+    if (looseEqual(arr[i], val)) { return i }
+  }
+  return -1
+}
+
+/**
+ * Ensure a function is called only once.
+ */
+function once (fn) {
+  var called = false;
+  return function () {
+    if (!called) {
+      called = true;
+      fn();
+    }
+  }
+}
+
+/*  */
+
+var config = {
+  /**
+   * Option merge strategies (used in core/util/options)
+   */
+  optionMergeStrategies: Object.create(null),
+
+  /**
+   * Whether to suppress warnings.
+   */
+  silent: false,
+
+  /**
+   * Show production mode tip message on boot?
+   */
+  productionTip: process.env.NODE_ENV !== 'production',
+
+  /**
+   * Whether to enable devtools
+   */
+  devtools: process.env.NODE_ENV !== 'production',
+
+  /**
+   * Whether to record perf
+   */
+  performance: false,
+
+  /**
+   * Error handler for watcher errors
+   */
+  errorHandler: null,
+
+  /**
+   * Ignore certain custom elements
+   */
+  ignoredElements: [],
+
+  /**
+   * Custom user key aliases for v-on
+   */
+  keyCodes: Object.create(null),
+
+  /**
+   * Check if a tag is reserved so that it cannot be registered as a
+   * component. This is platform-dependent and may be overwritten.
+   */
+  isReservedTag: no,
+
+  /**
+   * Check if a tag is an unknown element.
+   * Platform-dependent.
+   */
+  isUnknownElement: no,
+
+  /**
+   * Get the namespace of an element
+   */
+  getTagNamespace: noop,
+
+  /**
+   * Parse the real tag name for the specific platform.
+   */
+  parsePlatformTagName: identity,
+
+  /**
+   * Check if an attribute must be bound using property, e.g. value
+   * Platform-dependent.
+   */
+  mustUseProp: no,
+
+  /**
+   * List of asset types that a component can own.
+   */
+  _assetTypes: [
+    'component',
+    'directive',
+    'filter'
+  ],
+
+  /**
+   * List of lifecycle hooks.
+   */
+  _lifecycleHooks: [
+    'beforeCreate',
+    'created',
+    'beforeMount',
+    'mounted',
+    'beforeUpdate',
+    'updated',
+    'beforeDestroy',
+    'destroyed',
+    'activated',
+    'deactivated'
+  ],
+
+  /**
+   * Max circular updates allowed in a scheduler flush cycle.
+   */
+  _maxUpdateCount: 100
+};
+
+/*  */
+
+var emptyObject = Object.freeze({});
+
+/**
+ * Check if a string starts with $ or _
+ */
+function isReserved (str) {
+  var c = (str + '').charCodeAt(0);
+  return c === 0x24 || c === 0x5F
+}
 
 /**
  * Define a property.
- *
- * @param {Object} obj
- * @param {String} key
- * @param {*} val
- * @param {Boolean} [enumerable]
  */
-
-function def(obj, key, val, enumerable) {
+function def (obj, key, val, enumerable) {
   Object.defineProperty(obj, key, {
     value: val,
     enumerable: !!enumerable,
@@ -24197,139 +23736,77 @@ function def(obj, key, val, enumerable) {
 }
 
 /**
- * Debounce a function so it only gets called after the
- * input stops arriving after the given wait period.
- *
- * @param {Function} func
- * @param {Number} wait
- * @return {Function} - the debounced function
+ * Parse simple path.
  */
-
-function _debounce(func, wait) {
-  var timeout, args, context, timestamp, result;
-  var later = function later() {
-    var last = Date.now() - timestamp;
-    if (last < wait && last >= 0) {
-      timeout = setTimeout(later, wait - last);
-    } else {
-      timeout = null;
-      result = func.apply(context, args);
-      if (!timeout) context = args = null;
-    }
-  };
-  return function () {
-    context = this;
-    args = arguments;
-    timestamp = Date.now();
-    if (!timeout) {
-      timeout = setTimeout(later, wait);
-    }
-    return result;
-  };
-}
-
-/**
- * Manual indexOf because it's slightly faster than
- * native.
- *
- * @param {Array} arr
- * @param {*} obj
- */
-
-function indexOf(arr, obj) {
-  var i = arr.length;
-  while (i--) {
-    if (arr[i] === obj) return i;
+var bailRE = /[^\w.$]/;
+function parsePath (path) {
+  if (bailRE.test(path)) {
+    return
   }
-  return -1;
-}
-
-/**
- * Make a cancellable version of an async callback.
- *
- * @param {Function} fn
- * @return {Function}
- */
-
-function cancellable(fn) {
-  var cb = function cb() {
-    if (!cb.cancelled) {
-      return fn.apply(this, arguments);
+  var segments = path.split('.');
+  return function (obj) {
+    for (var i = 0; i < segments.length; i++) {
+      if (!obj) { return }
+      obj = obj[segments[i]];
     }
-  };
-  cb.cancel = function () {
-    cb.cancelled = true;
-  };
-  return cb;
+    return obj
+  }
 }
 
-/**
- * Check if two values are loosely equal - that is,
- * if they are plain objects, do they have the same shape?
- *
- * @param {*} a
- * @param {*} b
- * @return {Boolean}
- */
+/*  */
+/* globals MutationObserver */
 
-function looseEqual(a, b) {
-  /* eslint-disable eqeqeq */
-  return a == b || (isObject(a) && isObject(b) ? JSON.stringify(a) === JSON.stringify(b) : false);
-  /* eslint-enable eqeqeq */
-}
-
-var hasProto = ('__proto__' in {});
+// can we use __proto__?
+var hasProto = '__proto__' in {};
 
 // Browser environment sniffing
-var inBrowser = typeof window !== 'undefined' && Object.prototype.toString.call(window) !== '[object Object]';
+var inBrowser = typeof window !== 'undefined';
+var UA = inBrowser && window.navigator.userAgent.toLowerCase();
+var isIE = UA && /msie|trident/.test(UA);
+var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
+var isEdge = UA && UA.indexOf('edge/') > 0;
+var isAndroid = UA && UA.indexOf('android') > 0;
+var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
+var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
+
+// this needs to be lazy-evaled because vue may be required before
+// vue-server-renderer can set VUE_ENV
+var _isServer;
+var isServerRendering = function () {
+  if (_isServer === undefined) {
+    /* istanbul ignore if */
+    if (!inBrowser && typeof global !== 'undefined') {
+      // detect presence of vue-server-renderer and avoid
+      // Webpack shimming the process
+      _isServer = global['process'].env.VUE_ENV === 'server';
+    } else {
+      _isServer = false;
+    }
+  }
+  return _isServer
+};
 
 // detect devtools
 var devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
-// UA sniffing for working around browser-specific quirks
-var UA = inBrowser && window.navigator.userAgent.toLowerCase();
-var isIE = UA && UA.indexOf('trident') > 0;
-var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
-var isAndroid = UA && UA.indexOf('android') > 0;
-var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
-
-var transitionProp = undefined;
-var transitionEndEvent = undefined;
-var animationProp = undefined;
-var animationEndEvent = undefined;
-
-// Transition property/event sniffing
-if (inBrowser && !isIE9) {
-  var isWebkitTrans = window.ontransitionend === undefined && window.onwebkittransitionend !== undefined;
-  var isWebkitAnim = window.onanimationend === undefined && window.onwebkitanimationend !== undefined;
-  transitionProp = isWebkitTrans ? 'WebkitTransition' : 'transition';
-  transitionEndEvent = isWebkitTrans ? 'webkitTransitionEnd' : 'transitionend';
-  animationProp = isWebkitAnim ? 'WebkitAnimation' : 'animation';
-  animationEndEvent = isWebkitAnim ? 'webkitAnimationEnd' : 'animationend';
-}
-
 /* istanbul ignore next */
-function isNative(Ctor) {
-  return (/native code/.test(Ctor.toString())
-  );
+function isNative (Ctor) {
+  return /native code/.test(Ctor.toString())
 }
+
+var hasSymbol =
+  typeof Symbol !== 'undefined' && isNative(Symbol) &&
+  typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys);
 
 /**
- * Defer a task to execute it asynchronously. Ideally this
- * should be executed as a microtask, so we leverage
- * MutationObserver if it's available, and fallback to
- * setTimeout(0).
- *
- * @param {Function} cb
- * @param {Object} ctx
+ * Defer a task to execute it asynchronously.
  */
-
 var nextTick = (function () {
   var callbacks = [];
   var pending = false;
-  var timerFunc = undefined;
+  var timerFunc;
 
-  function nextTickHandler() {
+  function nextTickHandler () {
     pending = false;
     var copies = callbacks.slice(0);
     callbacks.length = 0;
@@ -24347,19 +23824,23 @@ var nextTick = (function () {
   /* istanbul ignore if */
   if (typeof Promise !== 'undefined' && isNative(Promise)) {
     var p = Promise.resolve();
-    var noop = function noop() {};
+    var logError = function (err) { console.error(err); };
     timerFunc = function () {
-      p.then(nextTickHandler);
+      p.then(nextTickHandler).catch(logError);
       // in problematic UIWebViews, Promise.then doesn't completely break, but
       // it can get stuck in a weird state where callbacks are pushed into the
       // microtask queue but the queue isn't being flushed, until the browser
       // needs to do some other work, e.g. handle a timer. Therefore we can
       // "force" the microtask queue to be flushed by adding an empty timer.
-      if (isIOS) setTimeout(noop);
+      if (isIOS) { setTimeout(noop); }
     };
-  } else if (typeof MutationObserver !== 'undefined') {
+  } else if (typeof MutationObserver !== 'undefined' && (
+    isNative(MutationObserver) ||
+    // PhantomJS and iOS 7.x
+    MutationObserver.toString() === '[object MutationObserverConstructor]'
+  )) {
     // use MutationObserver where native Promise is not available,
-    // e.g. IE11, iOS7, Android 4.4
+    // e.g. PhantomJS IE11, iOS7, Android 4.4
     var counter = 1;
     var observer = new MutationObserver(nextTickHandler);
     var textNode = document.createTextNode(String(counter));
@@ -24373,1659 +23854,189 @@ var nextTick = (function () {
   } else {
     // fallback to setTimeout
     /* istanbul ignore next */
-    timerFunc = setTimeout;
+    timerFunc = function () {
+      setTimeout(nextTickHandler, 0);
+    };
   }
 
-  return function (cb, ctx) {
-    var func = ctx ? function () {
-      cb.call(ctx);
-    } : cb;
-    callbacks.push(func);
-    if (pending) return;
-    pending = true;
-    timerFunc(nextTickHandler, 0);
-  };
+  return function queueNextTick (cb, ctx) {
+    var _resolve;
+    callbacks.push(function () {
+      if (cb) { cb.call(ctx); }
+      if (_resolve) { _resolve(ctx); }
+    });
+    if (!pending) {
+      pending = true;
+      timerFunc();
+    }
+    if (!cb && typeof Promise !== 'undefined') {
+      return new Promise(function (resolve) {
+        _resolve = resolve;
+      })
+    }
+  }
 })();
 
-var _Set = undefined;
+var _Set;
 /* istanbul ignore if */
 if (typeof Set !== 'undefined' && isNative(Set)) {
   // use native Set when available.
   _Set = Set;
 } else {
   // a non-standard Set polyfill that only works with primitive keys.
-  _Set = function () {
-    this.set = Object.create(null);
-  };
-  _Set.prototype.has = function (key) {
-    return this.set[key] !== undefined;
-  };
-  _Set.prototype.add = function (key) {
-    this.set[key] = 1;
-  };
-  _Set.prototype.clear = function () {
-    this.set = Object.create(null);
-  };
-}
-
-function Cache(limit) {
-  this.size = 0;
-  this.limit = limit;
-  this.head = this.tail = undefined;
-  this._keymap = Object.create(null);
-}
-
-var p = Cache.prototype;
-
-/**
- * Put <value> into the cache associated with <key>.
- * Returns the entry which was removed to make room for
- * the new entry. Otherwise undefined is returned.
- * (i.e. if there was enough room already).
- *
- * @param {String} key
- * @param {*} value
- * @return {Entry|undefined}
- */
-
-p.put = function (key, value) {
-  var removed;
-
-  var entry = this.get(key, true);
-  if (!entry) {
-    if (this.size === this.limit) {
-      removed = this.shift();
+  _Set = (function () {
+    function Set () {
+      this.set = Object.create(null);
     }
-    entry = {
-      key: key
+    Set.prototype.has = function has (key) {
+      return this.set[key] === true
     };
-    this._keymap[key] = entry;
-    if (this.tail) {
-      this.tail.newer = entry;
-      entry.older = this.tail;
-    } else {
-      this.head = entry;
-    }
-    this.tail = entry;
-    this.size++;
-  }
-  entry.value = value;
-
-  return removed;
-};
-
-/**
- * Purge the least recently used (oldest) entry from the
- * cache. Returns the removed entry or undefined if the
- * cache was empty.
- */
-
-p.shift = function () {
-  var entry = this.head;
-  if (entry) {
-    this.head = this.head.newer;
-    this.head.older = undefined;
-    entry.newer = entry.older = undefined;
-    this._keymap[entry.key] = undefined;
-    this.size--;
-  }
-  return entry;
-};
-
-/**
- * Get and register recent use of <key>. Returns the value
- * associated with <key> or undefined if not in cache.
- *
- * @param {String} key
- * @param {Boolean} returnEntry
- * @return {Entry|*}
- */
-
-p.get = function (key, returnEntry) {
-  var entry = this._keymap[key];
-  if (entry === undefined) return;
-  if (entry === this.tail) {
-    return returnEntry ? entry : entry.value;
-  }
-  // HEAD--------------TAIL
-  //   <.older   .newer>
-  //  <--- add direction --
-  //   A  B  C  <D>  E
-  if (entry.newer) {
-    if (entry === this.head) {
-      this.head = entry.newer;
-    }
-    entry.newer.older = entry.older; // C <-- E.
-  }
-  if (entry.older) {
-    entry.older.newer = entry.newer; // C. --> E
-  }
-  entry.newer = undefined; // D --x
-  entry.older = this.tail; // D. --> E
-  if (this.tail) {
-    this.tail.newer = entry; // E. <-- D
-  }
-  this.tail = entry;
-  return returnEntry ? entry : entry.value;
-};
-
-var cache$1 = new Cache(1000);
-var reservedArgRE = /^in$|^-?\d+/;
-
-/**
- * Parser state
- */
-
-var str;
-var dir;
-var len;
-var index;
-var chr;
-var state;
-var startState = 0;
-var filterState = 1;
-var filterNameState = 2;
-var filterArgState = 3;
-
-var doubleChr = 0x22;
-var singleChr = 0x27;
-var pipeChr = 0x7C;
-var escapeChr = 0x5C;
-var spaceChr = 0x20;
-
-var expStartChr = { 0x5B: 1, 0x7B: 1, 0x28: 1 };
-var expChrPair = { 0x5B: 0x5D, 0x7B: 0x7D, 0x28: 0x29 };
-
-function peek() {
-  return str.charCodeAt(index + 1);
-}
-
-function next() {
-  return str.charCodeAt(++index);
-}
-
-function eof() {
-  return index >= len;
-}
-
-function eatSpace() {
-  while (peek() === spaceChr) {
-    next();
-  }
-}
-
-function isStringStart(chr) {
-  return chr === doubleChr || chr === singleChr;
-}
-
-function isExpStart(chr) {
-  return expStartChr[chr];
-}
-
-function isExpEnd(start, chr) {
-  return expChrPair[start] === chr;
-}
-
-function parseString() {
-  var stringQuote = next();
-  var chr;
-  while (!eof()) {
-    chr = next();
-    // escape char
-    if (chr === escapeChr) {
-      next();
-    } else if (chr === stringQuote) {
-      break;
-    }
-  }
-}
-
-function parseSpecialExp(chr) {
-  var inExp = 0;
-  var startChr = chr;
-
-  while (!eof()) {
-    chr = peek();
-    if (isStringStart(chr)) {
-      parseString();
-      continue;
-    }
-
-    if (startChr === chr) {
-      inExp++;
-    }
-    if (isExpEnd(startChr, chr)) {
-      inExp--;
-    }
-
-    next();
-
-    if (inExp === 0) {
-      break;
-    }
-  }
-}
-
-/**
- * syntax:
- * expression | filterName  [arg  arg [| filterName arg arg]]
- */
-
-function parseExpression() {
-  var start = index;
-  while (!eof()) {
-    chr = peek();
-    if (isStringStart(chr)) {
-      parseString();
-    } else if (isExpStart(chr)) {
-      parseSpecialExp(chr);
-    } else if (chr === pipeChr) {
-      next();
-      chr = peek();
-      if (chr === pipeChr) {
-        next();
-      } else {
-        if (state === startState || state === filterArgState) {
-          state = filterState;
-        }
-        break;
-      }
-    } else if (chr === spaceChr && (state === filterNameState || state === filterArgState)) {
-      eatSpace();
-      break;
-    } else {
-      if (state === filterState) {
-        state = filterNameState;
-      }
-      next();
-    }
-  }
-
-  return str.slice(start + 1, index) || null;
-}
-
-function parseFilterList() {
-  var filters = [];
-  while (!eof()) {
-    filters.push(parseFilter());
-  }
-  return filters;
-}
-
-function parseFilter() {
-  var filter = {};
-  var args;
-
-  state = filterState;
-  filter.name = parseExpression().trim();
-
-  state = filterArgState;
-  args = parseFilterArguments();
-
-  if (args.length) {
-    filter.args = args;
-  }
-  return filter;
-}
-
-function parseFilterArguments() {
-  var args = [];
-  while (!eof() && state !== filterState) {
-    var arg = parseExpression();
-    if (!arg) {
-      break;
-    }
-    args.push(processFilterArg(arg));
-  }
-
-  return args;
-}
-
-/**
- * Check if an argument is dynamic and strip quotes.
- *
- * @param {String} arg
- * @return {Object}
- */
-
-function processFilterArg(arg) {
-  if (reservedArgRE.test(arg)) {
-    return {
-      value: toNumber(arg),
-      dynamic: false
+    Set.prototype.add = function add (key) {
+      this.set[key] = true;
     };
-  } else {
-    var stripped = stripQuotes(arg);
-    var dynamic = stripped === arg;
-    return {
-      value: dynamic ? arg : stripped,
-      dynamic: dynamic
+    Set.prototype.clear = function clear () {
+      this.set = Object.create(null);
     };
-  }
+
+    return Set;
+  }());
 }
 
-/**
- * Parse a directive value and extract the expression
- * and its filters into a descriptor.
- *
- * Example:
- *
- * "a + 1 | uppercase" will yield:
- * {
- *   expression: 'a + 1',
- *   filters: [
- *     { name: 'uppercase', args: null }
- *   ]
- * }
- *
- * @param {String} s
- * @return {Object}
- */
-
-function parseDirective(s) {
-  var hit = cache$1.get(s);
-  if (hit) {
-    return hit;
-  }
-
-  // reset parser state
-  str = s;
-  dir = {};
-  len = str.length;
-  index = -1;
-  chr = '';
-  state = startState;
-
-  var filters;
-
-  if (str.indexOf('|') < 0) {
-    dir.expression = str.trim();
-  } else {
-    dir.expression = parseExpression().trim();
-    filters = parseFilterList();
-    if (filters.length) {
-      dir.filters = filters;
-    }
-  }
-
-  cache$1.put(s, dir);
-  return dir;
-}
-
-var directive = Object.freeze({
-  parseDirective: parseDirective
-});
-
-var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
-var cache = undefined;
-var tagRE = undefined;
-var htmlRE = undefined;
-/**
- * Escape a string so it can be used in a RegExp
- * constructor.
- *
- * @param {String} str
- */
-
-function escapeRegex(str) {
-  return str.replace(regexEscapeRE, '\\$&');
-}
-
-function compileRegex() {
-  var open = escapeRegex(config.delimiters[0]);
-  var close = escapeRegex(config.delimiters[1]);
-  var unsafeOpen = escapeRegex(config.unsafeDelimiters[0]);
-  var unsafeClose = escapeRegex(config.unsafeDelimiters[1]);
-  tagRE = new RegExp(unsafeOpen + '((?:.|\\n)+?)' + unsafeClose + '|' + open + '((?:.|\\n)+?)' + close, 'g');
-  htmlRE = new RegExp('^' + unsafeOpen + '((?:.|\\n)+?)' + unsafeClose + '$');
-  // reset cache
-  cache = new Cache(1000);
-}
-
-/**
- * Parse a template text string into an array of tokens.
- *
- * @param {String} text
- * @return {Array<Object> | null}
- *               - {String} type
- *               - {String} value
- *               - {Boolean} [html]
- *               - {Boolean} [oneTime]
- */
-
-function parseText(text) {
-  if (!cache) {
-    compileRegex();
-  }
-  var hit = cache.get(text);
-  if (hit) {
-    return hit;
-  }
-  if (!tagRE.test(text)) {
-    return null;
-  }
-  var tokens = [];
-  var lastIndex = tagRE.lastIndex = 0;
-  var match, index, html, value, first, oneTime;
-  /* eslint-disable no-cond-assign */
-  while (match = tagRE.exec(text)) {
-    /* eslint-enable no-cond-assign */
-    index = match.index;
-    // push text token
-    if (index > lastIndex) {
-      tokens.push({
-        value: text.slice(lastIndex, index)
-      });
-    }
-    // tag token
-    html = htmlRE.test(match[0]);
-    value = html ? match[1] : match[2];
-    first = value.charCodeAt(0);
-    oneTime = first === 42; // *
-    value = oneTime ? value.slice(1) : value;
-    tokens.push({
-      tag: true,
-      value: value.trim(),
-      html: html,
-      oneTime: oneTime
-    });
-    lastIndex = index + match[0].length;
-  }
-  if (lastIndex < text.length) {
-    tokens.push({
-      value: text.slice(lastIndex)
-    });
-  }
-  cache.put(text, tokens);
-  return tokens;
-}
-
-/**
- * Format a list of tokens into an expression.
- * e.g. tokens parsed from 'a {{b}} c' can be serialized
- * into one single expression as '"a " + b + " c"'.
- *
- * @param {Array} tokens
- * @param {Vue} [vm]
- * @return {String}
- */
-
-function tokensToExp(tokens, vm) {
-  if (tokens.length > 1) {
-    return tokens.map(function (token) {
-      return formatToken(token, vm);
-    }).join('+');
-  } else {
-    return formatToken(tokens[0], vm, true);
-  }
-}
-
-/**
- * Format a single token.
- *
- * @param {Object} token
- * @param {Vue} [vm]
- * @param {Boolean} [single]
- * @return {String}
- */
-
-function formatToken(token, vm, single) {
-  return token.tag ? token.oneTime && vm ? '"' + vm.$eval(token.value) + '"' : inlineFilters(token.value, single) : '"' + token.value + '"';
-}
-
-/**
- * For an attribute with multiple interpolation tags,
- * e.g. attr="some-{{thing | filter}}", in order to combine
- * the whole thing into a single watchable expression, we
- * have to inline those filters. This function does exactly
- * that. This is a bit hacky but it avoids heavy changes
- * to directive parser and watcher mechanism.
- *
- * @param {String} exp
- * @param {Boolean} single
- * @return {String}
- */
-
-var filterRE = /[^|]\|[^|]/;
-function inlineFilters(exp, single) {
-  if (!filterRE.test(exp)) {
-    return single ? exp : '(' + exp + ')';
-  } else {
-    var dir = parseDirective(exp);
-    if (!dir.filters) {
-      return '(' + exp + ')';
-    } else {
-      return 'this._applyFilters(' + dir.expression + // value
-      ',null,' + // oldValue (null for read)
-      JSON.stringify(dir.filters) + // filter descriptors
-      ',false)'; // write?
-    }
-  }
-}
-
-var text = Object.freeze({
-  compileRegex: compileRegex,
-  parseText: parseText,
-  tokensToExp: tokensToExp
-});
-
-var delimiters = ['{{', '}}'];
-var unsafeDelimiters = ['{{{', '}}}'];
-
-var config = Object.defineProperties({
-
-  /**
-   * Whether to print debug messages.
-   * Also enables stack trace for warnings.
-   *
-   * @type {Boolean}
-   */
-
-  debug: false,
-
-  /**
-   * Whether to suppress warnings.
-   *
-   * @type {Boolean}
-   */
-
-  silent: false,
-
-  /**
-   * Whether to use async rendering.
-   */
-
-  async: true,
-
-  /**
-   * Whether to warn against errors caught when evaluating
-   * expressions.
-   */
-
-  warnExpressionErrors: true,
-
-  /**
-   * Whether to allow devtools inspection.
-   * Disabled by default in production builds.
-   */
-
-  devtools: process.env.NODE_ENV !== 'production',
-
-  /**
-   * Internal flag to indicate the delimiters have been
-   * changed.
-   *
-   * @type {Boolean}
-   */
-
-  _delimitersChanged: true,
-
-  /**
-   * List of asset types that a component can own.
-   *
-   * @type {Array}
-   */
-
-  _assetTypes: ['component', 'directive', 'elementDirective', 'filter', 'transition', 'partial'],
-
-  /**
-   * prop binding modes
-   */
-
-  _propBindingModes: {
-    ONE_WAY: 0,
-    TWO_WAY: 1,
-    ONE_TIME: 2
-  },
-
-  /**
-   * Max circular updates allowed in a batcher flush cycle.
-   */
-
-  _maxUpdateCount: 100
-
-}, {
-  delimiters: { /**
-                 * Interpolation delimiters. Changing these would trigger
-                 * the text parser to re-compile the regular expressions.
-                 *
-                 * @type {Array<String>}
-                 */
-
-    get: function get() {
-      return delimiters;
-    },
-    set: function set(val) {
-      delimiters = val;
-      compileRegex();
-    },
-    configurable: true,
-    enumerable: true
-  },
-  unsafeDelimiters: {
-    get: function get() {
-      return unsafeDelimiters;
-    },
-    set: function set(val) {
-      unsafeDelimiters = val;
-      compileRegex();
-    },
-    configurable: true,
-    enumerable: true
-  }
-});
-
-var warn = undefined;
-var formatComponentName = undefined;
+var warn = noop;
+var tip = noop;
+var formatComponentName;
 
 if (process.env.NODE_ENV !== 'production') {
-  (function () {
-    var hasConsole = typeof console !== 'undefined';
+  var hasConsole = typeof console !== 'undefined';
+  var classifyRE = /(?:^|[-_])(\w)/g;
+  var classify = function (str) { return str
+    .replace(classifyRE, function (c) { return c.toUpperCase(); })
+    .replace(/[-_]/g, ''); };
 
-    warn = function (msg, vm) {
-      if (hasConsole && !config.silent) {
-        console.error('[Vue warn]: ' + msg + (vm ? formatComponentName(vm) : ''));
-      }
-    };
-
-    formatComponentName = function (vm) {
-      var name = vm._isVue ? vm.$options.name : vm.name;
-      return name ? ' (found in component: <' + hyphenate(name) + '>)' : '';
-    };
-  })();
-}
-
-/**
- * Append with transition.
- *
- * @param {Element} el
- * @param {Element} target
- * @param {Vue} vm
- * @param {Function} [cb]
- */
-
-function appendWithTransition(el, target, vm, cb) {
-  applyTransition(el, 1, function () {
-    target.appendChild(el);
-  }, vm, cb);
-}
-
-/**
- * InsertBefore with transition.
- *
- * @param {Element} el
- * @param {Element} target
- * @param {Vue} vm
- * @param {Function} [cb]
- */
-
-function beforeWithTransition(el, target, vm, cb) {
-  applyTransition(el, 1, function () {
-    before(el, target);
-  }, vm, cb);
-}
-
-/**
- * Remove with transition.
- *
- * @param {Element} el
- * @param {Vue} vm
- * @param {Function} [cb]
- */
-
-function removeWithTransition(el, vm, cb) {
-  applyTransition(el, -1, function () {
-    remove(el);
-  }, vm, cb);
-}
-
-/**
- * Apply transitions with an operation callback.
- *
- * @param {Element} el
- * @param {Number} direction
- *                  1: enter
- *                 -1: leave
- * @param {Function} op - the actual DOM operation
- * @param {Vue} vm
- * @param {Function} [cb]
- */
-
-function applyTransition(el, direction, op, vm, cb) {
-  var transition = el.__v_trans;
-  if (!transition ||
-  // skip if there are no js hooks and CSS transition is
-  // not supported
-  !transition.hooks && !transitionEndEvent ||
-  // skip transitions for initial compile
-  !vm._isCompiled ||
-  // if the vm is being manipulated by a parent directive
-  // during the parent's compilation phase, skip the
-  // animation.
-  vm.$parent && !vm.$parent._isCompiled) {
-    op();
-    if (cb) cb();
-    return;
-  }
-  var action = direction > 0 ? 'enter' : 'leave';
-  transition[action](op, cb);
-}
-
-var transition = Object.freeze({
-  appendWithTransition: appendWithTransition,
-  beforeWithTransition: beforeWithTransition,
-  removeWithTransition: removeWithTransition,
-  applyTransition: applyTransition
-});
-
-/**
- * Query an element selector if it's not an element already.
- *
- * @param {String|Element} el
- * @return {Element}
- */
-
-function query(el) {
-  if (typeof el === 'string') {
-    var selector = el;
-    el = document.querySelector(el);
-    if (!el) {
-      process.env.NODE_ENV !== 'production' && warn('Cannot find element: ' + selector);
+  warn = function (msg, vm) {
+    if (hasConsole && (!config.silent)) {
+      console.error("[Vue warn]: " + msg + " " + (
+        vm ? formatLocation(formatComponentName(vm)) : ''
+      ));
     }
-  }
-  return el;
-}
+  };
 
-/**
- * Check if a node is in the document.
- * Note: document.documentElement.contains should work here
- * but always returns false for comment nodes in phantomjs,
- * making unit tests difficult. This is fixed by doing the
- * contains() check on the node's parentNode instead of
- * the node itself.
- *
- * @param {Node} node
- * @return {Boolean}
- */
-
-function inDoc(node) {
-  if (!node) return false;
-  var doc = node.ownerDocument.documentElement;
-  var parent = node.parentNode;
-  return doc === node || doc === parent || !!(parent && parent.nodeType === 1 && doc.contains(parent));
-}
-
-/**
- * Get and remove an attribute from a node.
- *
- * @param {Node} node
- * @param {String} _attr
- */
-
-function getAttr(node, _attr) {
-  var val = node.getAttribute(_attr);
-  if (val !== null) {
-    node.removeAttribute(_attr);
-  }
-  return val;
-}
-
-/**
- * Get an attribute with colon or v-bind: prefix.
- *
- * @param {Node} node
- * @param {String} name
- * @return {String|null}
- */
-
-function getBindAttr(node, name) {
-  var val = getAttr(node, ':' + name);
-  if (val === null) {
-    val = getAttr(node, 'v-bind:' + name);
-  }
-  return val;
-}
-
-/**
- * Check the presence of a bind attribute.
- *
- * @param {Node} node
- * @param {String} name
- * @return {Boolean}
- */
-
-function hasBindAttr(node, name) {
-  return node.hasAttribute(name) || node.hasAttribute(':' + name) || node.hasAttribute('v-bind:' + name);
-}
-
-/**
- * Insert el before target
- *
- * @param {Element} el
- * @param {Element} target
- */
-
-function before(el, target) {
-  target.parentNode.insertBefore(el, target);
-}
-
-/**
- * Insert el after target
- *
- * @param {Element} el
- * @param {Element} target
- */
-
-function after(el, target) {
-  if (target.nextSibling) {
-    before(el, target.nextSibling);
-  } else {
-    target.parentNode.appendChild(el);
-  }
-}
-
-/**
- * Remove el from DOM
- *
- * @param {Element} el
- */
-
-function remove(el) {
-  el.parentNode.removeChild(el);
-}
-
-/**
- * Prepend el to target
- *
- * @param {Element} el
- * @param {Element} target
- */
-
-function prepend(el, target) {
-  if (target.firstChild) {
-    before(el, target.firstChild);
-  } else {
-    target.appendChild(el);
-  }
-}
-
-/**
- * Replace target with el
- *
- * @param {Element} target
- * @param {Element} el
- */
-
-function replace(target, el) {
-  var parent = target.parentNode;
-  if (parent) {
-    parent.replaceChild(el, target);
-  }
-}
-
-/**
- * Add event listener shorthand.
- *
- * @param {Element} el
- * @param {String} event
- * @param {Function} cb
- * @param {Boolean} [useCapture]
- */
-
-function on(el, event, cb, useCapture) {
-  el.addEventListener(event, cb, useCapture);
-}
-
-/**
- * Remove event listener shorthand.
- *
- * @param {Element} el
- * @param {String} event
- * @param {Function} cb
- */
-
-function off(el, event, cb) {
-  el.removeEventListener(event, cb);
-}
-
-/**
- * For IE9 compat: when both class and :class are present
- * getAttribute('class') returns wrong value...
- *
- * @param {Element} el
- * @return {String}
- */
-
-function getClass(el) {
-  var classname = el.className;
-  if (typeof classname === 'object') {
-    classname = classname.baseVal || '';
-  }
-  return classname;
-}
-
-/**
- * In IE9, setAttribute('class') will result in empty class
- * if the element also has the :class attribute; However in
- * PhantomJS, setting `className` does not work on SVG elements...
- * So we have to do a conditional check here.
- *
- * @param {Element} el
- * @param {String} cls
- */
-
-function setClass(el, cls) {
-  /* istanbul ignore if */
-  if (isIE9 && !/svg$/.test(el.namespaceURI)) {
-    el.className = cls;
-  } else {
-    el.setAttribute('class', cls);
-  }
-}
-
-/**
- * Add class with compatibility for IE & SVG
- *
- * @param {Element} el
- * @param {String} cls
- */
-
-function addClass(el, cls) {
-  if (el.classList) {
-    el.classList.add(cls);
-  } else {
-    var cur = ' ' + getClass(el) + ' ';
-    if (cur.indexOf(' ' + cls + ' ') < 0) {
-      setClass(el, (cur + cls).trim());
+  tip = function (msg, vm) {
+    if (hasConsole && (!config.silent)) {
+      console.warn("[Vue tip]: " + msg + " " + (
+        vm ? formatLocation(formatComponentName(vm)) : ''
+      ));
     }
-  }
-}
+  };
 
-/**
- * Remove class with compatibility for IE & SVG
- *
- * @param {Element} el
- * @param {String} cls
- */
-
-function removeClass(el, cls) {
-  if (el.classList) {
-    el.classList.remove(cls);
-  } else {
-    var cur = ' ' + getClass(el) + ' ';
-    var tar = ' ' + cls + ' ';
-    while (cur.indexOf(tar) >= 0) {
-      cur = cur.replace(tar, ' ');
+  formatComponentName = function (vm, includeFile) {
+    if (vm.$root === vm) {
+      return '<Root>'
     }
-    setClass(el, cur.trim());
-  }
-  if (!el.className) {
-    el.removeAttribute('class');
-  }
-}
+    var name = typeof vm === 'function' && vm.options
+      ? vm.options.name
+      : vm._isVue
+        ? vm.$options.name || vm.$options._componentTag
+        : vm.name;
 
-/**
- * Extract raw content inside an element into a temporary
- * container div
- *
- * @param {Element} el
- * @param {Boolean} asFragment
- * @return {Element|DocumentFragment}
- */
-
-function extractContent(el, asFragment) {
-  var child;
-  var rawContent;
-  /* istanbul ignore if */
-  if (isTemplate(el) && isFragment(el.content)) {
-    el = el.content;
-  }
-  if (el.hasChildNodes()) {
-    trimNode(el);
-    rawContent = asFragment ? document.createDocumentFragment() : document.createElement('div');
-    /* eslint-disable no-cond-assign */
-    while (child = el.firstChild) {
-      /* eslint-enable no-cond-assign */
-      rawContent.appendChild(child);
+    var file = vm._isVue && vm.$options.__file;
+    if (!name && file) {
+      var match = file.match(/([^/\\]+)\.vue$/);
+      name = match && match[1];
     }
-  }
-  return rawContent;
-}
 
-/**
- * Trim possible empty head/tail text and comment
- * nodes inside a parent.
- *
- * @param {Node} node
- */
+    return (
+      (name ? ("<" + (classify(name)) + ">") : "<Anonymous>") +
+      (file && includeFile !== false ? (" at " + file) : '')
+    )
+  };
 
-function trimNode(node) {
-  var child;
-  /* eslint-disable no-sequences */
-  while ((child = node.firstChild, isTrimmable(child))) {
-    node.removeChild(child);
-  }
-  while ((child = node.lastChild, isTrimmable(child))) {
-    node.removeChild(child);
-  }
-  /* eslint-enable no-sequences */
-}
-
-function isTrimmable(node) {
-  return node && (node.nodeType === 3 && !node.data.trim() || node.nodeType === 8);
-}
-
-/**
- * Check if an element is a template tag.
- * Note if the template appears inside an SVG its tagName
- * will be in lowercase.
- *
- * @param {Element} el
- */
-
-function isTemplate(el) {
-  return el.tagName && el.tagName.toLowerCase() === 'template';
-}
-
-/**
- * Create an "anchor" for performing dom insertion/removals.
- * This is used in a number of scenarios:
- * - fragment instance
- * - v-html
- * - v-if
- * - v-for
- * - component
- *
- * @param {String} content
- * @param {Boolean} persist - IE trashes empty textNodes on
- *                            cloneNode(true), so in certain
- *                            cases the anchor needs to be
- *                            non-empty to be persisted in
- *                            templates.
- * @return {Comment|Text}
- */
-
-function createAnchor(content, persist) {
-  var anchor = config.debug ? document.createComment(content) : document.createTextNode(persist ? ' ' : '');
-  anchor.__v_anchor = true;
-  return anchor;
-}
-
-/**
- * Find a component ref attribute that starts with $.
- *
- * @param {Element} node
- * @return {String|undefined}
- */
-
-var refRE = /^v-ref:/;
-
-function findRef(node) {
-  if (node.hasAttributes()) {
-    var attrs = node.attributes;
-    for (var i = 0, l = attrs.length; i < l; i++) {
-      var name = attrs[i].name;
-      if (refRE.test(name)) {
-        return camelize(name.replace(refRE, ''));
-      }
+  var formatLocation = function (str) {
+    if (str === "<Anonymous>") {
+      str += " - use the \"name\" option for better debugging messages.";
     }
-  }
-}
-
-/**
- * Map a function to a range of nodes .
- *
- * @param {Node} node
- * @param {Node} end
- * @param {Function} op
- */
-
-function mapNodeRange(node, end, op) {
-  var next;
-  while (node !== end) {
-    next = node.nextSibling;
-    op(node);
-    node = next;
-  }
-  op(end);
-}
-
-/**
- * Remove a range of nodes with transition, store
- * the nodes in a fragment with correct ordering,
- * and call callback when done.
- *
- * @param {Node} start
- * @param {Node} end
- * @param {Vue} vm
- * @param {DocumentFragment} frag
- * @param {Function} cb
- */
-
-function removeNodeRange(start, end, vm, frag, cb) {
-  var done = false;
-  var removed = 0;
-  var nodes = [];
-  mapNodeRange(start, end, function (node) {
-    if (node === end) done = true;
-    nodes.push(node);
-    removeWithTransition(node, vm, onRemoved);
-  });
-  function onRemoved() {
-    removed++;
-    if (done && removed >= nodes.length) {
-      for (var i = 0; i < nodes.length; i++) {
-        frag.appendChild(nodes[i]);
-      }
-      cb && cb();
-    }
-  }
-}
-
-/**
- * Check if a node is a DocumentFragment.
- *
- * @param {Node} node
- * @return {Boolean}
- */
-
-function isFragment(node) {
-  return node && node.nodeType === 11;
-}
-
-/**
- * Get outerHTML of elements, taking care
- * of SVG elements in IE as well.
- *
- * @param {Element} el
- * @return {String}
- */
-
-function getOuterHTML(el) {
-  if (el.outerHTML) {
-    return el.outerHTML;
-  } else {
-    var container = document.createElement('div');
-    container.appendChild(el.cloneNode(true));
-    return container.innerHTML;
-  }
-}
-
-var commonTagRE = /^(div|p|span|img|a|b|i|br|ul|ol|li|h1|h2|h3|h4|h5|h6|code|pre|table|th|td|tr|form|label|input|select|option|nav|article|section|header|footer)$/i;
-var reservedTagRE = /^(slot|partial|component)$/i;
-
-var isUnknownElement = undefined;
-if (process.env.NODE_ENV !== 'production') {
-  isUnknownElement = function (el, tag) {
-    if (tag.indexOf('-') > -1) {
-      // http://stackoverflow.com/a/28210364/1070244
-      return el.constructor === window.HTMLUnknownElement || el.constructor === window.HTMLElement;
-    } else {
-      return (/HTMLUnknownElement/.test(el.toString()) &&
-        // Chrome returns unknown for several HTML5 elements.
-        // https://code.google.com/p/chromium/issues/detail?id=540526
-        // Firefox returns unknown for some "Interactive elements."
-        !/^(data|time|rtc|rb|details|dialog|summary)$/.test(tag)
-      );
-    }
+    return ("\n(found in " + str + ")")
   };
 }
 
-/**
- * Check if an element is a component, if yes return its
- * component id.
- *
- * @param {Element} el
- * @param {Object} options
- * @return {Object|undefined}
- */
+/*  */
 
-function checkComponentAttr(el, options) {
-  var tag = el.tagName.toLowerCase();
-  var hasAttrs = el.hasAttributes();
-  if (!commonTagRE.test(tag) && !reservedTagRE.test(tag)) {
-    if (resolveAsset(options, 'components', tag)) {
-      return { id: tag };
-    } else {
-      var is = hasAttrs && getIsBinding(el, options);
-      if (is) {
-        return is;
-      } else if (process.env.NODE_ENV !== 'production') {
-        var expectedTag = options._componentNameMap && options._componentNameMap[tag];
-        if (expectedTag) {
-          warn('Unknown custom element: <' + tag + '> - ' + 'did you mean <' + expectedTag + '>? ' + 'HTML is case-insensitive, remember to use kebab-case in templates.');
-        } else if (isUnknownElement(el, tag)) {
-          warn('Unknown custom element: <' + tag + '> - did you ' + 'register the component correctly? For recursive components, ' + 'make sure to provide the "name" option.');
-        }
-      }
-    }
-  } else if (hasAttrs) {
-    return getIsBinding(el, options);
-  }
-}
-
-/**
- * Get "is" binding from an element.
- *
- * @param {Element} el
- * @param {Object} options
- * @return {Object|undefined}
- */
-
-function getIsBinding(el, options) {
-  // dynamic syntax
-  var exp = el.getAttribute('is');
-  if (exp != null) {
-    if (resolveAsset(options, 'components', exp)) {
-      el.removeAttribute('is');
-      return { id: exp };
-    }
-  } else {
-    exp = getBindAttr(el, 'is');
-    if (exp != null) {
-      return { id: exp, dynamic: true };
-    }
-  }
-}
-
-/**
- * Option overwriting strategies are functions that handle
- * how to merge a parent option value and a child option
- * value into the final value.
- *
- * All strategy functions follow the same signature:
- *
- * @param {*} parentVal
- * @param {*} childVal
- * @param {Vue} [vm]
- */
-
-var strats = config.optionMergeStrategies = Object.create(null);
-
-/**
- * Helper that recursively merges two data objects together.
- */
-
-function mergeData(to, from) {
-  var key, toVal, fromVal;
-  for (key in from) {
-    toVal = to[key];
-    fromVal = from[key];
-    if (!hasOwn(to, key)) {
-      set(to, key, fromVal);
-    } else if (isObject(toVal) && isObject(fromVal)) {
-      mergeData(toVal, fromVal);
-    }
-  }
-  return to;
-}
-
-/**
- * Data
- */
-
-strats.data = function (parentVal, childVal, vm) {
-  if (!vm) {
-    // in a Vue.extend merge, both should be functions
-    if (!childVal) {
-      return parentVal;
-    }
-    if (typeof childVal !== 'function') {
-      process.env.NODE_ENV !== 'production' && warn('The "data" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
-      return parentVal;
-    }
-    if (!parentVal) {
-      return childVal;
-    }
-    // when parentVal & childVal are both present,
-    // we need to return a function that returns the
-    // merged result of both functions... no need to
-    // check if parentVal is a function here because
-    // it has to be a function to pass previous merges.
-    return function mergedDataFn() {
-      return mergeData(childVal.call(this), parentVal.call(this));
-    };
-  } else if (parentVal || childVal) {
-    return function mergedInstanceDataFn() {
-      // instance merge
-      var instanceData = typeof childVal === 'function' ? childVal.call(vm) : childVal;
-      var defaultData = typeof parentVal === 'function' ? parentVal.call(vm) : undefined;
-      if (instanceData) {
-        return mergeData(instanceData, defaultData);
-      } else {
-        return defaultData;
-      }
-    };
-  }
-};
-
-/**
- * El
- */
-
-strats.el = function (parentVal, childVal, vm) {
-  if (!vm && childVal && typeof childVal !== 'function') {
-    process.env.NODE_ENV !== 'production' && warn('The "el" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
-    return;
-  }
-  var ret = childVal || parentVal;
-  // invoke the element factory if this is instance merge
-  return vm && typeof ret === 'function' ? ret.call(vm) : ret;
-};
-
-/**
- * Hooks and param attributes are merged as arrays.
- */
-
-strats.init = strats.created = strats.ready = strats.attached = strats.detached = strats.beforeCompile = strats.compiled = strats.beforeDestroy = strats.destroyed = strats.activate = function (parentVal, childVal) {
-  return childVal ? parentVal ? parentVal.concat(childVal) : isArray(childVal) ? childVal : [childVal] : parentVal;
-};
-
-/**
- * Assets
- *
- * When a vm is present (instance creation), we need to do
- * a three-way merge between constructor options, instance
- * options and parent options.
- */
-
-function mergeAssets(parentVal, childVal) {
-  var res = Object.create(parentVal || null);
-  return childVal ? extend(res, guardArrayAssets(childVal)) : res;
-}
-
-config._assetTypes.forEach(function (type) {
-  strats[type + 's'] = mergeAssets;
-});
-
-/**
- * Events & Watchers.
- *
- * Events & watchers hashes should not overwrite one
- * another, so we merge them as arrays.
- */
-
-strats.watch = strats.events = function (parentVal, childVal) {
-  if (!childVal) return parentVal;
-  if (!parentVal) return childVal;
-  var ret = {};
-  extend(ret, parentVal);
-  for (var key in childVal) {
-    var parent = ret[key];
-    var child = childVal[key];
-    if (parent && !isArray(parent)) {
-      parent = [parent];
-    }
-    ret[key] = parent ? parent.concat(child) : [child];
-  }
-  return ret;
-};
-
-/**
- * Other object hashes.
- */
-
-strats.props = strats.methods = strats.computed = function (parentVal, childVal) {
-  if (!childVal) return parentVal;
-  if (!parentVal) return childVal;
-  var ret = Object.create(null);
-  extend(ret, parentVal);
-  extend(ret, childVal);
-  return ret;
-};
-
-/**
- * Default strategy.
- */
-
-var defaultStrat = function defaultStrat(parentVal, childVal) {
-  return childVal === undefined ? parentVal : childVal;
-};
-
-/**
- * Make sure component options get converted to actual
- * constructors.
- *
- * @param {Object} options
- */
-
-function guardComponents(options) {
-  if (options.components) {
-    var components = options.components = guardArrayAssets(options.components);
-    var ids = Object.keys(components);
-    var def;
-    if (process.env.NODE_ENV !== 'production') {
-      var map = options._componentNameMap = {};
-    }
-    for (var i = 0, l = ids.length; i < l; i++) {
-      var key = ids[i];
-      if (commonTagRE.test(key) || reservedTagRE.test(key)) {
-        process.env.NODE_ENV !== 'production' && warn('Do not use built-in or reserved HTML elements as component ' + 'id: ' + key);
-        continue;
-      }
-      // record a all lowercase <-> kebab-case mapping for
-      // possible custom element case error warning
-      if (process.env.NODE_ENV !== 'production') {
-        map[key.replace(/-/g, '').toLowerCase()] = hyphenate(key);
-      }
-      def = components[key];
-      if (isPlainObject(def)) {
-        components[key] = Vue.extend(def);
-      }
-    }
-  }
-}
-
-/**
- * Ensure all props option syntax are normalized into the
- * Object-based format.
- *
- * @param {Object} options
- */
-
-function guardProps(options) {
-  var props = options.props;
-  var i, val;
-  if (isArray(props)) {
-    options.props = {};
-    i = props.length;
-    while (i--) {
-      val = props[i];
-      if (typeof val === 'string') {
-        options.props[val] = null;
-      } else if (val.name) {
-        options.props[val.name] = val;
-      }
-    }
-  } else if (isPlainObject(props)) {
-    var keys = Object.keys(props);
-    i = keys.length;
-    while (i--) {
-      val = props[keys[i]];
-      if (typeof val === 'function') {
-        props[keys[i]] = { type: val };
-      }
-    }
-  }
-}
-
-/**
- * Guard an Array-format assets option and converted it
- * into the key-value Object format.
- *
- * @param {Object|Array} assets
- * @return {Object}
- */
-
-function guardArrayAssets(assets) {
-  if (isArray(assets)) {
-    var res = {};
-    var i = assets.length;
-    var asset;
-    while (i--) {
-      asset = assets[i];
-      var id = typeof asset === 'function' ? asset.options && asset.options.name || asset.id : asset.name || asset.id;
-      if (!id) {
-        process.env.NODE_ENV !== 'production' && warn('Array-syntax assets must provide a "name" or "id" field.');
-      } else {
-        res[id] = asset;
-      }
-    }
-    return res;
-  }
-  return assets;
-}
-
-/**
- * Merge two option objects into a new one.
- * Core utility used in both instantiation and inheritance.
- *
- * @param {Object} parent
- * @param {Object} child
- * @param {Vue} [vm] - if vm is present, indicates this is
- *                     an instantiation merge.
- */
-
-function mergeOptions(parent, child, vm) {
-  guardComponents(child);
-  guardProps(child);
-  if (process.env.NODE_ENV !== 'production') {
-    if (child.propsData && !vm) {
-      warn('propsData can only be used as an instantiation option.');
-    }
-  }
-  var options = {};
-  var key;
-  if (child['extends']) {
-    parent = typeof child['extends'] === 'function' ? mergeOptions(parent, child['extends'].options, vm) : mergeOptions(parent, child['extends'], vm);
-  }
-  if (child.mixins) {
-    for (var i = 0, l = child.mixins.length; i < l; i++) {
-      var mixin = child.mixins[i];
-      var mixinOptions = mixin.prototype instanceof Vue ? mixin.options : mixin;
-      parent = mergeOptions(parent, mixinOptions, vm);
-    }
-  }
-  for (key in parent) {
-    mergeField(key);
-  }
-  for (key in child) {
-    if (!hasOwn(parent, key)) {
-      mergeField(key);
-    }
-  }
-  function mergeField(key) {
-    var strat = strats[key] || defaultStrat;
-    options[key] = strat(parent[key], child[key], vm, key);
-  }
-  return options;
-}
-
-/**
- * Resolve an asset.
- * This function is used because child instances need access
- * to assets defined in its ancestor chain.
- *
- * @param {Object} options
- * @param {String} type
- * @param {String} id
- * @param {Boolean} warnMissing
- * @return {Object|Function}
- */
-
-function resolveAsset(options, type, id, warnMissing) {
-  /* istanbul ignore if */
-  if (typeof id !== 'string') {
-    return;
-  }
-  var assets = options[type];
-  var camelizedId;
-  var res = assets[id] ||
-  // camelCase ID
-  assets[camelizedId = camelize(id)] ||
-  // Pascal Case ID
-  assets[camelizedId.charAt(0).toUpperCase() + camelizedId.slice(1)];
-  if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
-    warn('Failed to resolve ' + type.slice(0, -1) + ': ' + id, options);
-  }
-  return res;
-}
 
 var uid$1 = 0;
 
 /**
  * A dep is an observable that can have multiple
  * directives subscribing to it.
- *
- * @constructor
  */
-function Dep() {
+var Dep = function Dep () {
   this.id = uid$1++;
   this.subs = [];
-}
+};
 
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
-Dep.target = null;
-
-/**
- * Add a directive subscriber.
- *
- * @param {Directive} sub
- */
-
-Dep.prototype.addSub = function (sub) {
+Dep.prototype.addSub = function addSub (sub) {
   this.subs.push(sub);
 };
 
-/**
- * Remove a directive subscriber.
- *
- * @param {Directive} sub
- */
-
-Dep.prototype.removeSub = function (sub) {
-  this.subs.$remove(sub);
+Dep.prototype.removeSub = function removeSub (sub) {
+  remove(this.subs, sub);
 };
 
-/**
- * Add self as a dependency to the target watcher.
- */
-
-Dep.prototype.depend = function () {
-  Dep.target.addDep(this);
+Dep.prototype.depend = function depend () {
+  if (Dep.target) {
+    Dep.target.addDep(this);
+  }
 };
 
-/**
- * Notify all subscribers of a new value.
- */
-
-Dep.prototype.notify = function () {
-  // stablize the subscriber list first
-  var subs = toArray(this.subs);
+Dep.prototype.notify = function notify () {
+  // stabilize the subscriber list first
+  var subs = this.subs.slice();
   for (var i = 0, l = subs.length; i < l; i++) {
     subs[i].update();
   }
 };
 
-var arrayProto = Array.prototype;
-var arrayMethods = Object.create(arrayProto)
+// the current target watcher being evaluated.
+// this is globally unique because there could be only one
+// watcher being evaluated at any time.
+Dep.target = null;
+var targetStack = [];
 
-/**
- * Intercept mutating methods and emit events
+function pushTarget (_target) {
+  if (Dep.target) { targetStack.push(Dep.target); }
+  Dep.target = _target;
+}
+
+function popTarget () {
+  Dep.target = targetStack.pop();
+}
+
+/*
+ * not type checking this file because flow doesn't play well with
+ * dynamically accessing methods on Array prototype
  */
 
-;['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(function (method) {
+var arrayProto = Array.prototype;
+var arrayMethods = Object.create(arrayProto);[
+  'push',
+  'pop',
+  'shift',
+  'unshift',
+  'splice',
+  'sort',
+  'reverse'
+]
+.forEach(function (method) {
   // cache original method
   var original = arrayProto[method];
-  def(arrayMethods, method, function mutator() {
+  def(arrayMethods, method, function mutator () {
+    var arguments$1 = arguments;
+
     // avoid leaking arguments:
     // http://jsperf.com/closure-with-arguments
     var i = arguments.length;
     var args = new Array(i);
     while (i--) {
-      args[i] = arguments[i];
+      args[i] = arguments$1[i];
     }
     var result = original.apply(this, args);
     var ob = this.__ob__;
@@ -26033,158 +24044,77 @@ var arrayMethods = Object.create(arrayProto)
     switch (method) {
       case 'push':
         inserted = args;
-        break;
+        break
       case 'unshift':
         inserted = args;
-        break;
+        break
       case 'splice':
         inserted = args.slice(2);
-        break;
+        break
     }
-    if (inserted) ob.observeArray(inserted);
+    if (inserted) { ob.observeArray(inserted); }
     // notify change
     ob.dep.notify();
-    return result;
+    return result
   });
 });
 
-/**
- * Swap the element at the given index with a new value
- * and emits corresponding event.
- *
- * @param {Number} index
- * @param {*} val
- * @return {*} - replaced element
- */
-
-def(arrayProto, '$set', function $set(index, val) {
-  if (index >= this.length) {
-    this.length = Number(index) + 1;
-  }
-  return this.splice(index, 1, val)[0];
-});
-
-/**
- * Convenience method to remove the element at given index or target element reference.
- *
- * @param {*} item
- */
-
-def(arrayProto, '$remove', function $remove(item) {
-  /* istanbul ignore if */
-  if (!this.length) return;
-  var index = indexOf(this, item);
-  if (index > -1) {
-    return this.splice(index, 1);
-  }
-});
+/*  */
 
 var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 /**
  * By default, when a reactive property is set, the new value is
- * also converted to become reactive. However in certain cases, e.g.
- * v-for scope alias and props, we don't want to force conversion
- * because the value may be a nested value under a frozen data structure.
- *
- * So whenever we want to set a reactive property without forcing
- * conversion on the new value, we wrap that call inside this function.
+ * also converted to become reactive. However when passing down props,
+ * we don't want to force conversion because the value may be a nested value
+ * under a frozen data structure. Converting it would defeat the optimization.
  */
-
-var shouldConvert = true;
-
-function withoutConversion(fn) {
-  shouldConvert = false;
-  fn();
-  shouldConvert = true;
-}
+var observerState = {
+  shouldConvert: true,
+  isSettingProps: false
+};
 
 /**
  * Observer class that are attached to each observed
  * object. Once attached, the observer converts target
  * object's property keys into getter/setters that
  * collect dependencies and dispatches updates.
- *
- * @param {Array|Object} value
- * @constructor
  */
-
-function Observer(value) {
+var Observer = function Observer (value) {
   this.value = value;
   this.dep = new Dep();
+  this.vmCount = 0;
   def(value, '__ob__', this);
-  if (isArray(value)) {
-    var augment = hasProto ? protoAugment : copyAugment;
+  if (Array.isArray(value)) {
+    var augment = hasProto
+      ? protoAugment
+      : copyAugment;
     augment(value, arrayMethods, arrayKeys);
     this.observeArray(value);
   } else {
     this.walk(value);
   }
-}
-
-// Instance methods
+};
 
 /**
  * Walk through each property and convert them into
  * getter/setters. This method should only be called when
  * value type is Object.
- *
- * @param {Object} obj
  */
-
-Observer.prototype.walk = function (obj) {
+Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
-  for (var i = 0, l = keys.length; i < l; i++) {
-    this.convert(keys[i], obj[keys[i]]);
+  for (var i = 0; i < keys.length; i++) {
+    defineReactive$$1(obj, keys[i], obj[keys[i]]);
   }
 };
 
 /**
  * Observe a list of Array items.
- *
- * @param {Array} items
  */
-
-Observer.prototype.observeArray = function (items) {
+Observer.prototype.observeArray = function observeArray (items) {
   for (var i = 0, l = items.length; i < l; i++) {
     observe(items[i]);
   }
-};
-
-/**
- * Convert a property into getter/setter so we can emit
- * the events when the property is accessed/changed.
- *
- * @param {String} key
- * @param {*} val
- */
-
-Observer.prototype.convert = function (key, val) {
-  defineReactive(this.value, key, val);
-};
-
-/**
- * Add an owner vm, so that when $set/$delete mutations
- * happen we can notify owner vms to proxy the keys and
- * digest the watchers. This is only called when the object
- * is observed as an instance's root $data.
- *
- * @param {Vue} vm
- */
-
-Observer.prototype.addVm = function (vm) {
-  (this.vms || (this.vms = [])).push(vm);
-};
-
-/**
- * Remove an owner vm. This is called when the object is
- * swapped out as an instance's $data object.
- *
- * @param {Vue} vm
- */
-
-Observer.prototype.removeVm = function (vm) {
-  this.vms.$remove(vm);
 };
 
 // helpers
@@ -26192,12 +24122,8 @@ Observer.prototype.removeVm = function (vm) {
 /**
  * Augment an target Object or Array by intercepting
  * the prototype chain using __proto__
- *
- * @param {Object|Array} target
- * @param {Object} src
  */
-
-function protoAugment(target, src) {
+function protoAugment (target, src) {
   /* eslint-disable no-proto */
   target.__proto__ = src;
   /* eslint-enable no-proto */
@@ -26206,12 +24132,9 @@ function protoAugment(target, src) {
 /**
  * Augment an target Object or Array by defining
  * hidden properties.
- *
- * @param {Object|Array} target
- * @param {Object} proto
  */
-
-function copyAugment(target, src, keys) {
+/* istanbul ignore next */
+function copyAugment (target, src, keys) {
   for (var i = 0, l = keys.length; i < l; i++) {
     var key = keys[i];
     def(target, key, src[key]);
@@ -26222,43 +24145,43 @@ function copyAugment(target, src, keys) {
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
- *
- * @param {*} value
- * @param {Vue} [vm]
- * @return {Observer|undefined}
- * @static
  */
-
-function observe(value, vm) {
-  if (!value || typeof value !== 'object') {
-    return;
+function observe (value, asRootData) {
+  if (!isObject(value)) {
+    return
   }
   var ob;
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__;
-  } else if (shouldConvert && (isArray(value) || isPlainObject(value)) && Object.isExtensible(value) && !value._isVue) {
+  } else if (
+    observerState.shouldConvert &&
+    !isServerRendering() &&
+    (Array.isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value) &&
+    !value._isVue
+  ) {
     ob = new Observer(value);
   }
-  if (ob && vm) {
-    ob.addVm(vm);
+  if (asRootData && ob) {
+    ob.vmCount++;
   }
-  return ob;
+  return ob
 }
 
 /**
  * Define a reactive property on an Object.
- *
- * @param {Object} obj
- * @param {String} key
- * @param {*} val
  */
-
-function defineReactive(obj, key, val) {
+function defineReactive$$1 (
+  obj,
+  key,
+  val,
+  customSetter
+) {
   var dep = new Dep();
 
   var property = Object.getOwnPropertyDescriptor(obj, key);
   if (property && property.configurable === false) {
-    return;
+    return
   }
 
   // cater for pre-defined getter/setters
@@ -26269,26 +24192,28 @@ function defineReactive(obj, key, val) {
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
-    get: function reactiveGetter() {
+    get: function reactiveGetter () {
       var value = getter ? getter.call(obj) : val;
       if (Dep.target) {
         dep.depend();
         if (childOb) {
           childOb.dep.depend();
         }
-        if (isArray(value)) {
-          for (var e, i = 0, l = value.length; i < l; i++) {
-            e = value[i];
-            e && e.__ob__ && e.__ob__.dep.depend();
-          }
+        if (Array.isArray(value)) {
+          dependArray(value);
         }
       }
-      return value;
+      return value
     },
-    set: function reactiveSetter(newVal) {
+    set: function reactiveSetter (newVal) {
       var value = getter ? getter.call(obj) : val;
-      if (newVal === value) {
-        return;
+      /* eslint-disable no-self-compare */
+      if (newVal === value || (newVal !== newVal && value !== value)) {
+        return
+      }
+      /* eslint-enable no-self-compare */
+      if (process.env.NODE_ENV !== 'production' && customSetter) {
+        customSetter();
       }
       if (setter) {
         setter.call(obj, newVal);
@@ -26301,847 +24226,1540 @@ function defineReactive(obj, key, val) {
   });
 }
 
-
-
-var util = Object.freeze({
-	defineReactive: defineReactive,
-	set: set,
-	del: del,
-	hasOwn: hasOwn,
-	isLiteral: isLiteral,
-	isReserved: isReserved,
-	_toString: _toString,
-	toNumber: toNumber,
-	toBoolean: toBoolean,
-	stripQuotes: stripQuotes,
-	camelize: camelize,
-	hyphenate: hyphenate,
-	classify: classify,
-	bind: bind,
-	toArray: toArray,
-	extend: extend,
-	isObject: isObject,
-	isPlainObject: isPlainObject,
-	def: def,
-	debounce: _debounce,
-	indexOf: indexOf,
-	cancellable: cancellable,
-	looseEqual: looseEqual,
-	isArray: isArray,
-	hasProto: hasProto,
-	inBrowser: inBrowser,
-	devtools: devtools,
-	isIE: isIE,
-	isIE9: isIE9,
-	isAndroid: isAndroid,
-	isIOS: isIOS,
-	get transitionProp () { return transitionProp; },
-	get transitionEndEvent () { return transitionEndEvent; },
-	get animationProp () { return animationProp; },
-	get animationEndEvent () { return animationEndEvent; },
-	nextTick: nextTick,
-	get _Set () { return _Set; },
-	query: query,
-	inDoc: inDoc,
-	getAttr: getAttr,
-	getBindAttr: getBindAttr,
-	hasBindAttr: hasBindAttr,
-	before: before,
-	after: after,
-	remove: remove,
-	prepend: prepend,
-	replace: replace,
-	on: on,
-	off: off,
-	setClass: setClass,
-	addClass: addClass,
-	removeClass: removeClass,
-	extractContent: extractContent,
-	trimNode: trimNode,
-	isTemplate: isTemplate,
-	createAnchor: createAnchor,
-	findRef: findRef,
-	mapNodeRange: mapNodeRange,
-	removeNodeRange: removeNodeRange,
-	isFragment: isFragment,
-	getOuterHTML: getOuterHTML,
-	mergeOptions: mergeOptions,
-	resolveAsset: resolveAsset,
-	checkComponentAttr: checkComponentAttr,
-	commonTagRE: commonTagRE,
-	reservedTagRE: reservedTagRE,
-	get warn () { return warn; }
-});
-
-var uid = 0;
-
-function initMixin (Vue) {
-  /**
-   * The main init sequence. This is called for every
-   * instance, including ones that are created from extended
-   * constructors.
-   *
-   * @param {Object} options - this options object should be
-   *                           the result of merging class
-   *                           options and the options passed
-   *                           in to the constructor.
-   */
-
-  Vue.prototype._init = function (options) {
-    options = options || {};
-
-    this.$el = null;
-    this.$parent = options.parent;
-    this.$root = this.$parent ? this.$parent.$root : this;
-    this.$children = [];
-    this.$refs = {}; // child vm references
-    this.$els = {}; // element references
-    this._watchers = []; // all watchers as an array
-    this._directives = []; // all directives
-
-    // a uid
-    this._uid = uid++;
-
-    // a flag to avoid this being observed
-    this._isVue = true;
-
-    // events bookkeeping
-    this._events = {}; // registered callbacks
-    this._eventsCount = {}; // for $broadcast optimization
-
-    // fragment instance properties
-    this._isFragment = false;
-    this._fragment = // @type {DocumentFragment}
-    this._fragmentStart = // @type {Text|Comment}
-    this._fragmentEnd = null; // @type {Text|Comment}
-
-    // lifecycle state
-    this._isCompiled = this._isDestroyed = this._isReady = this._isAttached = this._isBeingDestroyed = this._vForRemoving = false;
-    this._unlinkFn = null;
-
-    // context:
-    // if this is a transcluded component, context
-    // will be the common parent vm of this instance
-    // and its host.
-    this._context = options._context || this.$parent;
-
-    // scope:
-    // if this is inside an inline v-for, the scope
-    // will be the intermediate scope created for this
-    // repeat fragment. this is used for linking props
-    // and container directives.
-    this._scope = options._scope;
-
-    // fragment:
-    // if this instance is compiled inside a Fragment, it
-    // needs to register itself as a child of that fragment
-    // for attach/detach to work properly.
-    this._frag = options._frag;
-    if (this._frag) {
-      this._frag.children.push(this);
-    }
-
-    // push self into parent / transclusion host
-    if (this.$parent) {
-      this.$parent.$children.push(this);
-    }
-
-    // merge options.
-    options = this.$options = mergeOptions(this.constructor.options, options, this);
-
-    // set ref
-    this._updateRef();
-
-    // initialize data as empty object.
-    // it will be filled up in _initData().
-    this._data = {};
-
-    // call init hook
-    this._callHook('init');
-
-    // initialize data observation and scope inheritance.
-    this._initState();
-
-    // setup event system and option events.
-    this._initEvents();
-
-    // call created hook
-    this._callHook('created');
-
-    // if `el` option is passed, start compilation.
-    if (options.el) {
-      this.$mount(options.el);
-    }
-  };
-}
-
-var pathCache = new Cache(1000);
-
-// actions
-var APPEND = 0;
-var PUSH = 1;
-var INC_SUB_PATH_DEPTH = 2;
-var PUSH_SUB_PATH = 3;
-
-// states
-var BEFORE_PATH = 0;
-var IN_PATH = 1;
-var BEFORE_IDENT = 2;
-var IN_IDENT = 3;
-var IN_SUB_PATH = 4;
-var IN_SINGLE_QUOTE = 5;
-var IN_DOUBLE_QUOTE = 6;
-var AFTER_PATH = 7;
-var ERROR = 8;
-
-var pathStateMachine = [];
-
-pathStateMachine[BEFORE_PATH] = {
-  'ws': [BEFORE_PATH],
-  'ident': [IN_IDENT, APPEND],
-  '[': [IN_SUB_PATH],
-  'eof': [AFTER_PATH]
-};
-
-pathStateMachine[IN_PATH] = {
-  'ws': [IN_PATH],
-  '.': [BEFORE_IDENT],
-  '[': [IN_SUB_PATH],
-  'eof': [AFTER_PATH]
-};
-
-pathStateMachine[BEFORE_IDENT] = {
-  'ws': [BEFORE_IDENT],
-  'ident': [IN_IDENT, APPEND]
-};
-
-pathStateMachine[IN_IDENT] = {
-  'ident': [IN_IDENT, APPEND],
-  '0': [IN_IDENT, APPEND],
-  'number': [IN_IDENT, APPEND],
-  'ws': [IN_PATH, PUSH],
-  '.': [BEFORE_IDENT, PUSH],
-  '[': [IN_SUB_PATH, PUSH],
-  'eof': [AFTER_PATH, PUSH]
-};
-
-pathStateMachine[IN_SUB_PATH] = {
-  "'": [IN_SINGLE_QUOTE, APPEND],
-  '"': [IN_DOUBLE_QUOTE, APPEND],
-  '[': [IN_SUB_PATH, INC_SUB_PATH_DEPTH],
-  ']': [IN_PATH, PUSH_SUB_PATH],
-  'eof': ERROR,
-  'else': [IN_SUB_PATH, APPEND]
-};
-
-pathStateMachine[IN_SINGLE_QUOTE] = {
-  "'": [IN_SUB_PATH, APPEND],
-  'eof': ERROR,
-  'else': [IN_SINGLE_QUOTE, APPEND]
-};
-
-pathStateMachine[IN_DOUBLE_QUOTE] = {
-  '"': [IN_SUB_PATH, APPEND],
-  'eof': ERROR,
-  'else': [IN_DOUBLE_QUOTE, APPEND]
-};
-
 /**
- * Determine the type of a character in a keypath.
- *
- * @param {Char} ch
- * @return {String} type
+ * Set a property on an object. Adds the new property and
+ * triggers change notification if the property doesn't
+ * already exist.
  */
-
-function getPathCharType(ch) {
-  if (ch === undefined) {
-    return 'eof';
+function set (target, key, val) {
+  if (Array.isArray(target)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val
   }
-
-  var code = ch.charCodeAt(0);
-
-  switch (code) {
-    case 0x5B: // [
-    case 0x5D: // ]
-    case 0x2E: // .
-    case 0x22: // "
-    case 0x27: // '
-    case 0x30:
-      // 0
-      return ch;
-
-    case 0x5F: // _
-    case 0x24:
-      // $
-      return 'ident';
-
-    case 0x20: // Space
-    case 0x09: // Tab
-    case 0x0A: // Newline
-    case 0x0D: // Return
-    case 0xA0: // No-break space
-    case 0xFEFF: // Byte Order Mark
-    case 0x2028: // Line Separator
-    case 0x2029:
-      // Paragraph Separator
-      return 'ws';
+  if (hasOwn(target, key)) {
+    target[key] = val;
+    return val
   }
-
-  // a-z, A-Z
-  if (code >= 0x61 && code <= 0x7A || code >= 0x41 && code <= 0x5A) {
-    return 'ident';
+  var ob = target.__ob__;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' && warn(
+      'Avoid adding reactive properties to a Vue instance or its root $data ' +
+      'at runtime - declare it upfront in the data option.'
+    );
+    return val
   }
-
-  // 1-9
-  if (code >= 0x31 && code <= 0x39) {
-    return 'number';
+  if (!ob) {
+    target[key] = val;
+    return val
   }
-
-  return 'else';
+  defineReactive$$1(ob.value, key, val);
+  ob.dep.notify();
+  return val
 }
 
 /**
- * Format a subPath, return its plain form if it is
- * a literal string or number. Otherwise prepend the
- * dynamic indicator (*).
- *
- * @param {String} path
- * @return {String}
+ * Delete a property and trigger change if necessary.
  */
-
-function formatSubPath(path) {
-  var trimmed = path.trim();
-  // invalid leading 0
-  if (path.charAt(0) === '0' && isNaN(path)) {
-    return false;
+function del (target, key) {
+  if (Array.isArray(target)) {
+    target.splice(key, 1);
+    return
   }
-  return isLiteral(trimmed) ? stripQuotes(trimmed) : '*' + trimmed;
+  var ob = target.__ob__;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' && warn(
+      'Avoid deleting properties on a Vue instance or its root $data ' +
+      '- just set it to null.'
+    );
+    return
+  }
+  if (!hasOwn(target, key)) {
+    return
+  }
+  delete target[key];
+  if (!ob) {
+    return
+  }
+  ob.dep.notify();
 }
 
 /**
- * Parse a string path into an array of segments
- *
- * @param {String} path
- * @return {Array|undefined}
+ * Collect dependencies on array elements when the array is touched, since
+ * we cannot intercept array element access like property getters.
  */
-
-function parse(path) {
-  var keys = [];
-  var index = -1;
-  var mode = BEFORE_PATH;
-  var subPathDepth = 0;
-  var c, newChar, key, type, transition, action, typeMap;
-
-  var actions = [];
-
-  actions[PUSH] = function () {
-    if (key !== undefined) {
-      keys.push(key);
-      key = undefined;
-    }
-  };
-
-  actions[APPEND] = function () {
-    if (key === undefined) {
-      key = newChar;
-    } else {
-      key += newChar;
-    }
-  };
-
-  actions[INC_SUB_PATH_DEPTH] = function () {
-    actions[APPEND]();
-    subPathDepth++;
-  };
-
-  actions[PUSH_SUB_PATH] = function () {
-    if (subPathDepth > 0) {
-      subPathDepth--;
-      mode = IN_SUB_PATH;
-      actions[APPEND]();
-    } else {
-      subPathDepth = 0;
-      key = formatSubPath(key);
-      if (key === false) {
-        return false;
-      } else {
-        actions[PUSH]();
-      }
-    }
-  };
-
-  function maybeUnescapeQuote() {
-    var nextChar = path[index + 1];
-    if (mode === IN_SINGLE_QUOTE && nextChar === "'" || mode === IN_DOUBLE_QUOTE && nextChar === '"') {
-      index++;
-      newChar = '\\' + nextChar;
-      actions[APPEND]();
-      return true;
-    }
-  }
-
-  while (mode != null) {
-    index++;
-    c = path[index];
-
-    if (c === '\\' && maybeUnescapeQuote()) {
-      continue;
-    }
-
-    type = getPathCharType(c);
-    typeMap = pathStateMachine[mode];
-    transition = typeMap[type] || typeMap['else'] || ERROR;
-
-    if (transition === ERROR) {
-      return; // parse error
-    }
-
-    mode = transition[0];
-    action = actions[transition[1]];
-    if (action) {
-      newChar = transition[2];
-      newChar = newChar === undefined ? c : newChar;
-      if (action() === false) {
-        return;
-      }
-    }
-
-    if (mode === AFTER_PATH) {
-      keys.raw = path;
-      return keys;
+function dependArray (value) {
+  for (var e = (void 0), i = 0, l = value.length; i < l; i++) {
+    e = value[i];
+    e && e.__ob__ && e.__ob__.dep.depend();
+    if (Array.isArray(e)) {
+      dependArray(e);
     }
   }
 }
 
-/**
- * External parse that check for a cache hit first
- *
- * @param {String} path
- * @return {Array|undefined}
- */
-
-function parsePath(path) {
-  var hit = pathCache.get(path);
-  if (!hit) {
-    hit = parse(path);
-    if (hit) {
-      pathCache.put(path, hit);
-    }
-  }
-  return hit;
-}
+/*  */
 
 /**
- * Get from an object from a path string
- *
- * @param {Object} obj
- * @param {String} path
+ * Option overwriting strategies are functions that handle
+ * how to merge a parent option value and a child option
+ * value into the final value.
  */
-
-function getPath(obj, path) {
-  return parseExpression$1(path).get(obj);
-}
+var strats = config.optionMergeStrategies;
 
 /**
- * Warn against setting non-existent root path on a vm.
+ * Options with restrictions
  */
-
-var warnNonExistent;
 if (process.env.NODE_ENV !== 'production') {
-  warnNonExistent = function (path, vm) {
-    warn('You are setting a non-existent path "' + path.raw + '" ' + 'on a vm instance. Consider pre-initializing the property ' + 'with the "data" option for more reliable reactivity ' + 'and better performance.', vm);
+  strats.el = strats.propsData = function (parent, child, vm, key) {
+    if (!vm) {
+      warn(
+        "option \"" + key + "\" can only be used during instance " +
+        'creation with the `new` keyword.'
+      );
+    }
+    return defaultStrat(parent, child)
   };
 }
 
 /**
- * Set on an object from a path
- *
- * @param {Object} obj
- * @param {String | Array} path
- * @param {*} val
+ * Helper that recursively merges two data objects together.
  */
-
-function setPath(obj, path, val) {
-  var original = obj;
-  if (typeof path === 'string') {
-    path = parse(path);
-  }
-  if (!path || !isObject(obj)) {
-    return false;
-  }
-  var last, key;
-  for (var i = 0, l = path.length; i < l; i++) {
-    last = obj;
-    key = path[i];
-    if (key.charAt(0) === '*') {
-      key = parseExpression$1(key.slice(1)).get.call(original, original);
-    }
-    if (i < l - 1) {
-      obj = obj[key];
-      if (!isObject(obj)) {
-        obj = {};
-        if (process.env.NODE_ENV !== 'production' && last._isVue) {
-          warnNonExistent(path, last);
-        }
-        set(last, key, obj);
-      }
-    } else {
-      if (isArray(obj)) {
-        obj.$set(key, val);
-      } else if (key in obj) {
-        obj[key] = val;
-      } else {
-        if (process.env.NODE_ENV !== 'production' && obj._isVue) {
-          warnNonExistent(path, obj);
-        }
-        set(obj, key, val);
-      }
+function mergeData (to, from) {
+  if (!from) { return to }
+  var key, toVal, fromVal;
+  var keys = Object.keys(from);
+  for (var i = 0; i < keys.length; i++) {
+    key = keys[i];
+    toVal = to[key];
+    fromVal = from[key];
+    if (!hasOwn(to, key)) {
+      set(to, key, fromVal);
+    } else if (isPlainObject(toVal) && isPlainObject(fromVal)) {
+      mergeData(toVal, fromVal);
     }
   }
-  return true;
+  return to
 }
 
-var path = Object.freeze({
-  parsePath: parsePath,
-  getPath: getPath,
-  setPath: setPath
+/**
+ * Data
+ */
+strats.data = function (
+  parentVal,
+  childVal,
+  vm
+) {
+  if (!vm) {
+    // in a Vue.extend merge, both should be functions
+    if (!childVal) {
+      return parentVal
+    }
+    if (typeof childVal !== 'function') {
+      process.env.NODE_ENV !== 'production' && warn(
+        'The "data" option should be a function ' +
+        'that returns a per-instance value in component ' +
+        'definitions.',
+        vm
+      );
+      return parentVal
+    }
+    if (!parentVal) {
+      return childVal
+    }
+    // when parentVal & childVal are both present,
+    // we need to return a function that returns the
+    // merged result of both functions... no need to
+    // check if parentVal is a function here because
+    // it has to be a function to pass previous merges.
+    return function mergedDataFn () {
+      return mergeData(
+        childVal.call(this),
+        parentVal.call(this)
+      )
+    }
+  } else if (parentVal || childVal) {
+    return function mergedInstanceDataFn () {
+      // instance merge
+      var instanceData = typeof childVal === 'function'
+        ? childVal.call(vm)
+        : childVal;
+      var defaultData = typeof parentVal === 'function'
+        ? parentVal.call(vm)
+        : undefined;
+      if (instanceData) {
+        return mergeData(instanceData, defaultData)
+      } else {
+        return defaultData
+      }
+    }
+  }
+};
+
+/**
+ * Hooks and props are merged as arrays.
+ */
+function mergeHook (
+  parentVal,
+  childVal
+) {
+  return childVal
+    ? parentVal
+      ? parentVal.concat(childVal)
+      : Array.isArray(childVal)
+        ? childVal
+        : [childVal]
+    : parentVal
+}
+
+config._lifecycleHooks.forEach(function (hook) {
+  strats[hook] = mergeHook;
 });
 
-var expressionCache = new Cache(1000);
+/**
+ * Assets
+ *
+ * When a vm is present (instance creation), we need to do
+ * a three-way merge between constructor options, instance
+ * options and parent options.
+ */
+function mergeAssets (parentVal, childVal) {
+  var res = Object.create(parentVal || null);
+  return childVal
+    ? extend(res, childVal)
+    : res
+}
 
-var allowedKeywords = 'Math,Date,this,true,false,null,undefined,Infinity,NaN,' + 'isNaN,isFinite,decodeURI,decodeURIComponent,encodeURI,' + 'encodeURIComponent,parseInt,parseFloat';
-var allowedKeywordsRE = new RegExp('^(' + allowedKeywords.replace(/,/g, '\\b|') + '\\b)');
-
-// keywords that don't make sense inside expressions
-var improperKeywords = 'break,case,class,catch,const,continue,debugger,default,' + 'delete,do,else,export,extends,finally,for,function,if,' + 'import,in,instanceof,let,return,super,switch,throw,try,' + 'var,while,with,yield,enum,await,implements,package,' + 'protected,static,interface,private,public';
-var improperKeywordsRE = new RegExp('^(' + improperKeywords.replace(/,/g, '\\b|') + '\\b)');
-
-var wsRE = /\s/g;
-var newlineRE = /\n/g;
-var saveRE = /[\{,]\s*[\w\$_]+\s*:|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\"']|\\.)*`|`(?:[^`\\]|\\.)*`)|new |typeof |void /g;
-var restoreRE = /"(\d+)"/g;
-var pathTestRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?'\]|\[".*?"\]|\[\d+\]|\[[A-Za-z_$][\w$]*\])*$/;
-var identRE = /[^\w$\.](?:[A-Za-z_$][\w$]*)/g;
-var literalValueRE$1 = /^(?:true|false|null|undefined|Infinity|NaN)$/;
-
-function noop() {}
+config._assetTypes.forEach(function (type) {
+  strats[type + 's'] = mergeAssets;
+});
 
 /**
- * Save / Rewrite / Restore
+ * Watchers.
  *
- * When rewriting paths found in an expression, it is
- * possible for the same letter sequences to be found in
- * strings and Object literal property keys. Therefore we
- * remove and store these parts in a temporary array, and
- * restore them after the path rewrite.
+ * Watchers hashes should not overwrite one
+ * another, so we merge them as arrays.
  */
-
-var saved = [];
+strats.watch = function (parentVal, childVal) {
+  /* istanbul ignore if */
+  if (!childVal) { return Object.create(parentVal || null) }
+  if (!parentVal) { return childVal }
+  var ret = {};
+  extend(ret, parentVal);
+  for (var key in childVal) {
+    var parent = ret[key];
+    var child = childVal[key];
+    if (parent && !Array.isArray(parent)) {
+      parent = [parent];
+    }
+    ret[key] = parent
+      ? parent.concat(child)
+      : [child];
+  }
+  return ret
+};
 
 /**
- * Save replacer
- *
- * The save regex can match two possible cases:
- * 1. An opening object literal
- * 2. A string
- * If matched as a plain string, we need to escape its
- * newlines, since the string needs to be preserved when
- * generating the function body.
- *
- * @param {String} str
- * @param {String} isString - str if matched as a string
- * @return {String} - placeholder with index
+ * Other object hashes.
  */
+strats.props =
+strats.methods =
+strats.computed = function (parentVal, childVal) {
+  if (!childVal) { return Object.create(parentVal || null) }
+  if (!parentVal) { return childVal }
+  var ret = Object.create(null);
+  extend(ret, parentVal);
+  extend(ret, childVal);
+  return ret
+};
 
-function save(str, isString) {
-  var i = saved.length;
-  saved[i] = isString ? str.replace(newlineRE, '\\n') : str;
-  return '"' + i + '"';
+/**
+ * Default strategy.
+ */
+var defaultStrat = function (parentVal, childVal) {
+  return childVal === undefined
+    ? parentVal
+    : childVal
+};
+
+/**
+ * Validate component names
+ */
+function checkComponents (options) {
+  for (var key in options.components) {
+    var lower = key.toLowerCase();
+    if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
+      warn(
+        'Do not use built-in or reserved HTML elements as component ' +
+        'id: ' + key
+      );
+    }
+  }
 }
 
 /**
- * Path rewrite replacer
- *
- * @param {String} raw
- * @return {String}
+ * Ensure all props option syntax are normalized into the
+ * Object-based format.
  */
+function normalizeProps (options) {
+  var props = options.props;
+  if (!props) { return }
+  var res = {};
+  var i, val, name;
+  if (Array.isArray(props)) {
+    i = props.length;
+    while (i--) {
+      val = props[i];
+      if (typeof val === 'string') {
+        name = camelize(val);
+        res[name] = { type: null };
+      } else if (process.env.NODE_ENV !== 'production') {
+        warn('props must be strings when using array syntax.');
+      }
+    }
+  } else if (isPlainObject(props)) {
+    for (var key in props) {
+      val = props[key];
+      name = camelize(key);
+      res[name] = isPlainObject(val)
+        ? val
+        : { type: val };
+    }
+  }
+  options.props = res;
+}
 
-function rewrite(raw) {
-  var c = raw.charAt(0);
-  var path = raw.slice(1);
-  if (allowedKeywordsRE.test(path)) {
-    return raw;
+/**
+ * Normalize raw function directives into object format.
+ */
+function normalizeDirectives (options) {
+  var dirs = options.directives;
+  if (dirs) {
+    for (var key in dirs) {
+      var def = dirs[key];
+      if (typeof def === 'function') {
+        dirs[key] = { bind: def, update: def };
+      }
+    }
+  }
+}
+
+/**
+ * Merge two option objects into a new one.
+ * Core utility used in both instantiation and inheritance.
+ */
+function mergeOptions (
+  parent,
+  child,
+  vm
+) {
+  if (process.env.NODE_ENV !== 'production') {
+    checkComponents(child);
+  }
+  normalizeProps(child);
+  normalizeDirectives(child);
+  var extendsFrom = child.extends;
+  if (extendsFrom) {
+    parent = typeof extendsFrom === 'function'
+      ? mergeOptions(parent, extendsFrom.options, vm)
+      : mergeOptions(parent, extendsFrom, vm);
+  }
+  if (child.mixins) {
+    for (var i = 0, l = child.mixins.length; i < l; i++) {
+      var mixin = child.mixins[i];
+      if (mixin.prototype instanceof Vue$2) {
+        mixin = mixin.options;
+      }
+      parent = mergeOptions(parent, mixin, vm);
+    }
+  }
+  var options = {};
+  var key;
+  for (key in parent) {
+    mergeField(key);
+  }
+  for (key in child) {
+    if (!hasOwn(parent, key)) {
+      mergeField(key);
+    }
+  }
+  function mergeField (key) {
+    var strat = strats[key] || defaultStrat;
+    options[key] = strat(parent[key], child[key], vm, key);
+  }
+  return options
+}
+
+/**
+ * Resolve an asset.
+ * This function is used because child instances need access
+ * to assets defined in its ancestor chain.
+ */
+function resolveAsset (
+  options,
+  type,
+  id,
+  warnMissing
+) {
+  /* istanbul ignore if */
+  if (typeof id !== 'string') {
+    return
+  }
+  var assets = options[type];
+  // check local registration variations first
+  if (hasOwn(assets, id)) { return assets[id] }
+  var camelizedId = camelize(id);
+  if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
+  var PascalCaseId = capitalize(camelizedId);
+  if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
+  // fallback to prototype chain
+  var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
+  if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
+    warn(
+      'Failed to resolve ' + type.slice(0, -1) + ': ' + id,
+      options
+    );
+  }
+  return res
+}
+
+/*  */
+
+function validateProp (
+  key,
+  propOptions,
+  propsData,
+  vm
+) {
+  var prop = propOptions[key];
+  var absent = !hasOwn(propsData, key);
+  var value = propsData[key];
+  // handle boolean props
+  if (isType(Boolean, prop.type)) {
+    if (absent && !hasOwn(prop, 'default')) {
+      value = false;
+    } else if (!isType(String, prop.type) && (value === '' || value === hyphenate(key))) {
+      value = true;
+    }
+  }
+  // check default value
+  if (value === undefined) {
+    value = getPropDefaultValue(vm, prop, key);
+    // since the default value is a fresh copy,
+    // make sure to observe it.
+    var prevShouldConvert = observerState.shouldConvert;
+    observerState.shouldConvert = true;
+    observe(value);
+    observerState.shouldConvert = prevShouldConvert;
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    assertProp(prop, key, value, vm, absent);
+  }
+  return value
+}
+
+/**
+ * Get the default value of a prop.
+ */
+function getPropDefaultValue (vm, prop, key) {
+  // no default, return undefined
+  if (!hasOwn(prop, 'default')) {
+    return undefined
+  }
+  var def = prop.default;
+  // warn against non-factory defaults for Object & Array
+  if (process.env.NODE_ENV !== 'production' && isObject(def)) {
+    warn(
+      'Invalid default value for prop "' + key + '": ' +
+      'Props with type Object/Array must use a factory function ' +
+      'to return the default value.',
+      vm
+    );
+  }
+  // the raw prop value was also undefined from previous render,
+  // return previous default value to avoid unnecessary watcher trigger
+  if (vm && vm.$options.propsData &&
+    vm.$options.propsData[key] === undefined &&
+    vm._props[key] !== undefined) {
+    return vm._props[key]
+  }
+  // call factory function for non-Function types
+  // a value is Function if its prototype is function even across different execution context
+  return typeof def === 'function' && getType(prop.type) !== 'Function'
+    ? def.call(vm)
+    : def
+}
+
+/**
+ * Assert whether a prop is valid.
+ */
+function assertProp (
+  prop,
+  name,
+  value,
+  vm,
+  absent
+) {
+  if (prop.required && absent) {
+    warn(
+      'Missing required prop: "' + name + '"',
+      vm
+    );
+    return
+  }
+  if (value == null && !prop.required) {
+    return
+  }
+  var type = prop.type;
+  var valid = !type || type === true;
+  var expectedTypes = [];
+  if (type) {
+    if (!Array.isArray(type)) {
+      type = [type];
+    }
+    for (var i = 0; i < type.length && !valid; i++) {
+      var assertedType = assertType(value, type[i]);
+      expectedTypes.push(assertedType.expectedType || '');
+      valid = assertedType.valid;
+    }
+  }
+  if (!valid) {
+    warn(
+      'Invalid prop: type check failed for prop "' + name + '".' +
+      ' Expected ' + expectedTypes.map(capitalize).join(', ') +
+      ', got ' + Object.prototype.toString.call(value).slice(8, -1) + '.',
+      vm
+    );
+    return
+  }
+  var validator = prop.validator;
+  if (validator) {
+    if (!validator(value)) {
+      warn(
+        'Invalid prop: custom validator check failed for prop "' + name + '".',
+        vm
+      );
+    }
+  }
+}
+
+/**
+ * Assert the type of a value
+ */
+function assertType (value, type) {
+  var valid;
+  var expectedType = getType(type);
+  if (expectedType === 'String') {
+    valid = typeof value === (expectedType = 'string');
+  } else if (expectedType === 'Number') {
+    valid = typeof value === (expectedType = 'number');
+  } else if (expectedType === 'Boolean') {
+    valid = typeof value === (expectedType = 'boolean');
+  } else if (expectedType === 'Function') {
+    valid = typeof value === (expectedType = 'function');
+  } else if (expectedType === 'Object') {
+    valid = isPlainObject(value);
+  } else if (expectedType === 'Array') {
+    valid = Array.isArray(value);
   } else {
-    path = path.indexOf('"') > -1 ? path.replace(restoreRE, restore) : path;
-    return c + 'scope.' + path;
+    valid = value instanceof type;
+  }
+  return {
+    valid: valid,
+    expectedType: expectedType
   }
 }
 
 /**
- * Restore replacer
- *
- * @param {String} str
- * @param {String} i - matched save index
- * @return {String}
+ * Use function string name to check built-in types,
+ * because a simple equality check will fail when running
+ * across different vms / iframes.
  */
-
-function restore(str, i) {
-  return saved[i];
+function getType (fn) {
+  var match = fn && fn.toString().match(/^\s*function (\w+)/);
+  return match && match[1]
 }
 
-/**
- * Rewrite an expression, prefixing all path accessors with
- * `scope.` and generate getter/setter functions.
- *
- * @param {String} exp
- * @return {Function}
- */
-
-function compileGetter(exp) {
-  if (improperKeywordsRE.test(exp)) {
-    process.env.NODE_ENV !== 'production' && warn('Avoid using reserved keywords in expression: ' + exp);
+function isType (type, fn) {
+  if (!Array.isArray(fn)) {
+    return getType(fn) === getType(type)
   }
-  // reset state
-  saved.length = 0;
-  // save strings and object literal keys
-  var body = exp.replace(saveRE, save).replace(wsRE, '');
-  // rewrite all paths
-  // pad 1 space here because the regex matches 1 extra char
-  body = (' ' + body).replace(identRE, rewrite).replace(restoreRE, restore);
-  return makeGetterFn(body);
+  for (var i = 0, len = fn.length; i < len; i++) {
+    if (getType(fn[i]) === getType(type)) {
+      return true
+    }
+  }
+  /* istanbul ignore next */
+  return false
 }
 
-/**
- * Build a getter function. Requires eval.
- *
- * We isolate the try/catch so it doesn't affect the
- * optimization of the parse function when it is not called.
- *
- * @param {String} body
- * @return {Function|undefined}
- */
+function handleError (err, vm, info) {
+  if (config.errorHandler) {
+    config.errorHandler.call(null, err, vm, info);
+  } else {
+    if (process.env.NODE_ENV !== 'production') {
+      warn(("Error in " + info + ":"), vm);
+    }
+    /* istanbul ignore else */
+    if (inBrowser && typeof console !== 'undefined') {
+      console.error(err);
+    } else {
+      throw err
+    }
+  }
+}
 
-function makeGetterFn(body) {
-  try {
-    /* eslint-disable no-new-func */
-    return new Function('scope', 'return ' + body + ';');
-    /* eslint-enable no-new-func */
-  } catch (e) {
+/* not type checking this file because flow doesn't play well with Proxy */
+
+var initProxy;
+
+if (process.env.NODE_ENV !== 'production') {
+  var allowedGlobals = makeMap(
+    'Infinity,undefined,NaN,isFinite,isNaN,' +
+    'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
+    'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' +
+    'require' // for Webpack/Browserify
+  );
+
+  var warnNonPresent = function (target, key) {
+    warn(
+      "Property or method \"" + key + "\" is not defined on the instance but " +
+      "referenced during render. Make sure to declare reactive data " +
+      "properties in the data option.",
+      target
+    );
+  };
+
+  var hasProxy =
+    typeof Proxy !== 'undefined' &&
+    Proxy.toString().match(/native code/);
+
+  if (hasProxy) {
+    var isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta');
+    config.keyCodes = new Proxy(config.keyCodes, {
+      set: function set (target, key, value) {
+        if (isBuiltInModifier(key)) {
+          warn(("Avoid overwriting built-in modifier in config.keyCodes: ." + key));
+          return false
+        } else {
+          target[key] = value;
+          return true
+        }
+      }
+    });
+  }
+
+  var hasHandler = {
+    has: function has (target, key) {
+      var has = key in target;
+      var isAllowed = allowedGlobals(key) || key.charAt(0) === '_';
+      if (!has && !isAllowed) {
+        warnNonPresent(target, key);
+      }
+      return has || !isAllowed
+    }
+  };
+
+  var getHandler = {
+    get: function get (target, key) {
+      if (typeof key === 'string' && !(key in target)) {
+        warnNonPresent(target, key);
+      }
+      return target[key]
+    }
+  };
+
+  initProxy = function initProxy (vm) {
+    if (hasProxy) {
+      // determine which proxy handler to use
+      var options = vm.$options;
+      var handlers = options.render && options.render._withStripped
+        ? getHandler
+        : hasHandler;
+      vm._renderProxy = new Proxy(vm, handlers);
+    } else {
+      vm._renderProxy = vm;
+    }
+  };
+}
+
+var mark;
+var measure;
+
+if (process.env.NODE_ENV !== 'production') {
+  var perf = inBrowser && window.performance;
+  /* istanbul ignore if */
+  if (
+    perf &&
+    perf.mark &&
+    perf.measure &&
+    perf.clearMarks &&
+    perf.clearMeasures
+  ) {
+    mark = function (tag) { return perf.mark(tag); };
+    measure = function (name, startTag, endTag) {
+      perf.measure(name, startTag, endTag);
+      perf.clearMarks(startTag);
+      perf.clearMarks(endTag);
+      perf.clearMeasures(name);
+    };
+  }
+}
+
+/*  */
+
+var VNode = function VNode (
+  tag,
+  data,
+  children,
+  text,
+  elm,
+  context,
+  componentOptions
+) {
+  this.tag = tag;
+  this.data = data;
+  this.children = children;
+  this.text = text;
+  this.elm = elm;
+  this.ns = undefined;
+  this.context = context;
+  this.functionalContext = undefined;
+  this.key = data && data.key;
+  this.componentOptions = componentOptions;
+  this.componentInstance = undefined;
+  this.parent = undefined;
+  this.raw = false;
+  this.isStatic = false;
+  this.isRootInsert = true;
+  this.isComment = false;
+  this.isCloned = false;
+  this.isOnce = false;
+};
+
+var prototypeAccessors = { child: {} };
+
+// DEPRECATED: alias for componentInstance for backwards compat.
+/* istanbul ignore next */
+prototypeAccessors.child.get = function () {
+  return this.componentInstance
+};
+
+Object.defineProperties( VNode.prototype, prototypeAccessors );
+
+var createEmptyVNode = function () {
+  var node = new VNode();
+  node.text = '';
+  node.isComment = true;
+  return node
+};
+
+function createTextVNode (val) {
+  return new VNode(undefined, undefined, undefined, String(val))
+}
+
+// optimized shallow clone
+// used for static nodes and slot nodes because they may be reused across
+// multiple renders, cloning them avoids errors when DOM manipulations rely
+// on their elm reference.
+function cloneVNode (vnode) {
+  var cloned = new VNode(
+    vnode.tag,
+    vnode.data,
+    vnode.children,
+    vnode.text,
+    vnode.elm,
+    vnode.context,
+    vnode.componentOptions
+  );
+  cloned.ns = vnode.ns;
+  cloned.isStatic = vnode.isStatic;
+  cloned.key = vnode.key;
+  cloned.isCloned = true;
+  return cloned
+}
+
+function cloneVNodes (vnodes) {
+  var len = vnodes.length;
+  var res = new Array(len);
+  for (var i = 0; i < len; i++) {
+    res[i] = cloneVNode(vnodes[i]);
+  }
+  return res
+}
+
+/*  */
+
+var normalizeEvent = cached(function (name) {
+  var once$$1 = name.charAt(0) === '~'; // Prefixed last, checked first
+  name = once$$1 ? name.slice(1) : name;
+  var capture = name.charAt(0) === '!';
+  name = capture ? name.slice(1) : name;
+  return {
+    name: name,
+    once: once$$1,
+    capture: capture
+  }
+});
+
+function createFnInvoker (fns) {
+  function invoker () {
+    var arguments$1 = arguments;
+
+    var fns = invoker.fns;
+    if (Array.isArray(fns)) {
+      for (var i = 0; i < fns.length; i++) {
+        fns[i].apply(null, arguments$1);
+      }
+    } else {
+      // return handler return value for single handlers
+      return fns.apply(null, arguments)
+    }
+  }
+  invoker.fns = fns;
+  return invoker
+}
+
+function updateListeners (
+  on,
+  oldOn,
+  add,
+  remove$$1,
+  vm
+) {
+  var name, cur, old, event;
+  for (name in on) {
+    cur = on[name];
+    old = oldOn[name];
+    event = normalizeEvent(name);
+    if (!cur) {
+      process.env.NODE_ENV !== 'production' && warn(
+        "Invalid handler for event \"" + (event.name) + "\": got " + String(cur),
+        vm
+      );
+    } else if (!old) {
+      if (!cur.fns) {
+        cur = on[name] = createFnInvoker(cur);
+      }
+      add(event.name, cur, event.once, event.capture);
+    } else if (cur !== old) {
+      old.fns = cur;
+      on[name] = old;
+    }
+  }
+  for (name in oldOn) {
+    if (!on[name]) {
+      event = normalizeEvent(name);
+      remove$$1(event.name, oldOn[name], event.capture);
+    }
+  }
+}
+
+/*  */
+
+function mergeVNodeHook (def, hookKey, hook) {
+  var invoker;
+  var oldHook = def[hookKey];
+
+  function wrappedHook () {
+    hook.apply(this, arguments);
+    // important: remove merged hook to ensure it's called only once
+    // and prevent memory leak
+    remove(invoker.fns, wrappedHook);
+  }
+
+  if (!oldHook) {
+    // no existing hook
+    invoker = createFnInvoker([wrappedHook]);
+  } else {
+    /* istanbul ignore if */
+    if (oldHook.fns && oldHook.merged) {
+      // already a merged invoker
+      invoker = oldHook;
+      invoker.fns.push(wrappedHook);
+    } else {
+      // existing plain hook
+      invoker = createFnInvoker([oldHook, wrappedHook]);
+    }
+  }
+
+  invoker.merged = true;
+  def[hookKey] = invoker;
+}
+
+/*  */
+
+// The template compiler attempts to minimize the need for normalization by
+// statically analyzing the template at compile time.
+//
+// For plain HTML markup, normalization can be completely skipped because the
+// generated render function is guaranteed to return Array<VNode>. There are
+// two cases where extra normalization is needed:
+
+// 1. When the children contains components - because a functional component
+// may return an Array instead of a single root. In this case, just a simple
+// normalization is needed - if any child is an Array, we flatten the whole
+// thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
+// because functional components already normalize their own children.
+function simpleNormalizeChildren (children) {
+  for (var i = 0; i < children.length; i++) {
+    if (Array.isArray(children[i])) {
+      return Array.prototype.concat.apply([], children)
+    }
+  }
+  return children
+}
+
+// 2. When the children contains constructs that always generated nested Arrays,
+// e.g. <template>, <slot>, v-for, or when the children is provided by user
+// with hand-written render functions / JSX. In such cases a full normalization
+// is needed to cater to all possible types of children values.
+function normalizeChildren (children) {
+  return isPrimitive(children)
+    ? [createTextVNode(children)]
+    : Array.isArray(children)
+      ? normalizeArrayChildren(children)
+      : undefined
+}
+
+function normalizeArrayChildren (children, nestedIndex) {
+  var res = [];
+  var i, c, last;
+  for (i = 0; i < children.length; i++) {
+    c = children[i];
+    if (c == null || typeof c === 'boolean') { continue }
+    last = res[res.length - 1];
+    //  nested
+    if (Array.isArray(c)) {
+      res.push.apply(res, normalizeArrayChildren(c, ((nestedIndex || '') + "_" + i)));
+    } else if (isPrimitive(c)) {
+      if (last && last.text) {
+        last.text += String(c);
+      } else if (c !== '') {
+        // convert primitive to vnode
+        res.push(createTextVNode(c));
+      }
+    } else {
+      if (c.text && last && last.text) {
+        res[res.length - 1] = createTextVNode(last.text + c.text);
+      } else {
+        // default key for nested array children (likely generated by v-for)
+        if (c.tag && c.key == null && nestedIndex != null) {
+          c.key = "__vlist" + nestedIndex + "_" + i + "__";
+        }
+        res.push(c);
+      }
+    }
+  }
+  return res
+}
+
+/*  */
+
+function getFirstComponentChild (children) {
+  return children && children.filter(function (c) { return c && c.componentOptions; })[0]
+}
+
+/*  */
+
+function initEvents (vm) {
+  vm._events = Object.create(null);
+  vm._hasHookEvent = false;
+  // init parent attached events
+  var listeners = vm.$options._parentListeners;
+  if (listeners) {
+    updateComponentListeners(vm, listeners);
+  }
+}
+
+var target;
+
+function add (event, fn, once$$1) {
+  if (once$$1) {
+    target.$once(event, fn);
+  } else {
+    target.$on(event, fn);
+  }
+}
+
+function remove$1 (event, fn) {
+  target.$off(event, fn);
+}
+
+function updateComponentListeners (
+  vm,
+  listeners,
+  oldListeners
+) {
+  target = vm;
+  updateListeners(listeners, oldListeners || {}, add, remove$1, vm);
+}
+
+function eventsMixin (Vue) {
+  var hookRE = /^hook:/;
+  Vue.prototype.$on = function (event, fn) {
+    var this$1 = this;
+
+    var vm = this;
+    if (Array.isArray(event)) {
+      for (var i = 0, l = event.length; i < l; i++) {
+        this$1.$on(event[i], fn);
+      }
+    } else {
+      (vm._events[event] || (vm._events[event] = [])).push(fn);
+      // optimize hook:event cost by using a boolean flag marked at registration
+      // instead of a hash lookup
+      if (hookRE.test(event)) {
+        vm._hasHookEvent = true;
+      }
+    }
+    return vm
+  };
+
+  Vue.prototype.$once = function (event, fn) {
+    var vm = this;
+    function on () {
+      vm.$off(event, on);
+      fn.apply(vm, arguments);
+    }
+    on.fn = fn;
+    vm.$on(event, on);
+    return vm
+  };
+
+  Vue.prototype.$off = function (event, fn) {
+    var this$1 = this;
+
+    var vm = this;
+    // all
+    if (!arguments.length) {
+      vm._events = Object.create(null);
+      return vm
+    }
+    // array of events
+    if (Array.isArray(event)) {
+      for (var i$1 = 0, l = event.length; i$1 < l; i$1++) {
+        this$1.$off(event[i$1], fn);
+      }
+      return vm
+    }
+    // specific event
+    var cbs = vm._events[event];
+    if (!cbs) {
+      return vm
+    }
+    if (arguments.length === 1) {
+      vm._events[event] = null;
+      return vm
+    }
+    // specific handler
+    var cb;
+    var i = cbs.length;
+    while (i--) {
+      cb = cbs[i];
+      if (cb === fn || cb.fn === fn) {
+        cbs.splice(i, 1);
+        break
+      }
+    }
+    return vm
+  };
+
+  Vue.prototype.$emit = function (event) {
+    var vm = this;
+    var cbs = vm._events[event];
+    if (cbs) {
+      cbs = cbs.length > 1 ? toArray(cbs) : cbs;
+      var args = toArray(arguments, 1);
+      for (var i = 0, l = cbs.length; i < l; i++) {
+        cbs[i].apply(vm, args);
+      }
+    }
+    return vm
+  };
+}
+
+/*  */
+
+/**
+ * Runtime helper for resolving raw children VNodes into a slot object.
+ */
+function resolveSlots (
+  children,
+  context
+) {
+  var slots = {};
+  if (!children) {
+    return slots
+  }
+  var defaultSlot = [];
+  var name, child;
+  for (var i = 0, l = children.length; i < l; i++) {
+    child = children[i];
+    // named slots should only be respected if the vnode was rendered in the
+    // same context.
+    if ((child.context === context || child.functionalContext === context) &&
+        child.data && (name = child.data.slot)) {
+      var slot = (slots[name] || (slots[name] = []));
+      if (child.tag === 'template') {
+        slot.push.apply(slot, child.children);
+      } else {
+        slot.push(child);
+      }
+    } else {
+      defaultSlot.push(child);
+    }
+  }
+  // ignore whitespace
+  if (!defaultSlot.every(isWhitespace)) {
+    slots.default = defaultSlot;
+  }
+  return slots
+}
+
+function isWhitespace (node) {
+  return node.isComment || node.text === ' '
+}
+
+function resolveScopedSlots (
+  fns
+) {
+  var res = {};
+  for (var i = 0; i < fns.length; i++) {
+    res[fns[i][0]] = fns[i][1];
+  }
+  return res
+}
+
+/*  */
+
+var activeInstance = null;
+
+function initLifecycle (vm) {
+  var options = vm.$options;
+
+  // locate first non-abstract parent
+  var parent = options.parent;
+  if (parent && !options.abstract) {
+    while (parent.$options.abstract && parent.$parent) {
+      parent = parent.$parent;
+    }
+    parent.$children.push(vm);
+  }
+
+  vm.$parent = parent;
+  vm.$root = parent ? parent.$root : vm;
+
+  vm.$children = [];
+  vm.$refs = {};
+
+  vm._watcher = null;
+  vm._inactive = null;
+  vm._directInactive = false;
+  vm._isMounted = false;
+  vm._isDestroyed = false;
+  vm._isBeingDestroyed = false;
+}
+
+function lifecycleMixin (Vue) {
+  Vue.prototype._update = function (vnode, hydrating) {
+    var vm = this;
+    if (vm._isMounted) {
+      callHook(vm, 'beforeUpdate');
+    }
+    var prevEl = vm.$el;
+    var prevVnode = vm._vnode;
+    var prevActiveInstance = activeInstance;
+    activeInstance = vm;
+    vm._vnode = vnode;
+    // Vue.prototype.__patch__ is injected in entry points
+    // based on the rendering backend used.
+    if (!prevVnode) {
+      // initial render
+      vm.$el = vm.__patch__(
+        vm.$el, vnode, hydrating, false /* removeOnly */,
+        vm.$options._parentElm,
+        vm.$options._refElm
+      );
+    } else {
+      // updates
+      vm.$el = vm.__patch__(prevVnode, vnode);
+    }
+    activeInstance = prevActiveInstance;
+    // update __vue__ reference
+    if (prevEl) {
+      prevEl.__vue__ = null;
+    }
+    if (vm.$el) {
+      vm.$el.__vue__ = vm;
+    }
+    // if parent is an HOC, update its $el as well
+    if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
+      vm.$parent.$el = vm.$el;
+    }
+    // updated hook is called by the scheduler to ensure that children are
+    // updated in a parent's updated hook.
+  };
+
+  Vue.prototype.$forceUpdate = function () {
+    var vm = this;
+    if (vm._watcher) {
+      vm._watcher.update();
+    }
+  };
+
+  Vue.prototype.$destroy = function () {
+    var vm = this;
+    if (vm._isBeingDestroyed) {
+      return
+    }
+    callHook(vm, 'beforeDestroy');
+    vm._isBeingDestroyed = true;
+    // remove self from parent
+    var parent = vm.$parent;
+    if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
+      remove(parent.$children, vm);
+    }
+    // teardown watchers
+    if (vm._watcher) {
+      vm._watcher.teardown();
+    }
+    var i = vm._watchers.length;
+    while (i--) {
+      vm._watchers[i].teardown();
+    }
+    // remove reference from data ob
+    // frozen object may not have observer.
+    if (vm._data.__ob__) {
+      vm._data.__ob__.vmCount--;
+    }
+    // call the last hook...
+    vm._isDestroyed = true;
+    callHook(vm, 'destroyed');
+    // turn off all instance listeners.
+    vm.$off();
+    // remove __vue__ reference
+    if (vm.$el) {
+      vm.$el.__vue__ = null;
+    }
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+  };
+}
+
+function mountComponent (
+  vm,
+  el,
+  hydrating
+) {
+  vm.$el = el;
+  if (!vm.$options.render) {
+    vm.$options.render = createEmptyVNode;
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
-      if (e.toString().match(/unsafe-eval|CSP/)) {
-        warn('It seems you are using the default build of Vue.js in an environment ' + 'with Content Security Policy that prohibits unsafe-eval. ' + 'Use the CSP-compliant build instead: ' + 'http://vuejs.org/guide/installation.html#CSP-compliant-build');
+      if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
+        vm.$options.el || el) {
+        warn(
+          'You are using the runtime-only build of Vue where the template ' +
+          'compiler is not available. Either pre-compile the templates into ' +
+          'render functions, or use the compiler-included build.',
+          vm
+        );
       } else {
-        warn('Invalid expression. ' + 'Generated function body: ' + body);
+        warn(
+          'Failed to mount component: template or render function not defined.',
+          vm
+        );
       }
     }
-    return noop;
   }
-}
+  callHook(vm, 'beforeMount');
 
-/**
- * Compile a setter function for the expression.
- *
- * @param {String} exp
- * @return {Function|undefined}
- */
+  var updateComponent;
+  /* istanbul ignore if */
+  if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+    updateComponent = function () {
+      var name = vm._name;
+      var id = vm._uid;
+      var startTag = "vue-perf-start:" + id;
+      var endTag = "vue-perf-end:" + id;
 
-function compileSetter(exp) {
-  var path = parsePath(exp);
-  if (path) {
-    return function (scope, val) {
-      setPath(scope, path, val);
+      mark(startTag);
+      var vnode = vm._render();
+      mark(endTag);
+      measure((name + " render"), startTag, endTag);
+
+      mark(startTag);
+      vm._update(vnode, hydrating);
+      mark(endTag);
+      measure((name + " patch"), startTag, endTag);
     };
   } else {
-    process.env.NODE_ENV !== 'production' && warn('Invalid setter expression: ' + exp);
+    updateComponent = function () {
+      vm._update(vm._render(), hydrating);
+    };
   }
+
+  vm._watcher = new Watcher(vm, updateComponent, noop);
+  hydrating = false;
+
+  // manually mounted instance, call mounted on self
+  // mounted is called for render-created child components in its inserted hook
+  if (vm.$vnode == null) {
+    vm._isMounted = true;
+    callHook(vm, 'mounted');
+  }
+  return vm
 }
 
-/**
- * Parse an expression into re-written getter/setters.
- *
- * @param {String} exp
- * @param {Boolean} needSet
- * @return {Function}
- */
+function updateChildComponent (
+  vm,
+  propsData,
+  listeners,
+  parentVnode,
+  renderChildren
+) {
+  // determine whether component has slot children
+  // we need to do this before overwriting $options._renderChildren
+  var hasChildren = !!(
+    renderChildren ||               // has new static slots
+    vm.$options._renderChildren ||  // has old static slots
+    parentVnode.data.scopedSlots || // has new scoped slots
+    vm.$scopedSlots !== emptyObject // has old scoped slots
+  );
 
-function parseExpression$1(exp, needSet) {
-  exp = exp.trim();
-  // try cache
-  var hit = expressionCache.get(exp);
-  if (hit) {
-    if (needSet && !hit.set) {
-      hit.set = compileSetter(hit.exp);
+  vm.$options._parentVnode = parentVnode;
+  vm.$vnode = parentVnode; // update vm's placeholder node without re-render
+  if (vm._vnode) { // update child tree's parent
+    vm._vnode.parent = parentVnode;
+  }
+  vm.$options._renderChildren = renderChildren;
+
+  // update props
+  if (propsData && vm.$options.props) {
+    observerState.shouldConvert = false;
+    if (process.env.NODE_ENV !== 'production') {
+      observerState.isSettingProps = true;
     }
-    return hit;
+    var props = vm._props;
+    var propKeys = vm.$options._propKeys || [];
+    for (var i = 0; i < propKeys.length; i++) {
+      var key = propKeys[i];
+      props[key] = validateProp(key, vm.$options.props, propsData, vm);
+    }
+    observerState.shouldConvert = true;
+    if (process.env.NODE_ENV !== 'production') {
+      observerState.isSettingProps = false;
+    }
+    // keep a copy of raw propsData
+    vm.$options.propsData = propsData;
   }
-  var res = { exp: exp };
-  res.get = isSimplePath(exp) && exp.indexOf('[') < 0
-  // optimized super simple getter
-  ? makeGetterFn('scope.' + exp)
-  // dynamic getter
-  : compileGetter(exp);
-  if (needSet) {
-    res.set = compileSetter(exp);
+  // update listeners
+  if (listeners) {
+    var oldListeners = vm.$options._parentListeners;
+    vm.$options._parentListeners = listeners;
+    updateComponentListeners(vm, listeners, oldListeners);
   }
-  expressionCache.put(exp, res);
-  return res;
+  // resolve slots + force update if has children
+  if (hasChildren) {
+    vm.$slots = resolveSlots(renderChildren, parentVnode.context);
+    vm.$forceUpdate();
+  }
 }
 
-/**
- * Check if an expression is a simple path.
- *
- * @param {String} exp
- * @return {Boolean}
- */
-
-function isSimplePath(exp) {
-  return pathTestRE.test(exp) &&
-  // don't treat literal values as paths
-  !literalValueRE$1.test(exp) &&
-  // Math constants e.g. Math.PI, Math.E etc.
-  exp.slice(0, 5) !== 'Math.';
+function isInInactiveTree (vm) {
+  while (vm && (vm = vm.$parent)) {
+    if (vm._inactive) { return true }
+  }
+  return false
 }
 
-var expression = Object.freeze({
-  parseExpression: parseExpression$1,
-  isSimplePath: isSimplePath
-});
+function activateChildComponent (vm, direct) {
+  if (direct) {
+    vm._directInactive = false;
+    if (isInInactiveTree(vm)) {
+      return
+    }
+  } else if (vm._directInactive) {
+    return
+  }
+  if (vm._inactive || vm._inactive == null) {
+    vm._inactive = false;
+    for (var i = 0; i < vm.$children.length; i++) {
+      activateChildComponent(vm.$children[i]);
+    }
+    callHook(vm, 'activated');
+  }
+}
 
-// we have two separate queues: one for directive updates
-// and one for user watcher registered via $watch().
-// we want to guarantee directive updates to be called
-// before user watchers so that when user watchers are
-// triggered, the DOM would have already been in updated
-// state.
+function deactivateChildComponent (vm, direct) {
+  if (direct) {
+    vm._directInactive = true;
+    if (isInInactiveTree(vm)) {
+      return
+    }
+  }
+  if (!vm._inactive) {
+    vm._inactive = true;
+    for (var i = 0; i < vm.$children.length; i++) {
+      deactivateChildComponent(vm.$children[i]);
+    }
+    callHook(vm, 'deactivated');
+  }
+}
+
+function callHook (vm, hook) {
+  var handlers = vm.$options[hook];
+  if (handlers) {
+    for (var i = 0, j = handlers.length; i < j; i++) {
+      try {
+        handlers[i].call(vm);
+      } catch (e) {
+        handleError(e, vm, (hook + " hook"));
+      }
+    }
+  }
+  if (vm._hasHookEvent) {
+    vm.$emit('hook:' + hook);
+  }
+}
+
+/*  */
+
 
 var queue = [];
-var userQueue = [];
 var has = {};
 var circular = {};
 var waiting = false;
+var flushing = false;
+var index = 0;
 
 /**
- * Reset the batcher's state.
+ * Reset the scheduler's state.
  */
-
-function resetBatcherState() {
+function resetSchedulerState () {
   queue.length = 0;
-  userQueue.length = 0;
   has = {};
-  circular = {};
-  waiting = false;
+  if (process.env.NODE_ENV !== 'production') {
+    circular = {};
+  }
+  waiting = flushing = false;
 }
 
 /**
  * Flush both queues and run the watchers.
  */
+function flushSchedulerQueue () {
+  flushing = true;
+  var watcher, id, vm;
 
-function flushBatcherQueue() {
-  var _again = true;
+  // Sort queue before flush.
+  // This ensures that:
+  // 1. Components are updated from parent to child. (because parent is always
+  //    created before the child)
+  // 2. A component's user watchers are run before its render watcher (because
+  //    user watchers are created before the render watcher)
+  // 3. If a component is destroyed during a parent component's watcher run,
+  //    its watchers can be skipped.
+  queue.sort(function (a, b) { return a.id - b.id; });
 
-  _function: while (_again) {
-    _again = false;
-
-    runBatcherQueue(queue);
-    runBatcherQueue(userQueue);
-    // user watchers triggered more watchers,
-    // keep flushing until it depletes
-    if (queue.length) {
-      _again = true;
-      continue _function;
-    }
-    // dev tool hook
-    /* istanbul ignore if */
-    if (devtools && config.devtools) {
-      devtools.emit('flush');
-    }
-    resetBatcherState();
-  }
-}
-
-/**
- * Run the watchers in a single queue.
- *
- * @param {Array} queue
- */
-
-function runBatcherQueue(queue) {
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
-  for (var i = 0; i < queue.length; i++) {
-    var watcher = queue[i];
-    var id = watcher.id;
+  for (index = 0; index < queue.length; index++) {
+    watcher = queue[index];
+    id = watcher.id;
     has[id] = null;
     watcher.run();
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > config._maxUpdateCount) {
-        warn('You may have an infinite update loop for watcher ' + 'with expression "' + watcher.expression + '"', watcher.vm);
-        break;
+        warn(
+          'You may have an infinite update loop ' + (
+            watcher.user
+              ? ("in watcher with expression \"" + (watcher.expression) + "\"")
+              : "in a component render function."
+          ),
+          watcher.vm
+        );
+        break
       }
     }
   }
-  queue.length = 0;
+
+  // call updated hooks
+  index = queue.length;
+  while (index--) {
+    watcher = queue[index];
+    vm = watcher.vm;
+    if (vm._watcher === watcher && vm._isMounted) {
+      callHook(vm, 'updated');
+    }
+  }
+
+  // devtool hook
+  /* istanbul ignore if */
+  if (devtools && config.devtools) {
+    devtools.emit('flush');
+  }
+
+  resetSchedulerState();
 }
 
 /**
  * Push a watcher into the watcher queue.
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
- *
- * @param {Watcher} watcher
- *   properties:
- *   - {Number} id
- *   - {Function} run
  */
-
-function pushWatcher(watcher) {
+function queueWatcher (watcher) {
   var id = watcher.id;
   if (has[id] == null) {
-    // push watcher into appropriate queue
-    var q = watcher.user ? userQueue : queue;
-    has[id] = q.length;
-    q.push(watcher);
+    has[id] = true;
+    if (!flushing) {
+      queue.push(watcher);
+    } else {
+      // if already flushing, splice the watcher based on its id
+      // if already past its id, it will be run next immediately.
+      var i = queue.length - 1;
+      while (i >= 0 && queue[i].id > watcher.id) {
+        i--;
+      }
+      queue.splice(Math.max(i, index) + 1, 0, watcher);
+    }
     // queue the flush
     if (!waiting) {
       waiting = true;
-      nextTick(flushBatcherQueue);
+      nextTick(flushSchedulerQueue);
     }
   }
 }
+
+/*  */
 
 var uid$2 = 0;
 
 /**
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
- * This is used for both the $watch() _api and directives.
- *
- * @param {Vue} vm
- * @param {String|Function} expOrFn
- * @param {Function} cb
- * @param {Object} options
- *                 - {Array} filters
- *                 - {Boolean} twoWay
- *                 - {Boolean} deep
- *                 - {Boolean} user
- *                 - {Boolean} sync
- *                 - {Boolean} lazy
- *                 - {Function} [preProcess]
- *                 - {Function} [postProcess]
- * @constructor
+ * This is used for both the $watch() api and directives.
  */
-function Watcher(vm, expOrFn, cb, options) {
-  // mix in options
-  if (options) {
-    extend(this, options);
-  }
-  var isFn = typeof expOrFn === 'function';
+var Watcher = function Watcher (
+  vm,
+  expOrFn,
+  cb,
+  options
+) {
   this.vm = vm;
   vm._watchers.push(this);
-  this.expression = expOrFn;
+  // options
+  if (options) {
+    this.deep = !!options.deep;
+    this.user = !!options.user;
+    this.lazy = !!options.lazy;
+    this.sync = !!options.sync;
+  } else {
+    this.deep = this.user = this.lazy = this.sync = false;
+  }
   this.cb = cb;
   this.id = ++uid$2; // uid for batching
   this.active = true;
@@ -27150,106 +25768,59 @@ function Watcher(vm, expOrFn, cb, options) {
   this.newDeps = [];
   this.depIds = new _Set();
   this.newDepIds = new _Set();
-  this.prevError = null; // for async error stacks
-  // parse expression for getter/setter
-  if (isFn) {
+  this.expression = process.env.NODE_ENV !== 'production'
+    ? expOrFn.toString()
+    : '';
+  // parse expression for getter
+  if (typeof expOrFn === 'function') {
     this.getter = expOrFn;
-    this.setter = undefined;
   } else {
-    var res = parseExpression$1(expOrFn, this.twoWay);
-    this.getter = res.get;
-    this.setter = res.set;
+    this.getter = parsePath(expOrFn);
+    if (!this.getter) {
+      this.getter = function () {};
+      process.env.NODE_ENV !== 'production' && warn(
+        "Failed watching path: \"" + expOrFn + "\" " +
+        'Watcher only accepts simple dot-delimited paths. ' +
+        'For full control, use a function instead.',
+        vm
+      );
+    }
   }
-  this.value = this.lazy ? undefined : this.get();
-  // state for avoiding false triggers for deep and Array
-  // watchers during vm._digest()
-  this.queued = this.shallow = false;
-}
+  this.value = this.lazy
+    ? undefined
+    : this.get();
+};
 
 /**
  * Evaluate the getter, and re-collect dependencies.
  */
-
-Watcher.prototype.get = function () {
-  this.beforeGet();
-  var scope = this.scope || this.vm;
+Watcher.prototype.get = function get () {
+  pushTarget(this);
   var value;
-  try {
-    value = this.getter.call(scope, scope);
-  } catch (e) {
-    if (process.env.NODE_ENV !== 'production' && config.warnExpressionErrors) {
-      warn('Error when evaluating expression ' + '"' + this.expression + '": ' + e.toString(), this.vm);
+  var vm = this.vm;
+  if (this.user) {
+    try {
+      value = this.getter.call(vm, vm);
+    } catch (e) {
+      handleError(e, vm, ("getter for watcher \"" + (this.expression) + "\""));
     }
+  } else {
+    value = this.getter.call(vm, vm);
   }
   // "touch" every property so they are all tracked as
   // dependencies for deep watching
   if (this.deep) {
     traverse(value);
   }
-  if (this.preProcess) {
-    value = this.preProcess(value);
-  }
-  if (this.filters) {
-    value = scope._applyFilters(value, null, this.filters, false);
-  }
-  if (this.postProcess) {
-    value = this.postProcess(value);
-  }
-  this.afterGet();
-  return value;
-};
-
-/**
- * Set the corresponding value with the setter.
- *
- * @param {*} value
- */
-
-Watcher.prototype.set = function (value) {
-  var scope = this.scope || this.vm;
-  if (this.filters) {
-    value = scope._applyFilters(value, this.value, this.filters, true);
-  }
-  try {
-    this.setter.call(scope, scope, value);
-  } catch (e) {
-    if (process.env.NODE_ENV !== 'production' && config.warnExpressionErrors) {
-      warn('Error when evaluating setter ' + '"' + this.expression + '": ' + e.toString(), this.vm);
-    }
-  }
-  // two-way sync for v-for alias
-  var forContext = scope.$forContext;
-  if (forContext && forContext.alias === this.expression) {
-    if (forContext.filters) {
-      process.env.NODE_ENV !== 'production' && warn('It seems you are using two-way binding on ' + 'a v-for alias (' + this.expression + '), and the ' + 'v-for has filters. This will not work properly. ' + 'Either remove the filters or use an array of ' + 'objects and bind to object properties instead.', this.vm);
-      return;
-    }
-    forContext._withLock(function () {
-      if (scope.$key) {
-        // original is an object
-        forContext.rawValue[scope.$key] = value;
-      } else {
-        forContext.rawValue.$set(scope.$index, value);
-      }
-    });
-  }
-};
-
-/**
- * Prepare for dependency collection.
- */
-
-Watcher.prototype.beforeGet = function () {
-  Dep.target = this;
+  popTarget();
+  this.cleanupDeps();
+  return value
 };
 
 /**
  * Add a dependency to this directive.
- *
- * @param {Dep} dep
  */
-
-Watcher.prototype.addDep = function (dep) {
+Watcher.prototype.addDep = function addDep (dep) {
   var id = dep.id;
   if (!this.newDepIds.has(id)) {
     this.newDepIds.add(id);
@@ -27263,14 +25834,14 @@ Watcher.prototype.addDep = function (dep) {
 /**
  * Clean up for dependency collection.
  */
+Watcher.prototype.cleanupDeps = function cleanupDeps () {
+    var this$1 = this;
 
-Watcher.prototype.afterGet = function () {
-  Dep.target = null;
   var i = this.deps.length;
   while (i--) {
-    var dep = this.deps[i];
-    if (!this.newDepIds.has(dep.id)) {
-      dep.removeSub(this);
+    var dep = this$1.deps[i];
+    if (!this$1.newDepIds.has(dep.id)) {
+      dep.removeSub(this$1);
     }
   }
   var tmp = this.depIds;
@@ -27286,66 +25857,46 @@ Watcher.prototype.afterGet = function () {
 /**
  * Subscriber interface.
  * Will be called when a dependency changes.
- *
- * @param {Boolean} shallow
  */
-
-Watcher.prototype.update = function (shallow) {
+Watcher.prototype.update = function update () {
+  /* istanbul ignore else */
   if (this.lazy) {
     this.dirty = true;
-  } else if (this.sync || !config.async) {
+  } else if (this.sync) {
     this.run();
   } else {
-    // if queued, only overwrite shallow with non-shallow,
-    // but not the other way around.
-    this.shallow = this.queued ? shallow ? this.shallow : false : !!shallow;
-    this.queued = true;
-    // record before-push error stack in debug mode
-    /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production' && config.debug) {
-      this.prevError = new Error('[vue] async stack trace');
-    }
-    pushWatcher(this);
+    queueWatcher(this);
   }
 };
 
 /**
- * Batcher job interface.
- * Will be called by the batcher.
+ * Scheduler job interface.
+ * Will be called by the scheduler.
  */
-
-Watcher.prototype.run = function () {
+Watcher.prototype.run = function run () {
   if (this.active) {
     var value = this.get();
-    if (value !== this.value ||
-    // Deep watchers and watchers on Object/Arrays should fire even
-    // when the value is the same, because the value may
-    // have mutated; but only do so if this is a
-    // non-shallow update (caused by a vm digest).
-    (isObject(value) || this.deep) && !this.shallow) {
+    if (
+      value !== this.value ||
+      // Deep watchers and watchers on Object/Arrays should fire even
+      // when the value is the same, because the value may
+      // have mutated.
+      isObject(value) ||
+      this.deep
+    ) {
       // set new value
       var oldValue = this.value;
       this.value = value;
-      // in debug + async mode, when a watcher callbacks
-      // throws, we also throw the saved before-push error
-      // so the full cross-tick stack trace is available.
-      var prevError = this.prevError;
-      /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && config.debug && prevError) {
-        this.prevError = null;
+      if (this.user) {
         try {
           this.cb.call(this.vm, value, oldValue);
         } catch (e) {
-          nextTick(function () {
-            throw prevError;
-          }, 0);
-          throw e;
+          handleError(e, this.vm, ("callback for watcher \"" + (this.expression) + "\""));
         }
       } else {
         this.cb.call(this.vm, value, oldValue);
       }
     }
-    this.queued = this.shallow = false;
   }
 };
 
@@ -27353,6664 +25904,1349 @@ Watcher.prototype.run = function () {
  * Evaluate the value of the watcher.
  * This only gets called for lazy watchers.
  */
-
-Watcher.prototype.evaluate = function () {
-  // avoid overwriting another watcher that is being
-  // collected.
-  var current = Dep.target;
+Watcher.prototype.evaluate = function evaluate () {
   this.value = this.get();
   this.dirty = false;
-  Dep.target = current;
 };
 
 /**
  * Depend on all deps collected by this watcher.
  */
+Watcher.prototype.depend = function depend () {
+    var this$1 = this;
 
-Watcher.prototype.depend = function () {
   var i = this.deps.length;
   while (i--) {
-    this.deps[i].depend();
+    this$1.deps[i].depend();
   }
 };
 
 /**
- * Remove self from all dependencies' subcriber list.
+ * Remove self from all dependencies' subscriber list.
  */
+Watcher.prototype.teardown = function teardown () {
+    var this$1 = this;
 
-Watcher.prototype.teardown = function () {
   if (this.active) {
     // remove self from vm's watcher list
     // this is a somewhat expensive operation so we skip it
-    // if the vm is being destroyed or is performing a v-for
-    // re-render (the watcher list is then filtered by v-for).
-    if (!this.vm._isBeingDestroyed && !this.vm._vForRemoving) {
-      this.vm._watchers.$remove(this);
+    // if the vm is being destroyed.
+    if (!this.vm._isBeingDestroyed) {
+      remove(this.vm._watchers, this);
     }
     var i = this.deps.length;
     while (i--) {
-      this.deps[i].removeSub(this);
+      this$1.deps[i].removeSub(this$1);
     }
     this.active = false;
-    this.vm = this.cb = this.value = null;
   }
 };
 
 /**
- * Recrusively traverse an object to evoke all converted
+ * Recursively traverse an object to evoke all converted
  * getters, so that every nested property inside the object
  * is collected as a "deep" dependency.
- *
- * @param {*} val
  */
-
 var seenObjects = new _Set();
-function traverse(val, seen) {
-  var i = undefined,
-      keys = undefined;
-  if (!seen) {
-    seen = seenObjects;
-    seen.clear();
-  }
-  var isA = isArray(val);
-  var isO = isObject(val);
-  if ((isA || isO) && Object.isExtensible(val)) {
-    if (val.__ob__) {
-      var depId = val.__ob__.dep.id;
-      if (seen.has(depId)) {
-        return;
-      } else {
-        seen.add(depId);
-      }
-    }
-    if (isA) {
-      i = val.length;
-      while (i--) traverse(val[i], seen);
-    } else if (isO) {
-      keys = Object.keys(val);
-      i = keys.length;
-      while (i--) traverse(val[keys[i]], seen);
-    }
-  }
+function traverse (val) {
+  seenObjects.clear();
+  _traverse(val, seenObjects);
 }
 
-var text$1 = {
-
-  bind: function bind() {
-    this.attr = this.el.nodeType === 3 ? 'data' : 'textContent';
-  },
-
-  update: function update(value) {
-    this.el[this.attr] = _toString(value);
+function _traverse (val, seen) {
+  var i, keys;
+  var isA = Array.isArray(val);
+  if ((!isA && !isObject(val)) || !Object.isExtensible(val)) {
+    return
   }
-};
-
-var templateCache = new Cache(1000);
-var idSelectorCache = new Cache(1000);
-
-var map = {
-  efault: [0, '', ''],
-  legend: [1, '<fieldset>', '</fieldset>'],
-  tr: [2, '<table><tbody>', '</tbody></table>'],
-  col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>']
-};
-
-map.td = map.th = [3, '<table><tbody><tr>', '</tr></tbody></table>'];
-
-map.option = map.optgroup = [1, '<select multiple="multiple">', '</select>'];
-
-map.thead = map.tbody = map.colgroup = map.caption = map.tfoot = [1, '<table>', '</table>'];
-
-map.g = map.defs = map.symbol = map.use = map.image = map.text = map.circle = map.ellipse = map.line = map.path = map.polygon = map.polyline = map.rect = [1, '<svg ' + 'xmlns="http://www.w3.org/2000/svg" ' + 'xmlns:xlink="http://www.w3.org/1999/xlink" ' + 'xmlns:ev="http://www.w3.org/2001/xml-events"' + 'version="1.1">', '</svg>'];
-
-/**
- * Check if a node is a supported template node with a
- * DocumentFragment content.
- *
- * @param {Node} node
- * @return {Boolean}
- */
-
-function isRealTemplate(node) {
-  return isTemplate(node) && isFragment(node.content);
-}
-
-var tagRE$1 = /<([\w:-]+)/;
-var entityRE = /&#?\w+?;/;
-var commentRE = /<!--/;
-
-/**
- * Convert a string template to a DocumentFragment.
- * Determines correct wrapping by tag types. Wrapping
- * strategy found in jQuery & component/domify.
- *
- * @param {String} templateString
- * @param {Boolean} raw
- * @return {DocumentFragment}
- */
-
-function stringToFragment(templateString, raw) {
-  // try a cache hit first
-  var cacheKey = raw ? templateString : templateString.trim();
-  var hit = templateCache.get(cacheKey);
-  if (hit) {
-    return hit;
+  if (val.__ob__) {
+    var depId = val.__ob__.dep.id;
+    if (seen.has(depId)) {
+      return
+    }
+    seen.add(depId);
   }
-
-  var frag = document.createDocumentFragment();
-  var tagMatch = templateString.match(tagRE$1);
-  var entityMatch = entityRE.test(templateString);
-  var commentMatch = commentRE.test(templateString);
-
-  if (!tagMatch && !entityMatch && !commentMatch) {
-    // text only, return a single text node.
-    frag.appendChild(document.createTextNode(templateString));
+  if (isA) {
+    i = val.length;
+    while (i--) { _traverse(val[i], seen); }
   } else {
-    var tag = tagMatch && tagMatch[1];
-    var wrap = map[tag] || map.efault;
-    var depth = wrap[0];
-    var prefix = wrap[1];
-    var suffix = wrap[2];
-    var node = document.createElement('div');
-
-    node.innerHTML = prefix + templateString + suffix;
-    while (depth--) {
-      node = node.lastChild;
-    }
-
-    var child;
-    /* eslint-disable no-cond-assign */
-    while (child = node.firstChild) {
-      /* eslint-enable no-cond-assign */
-      frag.appendChild(child);
-    }
+    keys = Object.keys(val);
+    i = keys.length;
+    while (i--) { _traverse(val[keys[i]], seen); }
   }
-  if (!raw) {
-    trimNode(frag);
-  }
-  templateCache.put(cacheKey, frag);
-  return frag;
 }
 
-/**
- * Convert a template node to a DocumentFragment.
- *
- * @param {Node} node
- * @return {DocumentFragment}
- */
+/*  */
 
-function nodeToFragment(node) {
-  // if its a template tag and the browser supports it,
-  // its content is already a document fragment. However, iOS Safari has
-  // bug when using directly cloned template content with touch
-  // events and can cause crashes when the nodes are removed from DOM, so we
-  // have to treat template elements as string templates. (#2805)
-  /* istanbul ignore if */
-  if (isRealTemplate(node)) {
-    return stringToFragment(node.innerHTML);
-  }
-  // script template
-  if (node.tagName === 'SCRIPT') {
-    return stringToFragment(node.textContent);
-  }
-  // normal node, clone it to avoid mutating the original
-  var clonedNode = cloneNode(node);
-  var frag = document.createDocumentFragment();
-  var child;
-  /* eslint-disable no-cond-assign */
-  while (child = clonedNode.firstChild) {
-    /* eslint-enable no-cond-assign */
-    frag.appendChild(child);
-  }
-  trimNode(frag);
-  return frag;
-}
-
-// Test for the presence of the Safari template cloning bug
-// https://bugs.webkit.org/showug.cgi?id=137755
-var hasBrokenTemplate = (function () {
-  /* istanbul ignore else */
-  if (inBrowser) {
-    var a = document.createElement('div');
-    a.innerHTML = '<template>1</template>';
-    return !a.cloneNode(true).firstChild.innerHTML;
-  } else {
-    return false;
-  }
-})();
-
-// Test for IE10/11 textarea placeholder clone bug
-var hasTextareaCloneBug = (function () {
-  /* istanbul ignore else */
-  if (inBrowser) {
-    var t = document.createElement('textarea');
-    t.placeholder = 't';
-    return t.cloneNode(true).value === 't';
-  } else {
-    return false;
-  }
-})();
-
-/**
- * 1. Deal with Safari cloning nested <template> bug by
- *    manually cloning all template instances.
- * 2. Deal with IE10/11 textarea placeholder bug by setting
- *    the correct value after cloning.
- *
- * @param {Element|DocumentFragment} node
- * @return {Element|DocumentFragment}
- */
-
-function cloneNode(node) {
-  /* istanbul ignore if */
-  if (!node.querySelectorAll) {
-    return node.cloneNode();
-  }
-  var res = node.cloneNode(true);
-  var i, original, cloned;
-  /* istanbul ignore if */
-  if (hasBrokenTemplate) {
-    var tempClone = res;
-    if (isRealTemplate(node)) {
-      node = node.content;
-      tempClone = res.content;
-    }
-    original = node.querySelectorAll('template');
-    if (original.length) {
-      cloned = tempClone.querySelectorAll('template');
-      i = cloned.length;
-      while (i--) {
-        cloned[i].parentNode.replaceChild(cloneNode(original[i]), cloned[i]);
-      }
-    }
-  }
-  /* istanbul ignore if */
-  if (hasTextareaCloneBug) {
-    if (node.tagName === 'TEXTAREA') {
-      res.value = node.value;
-    } else {
-      original = node.querySelectorAll('textarea');
-      if (original.length) {
-        cloned = res.querySelectorAll('textarea');
-        i = cloned.length;
-        while (i--) {
-          cloned[i].value = original[i].value;
-        }
-      }
-    }
-  }
-  return res;
-}
-
-/**
- * Process the template option and normalizes it into a
- * a DocumentFragment that can be used as a partial or a
- * instance template.
- *
- * @param {*} template
- *        Possible values include:
- *        - DocumentFragment object
- *        - Node object of type Template
- *        - id selector: '#some-template-id'
- *        - template string: '<div><span>{{msg}}</span></div>'
- * @param {Boolean} shouldClone
- * @param {Boolean} raw
- *        inline HTML interpolation. Do not check for id
- *        selector and keep whitespace in the string.
- * @return {DocumentFragment|undefined}
- */
-
-function parseTemplate(template, shouldClone, raw) {
-  var node, frag;
-
-  // if the template is already a document fragment,
-  // do nothing
-  if (isFragment(template)) {
-    trimNode(template);
-    return shouldClone ? cloneNode(template) : template;
-  }
-
-  if (typeof template === 'string') {
-    // id selector
-    if (!raw && template.charAt(0) === '#') {
-      // id selector can be cached too
-      frag = idSelectorCache.get(template);
-      if (!frag) {
-        node = document.getElementById(template.slice(1));
-        if (node) {
-          frag = nodeToFragment(node);
-          // save selector to cache
-          idSelectorCache.put(template, frag);
-        }
-      }
-    } else {
-      // normal string template
-      frag = stringToFragment(template, raw);
-    }
-  } else if (template.nodeType) {
-    // a direct node
-    frag = nodeToFragment(template);
-  }
-
-  return frag && shouldClone ? cloneNode(frag) : frag;
-}
-
-var template = Object.freeze({
-  cloneNode: cloneNode,
-  parseTemplate: parseTemplate
-});
-
-var html = {
-
-  bind: function bind() {
-    // a comment node means this is a binding for
-    // {{{ inline unescaped html }}}
-    if (this.el.nodeType === 8) {
-      // hold nodes
-      this.nodes = [];
-      // replace the placeholder with proper anchor
-      this.anchor = createAnchor('v-html');
-      replace(this.el, this.anchor);
-    }
-  },
-
-  update: function update(value) {
-    value = _toString(value);
-    if (this.nodes) {
-      this.swap(value);
-    } else {
-      this.el.innerHTML = value;
-    }
-  },
-
-  swap: function swap(value) {
-    // remove old nodes
-    var i = this.nodes.length;
-    while (i--) {
-      remove(this.nodes[i]);
-    }
-    // convert new value to a fragment
-    // do not attempt to retrieve from id selector
-    var frag = parseTemplate(value, true, true);
-    // save a reference to these nodes so we can remove later
-    this.nodes = toArray(frag.childNodes);
-    before(frag, this.anchor);
-  }
+var sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
 };
 
-/**
- * Abstraction for a partially-compiled fragment.
- * Can optionally compile content with a child scope.
- *
- * @param {Function} linker
- * @param {Vue} vm
- * @param {DocumentFragment} frag
- * @param {Vue} [host]
- * @param {Object} [scope]
- * @param {Fragment} [parentFrag]
- */
-function Fragment(linker, vm, frag, host, scope, parentFrag) {
-  this.children = [];
-  this.childFrags = [];
-  this.vm = vm;
-  this.scope = scope;
-  this.inserted = false;
-  this.parentFrag = parentFrag;
-  if (parentFrag) {
-    parentFrag.childFrags.push(this);
-  }
-  this.unlink = linker(vm, frag, host, scope, this);
-  var single = this.single = frag.childNodes.length === 1 &&
-  // do not go single mode if the only node is an anchor
-  !frag.childNodes[0].__v_anchor;
-  if (single) {
-    this.node = frag.childNodes[0];
-    this.before = singleBefore;
-    this.remove = singleRemove;
-  } else {
-    this.node = createAnchor('fragment-start');
-    this.end = createAnchor('fragment-end');
-    this.frag = frag;
-    prepend(this.node, frag);
-    frag.appendChild(this.end);
-    this.before = multiBefore;
-    this.remove = multiRemove;
-  }
-  this.node.__v_frag = this;
-}
-
-/**
- * Call attach/detach for all components contained within
- * this fragment. Also do so recursively for all child
- * fragments.
- *
- * @param {Function} hook
- */
-
-Fragment.prototype.callHook = function (hook) {
-  var i, l;
-  for (i = 0, l = this.childFrags.length; i < l; i++) {
-    this.childFrags[i].callHook(hook);
-  }
-  for (i = 0, l = this.children.length; i < l; i++) {
-    hook(this.children[i]);
-  }
-};
-
-/**
- * Insert fragment before target, single node version
- *
- * @param {Node} target
- * @param {Boolean} withTransition
- */
-
-function singleBefore(target, withTransition) {
-  this.inserted = true;
-  var method = withTransition !== false ? beforeWithTransition : before;
-  method(this.node, target, this.vm);
-  if (inDoc(this.node)) {
-    this.callHook(attach);
-  }
-}
-
-/**
- * Remove fragment, single node version
- */
-
-function singleRemove() {
-  this.inserted = false;
-  var shouldCallRemove = inDoc(this.node);
-  var self = this;
-  this.beforeRemove();
-  removeWithTransition(this.node, this.vm, function () {
-    if (shouldCallRemove) {
-      self.callHook(detach);
-    }
-    self.destroy();
-  });
-}
-
-/**
- * Insert fragment before target, multi-nodes version
- *
- * @param {Node} target
- * @param {Boolean} withTransition
- */
-
-function multiBefore(target, withTransition) {
-  this.inserted = true;
-  var vm = this.vm;
-  var method = withTransition !== false ? beforeWithTransition : before;
-  mapNodeRange(this.node, this.end, function (node) {
-    method(node, target, vm);
-  });
-  if (inDoc(this.node)) {
-    this.callHook(attach);
-  }
-}
-
-/**
- * Remove fragment, multi-nodes version
- */
-
-function multiRemove() {
-  this.inserted = false;
-  var self = this;
-  var shouldCallRemove = inDoc(this.node);
-  this.beforeRemove();
-  removeNodeRange(this.node, this.end, this.vm, this.frag, function () {
-    if (shouldCallRemove) {
-      self.callHook(detach);
-    }
-    self.destroy();
-  });
-}
-
-/**
- * Prepare the fragment for removal.
- */
-
-Fragment.prototype.beforeRemove = function () {
-  var i, l;
-  for (i = 0, l = this.childFrags.length; i < l; i++) {
-    // call the same method recursively on child
-    // fragments, depth-first
-    this.childFrags[i].beforeRemove(false);
-  }
-  for (i = 0, l = this.children.length; i < l; i++) {
-    // Call destroy for all contained instances,
-    // with remove:false and defer:true.
-    // Defer is necessary because we need to
-    // keep the children to call detach hooks
-    // on them.
-    this.children[i].$destroy(false, true);
-  }
-  var dirs = this.unlink.dirs;
-  for (i = 0, l = dirs.length; i < l; i++) {
-    // disable the watchers on all the directives
-    // so that the rendered content stays the same
-    // during removal.
-    dirs[i]._watcher && dirs[i]._watcher.teardown();
-  }
-};
-
-/**
- * Destroy the fragment.
- */
-
-Fragment.prototype.destroy = function () {
-  if (this.parentFrag) {
-    this.parentFrag.childFrags.$remove(this);
-  }
-  this.node.__v_frag = null;
-  this.unlink();
-};
-
-/**
- * Call attach hook for a Vue instance.
- *
- * @param {Vue} child
- */
-
-function attach(child) {
-  if (!child._isAttached && inDoc(child.$el)) {
-    child._callHook('attached');
-  }
-}
-
-/**
- * Call detach hook for a Vue instance.
- *
- * @param {Vue} child
- */
-
-function detach(child) {
-  if (child._isAttached && !inDoc(child.$el)) {
-    child._callHook('detached');
-  }
-}
-
-var linkerCache = new Cache(5000);
-
-/**
- * A factory that can be used to create instances of a
- * fragment. Caches the compiled linker if possible.
- *
- * @param {Vue} vm
- * @param {Element|String} el
- */
-function FragmentFactory(vm, el) {
-  this.vm = vm;
-  var template;
-  var isString = typeof el === 'string';
-  if (isString || isTemplate(el) && !el.hasAttribute('v-if')) {
-    template = parseTemplate(el, true);
-  } else {
-    template = document.createDocumentFragment();
-    template.appendChild(el);
-  }
-  this.template = template;
-  // linker can be cached, but only for components
-  var linker;
-  var cid = vm.constructor.cid;
-  if (cid > 0) {
-    var cacheId = cid + (isString ? el : getOuterHTML(el));
-    linker = linkerCache.get(cacheId);
-    if (!linker) {
-      linker = compile(template, vm.$options, true);
-      linkerCache.put(cacheId, linker);
-    }
-  } else {
-    linker = compile(template, vm.$options, true);
-  }
-  this.linker = linker;
-}
-
-/**
- * Create a fragment instance with given host and scope.
- *
- * @param {Vue} host
- * @param {Object} scope
- * @param {Fragment} parentFrag
- */
-
-FragmentFactory.prototype.create = function (host, scope, parentFrag) {
-  var frag = cloneNode(this.template);
-  return new Fragment(this.linker, this.vm, frag, host, scope, parentFrag);
-};
-
-var ON = 700;
-var MODEL = 800;
-var BIND = 850;
-var TRANSITION = 1100;
-var EL = 1500;
-var COMPONENT = 1500;
-var PARTIAL = 1750;
-var IF = 2100;
-var FOR = 2200;
-var SLOT = 2300;
-
-var uid$3 = 0;
-
-var vFor = {
-
-  priority: FOR,
-  terminal: true,
-
-  params: ['track-by', 'stagger', 'enter-stagger', 'leave-stagger'],
-
-  bind: function bind() {
-    if (process.env.NODE_ENV !== 'production' && this.el.hasAttribute('v-if')) {
-      warn('<' + this.el.tagName.toLowerCase() + ' v-for="' + this.expression + '" v-if="' + this.el.getAttribute('v-if') + '">: ' + 'Using v-if and v-for on the same element is not recommended - ' + 'consider filtering the source Array instead.', this.vm);
-    }
-
-    // support "item in/of items" syntax
-    var inMatch = this.expression.match(/(.*) (?:in|of) (.*)/);
-    if (inMatch) {
-      var itMatch = inMatch[1].match(/\((.*),(.*)\)/);
-      if (itMatch) {
-        this.iterator = itMatch[1].trim();
-        this.alias = itMatch[2].trim();
-      } else {
-        this.alias = inMatch[1].trim();
-      }
-      this.expression = inMatch[2];
-    }
-
-    if (!this.alias) {
-      process.env.NODE_ENV !== 'production' && warn('Invalid v-for expression "' + this.descriptor.raw + '": ' + 'alias is required.', this.vm);
-      return;
-    }
-
-    // uid as a cache identifier
-    this.id = '__v-for__' + ++uid$3;
-
-    // check if this is an option list,
-    // so that we know if we need to update the <select>'s
-    // v-model when the option list has changed.
-    // because v-model has a lower priority than v-for,
-    // the v-model is not bound here yet, so we have to
-    // retrive it in the actual updateModel() function.
-    var tag = this.el.tagName;
-    this.isOption = (tag === 'OPTION' || tag === 'OPTGROUP') && this.el.parentNode.tagName === 'SELECT';
-
-    // setup anchor nodes
-    this.start = createAnchor('v-for-start');
-    this.end = createAnchor('v-for-end');
-    replace(this.el, this.end);
-    before(this.start, this.end);
-
-    // cache
-    this.cache = Object.create(null);
-
-    // fragment factory
-    this.factory = new FragmentFactory(this.vm, this.el);
-  },
-
-  update: function update(data) {
-    this.diff(data);
-    this.updateRef();
-    this.updateModel();
-  },
-
-  /**
-   * Diff, based on new data and old data, determine the
-   * minimum amount of DOM manipulations needed to make the
-   * DOM reflect the new data Array.
-   *
-   * The algorithm diffs the new data Array by storing a
-   * hidden reference to an owner vm instance on previously
-   * seen data. This allows us to achieve O(n) which is
-   * better than a levenshtein distance based algorithm,
-   * which is O(m * n).
-   *
-   * @param {Array} data
-   */
-
-  diff: function diff(data) {
-    // check if the Array was converted from an Object
-    var item = data[0];
-    var convertedFromObject = this.fromObject = isObject(item) && hasOwn(item, '$key') && hasOwn(item, '$value');
-
-    var trackByKey = this.params.trackBy;
-    var oldFrags = this.frags;
-    var frags = this.frags = new Array(data.length);
-    var alias = this.alias;
-    var iterator = this.iterator;
-    var start = this.start;
-    var end = this.end;
-    var inDocument = inDoc(start);
-    var init = !oldFrags;
-    var i, l, frag, key, value, primitive;
-
-    // First pass, go through the new Array and fill up
-    // the new frags array. If a piece of data has a cached
-    // instance for it, we reuse it. Otherwise build a new
-    // instance.
-    for (i = 0, l = data.length; i < l; i++) {
-      item = data[i];
-      key = convertedFromObject ? item.$key : null;
-      value = convertedFromObject ? item.$value : item;
-      primitive = !isObject(value);
-      frag = !init && this.getCachedFrag(value, i, key);
-      if (frag) {
-        // reusable fragment
-        frag.reused = true;
-        // update $index
-        frag.scope.$index = i;
-        // update $key
-        if (key) {
-          frag.scope.$key = key;
-        }
-        // update iterator
-        if (iterator) {
-          frag.scope[iterator] = key !== null ? key : i;
-        }
-        // update data for track-by, object repeat &
-        // primitive values.
-        if (trackByKey || convertedFromObject || primitive) {
-          withoutConversion(function () {
-            frag.scope[alias] = value;
-          });
-        }
-      } else {
-        // new instance
-        frag = this.create(value, alias, i, key);
-        frag.fresh = !init;
-      }
-      frags[i] = frag;
-      if (init) {
-        frag.before(end);
-      }
-    }
-
-    // we're done for the initial render.
-    if (init) {
-      return;
-    }
-
-    // Second pass, go through the old fragments and
-    // destroy those who are not reused (and remove them
-    // from cache)
-    var removalIndex = 0;
-    var totalRemoved = oldFrags.length - frags.length;
-    // when removing a large number of fragments, watcher removal
-    // turns out to be a perf bottleneck, so we batch the watcher
-    // removals into a single filter call!
-    this.vm._vForRemoving = true;
-    for (i = 0, l = oldFrags.length; i < l; i++) {
-      frag = oldFrags[i];
-      if (!frag.reused) {
-        this.deleteCachedFrag(frag);
-        this.remove(frag, removalIndex++, totalRemoved, inDocument);
-      }
-    }
-    this.vm._vForRemoving = false;
-    if (removalIndex) {
-      this.vm._watchers = this.vm._watchers.filter(function (w) {
-        return w.active;
-      });
-    }
-
-    // Final pass, move/insert new fragments into the
-    // right place.
-    var targetPrev, prevEl, currentPrev;
-    var insertionIndex = 0;
-    for (i = 0, l = frags.length; i < l; i++) {
-      frag = frags[i];
-      // this is the frag that we should be after
-      targetPrev = frags[i - 1];
-      prevEl = targetPrev ? targetPrev.staggerCb ? targetPrev.staggerAnchor : targetPrev.end || targetPrev.node : start;
-      if (frag.reused && !frag.staggerCb) {
-        currentPrev = findPrevFrag(frag, start, this.id);
-        if (currentPrev !== targetPrev && (!currentPrev ||
-        // optimization for moving a single item.
-        // thanks to suggestions by @livoras in #1807
-        findPrevFrag(currentPrev, start, this.id) !== targetPrev)) {
-          this.move(frag, prevEl);
-        }
-      } else {
-        // new instance, or still in stagger.
-        // insert with updated stagger index.
-        this.insert(frag, insertionIndex++, prevEl, inDocument);
-      }
-      frag.reused = frag.fresh = false;
-    }
-  },
-
-  /**
-   * Create a new fragment instance.
-   *
-   * @param {*} value
-   * @param {String} alias
-   * @param {Number} index
-   * @param {String} [key]
-   * @return {Fragment}
-   */
-
-  create: function create(value, alias, index, key) {
-    var host = this._host;
-    // create iteration scope
-    var parentScope = this._scope || this.vm;
-    var scope = Object.create(parentScope);
-    // ref holder for the scope
-    scope.$refs = Object.create(parentScope.$refs);
-    scope.$els = Object.create(parentScope.$els);
-    // make sure point $parent to parent scope
-    scope.$parent = parentScope;
-    // for two-way binding on alias
-    scope.$forContext = this;
-    // define scope properties
-    // important: define the scope alias without forced conversion
-    // so that frozen data structures remain non-reactive.
-    withoutConversion(function () {
-      defineReactive(scope, alias, value);
-    });
-    defineReactive(scope, '$index', index);
-    if (key) {
-      defineReactive(scope, '$key', key);
-    } else if (scope.$key) {
-      // avoid accidental fallback
-      def(scope, '$key', null);
-    }
-    if (this.iterator) {
-      defineReactive(scope, this.iterator, key !== null ? key : index);
-    }
-    var frag = this.factory.create(host, scope, this._frag);
-    frag.forId = this.id;
-    this.cacheFrag(value, frag, index, key);
-    return frag;
-  },
-
-  /**
-   * Update the v-ref on owner vm.
-   */
-
-  updateRef: function updateRef() {
-    var ref = this.descriptor.ref;
-    if (!ref) return;
-    var hash = (this._scope || this.vm).$refs;
-    var refs;
-    if (!this.fromObject) {
-      refs = this.frags.map(findVmFromFrag);
-    } else {
-      refs = {};
-      this.frags.forEach(function (frag) {
-        refs[frag.scope.$key] = findVmFromFrag(frag);
-      });
-    }
-    hash[ref] = refs;
-  },
-
-  /**
-   * For option lists, update the containing v-model on
-   * parent <select>.
-   */
-
-  updateModel: function updateModel() {
-    if (this.isOption) {
-      var parent = this.start.parentNode;
-      var model = parent && parent.__v_model;
-      if (model) {
-        model.forceUpdate();
-      }
-    }
-  },
-
-  /**
-   * Insert a fragment. Handles staggering.
-   *
-   * @param {Fragment} frag
-   * @param {Number} index
-   * @param {Node} prevEl
-   * @param {Boolean} inDocument
-   */
-
-  insert: function insert(frag, index, prevEl, inDocument) {
-    if (frag.staggerCb) {
-      frag.staggerCb.cancel();
-      frag.staggerCb = null;
-    }
-    var staggerAmount = this.getStagger(frag, index, null, 'enter');
-    if (inDocument && staggerAmount) {
-      // create an anchor and insert it synchronously,
-      // so that we can resolve the correct order without
-      // worrying about some elements not inserted yet
-      var anchor = frag.staggerAnchor;
-      if (!anchor) {
-        anchor = frag.staggerAnchor = createAnchor('stagger-anchor');
-        anchor.__v_frag = frag;
-      }
-      after(anchor, prevEl);
-      var op = frag.staggerCb = cancellable(function () {
-        frag.staggerCb = null;
-        frag.before(anchor);
-        remove(anchor);
-      });
-      setTimeout(op, staggerAmount);
-    } else {
-      var target = prevEl.nextSibling;
-      /* istanbul ignore if */
-      if (!target) {
-        // reset end anchor position in case the position was messed up
-        // by an external drag-n-drop library.
-        after(this.end, prevEl);
-        target = this.end;
-      }
-      frag.before(target);
-    }
-  },
-
-  /**
-   * Remove a fragment. Handles staggering.
-   *
-   * @param {Fragment} frag
-   * @param {Number} index
-   * @param {Number} total
-   * @param {Boolean} inDocument
-   */
-
-  remove: function remove(frag, index, total, inDocument) {
-    if (frag.staggerCb) {
-      frag.staggerCb.cancel();
-      frag.staggerCb = null;
-      // it's not possible for the same frag to be removed
-      // twice, so if we have a pending stagger callback,
-      // it means this frag is queued for enter but removed
-      // before its transition started. Since it is already
-      // destroyed, we can just leave it in detached state.
-      return;
-    }
-    var staggerAmount = this.getStagger(frag, index, total, 'leave');
-    if (inDocument && staggerAmount) {
-      var op = frag.staggerCb = cancellable(function () {
-        frag.staggerCb = null;
-        frag.remove();
-      });
-      setTimeout(op, staggerAmount);
-    } else {
-      frag.remove();
-    }
-  },
-
-  /**
-   * Move a fragment to a new position.
-   * Force no transition.
-   *
-   * @param {Fragment} frag
-   * @param {Node} prevEl
-   */
-
-  move: function move(frag, prevEl) {
-    // fix a common issue with Sortable:
-    // if prevEl doesn't have nextSibling, this means it's
-    // been dragged after the end anchor. Just re-position
-    // the end anchor to the end of the container.
-    /* istanbul ignore if */
-    if (!prevEl.nextSibling) {
-      this.end.parentNode.appendChild(this.end);
-    }
-    frag.before(prevEl.nextSibling, false);
-  },
-
-  /**
-   * Cache a fragment using track-by or the object key.
-   *
-   * @param {*} value
-   * @param {Fragment} frag
-   * @param {Number} index
-   * @param {String} [key]
-   */
-
-  cacheFrag: function cacheFrag(value, frag, index, key) {
-    var trackByKey = this.params.trackBy;
-    var cache = this.cache;
-    var primitive = !isObject(value);
-    var id;
-    if (key || trackByKey || primitive) {
-      id = getTrackByKey(index, key, value, trackByKey);
-      if (!cache[id]) {
-        cache[id] = frag;
-      } else if (trackByKey !== '$index') {
-        process.env.NODE_ENV !== 'production' && this.warnDuplicate(value);
-      }
-    } else {
-      id = this.id;
-      if (hasOwn(value, id)) {
-        if (value[id] === null) {
-          value[id] = frag;
-        } else {
-          process.env.NODE_ENV !== 'production' && this.warnDuplicate(value);
-        }
-      } else if (Object.isExtensible(value)) {
-        def(value, id, frag);
-      } else if (process.env.NODE_ENV !== 'production') {
-        warn('Frozen v-for objects cannot be automatically tracked, make sure to ' + 'provide a track-by key.');
-      }
-    }
-    frag.raw = value;
-  },
-
-  /**
-   * Get a cached fragment from the value/index/key
-   *
-   * @param {*} value
-   * @param {Number} index
-   * @param {String} key
-   * @return {Fragment}
-   */
-
-  getCachedFrag: function getCachedFrag(value, index, key) {
-    var trackByKey = this.params.trackBy;
-    var primitive = !isObject(value);
-    var frag;
-    if (key || trackByKey || primitive) {
-      var id = getTrackByKey(index, key, value, trackByKey);
-      frag = this.cache[id];
-    } else {
-      frag = value[this.id];
-    }
-    if (frag && (frag.reused || frag.fresh)) {
-      process.env.NODE_ENV !== 'production' && this.warnDuplicate(value);
-    }
-    return frag;
-  },
-
-  /**
-   * Delete a fragment from cache.
-   *
-   * @param {Fragment} frag
-   */
-
-  deleteCachedFrag: function deleteCachedFrag(frag) {
-    var value = frag.raw;
-    var trackByKey = this.params.trackBy;
-    var scope = frag.scope;
-    var index = scope.$index;
-    // fix #948: avoid accidentally fall through to
-    // a parent repeater which happens to have $key.
-    var key = hasOwn(scope, '$key') && scope.$key;
-    var primitive = !isObject(value);
-    if (trackByKey || key || primitive) {
-      var id = getTrackByKey(index, key, value, trackByKey);
-      this.cache[id] = null;
-    } else {
-      value[this.id] = null;
-      frag.raw = null;
-    }
-  },
-
-  /**
-   * Get the stagger amount for an insertion/removal.
-   *
-   * @param {Fragment} frag
-   * @param {Number} index
-   * @param {Number} total
-   * @param {String} type
-   */
-
-  getStagger: function getStagger(frag, index, total, type) {
-    type = type + 'Stagger';
-    var trans = frag.node.__v_trans;
-    var hooks = trans && trans.hooks;
-    var hook = hooks && (hooks[type] || hooks.stagger);
-    return hook ? hook.call(frag, index, total) : index * parseInt(this.params[type] || this.params.stagger, 10);
-  },
-
-  /**
-   * Pre-process the value before piping it through the
-   * filters. This is passed to and called by the watcher.
-   */
-
-  _preProcess: function _preProcess(value) {
-    // regardless of type, store the un-filtered raw value.
-    this.rawValue = value;
-    return value;
-  },
-
-  /**
-   * Post-process the value after it has been piped through
-   * the filters. This is passed to and called by the watcher.
-   *
-   * It is necessary for this to be called during the
-   * watcher's dependency collection phase because we want
-   * the v-for to update when the source Object is mutated.
-   */
-
-  _postProcess: function _postProcess(value) {
-    if (isArray(value)) {
-      return value;
-    } else if (isPlainObject(value)) {
-      // convert plain object to array.
-      var keys = Object.keys(value);
-      var i = keys.length;
-      var res = new Array(i);
-      var key;
-      while (i--) {
-        key = keys[i];
-        res[i] = {
-          $key: key,
-          $value: value[key]
-        };
-      }
-      return res;
-    } else {
-      if (typeof value === 'number' && !isNaN(value)) {
-        value = range(value);
-      }
-      return value || [];
-    }
-  },
-
-  unbind: function unbind() {
-    if (this.descriptor.ref) {
-      (this._scope || this.vm).$refs[this.descriptor.ref] = null;
-    }
-    if (this.frags) {
-      var i = this.frags.length;
-      var frag;
-      while (i--) {
-        frag = this.frags[i];
-        this.deleteCachedFrag(frag);
-        frag.destroy();
-      }
-    }
-  }
-};
-
-/**
- * Helper to find the previous element that is a fragment
- * anchor. This is necessary because a destroyed frag's
- * element could still be lingering in the DOM before its
- * leaving transition finishes, but its inserted flag
- * should have been set to false so we can skip them.
- *
- * If this is a block repeat, we want to make sure we only
- * return frag that is bound to this v-for. (see #929)
- *
- * @param {Fragment} frag
- * @param {Comment|Text} anchor
- * @param {String} id
- * @return {Fragment}
- */
-
-function findPrevFrag(frag, anchor, id) {
-  var el = frag.node.previousSibling;
-  /* istanbul ignore if */
-  if (!el) return;
-  frag = el.__v_frag;
-  while ((!frag || frag.forId !== id || !frag.inserted) && el !== anchor) {
-    el = el.previousSibling;
-    /* istanbul ignore if */
-    if (!el) return;
-    frag = el.__v_frag;
-  }
-  return frag;
-}
-
-/**
- * Create a range array from given number.
- *
- * @param {Number} n
- * @return {Array}
- */
-
-function range(n) {
-  var i = -1;
-  var ret = new Array(Math.floor(n));
-  while (++i < n) {
-    ret[i] = i;
-  }
-  return ret;
-}
-
-/**
- * Get the track by key for an item.
- *
- * @param {Number} index
- * @param {String} key
- * @param {*} value
- * @param {String} [trackByKey]
- */
-
-function getTrackByKey(index, key, value, trackByKey) {
-  return trackByKey ? trackByKey === '$index' ? index : trackByKey.charAt(0).match(/\w/) ? getPath(value, trackByKey) : value[trackByKey] : key || value;
-}
-
-if (process.env.NODE_ENV !== 'production') {
-  vFor.warnDuplicate = function (value) {
-    warn('Duplicate value found in v-for="' + this.descriptor.raw + '": ' + JSON.stringify(value) + '. Use track-by="$index" if ' + 'you are expecting duplicate values.', this.vm);
+function proxy (target, sourceKey, key) {
+  sharedPropertyDefinition.get = function proxyGetter () {
+    return this[sourceKey][key]
   };
-}
-
-/**
- * Find a vm from a fragment.
- *
- * @param {Fragment} frag
- * @return {Vue|undefined}
- */
-
-function findVmFromFrag(frag) {
-  var node = frag.node;
-  // handle multi-node frag
-  if (frag.end) {
-    while (!node.__vue__ && node !== frag.end && node.nextSibling) {
-      node = node.nextSibling;
-    }
-  }
-  return node.__vue__;
-}
-
-var vIf = {
-
-  priority: IF,
-  terminal: true,
-
-  bind: function bind() {
-    var el = this.el;
-    if (!el.__vue__) {
-      // check else block
-      var next = el.nextElementSibling;
-      if (next && getAttr(next, 'v-else') !== null) {
-        remove(next);
-        this.elseEl = next;
-      }
-      // check main block
-      this.anchor = createAnchor('v-if');
-      replace(el, this.anchor);
-    } else {
-      process.env.NODE_ENV !== 'production' && warn('v-if="' + this.expression + '" cannot be ' + 'used on an instance root element.', this.vm);
-      this.invalid = true;
-    }
-  },
-
-  update: function update(value) {
-    if (this.invalid) return;
-    if (value) {
-      if (!this.frag) {
-        this.insert();
-      }
-    } else {
-      this.remove();
-    }
-  },
-
-  insert: function insert() {
-    if (this.elseFrag) {
-      this.elseFrag.remove();
-      this.elseFrag = null;
-    }
-    // lazy init factory
-    if (!this.factory) {
-      this.factory = new FragmentFactory(this.vm, this.el);
-    }
-    this.frag = this.factory.create(this._host, this._scope, this._frag);
-    this.frag.before(this.anchor);
-  },
-
-  remove: function remove() {
-    if (this.frag) {
-      this.frag.remove();
-      this.frag = null;
-    }
-    if (this.elseEl && !this.elseFrag) {
-      if (!this.elseFactory) {
-        this.elseFactory = new FragmentFactory(this.elseEl._context || this.vm, this.elseEl);
-      }
-      this.elseFrag = this.elseFactory.create(this._host, this._scope, this._frag);
-      this.elseFrag.before(this.anchor);
-    }
-  },
-
-  unbind: function unbind() {
-    if (this.frag) {
-      this.frag.destroy();
-    }
-    if (this.elseFrag) {
-      this.elseFrag.destroy();
-    }
-  }
-};
-
-var show = {
-
-  bind: function bind() {
-    // check else block
-    var next = this.el.nextElementSibling;
-    if (next && getAttr(next, 'v-else') !== null) {
-      this.elseEl = next;
-    }
-  },
-
-  update: function update(value) {
-    this.apply(this.el, value);
-    if (this.elseEl) {
-      this.apply(this.elseEl, !value);
-    }
-  },
-
-  apply: function apply(el, value) {
-    if (inDoc(el)) {
-      applyTransition(el, value ? 1 : -1, toggle, this.vm);
-    } else {
-      toggle();
-    }
-    function toggle() {
-      el.style.display = value ? '' : 'none';
-    }
-  }
-};
-
-var text$2 = {
-
-  bind: function bind() {
-    var self = this;
-    var el = this.el;
-    var isRange = el.type === 'range';
-    var lazy = this.params.lazy;
-    var number = this.params.number;
-    var debounce = this.params.debounce;
-
-    // handle composition events.
-    //   http://blog.evanyou.me/2014/01/03/composition-event/
-    // skip this for Android because it handles composition
-    // events quite differently. Android doesn't trigger
-    // composition events for language input methods e.g.
-    // Chinese, but instead triggers them for spelling
-    // suggestions... (see Discussion/#162)
-    var composing = false;
-    if (!isAndroid && !isRange) {
-      this.on('compositionstart', function () {
-        composing = true;
-      });
-      this.on('compositionend', function () {
-        composing = false;
-        // in IE11 the "compositionend" event fires AFTER
-        // the "input" event, so the input handler is blocked
-        // at the end... have to call it here.
-        //
-        // #1327: in lazy mode this is unecessary.
-        if (!lazy) {
-          self.listener();
-        }
-      });
-    }
-
-    // prevent messing with the input when user is typing,
-    // and force update on blur.
-    this.focused = false;
-    if (!isRange && !lazy) {
-      this.on('focus', function () {
-        self.focused = true;
-      });
-      this.on('blur', function () {
-        self.focused = false;
-        // do not sync value after fragment removal (#2017)
-        if (!self._frag || self._frag.inserted) {
-          self.rawListener();
-        }
-      });
-    }
-
-    // Now attach the main listener
-    this.listener = this.rawListener = function () {
-      if (composing || !self._bound) {
-        return;
-      }
-      var val = number || isRange ? toNumber(el.value) : el.value;
-      self.set(val);
-      // force update on next tick to avoid lock & same value
-      // also only update when user is not typing
-      nextTick(function () {
-        if (self._bound && !self.focused) {
-          self.update(self._watcher.value);
-        }
-      });
-    };
-
-    // apply debounce
-    if (debounce) {
-      this.listener = _debounce(this.listener, debounce);
-    }
-
-    // Support jQuery events, since jQuery.trigger() doesn't
-    // trigger native events in some cases and some plugins
-    // rely on $.trigger()
-    //
-    // We want to make sure if a listener is attached using
-    // jQuery, it is also removed with jQuery, that's why
-    // we do the check for each directive instance and
-    // store that check result on itself. This also allows
-    // easier test coverage control by unsetting the global
-    // jQuery variable in tests.
-    this.hasjQuery = typeof jQuery === 'function';
-    if (this.hasjQuery) {
-      var method = jQuery.fn.on ? 'on' : 'bind';
-      jQuery(el)[method]('change', this.rawListener);
-      if (!lazy) {
-        jQuery(el)[method]('input', this.listener);
-      }
-    } else {
-      this.on('change', this.rawListener);
-      if (!lazy) {
-        this.on('input', this.listener);
-      }
-    }
-
-    // IE9 doesn't fire input event on backspace/del/cut
-    if (!lazy && isIE9) {
-      this.on('cut', function () {
-        nextTick(self.listener);
-      });
-      this.on('keyup', function (e) {
-        if (e.keyCode === 46 || e.keyCode === 8) {
-          self.listener();
-        }
-      });
-    }
-
-    // set initial value if present
-    if (el.hasAttribute('value') || el.tagName === 'TEXTAREA' && el.value.trim()) {
-      this.afterBind = this.listener;
-    }
-  },
-
-  update: function update(value) {
-    // #3029 only update when the value changes. This prevent
-    // browsers from overwriting values like selectionStart
-    value = _toString(value);
-    if (value !== this.el.value) this.el.value = value;
-  },
-
-  unbind: function unbind() {
-    var el = this.el;
-    if (this.hasjQuery) {
-      var method = jQuery.fn.off ? 'off' : 'unbind';
-      jQuery(el)[method]('change', this.listener);
-      jQuery(el)[method]('input', this.listener);
-    }
-  }
-};
-
-var radio = {
-
-  bind: function bind() {
-    var self = this;
-    var el = this.el;
-
-    this.getValue = function () {
-      // value overwrite via v-bind:value
-      if (el.hasOwnProperty('_value')) {
-        return el._value;
-      }
-      var val = el.value;
-      if (self.params.number) {
-        val = toNumber(val);
-      }
-      return val;
-    };
-
-    this.listener = function () {
-      self.set(self.getValue());
-    };
-    this.on('change', this.listener);
-
-    if (el.hasAttribute('checked')) {
-      this.afterBind = this.listener;
-    }
-  },
-
-  update: function update(value) {
-    this.el.checked = looseEqual(value, this.getValue());
-  }
-};
-
-var select = {
-
-  bind: function bind() {
-    var _this = this;
-
-    var self = this;
-    var el = this.el;
-
-    // method to force update DOM using latest value.
-    this.forceUpdate = function () {
-      if (self._watcher) {
-        self.update(self._watcher.get());
-      }
-    };
-
-    // check if this is a multiple select
-    var multiple = this.multiple = el.hasAttribute('multiple');
-
-    // attach listener
-    this.listener = function () {
-      var value = getValue(el, multiple);
-      value = self.params.number ? isArray(value) ? value.map(toNumber) : toNumber(value) : value;
-      self.set(value);
-    };
-    this.on('change', this.listener);
-
-    // if has initial value, set afterBind
-    var initValue = getValue(el, multiple, true);
-    if (multiple && initValue.length || !multiple && initValue !== null) {
-      this.afterBind = this.listener;
-    }
-
-    // All major browsers except Firefox resets
-    // selectedIndex with value -1 to 0 when the element
-    // is appended to a new parent, therefore we have to
-    // force a DOM update whenever that happens...
-    this.vm.$on('hook:attached', function () {
-      nextTick(_this.forceUpdate);
-    });
-    if (!inDoc(el)) {
-      nextTick(this.forceUpdate);
-    }
-  },
-
-  update: function update(value) {
-    var el = this.el;
-    el.selectedIndex = -1;
-    var multi = this.multiple && isArray(value);
-    var options = el.options;
-    var i = options.length;
-    var op, val;
-    while (i--) {
-      op = options[i];
-      val = op.hasOwnProperty('_value') ? op._value : op.value;
-      /* eslint-disable eqeqeq */
-      op.selected = multi ? indexOf$1(value, val) > -1 : looseEqual(value, val);
-      /* eslint-enable eqeqeq */
-    }
-  },
-
-  unbind: function unbind() {
-    /* istanbul ignore next */
-    this.vm.$off('hook:attached', this.forceUpdate);
-  }
-};
-
-/**
- * Get select value
- *
- * @param {SelectElement} el
- * @param {Boolean} multi
- * @param {Boolean} init
- * @return {Array|*}
- */
-
-function getValue(el, multi, init) {
-  var res = multi ? [] : null;
-  var op, val, selected;
-  for (var i = 0, l = el.options.length; i < l; i++) {
-    op = el.options[i];
-    selected = init ? op.hasAttribute('selected') : op.selected;
-    if (selected) {
-      val = op.hasOwnProperty('_value') ? op._value : op.value;
-      if (multi) {
-        res.push(val);
-      } else {
-        return val;
-      }
-    }
-  }
-  return res;
-}
-
-/**
- * Native Array.indexOf uses strict equal, but in this
- * case we need to match string/numbers with custom equal.
- *
- * @param {Array} arr
- * @param {*} val
- */
-
-function indexOf$1(arr, val) {
-  var i = arr.length;
-  while (i--) {
-    if (looseEqual(arr[i], val)) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-var checkbox = {
-
-  bind: function bind() {
-    var self = this;
-    var el = this.el;
-
-    this.getValue = function () {
-      return el.hasOwnProperty('_value') ? el._value : self.params.number ? toNumber(el.value) : el.value;
-    };
-
-    function getBooleanValue() {
-      var val = el.checked;
-      if (val && el.hasOwnProperty('_trueValue')) {
-        return el._trueValue;
-      }
-      if (!val && el.hasOwnProperty('_falseValue')) {
-        return el._falseValue;
-      }
-      return val;
-    }
-
-    this.listener = function () {
-      var model = self._watcher.get();
-      if (isArray(model)) {
-        var val = self.getValue();
-        var i = indexOf(model, val);
-        if (el.checked) {
-          if (i < 0) {
-            self.set(model.concat(val));
-          }
-        } else if (i > -1) {
-          self.set(model.slice(0, i).concat(model.slice(i + 1)));
-        }
-      } else {
-        self.set(getBooleanValue());
-      }
-    };
-
-    this.on('change', this.listener);
-    if (el.hasAttribute('checked')) {
-      this.afterBind = this.listener;
-    }
-  },
-
-  update: function update(value) {
-    var el = this.el;
-    if (isArray(value)) {
-      el.checked = indexOf(value, this.getValue()) > -1;
-    } else {
-      if (el.hasOwnProperty('_trueValue')) {
-        el.checked = looseEqual(value, el._trueValue);
-      } else {
-        el.checked = !!value;
-      }
-    }
-  }
-};
-
-var handlers = {
-  text: text$2,
-  radio: radio,
-  select: select,
-  checkbox: checkbox
-};
-
-var model = {
-
-  priority: MODEL,
-  twoWay: true,
-  handlers: handlers,
-  params: ['lazy', 'number', 'debounce'],
-
-  /**
-   * Possible elements:
-   *   <select>
-   *   <textarea>
-   *   <input type="*">
-   *     - text
-   *     - checkbox
-   *     - radio
-   *     - number
-   */
-
-  bind: function bind() {
-    // friendly warning...
-    this.checkFilters();
-    if (this.hasRead && !this.hasWrite) {
-      process.env.NODE_ENV !== 'production' && warn('It seems you are using a read-only filter with ' + 'v-model="' + this.descriptor.raw + '". ' + 'You might want to use a two-way filter to ensure correct behavior.', this.vm);
-    }
-    var el = this.el;
-    var tag = el.tagName;
-    var handler;
-    if (tag === 'INPUT') {
-      handler = handlers[el.type] || handlers.text;
-    } else if (tag === 'SELECT') {
-      handler = handlers.select;
-    } else if (tag === 'TEXTAREA') {
-      handler = handlers.text;
-    } else {
-      process.env.NODE_ENV !== 'production' && warn('v-model does not support element type: ' + tag, this.vm);
-      return;
-    }
-    el.__v_model = this;
-    handler.bind.call(this);
-    this.update = handler.update;
-    this._unbind = handler.unbind;
-  },
-
-  /**
-   * Check read/write filter stats.
-   */
-
-  checkFilters: function checkFilters() {
-    var filters = this.filters;
-    if (!filters) return;
-    var i = filters.length;
-    while (i--) {
-      var filter = resolveAsset(this.vm.$options, 'filters', filters[i].name);
-      if (typeof filter === 'function' || filter.read) {
-        this.hasRead = true;
-      }
-      if (filter.write) {
-        this.hasWrite = true;
-      }
-    }
-  },
-
-  unbind: function unbind() {
-    this.el.__v_model = null;
-    this._unbind && this._unbind();
-  }
-};
-
-// keyCode aliases
-var keyCodes = {
-  esc: 27,
-  tab: 9,
-  enter: 13,
-  space: 32,
-  'delete': [8, 46],
-  up: 38,
-  left: 37,
-  right: 39,
-  down: 40
-};
-
-function keyFilter(handler, keys) {
-  var codes = keys.map(function (key) {
-    var charCode = key.charCodeAt(0);
-    if (charCode > 47 && charCode < 58) {
-      return parseInt(key, 10);
-    }
-    if (key.length === 1) {
-      charCode = key.toUpperCase().charCodeAt(0);
-      if (charCode > 64 && charCode < 91) {
-        return charCode;
-      }
-    }
-    return keyCodes[key];
-  });
-  codes = [].concat.apply([], codes);
-  return function keyHandler(e) {
-    if (codes.indexOf(e.keyCode) > -1) {
-      return handler.call(this, e);
-    }
+  sharedPropertyDefinition.set = function proxySetter (val) {
+    this[sourceKey][key] = val;
   };
+  Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
-function stopFilter(handler) {
-  return function stopHandler(e) {
-    e.stopPropagation();
-    return handler.call(this, e);
-  };
-}
-
-function preventFilter(handler) {
-  return function preventHandler(e) {
-    e.preventDefault();
-    return handler.call(this, e);
-  };
-}
-
-function selfFilter(handler) {
-  return function selfHandler(e) {
-    if (e.target === e.currentTarget) {
-      return handler.call(this, e);
-    }
-  };
-}
-
-var on$1 = {
-
-  priority: ON,
-  acceptStatement: true,
-  keyCodes: keyCodes,
-
-  bind: function bind() {
-    // deal with iframes
-    if (this.el.tagName === 'IFRAME' && this.arg !== 'load') {
-      var self = this;
-      this.iframeBind = function () {
-        on(self.el.contentWindow, self.arg, self.handler, self.modifiers.capture);
-      };
-      this.on('load', this.iframeBind);
-    }
-  },
-
-  update: function update(handler) {
-    // stub a noop for v-on with no value,
-    // e.g. @mousedown.prevent
-    if (!this.descriptor.raw) {
-      handler = function () {};
-    }
-
-    if (typeof handler !== 'function') {
-      process.env.NODE_ENV !== 'production' && warn('v-on:' + this.arg + '="' + this.expression + '" expects a function value, ' + 'got ' + handler, this.vm);
-      return;
-    }
-
-    // apply modifiers
-    if (this.modifiers.stop) {
-      handler = stopFilter(handler);
-    }
-    if (this.modifiers.prevent) {
-      handler = preventFilter(handler);
-    }
-    if (this.modifiers.self) {
-      handler = selfFilter(handler);
-    }
-    // key filter
-    var keys = Object.keys(this.modifiers).filter(function (key) {
-      return key !== 'stop' && key !== 'prevent' && key !== 'self' && key !== 'capture';
-    });
-    if (keys.length) {
-      handler = keyFilter(handler, keys);
-    }
-
-    this.reset();
-    this.handler = handler;
-
-    if (this.iframeBind) {
-      this.iframeBind();
-    } else {
-      on(this.el, this.arg, this.handler, this.modifiers.capture);
-    }
-  },
-
-  reset: function reset() {
-    var el = this.iframeBind ? this.el.contentWindow : this.el;
-    if (this.handler) {
-      off(el, this.arg, this.handler);
-    }
-  },
-
-  unbind: function unbind() {
-    this.reset();
-  }
-};
-
-var prefixes = ['-webkit-', '-moz-', '-ms-'];
-var camelPrefixes = ['Webkit', 'Moz', 'ms'];
-var importantRE = /!important;?$/;
-var propCache = Object.create(null);
-
-var testEl = null;
-
-var style = {
-
-  deep: true,
-
-  update: function update(value) {
-    if (typeof value === 'string') {
-      this.el.style.cssText = value;
-    } else if (isArray(value)) {
-      this.handleObject(value.reduce(extend, {}));
-    } else {
-      this.handleObject(value || {});
-    }
-  },
-
-  handleObject: function handleObject(value) {
-    // cache object styles so that only changed props
-    // are actually updated.
-    var cache = this.cache || (this.cache = {});
-    var name, val;
-    for (name in cache) {
-      if (!(name in value)) {
-        this.handleSingle(name, null);
-        delete cache[name];
-      }
-    }
-    for (name in value) {
-      val = value[name];
-      if (val !== cache[name]) {
-        cache[name] = val;
-        this.handleSingle(name, val);
-      }
-    }
-  },
-
-  handleSingle: function handleSingle(prop, value) {
-    prop = normalize(prop);
-    if (!prop) return; // unsupported prop
-    // cast possible numbers/booleans into strings
-    if (value != null) value += '';
-    if (value) {
-      var isImportant = importantRE.test(value) ? 'important' : '';
-      if (isImportant) {
-        /* istanbul ignore if */
-        if (process.env.NODE_ENV !== 'production') {
-          warn('It\'s probably a bad idea to use !important with inline rules. ' + 'This feature will be deprecated in a future version of Vue.');
-        }
-        value = value.replace(importantRE, '').trim();
-        this.el.style.setProperty(prop.kebab, value, isImportant);
-      } else {
-        this.el.style[prop.camel] = value;
-      }
-    } else {
-      this.el.style[prop.camel] = '';
-    }
-  }
-
-};
-
-/**
- * Normalize a CSS property name.
- * - cache result
- * - auto prefix
- * - camelCase -> dash-case
- *
- * @param {String} prop
- * @return {String}
- */
-
-function normalize(prop) {
-  if (propCache[prop]) {
-    return propCache[prop];
-  }
-  var res = prefix(prop);
-  propCache[prop] = propCache[res] = res;
-  return res;
-}
-
-/**
- * Auto detect the appropriate prefix for a CSS property.
- * https://gist.github.com/paulirish/523692
- *
- * @param {String} prop
- * @return {String}
- */
-
-function prefix(prop) {
-  prop = hyphenate(prop);
-  var camel = camelize(prop);
-  var upper = camel.charAt(0).toUpperCase() + camel.slice(1);
-  if (!testEl) {
-    testEl = document.createElement('div');
-  }
-  var i = prefixes.length;
-  var prefixed;
-  if (camel !== 'filter' && camel in testEl.style) {
-    return {
-      kebab: prop,
-      camel: camel
-    };
-  }
-  while (i--) {
-    prefixed = camelPrefixes[i] + upper;
-    if (prefixed in testEl.style) {
-      return {
-        kebab: prefixes[i] + prop,
-        camel: prefixed
-      };
-    }
-  }
-}
-
-// xlink
-var xlinkNS = 'http://www.w3.org/1999/xlink';
-var xlinkRE = /^xlink:/;
-
-// check for attributes that prohibit interpolations
-var disallowedInterpAttrRE = /^v-|^:|^@|^(?:is|transition|transition-mode|debounce|track-by|stagger|enter-stagger|leave-stagger)$/;
-// these attributes should also set their corresponding properties
-// because they only affect the initial state of the element
-var attrWithPropsRE = /^(?:value|checked|selected|muted)$/;
-// these attributes expect enumrated values of "true" or "false"
-// but are not boolean attributes
-var enumeratedAttrRE = /^(?:draggable|contenteditable|spellcheck)$/;
-
-// these attributes should set a hidden property for
-// binding v-model to object values
-var modelProps = {
-  value: '_value',
-  'true-value': '_trueValue',
-  'false-value': '_falseValue'
-};
-
-var bind$1 = {
-
-  priority: BIND,
-
-  bind: function bind() {
-    var attr = this.arg;
-    var tag = this.el.tagName;
-    // should be deep watch on object mode
-    if (!attr) {
-      this.deep = true;
-    }
-    // handle interpolation bindings
-    var descriptor = this.descriptor;
-    var tokens = descriptor.interp;
-    if (tokens) {
-      // handle interpolations with one-time tokens
-      if (descriptor.hasOneTime) {
-        this.expression = tokensToExp(tokens, this._scope || this.vm);
-      }
-
-      // only allow binding on native attributes
-      if (disallowedInterpAttrRE.test(attr) || attr === 'name' && (tag === 'PARTIAL' || tag === 'SLOT')) {
-        process.env.NODE_ENV !== 'production' && warn(attr + '="' + descriptor.raw + '": ' + 'attribute interpolation is not allowed in Vue.js ' + 'directives and special attributes.', this.vm);
-        this.el.removeAttribute(attr);
-        this.invalid = true;
-      }
-
-      /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production') {
-        var raw = attr + '="' + descriptor.raw + '": ';
-        // warn src
-        if (attr === 'src') {
-          warn(raw + 'interpolation in "src" attribute will cause ' + 'a 404 request. Use v-bind:src instead.', this.vm);
-        }
-
-        // warn style
-        if (attr === 'style') {
-          warn(raw + 'interpolation in "style" attribute will cause ' + 'the attribute to be discarded in Internet Explorer. ' + 'Use v-bind:style instead.', this.vm);
-        }
-      }
-    }
-  },
-
-  update: function update(value) {
-    if (this.invalid) {
-      return;
-    }
-    var attr = this.arg;
-    if (this.arg) {
-      this.handleSingle(attr, value);
-    } else {
-      this.handleObject(value || {});
-    }
-  },
-
-  // share object handler with v-bind:class
-  handleObject: style.handleObject,
-
-  handleSingle: function handleSingle(attr, value) {
-    var el = this.el;
-    var interp = this.descriptor.interp;
-    if (this.modifiers.camel) {
-      attr = camelize(attr);
-    }
-    if (!interp && attrWithPropsRE.test(attr) && attr in el) {
-      var attrValue = attr === 'value' ? value == null // IE9 will set input.value to "null" for null...
-      ? '' : value : value;
-
-      if (el[attr] !== attrValue) {
-        el[attr] = attrValue;
-      }
-    }
-    // set model props
-    var modelProp = modelProps[attr];
-    if (!interp && modelProp) {
-      el[modelProp] = value;
-      // update v-model if present
-      var model = el.__v_model;
-      if (model) {
-        model.listener();
-      }
-    }
-    // do not set value attribute for textarea
-    if (attr === 'value' && el.tagName === 'TEXTAREA') {
-      el.removeAttribute(attr);
-      return;
-    }
-    // update attribute
-    if (enumeratedAttrRE.test(attr)) {
-      el.setAttribute(attr, value ? 'true' : 'false');
-    } else if (value != null && value !== false) {
-      if (attr === 'class') {
-        // handle edge case #1960:
-        // class interpolation should not overwrite Vue transition class
-        if (el.__v_trans) {
-          value += ' ' + el.__v_trans.id + '-transition';
-        }
-        setClass(el, value);
-      } else if (xlinkRE.test(attr)) {
-        el.setAttributeNS(xlinkNS, attr, value === true ? '' : value);
-      } else {
-        el.setAttribute(attr, value === true ? '' : value);
-      }
-    } else {
-      el.removeAttribute(attr);
-    }
-  }
-};
-
-var el = {
-
-  priority: EL,
-
-  bind: function bind() {
-    /* istanbul ignore if */
-    if (!this.arg) {
-      return;
-    }
-    var id = this.id = camelize(this.arg);
-    var refs = (this._scope || this.vm).$els;
-    if (hasOwn(refs, id)) {
-      refs[id] = this.el;
-    } else {
-      defineReactive(refs, id, this.el);
-    }
-  },
-
-  unbind: function unbind() {
-    var refs = (this._scope || this.vm).$els;
-    if (refs[this.id] === this.el) {
-      refs[this.id] = null;
-    }
-  }
-};
-
-var ref = {
-  bind: function bind() {
-    process.env.NODE_ENV !== 'production' && warn('v-ref:' + this.arg + ' must be used on a child ' + 'component. Found on <' + this.el.tagName.toLowerCase() + '>.', this.vm);
-  }
-};
-
-var cloak = {
-  bind: function bind() {
-    var el = this.el;
-    this.vm.$once('pre-hook:compiled', function () {
-      el.removeAttribute('v-cloak');
-    });
-  }
-};
-
-// logic control
-// two-way binding
-// event handling
-// attributes
-// ref & el
-// cloak
-// must export plain object
-var directives = {
-  text: text$1,
-  html: html,
-  'for': vFor,
-  'if': vIf,
-  show: show,
-  model: model,
-  on: on$1,
-  bind: bind$1,
-  el: el,
-  ref: ref,
-  cloak: cloak
-};
-
-var vClass = {
-
-  deep: true,
-
-  update: function update(value) {
-    if (!value) {
-      this.cleanup();
-    } else if (typeof value === 'string') {
-      this.setClass(value.trim().split(/\s+/));
-    } else {
-      this.setClass(normalize$1(value));
-    }
-  },
-
-  setClass: function setClass(value) {
-    this.cleanup(value);
-    for (var i = 0, l = value.length; i < l; i++) {
-      var val = value[i];
-      if (val) {
-        apply(this.el, val, addClass);
-      }
-    }
-    this.prevKeys = value;
-  },
-
-  cleanup: function cleanup(value) {
-    var prevKeys = this.prevKeys;
-    if (!prevKeys) return;
-    var i = prevKeys.length;
-    while (i--) {
-      var key = prevKeys[i];
-      if (!value || value.indexOf(key) < 0) {
-        apply(this.el, key, removeClass);
-      }
-    }
-  }
-};
-
-/**
- * Normalize objects and arrays (potentially containing objects)
- * into array of strings.
- *
- * @param {Object|Array<String|Object>} value
- * @return {Array<String>}
- */
-
-function normalize$1(value) {
-  var res = [];
-  if (isArray(value)) {
-    for (var i = 0, l = value.length; i < l; i++) {
-      var _key = value[i];
-      if (_key) {
-        if (typeof _key === 'string') {
-          res.push(_key);
-        } else {
-          for (var k in _key) {
-            if (_key[k]) res.push(k);
-          }
-        }
-      }
-    }
-  } else if (isObject(value)) {
-    for (var key in value) {
-      if (value[key]) res.push(key);
-    }
-  }
-  return res;
-}
-
-/**
- * Add or remove a class/classes on an element
- *
- * @param {Element} el
- * @param {String} key The class name. This may or may not
- *                     contain a space character, in such a
- *                     case we'll deal with multiple class
- *                     names at once.
- * @param {Function} fn
- */
-
-function apply(el, key, fn) {
-  key = key.trim();
-  if (key.indexOf(' ') === -1) {
-    fn(el, key);
-    return;
-  }
-  // The key contains one or more space characters.
-  // Since a class name doesn't accept such characters, we
-  // treat it as multiple classes.
-  var keys = key.split(/\s+/);
-  for (var i = 0, l = keys.length; i < l; i++) {
-    fn(el, keys[i]);
-  }
-}
-
-var component = {
-
-  priority: COMPONENT,
-
-  params: ['keep-alive', 'transition-mode', 'inline-template'],
-
-  /**
-   * Setup. Two possible usages:
-   *
-   * - static:
-   *   <comp> or <div v-component="comp">
-   *
-   * - dynamic:
-   *   <component :is="view">
-   */
-
-  bind: function bind() {
-    if (!this.el.__vue__) {
-      // keep-alive cache
-      this.keepAlive = this.params.keepAlive;
-      if (this.keepAlive) {
-        this.cache = {};
-      }
-      // check inline-template
-      if (this.params.inlineTemplate) {
-        // extract inline template as a DocumentFragment
-        this.inlineTemplate = extractContent(this.el, true);
-      }
-      // component resolution related state
-      this.pendingComponentCb = this.Component = null;
-      // transition related state
-      this.pendingRemovals = 0;
-      this.pendingRemovalCb = null;
-      // create a ref anchor
-      this.anchor = createAnchor('v-component');
-      replace(this.el, this.anchor);
-      // remove is attribute.
-      // this is removed during compilation, but because compilation is
-      // cached, when the component is used elsewhere this attribute
-      // will remain at link time.
-      this.el.removeAttribute('is');
-      this.el.removeAttribute(':is');
-      // remove ref, same as above
-      if (this.descriptor.ref) {
-        this.el.removeAttribute('v-ref:' + hyphenate(this.descriptor.ref));
-      }
-      // if static, build right now.
-      if (this.literal) {
-        this.setComponent(this.expression);
-      }
-    } else {
-      process.env.NODE_ENV !== 'production' && warn('cannot mount component "' + this.expression + '" ' + 'on already mounted element: ' + this.el);
-    }
-  },
-
-  /**
-   * Public update, called by the watcher in the dynamic
-   * literal scenario, e.g. <component :is="view">
-   */
-
-  update: function update(value) {
-    if (!this.literal) {
-      this.setComponent(value);
-    }
-  },
-
-  /**
-   * Switch dynamic components. May resolve the component
-   * asynchronously, and perform transition based on
-   * specified transition mode. Accepts a few additional
-   * arguments specifically for vue-router.
-   *
-   * The callback is called when the full transition is
-   * finished.
-   *
-   * @param {String} value
-   * @param {Function} [cb]
-   */
-
-  setComponent: function setComponent(value, cb) {
-    this.invalidatePending();
-    if (!value) {
-      // just remove current
-      this.unbuild(true);
-      this.remove(this.childVM, cb);
-      this.childVM = null;
-    } else {
-      var self = this;
-      this.resolveComponent(value, function () {
-        self.mountComponent(cb);
-      });
-    }
-  },
-
-  /**
-   * Resolve the component constructor to use when creating
-   * the child vm.
-   *
-   * @param {String|Function} value
-   * @param {Function} cb
-   */
-
-  resolveComponent: function resolveComponent(value, cb) {
-    var self = this;
-    this.pendingComponentCb = cancellable(function (Component) {
-      self.ComponentName = Component.options.name || (typeof value === 'string' ? value : null);
-      self.Component = Component;
-      cb();
-    });
-    this.vm._resolveComponent(value, this.pendingComponentCb);
-  },
-
-  /**
-   * Create a new instance using the current constructor and
-   * replace the existing instance. This method doesn't care
-   * whether the new component and the old one are actually
-   * the same.
-   *
-   * @param {Function} [cb]
-   */
-
-  mountComponent: function mountComponent(cb) {
-    // actual mount
-    this.unbuild(true);
-    var self = this;
-    var activateHooks = this.Component.options.activate;
-    var cached = this.getCached();
-    var newComponent = this.build();
-    if (activateHooks && !cached) {
-      this.waitingFor = newComponent;
-      callActivateHooks(activateHooks, newComponent, function () {
-        if (self.waitingFor !== newComponent) {
-          return;
-        }
-        self.waitingFor = null;
-        self.transition(newComponent, cb);
-      });
-    } else {
-      // update ref for kept-alive component
-      if (cached) {
-        newComponent._updateRef();
-      }
-      this.transition(newComponent, cb);
-    }
-  },
-
-  /**
-   * When the component changes or unbinds before an async
-   * constructor is resolved, we need to invalidate its
-   * pending callback.
-   */
-
-  invalidatePending: function invalidatePending() {
-    if (this.pendingComponentCb) {
-      this.pendingComponentCb.cancel();
-      this.pendingComponentCb = null;
-    }
-  },
-
-  /**
-   * Instantiate/insert a new child vm.
-   * If keep alive and has cached instance, insert that
-   * instance; otherwise build a new one and cache it.
-   *
-   * @param {Object} [extraOptions]
-   * @return {Vue} - the created instance
-   */
-
-  build: function build(extraOptions) {
-    var cached = this.getCached();
-    if (cached) {
-      return cached;
-    }
-    if (this.Component) {
-      // default options
-      var options = {
-        name: this.ComponentName,
-        el: cloneNode(this.el),
-        template: this.inlineTemplate,
-        // make sure to add the child with correct parent
-        // if this is a transcluded component, its parent
-        // should be the transclusion host.
-        parent: this._host || this.vm,
-        // if no inline-template, then the compiled
-        // linker can be cached for better performance.
-        _linkerCachable: !this.inlineTemplate,
-        _ref: this.descriptor.ref,
-        _asComponent: true,
-        _isRouterView: this._isRouterView,
-        // if this is a transcluded component, context
-        // will be the common parent vm of this instance
-        // and its host.
-        _context: this.vm,
-        // if this is inside an inline v-for, the scope
-        // will be the intermediate scope created for this
-        // repeat fragment. this is used for linking props
-        // and container directives.
-        _scope: this._scope,
-        // pass in the owner fragment of this component.
-        // this is necessary so that the fragment can keep
-        // track of its contained components in order to
-        // call attach/detach hooks for them.
-        _frag: this._frag
-      };
-      // extra options
-      // in 1.0.0 this is used by vue-router only
-      /* istanbul ignore if */
-      if (extraOptions) {
-        extend(options, extraOptions);
-      }
-      var child = new this.Component(options);
-      if (this.keepAlive) {
-        this.cache[this.Component.cid] = child;
-      }
-      /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && this.el.hasAttribute('transition') && child._isFragment) {
-        warn('Transitions will not work on a fragment instance. ' + 'Template: ' + child.$options.template, child);
-      }
-      return child;
-    }
-  },
-
-  /**
-   * Try to get a cached instance of the current component.
-   *
-   * @return {Vue|undefined}
-   */
-
-  getCached: function getCached() {
-    return this.keepAlive && this.cache[this.Component.cid];
-  },
-
-  /**
-   * Teardown the current child, but defers cleanup so
-   * that we can separate the destroy and removal steps.
-   *
-   * @param {Boolean} defer
-   */
-
-  unbuild: function unbuild(defer) {
-    if (this.waitingFor) {
-      if (!this.keepAlive) {
-        this.waitingFor.$destroy();
-      }
-      this.waitingFor = null;
-    }
-    var child = this.childVM;
-    if (!child || this.keepAlive) {
-      if (child) {
-        // remove ref
-        child._inactive = true;
-        child._updateRef(true);
-      }
-      return;
-    }
-    // the sole purpose of `deferCleanup` is so that we can
-    // "deactivate" the vm right now and perform DOM removal
-    // later.
-    child.$destroy(false, defer);
-  },
-
-  /**
-   * Remove current destroyed child and manually do
-   * the cleanup after removal.
-   *
-   * @param {Function} cb
-   */
-
-  remove: function remove(child, cb) {
-    var keepAlive = this.keepAlive;
-    if (child) {
-      // we may have a component switch when a previous
-      // component is still being transitioned out.
-      // we want to trigger only one lastest insertion cb
-      // when the existing transition finishes. (#1119)
-      this.pendingRemovals++;
-      this.pendingRemovalCb = cb;
-      var self = this;
-      child.$remove(function () {
-        self.pendingRemovals--;
-        if (!keepAlive) child._cleanup();
-        if (!self.pendingRemovals && self.pendingRemovalCb) {
-          self.pendingRemovalCb();
-          self.pendingRemovalCb = null;
-        }
-      });
-    } else if (cb) {
-      cb();
-    }
-  },
-
-  /**
-   * Actually swap the components, depending on the
-   * transition mode. Defaults to simultaneous.
-   *
-   * @param {Vue} target
-   * @param {Function} [cb]
-   */
-
-  transition: function transition(target, cb) {
-    var self = this;
-    var current = this.childVM;
-    // for devtool inspection
-    if (current) current._inactive = true;
-    target._inactive = false;
-    this.childVM = target;
-    switch (self.params.transitionMode) {
-      case 'in-out':
-        target.$before(self.anchor, function () {
-          self.remove(current, cb);
-        });
-        break;
-      case 'out-in':
-        self.remove(current, function () {
-          target.$before(self.anchor, cb);
-        });
-        break;
-      default:
-        self.remove(current);
-        target.$before(self.anchor, cb);
-    }
-  },
-
-  /**
-   * Unbind.
-   */
-
-  unbind: function unbind() {
-    this.invalidatePending();
-    // Do not defer cleanup when unbinding
-    this.unbuild();
-    // destroy all keep-alive cached instances
-    if (this.cache) {
-      for (var key in this.cache) {
-        this.cache[key].$destroy();
-      }
-      this.cache = null;
-    }
-  }
-};
-
-/**
- * Call activate hooks in order (asynchronous)
- *
- * @param {Array} hooks
- * @param {Vue} vm
- * @param {Function} cb
- */
-
-function callActivateHooks(hooks, vm, cb) {
-  var total = hooks.length;
-  var called = 0;
-  hooks[0].call(vm, next);
-  function next() {
-    if (++called >= total) {
-      cb();
-    } else {
-      hooks[called].call(vm, next);
-    }
-  }
-}
-
-var propBindingModes = config._propBindingModes;
-var empty = {};
-
-// regexes
-var identRE$1 = /^[$_a-zA-Z]+[\w$]*$/;
-var settablePathRE = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*|\[[^\[\]]+\])*$/;
-
-/**
- * Compile props on a root element and return
- * a props link function.
- *
- * @param {Element|DocumentFragment} el
- * @param {Array} propOptions
- * @param {Vue} vm
- * @return {Function} propsLinkFn
- */
-
-function compileProps(el, propOptions, vm) {
-  var props = [];
-  var propsData = vm.$options.propsData;
-  var names = Object.keys(propOptions);
-  var i = names.length;
-  var options, name, attr, value, path, parsed, prop;
-  while (i--) {
-    name = names[i];
-    options = propOptions[name] || empty;
-
-    if (process.env.NODE_ENV !== 'production' && name === '$data') {
-      warn('Do not use $data as prop.', vm);
-      continue;
-    }
-
-    // props could contain dashes, which will be
-    // interpreted as minus calculations by the parser
-    // so we need to camelize the path here
-    path = camelize(name);
-    if (!identRE$1.test(path)) {
-      process.env.NODE_ENV !== 'production' && warn('Invalid prop key: "' + name + '". Prop keys ' + 'must be valid identifiers.', vm);
-      continue;
-    }
-
-    prop = {
-      name: name,
-      path: path,
-      options: options,
-      mode: propBindingModes.ONE_WAY,
-      raw: null
-    };
-
-    attr = hyphenate(name);
-    // first check dynamic version
-    if ((value = getBindAttr(el, attr)) === null) {
-      if ((value = getBindAttr(el, attr + '.sync')) !== null) {
-        prop.mode = propBindingModes.TWO_WAY;
-      } else if ((value = getBindAttr(el, attr + '.once')) !== null) {
-        prop.mode = propBindingModes.ONE_TIME;
-      }
-    }
-    if (value !== null) {
-      // has dynamic binding!
-      prop.raw = value;
-      parsed = parseDirective(value);
-      value = parsed.expression;
-      prop.filters = parsed.filters;
-      // check binding type
-      if (isLiteral(value) && !parsed.filters) {
-        // for expressions containing literal numbers and
-        // booleans, there's no need to setup a prop binding,
-        // so we can optimize them as a one-time set.
-        prop.optimizedLiteral = true;
-      } else {
-        prop.dynamic = true;
-        // check non-settable path for two-way bindings
-        if (process.env.NODE_ENV !== 'production' && prop.mode === propBindingModes.TWO_WAY && !settablePathRE.test(value)) {
-          prop.mode = propBindingModes.ONE_WAY;
-          warn('Cannot bind two-way prop with non-settable ' + 'parent path: ' + value, vm);
-        }
-      }
-      prop.parentPath = value;
-
-      // warn required two-way
-      if (process.env.NODE_ENV !== 'production' && options.twoWay && prop.mode !== propBindingModes.TWO_WAY) {
-        warn('Prop "' + name + '" expects a two-way binding type.', vm);
-      }
-    } else if ((value = getAttr(el, attr)) !== null) {
-      // has literal binding!
-      prop.raw = value;
-    } else if (propsData && (value = propsData[name] || propsData[path]) !== null) {
-      // has propsData
-      prop.raw = value;
-    } else if (process.env.NODE_ENV !== 'production') {
-      // check possible camelCase prop usage
-      var lowerCaseName = path.toLowerCase();
-      value = /[A-Z\-]/.test(name) && (el.getAttribute(lowerCaseName) || el.getAttribute(':' + lowerCaseName) || el.getAttribute('v-bind:' + lowerCaseName) || el.getAttribute(':' + lowerCaseName + '.once') || el.getAttribute('v-bind:' + lowerCaseName + '.once') || el.getAttribute(':' + lowerCaseName + '.sync') || el.getAttribute('v-bind:' + lowerCaseName + '.sync'));
-      if (value) {
-        warn('Possible usage error for prop `' + lowerCaseName + '` - ' + 'did you mean `' + attr + '`? HTML is case-insensitive, remember to use ' + 'kebab-case for props in templates.', vm);
-      } else if (options.required && (!propsData || !(name in propsData) && !(path in propsData))) {
-        // warn missing required
-        warn('Missing required prop: ' + name, vm);
-      }
-    }
-    // push prop
-    props.push(prop);
-  }
-  return makePropsLinkFn(props);
-}
-
-/**
- * Build a function that applies props to a vm.
- *
- * @param {Array} props
- * @return {Function} propsLinkFn
- */
-
-function makePropsLinkFn(props) {
-  return function propsLinkFn(vm, scope) {
-    // store resolved props info
-    vm._props = {};
-    var inlineProps = vm.$options.propsData;
-    var i = props.length;
-    var prop, path, options, value, raw;
-    while (i--) {
-      prop = props[i];
-      raw = prop.raw;
-      path = prop.path;
-      options = prop.options;
-      vm._props[path] = prop;
-      if (inlineProps && hasOwn(inlineProps, path)) {
-        initProp(vm, prop, inlineProps[path]);
-      }if (raw === null) {
-        // initialize absent prop
-        initProp(vm, prop, undefined);
-      } else if (prop.dynamic) {
-        // dynamic prop
-        if (prop.mode === propBindingModes.ONE_TIME) {
-          // one time binding
-          value = (scope || vm._context || vm).$get(prop.parentPath);
-          initProp(vm, prop, value);
-        } else {
-          if (vm._context) {
-            // dynamic binding
-            vm._bindDir({
-              name: 'prop',
-              def: propDef,
-              prop: prop
-            }, null, null, scope); // el, host, scope
-          } else {
-              // root instance
-              initProp(vm, prop, vm.$get(prop.parentPath));
-            }
-        }
-      } else if (prop.optimizedLiteral) {
-        // optimized literal, cast it and just set once
-        var stripped = stripQuotes(raw);
-        value = stripped === raw ? toBoolean(toNumber(raw)) : stripped;
-        initProp(vm, prop, value);
-      } else {
-        // string literal, but we need to cater for
-        // Boolean props with no value, or with same
-        // literal value (e.g. disabled="disabled")
-        // see https://github.com/vuejs/vue-loader/issues/182
-        value = options.type === Boolean && (raw === '' || raw === hyphenate(prop.name)) ? true : raw;
-        initProp(vm, prop, value);
-      }
-    }
-  };
-}
-
-/**
- * Process a prop with a rawValue, applying necessary coersions,
- * default values & assertions and call the given callback with
- * processed value.
- *
- * @param {Vue} vm
- * @param {Object} prop
- * @param {*} rawValue
- * @param {Function} fn
- */
-
-function processPropValue(vm, prop, rawValue, fn) {
-  var isSimple = prop.dynamic && isSimplePath(prop.parentPath);
-  var value = rawValue;
-  if (value === undefined) {
-    value = getPropDefaultValue(vm, prop);
-  }
-  value = coerceProp(prop, value, vm);
-  var coerced = value !== rawValue;
-  if (!assertProp(prop, value, vm)) {
-    value = undefined;
-  }
-  if (isSimple && !coerced) {
-    withoutConversion(function () {
-      fn(value);
-    });
+function initState (vm) {
+  vm._watchers = [];
+  var opts = vm.$options;
+  if (opts.props) { initProps(vm, opts.props); }
+  if (opts.methods) { initMethods(vm, opts.methods); }
+  if (opts.data) {
+    initData(vm);
   } else {
-    fn(value);
+    observe(vm._data = {}, true /* asRootData */);
   }
+  if (opts.computed) { initComputed(vm, opts.computed); }
+  if (opts.watch) { initWatch(vm, opts.watch); }
 }
 
-/**
- * Set a prop's initial value on a vm and its data object.
- *
- * @param {Vue} vm
- * @param {Object} prop
- * @param {*} value
- */
+var isReservedProp = { key: 1, ref: 1, slot: 1 };
 
-function initProp(vm, prop, value) {
-  processPropValue(vm, prop, value, function (value) {
-    defineReactive(vm, prop.path, value);
-  });
-}
-
-/**
- * Update a prop's value on a vm.
- *
- * @param {Vue} vm
- * @param {Object} prop
- * @param {*} value
- */
-
-function updateProp(vm, prop, value) {
-  processPropValue(vm, prop, value, function (value) {
-    vm[prop.path] = value;
-  });
-}
-
-/**
- * Get the default value of a prop.
- *
- * @param {Vue} vm
- * @param {Object} prop
- * @return {*}
- */
-
-function getPropDefaultValue(vm, prop) {
-  // no default, return undefined
-  var options = prop.options;
-  if (!hasOwn(options, 'default')) {
-    // absent boolean value defaults to false
-    return options.type === Boolean ? false : undefined;
-  }
-  var def = options['default'];
-  // warn against non-factory defaults for Object & Array
-  if (isObject(def)) {
-    process.env.NODE_ENV !== 'production' && warn('Invalid default value for prop "' + prop.name + '": ' + 'Props with type Object/Array must use a factory function ' + 'to return the default value.', vm);
-  }
-  // call factory function for non-Function types
-  return typeof def === 'function' && options.type !== Function ? def.call(vm) : def;
-}
-
-/**
- * Assert whether a prop is valid.
- *
- * @param {Object} prop
- * @param {*} value
- * @param {Vue} vm
- */
-
-function assertProp(prop, value, vm) {
-  if (!prop.options.required && ( // non-required
-  prop.raw === null || // abscent
-  value == null) // null or undefined
-  ) {
-      return true;
-    }
-  var options = prop.options;
-  var type = options.type;
-  var valid = !type;
-  var expectedTypes = [];
-  if (type) {
-    if (!isArray(type)) {
-      type = [type];
-    }
-    for (var i = 0; i < type.length && !valid; i++) {
-      var assertedType = assertType(value, type[i]);
-      expectedTypes.push(assertedType.expectedType);
-      valid = assertedType.valid;
-    }
-  }
-  if (!valid) {
+function initProps (vm, propsOptions) {
+  var propsData = vm.$options.propsData || {};
+  var props = vm._props = {};
+  // cache prop keys so that future props updates can iterate using Array
+  // instead of dynamic object key enumeration.
+  var keys = vm.$options._propKeys = [];
+  var isRoot = !vm.$parent;
+  // root instance props should be converted
+  observerState.shouldConvert = isRoot;
+  var loop = function ( key ) {
+    keys.push(key);
+    var value = validateProp(key, propsOptions, propsData, vm);
+    /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
-      warn('Invalid prop: type check failed for prop "' + prop.name + '".' + ' Expected ' + expectedTypes.map(formatType).join(', ') + ', got ' + formatValue(value) + '.', vm);
-    }
-    return false;
-  }
-  var validator = options.validator;
-  if (validator) {
-    if (!validator(value)) {
-      process.env.NODE_ENV !== 'production' && warn('Invalid prop: custom validator check failed for prop "' + prop.name + '".', vm);
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
- * Force parsing value with coerce option.
- *
- * @param {*} value
- * @param {Object} options
- * @return {*}
- */
-
-function coerceProp(prop, value, vm) {
-  var coerce = prop.options.coerce;
-  if (!coerce) {
-    return value;
-  }
-  if (typeof coerce === 'function') {
-    return coerce(value);
-  } else {
-    process.env.NODE_ENV !== 'production' && warn('Invalid coerce for prop "' + prop.name + '": expected function, got ' + typeof coerce + '.', vm);
-    return value;
-  }
-}
-
-/**
- * Assert the type of a value
- *
- * @param {*} value
- * @param {Function} type
- * @return {Object}
- */
-
-function assertType(value, type) {
-  var valid;
-  var expectedType;
-  if (type === String) {
-    expectedType = 'string';
-    valid = typeof value === expectedType;
-  } else if (type === Number) {
-    expectedType = 'number';
-    valid = typeof value === expectedType;
-  } else if (type === Boolean) {
-    expectedType = 'boolean';
-    valid = typeof value === expectedType;
-  } else if (type === Function) {
-    expectedType = 'function';
-    valid = typeof value === expectedType;
-  } else if (type === Object) {
-    expectedType = 'object';
-    valid = isPlainObject(value);
-  } else if (type === Array) {
-    expectedType = 'array';
-    valid = isArray(value);
-  } else {
-    valid = value instanceof type;
-  }
-  return {
-    valid: valid,
-    expectedType: expectedType
-  };
-}
-
-/**
- * Format type for output
- *
- * @param {String} type
- * @return {String}
- */
-
-function formatType(type) {
-  return type ? type.charAt(0).toUpperCase() + type.slice(1) : 'custom type';
-}
-
-/**
- * Format value
- *
- * @param {*} value
- * @return {String}
- */
-
-function formatValue(val) {
-  return Object.prototype.toString.call(val).slice(8, -1);
-}
-
-var bindingModes = config._propBindingModes;
-
-var propDef = {
-
-  bind: function bind() {
-    var child = this.vm;
-    var parent = child._context;
-    // passed in from compiler directly
-    var prop = this.descriptor.prop;
-    var childKey = prop.path;
-    var parentKey = prop.parentPath;
-    var twoWay = prop.mode === bindingModes.TWO_WAY;
-
-    var parentWatcher = this.parentWatcher = new Watcher(parent, parentKey, function (val) {
-      updateProp(child, prop, val);
-    }, {
-      twoWay: twoWay,
-      filters: prop.filters,
-      // important: props need to be observed on the
-      // v-for scope if present
-      scope: this._scope
-    });
-
-    // set the child initial value.
-    initProp(child, prop, parentWatcher.value);
-
-    // setup two-way binding
-    if (twoWay) {
-      // important: defer the child watcher creation until
-      // the created hook (after data observation)
-      var self = this;
-      child.$once('pre-hook:created', function () {
-        self.childWatcher = new Watcher(child, childKey, function (val) {
-          parentWatcher.set(val);
-        }, {
-          // ensure sync upward before parent sync down.
-          // this is necessary in cases e.g. the child
-          // mutates a prop array, then replaces it. (#1683)
-          sync: true
-        });
-      });
-    }
-  },
-
-  unbind: function unbind() {
-    this.parentWatcher.teardown();
-    if (this.childWatcher) {
-      this.childWatcher.teardown();
-    }
-  }
-};
-
-var queue$1 = [];
-var queued = false;
-
-/**
- * Push a job into the queue.
- *
- * @param {Function} job
- */
-
-function pushJob(job) {
-  queue$1.push(job);
-  if (!queued) {
-    queued = true;
-    nextTick(flush);
-  }
-}
-
-/**
- * Flush the queue, and do one forced reflow before
- * triggering transitions.
- */
-
-function flush() {
-  // Force layout
-  var f = document.documentElement.offsetHeight;
-  for (var i = 0; i < queue$1.length; i++) {
-    queue$1[i]();
-  }
-  queue$1 = [];
-  queued = false;
-  // dummy return, so js linters don't complain about
-  // unused variable f
-  return f;
-}
-
-var TYPE_TRANSITION = 'transition';
-var TYPE_ANIMATION = 'animation';
-var transDurationProp = transitionProp + 'Duration';
-var animDurationProp = animationProp + 'Duration';
-
-/**
- * If a just-entered element is applied the
- * leave class while its enter transition hasn't started yet,
- * and the transitioned property has the same value for both
- * enter/leave, then the leave transition will be skipped and
- * the transitionend event never fires. This function ensures
- * its callback to be called after a transition has started
- * by waiting for double raf.
- *
- * It falls back to setTimeout on devices that support CSS
- * transitions but not raf (e.g. Android 4.2 browser) - since
- * these environments are usually slow, we are giving it a
- * relatively large timeout.
- */
-
-var raf = inBrowser && window.requestAnimationFrame;
-var waitForTransitionStart = raf
-/* istanbul ignore next */
-? function (fn) {
-  raf(function () {
-    raf(fn);
-  });
-} : function (fn) {
-  setTimeout(fn, 50);
-};
-
-/**
- * A Transition object that encapsulates the state and logic
- * of the transition.
- *
- * @param {Element} el
- * @param {String} id
- * @param {Object} hooks
- * @param {Vue} vm
- */
-function Transition(el, id, hooks, vm) {
-  this.id = id;
-  this.el = el;
-  this.enterClass = hooks && hooks.enterClass || id + '-enter';
-  this.leaveClass = hooks && hooks.leaveClass || id + '-leave';
-  this.hooks = hooks;
-  this.vm = vm;
-  // async state
-  this.pendingCssEvent = this.pendingCssCb = this.cancel = this.pendingJsCb = this.op = this.cb = null;
-  this.justEntered = false;
-  this.entered = this.left = false;
-  this.typeCache = {};
-  // check css transition type
-  this.type = hooks && hooks.type;
-  /* istanbul ignore if */
-  if (process.env.NODE_ENV !== 'production') {
-    if (this.type && this.type !== TYPE_TRANSITION && this.type !== TYPE_ANIMATION) {
-      warn('invalid CSS transition type for transition="' + this.id + '": ' + this.type, vm);
-    }
-  }
-  // bind
-  var self = this;['enterNextTick', 'enterDone', 'leaveNextTick', 'leaveDone'].forEach(function (m) {
-    self[m] = bind(self[m], self);
-  });
-}
-
-var p$1 = Transition.prototype;
-
-/**
- * Start an entering transition.
- *
- * 1. enter transition triggered
- * 2. call beforeEnter hook
- * 3. add enter class
- * 4. insert/show element
- * 5. call enter hook (with possible explicit js callback)
- * 6. reflow
- * 7. based on transition type:
- *    - transition:
- *        remove class now, wait for transitionend,
- *        then done if there's no explicit js callback.
- *    - animation:
- *        wait for animationend, remove class,
- *        then done if there's no explicit js callback.
- *    - no css transition:
- *        done now if there's no explicit js callback.
- * 8. wait for either done or js callback, then call
- *    afterEnter hook.
- *
- * @param {Function} op - insert/show the element
- * @param {Function} [cb]
- */
-
-p$1.enter = function (op, cb) {
-  this.cancelPending();
-  this.callHook('beforeEnter');
-  this.cb = cb;
-  addClass(this.el, this.enterClass);
-  op();
-  this.entered = false;
-  this.callHookWithCb('enter');
-  if (this.entered) {
-    return; // user called done synchronously.
-  }
-  this.cancel = this.hooks && this.hooks.enterCancelled;
-  pushJob(this.enterNextTick);
-};
-
-/**
- * The "nextTick" phase of an entering transition, which is
- * to be pushed into a queue and executed after a reflow so
- * that removing the class can trigger a CSS transition.
- */
-
-p$1.enterNextTick = function () {
-  var _this = this;
-
-  // prevent transition skipping
-  this.justEntered = true;
-  waitForTransitionStart(function () {
-    _this.justEntered = false;
-  });
-  var enterDone = this.enterDone;
-  var type = this.getCssTransitionType(this.enterClass);
-  if (!this.pendingJsCb) {
-    if (type === TYPE_TRANSITION) {
-      // trigger transition by removing enter class now
-      removeClass(this.el, this.enterClass);
-      this.setupCssCb(transitionEndEvent, enterDone);
-    } else if (type === TYPE_ANIMATION) {
-      this.setupCssCb(animationEndEvent, enterDone);
-    } else {
-      enterDone();
-    }
-  } else if (type === TYPE_TRANSITION) {
-    removeClass(this.el, this.enterClass);
-  }
-};
-
-/**
- * The "cleanup" phase of an entering transition.
- */
-
-p$1.enterDone = function () {
-  this.entered = true;
-  this.cancel = this.pendingJsCb = null;
-  removeClass(this.el, this.enterClass);
-  this.callHook('afterEnter');
-  if (this.cb) this.cb();
-};
-
-/**
- * Start a leaving transition.
- *
- * 1. leave transition triggered.
- * 2. call beforeLeave hook
- * 3. add leave class (trigger css transition)
- * 4. call leave hook (with possible explicit js callback)
- * 5. reflow if no explicit js callback is provided
- * 6. based on transition type:
- *    - transition or animation:
- *        wait for end event, remove class, then done if
- *        there's no explicit js callback.
- *    - no css transition:
- *        done if there's no explicit js callback.
- * 7. wait for either done or js callback, then call
- *    afterLeave hook.
- *
- * @param {Function} op - remove/hide the element
- * @param {Function} [cb]
- */
-
-p$1.leave = function (op, cb) {
-  this.cancelPending();
-  this.callHook('beforeLeave');
-  this.op = op;
-  this.cb = cb;
-  addClass(this.el, this.leaveClass);
-  this.left = false;
-  this.callHookWithCb('leave');
-  if (this.left) {
-    return; // user called done synchronously.
-  }
-  this.cancel = this.hooks && this.hooks.leaveCancelled;
-  // only need to handle leaveDone if
-  // 1. the transition is already done (synchronously called
-  //    by the user, which causes this.op set to null)
-  // 2. there's no explicit js callback
-  if (this.op && !this.pendingJsCb) {
-    // if a CSS transition leaves immediately after enter,
-    // the transitionend event never fires. therefore we
-    // detect such cases and end the leave immediately.
-    if (this.justEntered) {
-      this.leaveDone();
-    } else {
-      pushJob(this.leaveNextTick);
-    }
-  }
-};
-
-/**
- * The "nextTick" phase of a leaving transition.
- */
-
-p$1.leaveNextTick = function () {
-  var type = this.getCssTransitionType(this.leaveClass);
-  if (type) {
-    var event = type === TYPE_TRANSITION ? transitionEndEvent : animationEndEvent;
-    this.setupCssCb(event, this.leaveDone);
-  } else {
-    this.leaveDone();
-  }
-};
-
-/**
- * The "cleanup" phase of a leaving transition.
- */
-
-p$1.leaveDone = function () {
-  this.left = true;
-  this.cancel = this.pendingJsCb = null;
-  this.op();
-  removeClass(this.el, this.leaveClass);
-  this.callHook('afterLeave');
-  if (this.cb) this.cb();
-  this.op = null;
-};
-
-/**
- * Cancel any pending callbacks from a previously running
- * but not finished transition.
- */
-
-p$1.cancelPending = function () {
-  this.op = this.cb = null;
-  var hasPending = false;
-  if (this.pendingCssCb) {
-    hasPending = true;
-    off(this.el, this.pendingCssEvent, this.pendingCssCb);
-    this.pendingCssEvent = this.pendingCssCb = null;
-  }
-  if (this.pendingJsCb) {
-    hasPending = true;
-    this.pendingJsCb.cancel();
-    this.pendingJsCb = null;
-  }
-  if (hasPending) {
-    removeClass(this.el, this.enterClass);
-    removeClass(this.el, this.leaveClass);
-  }
-  if (this.cancel) {
-    this.cancel.call(this.vm, this.el);
-    this.cancel = null;
-  }
-};
-
-/**
- * Call a user-provided synchronous hook function.
- *
- * @param {String} type
- */
-
-p$1.callHook = function (type) {
-  if (this.hooks && this.hooks[type]) {
-    this.hooks[type].call(this.vm, this.el);
-  }
-};
-
-/**
- * Call a user-provided, potentially-async hook function.
- * We check for the length of arguments to see if the hook
- * expects a `done` callback. If true, the transition's end
- * will be determined by when the user calls that callback;
- * otherwise, the end is determined by the CSS transition or
- * animation.
- *
- * @param {String} type
- */
-
-p$1.callHookWithCb = function (type) {
-  var hook = this.hooks && this.hooks[type];
-  if (hook) {
-    if (hook.length > 1) {
-      this.pendingJsCb = cancellable(this[type + 'Done']);
-    }
-    hook.call(this.vm, this.el, this.pendingJsCb);
-  }
-};
-
-/**
- * Get an element's transition type based on the
- * calculated styles.
- *
- * @param {String} className
- * @return {Number}
- */
-
-p$1.getCssTransitionType = function (className) {
-  /* istanbul ignore if */
-  if (!transitionEndEvent ||
-  // skip CSS transitions if page is not visible -
-  // this solves the issue of transitionend events not
-  // firing until the page is visible again.
-  // pageVisibility API is supported in IE10+, same as
-  // CSS transitions.
-  document.hidden ||
-  // explicit js-only transition
-  this.hooks && this.hooks.css === false ||
-  // element is hidden
-  isHidden(this.el)) {
-    return;
-  }
-  var type = this.type || this.typeCache[className];
-  if (type) return type;
-  var inlineStyles = this.el.style;
-  var computedStyles = window.getComputedStyle(this.el);
-  var transDuration = inlineStyles[transDurationProp] || computedStyles[transDurationProp];
-  if (transDuration && transDuration !== '0s') {
-    type = TYPE_TRANSITION;
-  } else {
-    var animDuration = inlineStyles[animDurationProp] || computedStyles[animDurationProp];
-    if (animDuration && animDuration !== '0s') {
-      type = TYPE_ANIMATION;
-    }
-  }
-  if (type) {
-    this.typeCache[className] = type;
-  }
-  return type;
-};
-
-/**
- * Setup a CSS transitionend/animationend callback.
- *
- * @param {String} event
- * @param {Function} cb
- */
-
-p$1.setupCssCb = function (event, cb) {
-  this.pendingCssEvent = event;
-  var self = this;
-  var el = this.el;
-  var onEnd = this.pendingCssCb = function (e) {
-    if (e.target === el) {
-      off(el, event, onEnd);
-      self.pendingCssEvent = self.pendingCssCb = null;
-      if (!self.pendingJsCb && cb) {
-        cb();
+      if (isReservedProp[key]) {
+        warn(
+          ("\"" + key + "\" is a reserved attribute and cannot be used as component prop."),
+          vm
+        );
       }
-    }
-  };
-  on(el, event, onEnd);
-};
-
-/**
- * Check if an element is hidden - in that case we can just
- * skip the transition alltogether.
- *
- * @param {Element} el
- * @return {Boolean}
- */
-
-function isHidden(el) {
-  if (/svg$/.test(el.namespaceURI)) {
-    // SVG elements do not have offset(Width|Height)
-    // so we need to check the client rect
-    var rect = el.getBoundingClientRect();
-    return !(rect.width || rect.height);
-  } else {
-    return !(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
-  }
-}
-
-var transition$1 = {
-
-  priority: TRANSITION,
-
-  update: function update(id, oldId) {
-    var el = this.el;
-    // resolve on owner vm
-    var hooks = resolveAsset(this.vm.$options, 'transitions', id);
-    id = id || 'v';
-    oldId = oldId || 'v';
-    el.__v_trans = new Transition(el, id, hooks, this.vm);
-    removeClass(el, oldId + '-transition');
-    addClass(el, id + '-transition');
-  }
-};
-
-var internalDirectives = {
-  style: style,
-  'class': vClass,
-  component: component,
-  prop: propDef,
-  transition: transition$1
-};
-
-// special binding prefixes
-var bindRE = /^v-bind:|^:/;
-var onRE = /^v-on:|^@/;
-var dirAttrRE = /^v-([^:]+)(?:$|:(.*)$)/;
-var modifierRE = /\.[^\.]+/g;
-var transitionRE = /^(v-bind:|:)?transition$/;
-
-// default directive priority
-var DEFAULT_PRIORITY = 1000;
-var DEFAULT_TERMINAL_PRIORITY = 2000;
-
-/**
- * Compile a template and return a reusable composite link
- * function, which recursively contains more link functions
- * inside. This top level compile function would normally
- * be called on instance root nodes, but can also be used
- * for partial compilation if the partial argument is true.
- *
- * The returned composite link function, when called, will
- * return an unlink function that tearsdown all directives
- * created during the linking phase.
- *
- * @param {Element|DocumentFragment} el
- * @param {Object} options
- * @param {Boolean} partial
- * @return {Function}
- */
-
-function compile(el, options, partial) {
-  // link function for the node itself.
-  var nodeLinkFn = partial || !options._asComponent ? compileNode(el, options) : null;
-  // link function for the childNodes
-  var childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && !isScript(el) && el.hasChildNodes() ? compileNodeList(el.childNodes, options) : null;
-
-  /**
-   * A composite linker function to be called on a already
-   * compiled piece of DOM, which instantiates all directive
-   * instances.
-   *
-   * @param {Vue} vm
-   * @param {Element|DocumentFragment} el
-   * @param {Vue} [host] - host vm of transcluded content
-   * @param {Object} [scope] - v-for scope
-   * @param {Fragment} [frag] - link context fragment
-   * @return {Function|undefined}
-   */
-
-  return function compositeLinkFn(vm, el, host, scope, frag) {
-    // cache childNodes before linking parent, fix #657
-    var childNodes = toArray(el.childNodes);
-    // link
-    var dirs = linkAndCapture(function compositeLinkCapturer() {
-      if (nodeLinkFn) nodeLinkFn(vm, el, host, scope, frag);
-      if (childLinkFn) childLinkFn(vm, childNodes, host, scope, frag);
-    }, vm);
-    return makeUnlinkFn(vm, dirs);
-  };
-}
-
-/**
- * Apply a linker to a vm/element pair and capture the
- * directives created during the process.
- *
- * @param {Function} linker
- * @param {Vue} vm
- */
-
-function linkAndCapture(linker, vm) {
-  /* istanbul ignore if */
-  if (process.env.NODE_ENV === 'production') {
-    // reset directives before every capture in production
-    // mode, so that when unlinking we don't need to splice
-    // them out (which turns out to be a perf hit).
-    // they are kept in development mode because they are
-    // useful for Vue's own tests.
-    vm._directives = [];
-  }
-  var originalDirCount = vm._directives.length;
-  linker();
-  var dirs = vm._directives.slice(originalDirCount);
-  sortDirectives(dirs);
-  for (var i = 0, l = dirs.length; i < l; i++) {
-    dirs[i]._bind();
-  }
-  return dirs;
-}
-
-/**
- * sort directives by priority (stable sort)
- *
- * @param {Array} dirs
- */
-function sortDirectives(dirs) {
-  if (dirs.length === 0) return;
-
-  var groupedMap = {};
-  var i, j, k, l;
-  var index = 0;
-  var priorities = [];
-  for (i = 0, j = dirs.length; i < j; i++) {
-    var dir = dirs[i];
-    var priority = dir.descriptor.def.priority || DEFAULT_PRIORITY;
-    var array = groupedMap[priority];
-    if (!array) {
-      array = groupedMap[priority] = [];
-      priorities.push(priority);
-    }
-    array.push(dir);
-  }
-
-  priorities.sort(function (a, b) {
-    return a > b ? -1 : a === b ? 0 : 1;
-  });
-  for (i = 0, j = priorities.length; i < j; i++) {
-    var group = groupedMap[priorities[i]];
-    for (k = 0, l = group.length; k < l; k++) {
-      dirs[index++] = group[k];
-    }
-  }
-}
-
-/**
- * Linker functions return an unlink function that
- * tearsdown all directives instances generated during
- * the process.
- *
- * We create unlink functions with only the necessary
- * information to avoid retaining additional closures.
- *
- * @param {Vue} vm
- * @param {Array} dirs
- * @param {Vue} [context]
- * @param {Array} [contextDirs]
- * @return {Function}
- */
-
-function makeUnlinkFn(vm, dirs, context, contextDirs) {
-  function unlink(destroying) {
-    teardownDirs(vm, dirs, destroying);
-    if (context && contextDirs) {
-      teardownDirs(context, contextDirs);
-    }
-  }
-  // expose linked directives
-  unlink.dirs = dirs;
-  return unlink;
-}
-
-/**
- * Teardown partial linked directives.
- *
- * @param {Vue} vm
- * @param {Array} dirs
- * @param {Boolean} destroying
- */
-
-function teardownDirs(vm, dirs, destroying) {
-  var i = dirs.length;
-  while (i--) {
-    dirs[i]._teardown();
-    if (process.env.NODE_ENV !== 'production' && !destroying) {
-      vm._directives.$remove(dirs[i]);
-    }
-  }
-}
-
-/**
- * Compile link props on an instance.
- *
- * @param {Vue} vm
- * @param {Element} el
- * @param {Object} props
- * @param {Object} [scope]
- * @return {Function}
- */
-
-function compileAndLinkProps(vm, el, props, scope) {
-  var propsLinkFn = compileProps(el, props, vm);
-  var propDirs = linkAndCapture(function () {
-    propsLinkFn(vm, scope);
-  }, vm);
-  return makeUnlinkFn(vm, propDirs);
-}
-
-/**
- * Compile the root element of an instance.
- *
- * 1. attrs on context container (context scope)
- * 2. attrs on the component template root node, if
- *    replace:true (child scope)
- *
- * If this is a fragment instance, we only need to compile 1.
- *
- * @param {Element} el
- * @param {Object} options
- * @param {Object} contextOptions
- * @return {Function}
- */
-
-function compileRoot(el, options, contextOptions) {
-  var containerAttrs = options._containerAttrs;
-  var replacerAttrs = options._replacerAttrs;
-  var contextLinkFn, replacerLinkFn;
-
-  // only need to compile other attributes for
-  // non-fragment instances
-  if (el.nodeType !== 11) {
-    // for components, container and replacer need to be
-    // compiled separately and linked in different scopes.
-    if (options._asComponent) {
-      // 2. container attributes
-      if (containerAttrs && contextOptions) {
-        contextLinkFn = compileDirectives(containerAttrs, contextOptions);
-      }
-      if (replacerAttrs) {
-        // 3. replacer attributes
-        replacerLinkFn = compileDirectives(replacerAttrs, options);
-      }
-    } else {
-      // non-component, just compile as a normal element.
-      replacerLinkFn = compileDirectives(el.attributes, options);
-    }
-  } else if (process.env.NODE_ENV !== 'production' && containerAttrs) {
-    // warn container directives for fragment instances
-    var names = containerAttrs.filter(function (attr) {
-      // allow vue-loader/vueify scoped css attributes
-      return attr.name.indexOf('_v-') < 0 &&
-      // allow event listeners
-      !onRE.test(attr.name) &&
-      // allow slots
-      attr.name !== 'slot';
-    }).map(function (attr) {
-      return '"' + attr.name + '"';
-    });
-    if (names.length) {
-      var plural = names.length > 1;
-
-      var componentName = options.el.tagName.toLowerCase();
-      if (componentName === 'component' && options.name) {
-        componentName += ':' + options.name;
-      }
-
-      warn('Attribute' + (plural ? 's ' : ' ') + names.join(', ') + (plural ? ' are' : ' is') + ' ignored on component ' + '<' + componentName + '> because ' + 'the component is a fragment instance: ' + 'http://vuejs.org/guide/components.html#Fragment-Instance');
-    }
-  }
-
-  options._containerAttrs = options._replacerAttrs = null;
-  return function rootLinkFn(vm, el, scope) {
-    // link context scope dirs
-    var context = vm._context;
-    var contextDirs;
-    if (context && contextLinkFn) {
-      contextDirs = linkAndCapture(function () {
-        contextLinkFn(context, el, null, scope);
-      }, context);
-    }
-
-    // link self
-    var selfDirs = linkAndCapture(function () {
-      if (replacerLinkFn) replacerLinkFn(vm, el);
-    }, vm);
-
-    // return the unlink function that tearsdown context
-    // container directives.
-    return makeUnlinkFn(vm, selfDirs, context, contextDirs);
-  };
-}
-
-/**
- * Compile a node and return a nodeLinkFn based on the
- * node type.
- *
- * @param {Node} node
- * @param {Object} options
- * @return {Function|null}
- */
-
-function compileNode(node, options) {
-  var type = node.nodeType;
-  if (type === 1 && !isScript(node)) {
-    return compileElement(node, options);
-  } else if (type === 3 && node.data.trim()) {
-    return compileTextNode(node, options);
-  } else {
-    return null;
-  }
-}
-
-/**
- * Compile an element and return a nodeLinkFn.
- *
- * @param {Element} el
- * @param {Object} options
- * @return {Function|null}
- */
-
-function compileElement(el, options) {
-  // preprocess textareas.
-  // textarea treats its text content as the initial value.
-  // just bind it as an attr directive for value.
-  if (el.tagName === 'TEXTAREA') {
-    // a textarea which has v-pre attr should skip complie.
-    if (getAttr(el, 'v-pre') !== null) {
-      return skip;
-    }
-    var tokens = parseText(el.value);
-    if (tokens) {
-      el.setAttribute(':value', tokensToExp(tokens));
-      el.value = '';
-    }
-  }
-  var linkFn;
-  var hasAttrs = el.hasAttributes();
-  var attrs = hasAttrs && toArray(el.attributes);
-  // check terminal directives (for & if)
-  if (hasAttrs) {
-    linkFn = checkTerminalDirectives(el, attrs, options);
-  }
-  // check element directives
-  if (!linkFn) {
-    linkFn = checkElementDirectives(el, options);
-  }
-  // check component
-  if (!linkFn) {
-    linkFn = checkComponent(el, options);
-  }
-  // normal directives
-  if (!linkFn && hasAttrs) {
-    linkFn = compileDirectives(attrs, options);
-  }
-  return linkFn;
-}
-
-/**
- * Compile a textNode and return a nodeLinkFn.
- *
- * @param {TextNode} node
- * @param {Object} options
- * @return {Function|null} textNodeLinkFn
- */
-
-function compileTextNode(node, options) {
-  // skip marked text nodes
-  if (node._skip) {
-    return removeText;
-  }
-
-  var tokens = parseText(node.wholeText);
-  if (!tokens) {
-    return null;
-  }
-
-  // mark adjacent text nodes as skipped,
-  // because we are using node.wholeText to compile
-  // all adjacent text nodes together. This fixes
-  // issues in IE where sometimes it splits up a single
-  // text node into multiple ones.
-  var next = node.nextSibling;
-  while (next && next.nodeType === 3) {
-    next._skip = true;
-    next = next.nextSibling;
-  }
-
-  var frag = document.createDocumentFragment();
-  var el, token;
-  for (var i = 0, l = tokens.length; i < l; i++) {
-    token = tokens[i];
-    el = token.tag ? processTextToken(token, options) : document.createTextNode(token.value);
-    frag.appendChild(el);
-  }
-  return makeTextNodeLinkFn(tokens, frag, options);
-}
-
-/**
- * Linker for an skipped text node.
- *
- * @param {Vue} vm
- * @param {Text} node
- */
-
-function removeText(vm, node) {
-  remove(node);
-}
-
-/**
- * Process a single text token.
- *
- * @param {Object} token
- * @param {Object} options
- * @return {Node}
- */
-
-function processTextToken(token, options) {
-  var el;
-  if (token.oneTime) {
-    el = document.createTextNode(token.value);
-  } else {
-    if (token.html) {
-      el = document.createComment('v-html');
-      setTokenType('html');
-    } else {
-      // IE will clean up empty textNodes during
-      // frag.cloneNode(true), so we have to give it
-      // something here...
-      el = document.createTextNode(' ');
-      setTokenType('text');
-    }
-  }
-  function setTokenType(type) {
-    if (token.descriptor) return;
-    var parsed = parseDirective(token.value);
-    token.descriptor = {
-      name: type,
-      def: directives[type],
-      expression: parsed.expression,
-      filters: parsed.filters
-    };
-  }
-  return el;
-}
-
-/**
- * Build a function that processes a textNode.
- *
- * @param {Array<Object>} tokens
- * @param {DocumentFragment} frag
- */
-
-function makeTextNodeLinkFn(tokens, frag) {
-  return function textNodeLinkFn(vm, el, host, scope) {
-    var fragClone = frag.cloneNode(true);
-    var childNodes = toArray(fragClone.childNodes);
-    var token, value, node;
-    for (var i = 0, l = tokens.length; i < l; i++) {
-      token = tokens[i];
-      value = token.value;
-      if (token.tag) {
-        node = childNodes[i];
-        if (token.oneTime) {
-          value = (scope || vm).$eval(value);
-          if (token.html) {
-            replace(node, parseTemplate(value, true));
-          } else {
-            node.data = _toString(value);
-          }
-        } else {
-          vm._bindDir(token.descriptor, node, host, scope);
-        }
-      }
-    }
-    replace(el, fragClone);
-  };
-}
-
-/**
- * Compile a node list and return a childLinkFn.
- *
- * @param {NodeList} nodeList
- * @param {Object} options
- * @return {Function|undefined}
- */
-
-function compileNodeList(nodeList, options) {
-  var linkFns = [];
-  var nodeLinkFn, childLinkFn, node;
-  for (var i = 0, l = nodeList.length; i < l; i++) {
-    node = nodeList[i];
-    nodeLinkFn = compileNode(node, options);
-    childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && node.tagName !== 'SCRIPT' && node.hasChildNodes() ? compileNodeList(node.childNodes, options) : null;
-    linkFns.push(nodeLinkFn, childLinkFn);
-  }
-  return linkFns.length ? makeChildLinkFn(linkFns) : null;
-}
-
-/**
- * Make a child link function for a node's childNodes.
- *
- * @param {Array<Function>} linkFns
- * @return {Function} childLinkFn
- */
-
-function makeChildLinkFn(linkFns) {
-  return function childLinkFn(vm, nodes, host, scope, frag) {
-    var node, nodeLinkFn, childrenLinkFn;
-    for (var i = 0, n = 0, l = linkFns.length; i < l; n++) {
-      node = nodes[n];
-      nodeLinkFn = linkFns[i++];
-      childrenLinkFn = linkFns[i++];
-      // cache childNodes before linking parent, fix #657
-      var childNodes = toArray(node.childNodes);
-      if (nodeLinkFn) {
-        nodeLinkFn(vm, node, host, scope, frag);
-      }
-      if (childrenLinkFn) {
-        childrenLinkFn(vm, childNodes, host, scope, frag);
-      }
-    }
-  };
-}
-
-/**
- * Check for element directives (custom elements that should
- * be resovled as terminal directives).
- *
- * @param {Element} el
- * @param {Object} options
- */
-
-function checkElementDirectives(el, options) {
-  var tag = el.tagName.toLowerCase();
-  if (commonTagRE.test(tag)) {
-    return;
-  }
-  var def = resolveAsset(options, 'elementDirectives', tag);
-  if (def) {
-    return makeTerminalNodeLinkFn(el, tag, '', options, def);
-  }
-}
-
-/**
- * Check if an element is a component. If yes, return
- * a component link function.
- *
- * @param {Element} el
- * @param {Object} options
- * @return {Function|undefined}
- */
-
-function checkComponent(el, options) {
-  var component = checkComponentAttr(el, options);
-  if (component) {
-    var ref = findRef(el);
-    var descriptor = {
-      name: 'component',
-      ref: ref,
-      expression: component.id,
-      def: internalDirectives.component,
-      modifiers: {
-        literal: !component.dynamic
-      }
-    };
-    var componentLinkFn = function componentLinkFn(vm, el, host, scope, frag) {
-      if (ref) {
-        defineReactive((scope || vm).$refs, ref, null);
-      }
-      vm._bindDir(descriptor, el, host, scope, frag);
-    };
-    componentLinkFn.terminal = true;
-    return componentLinkFn;
-  }
-}
-
-/**
- * Check an element for terminal directives in fixed order.
- * If it finds one, return a terminal link function.
- *
- * @param {Element} el
- * @param {Array} attrs
- * @param {Object} options
- * @return {Function} terminalLinkFn
- */
-
-function checkTerminalDirectives(el, attrs, options) {
-  // skip v-pre
-  if (getAttr(el, 'v-pre') !== null) {
-    return skip;
-  }
-  // skip v-else block, but only if following v-if
-  if (el.hasAttribute('v-else')) {
-    var prev = el.previousElementSibling;
-    if (prev && prev.hasAttribute('v-if')) {
-      return skip;
-    }
-  }
-
-  var attr, name, value, modifiers, matched, dirName, rawName, arg, def, termDef;
-  for (var i = 0, j = attrs.length; i < j; i++) {
-    attr = attrs[i];
-    name = attr.name.replace(modifierRE, '');
-    if (matched = name.match(dirAttrRE)) {
-      def = resolveAsset(options, 'directives', matched[1]);
-      if (def && def.terminal) {
-        if (!termDef || (def.priority || DEFAULT_TERMINAL_PRIORITY) > termDef.priority) {
-          termDef = def;
-          rawName = attr.name;
-          modifiers = parseModifiers(attr.name);
-          value = attr.value;
-          dirName = matched[1];
-          arg = matched[2];
-        }
-      }
-    }
-  }
-
-  if (termDef) {
-    return makeTerminalNodeLinkFn(el, dirName, value, options, termDef, rawName, arg, modifiers);
-  }
-}
-
-function skip() {}
-skip.terminal = true;
-
-/**
- * Build a node link function for a terminal directive.
- * A terminal link function terminates the current
- * compilation recursion and handles compilation of the
- * subtree in the directive.
- *
- * @param {Element} el
- * @param {String} dirName
- * @param {String} value
- * @param {Object} options
- * @param {Object} def
- * @param {String} [rawName]
- * @param {String} [arg]
- * @param {Object} [modifiers]
- * @return {Function} terminalLinkFn
- */
-
-function makeTerminalNodeLinkFn(el, dirName, value, options, def, rawName, arg, modifiers) {
-  var parsed = parseDirective(value);
-  var descriptor = {
-    name: dirName,
-    arg: arg,
-    expression: parsed.expression,
-    filters: parsed.filters,
-    raw: value,
-    attr: rawName,
-    modifiers: modifiers,
-    def: def
-  };
-  // check ref for v-for, v-if and router-view
-  if (dirName === 'for' || dirName === 'router-view') {
-    descriptor.ref = findRef(el);
-  }
-  var fn = function terminalNodeLinkFn(vm, el, host, scope, frag) {
-    if (descriptor.ref) {
-      defineReactive((scope || vm).$refs, descriptor.ref, null);
-    }
-    vm._bindDir(descriptor, el, host, scope, frag);
-  };
-  fn.terminal = true;
-  return fn;
-}
-
-/**
- * Compile the directives on an element and return a linker.
- *
- * @param {Array|NamedNodeMap} attrs
- * @param {Object} options
- * @return {Function}
- */
-
-function compileDirectives(attrs, options) {
-  var i = attrs.length;
-  var dirs = [];
-  var attr, name, value, rawName, rawValue, dirName, arg, modifiers, dirDef, tokens, matched;
-  while (i--) {
-    attr = attrs[i];
-    name = rawName = attr.name;
-    value = rawValue = attr.value;
-    tokens = parseText(value);
-    // reset arg
-    arg = null;
-    // check modifiers
-    modifiers = parseModifiers(name);
-    name = name.replace(modifierRE, '');
-
-    // attribute interpolations
-    if (tokens) {
-      value = tokensToExp(tokens);
-      arg = name;
-      pushDir('bind', directives.bind, tokens);
-      // warn against mixing mustaches with v-bind
-      if (process.env.NODE_ENV !== 'production') {
-        if (name === 'class' && Array.prototype.some.call(attrs, function (attr) {
-          return attr.name === ':class' || attr.name === 'v-bind:class';
-        })) {
-          warn('class="' + rawValue + '": Do not mix mustache interpolation ' + 'and v-bind for "class" on the same element. Use one or the other.', options);
-        }
-      }
-    } else
-
-      // special attribute: transition
-      if (transitionRE.test(name)) {
-        modifiers.literal = !bindRE.test(name);
-        pushDir('transition', internalDirectives.transition);
-      } else
-
-        // event handlers
-        if (onRE.test(name)) {
-          arg = name.replace(onRE, '');
-          pushDir('on', directives.on);
-        } else
-
-          // attribute bindings
-          if (bindRE.test(name)) {
-            dirName = name.replace(bindRE, '');
-            if (dirName === 'style' || dirName === 'class') {
-              pushDir(dirName, internalDirectives[dirName]);
-            } else {
-              arg = dirName;
-              pushDir('bind', directives.bind);
-            }
-          } else
-
-            // normal directives
-            if (matched = name.match(dirAttrRE)) {
-              dirName = matched[1];
-              arg = matched[2];
-
-              // skip v-else (when used with v-show)
-              if (dirName === 'else') {
-                continue;
-              }
-
-              dirDef = resolveAsset(options, 'directives', dirName, true);
-              if (dirDef) {
-                pushDir(dirName, dirDef);
-              }
-            }
-  }
-
-  /**
-   * Push a directive.
-   *
-   * @param {String} dirName
-   * @param {Object|Function} def
-   * @param {Array} [interpTokens]
-   */
-
-  function pushDir(dirName, def, interpTokens) {
-    var hasOneTimeToken = interpTokens && hasOneTime(interpTokens);
-    var parsed = !hasOneTimeToken && parseDirective(value);
-    dirs.push({
-      name: dirName,
-      attr: rawName,
-      raw: rawValue,
-      def: def,
-      arg: arg,
-      modifiers: modifiers,
-      // conversion from interpolation strings with one-time token
-      // to expression is differed until directive bind time so that we
-      // have access to the actual vm context for one-time bindings.
-      expression: parsed && parsed.expression,
-      filters: parsed && parsed.filters,
-      interp: interpTokens,
-      hasOneTime: hasOneTimeToken
-    });
-  }
-
-  if (dirs.length) {
-    return makeNodeLinkFn(dirs);
-  }
-}
-
-/**
- * Parse modifiers from directive attribute name.
- *
- * @param {String} name
- * @return {Object}
- */
-
-function parseModifiers(name) {
-  var res = Object.create(null);
-  var match = name.match(modifierRE);
-  if (match) {
-    var i = match.length;
-    while (i--) {
-      res[match[i].slice(1)] = true;
-    }
-  }
-  return res;
-}
-
-/**
- * Build a link function for all directives on a single node.
- *
- * @param {Array} directives
- * @return {Function} directivesLinkFn
- */
-
-function makeNodeLinkFn(directives) {
-  return function nodeLinkFn(vm, el, host, scope, frag) {
-    // reverse apply because it's sorted low to high
-    var i = directives.length;
-    while (i--) {
-      vm._bindDir(directives[i], el, host, scope, frag);
-    }
-  };
-}
-
-/**
- * Check if an interpolation string contains one-time tokens.
- *
- * @param {Array} tokens
- * @return {Boolean}
- */
-
-function hasOneTime(tokens) {
-  var i = tokens.length;
-  while (i--) {
-    if (tokens[i].oneTime) return true;
-  }
-}
-
-function isScript(el) {
-  return el.tagName === 'SCRIPT' && (!el.hasAttribute('type') || el.getAttribute('type') === 'text/javascript');
-}
-
-var specialCharRE = /[^\w\-:\.]/;
-
-/**
- * Process an element or a DocumentFragment based on a
- * instance option object. This allows us to transclude
- * a template node/fragment before the instance is created,
- * so the processed fragment can then be cloned and reused
- * in v-for.
- *
- * @param {Element} el
- * @param {Object} options
- * @return {Element|DocumentFragment}
- */
-
-function transclude(el, options) {
-  // extract container attributes to pass them down
-  // to compiler, because they need to be compiled in
-  // parent scope. we are mutating the options object here
-  // assuming the same object will be used for compile
-  // right after this.
-  if (options) {
-    options._containerAttrs = extractAttrs(el);
-  }
-  // for template tags, what we want is its content as
-  // a documentFragment (for fragment instances)
-  if (isTemplate(el)) {
-    el = parseTemplate(el);
-  }
-  if (options) {
-    if (options._asComponent && !options.template) {
-      options.template = '<slot></slot>';
-    }
-    if (options.template) {
-      options._content = extractContent(el);
-      el = transcludeTemplate(el, options);
-    }
-  }
-  if (isFragment(el)) {
-    // anchors for fragment instance
-    // passing in `persist: true` to avoid them being
-    // discarded by IE during template cloning
-    prepend(createAnchor('v-start', true), el);
-    el.appendChild(createAnchor('v-end', true));
-  }
-  return el;
-}
-
-/**
- * Process the template option.
- * If the replace option is true this will swap the $el.
- *
- * @param {Element} el
- * @param {Object} options
- * @return {Element|DocumentFragment}
- */
-
-function transcludeTemplate(el, options) {
-  var template = options.template;
-  var frag = parseTemplate(template, true);
-  if (frag) {
-    var replacer = frag.firstChild;
-    if (!replacer) {
-      return frag;
-    }
-    var tag = replacer.tagName && replacer.tagName.toLowerCase();
-    if (options.replace) {
-      /* istanbul ignore if */
-      if (el === document.body) {
-        process.env.NODE_ENV !== 'production' && warn('You are mounting an instance with a template to ' + '<body>. This will replace <body> entirely. You ' + 'should probably use `replace: false` here.');
-      }
-      // there are many cases where the instance must
-      // become a fragment instance: basically anything that
-      // can create more than 1 root nodes.
-      if (
-      // multi-children template
-      frag.childNodes.length > 1 ||
-      // non-element template
-      replacer.nodeType !== 1 ||
-      // single nested component
-      tag === 'component' || resolveAsset(options, 'components', tag) || hasBindAttr(replacer, 'is') ||
-      // element directive
-      resolveAsset(options, 'elementDirectives', tag) ||
-      // for block
-      replacer.hasAttribute('v-for') ||
-      // if block
-      replacer.hasAttribute('v-if')) {
-        return frag;
-      } else {
-        options._replacerAttrs = extractAttrs(replacer);
-        mergeAttrs(el, replacer);
-        return replacer;
-      }
-    } else {
-      el.appendChild(frag);
-      return el;
-    }
-  } else {
-    process.env.NODE_ENV !== 'production' && warn('Invalid template option: ' + template);
-  }
-}
-
-/**
- * Helper to extract a component container's attributes
- * into a plain object array.
- *
- * @param {Element} el
- * @return {Array}
- */
-
-function extractAttrs(el) {
-  if (el.nodeType === 1 && el.hasAttributes()) {
-    return toArray(el.attributes);
-  }
-}
-
-/**
- * Merge the attributes of two elements, and make sure
- * the class names are merged properly.
- *
- * @param {Element} from
- * @param {Element} to
- */
-
-function mergeAttrs(from, to) {
-  var attrs = from.attributes;
-  var i = attrs.length;
-  var name, value;
-  while (i--) {
-    name = attrs[i].name;
-    value = attrs[i].value;
-    if (!to.hasAttribute(name) && !specialCharRE.test(name)) {
-      to.setAttribute(name, value);
-    } else if (name === 'class' && !parseText(value) && (value = value.trim())) {
-      value.split(/\s+/).forEach(function (cls) {
-        addClass(to, cls);
-      });
-    }
-  }
-}
-
-/**
- * Scan and determine slot content distribution.
- * We do this during transclusion instead at compile time so that
- * the distribution is decoupled from the compilation order of
- * the slots.
- *
- * @param {Element|DocumentFragment} template
- * @param {Element} content
- * @param {Vue} vm
- */
-
-function resolveSlots(vm, content) {
-  if (!content) {
-    return;
-  }
-  var contents = vm._slotContents = Object.create(null);
-  var el, name;
-  for (var i = 0, l = content.children.length; i < l; i++) {
-    el = content.children[i];
-    /* eslint-disable no-cond-assign */
-    if (name = el.getAttribute('slot')) {
-      (contents[name] || (contents[name] = [])).push(el);
-    }
-    /* eslint-enable no-cond-assign */
-    if (process.env.NODE_ENV !== 'production' && getBindAttr(el, 'slot')) {
-      warn('The "slot" attribute must be static.', vm.$parent);
-    }
-  }
-  for (name in contents) {
-    contents[name] = extractFragment(contents[name], content);
-  }
-  if (content.hasChildNodes()) {
-    var nodes = content.childNodes;
-    if (nodes.length === 1 && nodes[0].nodeType === 3 && !nodes[0].data.trim()) {
-      return;
-    }
-    contents['default'] = extractFragment(content.childNodes, content);
-  }
-}
-
-/**
- * Extract qualified content nodes from a node list.
- *
- * @param {NodeList} nodes
- * @return {DocumentFragment}
- */
-
-function extractFragment(nodes, parent) {
-  var frag = document.createDocumentFragment();
-  nodes = toArray(nodes);
-  for (var i = 0, l = nodes.length; i < l; i++) {
-    var node = nodes[i];
-    if (isTemplate(node) && !node.hasAttribute('v-if') && !node.hasAttribute('v-for')) {
-      parent.removeChild(node);
-      node = parseTemplate(node, true);
-    }
-    frag.appendChild(node);
-  }
-  return frag;
-}
-
-
-
-var compiler = Object.freeze({
-	compile: compile,
-	compileAndLinkProps: compileAndLinkProps,
-	compileRoot: compileRoot,
-	transclude: transclude,
-	resolveSlots: resolveSlots
-});
-
-function stateMixin (Vue) {
-  /**
-   * Accessor for `$data` property, since setting $data
-   * requires observing the new object and updating
-   * proxied properties.
-   */
-
-  Object.defineProperty(Vue.prototype, '$data', {
-    get: function get() {
-      return this._data;
-    },
-    set: function set(newData) {
-      if (newData !== this._data) {
-        this._setData(newData);
-      }
-    }
-  });
-
-  /**
-   * Setup the scope of an instance, which contains:
-   * - observed data
-   * - computed properties
-   * - user methods
-   * - meta properties
-   */
-
-  Vue.prototype._initState = function () {
-    this._initProps();
-    this._initMeta();
-    this._initMethods();
-    this._initData();
-    this._initComputed();
-  };
-
-  /**
-   * Initialize props.
-   */
-
-  Vue.prototype._initProps = function () {
-    var options = this.$options;
-    var el = options.el;
-    var props = options.props;
-    if (props && !el) {
-      process.env.NODE_ENV !== 'production' && warn('Props will not be compiled if no `el` option is ' + 'provided at instantiation.', this);
-    }
-    // make sure to convert string selectors into element now
-    el = options.el = query(el);
-    this._propsUnlinkFn = el && el.nodeType === 1 && props
-    // props must be linked in proper scope if inside v-for
-    ? compileAndLinkProps(this, el, props, this._scope) : null;
-  };
-
-  /**
-   * Initialize the data.
-   */
-
-  Vue.prototype._initData = function () {
-    var dataFn = this.$options.data;
-    var data = this._data = dataFn ? dataFn() : {};
-    if (!isPlainObject(data)) {
-      data = {};
-      process.env.NODE_ENV !== 'production' && warn('data functions should return an object.', this);
-    }
-    var props = this._props;
-    // proxy data on instance
-    var keys = Object.keys(data);
-    var i, key;
-    i = keys.length;
-    while (i--) {
-      key = keys[i];
-      // there are two scenarios where we can proxy a data key:
-      // 1. it's not already defined as a prop
-      // 2. it's provided via a instantiation option AND there are no
-      //    template prop present
-      if (!props || !hasOwn(props, key)) {
-        this._proxy(key);
-      } else if (process.env.NODE_ENV !== 'production') {
-        warn('Data field "' + key + '" is already defined ' + 'as a prop. To provide default value for a prop, use the "default" ' + 'prop option; if you want to pass prop values to an instantiation ' + 'call, use the "propsData" option.', this);
-      }
-    }
-    // observe data
-    observe(data, this);
-  };
-
-  /**
-   * Swap the instance's $data. Called in $data's setter.
-   *
-   * @param {Object} newData
-   */
-
-  Vue.prototype._setData = function (newData) {
-    newData = newData || {};
-    var oldData = this._data;
-    this._data = newData;
-    var keys, key, i;
-    // unproxy keys not present in new data
-    keys = Object.keys(oldData);
-    i = keys.length;
-    while (i--) {
-      key = keys[i];
-      if (!(key in newData)) {
-        this._unproxy(key);
-      }
-    }
-    // proxy keys not already proxied,
-    // and trigger change for changed values
-    keys = Object.keys(newData);
-    i = keys.length;
-    while (i--) {
-      key = keys[i];
-      if (!hasOwn(this, key)) {
-        // new property
-        this._proxy(key);
-      }
-    }
-    oldData.__ob__.removeVm(this);
-    observe(newData, this);
-    this._digest();
-  };
-
-  /**
-   * Proxy a property, so that
-   * vm.prop === vm._data.prop
-   *
-   * @param {String} key
-   */
-
-  Vue.prototype._proxy = function (key) {
-    if (!isReserved(key)) {
-      // need to store ref to self here
-      // because these getter/setters might
-      // be called by child scopes via
-      // prototype inheritance.
-      var self = this;
-      Object.defineProperty(self, key, {
-        configurable: true,
-        enumerable: true,
-        get: function proxyGetter() {
-          return self._data[key];
-        },
-        set: function proxySetter(val) {
-          self._data[key] = val;
+      defineReactive$$1(props, key, value, function () {
+        if (vm.$parent && !observerState.isSettingProps) {
+          warn(
+            "Avoid mutating a prop directly since the value will be " +
+            "overwritten whenever the parent component re-renders. " +
+            "Instead, use a data or computed property based on the prop's " +
+            "value. Prop being mutated: \"" + key + "\"",
+            vm
+          );
         }
       });
+    } else {
+      defineReactive$$1(props, key, value);
+    }
+    // static props are already proxied on the component's prototype
+    // during Vue.extend(). We only need to proxy props defined at
+    // instantiation here.
+    if (!(key in vm)) {
+      proxy(vm, "_props", key);
     }
   };
 
-  /**
-   * Unproxy a property.
-   *
-   * @param {String} key
-   */
+  for (var key in propsOptions) loop( key );
+  observerState.shouldConvert = true;
+}
 
-  Vue.prototype._unproxy = function (key) {
-    if (!isReserved(key)) {
-      delete this[key];
+function initData (vm) {
+  var data = vm.$options.data;
+  data = vm._data = typeof data === 'function'
+    ? data.call(vm)
+    : data || {};
+  if (!isPlainObject(data)) {
+    data = {};
+    process.env.NODE_ENV !== 'production' && warn(
+      'data functions should return an object:\n' +
+      'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function',
+      vm
+    );
+  }
+  // proxy data on instance
+  var keys = Object.keys(data);
+  var props = vm.$options.props;
+  var i = keys.length;
+  while (i--) {
+    if (props && hasOwn(props, keys[i])) {
+      process.env.NODE_ENV !== 'production' && warn(
+        "The data property \"" + (keys[i]) + "\" is already declared as a prop. " +
+        "Use prop default value instead.",
+        vm
+      );
+    } else if (!isReserved(keys[i])) {
+      proxy(vm, "_data", keys[i]);
     }
-  };
+  }
+  // observe data
+  observe(data, true /* asRootData */);
+}
 
-  /**
-   * Force update on every watcher in scope.
-   */
+var computedWatcherOptions = { lazy: true };
 
-  Vue.prototype._digest = function () {
-    for (var i = 0, l = this._watchers.length; i < l; i++) {
-      this._watchers[i].update(true); // shallow updates
+function initComputed (vm, computed) {
+  var watchers = vm._computedWatchers = Object.create(null);
+
+  for (var key in computed) {
+    var userDef = computed[key];
+    var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    // create internal watcher for the computed property.
+    watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
+
+    // component-defined computed properties are already defined on the
+    // component prototype. We only need to define computed properties defined
+    // at instantiation here.
+    if (!(key in vm)) {
+      defineComputed(vm, key, userDef);
     }
-  };
+  }
+}
 
-  /**
-   * Setup computed properties. They are essentially
-   * special getter/setters
-   */
+function defineComputed (target, key, userDef) {
+  if (typeof userDef === 'function') {
+    sharedPropertyDefinition.get = createComputedGetter(key);
+    sharedPropertyDefinition.set = noop;
+  } else {
+    sharedPropertyDefinition.get = userDef.get
+      ? userDef.cache !== false
+        ? createComputedGetter(key)
+        : userDef.get
+      : noop;
+    sharedPropertyDefinition.set = userDef.set
+      ? userDef.set
+      : noop;
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition);
+}
 
-  function noop() {}
-  Vue.prototype._initComputed = function () {
-    var computed = this.$options.computed;
-    if (computed) {
-      for (var key in computed) {
-        var userDef = computed[key];
-        var def = {
-          enumerable: true,
-          configurable: true
-        };
-        if (typeof userDef === 'function') {
-          def.get = makeComputedGetter(userDef, this);
-          def.set = noop;
-        } else {
-          def.get = userDef.get ? userDef.cache !== false ? makeComputedGetter(userDef.get, this) : bind(userDef.get, this) : noop;
-          def.set = userDef.set ? bind(userDef.set, this) : noop;
-        }
-        Object.defineProperty(this, key, def);
-      }
-    }
-  };
-
-  function makeComputedGetter(getter, owner) {
-    var watcher = new Watcher(owner, getter, null, {
-      lazy: true
-    });
-    return function computedGetter() {
+function createComputedGetter (key) {
+  return function computedGetter () {
+    var watcher = this._computedWatchers && this._computedWatchers[key];
+    if (watcher) {
       if (watcher.dirty) {
         watcher.evaluate();
       }
       if (Dep.target) {
         watcher.depend();
       }
-      return watcher.value;
+      return watcher.value
+    }
+  }
+}
+
+function initMethods (vm, methods) {
+  var props = vm.$options.props;
+  for (var key in methods) {
+    vm[key] = methods[key] == null ? noop : bind(methods[key], vm);
+    if (process.env.NODE_ENV !== 'production') {
+      if (methods[key] == null) {
+        warn(
+          "method \"" + key + "\" has an undefined value in the component definition. " +
+          "Did you reference the function correctly?",
+          vm
+        );
+      }
+      if (props && hasOwn(props, key)) {
+        warn(
+          ("method \"" + key + "\" has already been defined as a prop."),
+          vm
+        );
+      }
+    }
+  }
+}
+
+function initWatch (vm, watch) {
+  for (var key in watch) {
+    var handler = watch[key];
+    if (Array.isArray(handler)) {
+      for (var i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i]);
+      }
+    } else {
+      createWatcher(vm, key, handler);
+    }
+  }
+}
+
+function createWatcher (vm, key, handler) {
+  var options;
+  if (isPlainObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
+  if (typeof handler === 'string') {
+    handler = vm[handler];
+  }
+  vm.$watch(key, handler, options);
+}
+
+function stateMixin (Vue) {
+  // flow somehow has problems with directly declared definition object
+  // when using Object.defineProperty, so we have to procedurally build up
+  // the object here.
+  var dataDef = {};
+  dataDef.get = function () { return this._data };
+  var propsDef = {};
+  propsDef.get = function () { return this._props };
+  if (process.env.NODE_ENV !== 'production') {
+    dataDef.set = function (newData) {
+      warn(
+        'Avoid replacing instance root $data. ' +
+        'Use nested data properties instead.',
+        this
+      );
+    };
+    propsDef.set = function () {
+      warn("$props is readonly.", this);
     };
   }
-
-  /**
-   * Setup instance methods. Methods must be bound to the
-   * instance since they might be passed down as a prop to
-   * child components.
-   */
-
-  Vue.prototype._initMethods = function () {
-    var methods = this.$options.methods;
-    if (methods) {
-      for (var key in methods) {
-        this[key] = bind(methods[key], this);
-      }
-    }
-  };
-
-  /**
-   * Initialize meta information like $index, $key & $value.
-   */
-
-  Vue.prototype._initMeta = function () {
-    var metas = this.$options._meta;
-    if (metas) {
-      for (var key in metas) {
-        defineReactive(this, key, metas[key]);
-      }
-    }
-  };
-}
-
-var eventRE = /^v-on:|^@/;
-
-function eventsMixin (Vue) {
-  /**
-   * Setup the instance's option events & watchers.
-   * If the value is a string, we pull it from the
-   * instance's methods by name.
-   */
-
-  Vue.prototype._initEvents = function () {
-    var options = this.$options;
-    if (options._asComponent) {
-      registerComponentEvents(this, options.el);
-    }
-    registerCallbacks(this, '$on', options.events);
-    registerCallbacks(this, '$watch', options.watch);
-  };
-
-  /**
-   * Register v-on events on a child component
-   *
-   * @param {Vue} vm
-   * @param {Element} el
-   */
-
-  function registerComponentEvents(vm, el) {
-    var attrs = el.attributes;
-    var name, value, handler;
-    for (var i = 0, l = attrs.length; i < l; i++) {
-      name = attrs[i].name;
-      if (eventRE.test(name)) {
-        name = name.replace(eventRE, '');
-        // force the expression into a statement so that
-        // it always dynamically resolves the method to call (#2670)
-        // kinda ugly hack, but does the job.
-        value = attrs[i].value;
-        if (isSimplePath(value)) {
-          value += '.apply(this, $arguments)';
-        }
-        handler = (vm._scope || vm._context).$eval(value, true);
-        handler._fromParent = true;
-        vm.$on(name.replace(eventRE), handler);
-      }
-    }
-  }
-
-  /**
-   * Register callbacks for option events and watchers.
-   *
-   * @param {Vue} vm
-   * @param {String} action
-   * @param {Object} hash
-   */
-
-  function registerCallbacks(vm, action, hash) {
-    if (!hash) return;
-    var handlers, key, i, j;
-    for (key in hash) {
-      handlers = hash[key];
-      if (isArray(handlers)) {
-        for (i = 0, j = handlers.length; i < j; i++) {
-          register(vm, action, key, handlers[i]);
-        }
-      } else {
-        register(vm, action, key, handlers);
-      }
-    }
-  }
-
-  /**
-   * Helper to register an event/watch callback.
-   *
-   * @param {Vue} vm
-   * @param {String} action
-   * @param {String} key
-   * @param {Function|String|Object} handler
-   * @param {Object} [options]
-   */
-
-  function register(vm, action, key, handler, options) {
-    var type = typeof handler;
-    if (type === 'function') {
-      vm[action](key, handler, options);
-    } else if (type === 'string') {
-      var methods = vm.$options.methods;
-      var method = methods && methods[handler];
-      if (method) {
-        vm[action](key, method, options);
-      } else {
-        process.env.NODE_ENV !== 'production' && warn('Unknown method: "' + handler + '" when ' + 'registering callback for ' + action + ': "' + key + '".', vm);
-      }
-    } else if (handler && type === 'object') {
-      register(vm, action, key, handler.handler, handler);
-    }
-  }
-
-  /**
-   * Setup recursive attached/detached calls
-   */
-
-  Vue.prototype._initDOMHooks = function () {
-    this.$on('hook:attached', onAttached);
-    this.$on('hook:detached', onDetached);
-  };
-
-  /**
-   * Callback to recursively call attached hook on children
-   */
-
-  function onAttached() {
-    if (!this._isAttached) {
-      this._isAttached = true;
-      this.$children.forEach(callAttach);
-    }
-  }
-
-  /**
-   * Iterator to call attached hook
-   *
-   * @param {Vue} child
-   */
-
-  function callAttach(child) {
-    if (!child._isAttached && inDoc(child.$el)) {
-      child._callHook('attached');
-    }
-  }
-
-  /**
-   * Callback to recursively call detached hook on children
-   */
-
-  function onDetached() {
-    if (this._isAttached) {
-      this._isAttached = false;
-      this.$children.forEach(callDetach);
-    }
-  }
-
-  /**
-   * Iterator to call detached hook
-   *
-   * @param {Vue} child
-   */
-
-  function callDetach(child) {
-    if (child._isAttached && !inDoc(child.$el)) {
-      child._callHook('detached');
-    }
-  }
-
-  /**
-   * Trigger all handlers for a hook
-   *
-   * @param {String} hook
-   */
-
-  Vue.prototype._callHook = function (hook) {
-    this.$emit('pre-hook:' + hook);
-    var handlers = this.$options[hook];
-    if (handlers) {
-      for (var i = 0, j = handlers.length; i < j; i++) {
-        handlers[i].call(this);
-      }
-    }
-    this.$emit('hook:' + hook);
-  };
-}
-
-function noop$1() {}
-
-/**
- * A directive links a DOM element with a piece of data,
- * which is the result of evaluating an expression.
- * It registers a watcher with the expression and calls
- * the DOM update function when a change is triggered.
- *
- * @param {Object} descriptor
- *                 - {String} name
- *                 - {Object} def
- *                 - {String} expression
- *                 - {Array<Object>} [filters]
- *                 - {Object} [modifiers]
- *                 - {Boolean} literal
- *                 - {String} attr
- *                 - {String} arg
- *                 - {String} raw
- *                 - {String} [ref]
- *                 - {Array<Object>} [interp]
- *                 - {Boolean} [hasOneTime]
- * @param {Vue} vm
- * @param {Node} el
- * @param {Vue} [host] - transclusion host component
- * @param {Object} [scope] - v-for scope
- * @param {Fragment} [frag] - owner fragment
- * @constructor
- */
-function Directive(descriptor, vm, el, host, scope, frag) {
-  this.vm = vm;
-  this.el = el;
-  // copy descriptor properties
-  this.descriptor = descriptor;
-  this.name = descriptor.name;
-  this.expression = descriptor.expression;
-  this.arg = descriptor.arg;
-  this.modifiers = descriptor.modifiers;
-  this.filters = descriptor.filters;
-  this.literal = this.modifiers && this.modifiers.literal;
-  // private
-  this._locked = false;
-  this._bound = false;
-  this._listeners = null;
-  // link context
-  this._host = host;
-  this._scope = scope;
-  this._frag = frag;
-  // store directives on node in dev mode
-  if (process.env.NODE_ENV !== 'production' && this.el) {
-    this.el._vue_directives = this.el._vue_directives || [];
-    this.el._vue_directives.push(this);
-  }
-}
-
-/**
- * Initialize the directive, mixin definition properties,
- * setup the watcher, call definition bind() and update()
- * if present.
- */
-
-Directive.prototype._bind = function () {
-  var name = this.name;
-  var descriptor = this.descriptor;
-
-  // remove attribute
-  if ((name !== 'cloak' || this.vm._isCompiled) && this.el && this.el.removeAttribute) {
-    var attr = descriptor.attr || 'v-' + name;
-    this.el.removeAttribute(attr);
-  }
-
-  // copy def properties
-  var def = descriptor.def;
-  if (typeof def === 'function') {
-    this.update = def;
-  } else {
-    extend(this, def);
-  }
-
-  // setup directive params
-  this._setupParams();
-
-  // initial bind
-  if (this.bind) {
-    this.bind();
-  }
-  this._bound = true;
-
-  if (this.literal) {
-    this.update && this.update(descriptor.raw);
-  } else if ((this.expression || this.modifiers) && (this.update || this.twoWay) && !this._checkStatement()) {
-    // wrapped updater for context
-    var dir = this;
-    if (this.update) {
-      this._update = function (val, oldVal) {
-        if (!dir._locked) {
-          dir.update(val, oldVal);
-        }
-      };
-    } else {
-      this._update = noop$1;
-    }
-    var preProcess = this._preProcess ? bind(this._preProcess, this) : null;
-    var postProcess = this._postProcess ? bind(this._postProcess, this) : null;
-    var watcher = this._watcher = new Watcher(this.vm, this.expression, this._update, // callback
-    {
-      filters: this.filters,
-      twoWay: this.twoWay,
-      deep: this.deep,
-      preProcess: preProcess,
-      postProcess: postProcess,
-      scope: this._scope
-    });
-    // v-model with inital inline value need to sync back to
-    // model instead of update to DOM on init. They would
-    // set the afterBind hook to indicate that.
-    if (this.afterBind) {
-      this.afterBind();
-    } else if (this.update) {
-      this.update(watcher.value);
-    }
-  }
-};
-
-/**
- * Setup all param attributes, e.g. track-by,
- * transition-mode, etc...
- */
-
-Directive.prototype._setupParams = function () {
-  if (!this.params) {
-    return;
-  }
-  var params = this.params;
-  // swap the params array with a fresh object.
-  this.params = Object.create(null);
-  var i = params.length;
-  var key, val, mappedKey;
-  while (i--) {
-    key = hyphenate(params[i]);
-    mappedKey = camelize(key);
-    val = getBindAttr(this.el, key);
-    if (val != null) {
-      // dynamic
-      this._setupParamWatcher(mappedKey, val);
-    } else {
-      // static
-      val = getAttr(this.el, key);
-      if (val != null) {
-        this.params[mappedKey] = val === '' ? true : val;
-      }
-    }
-  }
-};
-
-/**
- * Setup a watcher for a dynamic param.
- *
- * @param {String} key
- * @param {String} expression
- */
-
-Directive.prototype._setupParamWatcher = function (key, expression) {
-  var self = this;
-  var called = false;
-  var unwatch = (this._scope || this.vm).$watch(expression, function (val, oldVal) {
-    self.params[key] = val;
-    // since we are in immediate mode,
-    // only call the param change callbacks if this is not the first update.
-    if (called) {
-      var cb = self.paramWatchers && self.paramWatchers[key];
-      if (cb) {
-        cb.call(self, val, oldVal);
-      }
-    } else {
-      called = true;
-    }
-  }, {
-    immediate: true,
-    user: false
-  });(this._paramUnwatchFns || (this._paramUnwatchFns = [])).push(unwatch);
-};
-
-/**
- * Check if the directive is a function caller
- * and if the expression is a callable one. If both true,
- * we wrap up the expression and use it as the event
- * handler.
- *
- * e.g. on-click="a++"
- *
- * @return {Boolean}
- */
-
-Directive.prototype._checkStatement = function () {
-  var expression = this.expression;
-  if (expression && this.acceptStatement && !isSimplePath(expression)) {
-    var fn = parseExpression$1(expression).get;
-    var scope = this._scope || this.vm;
-    var handler = function handler(e) {
-      scope.$event = e;
-      fn.call(scope, scope);
-      scope.$event = null;
-    };
-    if (this.filters) {
-      handler = scope._applyFilters(handler, null, this.filters);
-    }
-    this.update(handler);
-    return true;
-  }
-};
-
-/**
- * Set the corresponding value with the setter.
- * This should only be used in two-way directives
- * e.g. v-model.
- *
- * @param {*} value
- * @public
- */
-
-Directive.prototype.set = function (value) {
-  /* istanbul ignore else */
-  if (this.twoWay) {
-    this._withLock(function () {
-      this._watcher.set(value);
-    });
-  } else if (process.env.NODE_ENV !== 'production') {
-    warn('Directive.set() can only be used inside twoWay' + 'directives.');
-  }
-};
-
-/**
- * Execute a function while preventing that function from
- * triggering updates on this directive instance.
- *
- * @param {Function} fn
- */
-
-Directive.prototype._withLock = function (fn) {
-  var self = this;
-  self._locked = true;
-  fn.call(self);
-  nextTick(function () {
-    self._locked = false;
-  });
-};
-
-/**
- * Convenience method that attaches a DOM event listener
- * to the directive element and autometically tears it down
- * during unbind.
- *
- * @param {String} event
- * @param {Function} handler
- * @param {Boolean} [useCapture]
- */
-
-Directive.prototype.on = function (event, handler, useCapture) {
-  on(this.el, event, handler, useCapture);(this._listeners || (this._listeners = [])).push([event, handler]);
-};
-
-/**
- * Teardown the watcher and call unbind.
- */
-
-Directive.prototype._teardown = function () {
-  if (this._bound) {
-    this._bound = false;
-    if (this.unbind) {
-      this.unbind();
-    }
-    if (this._watcher) {
-      this._watcher.teardown();
-    }
-    var listeners = this._listeners;
-    var i;
-    if (listeners) {
-      i = listeners.length;
-      while (i--) {
-        off(this.el, listeners[i][0], listeners[i][1]);
-      }
-    }
-    var unwatchFns = this._paramUnwatchFns;
-    if (unwatchFns) {
-      i = unwatchFns.length;
-      while (i--) {
-        unwatchFns[i]();
-      }
-    }
-    if (process.env.NODE_ENV !== 'production' && this.el) {
-      this.el._vue_directives.$remove(this);
-    }
-    this.vm = this.el = this._watcher = this._listeners = null;
-  }
-};
-
-function lifecycleMixin (Vue) {
-  /**
-   * Update v-ref for component.
-   *
-   * @param {Boolean} remove
-   */
-
-  Vue.prototype._updateRef = function (remove) {
-    var ref = this.$options._ref;
-    if (ref) {
-      var refs = (this._scope || this._context).$refs;
-      if (remove) {
-        if (refs[ref] === this) {
-          refs[ref] = null;
-        }
-      } else {
-        refs[ref] = this;
-      }
-    }
-  };
-
-  /**
-   * Transclude, compile and link element.
-   *
-   * If a pre-compiled linker is available, that means the
-   * passed in element will be pre-transcluded and compiled
-   * as well - all we need to do is to call the linker.
-   *
-   * Otherwise we need to call transclude/compile/link here.
-   *
-   * @param {Element} el
-   */
-
-  Vue.prototype._compile = function (el) {
-    var options = this.$options;
-
-    // transclude and init element
-    // transclude can potentially replace original
-    // so we need to keep reference; this step also injects
-    // the template and caches the original attributes
-    // on the container node and replacer node.
-    var original = el;
-    el = transclude(el, options);
-    this._initElement(el);
-
-    // handle v-pre on root node (#2026)
-    if (el.nodeType === 1 && getAttr(el, 'v-pre') !== null) {
-      return;
-    }
-
-    // root is always compiled per-instance, because
-    // container attrs and props can be different every time.
-    var contextOptions = this._context && this._context.$options;
-    var rootLinker = compileRoot(el, options, contextOptions);
-
-    // resolve slot distribution
-    resolveSlots(this, options._content);
-
-    // compile and link the rest
-    var contentLinkFn;
-    var ctor = this.constructor;
-    // component compilation can be cached
-    // as long as it's not using inline-template
-    if (options._linkerCachable) {
-      contentLinkFn = ctor.linker;
-      if (!contentLinkFn) {
-        contentLinkFn = ctor.linker = compile(el, options);
-      }
-    }
-
-    // link phase
-    // make sure to link root with prop scope!
-    var rootUnlinkFn = rootLinker(this, el, this._scope);
-    var contentUnlinkFn = contentLinkFn ? contentLinkFn(this, el) : compile(el, options)(this, el);
-
-    // register composite unlink function
-    // to be called during instance destruction
-    this._unlinkFn = function () {
-      rootUnlinkFn();
-      // passing destroying: true to avoid searching and
-      // splicing the directives
-      contentUnlinkFn(true);
-    };
-
-    // finally replace original
-    if (options.replace) {
-      replace(original, el);
-    }
-
-    this._isCompiled = true;
-    this._callHook('compiled');
-  };
-
-  /**
-   * Initialize instance element. Called in the public
-   * $mount() method.
-   *
-   * @param {Element} el
-   */
-
-  Vue.prototype._initElement = function (el) {
-    if (isFragment(el)) {
-      this._isFragment = true;
-      this.$el = this._fragmentStart = el.firstChild;
-      this._fragmentEnd = el.lastChild;
-      // set persisted text anchors to empty
-      if (this._fragmentStart.nodeType === 3) {
-        this._fragmentStart.data = this._fragmentEnd.data = '';
-      }
-      this._fragment = el;
-    } else {
-      this.$el = el;
-    }
-    this.$el.__vue__ = this;
-    this._callHook('beforeCompile');
-  };
-
-  /**
-   * Create and bind a directive to an element.
-   *
-   * @param {Object} descriptor - parsed directive descriptor
-   * @param {Node} node   - target node
-   * @param {Vue} [host] - transclusion host component
-   * @param {Object} [scope] - v-for scope
-   * @param {Fragment} [frag] - owner fragment
-   */
-
-  Vue.prototype._bindDir = function (descriptor, node, host, scope, frag) {
-    this._directives.push(new Directive(descriptor, this, node, host, scope, frag));
-  };
-
-  /**
-   * Teardown an instance, unobserves the data, unbind all the
-   * directives, turn off all the event listeners, etc.
-   *
-   * @param {Boolean} remove - whether to remove the DOM node.
-   * @param {Boolean} deferCleanup - if true, defer cleanup to
-   *                                 be called later
-   */
-
-  Vue.prototype._destroy = function (remove, deferCleanup) {
-    if (this._isBeingDestroyed) {
-      if (!deferCleanup) {
-        this._cleanup();
-      }
-      return;
-    }
-
-    var destroyReady;
-    var pendingRemoval;
-
-    var self = this;
-    // Cleanup should be called either synchronously or asynchronoysly as
-    // callback of this.$remove(), or if remove and deferCleanup are false.
-    // In any case it should be called after all other removing, unbinding and
-    // turning of is done
-    var cleanupIfPossible = function cleanupIfPossible() {
-      if (destroyReady && !pendingRemoval && !deferCleanup) {
-        self._cleanup();
-      }
-    };
-
-    // remove DOM element
-    if (remove && this.$el) {
-      pendingRemoval = true;
-      this.$remove(function () {
-        pendingRemoval = false;
-        cleanupIfPossible();
-      });
-    }
-
-    this._callHook('beforeDestroy');
-    this._isBeingDestroyed = true;
-    var i;
-    // remove self from parent. only necessary
-    // if parent is not being destroyed as well.
-    var parent = this.$parent;
-    if (parent && !parent._isBeingDestroyed) {
-      parent.$children.$remove(this);
-      // unregister ref (remove: true)
-      this._updateRef(true);
-    }
-    // destroy all children.
-    i = this.$children.length;
-    while (i--) {
-      this.$children[i].$destroy();
-    }
-    // teardown props
-    if (this._propsUnlinkFn) {
-      this._propsUnlinkFn();
-    }
-    // teardown all directives. this also tearsdown all
-    // directive-owned watchers.
-    if (this._unlinkFn) {
-      this._unlinkFn();
-    }
-    i = this._watchers.length;
-    while (i--) {
-      this._watchers[i].teardown();
-    }
-    // remove reference to self on $el
-    if (this.$el) {
-      this.$el.__vue__ = null;
-    }
-
-    destroyReady = true;
-    cleanupIfPossible();
-  };
-
-  /**
-   * Clean up to ensure garbage collection.
-   * This is called after the leave transition if there
-   * is any.
-   */
-
-  Vue.prototype._cleanup = function () {
-    if (this._isDestroyed) {
-      return;
-    }
-    // remove self from owner fragment
-    // do it in cleanup so that we can call $destroy with
-    // defer right when a fragment is about to be removed.
-    if (this._frag) {
-      this._frag.children.$remove(this);
-    }
-    // remove reference from data ob
-    // frozen object may not have observer.
-    if (this._data && this._data.__ob__) {
-      this._data.__ob__.removeVm(this);
-    }
-    // Clean up references to private properties and other
-    // instances. preserve reference to _data so that proxy
-    // accessors still work. The only potential side effect
-    // here is that mutating the instance after it's destroyed
-    // may affect the state of other components that are still
-    // observing the same object, but that seems to be a
-    // reasonable responsibility for the user rather than
-    // always throwing an error on them.
-    this.$el = this.$parent = this.$root = this.$children = this._watchers = this._context = this._scope = this._directives = null;
-    // call the last hook...
-    this._isDestroyed = true;
-    this._callHook('destroyed');
-    // turn off all instance listeners.
-    this.$off();
-  };
-}
-
-function miscMixin (Vue) {
-  /**
-   * Apply a list of filter (descriptors) to a value.
-   * Using plain for loops here because this will be called in
-   * the getter of any watcher with filters so it is very
-   * performance sensitive.
-   *
-   * @param {*} value
-   * @param {*} [oldValue]
-   * @param {Array} filters
-   * @param {Boolean} write
-   * @return {*}
-   */
-
-  Vue.prototype._applyFilters = function (value, oldValue, filters, write) {
-    var filter, fn, args, arg, offset, i, l, j, k;
-    for (i = 0, l = filters.length; i < l; i++) {
-      filter = filters[write ? l - i - 1 : i];
-      fn = resolveAsset(this.$options, 'filters', filter.name, true);
-      if (!fn) continue;
-      fn = write ? fn.write : fn.read || fn;
-      if (typeof fn !== 'function') continue;
-      args = write ? [value, oldValue] : [value];
-      offset = write ? 2 : 1;
-      if (filter.args) {
-        for (j = 0, k = filter.args.length; j < k; j++) {
-          arg = filter.args[j];
-          args[j + offset] = arg.dynamic ? this.$get(arg.value) : arg.value;
-        }
-      }
-      value = fn.apply(this, args);
-    }
-    return value;
-  };
-
-  /**
-   * Resolve a component, depending on whether the component
-   * is defined normally or using an async factory function.
-   * Resolves synchronously if already resolved, otherwise
-   * resolves asynchronously and caches the resolved
-   * constructor on the factory.
-   *
-   * @param {String|Function} value
-   * @param {Function} cb
-   */
-
-  Vue.prototype._resolveComponent = function (value, cb) {
-    var factory;
-    if (typeof value === 'function') {
-      factory = value;
-    } else {
-      factory = resolveAsset(this.$options, 'components', value, true);
-    }
-    /* istanbul ignore if */
-    if (!factory) {
-      return;
-    }
-    // async component factory
-    if (!factory.options) {
-      if (factory.resolved) {
-        // cached
-        cb(factory.resolved);
-      } else if (factory.requested) {
-        // pool callbacks
-        factory.pendingCallbacks.push(cb);
-      } else {
-        factory.requested = true;
-        var cbs = factory.pendingCallbacks = [cb];
-        factory.call(this, function resolve(res) {
-          if (isPlainObject(res)) {
-            res = Vue.extend(res);
-          }
-          // cache resolved
-          factory.resolved = res;
-          // invoke callbacks
-          for (var i = 0, l = cbs.length; i < l; i++) {
-            cbs[i](res);
-          }
-        }, function reject(reason) {
-          process.env.NODE_ENV !== 'production' && warn('Failed to resolve async component' + (typeof value === 'string' ? ': ' + value : '') + '. ' + (reason ? '\nReason: ' + reason : ''));
-        });
-      }
-    } else {
-      // normal component
-      cb(factory);
-    }
-  };
-}
-
-var filterRE$1 = /[^|]\|[^|]/;
-
-function dataAPI (Vue) {
-  /**
-   * Get the value from an expression on this vm.
-   *
-   * @param {String} exp
-   * @param {Boolean} [asStatement]
-   * @return {*}
-   */
-
-  Vue.prototype.$get = function (exp, asStatement) {
-    var res = parseExpression$1(exp);
-    if (res) {
-      if (asStatement) {
-        var self = this;
-        return function statementHandler() {
-          self.$arguments = toArray(arguments);
-          var result = res.get.call(self, self);
-          self.$arguments = null;
-          return result;
-        };
-      } else {
-        try {
-          return res.get.call(this, this);
-        } catch (e) {}
-      }
-    }
-  };
-
-  /**
-   * Set the value from an expression on this vm.
-   * The expression must be a valid left-hand
-   * expression in an assignment.
-   *
-   * @param {String} exp
-   * @param {*} val
-   */
-
-  Vue.prototype.$set = function (exp, val) {
-    var res = parseExpression$1(exp, true);
-    if (res && res.set) {
-      res.set.call(this, this, val);
-    }
-  };
-
-  /**
-   * Delete a property on the VM
-   *
-   * @param {String} key
-   */
-
-  Vue.prototype.$delete = function (key) {
-    del(this._data, key);
-  };
-
-  /**
-   * Watch an expression, trigger callback when its
-   * value changes.
-   *
-   * @param {String|Function} expOrFn
-   * @param {Function} cb
-   * @param {Object} [options]
-   *                 - {Boolean} deep
-   *                 - {Boolean} immediate
-   * @return {Function} - unwatchFn
-   */
-
-  Vue.prototype.$watch = function (expOrFn, cb, options) {
+  Object.defineProperty(Vue.prototype, '$data', dataDef);
+  Object.defineProperty(Vue.prototype, '$props', propsDef);
+
+  Vue.prototype.$set = set;
+  Vue.prototype.$delete = del;
+
+  Vue.prototype.$watch = function (
+    expOrFn,
+    cb,
+    options
+  ) {
     var vm = this;
-    var parsed;
-    if (typeof expOrFn === 'string') {
-      parsed = parseDirective(expOrFn);
-      expOrFn = parsed.expression;
-    }
-    var watcher = new Watcher(vm, expOrFn, cb, {
-      deep: options && options.deep,
-      sync: options && options.sync,
-      filters: parsed && parsed.filters,
-      user: !options || options.user !== false
-    });
-    if (options && options.immediate) {
+    options = options || {};
+    options.user = true;
+    var watcher = new Watcher(vm, expOrFn, cb, options);
+    if (options.immediate) {
       cb.call(vm, watcher.value);
     }
-    return function unwatchFn() {
+    return function unwatchFn () {
       watcher.teardown();
-    };
-  };
-
-  /**
-   * Evaluate a text directive, including filters.
-   *
-   * @param {String} text
-   * @param {Boolean} [asStatement]
-   * @return {String}
-   */
-
-  Vue.prototype.$eval = function (text, asStatement) {
-    // check for filters.
-    if (filterRE$1.test(text)) {
-      var dir = parseDirective(text);
-      // the filter regex check might give false positive
-      // for pipes inside strings, so it's possible that
-      // we don't get any filters here
-      var val = this.$get(dir.expression, asStatement);
-      return dir.filters ? this._applyFilters(val, null, dir.filters) : val;
-    } else {
-      // no filter
-      return this.$get(text, asStatement);
     }
   };
+}
 
-  /**
-   * Interpolate a piece of template text.
-   *
-   * @param {String} text
-   * @return {String}
-   */
+/*  */
 
-  Vue.prototype.$interpolate = function (text) {
-    var tokens = parseText(text);
-    var vm = this;
-    if (tokens) {
-      if (tokens.length === 1) {
-        return vm.$eval(tokens[0].value) + '';
+// hooks to be invoked on component VNodes during patch
+var componentVNodeHooks = {
+  init: function init (
+    vnode,
+    hydrating,
+    parentElm,
+    refElm
+  ) {
+    if (!vnode.componentInstance || vnode.componentInstance._isDestroyed) {
+      var child = vnode.componentInstance = createComponentInstanceForVnode(
+        vnode,
+        activeInstance,
+        parentElm,
+        refElm
+      );
+      child.$mount(hydrating ? vnode.elm : undefined, hydrating);
+    } else if (vnode.data.keepAlive) {
+      // kept-alive components, treat as a patch
+      var mountedNode = vnode; // work around flow
+      componentVNodeHooks.prepatch(mountedNode, mountedNode);
+    }
+  },
+
+  prepatch: function prepatch (oldVnode, vnode) {
+    var options = vnode.componentOptions;
+    var child = vnode.componentInstance = oldVnode.componentInstance;
+    updateChildComponent(
+      child,
+      options.propsData, // updated props
+      options.listeners, // updated listeners
+      vnode, // new parent vnode
+      options.children // new children
+    );
+  },
+
+  insert: function insert (vnode) {
+    if (!vnode.componentInstance._isMounted) {
+      vnode.componentInstance._isMounted = true;
+      callHook(vnode.componentInstance, 'mounted');
+    }
+    if (vnode.data.keepAlive) {
+      activateChildComponent(vnode.componentInstance, true /* direct */);
+    }
+  },
+
+  destroy: function destroy (vnode) {
+    if (!vnode.componentInstance._isDestroyed) {
+      if (!vnode.data.keepAlive) {
+        vnode.componentInstance.$destroy();
       } else {
-        return tokens.map(function (token) {
-          return token.tag ? vm.$eval(token.value) : token.value;
-        }).join('');
-      }
-    } else {
-      return text;
-    }
-  };
-
-  /**
-   * Log instance data as a plain JS object
-   * so that it is easier to inspect in console.
-   * This method assumes console is available.
-   *
-   * @param {String} [path]
-   */
-
-  Vue.prototype.$log = function (path) {
-    var data = path ? getPath(this._data, path) : this._data;
-    if (data) {
-      data = clean(data);
-    }
-    // include computed fields
-    if (!path) {
-      var key;
-      for (key in this.$options.computed) {
-        data[key] = clean(this[key]);
-      }
-      if (this._props) {
-        for (key in this._props) {
-          data[key] = clean(this[key]);
-        }
+        deactivateChildComponent(vnode.componentInstance, true /* direct */);
       }
     }
-    console.log(data);
-  };
-
-  /**
-   * "clean" a getter/setter converted object into a plain
-   * object copy.
-   *
-   * @param {Object} - obj
-   * @return {Object}
-   */
-
-  function clean(obj) {
-    return JSON.parse(JSON.stringify(obj));
   }
+};
+
+var hooksToMerge = Object.keys(componentVNodeHooks);
+
+function createComponent (
+  Ctor,
+  data,
+  context,
+  children,
+  tag
+) {
+  if (!Ctor) {
+    return
+  }
+
+  var baseCtor = context.$options._base;
+  if (isObject(Ctor)) {
+    Ctor = baseCtor.extend(Ctor);
+  }
+
+  if (typeof Ctor !== 'function') {
+    if (process.env.NODE_ENV !== 'production') {
+      warn(("Invalid Component definition: " + (String(Ctor))), context);
+    }
+    return
+  }
+
+  // async component
+  if (!Ctor.cid) {
+    if (Ctor.resolved) {
+      Ctor = Ctor.resolved;
+    } else {
+      Ctor = resolveAsyncComponent(Ctor, baseCtor, function () {
+        // it's ok to queue this on every render because
+        // $forceUpdate is buffered by the scheduler.
+        context.$forceUpdate();
+      });
+      if (!Ctor) {
+        // return nothing if this is indeed an async component
+        // wait for the callback to trigger parent update.
+        return
+      }
+    }
+  }
+
+  // resolve constructor options in case global mixins are applied after
+  // component constructor creation
+  resolveConstructorOptions(Ctor);
+
+  data = data || {};
+
+  // transform component v-model data into props & events
+  if (data.model) {
+    transformModel(Ctor.options, data);
+  }
+
+  // extract props
+  var propsData = extractProps(data, Ctor);
+
+  // functional component
+  if (Ctor.options.functional) {
+    return createFunctionalComponent(Ctor, propsData, data, context, children)
+  }
+
+  // extract listeners, since these needs to be treated as
+  // child component listeners instead of DOM listeners
+  var listeners = data.on;
+  // replace with listeners with .native modifier
+  data.on = data.nativeOn;
+
+  if (Ctor.options.abstract) {
+    // abstract components do not keep anything
+    // other than props & listeners
+    data = {};
+  }
+
+  // merge component management hooks onto the placeholder node
+  mergeHooks(data);
+
+  // return a placeholder vnode
+  var name = Ctor.options.name || tag;
+  var vnode = new VNode(
+    ("vue-component-" + (Ctor.cid) + (name ? ("-" + name) : '')),
+    data, undefined, undefined, undefined, context,
+    { Ctor: Ctor, propsData: propsData, listeners: listeners, tag: tag, children: children }
+  );
+  return vnode
 }
 
-function domAPI (Vue) {
-  /**
-   * Convenience on-instance nextTick. The callback is
-   * auto-bound to the instance, and this avoids component
-   * modules having to rely on the global Vue.
-   *
-   * @param {Function} fn
-   */
-
-  Vue.prototype.$nextTick = function (fn) {
-    nextTick(fn, this);
-  };
-
-  /**
-   * Append instance to target
-   *
-   * @param {Node} target
-   * @param {Function} [cb]
-   * @param {Boolean} [withTransition] - defaults to true
-   */
-
-  Vue.prototype.$appendTo = function (target, cb, withTransition) {
-    return insert(this, target, cb, withTransition, append, appendWithTransition);
-  };
-
-  /**
-   * Prepend instance to target
-   *
-   * @param {Node} target
-   * @param {Function} [cb]
-   * @param {Boolean} [withTransition] - defaults to true
-   */
-
-  Vue.prototype.$prependTo = function (target, cb, withTransition) {
-    target = query(target);
-    if (target.hasChildNodes()) {
-      this.$before(target.firstChild, cb, withTransition);
-    } else {
-      this.$appendTo(target, cb, withTransition);
+function createFunctionalComponent (
+  Ctor,
+  propsData,
+  data,
+  context,
+  children
+) {
+  var props = {};
+  var propOptions = Ctor.options.props;
+  if (propOptions) {
+    for (var key in propOptions) {
+      props[key] = validateProp(key, propOptions, propsData);
     }
-    return this;
-  };
-
-  /**
-   * Insert instance before target
-   *
-   * @param {Node} target
-   * @param {Function} [cb]
-   * @param {Boolean} [withTransition] - defaults to true
-   */
-
-  Vue.prototype.$before = function (target, cb, withTransition) {
-    return insert(this, target, cb, withTransition, beforeWithCb, beforeWithTransition);
-  };
-
-  /**
-   * Insert instance after target
-   *
-   * @param {Node} target
-   * @param {Function} [cb]
-   * @param {Boolean} [withTransition] - defaults to true
-   */
-
-  Vue.prototype.$after = function (target, cb, withTransition) {
-    target = query(target);
-    if (target.nextSibling) {
-      this.$before(target.nextSibling, cb, withTransition);
-    } else {
-      this.$appendTo(target.parentNode, cb, withTransition);
+  }
+  // ensure the createElement function in functional components
+  // gets a unique context - this is necessary for correct named slot check
+  var _context = Object.create(context);
+  var h = function (a, b, c, d) { return createElement(_context, a, b, c, d, true); };
+  var vnode = Ctor.options.render.call(null, h, {
+    props: props,
+    data: data,
+    parent: context,
+    children: children,
+    slots: function () { return resolveSlots(children, context); }
+  });
+  if (vnode instanceof VNode) {
+    vnode.functionalContext = context;
+    if (data.slot) {
+      (vnode.data || (vnode.data = {})).slot = data.slot;
     }
-    return this;
+  }
+  return vnode
+}
+
+function createComponentInstanceForVnode (
+  vnode, // we know it's MountedComponentVNode but flow doesn't
+  parent, // activeInstance in lifecycle state
+  parentElm,
+  refElm
+) {
+  var vnodeComponentOptions = vnode.componentOptions;
+  var options = {
+    _isComponent: true,
+    parent: parent,
+    propsData: vnodeComponentOptions.propsData,
+    _componentTag: vnodeComponentOptions.tag,
+    _parentVnode: vnode,
+    _parentListeners: vnodeComponentOptions.listeners,
+    _renderChildren: vnodeComponentOptions.children,
+    _parentElm: parentElm || null,
+    _refElm: refElm || null
   };
+  // check inline-template render functions
+  var inlineTemplate = vnode.data.inlineTemplate;
+  if (inlineTemplate) {
+    options.render = inlineTemplate.render;
+    options.staticRenderFns = inlineTemplate.staticRenderFns;
+  }
+  return new vnodeComponentOptions.Ctor(options)
+}
 
-  /**
-   * Remove instance from DOM
-   *
-   * @param {Function} [cb]
-   * @param {Boolean} [withTransition] - defaults to true
-   */
+function resolveAsyncComponent (
+  factory,
+  baseCtor,
+  cb
+) {
+  if (factory.requested) {
+    // pool callbacks
+    factory.pendingCallbacks.push(cb);
+  } else {
+    factory.requested = true;
+    var cbs = factory.pendingCallbacks = [cb];
+    var sync = true;
 
-  Vue.prototype.$remove = function (cb, withTransition) {
-    if (!this.$el.parentNode) {
-      return cb && cb();
-    }
-    var inDocument = this._isAttached && inDoc(this.$el);
-    // if we are not in document, no need to check
-    // for transitions
-    if (!inDocument) withTransition = false;
-    var self = this;
-    var realCb = function realCb() {
-      if (inDocument) self._callHook('detached');
-      if (cb) cb();
+    var resolve = function (res) {
+      if (isObject(res)) {
+        res = baseCtor.extend(res);
+      }
+      // cache resolved
+      factory.resolved = res;
+      // invoke callbacks only if this is not a synchronous resolve
+      // (async resolves are shimmed as synchronous during SSR)
+      if (!sync) {
+        for (var i = 0, l = cbs.length; i < l; i++) {
+          cbs[i](res);
+        }
+      }
     };
-    if (this._isFragment) {
-      removeNodeRange(this._fragmentStart, this._fragmentEnd, this, this._fragment, realCb);
-    } else {
-      var op = withTransition === false ? removeWithCb : removeWithTransition;
-      op(this.$el, this, realCb);
+
+    var reject = function (reason) {
+      process.env.NODE_ENV !== 'production' && warn(
+        "Failed to resolve async component: " + (String(factory)) +
+        (reason ? ("\nReason: " + reason) : '')
+      );
+    };
+
+    var res = factory(resolve, reject);
+
+    // handle promise
+    if (res && typeof res.then === 'function' && !factory.resolved) {
+      res.then(resolve, reject);
     }
-    return this;
-  };
 
-  /**
-   * Shared DOM insertion function.
-   *
-   * @param {Vue} vm
-   * @param {Element} target
-   * @param {Function} [cb]
-   * @param {Boolean} [withTransition]
-   * @param {Function} op1 - op for non-transition insert
-   * @param {Function} op2 - op for transition insert
-   * @return vm
-   */
-
-  function insert(vm, target, cb, withTransition, op1, op2) {
-    target = query(target);
-    var targetIsDetached = !inDoc(target);
-    var op = withTransition === false || targetIsDetached ? op1 : op2;
-    var shouldCallHook = !targetIsDetached && !vm._isAttached && !inDoc(vm.$el);
-    if (vm._isFragment) {
-      mapNodeRange(vm._fragmentStart, vm._fragmentEnd, function (node) {
-        op(node, target, vm);
-      });
-      cb && cb();
-    } else {
-      op(vm.$el, target, vm, cb);
-    }
-    if (shouldCallHook) {
-      vm._callHook('attached');
-    }
-    return vm;
-  }
-
-  /**
-   * Check for selectors
-   *
-   * @param {String|Element} el
-   */
-
-  function query(el) {
-    return typeof el === 'string' ? document.querySelector(el) : el;
-  }
-
-  /**
-   * Append operation that takes a callback.
-   *
-   * @param {Node} el
-   * @param {Node} target
-   * @param {Vue} vm - unused
-   * @param {Function} [cb]
-   */
-
-  function append(el, target, vm, cb) {
-    target.appendChild(el);
-    if (cb) cb();
-  }
-
-  /**
-   * InsertBefore operation that takes a callback.
-   *
-   * @param {Node} el
-   * @param {Node} target
-   * @param {Vue} vm - unused
-   * @param {Function} [cb]
-   */
-
-  function beforeWithCb(el, target, vm, cb) {
-    before(el, target);
-    if (cb) cb();
-  }
-
-  /**
-   * Remove operation that takes a callback.
-   *
-   * @param {Node} el
-   * @param {Vue} vm - unused
-   * @param {Function} [cb]
-   */
-
-  function removeWithCb(el, vm, cb) {
-    remove(el);
-    if (cb) cb();
+    sync = false;
+    // return in case resolved synchronously
+    return factory.resolved
   }
 }
 
-function eventsAPI (Vue) {
-  /**
-   * Listen on the given `event` with `fn`.
-   *
-   * @param {String} event
-   * @param {Function} fn
-   */
-
-  Vue.prototype.$on = function (event, fn) {
-    (this._events[event] || (this._events[event] = [])).push(fn);
-    modifyListenerCount(this, event, 1);
-    return this;
-  };
-
-  /**
-   * Adds an `event` listener that will be invoked a single
-   * time then automatically removed.
-   *
-   * @param {String} event
-   * @param {Function} fn
-   */
-
-  Vue.prototype.$once = function (event, fn) {
-    var self = this;
-    function on() {
-      self.$off(event, on);
-      fn.apply(this, arguments);
-    }
-    on.fn = fn;
-    this.$on(event, on);
-    return this;
-  };
-
-  /**
-   * Remove the given callback for `event` or all
-   * registered callbacks.
-   *
-   * @param {String} event
-   * @param {Function} fn
-   */
-
-  Vue.prototype.$off = function (event, fn) {
-    var cbs;
-    // all
-    if (!arguments.length) {
-      if (this.$parent) {
-        for (event in this._events) {
-          cbs = this._events[event];
-          if (cbs) {
-            modifyListenerCount(this, event, -cbs.length);
-          }
+function extractProps (data, Ctor) {
+  // we are only extracting raw values here.
+  // validation and default values are handled in the child
+  // component itself.
+  var propOptions = Ctor.options.props;
+  if (!propOptions) {
+    return
+  }
+  var res = {};
+  var attrs = data.attrs;
+  var props = data.props;
+  var domProps = data.domProps;
+  if (attrs || props || domProps) {
+    for (var key in propOptions) {
+      var altKey = hyphenate(key);
+      if (process.env.NODE_ENV !== 'production') {
+        var keyInLowerCase = key.toLowerCase();
+        if (
+          key !== keyInLowerCase &&
+          attrs && attrs.hasOwnProperty(keyInLowerCase)
+        ) {
+          warn(
+            "Prop \"" + keyInLowerCase + "\" is not declared in component " +
+            (formatComponentName(Ctor)) + ". Note that HTML attributes are " +
+            "case-insensitive and camelCased props need to use their kebab-case " +
+            "equivalents when using in-DOM templates. You should probably use " +
+            "\"" + altKey + "\" instead of \"" + key + "\"."
+          );
         }
       }
-      this._events = {};
-      return this;
+      checkProp(res, props, key, altKey, true) ||
+      checkProp(res, attrs, key, altKey) ||
+      checkProp(res, domProps, key, altKey);
     }
-    // specific event
-    cbs = this._events[event];
-    if (!cbs) {
-      return this;
-    }
-    if (arguments.length === 1) {
-      modifyListenerCount(this, event, -cbs.length);
-      this._events[event] = null;
-      return this;
-    }
-    // specific handler
-    var cb;
-    var i = cbs.length;
-    while (i--) {
-      cb = cbs[i];
-      if (cb === fn || cb.fn === fn) {
-        modifyListenerCount(this, event, -1);
-        cbs.splice(i, 1);
-        break;
+  }
+  return res
+}
+
+function checkProp (
+  res,
+  hash,
+  key,
+  altKey,
+  preserve
+) {
+  if (hash) {
+    if (hasOwn(hash, key)) {
+      res[key] = hash[key];
+      if (!preserve) {
+        delete hash[key];
       }
-    }
-    return this;
-  };
-
-  /**
-   * Trigger an event on self.
-   *
-   * @param {String|Object} event
-   * @return {Boolean} shouldPropagate
-   */
-
-  Vue.prototype.$emit = function (event) {
-    var isSource = typeof event === 'string';
-    event = isSource ? event : event.name;
-    var cbs = this._events[event];
-    var shouldPropagate = isSource || !cbs;
-    if (cbs) {
-      cbs = cbs.length > 1 ? toArray(cbs) : cbs;
-      // this is a somewhat hacky solution to the question raised
-      // in #2102: for an inline component listener like <comp @test="doThis">,
-      // the propagation handling is somewhat broken. Therefore we
-      // need to treat these inline callbacks differently.
-      var hasParentCbs = isSource && cbs.some(function (cb) {
-        return cb._fromParent;
-      });
-      if (hasParentCbs) {
-        shouldPropagate = false;
+      return true
+    } else if (hasOwn(hash, altKey)) {
+      res[key] = hash[altKey];
+      if (!preserve) {
+        delete hash[altKey];
       }
-      var args = toArray(arguments, 1);
-      for (var i = 0, l = cbs.length; i < l; i++) {
-        var cb = cbs[i];
-        var res = cb.apply(this, args);
-        if (res === true && (!hasParentCbs || cb._fromParent)) {
-          shouldPropagate = true;
-        }
+      return true
+    }
+  }
+  return false
+}
+
+function mergeHooks (data) {
+  if (!data.hook) {
+    data.hook = {};
+  }
+  for (var i = 0; i < hooksToMerge.length; i++) {
+    var key = hooksToMerge[i];
+    var fromParent = data.hook[key];
+    var ours = componentVNodeHooks[key];
+    data.hook[key] = fromParent ? mergeHook$1(ours, fromParent) : ours;
+  }
+}
+
+function mergeHook$1 (one, two) {
+  return function (a, b, c, d) {
+    one(a, b, c, d);
+    two(a, b, c, d);
+  }
+}
+
+// transform component v-model info (value and callback) into
+// prop and event handler respectively.
+function transformModel (options, data) {
+  var prop = (options.model && options.model.prop) || 'value';
+  var event = (options.model && options.model.event) || 'input';(data.props || (data.props = {}))[prop] = data.model.value;
+  var on = data.on || (data.on = {});
+  if (on[event]) {
+    on[event] = [data.model.callback].concat(on[event]);
+  } else {
+    on[event] = data.model.callback;
+  }
+}
+
+/*  */
+
+var SIMPLE_NORMALIZE = 1;
+var ALWAYS_NORMALIZE = 2;
+
+// wrapper function for providing a more flexible interface
+// without getting yelled at by flow
+function createElement (
+  context,
+  tag,
+  data,
+  children,
+  normalizationType,
+  alwaysNormalize
+) {
+  if (Array.isArray(data) || isPrimitive(data)) {
+    normalizationType = children;
+    children = data;
+    data = undefined;
+  }
+  if (alwaysNormalize) { normalizationType = ALWAYS_NORMALIZE; }
+  return _createElement(context, tag, data, children, normalizationType)
+}
+
+function _createElement (
+  context,
+  tag,
+  data,
+  children,
+  normalizationType
+) {
+  if (data && data.__ob__) {
+    process.env.NODE_ENV !== 'production' && warn(
+      "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
+      'Always create fresh vnode data objects in each render!',
+      context
+    );
+    return createEmptyVNode()
+  }
+  if (!tag) {
+    // in case of component :is set to falsy value
+    return createEmptyVNode()
+  }
+  // support single function children as default scoped slot
+  if (Array.isArray(children) &&
+      typeof children[0] === 'function') {
+    data = data || {};
+    data.scopedSlots = { default: children[0] };
+    children.length = 0;
+  }
+  if (normalizationType === ALWAYS_NORMALIZE) {
+    children = normalizeChildren(children);
+  } else if (normalizationType === SIMPLE_NORMALIZE) {
+    children = simpleNormalizeChildren(children);
+  }
+  var vnode, ns;
+  if (typeof tag === 'string') {
+    var Ctor;
+    ns = config.getTagNamespace(tag);
+    if (config.isReservedTag(tag)) {
+      // platform built-in elements
+      vnode = new VNode(
+        config.parsePlatformTagName(tag), data, children,
+        undefined, undefined, context
+      );
+    } else if ((Ctor = resolveAsset(context.$options, 'components', tag))) {
+      // component
+      vnode = createComponent(Ctor, data, context, children, tag);
+    } else {
+      // unknown or unlisted namespaced elements
+      // check at runtime because it may get assigned a namespace when its
+      // parent normalizes children
+      vnode = new VNode(
+        tag, data, children,
+        undefined, undefined, context
+      );
+    }
+  } else {
+    // direct component options / constructor
+    vnode = createComponent(tag, data, context, children);
+  }
+  if (vnode) {
+    if (ns) { applyNS(vnode, ns); }
+    return vnode
+  } else {
+    return createEmptyVNode()
+  }
+}
+
+function applyNS (vnode, ns) {
+  vnode.ns = ns;
+  if (vnode.tag === 'foreignObject') {
+    // use default namespace inside foreignObject
+    return
+  }
+  if (vnode.children) {
+    for (var i = 0, l = vnode.children.length; i < l; i++) {
+      var child = vnode.children[i];
+      if (child.tag && !child.ns) {
+        applyNS(child, ns);
       }
-    }
-    return shouldPropagate;
-  };
-
-  /**
-   * Recursively broadcast an event to all children instances.
-   *
-   * @param {String|Object} event
-   * @param {...*} additional arguments
-   */
-
-  Vue.prototype.$broadcast = function (event) {
-    var isSource = typeof event === 'string';
-    event = isSource ? event : event.name;
-    // if no child has registered for this event,
-    // then there's no need to broadcast.
-    if (!this._eventsCount[event]) return;
-    var children = this.$children;
-    var args = toArray(arguments);
-    if (isSource) {
-      // use object event to indicate non-source emit
-      // on children
-      args[0] = { name: event, source: this };
-    }
-    for (var i = 0, l = children.length; i < l; i++) {
-      var child = children[i];
-      var shouldPropagate = child.$emit.apply(child, args);
-      if (shouldPropagate) {
-        child.$broadcast.apply(child, args);
-      }
-    }
-    return this;
-  };
-
-  /**
-   * Recursively propagate an event up the parent chain.
-   *
-   * @param {String} event
-   * @param {...*} additional arguments
-   */
-
-  Vue.prototype.$dispatch = function (event) {
-    var shouldPropagate = this.$emit.apply(this, arguments);
-    if (!shouldPropagate) return;
-    var parent = this.$parent;
-    var args = toArray(arguments);
-    // use object event to indicate non-source emit
-    // on parents
-    args[0] = { name: event, source: this };
-    while (parent) {
-      shouldPropagate = parent.$emit.apply(parent, args);
-      parent = shouldPropagate ? parent.$parent : null;
-    }
-    return this;
-  };
-
-  /**
-   * Modify the listener counts on all parents.
-   * This bookkeeping allows $broadcast to return early when
-   * no child has listened to a certain event.
-   *
-   * @param {Vue} vm
-   * @param {String} event
-   * @param {Number} count
-   */
-
-  var hookRE = /^hook:/;
-  function modifyListenerCount(vm, event, count) {
-    var parent = vm.$parent;
-    // hooks do not get broadcasted so no need
-    // to do bookkeeping for them
-    if (!parent || !count || hookRE.test(event)) return;
-    while (parent) {
-      parent._eventsCount[event] = (parent._eventsCount[event] || 0) + count;
-      parent = parent.$parent;
     }
   }
 }
 
-function lifecycleAPI (Vue) {
-  /**
-   * Set instance target element and kick off the compilation
-   * process. The passed in `el` can be a selector string, an
-   * existing Element, or a DocumentFragment (for block
-   * instances).
-   *
-   * @param {Element|DocumentFragment|string} el
-   * @public
-   */
+/*  */
 
-  Vue.prototype.$mount = function (el) {
-    if (this._isCompiled) {
-      process.env.NODE_ENV !== 'production' && warn('$mount() should be called only once.', this);
-      return;
+/**
+ * Runtime helper for rendering v-for lists.
+ */
+function renderList (
+  val,
+  render
+) {
+  var ret, i, l, keys, key;
+  if (Array.isArray(val) || typeof val === 'string') {
+    ret = new Array(val.length);
+    for (i = 0, l = val.length; i < l; i++) {
+      ret[i] = render(val[i], i);
     }
-    el = query(el);
-    if (!el) {
-      el = document.createElement('div');
+  } else if (typeof val === 'number') {
+    ret = new Array(val);
+    for (i = 0; i < val; i++) {
+      ret[i] = render(i + 1, i);
     }
-    this._compile(el);
-    this._initDOMHooks();
-    if (inDoc(this.$el)) {
-      this._callHook('attached');
-      ready.call(this);
-    } else {
-      this.$once('hook:attached', ready);
+  } else if (isObject(val)) {
+    keys = Object.keys(val);
+    ret = new Array(keys.length);
+    for (i = 0, l = keys.length; i < l; i++) {
+      key = keys[i];
+      ret[i] = render(val[key], key, i);
     }
-    return this;
-  };
-
-  /**
-   * Mark an instance as ready.
-   */
-
-  function ready() {
-    this._isAttached = true;
-    this._isReady = true;
-    this._callHook('ready');
   }
+  return ret
+}
 
-  /**
-   * Teardown the instance, simply delegate to the internal
-   * _destroy.
-   *
-   * @param {Boolean} remove
-   * @param {Boolean} deferCleanup
-   */
+/*  */
 
-  Vue.prototype.$destroy = function (remove, deferCleanup) {
-    this._destroy(remove, deferCleanup);
-  };
+/**
+ * Runtime helper for rendering <slot>
+ */
+function renderSlot (
+  name,
+  fallback,
+  props,
+  bindObject
+) {
+  var scopedSlotFn = this.$scopedSlots[name];
+  if (scopedSlotFn) { // scoped slot
+    props = props || {};
+    if (bindObject) {
+      extend(props, bindObject);
+    }
+    return scopedSlotFn(props) || fallback
+  } else {
+    var slotNodes = this.$slots[name];
+    // warn duplicate slot usage
+    if (slotNodes && process.env.NODE_ENV !== 'production') {
+      slotNodes._rendered && warn(
+        "Duplicate presence of slot \"" + name + "\" found in the same render tree " +
+        "- this will likely cause render errors.",
+        this
+      );
+      slotNodes._rendered = true;
+    }
+    return slotNodes || fallback
+  }
+}
 
-  /**
-   * Partially compile a piece of DOM and return a
-   * decompile function.
-   *
-   * @param {Element|DocumentFragment} el
-   * @param {Vue} [host]
-   * @param {Object} [scope]
-   * @param {Fragment} [frag]
-   * @return {Function}
-   */
+/*  */
 
-  Vue.prototype.$compile = function (el, host, scope, frag) {
-    return compile(el, this.$options, true)(this, el, host, scope, frag);
-  };
+/**
+ * Runtime helper for resolving filters
+ */
+function resolveFilter (id) {
+  return resolveAsset(this.$options, 'filters', id, true) || identity
+}
+
+/*  */
+
+/**
+ * Runtime helper for checking keyCodes from config.
+ */
+function checkKeyCodes (
+  eventKeyCode,
+  key,
+  builtInAlias
+) {
+  var keyCodes = config.keyCodes[key] || builtInAlias;
+  if (Array.isArray(keyCodes)) {
+    return keyCodes.indexOf(eventKeyCode) === -1
+  } else {
+    return keyCodes !== eventKeyCode
+  }
+}
+
+/*  */
+
+/**
+ * Runtime helper for merging v-bind="object" into a VNode's data.
+ */
+function bindObjectProps (
+  data,
+  tag,
+  value,
+  asProp
+) {
+  if (value) {
+    if (!isObject(value)) {
+      process.env.NODE_ENV !== 'production' && warn(
+        'v-bind without argument expects an Object or Array value',
+        this
+      );
+    } else {
+      if (Array.isArray(value)) {
+        value = toObject(value);
+      }
+      var hash;
+      for (var key in value) {
+        if (key === 'class' || key === 'style') {
+          hash = data;
+        } else {
+          var type = data.attrs && data.attrs.type;
+          hash = asProp || config.mustUseProp(tag, type, key)
+            ? data.domProps || (data.domProps = {})
+            : data.attrs || (data.attrs = {});
+        }
+        if (!(key in hash)) {
+          hash[key] = value[key];
+        }
+      }
+    }
+  }
+  return data
+}
+
+/*  */
+
+/**
+ * Runtime helper for rendering static trees.
+ */
+function renderStatic (
+  index,
+  isInFor
+) {
+  var tree = this._staticTrees[index];
+  // if has already-rendered static tree and not inside v-for,
+  // we can reuse the same tree by doing a shallow clone.
+  if (tree && !isInFor) {
+    return Array.isArray(tree)
+      ? cloneVNodes(tree)
+      : cloneVNode(tree)
+  }
+  // otherwise, render a fresh tree.
+  tree = this._staticTrees[index] =
+    this.$options.staticRenderFns[index].call(this._renderProxy);
+  markStatic(tree, ("__static__" + index), false);
+  return tree
 }
 
 /**
- * The exposed Vue constructor.
- *
- * API conventions:
- * - public API methods/properties are prefixed with `$`
- * - internal methods/properties are prefixed with `_`
- * - non-prefixed properties are assumed to be proxied user
- *   data.
- *
- * @constructor
- * @param {Object} [options]
- * @public
+ * Runtime helper for v-once.
+ * Effectively it means marking the node as static with a unique key.
  */
+function markOnce (
+  tree,
+  index,
+  key
+) {
+  markStatic(tree, ("__once__" + index + (key ? ("_" + key) : "")), true);
+  return tree
+}
 
-function Vue(options) {
+function markStatic (
+  tree,
+  key,
+  isOnce
+) {
+  if (Array.isArray(tree)) {
+    for (var i = 0; i < tree.length; i++) {
+      if (tree[i] && typeof tree[i] !== 'string') {
+        markStaticNode(tree[i], (key + "_" + i), isOnce);
+      }
+    }
+  } else {
+    markStaticNode(tree, key, isOnce);
+  }
+}
+
+function markStaticNode (node, key, isOnce) {
+  node.isStatic = true;
+  node.key = key;
+  node.isOnce = isOnce;
+}
+
+/*  */
+
+function initRender (vm) {
+  vm.$vnode = null; // the placeholder node in parent tree
+  vm._vnode = null; // the root of the child tree
+  vm._staticTrees = null;
+  var parentVnode = vm.$options._parentVnode;
+  var renderContext = parentVnode && parentVnode.context;
+  vm.$slots = resolveSlots(vm.$options._renderChildren, renderContext);
+  vm.$scopedSlots = emptyObject;
+  // bind the createElement fn to this instance
+  // so that we get proper render context inside it.
+  // args order: tag, data, children, normalizationType, alwaysNormalize
+  // internal version is used by render functions compiled from templates
+  vm._c = function (a, b, c, d) { return createElement(vm, a, b, c, d, false); };
+  // normalization is always applied for the public version, used in
+  // user-written render functions.
+  vm.$createElement = function (a, b, c, d) { return createElement(vm, a, b, c, d, true); };
+}
+
+function renderMixin (Vue) {
+  Vue.prototype.$nextTick = function (fn) {
+    return nextTick(fn, this)
+  };
+
+  Vue.prototype._render = function () {
+    var vm = this;
+    var ref = vm.$options;
+    var render = ref.render;
+    var staticRenderFns = ref.staticRenderFns;
+    var _parentVnode = ref._parentVnode;
+
+    if (vm._isMounted) {
+      // clone slot nodes on re-renders
+      for (var key in vm.$slots) {
+        vm.$slots[key] = cloneVNodes(vm.$slots[key]);
+      }
+    }
+
+    vm.$scopedSlots = (_parentVnode && _parentVnode.data.scopedSlots) || emptyObject;
+
+    if (staticRenderFns && !vm._staticTrees) {
+      vm._staticTrees = [];
+    }
+    // set parent vnode. this allows render functions to have access
+    // to the data on the placeholder node.
+    vm.$vnode = _parentVnode;
+    // render self
+    var vnode;
+    try {
+      vnode = render.call(vm._renderProxy, vm.$createElement);
+    } catch (e) {
+      handleError(e, vm, "render function");
+      // return error render result,
+      // or previous vnode to prevent render error causing blank component
+      /* istanbul ignore else */
+      if (process.env.NODE_ENV !== 'production') {
+        vnode = vm.$options.renderError
+          ? vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
+          : vm._vnode;
+      } else {
+        vnode = vm._vnode;
+      }
+    }
+    // return empty vnode in case the render function errored out
+    if (!(vnode instanceof VNode)) {
+      if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
+        warn(
+          'Multiple root nodes returned from render function. Render function ' +
+          'should return a single root node.',
+          vm
+        );
+      }
+      vnode = createEmptyVNode();
+    }
+    // set parent
+    vnode.parent = _parentVnode;
+    return vnode
+  };
+
+  // internal render helpers.
+  // these are exposed on the instance prototype to reduce generated render
+  // code size.
+  Vue.prototype._o = markOnce;
+  Vue.prototype._n = toNumber;
+  Vue.prototype._s = _toString;
+  Vue.prototype._l = renderList;
+  Vue.prototype._t = renderSlot;
+  Vue.prototype._q = looseEqual;
+  Vue.prototype._i = looseIndexOf;
+  Vue.prototype._m = renderStatic;
+  Vue.prototype._f = resolveFilter;
+  Vue.prototype._k = checkKeyCodes;
+  Vue.prototype._b = bindObjectProps;
+  Vue.prototype._v = createTextVNode;
+  Vue.prototype._e = createEmptyVNode;
+  Vue.prototype._u = resolveScopedSlots;
+}
+
+/*  */
+
+function initProvide (vm) {
+  var provide = vm.$options.provide;
+  if (provide) {
+    vm._provided = typeof provide === 'function'
+      ? provide.call(vm)
+      : provide;
+  }
+}
+
+function initInjections (vm) {
+  var inject = vm.$options.inject;
+  if (inject) {
+    // inject is :any because flow is not smart enough to figure out cached
+    // isArray here
+    var isArray = Array.isArray(inject);
+    var keys = isArray
+      ? inject
+      : hasSymbol
+        ? Reflect.ownKeys(inject)
+        : Object.keys(inject);
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var provideKey = isArray ? key : inject[key];
+      var source = vm;
+      while (source) {
+        if (source._provided && provideKey in source._provided) {
+          vm[key] = source._provided[provideKey];
+          break
+        }
+        source = source.$parent;
+      }
+    }
+  }
+}
+
+/*  */
+
+var uid = 0;
+
+function initMixin (Vue) {
+  Vue.prototype._init = function (options) {
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      mark('vue-perf-init');
+    }
+
+    var vm = this;
+    // a uid
+    vm._uid = uid++;
+    // a flag to avoid this being observed
+    vm._isVue = true;
+    // merge options
+    if (options && options._isComponent) {
+      // optimize internal component instantiation
+      // since dynamic options merging is pretty slow, and none of the
+      // internal component options needs special treatment.
+      initInternalComponent(vm, options);
+    } else {
+      vm.$options = mergeOptions(
+        resolveConstructorOptions(vm.constructor),
+        options || {},
+        vm
+      );
+    }
+    /* istanbul ignore else */
+    if (process.env.NODE_ENV !== 'production') {
+      initProxy(vm);
+    } else {
+      vm._renderProxy = vm;
+    }
+    // expose real self
+    vm._self = vm;
+    initLifecycle(vm);
+    initEvents(vm);
+    initRender(vm);
+    callHook(vm, 'beforeCreate');
+    initInjections(vm); // resolve injections before data/props
+    initState(vm);
+    initProvide(vm); // resolve provide after data/props
+    callHook(vm, 'created');
+
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      vm._name = formatComponentName(vm, false);
+      mark('vue-perf-init-end');
+      measure(((vm._name) + " init"), 'vue-perf-init', 'vue-perf-init-end');
+    }
+
+    if (vm.$options.el) {
+      vm.$mount(vm.$options.el);
+    }
+  };
+}
+
+function initInternalComponent (vm, options) {
+  var opts = vm.$options = Object.create(vm.constructor.options);
+  // doing this because it's faster than dynamic enumeration.
+  opts.parent = options.parent;
+  opts.propsData = options.propsData;
+  opts._parentVnode = options._parentVnode;
+  opts._parentListeners = options._parentListeners;
+  opts._renderChildren = options._renderChildren;
+  opts._componentTag = options._componentTag;
+  opts._parentElm = options._parentElm;
+  opts._refElm = options._refElm;
+  if (options.render) {
+    opts.render = options.render;
+    opts.staticRenderFns = options.staticRenderFns;
+  }
+}
+
+function resolveConstructorOptions (Ctor) {
+  var options = Ctor.options;
+  if (Ctor.super) {
+    var superOptions = resolveConstructorOptions(Ctor.super);
+    var cachedSuperOptions = Ctor.superOptions;
+    if (superOptions !== cachedSuperOptions) {
+      // super option changed,
+      // need to resolve new options.
+      Ctor.superOptions = superOptions;
+      // check if there are any late-modified/attached options (#4976)
+      var modifiedOptions = resolveModifiedOptions(Ctor);
+      // update base extend options
+      if (modifiedOptions) {
+        extend(Ctor.extendOptions, modifiedOptions);
+      }
+      options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions);
+      if (options.name) {
+        options.components[options.name] = Ctor;
+      }
+    }
+  }
+  return options
+}
+
+function resolveModifiedOptions (Ctor) {
+  var modified;
+  var latest = Ctor.options;
+  var sealed = Ctor.sealedOptions;
+  for (var key in latest) {
+    if (latest[key] !== sealed[key]) {
+      if (!modified) { modified = {}; }
+      modified[key] = dedupe(latest[key], sealed[key]);
+    }
+  }
+  return modified
+}
+
+function dedupe (latest, sealed) {
+  // compare latest and sealed to ensure lifecycle hooks won't be duplicated
+  // between merges
+  if (Array.isArray(latest)) {
+    var res = [];
+    sealed = Array.isArray(sealed) ? sealed : [sealed];
+    for (var i = 0; i < latest.length; i++) {
+      if (sealed.indexOf(latest[i]) < 0) {
+        res.push(latest[i]);
+      }
+    }
+    return res
+  } else {
+    return latest
+  }
+}
+
+function Vue$2 (options) {
+  if (process.env.NODE_ENV !== 'production' &&
+    !(this instanceof Vue$2)) {
+    warn('Vue is a constructor and should be called with the `new` keyword');
+  }
   this._init(options);
 }
 
-// install internals
-initMixin(Vue);
-stateMixin(Vue);
-eventsMixin(Vue);
-lifecycleMixin(Vue);
-miscMixin(Vue);
+initMixin(Vue$2);
+stateMixin(Vue$2);
+eventsMixin(Vue$2);
+lifecycleMixin(Vue$2);
+renderMixin(Vue$2);
 
-// install instance APIs
-dataAPI(Vue);
-domAPI(Vue);
-eventsAPI(Vue);
-lifecycleAPI(Vue);
+/*  */
 
-var slot = {
-
-  priority: SLOT,
-  params: ['name'],
-
-  bind: function bind() {
-    // this was resolved during component transclusion
-    var name = this.params.name || 'default';
-    var content = this.vm._slotContents && this.vm._slotContents[name];
-    if (!content || !content.hasChildNodes()) {
-      this.fallback();
-    } else {
-      this.compile(content.cloneNode(true), this.vm._context, this.vm);
+function initUse (Vue) {
+  Vue.use = function (plugin) {
+    /* istanbul ignore if */
+    if (plugin.installed) {
+      return
     }
-  },
-
-  compile: function compile(content, context, host) {
-    if (content && context) {
-      if (this.el.hasChildNodes() && content.childNodes.length === 1 && content.childNodes[0].nodeType === 1 && content.childNodes[0].hasAttribute('v-if')) {
-        // if the inserted slot has v-if
-        // inject fallback content as the v-else
-        var elseBlock = document.createElement('template');
-        elseBlock.setAttribute('v-else', '');
-        elseBlock.innerHTML = this.el.innerHTML;
-        // the else block should be compiled in child scope
-        elseBlock._context = this.vm;
-        content.appendChild(elseBlock);
-      }
-      var scope = host ? host._scope : this._scope;
-      this.unlink = context.$compile(content, host, scope, this._frag);
-    }
-    if (content) {
-      replace(this.el, content);
-    } else {
-      remove(this.el);
-    }
-  },
-
-  fallback: function fallback() {
-    this.compile(extractContent(this.el, true), this.vm);
-  },
-
-  unbind: function unbind() {
-    if (this.unlink) {
-      this.unlink();
-    }
-  }
-};
-
-var partial = {
-
-  priority: PARTIAL,
-
-  params: ['name'],
-
-  // watch changes to name for dynamic partials
-  paramWatchers: {
-    name: function name(value) {
-      vIf.remove.call(this);
-      if (value) {
-        this.insert(value);
-      }
-    }
-  },
-
-  bind: function bind() {
-    this.anchor = createAnchor('v-partial');
-    replace(this.el, this.anchor);
-    this.insert(this.params.name);
-  },
-
-  insert: function insert(id) {
-    var partial = resolveAsset(this.vm.$options, 'partials', id, true);
-    if (partial) {
-      this.factory = new FragmentFactory(this.vm, partial);
-      vIf.insert.call(this);
-    }
-  },
-
-  unbind: function unbind() {
-    if (this.frag) {
-      this.frag.destroy();
-    }
-  }
-};
-
-var elementDirectives = {
-  slot: slot,
-  partial: partial
-};
-
-var convertArray = vFor._postProcess;
-
-/**
- * Limit filter for arrays
- *
- * @param {Number} n
- * @param {Number} offset (Decimal expected)
- */
-
-function limitBy(arr, n, offset) {
-  offset = offset ? parseInt(offset, 10) : 0;
-  n = toNumber(n);
-  return typeof n === 'number' ? arr.slice(offset, offset + n) : arr;
-}
-
-/**
- * Filter filter for arrays
- *
- * @param {String} search
- * @param {String} [delimiter]
- * @param {String} ...dataKeys
- */
-
-function filterBy(arr, search, delimiter) {
-  arr = convertArray(arr);
-  if (search == null) {
-    return arr;
-  }
-  if (typeof search === 'function') {
-    return arr.filter(search);
-  }
-  // cast to lowercase string
-  search = ('' + search).toLowerCase();
-  // allow optional `in` delimiter
-  // because why not
-  var n = delimiter === 'in' ? 3 : 2;
-  // extract and flatten keys
-  var keys = Array.prototype.concat.apply([], toArray(arguments, n));
-  var res = [];
-  var item, key, val, j;
-  for (var i = 0, l = arr.length; i < l; i++) {
-    item = arr[i];
-    val = item && item.$value || item;
-    j = keys.length;
-    if (j) {
-      while (j--) {
-        key = keys[j];
-        if (key === '$key' && contains(item.$key, search) || contains(getPath(val, key), search)) {
-          res.push(item);
-          break;
-        }
-      }
-    } else if (contains(item, search)) {
-      res.push(item);
-    }
-  }
-  return res;
-}
-
-/**
- * Order filter for arrays
- *
- * @param {String|Array<String>|Function} ...sortKeys
- * @param {Number} [order]
- */
-
-function orderBy(arr) {
-  var comparator = null;
-  var sortKeys = undefined;
-  arr = convertArray(arr);
-
-  // determine order (last argument)
-  var args = toArray(arguments, 1);
-  var order = args[args.length - 1];
-  if (typeof order === 'number') {
-    order = order < 0 ? -1 : 1;
-    args = args.length > 1 ? args.slice(0, -1) : args;
-  } else {
-    order = 1;
-  }
-
-  // determine sortKeys & comparator
-  var firstArg = args[0];
-  if (!firstArg) {
-    return arr;
-  } else if (typeof firstArg === 'function') {
-    // custom comparator
-    comparator = function (a, b) {
-      return firstArg(a, b) * order;
-    };
-  } else {
-    // string keys. flatten first
-    sortKeys = Array.prototype.concat.apply([], args);
-    comparator = function (a, b, i) {
-      i = i || 0;
-      return i >= sortKeys.length - 1 ? baseCompare(a, b, i) : baseCompare(a, b, i) || comparator(a, b, i + 1);
-    };
-  }
-
-  function baseCompare(a, b, sortKeyIndex) {
-    var sortKey = sortKeys[sortKeyIndex];
-    if (sortKey) {
-      if (sortKey !== '$key') {
-        if (isObject(a) && '$value' in a) a = a.$value;
-        if (isObject(b) && '$value' in b) b = b.$value;
-      }
-      a = isObject(a) ? getPath(a, sortKey) : a;
-      b = isObject(b) ? getPath(b, sortKey) : b;
-    }
-    return a === b ? 0 : a > b ? order : -order;
-  }
-
-  // sort on a copy to avoid mutating original array
-  return arr.slice().sort(comparator);
-}
-
-/**
- * String contain helper
- *
- * @param {*} val
- * @param {String} search
- */
-
-function contains(val, search) {
-  var i;
-  if (isPlainObject(val)) {
-    var keys = Object.keys(val);
-    i = keys.length;
-    while (i--) {
-      if (contains(val[keys[i]], search)) {
-        return true;
-      }
-    }
-  } else if (isArray(val)) {
-    i = val.length;
-    while (i--) {
-      if (contains(val[i], search)) {
-        return true;
-      }
-    }
-  } else if (val != null) {
-    return val.toString().toLowerCase().indexOf(search) > -1;
-  }
-}
-
-var digitsRE = /(\d{3})(?=\d)/g;
-
-// asset collections must be a plain object.
-var filters = {
-
-  orderBy: orderBy,
-  filterBy: filterBy,
-  limitBy: limitBy,
-
-  /**
-   * Stringify value.
-   *
-   * @param {Number} indent
-   */
-
-  json: {
-    read: function read(value, indent) {
-      return typeof value === 'string' ? value : JSON.stringify(value, null, arguments.length > 1 ? indent : 2);
-    },
-    write: function write(value) {
-      try {
-        return JSON.parse(value);
-      } catch (e) {
-        return value;
-      }
-    }
-  },
-
-  /**
-   * 'abc' => 'Abc'
-   */
-
-  capitalize: function capitalize(value) {
-    if (!value && value !== 0) return '';
-    value = value.toString();
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  },
-
-  /**
-   * 'abc' => 'ABC'
-   */
-
-  uppercase: function uppercase(value) {
-    return value || value === 0 ? value.toString().toUpperCase() : '';
-  },
-
-  /**
-   * 'AbC' => 'abc'
-   */
-
-  lowercase: function lowercase(value) {
-    return value || value === 0 ? value.toString().toLowerCase() : '';
-  },
-
-  /**
-   * 12345 => $12,345.00
-   *
-   * @param {String} sign
-   * @param {Number} decimals Decimal places
-   */
-
-  currency: function currency(value, _currency, decimals) {
-    value = parseFloat(value);
-    if (!isFinite(value) || !value && value !== 0) return '';
-    _currency = _currency != null ? _currency : '$';
-    decimals = decimals != null ? decimals : 2;
-    var stringified = Math.abs(value).toFixed(decimals);
-    var _int = decimals ? stringified.slice(0, -1 - decimals) : stringified;
-    var i = _int.length % 3;
-    var head = i > 0 ? _int.slice(0, i) + (_int.length > 3 ? ',' : '') : '';
-    var _float = decimals ? stringified.slice(-1 - decimals) : '';
-    var sign = value < 0 ? '-' : '';
-    return sign + _currency + head + _int.slice(i).replace(digitsRE, '$1,') + _float;
-  },
-
-  /**
-   * 'item' => 'items'
-   *
-   * @params
-   *  an array of strings corresponding to
-   *  the single, double, triple ... forms of the word to
-   *  be pluralized. When the number to be pluralized
-   *  exceeds the length of the args, it will use the last
-   *  entry in the array.
-   *
-   *  e.g. ['single', 'double', 'triple', 'multiple']
-   */
-
-  pluralize: function pluralize(value) {
+    // additional parameters
     var args = toArray(arguments, 1);
-    var length = args.length;
-    if (length > 1) {
-      var index = value % 10 - 1;
-      return index in args ? args[index] : args[length - 1];
-    } else {
-      return args[0] + (value === 1 ? '' : 's');
+    args.unshift(this);
+    if (typeof plugin.install === 'function') {
+      plugin.install.apply(plugin, args);
+    } else if (typeof plugin === 'function') {
+      plugin.apply(null, args);
     }
-  },
-
-  /**
-   * Debounce a handler function.
-   *
-   * @param {Function} handler
-   * @param {Number} delay = 300
-   * @return {Function}
-   */
-
-  debounce: function debounce(handler, delay) {
-    if (!handler) return;
-    if (!delay) {
-      delay = 300;
-    }
-    return _debounce(handler, delay);
-  }
-};
-
-function installGlobalAPI (Vue) {
-  /**
-   * Vue and every constructor that extends Vue has an
-   * associated options object, which can be accessed during
-   * compilation steps as `this.constructor.options`.
-   *
-   * These can be seen as the default options of every
-   * Vue instance.
-   */
-
-  Vue.options = {
-    directives: directives,
-    elementDirectives: elementDirectives,
-    filters: filters,
-    transitions: {},
-    components: {},
-    partials: {},
-    replace: true
+    plugin.installed = true;
+    return this
   };
+}
 
-  /**
-   * Expose useful internals
-   */
+/*  */
 
-  Vue.util = util;
-  Vue.config = config;
-  Vue.set = set;
-  Vue['delete'] = del;
-  Vue.nextTick = nextTick;
-
-  /**
-   * The following are exposed for advanced usage / plugins
-   */
-
-  Vue.compiler = compiler;
-  Vue.FragmentFactory = FragmentFactory;
-  Vue.internalDirectives = internalDirectives;
-  Vue.parsers = {
-    path: path,
-    text: text,
-    template: template,
-    directive: directive,
-    expression: expression
+function initMixin$1 (Vue) {
+  Vue.mixin = function (mixin) {
+    this.options = mergeOptions(this.options, mixin);
   };
+}
 
+/*  */
+
+function initExtend (Vue) {
   /**
    * Each instance constructor, including Vue, has a unique
    * cid. This enables us to create wrapped "child
    * constructors" for prototypal inheritance and cache them.
    */
-
   Vue.cid = 0;
   var cid = 1;
 
   /**
    * Class inheritance
-   *
-   * @param {Object} extendOptions
    */
-
   Vue.extend = function (extendOptions) {
     extendOptions = extendOptions || {};
     var Super = this;
-    var isFirstExtend = Super.cid === 0;
-    if (isFirstExtend && extendOptions._Ctor) {
-      return extendOptions._Ctor;
+    var SuperId = Super.cid;
+    var cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {});
+    if (cachedCtors[SuperId]) {
+      return cachedCtors[SuperId]
     }
+
     var name = extendOptions.name || Super.options.name;
     if (process.env.NODE_ENV !== 'production') {
       if (!/^[a-zA-Z][\w-]*$/.test(name)) {
-        warn('Invalid component name: "' + name + '". Component names ' + 'can only contain alphanumeric characaters and the hyphen.');
-        name = null;
+        warn(
+          'Invalid component name: "' + name + '". Component names ' +
+          'can only contain alphanumeric characters and the hyphen, ' +
+          'and must start with a letter.'
+        );
       }
     }
-    var Sub = createClass(name || 'VueComponent');
+
+    var Sub = function VueComponent (options) {
+      this._init(options);
+    };
     Sub.prototype = Object.create(Super.prototype);
     Sub.prototype.constructor = Sub;
     Sub.cid = cid++;
-    Sub.options = mergeOptions(Super.options, extendOptions);
+    Sub.options = mergeOptions(
+      Super.options,
+      extendOptions
+    );
     Sub['super'] = Super;
-    // allow further extension
+
+    // For props and computed properties, we define the proxy getters on
+    // the Vue instances at extension time, on the extended prototype. This
+    // avoids Object.defineProperty calls for each instance created.
+    if (Sub.options.props) {
+      initProps$1(Sub);
+    }
+    if (Sub.options.computed) {
+      initComputed$1(Sub);
+    }
+
+    // allow further extension/mixin/plugin usage
     Sub.extend = Super.extend;
+    Sub.mixin = Super.mixin;
+    Sub.use = Super.use;
+
     // create asset registers, so extended classes
     // can have their private assets too.
     config._assetTypes.forEach(function (type) {
@@ -34020,114 +27256,2872 @@ function installGlobalAPI (Vue) {
     if (name) {
       Sub.options.components[name] = Sub;
     }
+
+    // keep a reference to the super options at extension time.
+    // later at instantiation we can check if Super's options have
+    // been updated.
+    Sub.superOptions = Super.options;
+    Sub.extendOptions = extendOptions;
+    Sub.sealedOptions = extend({}, Sub.options);
+
     // cache constructor
-    if (isFirstExtend) {
-      extendOptions._Ctor = Sub;
-    }
-    return Sub;
+    cachedCtors[SuperId] = Sub;
+    return Sub
   };
+}
 
-  /**
-   * A function that returns a sub-class constructor with the
-   * given name. This gives us much nicer output when
-   * logging instances in the console.
-   *
-   * @param {String} name
-   * @return {Function}
-   */
-
-  function createClass(name) {
-    /* eslint-disable no-new-func */
-    return new Function('return function ' + classify(name) + ' (options) { this._init(options) }')();
-    /* eslint-enable no-new-func */
+function initProps$1 (Comp) {
+  var props = Comp.options.props;
+  for (var key in props) {
+    proxy(Comp.prototype, "_props", key);
   }
+}
 
+function initComputed$1 (Comp) {
+  var computed = Comp.options.computed;
+  for (var key in computed) {
+    defineComputed(Comp.prototype, key, computed[key]);
+  }
+}
+
+/*  */
+
+function initAssetRegisters (Vue) {
   /**
-   * Plugin system
-   *
-   * @param {Object} plugin
+   * Create asset registration methods.
    */
-
-  Vue.use = function (plugin) {
-    /* istanbul ignore if */
-    if (plugin.installed) {
-      return;
-    }
-    // additional parameters
-    var args = toArray(arguments, 1);
-    args.unshift(this);
-    if (typeof plugin.install === 'function') {
-      plugin.install.apply(plugin, args);
-    } else {
-      plugin.apply(null, args);
-    }
-    plugin.installed = true;
-    return this;
-  };
-
-  /**
-   * Apply a global mixin by merging it into the default
-   * options.
-   */
-
-  Vue.mixin = function (mixin) {
-    Vue.options = mergeOptions(Vue.options, mixin);
-  };
-
-  /**
-   * Create asset registration methods with the following
-   * signature:
-   *
-   * @param {String} id
-   * @param {*} definition
-   */
-
   config._assetTypes.forEach(function (type) {
-    Vue[type] = function (id, definition) {
+    Vue[type] = function (
+      id,
+      definition
+    ) {
       if (!definition) {
-        return this.options[type + 's'][id];
+        return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
         if (process.env.NODE_ENV !== 'production') {
-          if (type === 'component' && (commonTagRE.test(id) || reservedTagRE.test(id))) {
-            warn('Do not use built-in or reserved HTML elements as component ' + 'id: ' + id);
+          if (type === 'component' && config.isReservedTag(id)) {
+            warn(
+              'Do not use built-in or reserved HTML elements as component ' +
+              'id: ' + id
+            );
           }
         }
         if (type === 'component' && isPlainObject(definition)) {
-          if (!definition.name) {
-            definition.name = id;
-          }
-          definition = Vue.extend(definition);
+          definition.name = definition.name || id;
+          definition = this.options._base.extend(definition);
+        }
+        if (type === 'directive' && typeof definition === 'function') {
+          definition = { bind: definition, update: definition };
         }
         this.options[type + 's'][id] = definition;
-        return definition;
+        return definition
       }
     };
   });
-
-  // expose internal transition API
-  extend(Vue.transition, transition);
 }
 
-installGlobalAPI(Vue);
+/*  */
 
-Vue.version = '1.0.28';
+var patternTypes = [String, RegExp];
+
+function getComponentName (opts) {
+  return opts && (opts.Ctor.options.name || opts.tag)
+}
+
+function matches (pattern, name) {
+  if (typeof pattern === 'string') {
+    return pattern.split(',').indexOf(name) > -1
+  } else if (pattern instanceof RegExp) {
+    return pattern.test(name)
+  }
+  /* istanbul ignore next */
+  return false
+}
+
+function pruneCache (cache, filter) {
+  for (var key in cache) {
+    var cachedNode = cache[key];
+    if (cachedNode) {
+      var name = getComponentName(cachedNode.componentOptions);
+      if (name && !filter(name)) {
+        pruneCacheEntry(cachedNode);
+        cache[key] = null;
+      }
+    }
+  }
+}
+
+function pruneCacheEntry (vnode) {
+  if (vnode) {
+    if (!vnode.componentInstance._inactive) {
+      callHook(vnode.componentInstance, 'deactivated');
+    }
+    vnode.componentInstance.$destroy();
+  }
+}
+
+var KeepAlive = {
+  name: 'keep-alive',
+  abstract: true,
+
+  props: {
+    include: patternTypes,
+    exclude: patternTypes
+  },
+
+  created: function created () {
+    this.cache = Object.create(null);
+  },
+
+  destroyed: function destroyed () {
+    var this$1 = this;
+
+    for (var key in this$1.cache) {
+      pruneCacheEntry(this$1.cache[key]);
+    }
+  },
+
+  watch: {
+    include: function include (val) {
+      pruneCache(this.cache, function (name) { return matches(val, name); });
+    },
+    exclude: function exclude (val) {
+      pruneCache(this.cache, function (name) { return !matches(val, name); });
+    }
+  },
+
+  render: function render () {
+    var vnode = getFirstComponentChild(this.$slots.default);
+    var componentOptions = vnode && vnode.componentOptions;
+    if (componentOptions) {
+      // check pattern
+      var name = getComponentName(componentOptions);
+      if (name && (
+        (this.include && !matches(this.include, name)) ||
+        (this.exclude && matches(this.exclude, name))
+      )) {
+        return vnode
+      }
+      var key = vnode.key == null
+        // same constructor may get registered as different local components
+        // so cid alone is not enough (#3269)
+        ? componentOptions.Ctor.cid + (componentOptions.tag ? ("::" + (componentOptions.tag)) : '')
+        : vnode.key;
+      if (this.cache[key]) {
+        vnode.componentInstance = this.cache[key].componentInstance;
+      } else {
+        this.cache[key] = vnode;
+      }
+      vnode.data.keepAlive = true;
+    }
+    return vnode
+  }
+};
+
+var builtInComponents = {
+  KeepAlive: KeepAlive
+};
+
+/*  */
+
+function initGlobalAPI (Vue) {
+  // config
+  var configDef = {};
+  configDef.get = function () { return config; };
+  if (process.env.NODE_ENV !== 'production') {
+    configDef.set = function () {
+      warn(
+        'Do not replace the Vue.config object, set individual fields instead.'
+      );
+    };
+  }
+  Object.defineProperty(Vue, 'config', configDef);
+
+  // exposed util methods.
+  // NOTE: these are not considered part of the public API - avoid relying on
+  // them unless you are aware of the risk.
+  Vue.util = {
+    warn: warn,
+    extend: extend,
+    mergeOptions: mergeOptions,
+    defineReactive: defineReactive$$1
+  };
+
+  Vue.set = set;
+  Vue.delete = del;
+  Vue.nextTick = nextTick;
+
+  Vue.options = Object.create(null);
+  config._assetTypes.forEach(function (type) {
+    Vue.options[type + 's'] = Object.create(null);
+  });
+
+  // this is used to identify the "base" constructor to extend all plain-object
+  // components with in Weex's multi-instance scenarios.
+  Vue.options._base = Vue;
+
+  extend(Vue.options.components, builtInComponents);
+
+  initUse(Vue);
+  initMixin$1(Vue);
+  initExtend(Vue);
+  initAssetRegisters(Vue);
+}
+
+initGlobalAPI(Vue$2);
+
+Object.defineProperty(Vue$2.prototype, '$isServer', {
+  get: isServerRendering
+});
+
+Vue$2.version = '2.2.4';
+
+/*  */
+
+// attributes that should be using props for binding
+var acceptValue = makeMap('input,textarea,option,select');
+var mustUseProp = function (tag, type, attr) {
+  return (
+    (attr === 'value' && acceptValue(tag)) && type !== 'button' ||
+    (attr === 'selected' && tag === 'option') ||
+    (attr === 'checked' && tag === 'input') ||
+    (attr === 'muted' && tag === 'video')
+  )
+};
+
+var isEnumeratedAttr = makeMap('contenteditable,draggable,spellcheck');
+
+var isBooleanAttr = makeMap(
+  'allowfullscreen,async,autofocus,autoplay,checked,compact,controls,declare,' +
+  'default,defaultchecked,defaultmuted,defaultselected,defer,disabled,' +
+  'enabled,formnovalidate,hidden,indeterminate,inert,ismap,itemscope,loop,multiple,' +
+  'muted,nohref,noresize,noshade,novalidate,nowrap,open,pauseonexit,readonly,' +
+  'required,reversed,scoped,seamless,selected,sortable,translate,' +
+  'truespeed,typemustmatch,visible'
+);
+
+var xlinkNS = 'http://www.w3.org/1999/xlink';
+
+var isXlink = function (name) {
+  return name.charAt(5) === ':' && name.slice(0, 5) === 'xlink'
+};
+
+var getXlinkProp = function (name) {
+  return isXlink(name) ? name.slice(6, name.length) : ''
+};
+
+var isFalsyAttrValue = function (val) {
+  return val == null || val === false
+};
+
+/*  */
+
+function genClassForVnode (vnode) {
+  var data = vnode.data;
+  var parentNode = vnode;
+  var childNode = vnode;
+  while (childNode.componentInstance) {
+    childNode = childNode.componentInstance._vnode;
+    if (childNode.data) {
+      data = mergeClassData(childNode.data, data);
+    }
+  }
+  while ((parentNode = parentNode.parent)) {
+    if (parentNode.data) {
+      data = mergeClassData(data, parentNode.data);
+    }
+  }
+  return genClassFromData(data)
+}
+
+function mergeClassData (child, parent) {
+  return {
+    staticClass: concat(child.staticClass, parent.staticClass),
+    class: child.class
+      ? [child.class, parent.class]
+      : parent.class
+  }
+}
+
+function genClassFromData (data) {
+  var dynamicClass = data.class;
+  var staticClass = data.staticClass;
+  if (staticClass || dynamicClass) {
+    return concat(staticClass, stringifyClass(dynamicClass))
+  }
+  /* istanbul ignore next */
+  return ''
+}
+
+function concat (a, b) {
+  return a ? b ? (a + ' ' + b) : a : (b || '')
+}
+
+function stringifyClass (value) {
+  var res = '';
+  if (!value) {
+    return res
+  }
+  if (typeof value === 'string') {
+    return value
+  }
+  if (Array.isArray(value)) {
+    var stringified;
+    for (var i = 0, l = value.length; i < l; i++) {
+      if (value[i]) {
+        if ((stringified = stringifyClass(value[i]))) {
+          res += stringified + ' ';
+        }
+      }
+    }
+    return res.slice(0, -1)
+  }
+  if (isObject(value)) {
+    for (var key in value) {
+      if (value[key]) { res += key + ' '; }
+    }
+    return res.slice(0, -1)
+  }
+  /* istanbul ignore next */
+  return res
+}
+
+/*  */
+
+var namespaceMap = {
+  svg: 'http://www.w3.org/2000/svg',
+  math: 'http://www.w3.org/1998/Math/MathML'
+};
+
+var isHTMLTag = makeMap(
+  'html,body,base,head,link,meta,style,title,' +
+  'address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,hgroup,nav,section,' +
+  'div,dd,dl,dt,figcaption,figure,hr,img,li,main,ol,p,pre,ul,' +
+  'a,b,abbr,bdi,bdo,br,cite,code,data,dfn,em,i,kbd,mark,q,rp,rt,rtc,ruby,' +
+  's,samp,small,span,strong,sub,sup,time,u,var,wbr,area,audio,map,track,video,' +
+  'embed,object,param,source,canvas,script,noscript,del,ins,' +
+  'caption,col,colgroup,table,thead,tbody,td,th,tr,' +
+  'button,datalist,fieldset,form,input,label,legend,meter,optgroup,option,' +
+  'output,progress,select,textarea,' +
+  'details,dialog,menu,menuitem,summary,' +
+  'content,element,shadow,template'
+);
+
+// this map is intentionally selective, only covering SVG elements that may
+// contain child elements.
+var isSVG = makeMap(
+  'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,font-face,' +
+  'foreignObject,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
+  'polygon,polyline,rect,switch,symbol,text,textpath,tspan,use,view',
+  true
+);
+
+
+
+var isReservedTag = function (tag) {
+  return isHTMLTag(tag) || isSVG(tag)
+};
+
+function getTagNamespace (tag) {
+  if (isSVG(tag)) {
+    return 'svg'
+  }
+  // basic support for MathML
+  // note it doesn't support other MathML elements being component roots
+  if (tag === 'math') {
+    return 'math'
+  }
+}
+
+var unknownElementCache = Object.create(null);
+function isUnknownElement (tag) {
+  /* istanbul ignore if */
+  if (!inBrowser) {
+    return true
+  }
+  if (isReservedTag(tag)) {
+    return false
+  }
+  tag = tag.toLowerCase();
+  /* istanbul ignore if */
+  if (unknownElementCache[tag] != null) {
+    return unknownElementCache[tag]
+  }
+  var el = document.createElement(tag);
+  if (tag.indexOf('-') > -1) {
+    // http://stackoverflow.com/a/28210364/1070244
+    return (unknownElementCache[tag] = (
+      el.constructor === window.HTMLUnknownElement ||
+      el.constructor === window.HTMLElement
+    ))
+  } else {
+    return (unknownElementCache[tag] = /HTMLUnknownElement/.test(el.toString()))
+  }
+}
+
+/*  */
+
+/**
+ * Query an element selector if it's not an element already.
+ */
+function query (el) {
+  if (typeof el === 'string') {
+    var selected = document.querySelector(el);
+    if (!selected) {
+      process.env.NODE_ENV !== 'production' && warn(
+        'Cannot find element: ' + el
+      );
+      return document.createElement('div')
+    }
+    return selected
+  } else {
+    return el
+  }
+}
+
+/*  */
+
+function createElement$1 (tagName, vnode) {
+  var elm = document.createElement(tagName);
+  if (tagName !== 'select') {
+    return elm
+  }
+  // false or null will remove the attribute but undefined will not
+  if (vnode.data && vnode.data.attrs && vnode.data.attrs.multiple !== undefined) {
+    elm.setAttribute('multiple', 'multiple');
+  }
+  return elm
+}
+
+function createElementNS (namespace, tagName) {
+  return document.createElementNS(namespaceMap[namespace], tagName)
+}
+
+function createTextNode (text) {
+  return document.createTextNode(text)
+}
+
+function createComment (text) {
+  return document.createComment(text)
+}
+
+function insertBefore (parentNode, newNode, referenceNode) {
+  parentNode.insertBefore(newNode, referenceNode);
+}
+
+function removeChild (node, child) {
+  node.removeChild(child);
+}
+
+function appendChild (node, child) {
+  node.appendChild(child);
+}
+
+function parentNode (node) {
+  return node.parentNode
+}
+
+function nextSibling (node) {
+  return node.nextSibling
+}
+
+function tagName (node) {
+  return node.tagName
+}
+
+function setTextContent (node, text) {
+  node.textContent = text;
+}
+
+function setAttribute (node, key, val) {
+  node.setAttribute(key, val);
+}
+
+
+var nodeOps = Object.freeze({
+	createElement: createElement$1,
+	createElementNS: createElementNS,
+	createTextNode: createTextNode,
+	createComment: createComment,
+	insertBefore: insertBefore,
+	removeChild: removeChild,
+	appendChild: appendChild,
+	parentNode: parentNode,
+	nextSibling: nextSibling,
+	tagName: tagName,
+	setTextContent: setTextContent,
+	setAttribute: setAttribute
+});
+
+/*  */
+
+var ref = {
+  create: function create (_, vnode) {
+    registerRef(vnode);
+  },
+  update: function update (oldVnode, vnode) {
+    if (oldVnode.data.ref !== vnode.data.ref) {
+      registerRef(oldVnode, true);
+      registerRef(vnode);
+    }
+  },
+  destroy: function destroy (vnode) {
+    registerRef(vnode, true);
+  }
+};
+
+function registerRef (vnode, isRemoval) {
+  var key = vnode.data.ref;
+  if (!key) { return }
+
+  var vm = vnode.context;
+  var ref = vnode.componentInstance || vnode.elm;
+  var refs = vm.$refs;
+  if (isRemoval) {
+    if (Array.isArray(refs[key])) {
+      remove(refs[key], ref);
+    } else if (refs[key] === ref) {
+      refs[key] = undefined;
+    }
+  } else {
+    if (vnode.data.refInFor) {
+      if (Array.isArray(refs[key]) && refs[key].indexOf(ref) < 0) {
+        refs[key].push(ref);
+      } else {
+        refs[key] = [ref];
+      }
+    } else {
+      refs[key] = ref;
+    }
+  }
+}
+
+/**
+ * Virtual DOM patching algorithm based on Snabbdom by
+ * Simon Friis Vindum (@paldepind)
+ * Licensed under the MIT License
+ * https://github.com/paldepind/snabbdom/blob/master/LICENSE
+ *
+ * modified by Evan You (@yyx990803)
+ *
+
+/*
+ * Not type-checking this because this file is perf-critical and the cost
+ * of making flow understand it is not worth it.
+ */
+
+var emptyNode = new VNode('', {}, []);
+
+var hooks = ['create', 'activate', 'update', 'remove', 'destroy'];
+
+function isUndef (s) {
+  return s == null
+}
+
+function isDef (s) {
+  return s != null
+}
+
+function sameVnode (vnode1, vnode2) {
+  return (
+    vnode1.key === vnode2.key &&
+    vnode1.tag === vnode2.tag &&
+    vnode1.isComment === vnode2.isComment &&
+    !vnode1.data === !vnode2.data
+  )
+}
+
+function createKeyToOldIdx (children, beginIdx, endIdx) {
+  var i, key;
+  var map = {};
+  for (i = beginIdx; i <= endIdx; ++i) {
+    key = children[i].key;
+    if (isDef(key)) { map[key] = i; }
+  }
+  return map
+}
+
+function createPatchFunction (backend) {
+  var i, j;
+  var cbs = {};
+
+  var modules = backend.modules;
+  var nodeOps = backend.nodeOps;
+
+  for (i = 0; i < hooks.length; ++i) {
+    cbs[hooks[i]] = [];
+    for (j = 0; j < modules.length; ++j) {
+      if (modules[j][hooks[i]] !== undefined) { cbs[hooks[i]].push(modules[j][hooks[i]]); }
+    }
+  }
+
+  function emptyNodeAt (elm) {
+    return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
+  }
+
+  function createRmCb (childElm, listeners) {
+    function remove$$1 () {
+      if (--remove$$1.listeners === 0) {
+        removeNode(childElm);
+      }
+    }
+    remove$$1.listeners = listeners;
+    return remove$$1
+  }
+
+  function removeNode (el) {
+    var parent = nodeOps.parentNode(el);
+    // element may have already been removed due to v-html / v-text
+    if (parent) {
+      nodeOps.removeChild(parent, el);
+    }
+  }
+
+  var inPre = 0;
+  function createElm (vnode, insertedVnodeQueue, parentElm, refElm, nested) {
+    vnode.isRootInsert = !nested; // for transition enter check
+    if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
+      return
+    }
+
+    var data = vnode.data;
+    var children = vnode.children;
+    var tag = vnode.tag;
+    if (isDef(tag)) {
+      if (process.env.NODE_ENV !== 'production') {
+        if (data && data.pre) {
+          inPre++;
+        }
+        if (
+          !inPre &&
+          !vnode.ns &&
+          !(config.ignoredElements.length && config.ignoredElements.indexOf(tag) > -1) &&
+          config.isUnknownElement(tag)
+        ) {
+          warn(
+            'Unknown custom element: <' + tag + '> - did you ' +
+            'register the component correctly? For recursive components, ' +
+            'make sure to provide the "name" option.',
+            vnode.context
+          );
+        }
+      }
+      vnode.elm = vnode.ns
+        ? nodeOps.createElementNS(vnode.ns, tag)
+        : nodeOps.createElement(tag, vnode);
+      setScope(vnode);
+
+      /* istanbul ignore if */
+      {
+        createChildren(vnode, children, insertedVnodeQueue);
+        if (isDef(data)) {
+          invokeCreateHooks(vnode, insertedVnodeQueue);
+        }
+        insert(parentElm, vnode.elm, refElm);
+      }
+
+      if (process.env.NODE_ENV !== 'production' && data && data.pre) {
+        inPre--;
+      }
+    } else if (vnode.isComment) {
+      vnode.elm = nodeOps.createComment(vnode.text);
+      insert(parentElm, vnode.elm, refElm);
+    } else {
+      vnode.elm = nodeOps.createTextNode(vnode.text);
+      insert(parentElm, vnode.elm, refElm);
+    }
+  }
+
+  function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+    var i = vnode.data;
+    if (isDef(i)) {
+      var isReactivated = isDef(vnode.componentInstance) && i.keepAlive;
+      if (isDef(i = i.hook) && isDef(i = i.init)) {
+        i(vnode, false /* hydrating */, parentElm, refElm);
+      }
+      // after calling the init hook, if the vnode is a child component
+      // it should've created a child instance and mounted it. the child
+      // component also has set the placeholder vnode's elm.
+      // in that case we can just return the element and be done.
+      if (isDef(vnode.componentInstance)) {
+        initComponent(vnode, insertedVnodeQueue);
+        if (isReactivated) {
+          reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm);
+        }
+        return true
+      }
+    }
+  }
+
+  function initComponent (vnode, insertedVnodeQueue) {
+    if (vnode.data.pendingInsert) {
+      insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);
+    }
+    vnode.elm = vnode.componentInstance.$el;
+    if (isPatchable(vnode)) {
+      invokeCreateHooks(vnode, insertedVnodeQueue);
+      setScope(vnode);
+    } else {
+      // empty component root.
+      // skip all element-related modules except for ref (#3455)
+      registerRef(vnode);
+      // make sure to invoke the insert hook
+      insertedVnodeQueue.push(vnode);
+    }
+  }
+
+  function reactivateComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+    var i;
+    // hack for #4339: a reactivated component with inner transition
+    // does not trigger because the inner node's created hooks are not called
+    // again. It's not ideal to involve module-specific logic in here but
+    // there doesn't seem to be a better way to do it.
+    var innerNode = vnode;
+    while (innerNode.componentInstance) {
+      innerNode = innerNode.componentInstance._vnode;
+      if (isDef(i = innerNode.data) && isDef(i = i.transition)) {
+        for (i = 0; i < cbs.activate.length; ++i) {
+          cbs.activate[i](emptyNode, innerNode);
+        }
+        insertedVnodeQueue.push(innerNode);
+        break
+      }
+    }
+    // unlike a newly created component,
+    // a reactivated keep-alive component doesn't insert itself
+    insert(parentElm, vnode.elm, refElm);
+  }
+
+  function insert (parent, elm, ref) {
+    if (parent) {
+      if (ref) {
+        nodeOps.insertBefore(parent, elm, ref);
+      } else {
+        nodeOps.appendChild(parent, elm);
+      }
+    }
+  }
+
+  function createChildren (vnode, children, insertedVnodeQueue) {
+    if (Array.isArray(children)) {
+      for (var i = 0; i < children.length; ++i) {
+        createElm(children[i], insertedVnodeQueue, vnode.elm, null, true);
+      }
+    } else if (isPrimitive(vnode.text)) {
+      nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(vnode.text));
+    }
+  }
+
+  function isPatchable (vnode) {
+    while (vnode.componentInstance) {
+      vnode = vnode.componentInstance._vnode;
+    }
+    return isDef(vnode.tag)
+  }
+
+  function invokeCreateHooks (vnode, insertedVnodeQueue) {
+    for (var i$1 = 0; i$1 < cbs.create.length; ++i$1) {
+      cbs.create[i$1](emptyNode, vnode);
+    }
+    i = vnode.data.hook; // Reuse variable
+    if (isDef(i)) {
+      if (i.create) { i.create(emptyNode, vnode); }
+      if (i.insert) { insertedVnodeQueue.push(vnode); }
+    }
+  }
+
+  // set scope id attribute for scoped CSS.
+  // this is implemented as a special case to avoid the overhead
+  // of going through the normal attribute patching process.
+  function setScope (vnode) {
+    var i;
+    var ancestor = vnode;
+    while (ancestor) {
+      if (isDef(i = ancestor.context) && isDef(i = i.$options._scopeId)) {
+        nodeOps.setAttribute(vnode.elm, i, '');
+      }
+      ancestor = ancestor.parent;
+    }
+    // for slot content they should also get the scopeId from the host instance.
+    if (isDef(i = activeInstance) &&
+        i !== vnode.context &&
+        isDef(i = i.$options._scopeId)) {
+      nodeOps.setAttribute(vnode.elm, i, '');
+    }
+  }
+
+  function addVnodes (parentElm, refElm, vnodes, startIdx, endIdx, insertedVnodeQueue) {
+    for (; startIdx <= endIdx; ++startIdx) {
+      createElm(vnodes[startIdx], insertedVnodeQueue, parentElm, refElm);
+    }
+  }
+
+  function invokeDestroyHook (vnode) {
+    var i, j;
+    var data = vnode.data;
+    if (isDef(data)) {
+      if (isDef(i = data.hook) && isDef(i = i.destroy)) { i(vnode); }
+      for (i = 0; i < cbs.destroy.length; ++i) { cbs.destroy[i](vnode); }
+    }
+    if (isDef(i = vnode.children)) {
+      for (j = 0; j < vnode.children.length; ++j) {
+        invokeDestroyHook(vnode.children[j]);
+      }
+    }
+  }
+
+  function removeVnodes (parentElm, vnodes, startIdx, endIdx) {
+    for (; startIdx <= endIdx; ++startIdx) {
+      var ch = vnodes[startIdx];
+      if (isDef(ch)) {
+        if (isDef(ch.tag)) {
+          removeAndInvokeRemoveHook(ch);
+          invokeDestroyHook(ch);
+        } else { // Text node
+          removeNode(ch.elm);
+        }
+      }
+    }
+  }
+
+  function removeAndInvokeRemoveHook (vnode, rm) {
+    if (rm || isDef(vnode.data)) {
+      var listeners = cbs.remove.length + 1;
+      if (!rm) {
+        // directly removing
+        rm = createRmCb(vnode.elm, listeners);
+      } else {
+        // we have a recursively passed down rm callback
+        // increase the listeners count
+        rm.listeners += listeners;
+      }
+      // recursively invoke hooks on child component root node
+      if (isDef(i = vnode.componentInstance) && isDef(i = i._vnode) && isDef(i.data)) {
+        removeAndInvokeRemoveHook(i, rm);
+      }
+      for (i = 0; i < cbs.remove.length; ++i) {
+        cbs.remove[i](vnode, rm);
+      }
+      if (isDef(i = vnode.data.hook) && isDef(i = i.remove)) {
+        i(vnode, rm);
+      } else {
+        rm();
+      }
+    } else {
+      removeNode(vnode.elm);
+    }
+  }
+
+  function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
+    var oldStartIdx = 0;
+    var newStartIdx = 0;
+    var oldEndIdx = oldCh.length - 1;
+    var oldStartVnode = oldCh[0];
+    var oldEndVnode = oldCh[oldEndIdx];
+    var newEndIdx = newCh.length - 1;
+    var newStartVnode = newCh[0];
+    var newEndVnode = newCh[newEndIdx];
+    var oldKeyToIdx, idxInOld, elmToMove, refElm;
+
+    // removeOnly is a special flag used only by <transition-group>
+    // to ensure removed elements stay in correct relative positions
+    // during leaving transitions
+    var canMove = !removeOnly;
+
+    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+      if (isUndef(oldStartVnode)) {
+        oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
+      } else if (isUndef(oldEndVnode)) {
+        oldEndVnode = oldCh[--oldEndIdx];
+      } else if (sameVnode(oldStartVnode, newStartVnode)) {
+        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue);
+        oldStartVnode = oldCh[++oldStartIdx];
+        newStartVnode = newCh[++newStartIdx];
+      } else if (sameVnode(oldEndVnode, newEndVnode)) {
+        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue);
+        oldEndVnode = oldCh[--oldEndIdx];
+        newEndVnode = newCh[--newEndIdx];
+      } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
+        canMove && nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm));
+        oldStartVnode = oldCh[++oldStartIdx];
+        newEndVnode = newCh[--newEndIdx];
+      } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue);
+        canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
+        oldEndVnode = oldCh[--oldEndIdx];
+        newStartVnode = newCh[++newStartIdx];
+      } else {
+        if (isUndef(oldKeyToIdx)) { oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx); }
+        idxInOld = isDef(newStartVnode.key) ? oldKeyToIdx[newStartVnode.key] : null;
+        if (isUndef(idxInOld)) { // New element
+          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
+          newStartVnode = newCh[++newStartIdx];
+        } else {
+          elmToMove = oldCh[idxInOld];
+          /* istanbul ignore if */
+          if (process.env.NODE_ENV !== 'production' && !elmToMove) {
+            warn(
+              'It seems there are duplicate keys that is causing an update error. ' +
+              'Make sure each v-for item has a unique key.'
+            );
+          }
+          if (sameVnode(elmToMove, newStartVnode)) {
+            patchVnode(elmToMove, newStartVnode, insertedVnodeQueue);
+            oldCh[idxInOld] = undefined;
+            canMove && nodeOps.insertBefore(parentElm, newStartVnode.elm, oldStartVnode.elm);
+            newStartVnode = newCh[++newStartIdx];
+          } else {
+            // same key but different element. treat as new element
+            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
+            newStartVnode = newCh[++newStartIdx];
+          }
+        }
+      }
+    }
+    if (oldStartIdx > oldEndIdx) {
+      refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
+      addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
+    } else if (newStartIdx > newEndIdx) {
+      removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+    }
+  }
+
+  function patchVnode (oldVnode, vnode, insertedVnodeQueue, removeOnly) {
+    if (oldVnode === vnode) {
+      return
+    }
+    // reuse element for static trees.
+    // note we only do this if the vnode is cloned -
+    // if the new node is not cloned it means the render functions have been
+    // reset by the hot-reload-api and we need to do a proper re-render.
+    if (vnode.isStatic &&
+        oldVnode.isStatic &&
+        vnode.key === oldVnode.key &&
+        (vnode.isCloned || vnode.isOnce)) {
+      vnode.elm = oldVnode.elm;
+      vnode.componentInstance = oldVnode.componentInstance;
+      return
+    }
+    var i;
+    var data = vnode.data;
+    var hasData = isDef(data);
+    if (hasData && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+      i(oldVnode, vnode);
+    }
+    var elm = vnode.elm = oldVnode.elm;
+    var oldCh = oldVnode.children;
+    var ch = vnode.children;
+    if (hasData && isPatchable(vnode)) {
+      for (i = 0; i < cbs.update.length; ++i) { cbs.update[i](oldVnode, vnode); }
+      if (isDef(i = data.hook) && isDef(i = i.update)) { i(oldVnode, vnode); }
+    }
+    if (isUndef(vnode.text)) {
+      if (isDef(oldCh) && isDef(ch)) {
+        if (oldCh !== ch) { updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly); }
+      } else if (isDef(ch)) {
+        if (isDef(oldVnode.text)) { nodeOps.setTextContent(elm, ''); }
+        addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
+      } else if (isDef(oldCh)) {
+        removeVnodes(elm, oldCh, 0, oldCh.length - 1);
+      } else if (isDef(oldVnode.text)) {
+        nodeOps.setTextContent(elm, '');
+      }
+    } else if (oldVnode.text !== vnode.text) {
+      nodeOps.setTextContent(elm, vnode.text);
+    }
+    if (hasData) {
+      if (isDef(i = data.hook) && isDef(i = i.postpatch)) { i(oldVnode, vnode); }
+    }
+  }
+
+  function invokeInsertHook (vnode, queue, initial) {
+    // delay insert hooks for component root nodes, invoke them after the
+    // element is really inserted
+    if (initial && vnode.parent) {
+      vnode.parent.data.pendingInsert = queue;
+    } else {
+      for (var i = 0; i < queue.length; ++i) {
+        queue[i].data.hook.insert(queue[i]);
+      }
+    }
+  }
+
+  var bailed = false;
+  // list of modules that can skip create hook during hydration because they
+  // are already rendered on the client or has no need for initialization
+  var isRenderedModule = makeMap('attrs,style,class,staticClass,staticStyle,key');
+
+  // Note: this is a browser-only function so we can assume elms are DOM nodes.
+  function hydrate (elm, vnode, insertedVnodeQueue) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (!assertNodeMatch(elm, vnode)) {
+        return false
+      }
+    }
+    vnode.elm = elm;
+    var tag = vnode.tag;
+    var data = vnode.data;
+    var children = vnode.children;
+    if (isDef(data)) {
+      if (isDef(i = data.hook) && isDef(i = i.init)) { i(vnode, true /* hydrating */); }
+      if (isDef(i = vnode.componentInstance)) {
+        // child component. it should have hydrated its own tree.
+        initComponent(vnode, insertedVnodeQueue);
+        return true
+      }
+    }
+    if (isDef(tag)) {
+      if (isDef(children)) {
+        // empty element, allow client to pick up and populate children
+        if (!elm.hasChildNodes()) {
+          createChildren(vnode, children, insertedVnodeQueue);
+        } else {
+          var childrenMatch = true;
+          var childNode = elm.firstChild;
+          for (var i$1 = 0; i$1 < children.length; i$1++) {
+            if (!childNode || !hydrate(childNode, children[i$1], insertedVnodeQueue)) {
+              childrenMatch = false;
+              break
+            }
+            childNode = childNode.nextSibling;
+          }
+          // if childNode is not null, it means the actual childNodes list is
+          // longer than the virtual children list.
+          if (!childrenMatch || childNode) {
+            if (process.env.NODE_ENV !== 'production' &&
+                typeof console !== 'undefined' &&
+                !bailed) {
+              bailed = true;
+              console.warn('Parent: ', elm);
+              console.warn('Mismatching childNodes vs. VNodes: ', elm.childNodes, children);
+            }
+            return false
+          }
+        }
+      }
+      if (isDef(data)) {
+        for (var key in data) {
+          if (!isRenderedModule(key)) {
+            invokeCreateHooks(vnode, insertedVnodeQueue);
+            break
+          }
+        }
+      }
+    } else if (elm.data !== vnode.text) {
+      elm.data = vnode.text;
+    }
+    return true
+  }
+
+  function assertNodeMatch (node, vnode) {
+    if (vnode.tag) {
+      return (
+        vnode.tag.indexOf('vue-component') === 0 ||
+        vnode.tag.toLowerCase() === (node.tagName && node.tagName.toLowerCase())
+      )
+    } else {
+      return node.nodeType === (vnode.isComment ? 8 : 3)
+    }
+  }
+
+  return function patch (oldVnode, vnode, hydrating, removeOnly, parentElm, refElm) {
+    if (!vnode) {
+      if (oldVnode) { invokeDestroyHook(oldVnode); }
+      return
+    }
+
+    var isInitialPatch = false;
+    var insertedVnodeQueue = [];
+
+    if (!oldVnode) {
+      // empty mount (likely as component), create new root element
+      isInitialPatch = true;
+      createElm(vnode, insertedVnodeQueue, parentElm, refElm);
+    } else {
+      var isRealElement = isDef(oldVnode.nodeType);
+      if (!isRealElement && sameVnode(oldVnode, vnode)) {
+        // patch existing root node
+        patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly);
+      } else {
+        if (isRealElement) {
+          // mounting to a real element
+          // check if this is server-rendered content and if we can perform
+          // a successful hydration.
+          if (oldVnode.nodeType === 1 && oldVnode.hasAttribute('server-rendered')) {
+            oldVnode.removeAttribute('server-rendered');
+            hydrating = true;
+          }
+          if (hydrating) {
+            if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
+              invokeInsertHook(vnode, insertedVnodeQueue, true);
+              return oldVnode
+            } else if (process.env.NODE_ENV !== 'production') {
+              warn(
+                'The client-side rendered virtual DOM tree is not matching ' +
+                'server-rendered content. This is likely caused by incorrect ' +
+                'HTML markup, for example nesting block-level elements inside ' +
+                '<p>, or missing <tbody>. Bailing hydration and performing ' +
+                'full client-side render.'
+              );
+            }
+          }
+          // either not server-rendered, or hydration failed.
+          // create an empty node and replace it
+          oldVnode = emptyNodeAt(oldVnode);
+        }
+        // replacing existing element
+        var oldElm = oldVnode.elm;
+        var parentElm$1 = nodeOps.parentNode(oldElm);
+        createElm(
+          vnode,
+          insertedVnodeQueue,
+          // extremely rare edge case: do not insert if old element is in a
+          // leaving transition. Only happens when combining transition +
+          // keep-alive + HOCs. (#4590)
+          oldElm._leaveCb ? null : parentElm$1,
+          nodeOps.nextSibling(oldElm)
+        );
+
+        if (vnode.parent) {
+          // component root element replaced.
+          // update parent placeholder node element, recursively
+          var ancestor = vnode.parent;
+          while (ancestor) {
+            ancestor.elm = vnode.elm;
+            ancestor = ancestor.parent;
+          }
+          if (isPatchable(vnode)) {
+            for (var i = 0; i < cbs.create.length; ++i) {
+              cbs.create[i](emptyNode, vnode.parent);
+            }
+          }
+        }
+
+        if (parentElm$1 !== null) {
+          removeVnodes(parentElm$1, [oldVnode], 0, 0);
+        } else if (isDef(oldVnode.tag)) {
+          invokeDestroyHook(oldVnode);
+        }
+      }
+    }
+
+    invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch);
+    return vnode.elm
+  }
+}
+
+/*  */
+
+var directives = {
+  create: updateDirectives,
+  update: updateDirectives,
+  destroy: function unbindDirectives (vnode) {
+    updateDirectives(vnode, emptyNode);
+  }
+};
+
+function updateDirectives (oldVnode, vnode) {
+  if (oldVnode.data.directives || vnode.data.directives) {
+    _update(oldVnode, vnode);
+  }
+}
+
+function _update (oldVnode, vnode) {
+  var isCreate = oldVnode === emptyNode;
+  var isDestroy = vnode === emptyNode;
+  var oldDirs = normalizeDirectives$1(oldVnode.data.directives, oldVnode.context);
+  var newDirs = normalizeDirectives$1(vnode.data.directives, vnode.context);
+
+  var dirsWithInsert = [];
+  var dirsWithPostpatch = [];
+
+  var key, oldDir, dir;
+  for (key in newDirs) {
+    oldDir = oldDirs[key];
+    dir = newDirs[key];
+    if (!oldDir) {
+      // new directive, bind
+      callHook$1(dir, 'bind', vnode, oldVnode);
+      if (dir.def && dir.def.inserted) {
+        dirsWithInsert.push(dir);
+      }
+    } else {
+      // existing directive, update
+      dir.oldValue = oldDir.value;
+      callHook$1(dir, 'update', vnode, oldVnode);
+      if (dir.def && dir.def.componentUpdated) {
+        dirsWithPostpatch.push(dir);
+      }
+    }
+  }
+
+  if (dirsWithInsert.length) {
+    var callInsert = function () {
+      for (var i = 0; i < dirsWithInsert.length; i++) {
+        callHook$1(dirsWithInsert[i], 'inserted', vnode, oldVnode);
+      }
+    };
+    if (isCreate) {
+      mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'insert', callInsert);
+    } else {
+      callInsert();
+    }
+  }
+
+  if (dirsWithPostpatch.length) {
+    mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'postpatch', function () {
+      for (var i = 0; i < dirsWithPostpatch.length; i++) {
+        callHook$1(dirsWithPostpatch[i], 'componentUpdated', vnode, oldVnode);
+      }
+    });
+  }
+
+  if (!isCreate) {
+    for (key in oldDirs) {
+      if (!newDirs[key]) {
+        // no longer present, unbind
+        callHook$1(oldDirs[key], 'unbind', oldVnode, oldVnode, isDestroy);
+      }
+    }
+  }
+}
+
+var emptyModifiers = Object.create(null);
+
+function normalizeDirectives$1 (
+  dirs,
+  vm
+) {
+  var res = Object.create(null);
+  if (!dirs) {
+    return res
+  }
+  var i, dir;
+  for (i = 0; i < dirs.length; i++) {
+    dir = dirs[i];
+    if (!dir.modifiers) {
+      dir.modifiers = emptyModifiers;
+    }
+    res[getRawDirName(dir)] = dir;
+    dir.def = resolveAsset(vm.$options, 'directives', dir.name, true);
+  }
+  return res
+}
+
+function getRawDirName (dir) {
+  return dir.rawName || ((dir.name) + "." + (Object.keys(dir.modifiers || {}).join('.')))
+}
+
+function callHook$1 (dir, hook, vnode, oldVnode, isDestroy) {
+  var fn = dir.def && dir.def[hook];
+  if (fn) {
+    fn(vnode.elm, dir, vnode, oldVnode, isDestroy);
+  }
+}
+
+var baseModules = [
+  ref,
+  directives
+];
+
+/*  */
+
+function updateAttrs (oldVnode, vnode) {
+  if (!oldVnode.data.attrs && !vnode.data.attrs) {
+    return
+  }
+  var key, cur, old;
+  var elm = vnode.elm;
+  var oldAttrs = oldVnode.data.attrs || {};
+  var attrs = vnode.data.attrs || {};
+  // clone observed objects, as the user probably wants to mutate it
+  if (attrs.__ob__) {
+    attrs = vnode.data.attrs = extend({}, attrs);
+  }
+
+  for (key in attrs) {
+    cur = attrs[key];
+    old = oldAttrs[key];
+    if (old !== cur) {
+      setAttr(elm, key, cur);
+    }
+  }
+  // #4391: in IE9, setting type can reset value for input[type=radio]
+  /* istanbul ignore if */
+  if (isIE9 && attrs.value !== oldAttrs.value) {
+    setAttr(elm, 'value', attrs.value);
+  }
+  for (key in oldAttrs) {
+    if (attrs[key] == null) {
+      if (isXlink(key)) {
+        elm.removeAttributeNS(xlinkNS, getXlinkProp(key));
+      } else if (!isEnumeratedAttr(key)) {
+        elm.removeAttribute(key);
+      }
+    }
+  }
+}
+
+function setAttr (el, key, value) {
+  if (isBooleanAttr(key)) {
+    // set attribute for blank value
+    // e.g. <option disabled>Select one</option>
+    if (isFalsyAttrValue(value)) {
+      el.removeAttribute(key);
+    } else {
+      el.setAttribute(key, key);
+    }
+  } else if (isEnumeratedAttr(key)) {
+    el.setAttribute(key, isFalsyAttrValue(value) || value === 'false' ? 'false' : 'true');
+  } else if (isXlink(key)) {
+    if (isFalsyAttrValue(value)) {
+      el.removeAttributeNS(xlinkNS, getXlinkProp(key));
+    } else {
+      el.setAttributeNS(xlinkNS, key, value);
+    }
+  } else {
+    if (isFalsyAttrValue(value)) {
+      el.removeAttribute(key);
+    } else {
+      el.setAttribute(key, value);
+    }
+  }
+}
+
+var attrs = {
+  create: updateAttrs,
+  update: updateAttrs
+};
+
+/*  */
+
+function updateClass (oldVnode, vnode) {
+  var el = vnode.elm;
+  var data = vnode.data;
+  var oldData = oldVnode.data;
+  if (!data.staticClass && !data.class &&
+      (!oldData || (!oldData.staticClass && !oldData.class))) {
+    return
+  }
+
+  var cls = genClassForVnode(vnode);
+
+  // handle transition classes
+  var transitionClass = el._transitionClasses;
+  if (transitionClass) {
+    cls = concat(cls, stringifyClass(transitionClass));
+  }
+
+  // set the class
+  if (cls !== el._prevClass) {
+    el.setAttribute('class', cls);
+    el._prevClass = cls;
+  }
+}
+
+var klass = {
+  create: updateClass,
+  update: updateClass
+};
+
+/*  */
+
+var validDivisionCharRE = /[\w).+\-_$\]]/;
+
+
+
+function wrapFilter (exp, filter) {
+  var i = filter.indexOf('(');
+  if (i < 0) {
+    // _f: resolveFilter
+    return ("_f(\"" + filter + "\")(" + exp + ")")
+  } else {
+    var name = filter.slice(0, i);
+    var args = filter.slice(i + 1);
+    return ("_f(\"" + name + "\")(" + exp + "," + args)
+  }
+}
+
+/*  */
+
+/*  */
+
+/**
+ * Cross-platform code generation for component v-model
+ */
+
+
+/**
+ * Cross-platform codegen helper for generating v-model value assignment code.
+ */
+
+
+/**
+ * parse directive model to do the array update transform. a[idx] = val => $$a.splice($$idx, 1, val)
+ *
+ * for loop possible cases:
+ *
+ * - test
+ * - test[idx]
+ * - test[test1[idx]]
+ * - test["a"][idx]
+ * - xxx.test[a[a].test1[idx]]
+ * - test.xxx.a["asa"][test1[idx]]
+ *
+ */
+
+var str;
+var index$1;
+
+/*  */
+
+// in some cases, the event used has to be determined at runtime
+// so we used some reserved tokens during compile.
+var RANGE_TOKEN = '__r';
+var CHECKBOX_RADIO_TOKEN = '__c';
+
+/*  */
+
+// normalize v-model event tokens that can only be determined at runtime.
+// it's important to place the event as the first in the array because
+// the whole point is ensuring the v-model callback gets called before
+// user-attached handlers.
+function normalizeEvents (on) {
+  var event;
+  /* istanbul ignore if */
+  if (on[RANGE_TOKEN]) {
+    // IE input[type=range] only supports `change` event
+    event = isIE ? 'change' : 'input';
+    on[event] = [].concat(on[RANGE_TOKEN], on[event] || []);
+    delete on[RANGE_TOKEN];
+  }
+  if (on[CHECKBOX_RADIO_TOKEN]) {
+    // Chrome fires microtasks in between click/change, leads to #4521
+    event = isChrome ? 'click' : 'change';
+    on[event] = [].concat(on[CHECKBOX_RADIO_TOKEN], on[event] || []);
+    delete on[CHECKBOX_RADIO_TOKEN];
+  }
+}
+
+var target$1;
+
+function add$1 (
+  event,
+  handler,
+  once,
+  capture
+) {
+  if (once) {
+    var oldHandler = handler;
+    var _target = target$1; // save current target element in closure
+    handler = function (ev) {
+      var res = arguments.length === 1
+        ? oldHandler(ev)
+        : oldHandler.apply(null, arguments);
+      if (res !== null) {
+        remove$2(event, handler, capture, _target);
+      }
+    };
+  }
+  target$1.addEventListener(event, handler, capture);
+}
+
+function remove$2 (
+  event,
+  handler,
+  capture,
+  _target
+) {
+  (_target || target$1).removeEventListener(event, handler, capture);
+}
+
+function updateDOMListeners (oldVnode, vnode) {
+  if (!oldVnode.data.on && !vnode.data.on) {
+    return
+  }
+  var on = vnode.data.on || {};
+  var oldOn = oldVnode.data.on || {};
+  target$1 = vnode.elm;
+  normalizeEvents(on);
+  updateListeners(on, oldOn, add$1, remove$2, vnode.context);
+}
+
+var events = {
+  create: updateDOMListeners,
+  update: updateDOMListeners
+};
+
+/*  */
+
+function updateDOMProps (oldVnode, vnode) {
+  if (!oldVnode.data.domProps && !vnode.data.domProps) {
+    return
+  }
+  var key, cur;
+  var elm = vnode.elm;
+  var oldProps = oldVnode.data.domProps || {};
+  var props = vnode.data.domProps || {};
+  // clone observed objects, as the user probably wants to mutate it
+  if (props.__ob__) {
+    props = vnode.data.domProps = extend({}, props);
+  }
+
+  for (key in oldProps) {
+    if (props[key] == null) {
+      elm[key] = '';
+    }
+  }
+  for (key in props) {
+    cur = props[key];
+    // ignore children if the node has textContent or innerHTML,
+    // as these will throw away existing DOM nodes and cause removal errors
+    // on subsequent patches (#3360)
+    if (key === 'textContent' || key === 'innerHTML') {
+      if (vnode.children) { vnode.children.length = 0; }
+      if (cur === oldProps[key]) { continue }
+    }
+
+    if (key === 'value') {
+      // store value as _value as well since
+      // non-string values will be stringified
+      elm._value = cur;
+      // avoid resetting cursor position when value is the same
+      var strCur = cur == null ? '' : String(cur);
+      if (shouldUpdateValue(elm, vnode, strCur)) {
+        elm.value = strCur;
+      }
+    } else {
+      elm[key] = cur;
+    }
+  }
+}
+
+// check platforms/web/util/attrs.js acceptValue
+
+
+function shouldUpdateValue (
+  elm,
+  vnode,
+  checkVal
+) {
+  return (!elm.composing && (
+    vnode.tag === 'option' ||
+    isDirty(elm, checkVal) ||
+    isInputChanged(elm, checkVal)
+  ))
+}
+
+function isDirty (elm, checkVal) {
+  // return true when textbox (.number and .trim) loses focus and its value is not equal to the updated value
+  return document.activeElement !== elm && elm.value !== checkVal
+}
+
+function isInputChanged (elm, newVal) {
+  var value = elm.value;
+  var modifiers = elm._vModifiers; // injected by v-model runtime
+  if ((modifiers && modifiers.number) || elm.type === 'number') {
+    return toNumber(value) !== toNumber(newVal)
+  }
+  if (modifiers && modifiers.trim) {
+    return value.trim() !== newVal.trim()
+  }
+  return value !== newVal
+}
+
+var domProps = {
+  create: updateDOMProps,
+  update: updateDOMProps
+};
+
+/*  */
+
+var parseStyleText = cached(function (cssText) {
+  var res = {};
+  var listDelimiter = /;(?![^(]*\))/g;
+  var propertyDelimiter = /:(.+)/;
+  cssText.split(listDelimiter).forEach(function (item) {
+    if (item) {
+      var tmp = item.split(propertyDelimiter);
+      tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim());
+    }
+  });
+  return res
+});
+
+// merge static and dynamic style data on the same vnode
+function normalizeStyleData (data) {
+  var style = normalizeStyleBinding(data.style);
+  // static style is pre-processed into an object during compilation
+  // and is always a fresh object, so it's safe to merge into it
+  return data.staticStyle
+    ? extend(data.staticStyle, style)
+    : style
+}
+
+// normalize possible array / string values into Object
+function normalizeStyleBinding (bindingStyle) {
+  if (Array.isArray(bindingStyle)) {
+    return toObject(bindingStyle)
+  }
+  if (typeof bindingStyle === 'string') {
+    return parseStyleText(bindingStyle)
+  }
+  return bindingStyle
+}
+
+/**
+ * parent component style should be after child's
+ * so that parent component's style could override it
+ */
+function getStyle (vnode, checkChild) {
+  var res = {};
+  var styleData;
+
+  if (checkChild) {
+    var childNode = vnode;
+    while (childNode.componentInstance) {
+      childNode = childNode.componentInstance._vnode;
+      if (childNode.data && (styleData = normalizeStyleData(childNode.data))) {
+        extend(res, styleData);
+      }
+    }
+  }
+
+  if ((styleData = normalizeStyleData(vnode.data))) {
+    extend(res, styleData);
+  }
+
+  var parentNode = vnode;
+  while ((parentNode = parentNode.parent)) {
+    if (parentNode.data && (styleData = normalizeStyleData(parentNode.data))) {
+      extend(res, styleData);
+    }
+  }
+  return res
+}
+
+/*  */
+
+var cssVarRE = /^--/;
+var importantRE = /\s*!important$/;
+var setProp = function (el, name, val) {
+  /* istanbul ignore if */
+  if (cssVarRE.test(name)) {
+    el.style.setProperty(name, val);
+  } else if (importantRE.test(val)) {
+    el.style.setProperty(name, val.replace(importantRE, ''), 'important');
+  } else {
+    el.style[normalize(name)] = val;
+  }
+};
+
+var prefixes = ['Webkit', 'Moz', 'ms'];
+
+var testEl;
+var normalize = cached(function (prop) {
+  testEl = testEl || document.createElement('div');
+  prop = camelize(prop);
+  if (prop !== 'filter' && (prop in testEl.style)) {
+    return prop
+  }
+  var upper = prop.charAt(0).toUpperCase() + prop.slice(1);
+  for (var i = 0; i < prefixes.length; i++) {
+    var prefixed = prefixes[i] + upper;
+    if (prefixed in testEl.style) {
+      return prefixed
+    }
+  }
+});
+
+function updateStyle (oldVnode, vnode) {
+  var data = vnode.data;
+  var oldData = oldVnode.data;
+
+  if (!data.staticStyle && !data.style &&
+      !oldData.staticStyle && !oldData.style) {
+    return
+  }
+
+  var cur, name;
+  var el = vnode.elm;
+  var oldStaticStyle = oldVnode.data.staticStyle;
+  var oldStyleBinding = oldVnode.data.style || {};
+
+  // if static style exists, stylebinding already merged into it when doing normalizeStyleData
+  var oldStyle = oldStaticStyle || oldStyleBinding;
+
+  var style = normalizeStyleBinding(vnode.data.style) || {};
+
+  vnode.data.style = style.__ob__ ? extend({}, style) : style;
+
+  var newStyle = getStyle(vnode, true);
+
+  for (name in oldStyle) {
+    if (newStyle[name] == null) {
+      setProp(el, name, '');
+    }
+  }
+  for (name in newStyle) {
+    cur = newStyle[name];
+    if (cur !== oldStyle[name]) {
+      // ie9 setting to null has no effect, must use empty string
+      setProp(el, name, cur == null ? '' : cur);
+    }
+  }
+}
+
+var style = {
+  create: updateStyle,
+  update: updateStyle
+};
+
+/*  */
+
+/**
+ * Add class with compatibility for SVG since classList is not supported on
+ * SVG elements in IE
+ */
+function addClass (el, cls) {
+  /* istanbul ignore if */
+  if (!cls || !(cls = cls.trim())) {
+    return
+  }
+
+  /* istanbul ignore else */
+  if (el.classList) {
+    if (cls.indexOf(' ') > -1) {
+      cls.split(/\s+/).forEach(function (c) { return el.classList.add(c); });
+    } else {
+      el.classList.add(cls);
+    }
+  } else {
+    var cur = " " + (el.getAttribute('class') || '') + " ";
+    if (cur.indexOf(' ' + cls + ' ') < 0) {
+      el.setAttribute('class', (cur + cls).trim());
+    }
+  }
+}
+
+/**
+ * Remove class with compatibility for SVG since classList is not supported on
+ * SVG elements in IE
+ */
+function removeClass (el, cls) {
+  /* istanbul ignore if */
+  if (!cls || !(cls = cls.trim())) {
+    return
+  }
+
+  /* istanbul ignore else */
+  if (el.classList) {
+    if (cls.indexOf(' ') > -1) {
+      cls.split(/\s+/).forEach(function (c) { return el.classList.remove(c); });
+    } else {
+      el.classList.remove(cls);
+    }
+  } else {
+    var cur = " " + (el.getAttribute('class') || '') + " ";
+    var tar = ' ' + cls + ' ';
+    while (cur.indexOf(tar) >= 0) {
+      cur = cur.replace(tar, ' ');
+    }
+    el.setAttribute('class', cur.trim());
+  }
+}
+
+/*  */
+
+function resolveTransition (def$$1) {
+  if (!def$$1) {
+    return
+  }
+  /* istanbul ignore else */
+  if (typeof def$$1 === 'object') {
+    var res = {};
+    if (def$$1.css !== false) {
+      extend(res, autoCssTransition(def$$1.name || 'v'));
+    }
+    extend(res, def$$1);
+    return res
+  } else if (typeof def$$1 === 'string') {
+    return autoCssTransition(def$$1)
+  }
+}
+
+var autoCssTransition = cached(function (name) {
+  return {
+    enterClass: (name + "-enter"),
+    enterToClass: (name + "-enter-to"),
+    enterActiveClass: (name + "-enter-active"),
+    leaveClass: (name + "-leave"),
+    leaveToClass: (name + "-leave-to"),
+    leaveActiveClass: (name + "-leave-active")
+  }
+});
+
+var hasTransition = inBrowser && !isIE9;
+var TRANSITION = 'transition';
+var ANIMATION = 'animation';
+
+// Transition property/event sniffing
+var transitionProp = 'transition';
+var transitionEndEvent = 'transitionend';
+var animationProp = 'animation';
+var animationEndEvent = 'animationend';
+if (hasTransition) {
+  /* istanbul ignore if */
+  if (window.ontransitionend === undefined &&
+    window.onwebkittransitionend !== undefined) {
+    transitionProp = 'WebkitTransition';
+    transitionEndEvent = 'webkitTransitionEnd';
+  }
+  if (window.onanimationend === undefined &&
+    window.onwebkitanimationend !== undefined) {
+    animationProp = 'WebkitAnimation';
+    animationEndEvent = 'webkitAnimationEnd';
+  }
+}
+
+// binding to window is necessary to make hot reload work in IE in strict mode
+var raf = inBrowser && window.requestAnimationFrame
+  ? window.requestAnimationFrame.bind(window)
+  : setTimeout;
+
+function nextFrame (fn) {
+  raf(function () {
+    raf(fn);
+  });
+}
+
+function addTransitionClass (el, cls) {
+  (el._transitionClasses || (el._transitionClasses = [])).push(cls);
+  addClass(el, cls);
+}
+
+function removeTransitionClass (el, cls) {
+  if (el._transitionClasses) {
+    remove(el._transitionClasses, cls);
+  }
+  removeClass(el, cls);
+}
+
+function whenTransitionEnds (
+  el,
+  expectedType,
+  cb
+) {
+  var ref = getTransitionInfo(el, expectedType);
+  var type = ref.type;
+  var timeout = ref.timeout;
+  var propCount = ref.propCount;
+  if (!type) { return cb() }
+  var event = type === TRANSITION ? transitionEndEvent : animationEndEvent;
+  var ended = 0;
+  var end = function () {
+    el.removeEventListener(event, onEnd);
+    cb();
+  };
+  var onEnd = function (e) {
+    if (e.target === el) {
+      if (++ended >= propCount) {
+        end();
+      }
+    }
+  };
+  setTimeout(function () {
+    if (ended < propCount) {
+      end();
+    }
+  }, timeout + 1);
+  el.addEventListener(event, onEnd);
+}
+
+var transformRE = /\b(transform|all)(,|$)/;
+
+function getTransitionInfo (el, expectedType) {
+  var styles = window.getComputedStyle(el);
+  var transitionDelays = styles[transitionProp + 'Delay'].split(', ');
+  var transitionDurations = styles[transitionProp + 'Duration'].split(', ');
+  var transitionTimeout = getTimeout(transitionDelays, transitionDurations);
+  var animationDelays = styles[animationProp + 'Delay'].split(', ');
+  var animationDurations = styles[animationProp + 'Duration'].split(', ');
+  var animationTimeout = getTimeout(animationDelays, animationDurations);
+
+  var type;
+  var timeout = 0;
+  var propCount = 0;
+  /* istanbul ignore if */
+  if (expectedType === TRANSITION) {
+    if (transitionTimeout > 0) {
+      type = TRANSITION;
+      timeout = transitionTimeout;
+      propCount = transitionDurations.length;
+    }
+  } else if (expectedType === ANIMATION) {
+    if (animationTimeout > 0) {
+      type = ANIMATION;
+      timeout = animationTimeout;
+      propCount = animationDurations.length;
+    }
+  } else {
+    timeout = Math.max(transitionTimeout, animationTimeout);
+    type = timeout > 0
+      ? transitionTimeout > animationTimeout
+        ? TRANSITION
+        : ANIMATION
+      : null;
+    propCount = type
+      ? type === TRANSITION
+        ? transitionDurations.length
+        : animationDurations.length
+      : 0;
+  }
+  var hasTransform =
+    type === TRANSITION &&
+    transformRE.test(styles[transitionProp + 'Property']);
+  return {
+    type: type,
+    timeout: timeout,
+    propCount: propCount,
+    hasTransform: hasTransform
+  }
+}
+
+function getTimeout (delays, durations) {
+  /* istanbul ignore next */
+  while (delays.length < durations.length) {
+    delays = delays.concat(delays);
+  }
+
+  return Math.max.apply(null, durations.map(function (d, i) {
+    return toMs(d) + toMs(delays[i])
+  }))
+}
+
+function toMs (s) {
+  return Number(s.slice(0, -1)) * 1000
+}
+
+/*  */
+
+function enter (vnode, toggleDisplay) {
+  var el = vnode.elm;
+
+  // call leave callback now
+  if (el._leaveCb) {
+    el._leaveCb.cancelled = true;
+    el._leaveCb();
+  }
+
+  var data = resolveTransition(vnode.data.transition);
+  if (!data) {
+    return
+  }
+
+  /* istanbul ignore if */
+  if (el._enterCb || el.nodeType !== 1) {
+    return
+  }
+
+  var css = data.css;
+  var type = data.type;
+  var enterClass = data.enterClass;
+  var enterToClass = data.enterToClass;
+  var enterActiveClass = data.enterActiveClass;
+  var appearClass = data.appearClass;
+  var appearToClass = data.appearToClass;
+  var appearActiveClass = data.appearActiveClass;
+  var beforeEnter = data.beforeEnter;
+  var enter = data.enter;
+  var afterEnter = data.afterEnter;
+  var enterCancelled = data.enterCancelled;
+  var beforeAppear = data.beforeAppear;
+  var appear = data.appear;
+  var afterAppear = data.afterAppear;
+  var appearCancelled = data.appearCancelled;
+  var duration = data.duration;
+
+  // activeInstance will always be the <transition> component managing this
+  // transition. One edge case to check is when the <transition> is placed
+  // as the root node of a child component. In that case we need to check
+  // <transition>'s parent for appear check.
+  var context = activeInstance;
+  var transitionNode = activeInstance.$vnode;
+  while (transitionNode && transitionNode.parent) {
+    transitionNode = transitionNode.parent;
+    context = transitionNode.context;
+  }
+
+  var isAppear = !context._isMounted || !vnode.isRootInsert;
+
+  if (isAppear && !appear && appear !== '') {
+    return
+  }
+
+  var startClass = isAppear && appearClass
+    ? appearClass
+    : enterClass;
+  var activeClass = isAppear && appearActiveClass
+    ? appearActiveClass
+    : enterActiveClass;
+  var toClass = isAppear && appearToClass
+    ? appearToClass
+    : enterToClass;
+
+  var beforeEnterHook = isAppear
+    ? (beforeAppear || beforeEnter)
+    : beforeEnter;
+  var enterHook = isAppear
+    ? (typeof appear === 'function' ? appear : enter)
+    : enter;
+  var afterEnterHook = isAppear
+    ? (afterAppear || afterEnter)
+    : afterEnter;
+  var enterCancelledHook = isAppear
+    ? (appearCancelled || enterCancelled)
+    : enterCancelled;
+
+  var explicitEnterDuration = toNumber(
+    isObject(duration)
+      ? duration.enter
+      : duration
+  );
+
+  if (process.env.NODE_ENV !== 'production' && explicitEnterDuration != null) {
+    checkDuration(explicitEnterDuration, 'enter', vnode);
+  }
+
+  var expectsCSS = css !== false && !isIE9;
+  var userWantsControl = getHookArgumentsLength(enterHook);
+
+  var cb = el._enterCb = once(function () {
+    if (expectsCSS) {
+      removeTransitionClass(el, toClass);
+      removeTransitionClass(el, activeClass);
+    }
+    if (cb.cancelled) {
+      if (expectsCSS) {
+        removeTransitionClass(el, startClass);
+      }
+      enterCancelledHook && enterCancelledHook(el);
+    } else {
+      afterEnterHook && afterEnterHook(el);
+    }
+    el._enterCb = null;
+  });
+
+  if (!vnode.data.show) {
+    // remove pending leave element on enter by injecting an insert hook
+    mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'insert', function () {
+      var parent = el.parentNode;
+      var pendingNode = parent && parent._pending && parent._pending[vnode.key];
+      if (pendingNode &&
+          pendingNode.tag === vnode.tag &&
+          pendingNode.elm._leaveCb) {
+        pendingNode.elm._leaveCb();
+      }
+      enterHook && enterHook(el, cb);
+    });
+  }
+
+  // start enter transition
+  beforeEnterHook && beforeEnterHook(el);
+  if (expectsCSS) {
+    addTransitionClass(el, startClass);
+    addTransitionClass(el, activeClass);
+    nextFrame(function () {
+      addTransitionClass(el, toClass);
+      removeTransitionClass(el, startClass);
+      if (!cb.cancelled && !userWantsControl) {
+        if (isValidDuration(explicitEnterDuration)) {
+          setTimeout(cb, explicitEnterDuration);
+        } else {
+          whenTransitionEnds(el, type, cb);
+        }
+      }
+    });
+  }
+
+  if (vnode.data.show) {
+    toggleDisplay && toggleDisplay();
+    enterHook && enterHook(el, cb);
+  }
+
+  if (!expectsCSS && !userWantsControl) {
+    cb();
+  }
+}
+
+function leave (vnode, rm) {
+  var el = vnode.elm;
+
+  // call enter callback now
+  if (el._enterCb) {
+    el._enterCb.cancelled = true;
+    el._enterCb();
+  }
+
+  var data = resolveTransition(vnode.data.transition);
+  if (!data) {
+    return rm()
+  }
+
+  /* istanbul ignore if */
+  if (el._leaveCb || el.nodeType !== 1) {
+    return
+  }
+
+  var css = data.css;
+  var type = data.type;
+  var leaveClass = data.leaveClass;
+  var leaveToClass = data.leaveToClass;
+  var leaveActiveClass = data.leaveActiveClass;
+  var beforeLeave = data.beforeLeave;
+  var leave = data.leave;
+  var afterLeave = data.afterLeave;
+  var leaveCancelled = data.leaveCancelled;
+  var delayLeave = data.delayLeave;
+  var duration = data.duration;
+
+  var expectsCSS = css !== false && !isIE9;
+  var userWantsControl = getHookArgumentsLength(leave);
+
+  var explicitLeaveDuration = toNumber(
+    isObject(duration)
+      ? duration.leave
+      : duration
+  );
+
+  if (process.env.NODE_ENV !== 'production' && explicitLeaveDuration != null) {
+    checkDuration(explicitLeaveDuration, 'leave', vnode);
+  }
+
+  var cb = el._leaveCb = once(function () {
+    if (el.parentNode && el.parentNode._pending) {
+      el.parentNode._pending[vnode.key] = null;
+    }
+    if (expectsCSS) {
+      removeTransitionClass(el, leaveToClass);
+      removeTransitionClass(el, leaveActiveClass);
+    }
+    if (cb.cancelled) {
+      if (expectsCSS) {
+        removeTransitionClass(el, leaveClass);
+      }
+      leaveCancelled && leaveCancelled(el);
+    } else {
+      rm();
+      afterLeave && afterLeave(el);
+    }
+    el._leaveCb = null;
+  });
+
+  if (delayLeave) {
+    delayLeave(performLeave);
+  } else {
+    performLeave();
+  }
+
+  function performLeave () {
+    // the delayed leave may have already been cancelled
+    if (cb.cancelled) {
+      return
+    }
+    // record leaving element
+    if (!vnode.data.show) {
+      (el.parentNode._pending || (el.parentNode._pending = {}))[vnode.key] = vnode;
+    }
+    beforeLeave && beforeLeave(el);
+    if (expectsCSS) {
+      addTransitionClass(el, leaveClass);
+      addTransitionClass(el, leaveActiveClass);
+      nextFrame(function () {
+        addTransitionClass(el, leaveToClass);
+        removeTransitionClass(el, leaveClass);
+        if (!cb.cancelled && !userWantsControl) {
+          if (isValidDuration(explicitLeaveDuration)) {
+            setTimeout(cb, explicitLeaveDuration);
+          } else {
+            whenTransitionEnds(el, type, cb);
+          }
+        }
+      });
+    }
+    leave && leave(el, cb);
+    if (!expectsCSS && !userWantsControl) {
+      cb();
+    }
+  }
+}
+
+// only used in dev mode
+function checkDuration (val, name, vnode) {
+  if (typeof val !== 'number') {
+    warn(
+      "<transition> explicit " + name + " duration is not a valid number - " +
+      "got " + (JSON.stringify(val)) + ".",
+      vnode.context
+    );
+  } else if (isNaN(val)) {
+    warn(
+      "<transition> explicit " + name + " duration is NaN - " +
+      'the duration expression might be incorrect.',
+      vnode.context
+    );
+  }
+}
+
+function isValidDuration (val) {
+  return typeof val === 'number' && !isNaN(val)
+}
+
+/**
+ * Normalize a transition hook's argument length. The hook may be:
+ * - a merged hook (invoker) with the original in .fns
+ * - a wrapped component method (check ._length)
+ * - a plain function (.length)
+ */
+function getHookArgumentsLength (fn) {
+  if (!fn) { return false }
+  var invokerFns = fn.fns;
+  if (invokerFns) {
+    // invoker
+    return getHookArgumentsLength(
+      Array.isArray(invokerFns)
+        ? invokerFns[0]
+        : invokerFns
+    )
+  } else {
+    return (fn._length || fn.length) > 1
+  }
+}
+
+function _enter (_, vnode) {
+  if (!vnode.data.show) {
+    enter(vnode);
+  }
+}
+
+var transition = inBrowser ? {
+  create: _enter,
+  activate: _enter,
+  remove: function remove$$1 (vnode, rm) {
+    /* istanbul ignore else */
+    if (!vnode.data.show) {
+      leave(vnode, rm);
+    } else {
+      rm();
+    }
+  }
+} : {};
+
+var platformModules = [
+  attrs,
+  klass,
+  events,
+  domProps,
+  style,
+  transition
+];
+
+/*  */
+
+// the directive module should be applied last, after all
+// built-in modules have been applied.
+var modules = platformModules.concat(baseModules);
+
+var patch = createPatchFunction({ nodeOps: nodeOps, modules: modules });
+
+/**
+ * Not type checking this file because flow doesn't like attaching
+ * properties to Elements.
+ */
+
+/* istanbul ignore if */
+if (isIE9) {
+  // http://www.matts411.com/post/internet-explorer-9-oninput/
+  document.addEventListener('selectionchange', function () {
+    var el = document.activeElement;
+    if (el && el.vmodel) {
+      trigger(el, 'input');
+    }
+  });
+}
+
+var model$1 = {
+  inserted: function inserted (el, binding, vnode) {
+    if (vnode.tag === 'select') {
+      var cb = function () {
+        setSelected(el, binding, vnode.context);
+      };
+      cb();
+      /* istanbul ignore if */
+      if (isIE || isEdge) {
+        setTimeout(cb, 0);
+      }
+    } else if (vnode.tag === 'textarea' || el.type === 'text') {
+      el._vModifiers = binding.modifiers;
+      if (!binding.modifiers.lazy) {
+        if (!isAndroid) {
+          el.addEventListener('compositionstart', onCompositionStart);
+          el.addEventListener('compositionend', onCompositionEnd);
+        }
+        /* istanbul ignore if */
+        if (isIE9) {
+          el.vmodel = true;
+        }
+      }
+    }
+  },
+  componentUpdated: function componentUpdated (el, binding, vnode) {
+    if (vnode.tag === 'select') {
+      setSelected(el, binding, vnode.context);
+      // in case the options rendered by v-for have changed,
+      // it's possible that the value is out-of-sync with the rendered options.
+      // detect such cases and filter out values that no longer has a matching
+      // option in the DOM.
+      var needReset = el.multiple
+        ? binding.value.some(function (v) { return hasNoMatchingOption(v, el.options); })
+        : binding.value !== binding.oldValue && hasNoMatchingOption(binding.value, el.options);
+      if (needReset) {
+        trigger(el, 'change');
+      }
+    }
+  }
+};
+
+function setSelected (el, binding, vm) {
+  var value = binding.value;
+  var isMultiple = el.multiple;
+  if (isMultiple && !Array.isArray(value)) {
+    process.env.NODE_ENV !== 'production' && warn(
+      "<select multiple v-model=\"" + (binding.expression) + "\"> " +
+      "expects an Array value for its binding, but got " + (Object.prototype.toString.call(value).slice(8, -1)),
+      vm
+    );
+    return
+  }
+  var selected, option;
+  for (var i = 0, l = el.options.length; i < l; i++) {
+    option = el.options[i];
+    if (isMultiple) {
+      selected = looseIndexOf(value, getValue(option)) > -1;
+      if (option.selected !== selected) {
+        option.selected = selected;
+      }
+    } else {
+      if (looseEqual(getValue(option), value)) {
+        if (el.selectedIndex !== i) {
+          el.selectedIndex = i;
+        }
+        return
+      }
+    }
+  }
+  if (!isMultiple) {
+    el.selectedIndex = -1;
+  }
+}
+
+function hasNoMatchingOption (value, options) {
+  for (var i = 0, l = options.length; i < l; i++) {
+    if (looseEqual(getValue(options[i]), value)) {
+      return false
+    }
+  }
+  return true
+}
+
+function getValue (option) {
+  return '_value' in option
+    ? option._value
+    : option.value
+}
+
+function onCompositionStart (e) {
+  e.target.composing = true;
+}
+
+function onCompositionEnd (e) {
+  e.target.composing = false;
+  trigger(e.target, 'input');
+}
+
+function trigger (el, type) {
+  var e = document.createEvent('HTMLEvents');
+  e.initEvent(type, true, true);
+  el.dispatchEvent(e);
+}
+
+/*  */
+
+// recursively search for possible transition defined inside the component root
+function locateNode (vnode) {
+  return vnode.componentInstance && (!vnode.data || !vnode.data.transition)
+    ? locateNode(vnode.componentInstance._vnode)
+    : vnode
+}
+
+var show = {
+  bind: function bind (el, ref, vnode) {
+    var value = ref.value;
+
+    vnode = locateNode(vnode);
+    var transition = vnode.data && vnode.data.transition;
+    var originalDisplay = el.__vOriginalDisplay =
+      el.style.display === 'none' ? '' : el.style.display;
+    if (value && transition && !isIE9) {
+      vnode.data.show = true;
+      enter(vnode, function () {
+        el.style.display = originalDisplay;
+      });
+    } else {
+      el.style.display = value ? originalDisplay : 'none';
+    }
+  },
+
+  update: function update (el, ref, vnode) {
+    var value = ref.value;
+    var oldValue = ref.oldValue;
+
+    /* istanbul ignore if */
+    if (value === oldValue) { return }
+    vnode = locateNode(vnode);
+    var transition = vnode.data && vnode.data.transition;
+    if (transition && !isIE9) {
+      vnode.data.show = true;
+      if (value) {
+        enter(vnode, function () {
+          el.style.display = el.__vOriginalDisplay;
+        });
+      } else {
+        leave(vnode, function () {
+          el.style.display = 'none';
+        });
+      }
+    } else {
+      el.style.display = value ? el.__vOriginalDisplay : 'none';
+    }
+  },
+
+  unbind: function unbind (
+    el,
+    binding,
+    vnode,
+    oldVnode,
+    isDestroy
+  ) {
+    if (!isDestroy) {
+      el.style.display = el.__vOriginalDisplay;
+    }
+  }
+};
+
+var platformDirectives = {
+  model: model$1,
+  show: show
+};
+
+/*  */
+
+// Provides transition support for a single element/component.
+// supports transition mode (out-in / in-out)
+
+var transitionProps = {
+  name: String,
+  appear: Boolean,
+  css: Boolean,
+  mode: String,
+  type: String,
+  enterClass: String,
+  leaveClass: String,
+  enterToClass: String,
+  leaveToClass: String,
+  enterActiveClass: String,
+  leaveActiveClass: String,
+  appearClass: String,
+  appearActiveClass: String,
+  appearToClass: String,
+  duration: [Number, String, Object]
+};
+
+// in case the child is also an abstract component, e.g. <keep-alive>
+// we want to recursively retrieve the real component to be rendered
+function getRealChild (vnode) {
+  var compOptions = vnode && vnode.componentOptions;
+  if (compOptions && compOptions.Ctor.options.abstract) {
+    return getRealChild(getFirstComponentChild(compOptions.children))
+  } else {
+    return vnode
+  }
+}
+
+function extractTransitionData (comp) {
+  var data = {};
+  var options = comp.$options;
+  // props
+  for (var key in options.propsData) {
+    data[key] = comp[key];
+  }
+  // events.
+  // extract listeners and pass them directly to the transition methods
+  var listeners = options._parentListeners;
+  for (var key$1 in listeners) {
+    data[camelize(key$1)] = listeners[key$1];
+  }
+  return data
+}
+
+function placeholder (h, rawChild) {
+  return /\d-keep-alive$/.test(rawChild.tag)
+    ? h('keep-alive')
+    : null
+}
+
+function hasParentTransition (vnode) {
+  while ((vnode = vnode.parent)) {
+    if (vnode.data.transition) {
+      return true
+    }
+  }
+}
+
+function isSameChild (child, oldChild) {
+  return oldChild.key === child.key && oldChild.tag === child.tag
+}
+
+var Transition = {
+  name: 'transition',
+  props: transitionProps,
+  abstract: true,
+
+  render: function render (h) {
+    var this$1 = this;
+
+    var children = this.$slots.default;
+    if (!children) {
+      return
+    }
+
+    // filter out text nodes (possible whitespaces)
+    children = children.filter(function (c) { return c.tag; });
+    /* istanbul ignore if */
+    if (!children.length) {
+      return
+    }
+
+    // warn multiple elements
+    if (process.env.NODE_ENV !== 'production' && children.length > 1) {
+      warn(
+        '<transition> can only be used on a single element. Use ' +
+        '<transition-group> for lists.',
+        this.$parent
+      );
+    }
+
+    var mode = this.mode;
+
+    // warn invalid mode
+    if (process.env.NODE_ENV !== 'production' &&
+        mode && mode !== 'in-out' && mode !== 'out-in') {
+      warn(
+        'invalid <transition> mode: ' + mode,
+        this.$parent
+      );
+    }
+
+    var rawChild = children[0];
+
+    // if this is a component root node and the component's
+    // parent container node also has transition, skip.
+    if (hasParentTransition(this.$vnode)) {
+      return rawChild
+    }
+
+    // apply transition data to child
+    // use getRealChild() to ignore abstract components e.g. keep-alive
+    var child = getRealChild(rawChild);
+    /* istanbul ignore if */
+    if (!child) {
+      return rawChild
+    }
+
+    if (this._leaving) {
+      return placeholder(h, rawChild)
+    }
+
+    // ensure a key that is unique to the vnode type and to this transition
+    // component instance. This key will be used to remove pending leaving nodes
+    // during entering.
+    var id = "__transition-" + (this._uid) + "-";
+    child.key = child.key == null
+      ? id + child.tag
+      : isPrimitive(child.key)
+        ? (String(child.key).indexOf(id) === 0 ? child.key : id + child.key)
+        : child.key;
+
+    var data = (child.data || (child.data = {})).transition = extractTransitionData(this);
+    var oldRawChild = this._vnode;
+    var oldChild = getRealChild(oldRawChild);
+
+    // mark v-show
+    // so that the transition module can hand over the control to the directive
+    if (child.data.directives && child.data.directives.some(function (d) { return d.name === 'show'; })) {
+      child.data.show = true;
+    }
+
+    if (oldChild && oldChild.data && !isSameChild(child, oldChild)) {
+      // replace old child transition data with fresh one
+      // important for dynamic transitions!
+      var oldData = oldChild && (oldChild.data.transition = extend({}, data));
+      // handle transition mode
+      if (mode === 'out-in') {
+        // return placeholder node and queue update when leave finishes
+        this._leaving = true;
+        mergeVNodeHook(oldData, 'afterLeave', function () {
+          this$1._leaving = false;
+          this$1.$forceUpdate();
+        });
+        return placeholder(h, rawChild)
+      } else if (mode === 'in-out') {
+        var delayedLeave;
+        var performLeave = function () { delayedLeave(); };
+        mergeVNodeHook(data, 'afterEnter', performLeave);
+        mergeVNodeHook(data, 'enterCancelled', performLeave);
+        mergeVNodeHook(oldData, 'delayLeave', function (leave) { delayedLeave = leave; });
+      }
+    }
+
+    return rawChild
+  }
+};
+
+/*  */
+
+// Provides transition support for list items.
+// supports move transitions using the FLIP technique.
+
+// Because the vdom's children update algorithm is "unstable" - i.e.
+// it doesn't guarantee the relative positioning of removed elements,
+// we force transition-group to update its children into two passes:
+// in the first pass, we remove all nodes that need to be removed,
+// triggering their leaving transition; in the second pass, we insert/move
+// into the final desired state. This way in the second pass removed
+// nodes will remain where they should be.
+
+var props = extend({
+  tag: String,
+  moveClass: String
+}, transitionProps);
+
+delete props.mode;
+
+var TransitionGroup = {
+  props: props,
+
+  render: function render (h) {
+    var tag = this.tag || this.$vnode.data.tag || 'span';
+    var map = Object.create(null);
+    var prevChildren = this.prevChildren = this.children;
+    var rawChildren = this.$slots.default || [];
+    var children = this.children = [];
+    var transitionData = extractTransitionData(this);
+
+    for (var i = 0; i < rawChildren.length; i++) {
+      var c = rawChildren[i];
+      if (c.tag) {
+        if (c.key != null && String(c.key).indexOf('__vlist') !== 0) {
+          children.push(c);
+          map[c.key] = c
+          ;(c.data || (c.data = {})).transition = transitionData;
+        } else if (process.env.NODE_ENV !== 'production') {
+          var opts = c.componentOptions;
+          var name = opts ? (opts.Ctor.options.name || opts.tag || '') : c.tag;
+          warn(("<transition-group> children must be keyed: <" + name + ">"));
+        }
+      }
+    }
+
+    if (prevChildren) {
+      var kept = [];
+      var removed = [];
+      for (var i$1 = 0; i$1 < prevChildren.length; i$1++) {
+        var c$1 = prevChildren[i$1];
+        c$1.data.transition = transitionData;
+        c$1.data.pos = c$1.elm.getBoundingClientRect();
+        if (map[c$1.key]) {
+          kept.push(c$1);
+        } else {
+          removed.push(c$1);
+        }
+      }
+      this.kept = h(tag, null, kept);
+      this.removed = removed;
+    }
+
+    return h(tag, null, children)
+  },
+
+  beforeUpdate: function beforeUpdate () {
+    // force removing pass
+    this.__patch__(
+      this._vnode,
+      this.kept,
+      false, // hydrating
+      true // removeOnly (!important, avoids unnecessary moves)
+    );
+    this._vnode = this.kept;
+  },
+
+  updated: function updated () {
+    var children = this.prevChildren;
+    var moveClass = this.moveClass || ((this.name || 'v') + '-move');
+    if (!children.length || !this.hasMove(children[0].elm, moveClass)) {
+      return
+    }
+
+    // we divide the work into three loops to avoid mixing DOM reads and writes
+    // in each iteration - which helps prevent layout thrashing.
+    children.forEach(callPendingCbs);
+    children.forEach(recordPosition);
+    children.forEach(applyTranslation);
+
+    // force reflow to put everything in position
+    var body = document.body;
+    var f = body.offsetHeight; // eslint-disable-line
+
+    children.forEach(function (c) {
+      if (c.data.moved) {
+        var el = c.elm;
+        var s = el.style;
+        addTransitionClass(el, moveClass);
+        s.transform = s.WebkitTransform = s.transitionDuration = '';
+        el.addEventListener(transitionEndEvent, el._moveCb = function cb (e) {
+          if (!e || /transform$/.test(e.propertyName)) {
+            el.removeEventListener(transitionEndEvent, cb);
+            el._moveCb = null;
+            removeTransitionClass(el, moveClass);
+          }
+        });
+      }
+    });
+  },
+
+  methods: {
+    hasMove: function hasMove (el, moveClass) {
+      /* istanbul ignore if */
+      if (!hasTransition) {
+        return false
+      }
+      if (this._hasMove != null) {
+        return this._hasMove
+      }
+      // Detect whether an element with the move class applied has
+      // CSS transitions. Since the element may be inside an entering
+      // transition at this very moment, we make a clone of it and remove
+      // all other transition classes applied to ensure only the move class
+      // is applied.
+      var clone = el.cloneNode();
+      if (el._transitionClasses) {
+        el._transitionClasses.forEach(function (cls) { removeClass(clone, cls); });
+      }
+      addClass(clone, moveClass);
+      clone.style.display = 'none';
+      this.$el.appendChild(clone);
+      var info = getTransitionInfo(clone);
+      this.$el.removeChild(clone);
+      return (this._hasMove = info.hasTransform)
+    }
+  }
+};
+
+function callPendingCbs (c) {
+  /* istanbul ignore if */
+  if (c.elm._moveCb) {
+    c.elm._moveCb();
+  }
+  /* istanbul ignore if */
+  if (c.elm._enterCb) {
+    c.elm._enterCb();
+  }
+}
+
+function recordPosition (c) {
+  c.data.newPos = c.elm.getBoundingClientRect();
+}
+
+function applyTranslation (c) {
+  var oldPos = c.data.pos;
+  var newPos = c.data.newPos;
+  var dx = oldPos.left - newPos.left;
+  var dy = oldPos.top - newPos.top;
+  if (dx || dy) {
+    c.data.moved = true;
+    var s = c.elm.style;
+    s.transform = s.WebkitTransform = "translate(" + dx + "px," + dy + "px)";
+    s.transitionDuration = '0s';
+  }
+}
+
+var platformComponents = {
+  Transition: Transition,
+  TransitionGroup: TransitionGroup
+};
+
+/*  */
+
+// install platform specific utils
+Vue$2.config.mustUseProp = mustUseProp;
+Vue$2.config.isReservedTag = isReservedTag;
+Vue$2.config.getTagNamespace = getTagNamespace;
+Vue$2.config.isUnknownElement = isUnknownElement;
+
+// install platform runtime directives & components
+extend(Vue$2.options.directives, platformDirectives);
+extend(Vue$2.options.components, platformComponents);
+
+// install platform patch function
+Vue$2.prototype.__patch__ = inBrowser ? patch : noop;
+
+// public mount method
+Vue$2.prototype.$mount = function (
+  el,
+  hydrating
+) {
+  el = el && inBrowser ? query(el) : undefined;
+  return mountComponent(this, el, hydrating)
+};
 
 // devtools global hook
 /* istanbul ignore next */
 setTimeout(function () {
   if (config.devtools) {
     if (devtools) {
-      devtools.emit('init', Vue);
-    } else if (process.env.NODE_ENV !== 'production' && inBrowser && /Chrome\/\d+/.test(window.navigator.userAgent)) {
-      console.log('Download the Vue Devtools for a better development experience:\n' + 'https://github.com/vuejs/vue-devtools');
+      devtools.emit('init', Vue$2);
+    } else if (process.env.NODE_ENV !== 'production' && isChrome) {
+      console[console.info ? 'info' : 'log'](
+        'Download the Vue Devtools extension for a better development experience:\n' +
+        'https://github.com/vuejs/vue-devtools'
+      );
     }
+  }
+  if (process.env.NODE_ENV !== 'production' &&
+      config.productionTip !== false &&
+      inBrowser && typeof console !== 'undefined') {
+    console[console.info ? 'info' : 'log'](
+      "You are running Vue in development mode.\n" +
+      "Make sure to turn on production mode when deploying for production.\n" +
+      "See more tips at https://vuejs.org/guide/deployment.html"
+    );
   }
 }, 0);
 
-module.exports = Vue;
-}).call(this,require('_process'))
-},{"_process":312}],316:[function(require,module,exports){
+module.exports = Vue$2;
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":336}],342:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -34435,7 +30429,27 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     Vue.component('draggable', draggable);
   }
 })();
-},{"sortablejs":313}],317:[function(require,module,exports){
+},{"sortablejs":338}],343:[function(require,module,exports){
+var inserted = exports.cache = {}
+
+exports.insert = function (css) {
+  if (inserted[css]) return
+  inserted[css] = true
+
+  var elem = document.createElement('style')
+  elem.setAttribute('type', 'text/css')
+
+  if ('textContent' in elem) {
+    elem.textContent = css
+  } else {
+    elem.styleSheet.cssText = css
+  }
+
+  document.getElementsByTagName('head')[0].appendChild(elem)
+  return elem
+}
+
+},{}],344:[function(require,module,exports){
 /**
  * vuex v2.2.1
  * (c) 2017 Evan You
@@ -35248,7 +31262,177 @@ return index;
 
 })));
 
-},{}],318:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _axios = require('axios');
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _vueAxios = require('vue-axios');
+
+var _vueAxios2 = _interopRequireDefault(_vueAxios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_axios2.default.defaults.baseURL = routeRoot;
+// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+// This wrapper bind axios to Vue or this if you're using single file component.
+/**
+ * Created by adam on 3/20/17.
+ */
+_vue2.default.use(_vueAxios2.default, _axios2.default);
+
+exports.default = {
+    _connection: null,
+
+    // _api: function () {
+    //     //if the connection has not already been created
+    //     //create it
+    //     if ( this._connection == null ) {
+    //         this._connection = axios.create( {
+    //             baseURL: 'https://some-domain.com/_api/',
+    //             timeout: 1000,
+    //             headers: {'X-Custom-Header': 'foobar'}
+    //         } );
+    //
+    //         return this._connection;
+    //     }
+    //
+    // },
+    data: function data() {
+        return {
+            routeBase: {
+                item: "items",
+                exam: 'exams'
+            }
+        };
+    },
+
+    methods: {
+        /**
+         * Utility for creating most of the route to the _api
+         * @param type
+         * @returns {*}
+         */
+        makeRoute: function makeRoute(type) {
+            if (undefined.routeRoot) {
+                return undefined.routeRoot + undefined.routeBase[type];
+            }
+        },
+
+        _errorHandling: function _errorHandling(error) {
+            if (error.response) {
+                // The request was made, but the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
+        },
+
+        /**
+         * Asks the server to create the given model
+         * @param IModel
+         */
+        createModel: function createModel(Model) {
+            var api = undefined.makeRoute(Model.className) + '/create';
+
+            undefined.axios.get(api).then(function (response) {
+                console.log(response.data);
+                //return Item with the new id or other data loaded
+                if (typeof response.data.id != 'undefined') {
+                    Model.id = response.data.id;
+                }
+                return Model;
+            }).catch(function (error) {
+                this._errorHandling(error);
+            });
+        },
+
+        /**
+         * Asks the server to get the given model
+         * @param IModel
+         */
+        readModel: function readModel(Model) {
+            var api = undefined.makeRoute(Model.className) + '/' + Model.id;
+
+            undefined.axios.get(api).then(function (response) {
+
+                console.log(response.data);
+                //return Item with the new id or other data loaded
+                if (typeof response.data.id != 'undefined') {
+                    Model.id = response.data.id;
+                }
+                return Model;
+            }).catch(function (error) {
+                this._errorHandling(error);
+                console.log(error);
+            });
+        },
+
+        /**
+         * Asks the server to create the given item
+         * @param Item
+         */
+        updateModel: function updateModel(Model) {
+            var api = undefined.makeRoute(Model.className) + '/' + Model.id;
+
+            undefined.axios.put(api, Model).then(function (response) {
+
+                // if (response.status == 200 ){
+                return callback(response);
+                // }
+                //
+                // console.log( response.data )
+                // //return Item with the new id loaded
+                // return Model;
+            }).catch(function (error) {
+                this._errorHandling(error);
+                console.log(error);
+            });
+        },
+
+        /**
+         * Asks the server to create the given item
+         * @param Item
+         */
+        deleteModel: function deleteModel(Model, callback) {
+
+            var api = undefined.makeRoute(Model.className()) + '/' + Model.id;
+
+            undefined.axios.delete(api).then(function (response) {
+                if (response.status == 200) {
+                    return callback(response);
+                }
+            }).catch(function (error) {
+                this._errorHandling(error);
+                console.log(error);
+            });
+        }
+
+    }
+
+    // this.$http.get( _api ).then( ( response ) => {
+    //     console.log( response.data )
+    // } )
+};
+
+},{"axios":1,"vue":341,"vue-axios":339}],346:[function(require,module,exports){
 'use strict';
 
 var _Item = require('../../models/Item');
@@ -35324,7 +31508,7 @@ module.exports = {
         }
     },
 
-    ready: function ready() {
+    mounted: function mounted() {
         this.addItem();
         var me = this;
         try {
@@ -35408,7 +31592,7 @@ module.exports = {
     }
 };
 
-},{"../../models/Item":357,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/card-list.template.html":337,"jquery":311,"sortablejs":313}],319:[function(require,module,exports){
+},{"../../models/Item":383,"../../store/action-types":387,"../../store/mutation-types":403,"../templates/card-list.template.html":364,"jquery":335,"sortablejs":338}],347:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -35475,10 +31659,10 @@ module.exports = {
         }
     },
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 };
 
-},{"../../store/action-types":361,"../templates/delete-item-button.template.html":338,"bootbox":3}],320:[function(require,module,exports){
+},{"../../store/action-types":387,"../templates/delete-item-button.template.html":365,"bootbox":27}],348:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -35588,15 +31772,150 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('itemNav ready ', this.type);
     }
 }; /**
     * Created by adam on 2/17/17.
     */
 
-},{"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-nav.template.html":345}],321:[function(require,module,exports){
-"use strict";
+},{"../../models/Payload":384,"../../store/action-types":387,"../../store/mutation-types":403,"../templates/item-nav.template.html":371}],349:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+
+    props: ['exam-id'],
+
+    data: function data() {
+        return {
+            isHidden: true
+        };
+    },
+
+    computed: {
+        /**
+         * Name which will be visible to students when they see the exam.
+         * Otherwise it will just be referred to as 'Your exam' or
+         * 'Your assignment'
+         */
+        publicName: {
+            get: function get() {
+                //                    return this.$store.getters[ gTypes.getExam ]( Payload.factory( {examId: this.examId} ) );
+            },
+            set: function set() {}
+        },
+        terms: ['fall', 'winter', 'spring', 'summer'],
+
+        term: {
+            get: function get() {},
+            set: function set() {}
+        },
+        year: {
+            get: function get() {},
+            set: function set() {}
+        },
+        years: {
+            get: function get() {},
+            set: function set() {}
+        }
+    },
+
+    methods: {
+        openPropsArea: function openPropsArea() {
+            //make visible
+            this.isHidden = false;
+        },
+
+        closePropsArea: function closePropsArea() {
+            //hide
+            this.isHidden = true;
+        },
+
+        togglePropsArea: function togglePropsArea() {
+            //hide
+            this.isHidden = !this.isHidden;
+        }
+    },
+
+    directives: {},
+
+    events: {
+        /**
+         * If properties are showing, hide them; or vice-versa
+         */
+        'toggle-exam-properties': function toggleExamProperties() {
+            this.togglePropsArea();
+        },
+        /**
+         * Display exam properties area
+         */
+        'open-exam-properties': function openExamProperties() {
+            this.openPropsArea();
+        },
+        /**
+         * Close exam properties area
+         */
+        'close-exam-properties': function closeExamProperties() {
+            this.closePropsArea();
+        }
+    },
+
+    mounted: function mounted() {
+
+        //check if exam id was provided,
+        // if not, create a new exam object and set it
+        // as active.
+        if (typeof this.examId == 'undefined') {}
+        //Also get ready to request an exam id from the server
+        //as soon as the user does something which alters the store
+        console.log('exam-properties ready');
+        console.log('exam-properties ready');
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n\n<div class=\"row\" v-show=\"isHidden\">\n    <div class=\"col-lg-10\">\n        <!-- name input -->\n        <div class=\"input-group\">\n                <span class=\"input-group-addon\" id=\"basic-addon1\">Public Assignment Name</span>\n            <input type=\"text\" class=\"form-control input-lg\" id=\"publicName\" name=\"publicName\" aria-describedby=\"basic-addon1\" v-model=\"publicName\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-5\">\n            <h3>Update the properties for the overall exam here.</h3>\n            <!-- term selector -->\n            <input v-model=\"term\" name=\"examTerm\" type=\"hidden\" id=\"hiddenTerm\">\n\n            <div class=\"btn-group btn-group\">\n                <button class=\"btn btn-primary dropdown-toggle\" id=\"term\" title=\"Choose Term\" data-toggle=\"dropdown\">{{ term }} <span class=\"glyphicon glyphicon-menu-down\"></span></button>\n\n                <ul class=\"dropdown-menu\" id=\"termList\" role=\"menu\" style=\"cursor:pointer;\">\n                    <li v-for=\"term in terms\">\n                        <a class=\"termItem\">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class=\"col-lg-5\">\n            <!-- year selector -->\n            <input name=\"examYear\" type=\"hidden\" id=\"hiddenYear\" v-model=\"year\">\n\n            <div class=\"btn-group btn-group\">\n                <button class=\"btn btn-primary dropdown-toggle\" id=\"year\" title=\"Choose Year\" data-toggle=\"dropdown\">{{ year }}\n                    <span class=\"glyphicon glyphicon-menu-down\"></span>\n                </button>\n\n                <ul class=\"dropdown-menu\" id=\"yearList\" role=\"menu\" style=\"cursor:pointer;\">\n                    <li v-for=\"year in years\">\n                        <a class=\"yearItem\">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n    </div>\n\n</div>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-66093a27", module.exports)
+  } else {
+    hotAPI.update("_v-66093a27", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Payload":384,"../../store/action-types":387,"../../store/getter-types":389,"../../store/mutation-types":403,"vue":341,"vue-hot-reload-api":340,"vueify/lib/insert-css":343}],350:[function(require,module,exports){
+'use strict';
 
 /**
  * Created by adam on 2/15/17.
@@ -35608,8 +31927,8 @@ module.exports = {
 
     template: require('../templates/exam-name.template.html'),
 
-    props: [
-        //ability to set type which gets displayed
+    props: ['exam-id'
+    //ability to set type which gets displayed
     ],
 
     components: {},
@@ -35666,72 +31985,12 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('exam-name ready');
     }
 };
 
-},{"../templates/exam-name.template.html":340}],322:[function(require,module,exports){
-'use strict';
-
-/**
- * Created by adam on 2/15/17.
- */
-
-module.exports = {
-
-    template: require('../templates/exam-properties.template.html'),
-
-    props: [],
-
-    data: function data() {
-        return {
-            isHidden: true
-        };
-    },
-
-    computed: {
-        /**
-         * Name which will be visible to students when they see the exam.
-         * Otherwise it will just be referred to as 'Your exam' or
-         * 'Your assignment'
-         */
-        publicName: { get: function get() {}, set: function set() {} },
-        terms: { get: function get() {}, set: function set() {} },
-        term: { get: function get() {}, set: function set() {} },
-        year: { get: function get() {}, set: function set() {} },
-        years: { get: function get() {}, set: function set() {} }
-    },
-
-    methods: {
-        openPropsArea: function openPropsArea() {
-            //make visible
-        },
-
-        closePropsArea: function closePropsArea() {
-            //hide
-        }
-    },
-
-    directives: {},
-
-    events: {
-        /**
-         * Display exam properties area
-         */
-        'open-exam-properties': function openExamProperties() {},
-        /**
-         * Close exam properties area
-         */
-        'close-exam-properties': function closeExamProperties() {}
-    },
-
-    ready: function ready() {
-        console.log('exam-properties ready');
-    }
-};
-
-},{"../templates/exam-properties.template.html":341}],323:[function(require,module,exports){
+},{"../templates/exam-name.template.html":367}],351:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -35782,12 +32041,12 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('itemAddButton', 'ready', this.$store);
     }
 };
 
-},{"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-add-button.template.html":342}],324:[function(require,module,exports){
+},{"../../store/action-types":387,"../../store/mutation-types":403,"../templates/item-add-button.template.html":368}],352:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35826,6 +32085,10 @@ module.exports = {
     },
 
     computed: {
+        divId: function divId() {
+            return "item-card-" + this.index;
+        },
+
         /**
          * Returns the bootstrap class for the depth
          */
@@ -35890,14 +32153,13 @@ module.exports = {
     events: {
         'display-settings': function displaySettings() {
             console.log('itemName', 'CAUGHT', 'display-settings', this.index);
-            this.$broadcast('display-settings');
         }
     },
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 };
 
-},{"../templates/item-card.template.html":343}],325:[function(require,module,exports){
+},{"../templates/item-card.template.html":369}],353:[function(require,module,exports){
 'use strict';
 
 var _Item = require('../../models/Item');
@@ -36012,7 +32274,7 @@ module.exports = {
         }
     },
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 }; /**
     * This is the name field for a question or an element
     *
@@ -36021,7 +32283,7 @@ module.exports = {
 //var $ = require('jquery');
 //window.$ = $;
 
-},{"../../models/Item":357,"../../models/Payload":358,"../../store/mutation-types":377,"../templates/item-name.template.html":344}],326:[function(require,module,exports){
+},{"../../models/Item":383,"../../models/Payload":384,"../../store/mutation-types":403,"../templates/item-name.template.html":370}],354:[function(require,module,exports){
 'use strict';
 
 /**
@@ -36116,12 +32378,12 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('itemNav ready ', this.type);
     }
 };
 
-},{"../templates/item-nav.template.html":345}],327:[function(require,module,exports){
+},{"../templates/item-nav.template.html":371}],355:[function(require,module,exports){
 'use strict';
 
 var _Comment = require('../../models/Comment');
@@ -36228,13 +32490,13 @@ module.exports = {
         }
     },
 
-    ready: function ready() {
+    mounted: function mounted() {
         //push a comment into the item
 
     }
 };
 
-},{"../../models/Comment":354,"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-settings.commentSetup.template.html":346}],328:[function(require,module,exports){
+},{"../../models/Comment":380,"../../models/Payload":384,"../../store/action-types":387,"../../store/mutation-types":403,"../templates/item-settings.commentSetup.template.html":372}],356:[function(require,module,exports){
 'use strict';
 
 /**
@@ -36262,6 +32524,9 @@ module.exports = {
     },
 
     computed: {
+        tabTitle: function tabTitle() {
+            //  return this.tab.
+        },
 
         tabActive: function tabActive() {},
 
@@ -36308,10 +32573,10 @@ module.exports = {
         }
     },
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 };
 
-},{"../templates/item-settings.template.html":348}],329:[function(require,module,exports){
+},{"../templates/item-settings.template.html":374}],357:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -36401,7 +32666,7 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 }; /**
     * This is the settings component which contains
     * the more lengthy item text (like the prompt question)
@@ -36412,7 +32677,7 @@ module.exports = {
     * Created by adam on 2/19/17.
     */
 
-},{"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-settings.detail.template.html":347}],330:[function(require,module,exports){
+},{"../../models/Payload":384,"../../store/action-types":387,"../../store/mutation-types":403,"../templates/item-settings.detail.template.html":373}],358:[function(require,module,exports){
 'use strict';
 
 /**
@@ -36502,12 +32767,12 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('props-dashboard ready');
     }
 };
 
-},{"../templates/props-dashboard.template.html":349}],331:[function(require,module,exports){
+},{"../templates/props-dashboard.template.html":375}],359:[function(require,module,exports){
 'use strict';
 
 /**
@@ -36614,7 +32879,7 @@ module.exports = {
          */
         togglePublic: function togglePublic() {
             console.log('CALLED', 'togglePublic');
-            this.$dispatch('toggle-public');
+            this.$store.dispatch('toggle-public');
         }
 
     },
@@ -36623,10 +32888,10 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 };
 
-},{"../templates/public-indicator.template.html":350}],332:[function(require,module,exports){
+},{"../templates/public-indicator.template.html":376}],360:[function(require,module,exports){
 'use strict';
 
 /**
@@ -36664,7 +32929,7 @@ module.exports = {
          * who it belongs to
          */
         requestSettingsDisplay: function requestSettingsDisplay() {
-            this.$dispatch('display-settings');
+            this.$store.dispatch('display-settings');
         }
     },
 
@@ -36672,56 +32937,10 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {}
+    mounted: function mounted() {}
 };
 
-},{"../templates/settings-button.template.html":351}],333:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-require('babel-polyfill');
-
-var _vue = require('vue');
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _examName = require('./examName.component');
-
-var _examName2 = _interopRequireDefault(_examName);
-
-var _examProperties = require('./examProperties.component');
-
-var _examProperties2 = _interopRequireDefault(_examProperties);
-
-var _propsDashboard = require('./propsDashboard.component');
-
-var _propsDashboard2 = _interopRequireDefault(_propsDashboard);
-
-var _toolsDashboard = require('./toolsDashboard.component');
-
-var _toolsDashboard2 = _interopRequireDefault(_toolsDashboard);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Created by adam on 2/15/17.
- */
-//This pulls together the various components used in
-// exam and question setup
-
-exports.default = {
-    components: {
-        'exam-name': _examName2.default,
-        'exam-properties': _examProperties2.default,
-        'props-dashboard': _propsDashboard2.default,
-        'tools-dashboard': _toolsDashboard2.default
-    }
-};
-
-},{"./examName.component":321,"./examProperties.component":322,"./propsDashboard.component":330,"./toolsDashboard.component":334,"babel-polyfill":1,"vue":315}],334:[function(require,module,exports){
+},{"../templates/settings-button.template.html":377}],361:[function(require,module,exports){
 'use strict';
 
 var _mutationTypes = require('../../store/mutation-types');
@@ -36783,14 +33002,14 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('tools-dashboard ready');
     }
 }; /**
     * Created by adam on 2/15/17.
     */
 
-},{"../../store/mutation-types":377,"../templates/tools-dashboard.template.html":352}],335:[function(require,module,exports){
+},{"../../store/mutation-types":403,"../templates/tools-dashboard.template.html":378}],362:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36835,12 +33054,12 @@ exports.default = {
          * This sends the actual request(s)
          */
         sendRequest: function sendRequest() {
-            return this.$dispatch('please-change-valence', this.valence);
+            return this.$store.dispatch('please-change-valence', this.valence);
         }
     }
 };
 
-},{"../templates/valence-button.template.html":353}],336:[function(require,module,exports){
+},{"../templates/valence-button.template.html":379}],363:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -36848,14 +33067,6 @@ require('babel-polyfill');
 var _vue = require('vue');
 
 var _vue2 = _interopRequireDefault(_vue);
-
-var _vueRouter = require('vue-router');
-
-var _vueRouter2 = _interopRequireDefault(_vueRouter);
-
-var _setupAppVue = require('./components/setupApp.vue.js');
-
-var _setupAppVue2 = _interopRequireDefault(_setupAppVue);
 
 var _store = require('../store');
 
@@ -36865,7 +33076,7 @@ var _examName = require('./components/examName.component');
 
 var _examName2 = _interopRequireDefault(_examName);
 
-var _examProperties = require('./components/examProperties.component');
+var _examProperties = require('./components/exam.properties.vue');
 
 var _examProperties2 = _interopRequireDefault(_examProperties);
 
@@ -36944,6 +33155,22 @@ require('bootstrap');
 // var bootbox = require( 'bootbox' );
 
 
+//Vue libraries
+
+
+// Vue router
+//import Router from 'vue-router'
+// install router
+// Vue.use(Router)
+
+// Vuex store
+//this calls use vuex in addition to exposing all the modules
+
+
+//Components
+
+
+//Other folks' libraries
 var draggable = require('vuedraggable');
 
 _vue2.default.component('exam-name', _examName2.default);
@@ -36966,9 +33193,6 @@ _vue2.default.component('depth-control', _depthControl2.default);
 
 _vue2.default.component('draggable', draggable);
 
-// install router
-// Vue.use(Router)
-
 new _vue2.default({
     el: '#app',
 
@@ -36980,71 +33204,44 @@ new _vue2.default({
     //so temp doing import manually above
     //  render: h => h( App ),
 
-    ready: function ready() {
+    mounted: function mounted() {
         console.log('newSetup ready', this);
     }
 });
 
-// routing
-// var router = new Router()
-
-// router.map({
-//     // '/news/:page': {
-//     //     component: NewsView
-//     // },
-//     // '/user/:id': {
-//     //     component: UserView
-//     // },
-//     // '/item/:id': {
-//     //     component: ItemView
-//     // }
-// })
-//
-// router.beforeEach(function () {
-//     window.scrollTo(0, 0)
-// })
-//
-// router.redirect({
-// //    '*': '/news/1'
-// })
-
-// router.start(App, '#app')
-
-},{"../store":365,"./components/cardList.component":318,"./components/deleteItemButton.component":319,"./components/depthControl.component":320,"./components/examName.component":321,"./components/examProperties.component":322,"./components/itemAddButton.component":323,"./components/itemCard.component":324,"./components/itemName.component":325,"./components/itemNav.component":326,"./components/itemSettings.commentSetup.component":327,"./components/itemSettings.component":328,"./components/itemSettings.detail.component":329,"./components/propsDashboard.component":330,"./components/publicIndicator.component":331,"./components/settingsButton.component":332,"./components/setupApp.vue.js":333,"./components/toolsDashboard.component":334,"./components/valenceButton.component":335,"./templates/exam-editor.template.html":339,"babel-polyfill":1,"bootstrap":4,"jquery":311,"vue":315,"vue-router":314,"vuedraggable":316}],337:[function(require,module,exports){
-module.exports = '<div class="card-list card-list-component">\n<!--<draggable v-model=\'items\'>-->\n\n        <ul id=\'card-list\' class="list-group">\n            <li\n                    class="item-cards list-group-item handle"\n                    v-for="(index, item) in items"\n            >\n                <item-card :index="item.index" :id="item.id"></item-card>\n            </li>\n        </ul>\n    <!--</div>-->\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n<!--</draggable>-->\n</div>';
-},{}],338:[function(require,module,exports){
+},{"../store":391,"./components/cardList.component":346,"./components/deleteItemButton.component":347,"./components/depthControl.component":348,"./components/exam.properties.vue":349,"./components/examName.component":350,"./components/itemAddButton.component":351,"./components/itemCard.component":352,"./components/itemName.component":353,"./components/itemNav.component":354,"./components/itemSettings.commentSetup.component":355,"./components/itemSettings.component":356,"./components/itemSettings.detail.component":357,"./components/propsDashboard.component":358,"./components/publicIndicator.component":359,"./components/settingsButton.component":360,"./components/toolsDashboard.component":361,"./components/valenceButton.component":362,"./templates/exam-editor.template.html":366,"babel-polyfill":26,"bootstrap":28,"jquery":335,"vue":341,"vuedraggable":342}],364:[function(require,module,exports){
+module.exports = '<div class="card-list card-list-component">\n<!--<draggable v-model=\'items\'>-->\n\n        <ul id=\'card-list\' class="list-group">\n            <li\n                    class="item-cards list-group-item handle"\n                    v-for="(item, index) in items"\n            >\n                <item-card :index="item.index" :id="item.id"></item-card>\n            </li>\n        </ul>\n    <!--</div>-->\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n<!--</draggable>-->\n</div>';
+},{}],365:[function(require,module,exports){
 module.exports = '<div class="deleteButton ">\n    <button\n            v-if="visible"\n            class="btn btn-danger btn-block js-remove "\n            v-on:click="remove"\n    >\n        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n    </button>\n</div>';
-},{}],339:[function(require,module,exports){
-module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
-},{}],340:[function(require,module,exports){
-module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
-},{}],341:[function(require,module,exports){
-module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
-},{}],342:[function(require,module,exports){
+},{}],366:[function(require,module,exports){
+module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n\n<exam-properties></exam-properties>\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
+},{}],367:[function(require,module,exports){
+module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               v-bind:placeholder="placeHolders.privateName"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2">\n            <span v-on:click="openExamProperties"\n                  class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
+},{}],368:[function(require,module,exports){
 module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
-},{}],343:[function(require,module,exports){
-module.exports = '<!--This represents a question or an element-->\n<div id="item-card-{{index}}"\n     class="item-card-component"\n     v-bind:class="offsetClass"\n>\n    <div class="row">\n        <item-name\n                :index="index"\n                :id="id"\n        ></item-name>\n\n    </div>\n    <div class="row">\n        <div class="clearfix"></div>\n\n        <div class="col-lg-12">\n            <!--<div class="col-lg-10">-->\n            <div class="clearfix"></div>\n            <slot name="head">\n\n                <item-settings\n                        :index="index"\n                        :id="id"\n                >\n                    <!--is="currentView"-->\n                    <div slot="controlsArea">\n                        <div class="row">\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="demote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                            <div class="col-md-10"></div>\n\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="promote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                        </div>\n                    </div>\n                </item-settings>\n            </slot>\n\n            <div class="clearfix"></div>\n\n        </div>\n\n        <!--<div class="col-lg-1 vertical-align">-->\n        <!--<depth-control type="promote" :index="index"></depth-control>-->\n        <!--</div>-->\n    </div>\n\n    <div class="row">\n        <!--<div class="col-lg-1"></div>-->\n        <div class="col-lg-12">\n            <delete-item-button\n                    :index="index"\n                    :id="id"\n            ></delete-item-button>\n        </div>\n        <!--<div class="col-lg-1"></div>-->\n    </div>\n</div>\n\n';
-},{}],344:[function(require,module,exports){
-module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{index}}{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
-},{}],345:[function(require,module,exports){
+},{}],369:[function(require,module,exports){
+module.exports = '<!--This represents a question or an element-->\n<div v-bind:id="divId"\n     class="item-card-component"\n     v-bind:class="offsetClass"\n>\n    <div class="row">\n        <item-name\n                :index="index"\n                :id="id"\n        ></item-name>\n\n    </div>\n    <div class="row">\n        <div class="clearfix"></div>\n\n        <div class="col-lg-12">\n            <!--<div class="col-lg-10">-->\n            <div class="clearfix"></div>\n            <slot name="head">\n\n                <item-settings\n                        :index="index"\n                        :id="id"\n                >\n                    <!--is="currentView"-->\n                    <div slot="controlsArea">\n                        <div class="row">\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="demote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                            <div class="col-md-10"></div>\n\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="promote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                        </div>\n                    </div>\n                </item-settings>\n            </slot>\n\n            <div class="clearfix"></div>\n\n        </div>\n\n        <!--<div class="col-lg-1 vertical-align">-->\n        <!--<depth-control type="promote" :index="index"></depth-control>-->\n        <!--</div>-->\n    </div>\n\n    <div class="row">\n        <!--<div class="col-lg-1"></div>-->\n        <div class="col-lg-12">\n            <delete-item-button\n                    :index="index"\n                    :id="id"\n            ></delete-item-button>\n        </div>\n        <!--<div class="col-lg-1"></div>-->\n    </div>\n</div>\n\n';
+},{}],370:[function(require,module,exports){
+module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{index}}{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           v-bind:placeholder="placeHolders.privateName"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
+},{}],371:[function(require,module,exports){
 module.exports = '<div class="item-nav-component "\n     v-on:click="goTo"\n>\n    <div class="nav-arrow text-center">\n        <span v-bind:class="arrow"></span>\n    </div>\n</div>';
-},{}],346:[function(require,module,exports){
-module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="item-settings-comment-setup-component">\n    <div class="row">\n        <div class="col-md-12 ">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <div class="btn-group-justified"\n                     role="group"\n                     aria-label="valence buttons">\n\n                        <valence-button\n                                v-for="v in valences"\n                                :valence="v"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n';
-},{}],347:[function(require,module,exports){
+},{}],372:[function(require,module,exports){
+module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="item-settings-comment-setup-component">\n    <div class="row">\n        <div class="col-md-12 ">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                v-bind:placeholder="placeholders.elementText"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <div class="btn-group-justified"\n                     role="group"\n                     aria-label="valence buttons">\n\n                        <valence-button\n                                v-for="v in valences"\n                                :valence="v"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n';
+},{}],373:[function(require,module,exports){
 module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-settings-detail-component">\n    <div class="row">\n        <div class="col-md-6">\n\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"\n                    />\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            v-model="questionText"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>';
-},{}],348:[function(require,module,exports){
-module.exports = '<div class="well well-sm" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active"\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name="controlsArea"></slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
-},{}],349:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
+module.exports = '<div class="well well-sm"\n     v-show="hidden">\n\n    <slot name="settingsBody">\nx\n        <div>\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs"\n                role="tablist">\n                <li role="presentation"\n                    v-for="tab in tabs">\n                    <a v-bind:href="\'#\' + tab + index"\n                       v-bind:aria-controls="tab + index"\n                       role="tab"\n                       data-toggle="tab"\n                    >\n                        <span class="tabTitle">\n                            {{ tab }}\n                        </span>\n                    </a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active"\n                     v-bind:id="\'details\' + index"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     v-bind:id="\'comments\' + index"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     v-bind:id="\'stats\' + index"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     v-bind:id="\'history\' + index"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     v-bind:id="\'notes\' + index"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name="controlsArea"></slot>\n</div>\n';
+},{}],375:[function(require,module,exports){
 module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
-},{}],350:[function(require,module,exports){
+},{}],376:[function(require,module,exports){
 module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
-},{}],351:[function(require,module,exports){
+},{}],377:[function(require,module,exports){
 module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
-},{}],352:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-danger"\n                    v-on:click="toggleDeleteMode"\n            >Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-warning"\n                    v-on:click="toggleReorderMode"\n            >Reorder items</button>\n        </li>\n\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="showSampleFeedback"\n            >View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="toggleHolesShown"\n            >Show holes</button>\n        </li>\n    </ul>\n</div>';
-},{}],353:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 module.exports = '<div class="btn-group" role="group">\n<button type="button" class="btn btn-small valence-button"\n        v-bind:class="classObject"\n        v-on:click="selectValence"\n>{{ valence }}</button>\n</div>';
-},{}],354:[function(require,module,exports){
+},{}],380:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37148,7 +33345,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":356,"./Item":357}],355:[function(require,module,exports){
+},{"./IModel":382,"./Item":383}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37208,6 +33405,9 @@ var Exam = function (_Item) {
          * we oblige them with a nice alias.
          */
         get: function get() {
+            if (typeof this.id == 'undefined') {
+                return null;
+            }
             return this.id;
         }
 
@@ -37223,6 +33423,9 @@ var Exam = function (_Item) {
     }, {
         key: 'examIndex',
         get: function get() {
+            if (typeof this.index == 'undefined') {
+                return null;
+            }
             return this.index;
         }
 
@@ -37254,6 +33457,18 @@ var Exam = function (_Item) {
         key: 'examIdentifiers',
         value: function examIdentifiers() {
             return ['examId', 'examIndex'];
+        }
+
+        /**
+         * This is used by the api module to determine what
+         * requests to send to the server
+         * @returns {string}
+         */
+
+    }, {
+        key: 'className',
+        value: function className() {
+            return 'exam';
         }
 
         /**
@@ -37290,7 +33505,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":357}],356:[function(require,module,exports){
+},{"./Item":383}],382:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37456,7 +33671,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],357:[function(require,module,exports){
+},{}],383:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37512,6 +33727,9 @@ var Item = function (_IModel) {
          * @private
          */
         _this._public = false;
+
+        //The id of the exam the item is associated with
+        _this.examId;
 
         return _this;
     }
@@ -37646,6 +33864,18 @@ var Item = function (_IModel) {
         }
 
         /**
+         * This is used by the api module to determine what
+         * requests to send to the server
+         * @returns {string}
+         */
+
+    }, {
+        key: 'className',
+        value: function className() {
+            return 'item';
+        }
+
+        /**
          * Returns a list of strings which are property
          * names. These fields can be filled from the input
          * @returns {[string,string]}
@@ -37677,14 +33907,14 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":354,"./IModel":356}],358:[function(require,module,exports){
+},{"./Comment":380,"./IModel":382}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -37866,7 +34096,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],359:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38023,7 +34253,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":357}],360:[function(require,module,exports){
+},{"./Item":383}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38314,7 +34544,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":356}],361:[function(require,module,exports){
+},{"./IModel":382}],387:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38323,6 +34553,12 @@ Object.defineProperty(exports, "__esModule", {
 /**
  * Created by adam on 1/10/17.
  */
+
+//parent.actions
+// these are actions which involve multiple modules
+// they are described in actions.js
+var createExam = exports.createExam = 'createExam';
+var updateExam = exports.updateExam = 'updateExam';
 
 var addStudent = exports.addStudent = 'addStudent';
 
@@ -38387,7 +34623,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],362:[function(require,module,exports){
+},{}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38397,7 +34633,7 @@ exports.actions = undefined;
 
 var _actions;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; //Root actions for the vuex instance
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; //Root actions for the vuex instance
 
 var _mutationTypes = require('./mutation-types');
 
@@ -38411,15 +34647,51 @@ var _Student = require('../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
+var _Exam = require('../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _controller = require('../api/controller');
+
+var api = _interopRequireWildcard(_controller);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
+var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.createExam, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
+
+    //instantiate the new exam
+    var exam = new _Exam2.default();
+
+    //set it as active
+    commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+
+    //request id for it from server
+    api.createModel(exam, function (response) {
+        //when the server responds, store the id
+        exam.id = response.data.id;
+        commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+    });
+}), _defineProperty(_actions, aTypes.updateExam, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+
+    //set it as active
+    commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+    //request server update
+}), _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
 
     // [aTypes.setActiveStudentId](state, rootState, payload){
 
@@ -38443,9 +34715,9 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     // if (Number.isInteger(studentId)) {
     //     commit(mTypes.setId, Payload.factory({num: studentId}));
     // }
-}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
+}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
 
 
     console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
@@ -38468,9 +34740,9 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     // if (Number.isInteger(studentIndex)) {
     //     commit(mTypes.setIndex, studentIndex);
     // }
-}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
+}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref5, payload) {
+    var state = _ref5.state,
+        commit = _ref5.commit;
 
     console.log(aTypes.setActiveStudentObject, 'is deprecated!');
     [aTypes.setActiveStudent](state, commit, payload);
@@ -38496,35 +34768,35 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     // if (payload instanceof Student) {
     //     commit(mTypes.setStudentObject, payload);
     // }
-}), _defineProperty(_actions, aTypes.setIndex, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
+}), _defineProperty(_actions, aTypes.setIndex, function (_ref6, payload) {
+    var state = _ref6.state,
+        commit = _ref6.commit;
 
     console.log(aTypes.setIndex, 'is deprecated!');
     console.log(aTypes.setIndex, payload);
     payload = state.activeStudent;
     actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setId, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
+}), _defineProperty(_actions, aTypes.setId, function (_ref7, payload) {
+    var state = _ref7.state,
+        commit = _ref7.commit;
 
     console.log(aTypes.setId, 'is deprecated!');
     payload = state.activeStudent;
 
     actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref6, payload) {
-    var state = _ref6.state,
-        commit = _ref6.commit;
+}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref8, payload) {
+    var state = _ref8.state,
+        commit = _ref8.commit;
 
     payload = state.activeStudent;
 
     if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
-        commit(mTypes.setActiveStudent, Payload.factory({ obj: payload }));
+        commit(mTypes.setActiveStudent, _Payload2.default.factory({ obj: payload }));
         // state.student = payload;
     }
-}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref7, payload) {
-    var state = _ref7.state,
-        commit = _ref7.commit;
+}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref9, payload) {
+    var state = _ref9.state,
+        commit = _ref9.commit;
 
 
     var studentIndex = state.activeStudent.index;
@@ -38556,15 +34828,15 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     if (typeof time == 'number') {
         commit(mTypes.setTime, time);
     }
-}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref8, payload) {
-    var state = _ref8.state,
-        commit = _ref8.commit;
+}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref10, payload) {
+    var state = _ref10.state,
+        commit = _ref10.commit;
 
     var studentIndex = state.activeStudent.index;
     state.examGradingTimes[studentIndex] += payload.timeToAdd;
-}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref9, payload) {
-    var state = _ref9.state,
-        commit = _ref9.commit;
+}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref11, payload) {
+    var state = _ref11.state,
+        commit = _ref11.commit;
 
     // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
     var questionIndex = payload.questionIndex,
@@ -38573,12 +34845,12 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     var studentIndex = state.activeStudent.index;
     //type checking
 
-    var out = Payload.factory({ index2: questionIndex, index: studentIndex, num: score });
+    var out = _Payload2.default.factory({ index2: questionIndex, index: studentIndex, num: score });
 
     commit(mTypes.setQuestionScore, out);
-}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref10, payload) {
-    var state = _ref10.state,
-        commit = _ref10.commit;
+}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref12, payload) {
+    var state = _ref12.state,
+        commit = _ref12.commit;
 
     var studentIndex = state.getActiveStudentIndex();
     var elementIndex = payload.elementIndex,
@@ -38590,7 +34862,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
         score = payload.elementScore;
     }
 
-    var out = Payload.factory({
+    var out = _Payload2.default.factory({
         index: studentIndex,
         index2: elementIndex,
         num: score
@@ -38599,51 +34871,20 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../models/Student":360,"./action-types":361,"./mutation-types":377}],363:[function(require,module,exports){
-"use strict";
+},{"../api/controller":345,"../models/Exam":381,"../models/Payload":384,"../models/Student":386,"./action-types":387,"./mutation-types":403}],389:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 /**
- * Created by adam on 1/10/17.
+ * Created by adam on 3/21/17.
  */
 
-/**
- * Returns true if at least one question has received
- * a score for the student.
- */
-var isGraded = exports.isGraded = function isGraded(state, studentIndex) {
-    state.updateExamGrade(studentIndex);
-    if (state.examGrades[studentIndex] != "Letter grade" && state.examGrades[studentIndex] >= 0) {
-        return true;
-    }
-    return false;
-};
+var getExam = exports.getExam = 'getExam';
+var getAllExams = exports.getAllExams = 'getAllExams';
 
-/* ------------ Utilities --------------*/
-
-/**
- * Checks to make sure that a property has had its
- * values loaded before trying to do stuff with it
- *
- * @param propertyName
- */
-var checkValid = exports.checkValid = function checkValid(state, propertyName) {
-    if (typeof state[propertyName] != 'undefined') {
-        throw propertyName + " is undefined";
-    }
-    if (state[propertyName] == null) {
-        throw propertyName + " is null";
-    }
-    if (state[propertyName] == {}) {
-        throw propertyName + " was empty. Probably because it wasn't initialized";
-    }
-
-    return true;
-};
-
-},{}],364:[function(require,module,exports){
+},{}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38677,7 +34918,10 @@ var validateIndex = function validateIndex(index) {
  * @param state
  */
 var getExamId = exports.getExamId = function getExamId(state) {
-    return state.activeExam.id;
+    if (typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined') {
+        return state.activeExam.id;
+    }
+    return null;
 };
 
 /**
@@ -38703,17 +34947,18 @@ var isActive = exports.isActive = function isActive(state) {
  */
 var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) {
     var graded = 0;
-
-    if (Object.keys(state.examGrades).length > 0) {
-        //Loop through each exam (via studentIndex as key)
-        for (var i = 0; i < Object.keys(state.examGrades).length; i++) {
-            //Make sure the stored exam total score is up to date
-            state.updateExamGrade(i);
-            //this will be the string 'letter grade' if
-            //no grade has been entered. Thus we check
-            //whether it is a number 0 or greater
-            //if it is graded, increment the number graded
-            if (state.examGrades[i] >= 0) graded++;
+    if (typeof state.examGrades != 'undefined') {
+        if (Object.keys(state.examGrades).length > 0) {
+            //Loop through each exam (via studentIndex as key)
+            for (var i = 0; i < Object.keys(state.examGrades).length; i++) {
+                //Make sure the stored exam total score is up to date
+                state.updateExamGrade(i);
+                //this will be the string 'letter grade' if
+                //no grade has been entered. Thus we check
+                //whether it is a number 0 or greater
+                //if it is graded, increment the number graded
+                if (state.examGrades[i] >= 0) graded++;
+            }
         }
     }
     return graded;
@@ -38726,10 +34971,12 @@ var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) 
  */
 var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
     var total = 0;
-    if (Object.keys(state.examGrades).length > 0) {
-        total = Object.keys(state.examGrades).length;
-    }
 
+    if (typeof state.examGrades != 'undefined') {
+        if (Object.keys(state.examGrades).length > 0) {
+            total = Object.keys(state.examGrades).length;
+        }
+    }
     return total;
 };
 
@@ -38743,6 +34990,8 @@ var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
  * @param questionIndex
  */
 var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
+    if (typeof state.activeStudent == 'undefined') return false;
+
     var idx = getters.getActiveStudentIndex(state, getters, rootState);
     if (idx == null) return '';
     return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
@@ -38760,6 +35009,8 @@ var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent 
  * @returns {*}
  */
 var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function getActiveStudentGradingTime(state, getters, rootState) {
+    if (typeof state.activeStudent == 'undefined') return false;
+
     var idx = getters.getActiveStudentIndex(state, getters, rootState);
     if (idx == null) return '';
     return getters.getStudentGradingTime(state, getters, idx);
@@ -38778,6 +35029,8 @@ var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function
  * @returns {*}
  */
 var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
+    if (typeof state.activeStudent == 'undefined') return false;
+
     //If no student is set, the comment field should be blank
     var idx = getters.getActiveStudentIndex(state, getters, rootState);
     validateIndex(idx);
@@ -38797,6 +35050,8 @@ var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = fu
  * @returns {*}
  */
 var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = function getExamGradeForActiveStudent(state, getters, rootState) {
+    if (typeof state.activeStudent == 'undefined') return false;
+
     var idx = getters.getActiveStudentIndex(state, getters, rootState);
     validateIndex(idx);
     // if ( idx == null ) return '';
@@ -38805,13 +35060,15 @@ var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = functi
 
 //------------ escores
 var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
+    if (typeof state.activeStudent == 'undefined') return false;
+
     var idx = getters.getActiveStudentIndex(state, getters, rootState);
     validateIndex(idx);
     // if ( idx == null ) return '';
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],365:[function(require,module,exports){
+},{}],391:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -38819,40 +35076,40 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                   * Created by adam on 1/10/17.
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   * Notes about how to use
-                                                                                                                                                                                                                                                   * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   const app = new Vue({
-                                                                                                                                                                                                                                                    el: '#app',
-                                                                                                                                                                                                                                                    // provide the store using the "store" option.
-                                                                                                                                                                                                                                                    // this will inject the store instance to all child components.
-                                                                                                                                                                                                                                                    store,
-                                                                                                                                                                                                                                                    components: { Counter },
-                                                                                                                                                                                                                                                    template: `
-                                                                                                                                                                                                                                                      <div class="app">
-                                                                                                                                                                                                                                                        <counter></counter>
-                                                                                                                                                                                                                                                      </div>
-                                                                                                                                                                                                                                                    `
-                                                                                                                                                                                                                                                  })
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   const Counter = {
-                                                                                                                                                                                                                                                    template: `<div>{{ count }}</div>`,
-                                                                                                                                                                                                                                                    computed: {
-                                                                                                                                                                                                                                                      count () {
-                                                                                                                                                                                                                                                        return this.$store.state.count
-                                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   */
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
+                                                                                                                                                                                                                                                                               * Created by adam on 1/10/17.
+                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                               * Notes about how to use
+                                                                                                                                                                                                                                                                               * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
+                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                               Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
+                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                               const app = new Vue({
+                                                                                                                                                                                                                                                                                el: '#app',
+                                                                                                                                                                                                                                                                                // provide the store using the "store" option.
+                                                                                                                                                                                                                                                                                // this will inject the store instance to all child components.
+                                                                                                                                                                                                                                                                                store,
+                                                                                                                                                                                                                                                                                components: { Counter },
+                                                                                                                                                                                                                                                                                template: `
+                                                                                                                                                                                                                                                                                  <div class="app">
+                                                                                                                                                                                                                                                                                    <counter></counter>
+                                                                                                                                                                                                                                                                                  </div>
+                                                                                                                                                                                                                                                                                `
+                                                                                                                                                                                                                                                                              })
+                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                               By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
+                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                               const Counter = {
+                                                                                                                                                                                                                                                                                template: `<div>{{ count }}</div>`,
+                                                                                                                                                                                                                                                                                computed: {
+                                                                                                                                                                                                                                                                                  count () {
+                                                                                                                                                                                                                                                                                    return this.$store.state.count
+                                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                              }
+                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                               */
 
 var _vue = require('vue');
 
@@ -38877,10 +35134,6 @@ var mutations = _interopRequireWildcard(_mutations);
 var _state = require('./state');
 
 var state = _interopRequireWildcard(_state);
-
-var _api = require('./_api');
-
-var api = _interopRequireWildcard(_api);
 
 var _activestudent = require('./modules/activestudent.js');
 
@@ -38978,12 +35231,11 @@ exports.default = new _vuex2.default.Store({
 
   },
   state: state,
-  _api: api,
 
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":362,"./api":363,"./getters":364,"./modules/activeexam.js":366,"./modules/activestudent.js":367,"./modules/comments.js":368,"./modules/escores.js":369,"./modules/grades.js":370,"./modules/items.js":371,"./modules/qscores.js":372,"./modules/questions.js":373,"./modules/settings":374,"./modules/students.js":375,"./modules/times.js":376,"./mutations":378,"./state":379,"_process":312,"vue":315,"vuex":317}],366:[function(require,module,exports){
+},{"./actions":388,"./getters":390,"./modules/activeexam.js":392,"./modules/activestudent.js":393,"./modules/comments.js":394,"./modules/escores.js":395,"./modules/grades.js":396,"./modules/items.js":397,"./modules/qscores.js":398,"./modules/questions.js":399,"./modules/settings":400,"./modules/students.js":401,"./modules/times.js":402,"./mutations":404,"./state":405,"_process":336,"vue":341,"vuex":344}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39061,15 +35313,19 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveExam, fu
 var getters = {
 
     getActiveExamId: function getActiveExamId(state, getters, payload) {
-        return state.activeExam.id;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
     },
 
     getActiveExamIndex: function getActiveExamIndex(state, getters, payload) {
-        return state.activeExam.index;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.index : false;
+        // return state.activeExam.index;
     },
 
     getActiveExamObj: function getActiveExamObj(state, getters) {
-        return state.activeExam;
+        return typeof state.activeExam != 'undefined' ? state.activeExam : false;
+        // return state.activeExam;
     }
 
 };
@@ -39081,7 +35337,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":355,"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],367:[function(require,module,exports){
+},{"../../models/Exam":381,"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39181,7 +35437,10 @@ var getters = {
      * @returns {null|integer}
      */
     getActiveStudentId: function getActiveStudentId(state, getters, rootState) {
-        return state.activeStudent.id;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
+
+        //        return state.activeStudent.id;
     },
 
 
@@ -39193,7 +35452,10 @@ var getters = {
      * @returns {integer|null}
      */
     getActiveStudentIndex: function getActiveStudentIndex(state, getters, rootState) {
-        return state.activeStudent.index;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
+
+        //        return state.activeStudent.index || null;
     },
 
     /**
@@ -39214,7 +35476,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../../models/Student":360,"../action-types":361,"../mutation-types":377}],368:[function(require,module,exports){
+},{"../../models/Payload":384,"../../models/Student":386,"../action-types":387,"../mutation-types":403}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39257,6 +35519,13 @@ var state = {
     /** Standard valences */
     valences: [0, 1, 2, 3]
 
+};
+
+var isElementCommentsEmpty = function isElementCommentsEmpty(state) {
+    if (Object.keys(state.elementComments).length > 0) {
+        return false;
+    }
+    return true;
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementComment, function (state, rootState, payload) {
@@ -39308,6 +35577,10 @@ var getters = {
      * @returns {*}
      */
     getElementComment: function getElementComment(state, getters, rootState, studentIndex, elementIndex) {
+        if (isElementCommentsEmpty(state)) {
+            return false;
+        };
+
         return state.elementComments[studentIndex][elementIndex];
     },
 
@@ -39322,6 +35595,10 @@ var getters = {
      * @returns {*}
      */
     getCommentText: function getCommentText(state, getters, rootState, studentIndex, elementIndex, valence) {
+        if (isElementCommentsEmpty(state)) {
+            return false;
+        };
+
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
         var comment = state.elementComments[studentIndex][elementIndex];
@@ -39366,6 +35643,10 @@ var getters = {
      * @private
      */
     getStoredCommentText: function getStoredCommentText(state, getters, rootState, studentIndex, elementIndex) {
+        if (isElementCommentsEmpty(state)) {
+            return false;
+        };
+
         return state.elementComments[studentIndex][elementIndex];
     }
 
@@ -39378,7 +35659,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],369:[function(require,module,exports){
+},{"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39408,6 +35689,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var state = {
     /** Format: { studentIndex : { elementIndex : elementScore},  ... } */
     elementScores: {}
+};
+
+var isEmpty = function isEmpty(state) {
+    if (Object.keys(state.elementScores).length > 0) {
+        return false;
+    }
+    return true;
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadElementScores, function (state, rootState, payload) {
@@ -39461,6 +35749,10 @@ var getters = {
      * @returns {*}
      */
     getElementScore: function getElementScore(state, getters, rootState, studentIndex, elementIndex) {
+        if (isEmpty(state)) {
+            return false;
+        };
+
         return state.elementScores[studentIndex][elementIndex];
     }
 };
@@ -39472,7 +35764,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],370:[function(require,module,exports){
+},{"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39523,6 +35815,20 @@ var state = {
      */
     standardGrades: {}
 
+};
+
+var isExamGradeEmpty = function isExamGradeEmpty(state) {
+    if (Object.keys(state.examGrades).length > 0) {
+        return false;
+    }
+    return true;
+};
+
+var isStandardGradesEmpty = function isStandardGradesEmpty(state) {
+    if (Object.keys(state.standardGrades).length > 0) {
+        return false;
+    }
+    return true;
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadExamGrades, function (state, rootState, payload) {
@@ -39600,15 +35906,18 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadExamGrades, f
 var getters = {
 
     getExamGrade: function getExamGrade(state, getters, rootState, studentIndex) {
+        if (isExamGradeEmpty(state)) return false;
+
         return state.examGrades[studentIndex];
     },
 
     /**
      * Returns the standard grades json.
      * NB, state is not the total scores for students
-     * @returns {{}}
      */
     getStandardGrades: function getStandardGrades(state, getters, rootState) {
+        if (isStandardGradesEmpty(state)) return false;
+
         return state.standardGrades;
     },
 
@@ -39616,10 +35925,13 @@ var getters = {
      * Returns the standard grades json.
      * NB, state is not the total scores for students
      * @deprecated This now wraps the better named method
-     * @returns {{}}
      */
     getGrade: function getGrade(state, getters, rootState) {
-        return getters.getStandardGrades(state, getters, rootState);
+        // if(isExamGradeEmpty(state)) return false;
+        if (isStandardGradesEmpty(state)) return false;
+        return state.standardGrades;
+
+        // return this.getStandardGrades( state, getters, rootState );
     }
 
 };
@@ -39631,7 +35943,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],371:[function(require,module,exports){
+},{"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39689,6 +36001,13 @@ var state = {
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
+};
+
+var isItemsEmpty = function isItemsEmpty(state) {
+    if (state.items.length > 0) {
+        return false;
+    }
+    return true;
 };
 
 var helpers = {
@@ -39860,6 +36179,8 @@ var getters = {
      * @param payload Object containing Item identifier
      */
     getItem: function getItem(state, getters, payload) {
+        if (isItemsEmpty(state)) return false;
+
         var index = payload.index,
             id = payload.id;
         //room for other ways of finding index
@@ -40032,7 +36353,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":357,"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"vue":315}],372:[function(require,module,exports){
+},{"../../models/Item":383,"../../models/Payload":384,"../../store/action-types":387,"../../store/mutation-types":403,"vue":341}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40071,6 +36392,13 @@ var state = {
      */
     questionScores: {}
 
+};
+
+var isScoresEmpty = function isScoresEmpty(state) {
+    if (Object.keys(state.questionScores).length > 0) {
+        return false;
+    }
+    return true;
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setQuestionScore, function (state, rootState, payload) {
@@ -40120,6 +36448,10 @@ var getters = {
      * @param questionIndex
      */
     getQuestionScore: function getQuestionScore(state, getters, rootState, studentIndex, questionIndex) {
+        if (isScoresEmpty(state)) {
+            return false;
+        }
+
         return state.questionScores[studentIndex][questionIndex];
     }
 };
@@ -40131,7 +36463,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],373:[function(require,module,exports){
+},{"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40270,7 +36602,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../../models/Question":359,"../action-types":361,"../mutation-types":377}],374:[function(require,module,exports){
+},{"../../models/Payload":384,"../../models/Question":385,"../action-types":387,"../mutation-types":403}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40339,7 +36671,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],375:[function(require,module,exports){
+},{"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40459,7 +36791,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":358,"../../models/Student":360,"../action-types":361,"../mutation-types":377}],376:[function(require,module,exports){
+},{"../../models/Payload":384,"../../models/Student":386,"../action-types":387,"../mutation-types":403}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40596,7 +36928,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],377:[function(require,module,exports){
+},{"../../models/Payload":384,"../action-types":387,"../mutation-types":403}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40687,7 +37019,7 @@ var toggleDeleteButtonVisibility = exports.toggleDeleteButtonVisibility = 'toggl
 var toggleReorderMode = exports.toggleReorderMode = 'toggleReorderMode';
 var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback';
 
-},{}],378:[function(require,module,exports){
+},{}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -40721,7 +37053,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":377}],379:[function(require,module,exports){
+},{"./mutation-types":403}],405:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40751,6 +37083,6 @@ exports.default = {
 
 };
 
-},{}]},{},[336]);
+},{}]},{},[363]);
 
 //# sourceMappingURL=new-setup-package.js.map

@@ -89,7 +89,7 @@ module.exports = {
         },
     },
 
-    ready: function () {
+    mounted: function () {
         //check if exam id was provided,
         // if not, create a new exam object and set it
         // as active.

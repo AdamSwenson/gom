@@ -10,7 +10,7 @@ import * as gTypes from '../getter-types'
 import Exam from '../../models/Exam'
 import Payload from '../../models/Payload'
 
-import controller from '../../development/_api'
+// import * as api from '../../api/controller'
 
 /**
  * The older version used an index value to do lots of stuff.
@@ -119,7 +119,7 @@ const actions = {
         commit( mTypes.addIndexMapping, out );
 
         //request that the server create an exam
-        controller.createModel(Exam);
+        // api.createModel(Exam);
 
     },
 
@@ -171,8 +171,6 @@ const getters = {
         }
 
         //other lookup methods
-
-
     },
 
     /**

@@ -108,7 +108,7 @@
              */
             publicName: {
                 get: function () {
-                    return this.$store.getters[ gTypes.getExam ]( Payload.factory( {examId: this.examId} ) );
+//                    return this.$store.getters[ gTypes.getExam ]( Payload.factory( {examId: this.examId} ) );
                 },
                 set: function () {
                 }
@@ -176,7 +176,7 @@
             },
         },
 
-        ready: function () {
+        mounted: function () {
 
             //check if exam id was provided,
             // if not, create a new exam object and set it

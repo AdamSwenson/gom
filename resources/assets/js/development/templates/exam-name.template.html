@@ -7,10 +7,12 @@
                id="privateName"
                name="privateName"
                aria-describedby="basic-addon1"
-               placeholder="{{ placeHolders.privateName }}"
+               v-bind:placeholder="placeHolders.privateName"
                v-model="privateName"
         >
-        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>
+        <span class="input-group-addon" id="basic-addon2">
+            <span v-on:click="openExamProperties"
+                  class="glyphicon glyphicon-cog"></span></span>
 
     </div>
 

@@ -87,7 +87,7 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
         console.log( 'props-dashboard ready' );
     },
 };

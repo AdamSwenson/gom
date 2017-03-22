@@ -32,6 +32,9 @@ export default class Exam extends Item{
      * we oblige them with a nice alias.
      */
     get examId() {
+        if (typeof this.id == 'undefined'){
+            return null;
+        }
         return this.id;
     }
 
@@ -44,7 +47,11 @@ export default class Exam extends Item{
      * @returns {*}
      */
     get examIndex() {
-        return this.index;
+        if (typeof this.index == 'undefined'){
+            return null;
+        }
+            return this.index;
+
     }
 
     /* *************************** Props ************* */

@@ -25,6 +25,9 @@ module.exports = {
     },
 
     computed: {
+        tabTitle: function(){
+          //  return this.tab.
+        },
 
         tabActive: function(){
 
@@ -73,6 +76,6 @@ module.exports = {
         }
     },
 
-    ready: function () {
+    mounted: function () {
     },
 };

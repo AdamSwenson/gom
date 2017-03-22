@@ -40,7 +40,7 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
         console.log( 'itemAddButton', 'ready', this.$store );
     },
 };

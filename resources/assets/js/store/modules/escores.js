@@ -7,6 +7,14 @@ const state = {
     elementScores: {},
 };
 
+
+const isEmpty = (state) => {
+    if(Object.keys(state.elementScores).length > 0){
+        return false;
+    }
+    return true;
+}
+
 const mutations = {
     /**
      * Consume a json object and populate the elementScores state
@@ -90,6 +98,8 @@ const getters = {
      * @returns {*}
      */
     getElementScore(state, getters, rootState, studentIndex, elementIndex) {
+        if(isEmpty(state)){ return false; };
+
         return state.elementScores[studentIndex][elementIndex];
     }
 

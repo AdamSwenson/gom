@@ -60,7 +60,7 @@ module.exports = {
         }
     },
 
-    ready: function () {
+    mounted: function () {
         this.addItem();
 let me = this;
         try {

@@ -32,6 +32,16 @@ const state = {
 
 };
 
+const isExamGradeEmpty = (state) => {
+    if(Object.keys(state.examGrades).length >0) { return false;}
+    return true;
+};
+
+const isStandardGradesEmpty = (state) => {
+    if(Object.keys(state.standardGrades).length >0) { return false;}
+    return true;
+};
+
 const mutations = {
 
     /**
@@ -145,15 +155,18 @@ const actions = {
 const getters = {
 
     getExamGrade: ( state, getters, rootState, studentIndex ) => {
+        if(isExamGradeEmpty(state)) return false;
+
         return state.examGrades[ studentIndex ];
     },
 
     /**
      * Returns the standard grades json.
      * NB, state is not the total scores for students
-     * @returns {{}}
      */
     getStandardGrades: ( state, getters, rootState ) => {
+        if(isStandardGradesEmpty(state)) return false;
+
         return state.standardGrades;
     },
 
@@ -161,10 +174,13 @@ const getters = {
      * Returns the standard grades json.
      * NB, state is not the total scores for students
      * @deprecated This now wraps the better named method
-     * @returns {{}}
      */
     getGrade: ( state, getters, rootState ) => {
-        return getters.getStandardGrades( state, getters, rootState );
+        // if(isExamGradeEmpty(state)) return false;
+        if(isStandardGradesEmpty(state)) return false;
+        return state.standardGrades;
+
+        // return this.getStandardGrades( state, getters, rootState );
     },
 
 

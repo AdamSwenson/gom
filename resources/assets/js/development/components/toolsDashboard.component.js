@@ -60,7 +60,7 @@ module.exports = {
 
     events: {},
 
-    ready: function () {
+    mounted: function () {
         console.log( 'tools-dashboard ready' );
     },
 };

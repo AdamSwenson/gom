@@ -194,7 +194,10 @@ const getters = {
      * @returns {null|integer}
      */
     getActiveStudentId( state, getters, rootState ){
-        return state.activeStudent.id;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
+
+//        return state.activeStudent.id;
     },
 
     /**
@@ -205,7 +208,10 @@ const getters = {
      * @returns {integer|null}
      */
     getActiveStudentIndex: ( state, getters, rootState ) => {
-        return state.activeStudent.index;
+        return 0;
+        // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
+
+//        return state.activeStudent.index || null;
     },
 
     /**
