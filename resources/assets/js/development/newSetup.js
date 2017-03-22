@@ -10,7 +10,6 @@ window.jQuery = jQuery;
 require( 'bootstrap' );
 // var bootbox = require( 'bootbox' );
 
-
 import 'babel-polyfill'
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -18,7 +17,7 @@ import App from './components/setupApp.vue.js'
 import store from '../store'
 
 import examName from './components/examName.component'
-import examProperties from './components/examProperties.component'
+import examProperties from './components/exam.properties.vue'
 import propsDashboard from './components/propsDashboard.component'
 import toolsDashboard from './components/toolsDashboard.component'
 import itemNav from './components/itemNav.component'
@@ -59,6 +58,7 @@ Vue.component('delete-item-button', deleteButton)
 Vue.component('depth-control', depthControl)
 
 Vue.component('draggable', draggable)
+
 
 
 // install router

@@ -31,6 +31,9 @@ export default class Item extends IModel {
          */
         this._public = false;
 
+        //The id of the exam the item is associated with
+        this.examId;
+
     }
 
     /**
@@ -139,6 +142,16 @@ export default class Item extends IModel {
             'id',
             'index'
         ]
+    }
+
+
+    /**
+     * This is used by the api module to determine what
+     * requests to send to the server
+     * @returns {string}
+     */
+    static className(){
+        return 'item';
     }
 
 

@@ -3,8 +3,51 @@
 import * as mTypes from './mutation-types'
 import * as aTypes from './action-types'
 import Student from '../models/Student'
+import Exam from '../models/Exam'
+import Payload from '../models/Payload'
+import * as api from '../api/controller'
 
 export const actions = {
+
+    /**
+     * Creates a new exam on the client, sets
+     * it as the active exam, and requests an
+     * exam id from the server
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    [aTypes.createExam]: ( {state, commit}, payload ) => {
+        //instantiate the new exam
+        let exam = new Exam();
+
+        //set it as active
+        commit( mTypes.setActiveExam, Payload.factory( {obj: exam} ) );
+
+        //request id for it from server
+        api.createModel( exam, function ( response ) {
+            //when the server responds, store the id
+            exam.id = response.data.id;
+            commit( mTypes.setActiveExam, Payload.factory( {obj: exam} ) )
+        } )
+    },
+
+    /**
+     * The payload should contain the exam that is presently set
+     * as the active exam, but with updated properties. This
+     * will replace the exam stored, so that vue can see the change
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    [aTypes.updateExam]: ( {state, commit}, payload ) => {
+
+        //set it as active
+        commit( mTypes.setActiveExam, Payload.factory( {obj: exam} ) );
+        //request server update
+    },
+
+
 // /**
 //  * Sets the id of the exam currently being worked on
 //  * @param commit
@@ -238,31 +281,31 @@ export const actions = {
         let studentIndex = state.activeStudent.index;
         //type checking
 
-        let out = Payload.factory({index2: questionIndex, index: studentIndex, num: score});
+        let out = Payload.factory( {index2: questionIndex, index: studentIndex, num: score} );
 
         commit( mTypes.setQuestionScore, out );
     },
 
     // escores
 
-    [aTypes.storeElementScoreForActiveStudent]({state, commit}, payload) {
+    [aTypes.storeElementScoreForActiveStudent]( {state, commit}, payload ) {
         let studentIndex = state.getActiveStudentIndex();
         let {elementIndex, score} = payload;
         //type checks
 
-        if(typeof (score) == 'undefined'){
+        if ( typeof (score) == 'undefined' ) {
             //score may have been named differently
             score = payload.elementScore;
         }
 
 
-        let out = Payload.factory({
+        let out = Payload.factory( {
             index: studentIndex,
             index2: elementIndex,
             num: score
-        });
+        } );
 
-        commit(mTypes.setElementScore, out);
+        commit( mTypes.setElementScore, out );
     },
 
 

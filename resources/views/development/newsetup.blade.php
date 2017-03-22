@@ -18,7 +18,15 @@
 <body>
 <div class="container-fluid">
     <div id="app"></div>
+    {{ method_field('PUT') }}
+
+    {{ method_field('DELETE') }}
+    <input type="hidden" id="routeRoot" data="{{ url('') }}" />
+
 </div>
+<script type="text/javascript">
+    var routeRoot = document.getElementById('routeRoot').getAttribute('data');
+</script>
 <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
 </body>
 </html>

@@ -39,11 +39,11 @@ import * as actions from './actions'
 import * as getters from './getters'
 import * as mutations from './mutations'
 import * as state from './state'
-import * as api from './api'
 
-import  activestudent from './modules/activestudent.js'
-import  activeexam from './modules/activeexam.js'
-import  comments from './modules/comments.js'
+
+import activestudent from './modules/activestudent.js'
+import activeexam from './modules/activeexam.js'
+import comments from './modules/comments.js'
 import escores from './modules/escores.js'
 import items from './modules/items.js'
 import grades from './modules/grades.js'
@@ -101,7 +101,6 @@ export default new Vuex.Store({
 
     },
     state,
-    api,
 
     strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 

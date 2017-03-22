@@ -5,8 +5,12 @@
 
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
+import * as gTypes from '../getter-types'
+
 import Exam from '../../models/Exam'
 import Payload from '../../models/Payload'
+
+import controller from '../../development/_api'
 
 /**
  * The older version used an index value to do lots of stuff.
@@ -113,6 +117,10 @@ const actions = {
 
         //Add to the mapping store
         commit( mTypes.addIndexMapping, out );
+
+        //request that the server create an exam
+        controller.createModel(Exam);
+
     },
 
     /**
@@ -151,7 +159,7 @@ const getters = {
      * @param getters
      * @param payload Object containing exam identifier
      */
-    getExam: ( state, getters, payload ) => {
+    [gTypes.getExam] : ( state, getters, payload ) => {
         //finds the exam and returns it
         const lookupByExamId = ( state, examId ) => {
             return state.exams[ examId ];
@@ -174,7 +182,7 @@ const getters = {
      * @param payload
      * @returns {{}}
      */
-    getAllExams: ( state, getters, payload ) => {
+    [gTypes.getAllExams] : ( state, getters, payload ) => {
         let out = [];
         let keys = Object.keys( state.exams );
         for ( let i = 0; i < keys.length; i++ ) {

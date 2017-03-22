@@ -71,6 +71,15 @@ export default class Exam extends Item{
 
 
     /**
+     * This is used by the api module to determine what
+     * requests to send to the server
+     * @returns {string}
+     */
+    static className(){
+        return 'exam';
+    }
+
+    /**
      * Returns a list of strings which are property
      * names. These fields can be filled from the input
      * @returns {[string,string]}

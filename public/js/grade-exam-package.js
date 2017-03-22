@@ -14438,7 +14438,7 @@ window.onload = function () {
 },{"../common.js":16,"../libraries/bootstrap-slider-modified.js":25,"../libraries/bootstrap3-typeahead.min.js":26,"./components/AjaxHandler.js":17,"./components/Dashboard.js":18,"./components/Roster.js":19,"./components/SearchBox.js":20,"./components/SliderTools.js":21,"./components/Timer.js":22,"./components/letterGradeButton.js":23,"bootbox":1,"bootstrap":2,"jquery":15}],25:[function(require,module,exports){
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*! =========================================================
  * bootstrap-slider.js
@@ -15939,7 +15939,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 },{"jquery":15}],26:[function(require,module,exports){
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 !function (a, b) {
   "use strict";

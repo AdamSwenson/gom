@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class ItemRequest extends FormRequest
+class ItemRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +23,10 @@ class ItemRequest extends FormRequest
     {
         return [
 
-            'index' => 'number|min:0|max:225',
-            'depth' => 'number|min:0|max:225',
-            'text' => ''
+            'index' => 'required|min:0|max:225',
+            'depth' => 'required|min:0|max:225',
+            'text' => '',
+            'examid' => 'exams' //check that corresponds to something in the db
         ];
     }
 }

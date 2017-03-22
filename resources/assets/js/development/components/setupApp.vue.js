@@ -6,7 +6,8 @@
 
 import 'babel-polyfill'
 import Vue from 'vue'
-import examName from './examName.component'
+// import examName from './examName.component'
+import examName from './examName.vue'
 import examProperties from './examProperties.component'
 import propsDashboard from './propsDashboard.component'
 import toolsDashboard from './toolsDashboard.component'

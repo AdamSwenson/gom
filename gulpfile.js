@@ -1,6 +1,10 @@
 var elixir = require( 'laravel-elixir' );
-
+//todo This needs to be enabled!!!!! Turned off because one package it depends on was killing gulp
 require('laravel-elixir-images');
+require('laravel-elixir-vue')
+
+require('laravel-elixir-webpack-official')
+
 
 
 /*
@@ -139,7 +143,8 @@ elixir( function ( mix ) {
      lossy: options && options.lossy || config.images.lossy,
      webp: options && options.webp || config.images.webp
      */
-    mix.images(null, 'public/images', {});
+    //todo This needs to be enabled!!!!! Turned off because one package it depends on was killing gulp
+    // mix.images(null, 'public/images', {});
         // extensions: {
         //     lossy: {
         //

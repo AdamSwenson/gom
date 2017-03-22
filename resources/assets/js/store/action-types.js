@@ -2,6 +2,12 @@
  * Created by adam on 1/10/17.
  */
 
+//parent.actions
+// these are actions which involve multiple modules
+// they are described in actions.js
+export const createExam = 'createExam'
+export const updateExam = 'updateExam'
+
 
 export const addStudent = 'addStudent'
 
@@ -18,7 +24,7 @@ export const setActiveStudentTime = 'setActiveStudentTime'
 export const setIndex = 'setIndex'
 export const setId = 'setId'
 export const setTime = 'setTime'
-export const setStudentObject  = 'setStudentObject'
+export const setStudentObject = 'setStudentObject'
 export const clearActiveStudent = 'clearActiveStudent'
 
 //comments
@@ -33,7 +39,6 @@ export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStud
 //exams
 export const addNewExam = 'addNewExam'
 export const loadExams = 'loadExams'
-
 
 
 //grades

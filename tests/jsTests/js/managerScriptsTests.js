@@ -34,7 +34,7 @@ function sendRequestCallback(Request, successCallback, failureCallback){
     console.log('h');
     results.push(Request);
     console.log(Request);
-    $.post("api.php", Request, function(){
+    $.post("_api.php", Request, function(){
        successCallback();
     },"JSON");
 }

@@ -9,6 +9,7 @@ module.exports = {
     template: require( '../templates/exam-name.template.html' ),
 
     props: [
+        'exam-id'
         //ability to set type which gets displayed
     ],
 

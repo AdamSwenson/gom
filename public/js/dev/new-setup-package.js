@@ -1737,8 +1737,8 @@ require('../../js/affix.js')
     this.options = $.extend({}, Affix.DEFAULTS, options)
 
     this.$target = $(this.options.target)
-      .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
-      .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
+      .on('scroll.bs.affix.data-_api', $.proxy(this.checkPosition, this))
+      .on('click.bs.affix.data-_api',  $.proxy(this.checkPositionWithEventLoop, this))
 
     this.$element     = $(element)
     this.affixed      = null
@@ -1973,7 +1973,7 @@ require('../../js/affix.js')
   // ALERT DATA-API
   // ==============
 
-  $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
+  $(document).on('click.bs.alert.data-_api', dismiss, Alert.prototype.close)
 
 }(jQuery);
 
@@ -2087,7 +2087,7 @@ require('../../js/affix.js')
   // ===============
 
   $(document)
-    .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
+    .on('click.bs.button.data-_api', '[data-toggle^="button"]', function (e) {
       var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
       if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
@@ -2098,7 +2098,7 @@ require('../../js/affix.js')
         else $btn.find('input:visible,button:visible').first().trigger('focus')
       }
     })
-    .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
+    .on('focus.bs.button.data-_api blur.bs.button.data-_api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
     })
 
@@ -2331,8 +2331,8 @@ require('../../js/affix.js')
   }
 
   $(document)
-    .on('click.bs.carousel.data-api', '[data-slide]', clickHandler)
-    .on('click.bs.carousel.data-api', '[data-slide-to]', clickHandler)
+    .on('click.bs.carousel.data-_api', '[data-slide]', clickHandler)
+    .on('click.bs.carousel.data-_api', '[data-slide-to]', clickHandler)
 
   $(window).on('load', function () {
     $('[data-ride="carousel"]').each(function () {
@@ -2543,7 +2543,7 @@ require('../../js/affix.js')
   // COLLAPSE DATA-API
   // =================
 
-  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+  $(document).on('click.bs.collapse.data-_api', '[data-toggle="collapse"]', function (e) {
     var $this   = $(this)
 
     if (!$this.attr('data-target')) e.preventDefault()
@@ -2716,11 +2716,11 @@ require('../../js/affix.js')
   // ===================================
 
   $(document)
-    .on('click.bs.dropdown.data-api', clearMenus)
-    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
-    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
-    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
-    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
+    .on('click.bs.dropdown.data-_api', clearMenus)
+    .on('click.bs.dropdown.data-_api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-_api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-_api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-_api', '.dropdown-menu', Dropdown.prototype.keydown)
 
 }(jQuery);
 
@@ -3046,7 +3046,7 @@ require('../../js/affix.js')
   // MODAL DATA-API
   // ==============
 
-  $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
+  $(document).on('click.bs.modal.data-_api', '[data-toggle="modal"]', function (e) {
     var $this   = $(this)
     var href    = $this.attr('href')
     var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7
@@ -3340,7 +3340,7 @@ require('../../js/affix.js')
   // SCROLLSPY DATA-API
   // ==================
 
-  $(window).on('load.bs.scrollspy.data-api', function () {
+  $(window).on('load.bs.scrollspy.data-_api', function () {
     $('[data-spy="scroll"]').each(function () {
       var $spy = $(this)
       Plugin.call($spy, $spy.data())
@@ -3501,8 +3501,8 @@ require('../../js/affix.js')
   }
 
   $(document)
-    .on('click.bs.tab.data-api', '[data-toggle="tab"]', clickHandler)
-    .on('click.bs.tab.data-api', '[data-toggle="pill"]', clickHandler)
+    .on('click.bs.tab.data-_api', '[data-toggle="tab"]', clickHandler)
+    .on('click.bs.tab.data-_api', '[data-toggle="pill"]', clickHandler)
 
 }(jQuery);
 
@@ -14712,7 +14712,7 @@ jQuery.event = {
 			// If event changes its type, use the special event handlers for the changed type
 			special = jQuery.event.special[ type ] || {};
 
-			// If selector defined, determine special event api type, otherwise given type
+			// If selector defined, determine special event _api type, otherwise given type
 			type = ( selector ? special.delegateType : special.bindType ) || type;
 
 			// Update special based on newly reset type
@@ -23097,7 +23097,7 @@ var supportsPushState = inBrowser && (function () {
   return window.history && 'pushState' in window.history
 })();
 
-// use User Timing api (if present) for more accurate key precision
+// use User Timing _api (if present) for more accurate key precision
 var Time = inBrowser && window.performance && window.performance.now
   ? window.performance
   : Date;
@@ -27117,7 +27117,7 @@ var uid$2 = 0;
 /**
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
- * This is used for both the $watch() api and directives.
+ * This is used for both the $watch() _api and directives.
  *
  * @param {Vue} vm
  * @param {String|Function} expOrFn
@@ -38878,7 +38878,7 @@ var _state = require('./state');
 
 var state = _interopRequireWildcard(_state);
 
-var _api = require('./api');
+var _api = require('./_api');
 
 var api = _interopRequireWildcard(_api);
 
@@ -38978,7 +38978,7 @@ exports.default = new _vuex2.default.Store({
 
   },
   state: state,
-  api: api,
+  _api: api,
 
   strict: debug });
 
