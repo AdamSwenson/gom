@@ -20,5 +20,5 @@ require('laravel-elixir-vue-2');
 //     .sass('resources/assets/sass/app.scss', 'public/css');
 
 
-mix.js('development/newSetup.js', 'public/js/dev/new-setup-package.js')
+mix.js('development/new-setup.vue', 'public/js/dev/new-setup-package.js')
     .sass(['development/newSetup.sass'], 'public/css/new-setup-package.css');

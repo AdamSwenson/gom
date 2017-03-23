@@ -17,7 +17,51 @@
 
 <body>
 <div class="container-fluid">
-    <div id="app"></div>
+    <div id="app">
+            <div id="examEditor">
+
+                <!--<div class="row">-->
+                <!--<div class="col-lg-8">-->
+                <exam-name></exam-name>
+
+                <exam-properties></exam-properties>
+
+                <div id="examEditorBody"
+                     class="row">
+
+                    <div id="itemCol"
+                         class="col-lg-9 well well-lg">
+
+                        <div class="itemRow row">
+                            <div class="col-lg-12">
+                                <card-list></card-list>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="infoCol"
+                         class="col-lg-3">
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <props-dashboard></props-dashboard>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <tools-dashboard></tools-dashboard>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+    </div>
+
     {{ method_field('PUT') }}
 
     {{ method_field('DELETE') }}

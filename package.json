@@ -53,6 +53,7 @@
     "laravel-elixir-images": "^2.0.0",
     "laravel-elixir-webpack-official": "^1.0.10",
     "laravel-mix": "^0.8.9",
+    "lodash": "^4.17.4",
     "minimatch": "^3.0.3",
     "node-sass": "^4.5.0",
     "requirejs": "^2.2.0",
