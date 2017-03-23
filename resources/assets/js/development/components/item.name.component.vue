@@ -1,41 +1,40 @@
 <template>
+
     <div class="item-name-component input-group input-group-lg">
-        <div class="row">
-            <div class="col-lg-2">
-                <item-number
-                        :index="index"
-                        :id="id"
-                ></item-number>
-            </div>
 
-            <div class="col-lg-7">
-                <input type="text"
-                       class="itemName form-control"
-                       aria-describedby="basic-addon1"
-                       v-bind:placeholder="placeHolders.privateName"
-                       v-model="name"
-                >
-            </div>
-
-            <div class="col-lg-2">
-                <max-score
-                        :index="index"
-                        :id="id"
-                ></max-score>
-            </div>
-
-            <div class="col-lg-2">
-                <div class="input-group-btn">
-                    <settings-button></settings-button>
-                    <public-indicator></public-indicator>
-                </div>
-            </div>
-
+        <div class="input-group-addon">
+            <item-number
+                    :index="index"
+                    :id="id"
+            ></item-number>
         </div>
+
+        <input type="text"
+               class="itemName form-control"
+               v-bind:placeholder="placeHolders.privateName"
+               v-model="name"
+        >
+
+        <div class="input-group-btn">
+            <settings-button
+                    :index="index"
+                    :id="id"
+            ></settings-button>
+
+            <public-indicator
+                    :index="index"
+                    :id="id"
+            >
+            </public-indicator>
+        </div>
+
     </div>
 </template>
 
 <style>
+    .itemName{
+        height: 100%;
+    }
 
 </style>
 <script>
@@ -83,30 +82,6 @@
         },
 
         computed: {
-            questionNumber: {
-                get: function () {
-
-                    return this.getter( 'number' );
-                },
-
-                set: function ( v ) {
-                    this.setter( 'number', v );
-                    // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
-                    // this.$store.commit( mTypes.updateItem, pl );
-                }
-
-            },
-//            maxScore: {
-//                get: function () {
-//                    return this.getter( 'maxScore' );
-//                },
-//
-//                set: function ( v ) {
-//                    this.setter( 'maxScore', v )
-//                }
-//
-//            },
-
             /**
              * For questions, this will be the question number
              * For elements it will be the subtask number.
@@ -121,16 +96,6 @@
                 set: function ( v ) {
                 }
             },
-//
-//            displayType: {
-//                get: function () {
-//                    //if question, return q number
-//                    return '#';
-//                    //if element, return order
-//                },
-//                set: function ( v ) {
-//                }
-//            },
 
             name: {
                 get: function () {
@@ -187,11 +152,7 @@
 
         events: {
             'toggle-public': function () {
-                let item = this.$store.getters.getItemById( this.id );
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item != 'undefined' ) {
-                    return item.togglePublic();
-                }
+
             }
         },
 

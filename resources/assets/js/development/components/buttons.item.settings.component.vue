@@ -1,5 +1,5 @@
 <template>
-    <button
+    <button type="button"
             class="btn settings-button"
             v-on:click="openItemSettings"
     >

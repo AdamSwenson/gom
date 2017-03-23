@@ -1,16 +1,21 @@
 <template>
+
     <button
+            type="button"
             class="btn public-indicator"
             v-bind:class="{'btn-warning': public}"
             v-on:click="togglePublic"
     >
         <span v-bind:class="icon"></span>
     </button>
+
 </template>
 <style>
 
 </style>
 <script>
+    import Item from '../../models/Item'
+
     /**
      * This is the indicator which tells the user whether the thing it
      * is attached to is visible to the public.
@@ -31,25 +36,10 @@
      */
     export default {
 
-        props: [],
+        props: [ 'index', 'id' ],
 
         data: function () {
             return {
-                //
-                // defaults: {
-                // /**
-                //  * If this indicator is associated with a particular
-                //  * item, that item's id will be stored here.
-                //  * It will use this value in listening for events
-                //  * and in sending requests
-                //  */
-                // itemId: null,
-                //
-                //     /**
-                //      * Things are private by default
-                //      */
-                //     public: false,
-                // },
 
                 styles: {
                     public: 'bg-warning',
@@ -111,7 +101,12 @@
              */
             togglePublic: function () {
                 console.log( 'CALLED', 'togglePublic' );
-                this.$store.dispatch( 'toggle-public' );
+
+                let item = this.$store.getters.getItemById( this.id );
+                if ( typeof item != 'undefined' && item instanceof Item) {
+                    return item.togglePublic();
+                }
+
             },
 
 

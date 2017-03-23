@@ -1,22 +1,25 @@
 <template>
 
-    <div class="question-num-area input-group">
-        <span class="input-group-addon"
-              id="basic-addon11111"
-        >{{ displayType }}</span>
+    <div class="question-num-area">
+        <label
+                for="question-number-label"
+        >{{ displayType }}</label>
         <input
-               type="number"
-               min="0"
-               title="order of the question on the exam"
-               class="form-control input"
-               aria-describedby="basic-addon11111"
-               v-model="questionNumber"/>
+                type="number"
+                min="0"
+                id="question-number-label"
+                title="order of the item on the assignment"
+                v-model="questionNumber"/>
     </div>
 
 </template>
 <style>
-    input{
-        width: 6em;
+    .item-type {
+        font-weight: bold;
+    }
+
+    input {
+        width: 4em;
     }
 
 </style>

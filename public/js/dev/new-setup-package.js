@@ -60239,7 +60239,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"btn settings-button\" v-on:click=\"openItemSettings\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button type=\"button\" class=\"btn settings-button\" v-on:click=\"openItemSettings\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -60263,6 +60263,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * This is the indicator which tells the user whether the thing it
@@ -60284,25 +60289,10 @@ Object.defineProperty(exports, "__esModule", {
  */
 exports.default = {
 
-    props: [],
+    props: ['index', 'id'],
 
     data: function data() {
         return {
-            //
-            // defaults: {
-            // /**
-            //  * If this indicator is associated with a particular
-            //  * item, that item's id will be stored here.
-            //  * It will use this value in listening for events
-            //  * and in sending requests
-            //  */
-            // itemId: null,
-            //
-            //     /**
-            //      * Things are private by default
-            //      */
-            //     public: false,
-            // },
 
             styles: {
                 public: 'bg-warning',
@@ -60363,7 +60353,11 @@ exports.default = {
          */
         togglePublic: function togglePublic() {
             console.log('CALLED', 'togglePublic');
-            this.$store.dispatch('toggle-public');
+
+            var item = this.$store.getters.getItemById(this.id);
+            if (typeof item != 'undefined' && item instanceof _Item2.default) {
+                return item.togglePublic();
+            }
         }
 
     },
@@ -60375,7 +60369,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"btn public-indicator\" v-bind:class=\"{'btn-warning': public}\" v-on:click=\"togglePublic\">\n    <span v-bind:class=\"icon\"></span>\n</button>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn public-indicator\" v-bind:class=\"{'btn-warning': public}\" v-on:click=\"togglePublic\">\n    <span v-bind:class=\"icon\"></span>\n</button>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -60390,7 +60384,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],354:[function(require,module,exports){
+},{"../../models/Item":371,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60909,7 +60903,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\ninput{\n    width: 6em;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60983,13 +60977,13 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"question-num-area input-group\">\n    <span class=\"input-group-addon\" id=\"basic-addon11111\">{{ displayType }}</span>\n    <input type=\"number\" min=\"0\" title=\"order of the question on the exam\" class=\"form-control input\" aria-describedby=\"basic-addon11111\" v-model=\"questionNumber\">\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"question-num-area\">\n    <label for=\"question-number-label\">{{ displayType }}</label>\n    <input type=\"number\" min=\"0\" id=\"question-number-label\" title=\"order of the item on the assignment\" v-model=\"questionNumber\">\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\ninput{\n    width: 6em;\n}\n\n"] = false
+    __vueify_insert__.cache["\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n}\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -61062,7 +61056,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area input-group\">\n\n    <span class=\"input-group-addon\" id=\"basic-addon\">{{ title }}</span>\n    <input type=\"number\" min=\"0\" title=\"maximum score for this question\" class=\"form-control input\" aria-describedby=\"basic-addon\" v-model=\"maxScore\">\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area\">\n\n    <input type=\"number\" min=\"0\" title=\"maximum score for this question\" class=\"form-control input\" aria-describedby=\"max-score-addon\" v-model=\"maxScore\">\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -61176,7 +61170,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Payload":372,"../../store/action-types":375,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.itemName{\n    height: 100%;\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -61237,30 +61231,6 @@ exports.default = {
     },
 
     computed: {
-        questionNumber: {
-            get: function get() {
-
-                return this.getter('number');
-            },
-
-            set: function set(v) {
-                this.setter('number', v);
-                // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
-                // this.$store.commit( mTypes.updateItem, pl );
-            }
-
-        },
-        //            maxScore: {
-        //                get: function () {
-        //                    return this.getter( 'maxScore' );
-        //                },
-        //
-        //                set: function ( v ) {
-        //                    this.setter( 'maxScore', v )
-        //                }
-        //
-        //            },
-
         /**
          * For questions, this will be the question number
          * For elements it will be the subtask number.
@@ -61274,16 +61244,6 @@ exports.default = {
             },
             set: function set(v) {}
         },
-        //
-        //            displayType: {
-        //                get: function () {
-        //                    //if question, return q number
-        //                    return '#';
-        //                    //if element, return order
-        //                },
-        //                set: function ( v ) {
-        //                }
-        //            },
 
         name: {
             get: function get() {
@@ -61339,25 +61299,19 @@ exports.default = {
     directives: {},
 
     events: {
-        'toggle-public': function togglePublic() {
-            var item = this.$store.getters.getItemById(this.id);
-            // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item != 'undefined') {
-                return item.togglePublic();
-            }
-        }
+        'toggle-public': function togglePublic() {}
     },
 
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-name-component input-group input-group-lg\">\n    <div class=\"row\">\n        <div class=\"col-lg-2\">\n            <item-number :index=\"index\" :id=\"id\"></item-number>\n        </div>\n\n        <div class=\"col-lg-7\">\n            <input type=\"text\" class=\"itemName form-control\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n        </div>\n\n        <div class=\"col-lg-2\">\n            <max-score :index=\"index\" :id=\"id\"></max-score>\n        </div>\n\n        <div class=\"col-lg-2\">\n            <div class=\"input-group-btn\">\n                <settings-button></settings-button>\n                <public-indicator></public-indicator>\n            </div>\n        </div>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-name-component input-group input-group-lg\">\n\n    <div class=\"input-group-addon\">\n        <item-number :index=\"index\" :id=\"id\"></item-number>\n    </div>\n\n    <input type=\"text\" class=\"itemName form-control\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n    <div class=\"input-group-btn\">\n        <settings-button :index=\"index\" :id=\"id\"></settings-button>\n\n        <public-indicator :index=\"index\" :id=\"id\">\n        </public-indicator>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["\n.itemName{\n    height: 100%;\n}\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {

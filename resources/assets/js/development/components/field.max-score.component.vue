@@ -1,16 +1,13 @@
 <template>
     <!-- max grade -->
-    <div class="max-score-area input-group">
+    <div class="max-score-area">
 
-        <span class="input-group-addon"
-              id="basic-addon"
-        >{{ title }}</span>
         <input
                 type="number"
                 min="0"
                 title="maximum score for this question"
                 class="form-control input"
-                aria-describedby="basic-addon"
+                aria-describedby="max-score-addon"
                 v-model="maxScore"
         />
     </div>
