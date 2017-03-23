@@ -1,94 +1,107 @@
 <template>
+    <!--<div id="app">-->
+        <div id="examEditor">
+
+            <!--<div class="row">-->
+            <!--<div class="col-lg-8">-->
+            <exam-name></exam-name>
+
+            <exam-properties></exam-properties>
+
+            <div id="examEditorBody"
+                 class="row">
+
+                <div id="itemCol"
+                     class="col-lg-9 well well-lg">
+
+                    <div class="itemRow row">
+                        <div class="col-lg-12">
+                            <card-list></card-list>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="infoCol"
+                     class="col-lg-3">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <props-dashboard></props-dashboard>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <tools-dashboard></tools-dashboard>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        <!--</div>-->
+
+    </div>
 </template>
 
 <style>
 
 </style>
 <script>
-
-export 
-    //Vue libraries
-    import Vue from 'vue'
-
-    // Vue router
-    //import Router from 'vue-router'
-    // install router
-    // Vue.use(Router)
-
     // Vuex store
     //this calls use vuex in addition to exposing all the modules
-    import store from '../store'
+//    import store from '../store'
 
-    //Components
-    //exam
     import examName from './components/exam.name.component.vue'
-    Vue.component( 'exam-name', examName )
-
     import examProperties from './components/exam.properties.component.vue'
-    Vue.component( 'exam-properties', examProperties )
-
-    //Item
-    import itemName from './components/item.name.component.vue'
-    Vue.component( 'item-name', itemName )
-
-    import settingsArea from './components/item.settings.component.vue'
-    Vue.component( 'item-settings', settingsArea )
-
-    import itemDetail from './components/item.detail.component.vue'
-    Vue.component( 'item-settings-detail', itemDetail )
-
-    //buttons
-    import settingsButton from './components/buttons.item.settings.component.vue'
-    Vue.component( 'settings-button', settingsButton )
-
-    import valenceButton from './components/buttons.valence.component.vue'
-    Vue.component('valence-button', valenceButton)
-
-    import itemAddButton from './components/buttons.item.add.component.vue'
-    Vue.component( 'item-add-button', itemAddButton )
-
-    import deleteButton from './components/buttons.item.delete.component.vue'
-    Vue.component('delete-item-button', deleteButton)
-
-    import publicIndicator from './components/buttons.public-control.component.vue'
-    Vue.component( 'public-indicator', publicIndicator )
-
-    //card structure
-    import itemCard from './components/itemCards.card.component.vue'
-    Vue.component( 'item-card', itemCard )
-
-    import cardList from './components/itemCards.list.component.vue'
-    Vue.component( 'card-list', cardList )
-
-    //comments
-    import commentSetup from './components/comment.setup.component.vue'
-    Vue.component( 'item-settings-comment-setup', commentSetup )
-
-    //dashboards and  tools
     import propsDashboard from './components/dashboard.props.component.vue'
-    Vue.component( 'props-dashboard', propsDashboard )
-
     import toolsDashboard from './components/dashboard.tools.component.vue'
-    Vue.component( 'tools-dashboard', toolsDashboard )
+    import cardList from './components/itemCards.list.component.vue'
 
-    import depthControl from './components/buttons.depth-control.component.vue'
-    Vue.component('depth-control', depthControl)
+    //    import itemName from './components/item.name.component.vue'
+//    import settingsArea from './components/item.settings.component.vue'
+//    import itemDetail from './components/item.detail.component.vue'
+//    import settingsButton from './components/buttons.item.settings.component.vue'
+//    import valenceButton from './components/buttons.valence.component.vue'
+//    import itemAddButton from './components/buttons.item.add.component.vue'
+//    import deleteButton from './components/buttons.item.delete.component.vue'
+//    import publicIndicator from './components/buttons.public-control.component.vue'
+//    import itemCard from './components/itemCards.card.component.vue'
+//    import commentSetup from './components/comment.setup.component.vue'
 
-//    Other folks' libraries
-//    var draggable = require('vuedraggable');
-//    Vue.component('draggable', draggable)
+//    import depthControl from './components/buttons.depth-control.component.vue'
 
-    new Vue( {
-        el: '#app',
+    export default {
+//        store,
 
-        store,
+        //Components
+        //exam
+        components: {
+            'exam-name': examName,
+            'exam-properties': examProperties,
+//dashboards and  tools
+            'props-dashboard': propsDashboard,
+            'tools-dashboard': toolsDashboard,
+            'card-list': cardList,
 
-        //may be a vue version problem
-        //so temp doing import manually above
-        //  render: h => h( App ),
 
-        mounted: function () {
-            console.log( 'newSetup ready', this );
-        },
-    } )
+            //Item
+//            'item-name': itemName,
+//            'item-settings': settingsArea,
+//            'item-settings-detail': itemDetail,
+            //buttons
+//            'settings-button': settingsButton,
+//            'valence-button': valenceButton,
+//            'item-add-button': itemAddButton,
+//            'delete-item-button': deleteButton,
+//            'public-indicator': publicIndicator,
+            //card structure
+//            'item-card': itemCard,
+            //comments
+//            'item-settings-comment-setup': commentSetup,
+
+//            'depth-control': depthControl,
+        }
+    }
 </script>

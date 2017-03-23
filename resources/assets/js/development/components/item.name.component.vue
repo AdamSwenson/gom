@@ -17,6 +17,7 @@
 
     </div>
 </template>
+
 <style>
 
 </style>
@@ -26,10 +27,20 @@
     import Payload from '../../models/Payload'
 
     import * as mTypes from '../../store/mutation-types'
-
+    import settingsButton from './buttons.item.settings.component.vue'
+    import publicIndicator from './buttons.public-control.component.vue'
+    //
     export default{
 
+        components : {
+            'settings-button': settingsButton,
+//            'valence-button': valenceButton,
+//            'delete-item-button': deleteButton,
+            'public-indicator': publicIndicator,
+
+        },
         props: [ 'index', 'id' ],
+
 
         data: function () {
             return {

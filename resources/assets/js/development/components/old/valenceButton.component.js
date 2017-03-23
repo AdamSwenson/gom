@@ -1,7 +1,7 @@
 export default{
     props: [ 'valence' ],
 
-    template: require( '../templates/valence-button.template.html' ),
+    template: require( '../../templates/valence-button.template.html' ),
 
     data: function () {
         return {

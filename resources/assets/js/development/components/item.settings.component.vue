@@ -52,7 +52,7 @@
                     >
                         <p>Which exams clones of this item have been used on</p>
                     </div>
-
+µ
                     <div role="tabpanel"
                          class="tab-pane fade"
                          v-bind:id="'notes' + index"
@@ -78,8 +78,16 @@
     /**
      * Created by adam on 2/18/17.
      */
+    import itemDetail from './item.detail.component.vue'
+    import commentSetup from './comment.setup.component.vue'
+
+
 
     export default {
+        components : {
+            'item-settings-detail': itemDetail,
+            'item-settings-comment-setup': commentSetup,
+        },
 
         props: [],
 

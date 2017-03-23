@@ -6,7 +6,7 @@
 
 module.exports = {
 
-    template: require( '../templates/item-settings.template.html' ),
+    template: require( '../../templates/item-settings.template.html' ),
 
     props: [ "index", 'id' ],
 

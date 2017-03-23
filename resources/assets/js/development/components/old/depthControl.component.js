@@ -3,10 +3,10 @@
  */
 
 
-import * as aTypes from '../../store/action-types';
-import * as mTypes from '../../store/mutation-types';
+import * as aTypes from '../../../store/action-types';
+import * as mTypes from '../../../store/mutation-types';
 
-import Payload from '../../models/Payload'
+import Payload from '../../../models/Payload'
 
 /**
  * These make an item into a child of another or makes them into siblings.
@@ -15,7 +15,7 @@ import Payload from '../../models/Payload'
  */
 module.exports = {
 
-    template: require( '../templates/item-nav.template.html' ),
+    template: require( '../../templates/item-nav.template.html' ),
 
     props: [
         'index',

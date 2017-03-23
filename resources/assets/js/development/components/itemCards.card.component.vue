@@ -15,7 +15,6 @@
             <div class="clearfix"></div>
 
             <div class="col-lg-12">
-                <!--<div class="col-lg-10">-->
                 <div class="clearfix"></div>
                 <slot name="head">
 
@@ -27,25 +26,30 @@
                         <div slot="controlsArea">
                             <div class="row">
                                 <div class="col-md-1">
+
                                     <depth-control
                                             type="demote"
                                             :index="index"
                                             :id="id"
                                     ></depth-control>
+
                                 </div>
 
                                 <div class="col-md-10"></div>
 
                                 <div class="col-md-1">
+
                                     <depth-control
                                             type="promote"
                                             :index="index"
                                             :id="id"
                                     ></depth-control>
+
                                 </div>
 
                             </div>
                         </div>
+
                     </item-settings>
                 </slot>
 
@@ -53,21 +57,16 @@
 
             </div>
 
-            <!--<div class="col-lg-1 vertical-align">-->
-            <!--<depth-control type="promote" :index="index"></depth-control>-->
-            <!--</div>-->
         </div>
 
         <div class="row">
-            <!--<div class="col-lg-1"></div>-->
             <div class="col-lg-12">
                 <delete-item-button
                         :index="index"
                         :id="id"
                 ></delete-item-button>
             </div>
-            <!--<div class="col-lg-1"></div>-->
-        </div>
+             </div>
     </div>
 
 
@@ -76,6 +75,10 @@
 
 </style>
 <script>
+    import deleteButton from './buttons.item.delete.component.vue'
+    import settingsArea from './item.settings.component.vue'
+    import depthControl from './buttons.depth-control.component.vue'
+    import itemName from './item.name.component.vue'
 
     export default{
 
@@ -97,6 +100,14 @@
                  */
                 isNamePublic: false,
             };
+        },
+
+        components : {
+            'item-settings': settingsArea,
+            'delete-item-button': deleteButton,
+            'depth-control': depthControl,
+            'item-name': itemName,
+
         },
 
         computed: {

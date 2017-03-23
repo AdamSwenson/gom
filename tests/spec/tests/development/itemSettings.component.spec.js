@@ -17,7 +17,7 @@ var Vue = require( 'vue' );
 Vue.config.debug = true;
 
 //tested stuff
-var testedComponent = require( "../../../../resources/assets/js/development/components/itemSettings.component" );
+var testedComponent = require( "../../../../resources/assets/js/development/components/old/itemSettings.component.js" );
 var fixture = 'itemSettings.fixture.html';
 
 

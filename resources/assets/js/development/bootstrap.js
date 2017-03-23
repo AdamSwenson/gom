@@ -2,8 +2,6 @@
  * This file bootstraps the application
  */
 
-
-
 window._ = require('lodash');
 
 /**
@@ -11,9 +9,12 @@ window._ = require('lodash');
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-
 window.$ = window.jQuery = require('jquery');
 
+//set csrf token
+window.Laravel = {csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" )};
+
+//Pull in bootstrap libraries
 require ('bootstrap');
 require('bootstrap-sass');
 

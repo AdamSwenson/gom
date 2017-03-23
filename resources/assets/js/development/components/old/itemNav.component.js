@@ -12,7 +12,7 @@
  */
 module.exports = {
 
-    template: require( '../templates/item-nav.template.html' ),
+    template: require( '../../templates/item-nav.template.html' ),
 
     props: [
         //'forward', 'back'

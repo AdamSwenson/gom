@@ -45,9 +45,11 @@
     import * as mTypes from '../../store/mutation-types';
 
     import * as aTypes from '../../store/action-types';
-
+    import valenceButton from './buttons.valence.component.vue'
     export default {
-
+        components: {
+            'valence-button': valenceButton,
+        },
         props: [ 'index' ],
 
         data: function () {
@@ -79,7 +81,7 @@
 
                     let comment = item.getComment( this.displayedValence );
                     console.log( 'commenet', comment );
-                    if(typeof comment != 'undefined'){
+                    if ( typeof comment != 'undefined' ) {
                         return comment.text;
                     }
                 },
@@ -95,7 +97,7 @@
                 }
             },
 
-            valences: function(){
+            valences: function () {
                 return Comment.valences;
             }
 
@@ -119,7 +121,7 @@
         directives: {},
 
         events: {
-            'please-change-valence' : function(evt) {
+            'please-change-valence': function ( evt ) {
                 console.log( 'caught please-change-valence', evt );
                 this.displayedValence = evt;
             }

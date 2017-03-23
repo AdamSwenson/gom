@@ -2,11 +2,11 @@
  * Created by adam on 2/15/17.
  */
 
-import * as mTypes from '../../store/mutation-types';
+import * as mTypes from '../../../store/mutation-types';
 
 module.exports = {
 
-    template: require( '../templates/tools-dashboard.template.html' ),
+    template: require( '../../templates/tools-dashboard.template.html' ),
 
     props: [],
 

@@ -1,12 +1,12 @@
 /**
  * Created by adam on 3/10/17.
  */
-import * as aTypes from '../../store/action-types';
+import * as aTypes from '../../../store/action-types';
 let bootbox = require( 'bootbox' )
 
 module.exports = {
 
-    template: require( '../templates/delete-item-button.template.html' ),
+    template: require( '../../templates/delete-item-button.template.html' ),
 
     props: [ 'index', 'id' ],
 

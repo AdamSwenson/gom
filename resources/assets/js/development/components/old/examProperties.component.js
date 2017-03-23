@@ -5,7 +5,7 @@
 
 module.exports = {
 
-    template: require( '../templates/exam-properties.template.html' ),
+    template: require( '../../templates/exam-properties.template.html' ),
 
     props: ['exam-id'],
 

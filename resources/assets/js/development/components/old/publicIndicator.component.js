@@ -21,7 +21,7 @@
 
 module.exports = {
 
-    template: require( '../templates/public-indicator.template.html' ),
+    template: require( '../../templates/public-indicator.template.html' ),
 
     props: [],
 

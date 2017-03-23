@@ -8,15 +8,15 @@
  * Created by adam on 2/19/17.
  */
 
-import * as aTypes from '../../store/action-types';
-import * as mTypes from '../../store/mutation-types';
+import * as aTypes from '../../../store/action-types';
+import * as mTypes from '../../../store/mutation-types';
 
-import Payload from '../../models/Payload'
+import Payload from '../../../models/Payload'
 
 
 module.exports = {
 
-    template: require( '../templates/item-settings.detail.template.html' ),
+    template: require( '../../templates/item-settings.detail.template.html' ),
 
     props: [ 'index', 'id' ],
 

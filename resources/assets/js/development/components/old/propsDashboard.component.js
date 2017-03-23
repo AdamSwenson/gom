@@ -6,7 +6,7 @@
 
 module.exports = {
 
-    template: require( '../templates/props-dashboard.template.html' ),
+    template: require( '../../templates/props-dashboard.template.html' ),
 
     props: [],
 

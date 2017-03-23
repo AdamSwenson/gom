@@ -6,7 +6,7 @@
 
 module.exports = {
 
-    template: require( '../templates/settings-button.template.html' ),
+    template: require( '../../templates/settings-button.template.html' ),
 
     props: [],
 

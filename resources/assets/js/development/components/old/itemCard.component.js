@@ -11,7 +11,7 @@
 
 module.exports = {
 
-    template: require( '../templates/item-card.template.html' ),
+    template: require( '../../templates/item-card.template.html' ),
 
     props: [ 'index' , 'id'],
 

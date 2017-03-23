@@ -6,14 +6,14 @@
 //var $ = require('jquery');
 //window.$ = $;
 
-import Item from '../../models/Item'
-import Payload from '../../models/Payload'
+import Item from '../../../models/Item'
+import Payload from '../../../models/Payload'
 
-import * as mTypes from '../../store/mutation-types'
+import * as mTypes from '../../../store/mutation-types'
 
 module.exports = {
 
-    template: require( '../templates/item-name.template.html' ),
+    template: require( '../../templates/item-name.template.html' ),
 
     props: [ 'index', 'id' ],
 

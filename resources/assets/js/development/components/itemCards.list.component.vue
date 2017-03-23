@@ -1,13 +1,15 @@
 <template>
     <div class="card-list card-list-component">
         <!--<draggable v-model='items'>-->
-
         <ul id='card-list' class="list-group">
             <li
                     class="item-cards list-group-item handle"
                     v-for="(item, index) in items"
             >
-                <item-card :index="item.index" :id="item.id"></item-card>
+                <item-card
+                        :index="item.index"
+                        :id="item.id"
+                ></item-card>
             </li>
         </ul>
         <!--</div>-->
@@ -34,6 +36,9 @@
     import Payload from '../../models/Payload'
     import Item from '../../models/Item'
 
+    import itemCard from './itemCards.card.component.vue'
+    import itemAddButton from './buttons.item.add.component.vue'
+
     //For Vue.js 2.0
     // var draggable = require('vuedraggable')
 
@@ -48,7 +53,11 @@
     export default{
 
         props: [],
+        components: {
+            'item-card': itemCard,
+            'item-add-button': itemAddButton,
 
+        },
         data: function () {
             return {};
         },

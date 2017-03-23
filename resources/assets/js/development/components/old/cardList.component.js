@@ -6,10 +6,10 @@
 var $ = require( 'jquery' );
 window.$ = $;
 
-import Item from '../../models/Item'
+import Item from '../../../models/Item'
 
-import * as mTypes from '../../store/mutation-types';
-import * as aTypes from '../../store/action-types';
+import * as mTypes from '../../../store/mutation-types';
+import * as aTypes from '../../../store/action-types';
 
 //For Vue.js 2.0
 // var draggable = require('vuedraggable')
@@ -18,7 +18,7 @@ var Sortable = require( 'sortablejs' );
 
 module.exports = {
 
-    template: require( '../templates/card-list.template.html' ),
+    template: require( '../../templates/card-list.template.html' ),
 
     props: [],
 

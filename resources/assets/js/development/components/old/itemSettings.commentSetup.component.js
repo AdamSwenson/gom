@@ -2,15 +2,15 @@
  * Created by adam on 2/19/17.
  */
 
-import Comment from '../../models/Comment'
-import Payload from '../../models/Payload'
-import * as mTypes from '../../store/mutation-types';
+import Comment from '../../../models/Comment'
+import Payload from '../../../models/Payload'
+import * as mTypes from '../../../store/mutation-types';
 
-import * as aTypes from '../../store/action-types';
+import * as aTypes from '../../../store/action-types';
 
 module.exports = {
 
-    template: require( '../templates/item-settings.commentSetup.template.html' ),
+    template: require( '../../templates/item-settings.commentSetup.template.html' ),
 
     props: [ 'index' ],
 

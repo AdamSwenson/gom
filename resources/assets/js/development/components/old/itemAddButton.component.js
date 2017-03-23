@@ -2,13 +2,13 @@
  * Created by adam on 2/17/17.
  */
 
-import * as aTypes from '../../store/action-types';
-import * as mTypes from '../../store/mutation-types';
+import * as aTypes from '../../../store/action-types';
+import * as mTypes from '../../../store/mutation-types';
 
 
 module.exports = {
 
-    template: require( '../templates/item-add-button.template.html' ),
+    template: require( '../../templates/item-add-button.template.html' ),
 
     props: [],
 
