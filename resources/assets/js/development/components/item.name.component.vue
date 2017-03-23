@@ -1,20 +1,37 @@
 <template>
     <div class="item-name-component input-group input-group-lg">
+        <div class="row">
+            <div class="col-lg-2">
+                <item-number
+                        :index="index"
+                        :id="id"
+                ></item-number>
+            </div>
 
-        <span class="input-group-addon" id="basic-addon1">{{index}}{{ displayType }} Name</span>
+            <div class="col-lg-7">
+                <input type="text"
+                       class="itemName form-control"
+                       aria-describedby="basic-addon1"
+                       v-bind:placeholder="placeHolders.privateName"
+                       v-model="name"
+                >
+            </div>
 
-        <input type="text"
-               class="itemName form-control"
-               aria-describedby="basic-addon1"
-               v-bind:placeholder="placeHolders.privateName"
-               v-model="name"
-        >
+            <div class="col-lg-2">
+                <max-score
+                        :index="index"
+                        :id="id"
+                ></max-score>
+            </div>
 
-        <div class="input-group-btn">
-            <settings-button></settings-button>
-            <public-indicator></public-indicator>
+            <div class="col-lg-2">
+                <div class="input-group-btn">
+                    <settings-button></settings-button>
+                    <public-indicator></public-indicator>
+                </div>
+            </div>
+
         </div>
-
     </div>
 </template>
 
@@ -27,18 +44,18 @@
     import Payload from '../../models/Payload'
 
     import * as mTypes from '../../store/mutation-types'
-    import settingsButton from './buttons.item.settings.component.vue'
-    import publicIndicator from './buttons.public-control.component.vue'
-    //
+    //    import settingsButton from './buttons.item.settings.component.vue'
+    //    import publicIndicator from './buttons.public-control.component.vue'
+    //    //
     export default{
+//
+//        components : {
+//            'settings-button': settingsButton,
+////            'valence-button': valenceButton,
+////            'delete-item-button': deleteButton,
+//            'public-indicator': publicIndicator,
+//        },
 
-        components : {
-            'settings-button': settingsButton,
-//            'valence-button': valenceButton,
-//            'delete-item-button': deleteButton,
-            'public-indicator': publicIndicator,
-
-        },
         props: [ 'index', 'id' ],
 
 
@@ -66,6 +83,29 @@
         },
 
         computed: {
+            questionNumber: {
+                get: function () {
+
+                    return this.getter( 'number' );
+                },
+
+                set: function ( v ) {
+                    this.setter( 'number', v );
+                    // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
+                    // this.$store.commit( mTypes.updateItem, pl );
+                }
+
+            },
+//            maxScore: {
+//                get: function () {
+//                    return this.getter( 'maxScore' );
+//                },
+//
+//                set: function ( v ) {
+//                    this.setter( 'maxScore', v )
+//                }
+//
+//            },
 
             /**
              * For questions, this will be the question number
@@ -81,7 +121,16 @@
                 set: function ( v ) {
                 }
             },
-
+//
+//            displayType: {
+//                get: function () {
+//                    //if question, return q number
+//                    return '#';
+//                    //if element, return order
+//                },
+//                set: function ( v ) {
+//                }
+//            },
 
             name: {
                 get: function () {
@@ -119,6 +168,18 @@
 
             isPublic: function () {
                 return this.public;
+            },
+            getter: function ( name ) {
+                let item = this.$store.getters.getItemById( this.id );
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                if ( typeof item != 'undefined' ) {
+                    return item[ name ]
+                }
+            },
+
+            setter: function ( name, value ) {
+                let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
+                this.$store.commit( mTypes.updateItem, pl );
             }
         },
 
@@ -128,7 +189,7 @@
             'toggle-public': function () {
                 let item = this.$store.getters.getItemById( this.id );
                 // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item!= 'undefined' ) {
+                if ( typeof item != 'undefined' ) {
                     return item.togglePublic();
                 }
             }

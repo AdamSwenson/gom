@@ -75,10 +75,10 @@
 
 </style>
 <script>
-    import deleteButton from './buttons.item.delete.component.vue'
-    import settingsArea from './item.settings.component.vue'
-    import depthControl from './buttons.depth-control.component.vue'
-    import itemName from './item.name.component.vue'
+//    import deleteButton from './buttons.item.delete.component.vue'
+//    import settingsArea from './item.settings.component.vue'
+//    import depthControl from './buttons.depth-control.component.vue'
+//    import itemName from './item.name.component.vue'
 
     export default{
 
@@ -102,13 +102,13 @@
             };
         },
 
-        components : {
-            'item-settings': settingsArea,
-            'delete-item-button': deleteButton,
-            'depth-control': depthControl,
-            'item-name': itemName,
-
-        },
+//        components : {
+//            'item-settings': settingsArea,
+//            'delete-item-button': deleteButton,
+//            'depth-control': depthControl,
+//            'item-name': itemName,
+//
+//        },
 
         computed: {
             divId : function(){

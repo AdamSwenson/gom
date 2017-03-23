@@ -3,36 +3,19 @@
     <div class="item-settings-detail-component">
         <div class="row">
             <div class="col-md-6">
-
-                <div class="question-num-area input-group">
-
-                    <span class="input-group-addon">Question #</span>
-                    <input style="width:6em;"
-                           type="number"
-                           min="0"
-                           title="order of the question on the exam"
-                           class="form-control input"
-                           aria-describedby="basic-addon"
-                           v-model="questionNumber"/>
-
-                </div>
+                <item-number
+                        :index="index"
+                        :id="id"
+                ></item-number>
             </div>
 
             <div class="col-md-6">
-                <div class="max-score-area" style="text-align: left">
-                    <!-- max grade -->
-                    <div class="input-group">
-                        <span class="input-group-addon">Max Score</span>
-                        <input style="width:6em;"
-                               type="number"
-                               min="0"
-                               title="maximum score for this question"
-                               class="form-control input"
-                               aria-describedby="basic-addon"
-                               v-model="maxScore"
-                        />
-                    </div>
-                </div>
+
+                <max-score
+                        :index="index"
+                        :id="id"
+                ></max-score>
+
             </div>
         </div>
 
@@ -92,30 +75,30 @@
                     this.setter( 'text', v );
                 }
             },
-
-            questionNumber: {
-                get: function () {
-
-                    return this.getter( 'number' );
-                },
-
-                set: function ( v ) {
-                    this.setter( 'number', v );
-                    // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
-                    // this.$store.commit( mTypes.updateItem, pl );
-                }
-
-            },
-            maxScore: {
-                get: function () {
-                    return this.getter( 'maxScore' );
-                },
-
-                set: function ( v ) {
-                    this.setter( 'maxScore', v )
-                }
-
-            },
+//
+//            questionNumber: {
+//                get: function () {
+//
+//                    return this.getter( 'number' );
+//                },
+//
+//                set: function ( v ) {
+//                    this.setter( 'number', v );
+//                    // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
+//                    // this.$store.commit( mTypes.updateItem, pl );
+//                }
+//
+//            },
+//            maxScore: {
+//                get: function () {
+//                    return this.getter( 'maxScore' );
+//                },
+//
+//                set: function ( v ) {
+//                    this.setter( 'maxScore', v )
+//                }
+//
+//            },
         },
 
         methods: {

@@ -1,9 +1,14 @@
 <template>
-    <div class="item-nav-component "
-         v-on:click="goTo"
+    <div
+            class="item-nav-component "
+            v-on:click="goTo"
     >
-        <div class="nav-arrow text-center">
-            <span v-bind:class="arrow"></span>
+        <div
+                class="nav-arrow text-center"
+        >
+            <span
+                    v-bind:class="arrow"
+            ></span>
         </div>
     </div>
 </template>

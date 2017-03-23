@@ -1,7 +1,10 @@
 import * as mTypes from '../../store/mutation-types'
 import * as aTypes from '../../store/action-types'
+import * as gTypes from '../../store/getter-types'
+
 import Payload from '../../models/Payload'
 import Item from '../../models/Item'
+
 const Vue = require( 'vue' );
 
 
@@ -66,7 +69,8 @@ const mutations = {
             //set the property on the object
             Vue.set( item, 'index', i );
             //set it in the array with vue
-            state.items.$set( i, item );
+            Vue.set(state.items, i, item);
+            // state.items.$set( i, item );
         }
     },
 
@@ -89,7 +93,9 @@ const mutations = {
         let item = new Item() //.factory( {id: id, index: index} );
         Vue.set( item, 'index', index );
         Vue.set(item, 'id', id);
-        state.items.$set( index, item );
+        //set it in the array with vue
+        Vue.set(state.items, index, item);
+        // state.items.$set( index, item );
     },
 
 
@@ -106,7 +112,9 @@ const mutations = {
         //Set the value so vue can see it
         Vue.set( itm, payload.updateProp, payload.updateVal );
         //Push the altered item back into the array
-        state.items.$set( payload.index, itm );
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
     },
 
     /**
@@ -128,7 +136,9 @@ const mutations = {
         }
 
         //Push the altered item back into the array
-        state.items.$set( payload.index, itm );
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
     },
 
 
@@ -142,7 +152,8 @@ const mutations = {
      */
     [mTypes.setItem]: ( state, payload ) => {
         console.log( 'items.mutations', mTypes.setItem, state, payload );
-        state.items.$set( payload.obj.index, payload.obj );
+        Vue.set(state.items, payload.obj.index, payload.obj);
+        // state.items.$set( payload.obj.index, payload.obj );
     },
 
     /**
@@ -358,7 +369,9 @@ const getters = {
      * @param payload
      * @returns []
      */
-    getAllItems: ( state, getters, rootState ) => {
+    getAllItems : ( state, getters, rootState ) => {
+
+        // [gTypes.getAllItems] : ( state, getters, rootState ) => {
         return state.items;
     },
 
@@ -398,7 +411,7 @@ const getters = {
      * @param payload
      * @returns {Number}
      */
-    getItemCount: ( state, getters ) => {
+    [gTypes.getItemCount] : ( state, getters ) => {
         return state.items.length;
     },
 

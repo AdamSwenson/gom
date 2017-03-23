@@ -33,13 +33,13 @@
  *
  */
 
-import Vue from 'vue'
+import Vue from  'vue/dist/vue.js'
+// import Vue from 'vue'
 import Vuex from 'vuex'
 import * as actions from './actions'
 import * as getters from './getters'
 import * as mutations from './mutations'
 import * as state from './state'
-
 
 import activestudent from './modules/activestudent.js'
 import activeexam from './modules/activeexam.js'

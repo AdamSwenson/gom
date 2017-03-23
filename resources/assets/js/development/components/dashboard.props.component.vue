@@ -26,6 +26,11 @@
 
 </style>
 <script>
+
+    import * as aTypes from '../../store/action-types';
+    import * as mTypes from '../../store/mutation-types';
+    import * as gTypes from '../../store/getter-types';
+
     /**
      * This handles the display of various statistical features of the exam
      * Such as: the highest possible score, number of items, # students
@@ -54,11 +59,13 @@
             /**
              * Number of constituent items (questions, elements) on the exam
              */
-            numberItems: function () {
-                let v = this.$store.getters.getItemCount;
-                //if not set return placeholder
-                return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
-
+            numberItems: {
+                get: function () {
+                    console.log( this );
+                    let v = this.$store.getters[ gTypes.getItemCount ];
+                    //if not set return placeholder
+                    return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
+                }
             },
 
             /**
@@ -113,7 +120,7 @@
         events: {},
 
         mounted: function () {
-            console.log( 'props-dashboard ready' );
+            console.log( 'props-dashboard ready', this.$store );
         },
     };
 </script>

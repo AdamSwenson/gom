@@ -36,8 +36,8 @@
     import Payload from '../../models/Payload'
     import Item from '../../models/Item'
 
-    import itemCard from './itemCards.card.component.vue'
-    import itemAddButton from './buttons.item.add.component.vue'
+//    import itemCard from './itemCards.card.component.vue'
+//    import itemAddButton from './buttons.item.add.component.vue'
 
     //For Vue.js 2.0
     // var draggable = require('vuedraggable')
@@ -49,22 +49,21 @@
      *
      * Created by adam on 2/19/17.
      */
-
     export default{
 
         props: [],
-        components: {
-            'item-card': itemCard,
-            'item-add-button': itemAddButton,
-
-        },
+//        components: {
+//            'item-card': itemCard,
+//            'item-add-button': itemAddButton,
+//        },
         data: function () {
             return {};
         },
 
         computed: {
             items: function () {
-                return this.$store.getters.getAllItems;
+                console.log( 'items', this );
+                return this.$store.getters.getAllItems; //[gTypes.getAllItems];
             },
 
             numberOfItems: function () {

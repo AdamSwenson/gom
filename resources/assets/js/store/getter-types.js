@@ -4,3 +4,7 @@
 
 export const getExam = 'getExam'
 export const getAllExams = 'getAllExams'
+
+//items
+export const getItemCount = 'getItemCount'
+export const getAllItems = 'getAllItems'

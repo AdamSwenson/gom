@@ -3,7 +3,6 @@
          v-show="hidden">
 
         <slot name="settingsBody">
-            x
             <div>
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs"
@@ -52,7 +51,7 @@
                     >
                         <p>Which exams clones of this item have been used on</p>
                     </div>
-µ
+
                     <div role="tabpanel"
                          class="tab-pane fade"
                          v-bind:id="'notes' + index"
@@ -78,51 +77,86 @@
     /**
      * Created by adam on 2/18/17.
      */
-    import itemDetail from './item.detail.component.vue'
-    import commentSetup from './comment.setup.component.vue'
-
+//    import itemDetail from './item.detail.component.vue'
+//    import commentSetup from './comment.setup.component.vue'
+//
 
 
     export default {
-        components : {
-            'item-settings-detail': itemDetail,
-            'item-settings-comment-setup': commentSetup,
-        },
-
-        props: [],
+        props: [ "index", 'id' ],
 
         data: function () {
-            return {};
+            return {
+                defaults: {
+                    types: [ 'question', 'element' ]
+                },
+                // currentView: 'item-settings-question',
+                tabs: [
+                    'details', 'comments', 'stats', 'history', 'notes'
+                ],
+                hiding: true,
+
+            };
         },
 
-        computed: {},
-
-        methods: {
-            /**
-             * Requests that the item properties area
-             * be displayed
-             */
-            openItemSettings: function () {
-                console.log( 'CALLED', 'openItemSettings' );
-                this.requestSettingsDisplay();
+        computed: {
+            tabTitle: function () {
+                //  return this.tab.
             },
 
-            /**
-             * Emits an event caught by the parent.
-             * The catching object will handle the opening.
-             * Thus there is no need for this button to know
-             * who it belongs to
-             */
-            requestSettingsDisplay: function(){
-                this.$store.dispatch('display-settings');
+            tabActive: function () {
+
+            },
+
+            hidden: {
+                get: function () {
+                    console.log( this.hiding );
+                    return this.hiding;
+                },
+                /**
+                 * Maybe this should be disabled?
+                 * @param v
+                 */
+                set: function ( v ) {
+                    this.hiding = v;
+                }
+            }
+        },
+
+        methods: {
+            show: function () {
+                console.log( 'itemSetting', 'CALLED', 'show' );
+                this.hiding = false;
+            },
+            hide: function () {
+                console.log( 'itemSetting', 'CALLED', 'hide', this.hiding );
+                this.hiding = true;
+                console.log( this.hiding );
+            },
+            toggle: function () {
+                console.log( 'itemSetting', 'CALLED', 'hide', this.hiding );
+
+                this.hiding = !this.hiding;
+
+                console.log( this.hiding );
             }
         },
 
         directives: {},
 
-        events: {},
+        events: {
+            'display-settings': function () {
+                console.log( 'itemSettings', 'CAUGHT', 'display-settings', this.hiding );
+                this.toggle();
+            }
+        },
 
         mounted: function () {
         },
-    };
+//        components : {
+//            'item-settings-detail': itemDetail,
+//            'item-settings-comment-setup': commentSetup,
+//        },
+    }
+
 </script>
