@@ -85,10 +85,14 @@ export const updateItemName = 'updateItemName'
 export const updateItem = 'updateItem'
 export const setItemNameByIndex = 'setItemNameByIndex'
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
-
+export const toggleItemPublic = 'toggleItemPublic'
 export const updateComment = 'updateComment'
 
 //settings
 export const toggleDeleteButtonVisibility = 'toggleDeleteButtonVisibility'
 export const toggleReorderMode ='toggleReorderMode'
 export const toggleSampleFeedback = 'toggleSampleFeedback'
+
+//item settings
+export const showItemSettings = 'showItemSettings'
+export const hideItemSettings = 'hideItemSettings'

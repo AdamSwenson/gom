@@ -1,6 +1,6 @@
 <template>
 
-    <div class="item-name-component input-group input-group-lg">
+    <div class="item-main-component input-group input-group-lg">
 
         <div class="input-group-addon">
             <item-number
@@ -14,7 +14,6 @@
                v-bind:placeholder="placeHolders.privateName"
                v-model="name"
         >
-
         <div class="input-group-btn">
             <settings-button
                     :index="index"
@@ -27,13 +26,13 @@
             >
             </public-indicator>
         </div>
-
     </div>
 </template>
 
 <style>
-    .itemName{
-        height: 100%;
+    .itemName {
+        margin-bottom: 0;
+        margin-top: 0;
     }
 
 </style>
@@ -43,7 +42,7 @@
     import Payload from '../../models/Payload'
 
     import * as mTypes from '../../store/mutation-types'
-    //    import settingsButton from './buttons.item.settings.component.vue'
+    //    import settingsButton from './buttons.settings-control.component.vue'
     //    import publicIndicator from './buttons.public-control.component.vue'
     //    //
     export default{
@@ -99,8 +98,8 @@
 
             name: {
                 get: function () {
-                    let item = this.$store.getters.getItemById( this.id );
-                    // let item = this.$store.getters.getItemByIndex( this.index );
+//                    let item = this.$store.getters.getItemById( this.id );
+                    let item = this.$store.getters.getItemByIndex( this.index );
                     if ( typeof item != 'undefined' ) {
                         return item.name;
                     }
@@ -113,7 +112,9 @@
             },
 
             public: function () {
-                let item = this.$store.getters.getItemById( this.id );
+//                let item = this.$store.getters.getItemById( this.id );
+                let item = this.$store.getters.getItemByIndex( this.index );
+
                 // let item = this.$store.getters.getItemByIndex( this.index );
                 if ( typeof item != 'undefined' ) {
                     return item.isPublic();
@@ -128,7 +129,7 @@
              */
             openItemSettings: function () {
                 console.log( 'itemName', 'CALLED', 'openItemSettings' );
-                this.$dipatch( 'display-settings' );
+                this.$store.dipatch( 'display-settings' );
             },
 
             isPublic: function () {

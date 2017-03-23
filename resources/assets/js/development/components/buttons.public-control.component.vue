@@ -15,6 +15,9 @@
 </style>
 <script>
     import Item from '../../models/Item'
+    import Payload from '../../models/Payload'
+
+    import * as mTypes from '../../store/mutation-types'
 
     /**
      * This is the indicator which tells the user whether the thing it
@@ -102,10 +105,12 @@
             togglePublic: function () {
                 console.log( 'CALLED', 'togglePublic' );
 
-                let item = this.$store.getters.getItemById( this.id );
-                if ( typeof item != 'undefined' && item instanceof Item) {
-                    return item.togglePublic();
-                }
+                this.$store.commit( mTypes.toggleItemPublic )
+
+//                let item = this.$store.getters.getItemById( this.id );
+//                if ( typeof item != 'undefined' && item instanceof Item) {
+//                    return item.togglePublic();
+//                }
 
             },
 

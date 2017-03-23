@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
 
     <link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">
-<style>
-    .dashboard{
-        border: double;
-    }
-</style>
+
 </head>
 
 <body>

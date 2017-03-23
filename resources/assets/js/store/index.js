@@ -53,14 +53,16 @@ import students from './modules/students.js'
 import settings from './modules/settings'
 import times from './modules/times.js'
 
+import visibility from './modules/visibility'
+
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
-Vue.use(Vuex)
+Vue.use( Vuex )
 
 const debug = process.env.NODE_ENV !== 'production'
 
-export default new Vuex.Store({
+export default new Vuex.Store( {
     /**
      * From instances and components where store has been
      * injected, actions are called
@@ -77,12 +79,12 @@ export default new Vuex.Store({
          * @param state
          * @param payload
          */
-        _setExamId(state, payload) {
-            if (typeof (payload) == Number) {
+        _setExamId( state, payload ) {
+            if ( typeof (payload) == Number ) {
                 state.examId = payload;
             }
 
-            window.console.log('setExamId', state);
+            window.console.log( 'setExamId', state );
         }
     },
 
@@ -98,11 +100,11 @@ export default new Vuex.Store({
         settings,
         students,
         times,
-
+        visibility
     },
     state,
 
     strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 
     // plugins: debug ? [createLogger()] : []
-})
+} )

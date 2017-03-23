@@ -20,7 +20,7 @@
                          aria-label="valence buttons">
 
                         <valence-button
-                                v-for="v in valences"
+                                v-for="[v, k] in valences"
                                 :valence="v"></valence-button>
 
                     </div>

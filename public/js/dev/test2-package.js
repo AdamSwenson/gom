@@ -20196,7 +20196,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../api/controller":31,"../models/Exam":33,"../models/Payload":36,"../models/Student":38,"./action-types":39,"./mutation-types":55}],41:[function(require,module,exports){
+},{"../api/controller":31,"../models/Exam":33,"../models/Payload":36,"../models/Student":38,"./action-types":39,"./mutation-types":56}],41:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20211,7 +20211,60 @@ var getAllExams = exports.getAllExams = 'getAllExams';
 
 //items
 var getItemCount = exports.getItemCount = 'getItemCount';
+
+var getItem = exports.getItem = 'getItem';
+/**
+ * Returns the item object residing at the
+ * given index in the list.
+ * This does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
+
+/**
+ * Returns the item object with the given id.
+ * This is the preferred way of looking up objects.
+ * It is immutable across re-sorting and corresponds with
+ * the stored db value.
+ * Getting an object by this does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemById = exports.getItemById = 'getItemById';
+
+/**
+ * Returns list of items objects
+ * @param state
+ * @param getters
+ * @param payload
+ * @returns []
+ */
 var getAllItems = exports.getAllItems = 'getAllItems';
+
+var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
+
+/**
+ * Return list of Item objects
+ * @param state
+ * @param getters
+ * @param payload
+ * @returns []
+ */
+var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
+
+//Visibility settings
+var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 
 },{}],42:[function(require,module,exports){
 'use strict';
@@ -20511,6 +20564,10 @@ var _times = require('./modules/times.js');
 
 var _times2 = _interopRequireDefault(_times);
 
+var _visibility = require('./modules/visibility');
+
+var _visibility2 = _interopRequireDefault(_visibility);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -20559,15 +20616,15 @@ exports.default = new _vuex2.default.Store({
     questions: _questions2.default,
     settings: _settings2.default,
     students: _students2.default,
-    times: _times2.default
-
+    times: _times2.default,
+    visibility: _visibility2.default
   },
   state: state,
 
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":40,"./getters":42,"./modules/activeexam.js":44,"./modules/activestudent.js":45,"./modules/comments.js":46,"./modules/escores.js":47,"./modules/grades.js":48,"./modules/items.js":49,"./modules/qscores.js":50,"./modules/questions.js":51,"./modules/settings":52,"./modules/students.js":53,"./modules/times.js":54,"./mutations":56,"./state":57,"_process":26,"vue/dist/vue.js":28,"vuex":30}],44:[function(require,module,exports){
+},{"./actions":40,"./getters":42,"./modules/activeexam.js":44,"./modules/activestudent.js":45,"./modules/comments.js":46,"./modules/escores.js":47,"./modules/grades.js":48,"./modules/items.js":49,"./modules/qscores.js":50,"./modules/questions.js":51,"./modules/settings":52,"./modules/students.js":53,"./modules/times.js":54,"./modules/visibility":55,"./mutations":57,"./state":58,"_process":26,"vue/dist/vue.js":28,"vuex":30}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20669,7 +20726,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":33,"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],45:[function(require,module,exports){
+},{"../../models/Exam":33,"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],45:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20808,7 +20865,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../../models/Student":38,"../action-types":39,"../mutation-types":55}],46:[function(require,module,exports){
+},{"../../models/Payload":36,"../../models/Student":38,"../action-types":39,"../mutation-types":56}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20991,7 +21048,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],47:[function(require,module,exports){
+},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21096,7 +21153,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],48:[function(require,module,exports){
+},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21275,7 +21332,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],49:[function(require,module,exports){
+},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21433,7 +21490,15 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     item.demote();
 }), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
-    state.indexMap.set(payload.index, payload.id);
+    Vue.set(state.indexMap, payload.index, payload.id);
+
+    // state.indexMap.set( payload.index, payload.id );
+}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, rootState, payload) {
+    // Payload.checkIfPayload( payload )
+    // let item = state.items[ payload.index ];
+    // item.togglePublic();
+    // Vue.set( state.items, payload.index, item );
+
 }), _mutations);
 
 /**
@@ -21510,7 +21575,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
     }
 }), _actions);
 
-var getters = _defineProperty({
+var getters = {
     /**
      * Returns the desired Item object
      * Payload can have any of the following identifiers,
@@ -21522,21 +21587,27 @@ var getters = _defineProperty({
      * @param getters
      * @param payload Object containing Item identifier
      */
-    getItem: function getItem(state, getters, payload) {
-        if (isItemsEmpty(state)) return false;
-
-        var index = payload.index,
-            id = payload.id;
-        //room for other ways of finding index
-
-        if (typeof id != 'undefined') {
-            return undefined.getItemById(state, getters, id);
-        }
-        if (typeof index != 'undefined') {
-            return undefined.getItemByIndex(state, getters, index);
-        }
-        //default case
-        throw new Error('bad input to getItem');
+    getItem: function getItem(state, getters, rootState) {
+        return function (payload) {
+            // [gTypes.getItem ]: ( state, getters, payload ) => {
+            console.log('getItem', state, payload);
+            if (isItemsEmpty(state)) return false;
+            if (_Payload2.default.checkIfPayload(payload)) {
+                console.log('getItem', payload);
+                var index = payload.index;
+                var _id2 = payload.id;
+                //room for other ways of finding index
+                if (typeof _id2 != 'undefined') {
+                    return undefined.getItemById(state, getters, _id2);
+                }
+                if (typeof index != 'undefined') {
+                    return undefined.getItemByIndex(state, getters, index);
+                }
+            }
+            /**/
+            //default case
+            // throw new Error( 'bad input to getItem' )
+        };
     },
 
     /**
@@ -21553,6 +21624,8 @@ var getters = _defineProperty({
      */
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
+
+            // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
             console.log('getItemByIndex', state, index);
             return function (state, index) {
                 return state.items[index];
@@ -21576,6 +21649,7 @@ var getters = _defineProperty({
      */
     getItemById: function getItemById(state, getters) {
         return function (id) {
+            // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
             console.log('getItemById', state, id);
             return function (state, id) {
                 var r = state.items.filter(function (i) {
@@ -21601,37 +21675,17 @@ var getters = _defineProperty({
         return state.items;
     },
 
-    getAllIndexesList: function getAllIndexesList(state, getters, rootState, payload) {
+    getAllIndexesList: function getAllIndexesList(state, getters, rootState) {
+
+        if (isItemsEmpty(state)) return [];
+        // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
         var out = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var _step$value = _slicedToArray(_step.value, 2),
-                    key = _step$value[0],
-                    val = _step$value[1];
-
-                // console.log( 'getAllIndexesList', key, val );
-                out.push(key);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-
-        return out;
+        return Object.keys(state.items);
+        // for ( let [ key, val ] of state.items ) {
+        //     // console.log( 'getAllIndexesList', key, val );
+        //     out.push( key );
+        // }
+        // return out;
     },
 
     /**
@@ -21643,17 +21697,19 @@ var getters = _defineProperty({
      */
     getAllItemsList: function getAllItemsList(state, getters) {
         return function (items) {
+
+            // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
             var out = [];
             // if ( state.items.size > 0 ) {
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
             try {
-                for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var _step2$value = _slicedToArray(_step2.value, 2),
-                        key = _step2$value[0],
-                        val = _step2$value[1];
+                for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _step$value = _slicedToArray(_step.value, 2),
+                        key = _step$value[0],
+                        val = _step$value[1];
 
                     // for ( let [ key, val ] of state.items.entries() ) {
                     // console.log( 'getAllItemsList', key, val );
@@ -21661,27 +21717,37 @@ var getters = _defineProperty({
                 }
                 // }
             } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
+                _didIteratorError = true;
+                _iteratorError = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
                     }
                 } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
+                    if (_didIteratorError) {
+                        throw _iteratorError;
                     }
                 }
             }
 
             return out;
         };
+    },
+
+    /**
+     * Returns the current count of items
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns {Number}
+     */
+    getItemCount: function getItemCount(state, getters) {
+        // [gTypes.getItemCount]: ( state, getters ) => {
+        return state.items.length;
     }
 
-}, gTypes.getItemCount, function (state, getters) {
-    return state.items.length;
-});
+};
 
 exports.default = {
     actions: actions,
@@ -21690,7 +21756,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":35,"../../models/Payload":36,"../../store/action-types":39,"../../store/getter-types":41,"../../store/mutation-types":55,"vue":29}],50:[function(require,module,exports){
+},{"../../models/Item":35,"../../models/Payload":36,"../../store/action-types":39,"../../store/getter-types":41,"../../store/mutation-types":56,"vue":29}],50:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21800,7 +21866,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],51:[function(require,module,exports){
+},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],51:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21939,7 +22005,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../../models/Question":37,"../action-types":39,"../mutation-types":55}],52:[function(require,module,exports){
+},{"../../models/Payload":36,"../../models/Question":37,"../action-types":39,"../mutation-types":56}],52:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22008,7 +22074,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],53:[function(require,module,exports){
+},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],53:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22128,7 +22194,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../../models/Student":38,"../action-types":39,"../mutation-types":55}],54:[function(require,module,exports){
+},{"../../models/Payload":36,"../../models/Student":38,"../action-types":39,"../mutation-types":56}],54:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22265,7 +22331,97 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":55}],55:[function(require,module,exports){
+},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],55:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations;
+
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = require('../getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This maintains the visibility of page elements
+                                                                                                                                                                                                                   * and their various parts.
+                                                                                                                                                                                                                   * Since the server doesn't need to know about the state
+                                                                                                                                                                                                                   * there is no need to work through the stored items
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 3/23/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    /** List of indexes of items for which the settings panel is visible */
+    itemsWithSettingsVisible: [0, 1] //The root item (the exam) is always visible
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.showItemSettings, function (state, payload) {
+    console.log('show called', payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+
+        if (typeof payload.index != 'undefined') {
+            if (!state.itemsWithSettingsVisible.includes(payload.index)) {
+
+                state.itemsWithSettingsVisible.push(payload.index);
+            }
+        }
+    }
+}), _defineProperty(_mutations, mTypes.hideItemSettings, function (state, payload) {
+    console.log('hide called', payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+        if (typeof payload.index != 'undefined') {
+            //get index of where the item index is stored
+            var index = state.itemsWithSettingsVisible.indexOf(payload.index);
+            console.log('in dex', index);
+            //todo renenable
+            //this covers index > -1  (not found) and index = 0 (the exam)
+            //so neither can be altered
+            // if ( index > 0 ) {
+            if (index > -1) state.itemsWithSettingsVisible.splice(index, 1);
+        }
+    }
+}), _mutations);
+// [mTypes.toggleItemSettings] : ( state, rootState, payload ) => {
+//     if(Payload.checkIfPayload(payload)) {
+//         if ( typeof payload.index != 'undefined' ) {
+//
+//         };
+
+var actions = {};
+
+var getters = _defineProperty({}, gTypes.isItemSettingsVisible, function (state, getters, rootState) {
+    return function (index) {
+        return state.itemsWithSettingsVisible.includes(index);
+    };
+});
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Payload":36,"../action-types":39,"../getter-types":41,"../mutation-types":56}],56:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22348,7 +22504,7 @@ var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
-
+var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
 var updateComment = exports.updateComment = 'updateComment';
 
 //settings
@@ -22356,7 +22512,11 @@ var toggleDeleteButtonVisibility = exports.toggleDeleteButtonVisibility = 'toggl
 var toggleReorderMode = exports.toggleReorderMode = 'toggleReorderMode';
 var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback';
 
-},{}],56:[function(require,module,exports){
+//item settings
+var showItemSettings = exports.showItemSettings = 'showItemSettings';
+var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
+
+},{}],57:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22390,7 +22550,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":55}],57:[function(require,module,exports){
+},{"./mutation-types":56}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

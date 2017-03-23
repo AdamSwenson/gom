@@ -1,6 +1,6 @@
 <template>
     <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
-    <div class="item-settings-detail-component">
+    <div class="panel-detail-component">
         <div class="row">
             <div class="col-md-6">
                 <item-number
@@ -75,30 +75,7 @@
                     this.setter( 'text', v );
                 }
             },
-//
-//            questionNumber: {
-//                get: function () {
-//
-//                    return this.getter( 'number' );
-//                },
-//
-//                set: function ( v ) {
-//                    this.setter( 'number', v );
-//                    // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
-//                    // this.$store.commit( mTypes.updateItem, pl );
-//                }
-//
-//            },
-//            maxScore: {
-//                get: function () {
-//                    return this.getter( 'maxScore' );
-//                },
-//
-//                set: function ( v ) {
-//                    this.setter( 'maxScore', v )
-//                }
-//
-//            },
+
         },
 
         methods: {

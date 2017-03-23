@@ -18,7 +18,7 @@
                 <div class="clearfix"></div>
                 <slot name="head">
 
-                    <item-settings
+                    <item-edit-pane
                             :index="index"
                             :id="id"
                     >
@@ -50,7 +50,7 @@
                             </div>
                         </div>
 
-                    </item-settings>
+                    </item-edit-pane>
                 </slot>
 
                 <div class="clearfix"></div>
@@ -76,9 +76,9 @@
 </style>
 <script>
 //    import deleteButton from './buttons.item.delete.component.vue'
-//    import settingsArea from './item.settings.component.vue'
+//    import itemEditPane from './item.edit-pane.component.vue'
 //    import depthControl from './buttons.depth-control.component.vue'
-//    import itemName from './item.name.component.vue'
+//    import itemName from './item.main.component.vue'
 
     export default{
 
@@ -103,7 +103,7 @@
         },
 
 //        components : {
-//            'item-settings': settingsArea,
+//            'item-settings': itemEditPane,
 //            'delete-item-button': deleteButton,
 //            'depth-control': depthControl,
 //            'item-name': itemName,

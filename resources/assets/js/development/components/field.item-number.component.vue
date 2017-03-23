@@ -20,6 +20,7 @@
 
     input {
         width: 4em;
+        outline: none;
     }
 
 </style>
@@ -53,7 +54,6 @@
             questionNumber: {
                 get: function () {
                     return this.index;
-
 //                    return this.getter( 'number' );
                 },
 

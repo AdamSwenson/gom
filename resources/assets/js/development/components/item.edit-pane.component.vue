@@ -1,6 +1,6 @@
 <template>
     <div class="well well-sm"
-         v-show="hidden">
+         v-show="visible">
 
         <slot name="settingsBody">
             <div>
@@ -28,20 +28,22 @@
                          class="tab-pane active"
                          v-bind:id="'details' + index"
                     >
-                        <item-settings-detail :index="index"></item-settings-detail>
+                        <panel-detail :index="index"></panel-detail>
                     </div>
 
                     <div role="tabpanel"
                          class="tab-pane  "
                          v-bind:id="'comments' + index"
                     >
-                        <item-settings-comment-setup :index="index"></item-settings-comment-setup>
+                        <panel-comments :index="index"></panel-comments>
+
                     </div>
 
                     <div role="tabpanel"
                          class="tab-pane "
                          v-bind:id="'stats' + index"
                     >
+                        <panel-stats :index="index"></panel-stats>
                         <p>Stats here</p>
                     </div>
 
@@ -49,6 +51,8 @@
                          class="tab-pane "
                          v-bind:id="'history' + index"
                     >
+                        <panel-history :index="index"></panel-history>
+
                         <p>Which exams clones of this item have been used on</p>
                     </div>
 
@@ -57,6 +61,8 @@
                          v-bind:id="'notes' + index"
                     >
                         <p>Notes to self about item</p>
+
+                        <panel-notes :index="index"></panel-notes>
                     </div>
 
                 </div>
@@ -74,14 +80,19 @@
 
 </style>
 <script>
+
+    import * as mTypes from '../../store/mutation-types'
+    import * as gTypes from '../../store/getter-types'
+    import Item from '../../models/Item'
+    import Payload from '../../models/Payload'
+
+
     /**
+     * This holds all the tools for editing an item. It drops down
+     * when called and has lots of tabs etc
+     *
      * Created by adam on 2/18/17.
      */
-//    import itemDetail from './item.detail.component.vue'
-//    import commentSetup from './comment.setup.component.vue'
-//
-
-
     export default {
         props: [ "index", 'id' ],
 
@@ -108,38 +119,25 @@
 
             },
 
-            hidden: {
-                get: function () {
-                    console.log( this.hiding );
-                    return this.hiding;
-                },
-                /**
-                 * Maybe this should be disabled?
-                 * @param v
-                 */
-                set: function ( v ) {
-                    this.hiding = v;
-                }
+            /**
+             * Returns true if the settings pane for this item should be displayed
+             */
+            visible: function () {
+                return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index )
             }
+
         },
 
         methods: {
             show: function () {
                 console.log( 'itemSetting', 'CALLED', 'show' );
-                this.hiding = false;
+                this.$store.commit(mTypes.showItemSettings(Payload.factory({index: this.index})));
             },
             hide: function () {
-                console.log( 'itemSetting', 'CALLED', 'hide', this.hiding );
-                this.hiding = true;
-                console.log( this.hiding );
+                console.log( 'itemSetting', 'CALLED', 'hide');
+                this.$store.commit(mTypes.hideItemSettings(Payload.factory({index: this.index})));
             },
-            toggle: function () {
-                console.log( 'itemSetting', 'CALLED', 'hide', this.hiding );
 
-                this.hiding = !this.hiding;
-
-                console.log( this.hiding );
-            }
         },
 
         directives: {},
@@ -147,7 +145,7 @@
         events: {
             'display-settings': function () {
                 console.log( 'itemSettings', 'CAUGHT', 'display-settings', this.hiding );
-                this.toggle();
+                //this.toggle();
             }
         },
 

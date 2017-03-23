@@ -1,25 +1,34 @@
 <template>
     <!-- max grade -->
-    <div class="max-score-area">
+    <div class="max-score-area input-group">
 
+        <span class="input-group-addon"
+              id="max-score-addon"
+        >{{ title }}</span>
         <input
                 type="number"
                 min="0"
                 title="maximum score for this question"
-                class="form-control input"
+                class="form-control input max-score-input"
                 aria-describedby="max-score-addon"
                 v-model="maxScore"
         />
     </div>
 
 </template>
-<style>
+<style lang="scss">
     .max-score-area {
-        text-align: left
+        text-align: left;
+
     }
 
     input {
-        width: 6em;
+        width: 4em;
+        outline: none;
+    }
+
+    .max-score-input {
+        width: 3em;
     }
 
 </style>
@@ -36,7 +45,9 @@
             return {
                 title: 'Max Score',
 
-                placeholders: {},
+                placeholders: {
+                    'score': 100
+                },
             };
         },
 
@@ -44,7 +55,14 @@
 
             maxScore: {
                 get: function () {
-                    return this.getter( 'maxScore' );
+                    if ( typeof this.index != 'undefined' ) {
+                        let item = this.$store.getters.getItemByIndex( this.index );
+                        if ( typeof item != 'undefined' ) {
+                            return item.maxScore
+                        }
+                    }
+                    return this.placeholders.score;
+//                        return this.getter( 'maxScore' );
                 },
 
                 set: function ( v ) {
@@ -56,9 +74,11 @@
 
         methods: {
             getter: function ( name ) {
-                let item = this.$store.getters.getItemById( this.id );
-                if ( typeof item != 'undefined' ) {
-                    return item[ name ]
+                if ( typeof this.id != 'undefined' ) {
+                    let item = this.$store.getters.getItemById( this.id );
+                    if ( typeof item != 'undefined' ) {
+                        return item[ name ]
+                    }
                 }
             },
 

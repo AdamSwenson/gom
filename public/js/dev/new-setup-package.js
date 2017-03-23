@@ -60033,7 +60033,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-bedabc0c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":372,"../../store/action-types":375,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],350:[function(require,module,exports){
+},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],350:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60103,7 +60103,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4b0ad92d", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":375,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],351:[function(require,module,exports){
+},{"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],351:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -60188,73 +60188,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-344d0d66", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":375,"bootbox":27,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],352:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-
-/**
- * Created by adam on 2/18/17.
- */
-exports.default = {
-
-    props: [],
-
-    data: function data() {
-        return {};
-    },
-
-    computed: {},
-
-    methods: {
-        /**
-         * Requests that the item properties area
-         * be displayed
-         */
-        openItemSettings: function openItemSettings() {
-            console.log('CALLED', 'openItemSettings');
-            this.requestSettingsDisplay();
-        },
-
-        /**
-         * Emits an event caught by the parent.
-         * The catching object will handle the opening.
-         * Thus there is no need for this button to know
-         * who it belongs to
-         */
-        requestSettingsDisplay: function requestSettingsDisplay() {
-            this.$store.dispatch('display-settings');
-        }
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button type=\"button\" class=\"btn settings-button\" v-on:click=\"openItemSettings\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-66f81b05", module.exports)
-  } else {
-    hotAPI.update("_v-66f81b05", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],353:[function(require,module,exports){
+},{"../../store/action-types":378,"bootbox":27,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],352:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60266,6 +60200,16 @@ Object.defineProperty(exports, "__esModule", {
 var _Item = require('../../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60354,10 +60298,12 @@ exports.default = {
         togglePublic: function togglePublic() {
             console.log('CALLED', 'togglePublic');
 
-            var item = this.$store.getters.getItemById(this.id);
-            if (typeof item != 'undefined' && item instanceof _Item2.default) {
-                return item.togglePublic();
-            }
+            this.$store.commit(mTypes.toggleItemPublic);
+
+            //                let item = this.$store.getters.getItemById( this.id );
+            //                if ( typeof item != 'undefined' && item instanceof Item) {
+            //                    return item.togglePublic();
+            //                }
         }
 
     },
@@ -60384,7 +60330,87 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":371,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],354:[function(require,module,exports){
+},{"../../models/Item":374,"../../models/Payload":375,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],353:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Handles showing and hiding the item settings pane
+ *
+ * Created by adam on 2/18/17.
+ */
+exports.default = {
+
+    props: ['index', 'id'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {},
+
+    methods: {
+        toggleVis: function toggleVis() {
+            console.log('buttons.settings-control', 'CALLED', 'toggle', this.index);
+            var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+            console.log('isvis', isVis);
+            if (isVis) {
+                //if comes back true, we know that currently visible
+                //call the mutation with our index
+                this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({ index: this.index }));
+            } else {
+                //                    let mutation = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index ) ? mTypes.showItemSettings : mTypes.hideItemSettings;
+
+                //call the mutation to show with our index
+                this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({ index: this.index }));
+            }
+        }
+    },
+
+    mounted: function mounted() {}
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn settings-button\" v-on:click=\"toggleVis\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-7de0264c", module.exports)
+  } else {
+    hotAPI.update("_v-7de0264c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Item":374,"../../models/Payload":375,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60450,144 +60476,6 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],355:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Comment = require('../../models/Comment');
-
-var _Comment2 = _interopRequireDefault(_Comment);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _buttonsValenceComponent = require('./buttons.valence.component.vue');
-
-var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-    components: {
-        'valence-button': _buttonsValenceComponent2.default
-    },
-    props: ['index'],
-
-    data: function data() {
-        return {
-
-            displayedValence: 'stock',
-
-            defaults: {
-                commentText: ''
-            },
-            placeholders: {
-                elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
-                elementText: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student."
-            }
-        };
-    },
-
-    computed: {
-
-        commentText: {
-            get: function get() {
-                var item = this.$store.getters.getItemByIndex(this.index);
-
-                //make sure there is a comment object waiting for us
-                // if not, initialize it
-                if (item.comments.size === 0) {
-                    item.initializeComments();
-                }
-
-                var comment = item.getComment(this.displayedValence);
-                console.log('commenet', comment);
-                if (typeof comment != 'undefined') {
-                    return comment.text;
-                }
-            },
-
-            set: function set(v) {
-                var pl = _Payload2.default.factory({
-                    index: this.index,
-                    updateValence: this.displayedValence,
-                    updateVal: v
-                });
-
-                this.$store.commit(mTypes.updateComment, pl);
-            }
-        },
-
-        valences: function valences() {
-            return _Comment2.default.valences;
-        }
-
-    },
-
-    methods: {
-        getter: function getter(name) {
-            var item = this.$store.getters.getItemByIndex(this.index);
-            if (typeof item != 'undefined') {
-                return item[name];
-            }
-        },
-
-        setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
-            this.$store.commit(mTypes.updateItem, pl);
-        }
-    },
-
-    directives: {},
-
-    events: {
-        'please-change-valence': function pleaseChangeValence(evt) {
-            console.log('caught please-change-valence', evt);
-            this.displayedValence = evt;
-        }
-    },
-
-    mounted: function mounted() {
-        //push a comment into the item
-
-    }
-};
-
-/**
- * Created by adam on 2/19/17.
- */
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Template used by 'edit_element' to hold the fields and buttons for an individual element.  -->\n<div class=\"item-settings-comment-setup-component\">\n    <div class=\"row\">\n        <div class=\"col-md-12 \">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the \"stock comment\") -->\n            <div class=\"form-group\">\n                    <textarea class=\"form-control\" rows=\"3\" v-bind:placeholder=\"placeholders.elementText\" v-model=\"commentText\"></textarea>\n            </div>\n\n            <div class=\"form-group\">\n                <div class=\"btn-group-justified\" role=\"group\" aria-label=\"valence buttons\">\n\n                    <valence-button v-for=\"v in valences\" :valence=\"v\"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-33717e82", module.exports)
-  } else {
-    hotAPI.update("_v-33717e82", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Comment":368,"../../models/Payload":372,"../../store/action-types":375,"../../store/mutation-types":391,"./buttons.valence.component.vue":354,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60717,7 +60605,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-a586beac", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":375,"../../store/getter-types":377,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],357:[function(require,module,exports){
+},{"../../store/action-types":378,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60806,7 +60694,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],358:[function(require,module,exports){
+},{"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],357:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 "use strict";
@@ -60901,9 +60789,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-2ddb6cce", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],359:[function(require,module,exports){
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60948,7 +60836,6 @@ exports.default = {
         questionNumber: {
             get: function get() {
                 return this.index;
-
                 //                    return this.getter( 'number' );
             },
 
@@ -60983,7 +60870,7 @@ if (module.hot) {(function () {  module.hot.accept()
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n}\n\n"] = false
+    __vueify_insert__.cache["\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -60992,9 +60879,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":372,"../../store/action-types":375,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],360:[function(require,module,exports){
+},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.max-score-area {\n    text-align: left\n}\n\ninput {\n    width: 6em;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -61023,7 +60910,9 @@ exports.default = {
         return {
             title: 'Max Score',
 
-            placeholders: {}
+            placeholders: {
+                'score': 100
+            }
         };
     },
 
@@ -61031,7 +60920,14 @@ exports.default = {
 
         maxScore: {
             get: function get() {
-                return this.getter('maxScore');
+                if (typeof this.index != 'undefined') {
+                    var item = this.$store.getters.getItemByIndex(this.index);
+                    if (typeof item != 'undefined') {
+                        return item.maxScore;
+                    }
+                }
+                return this.placeholders.score;
+                //                        return this.getter( 'maxScore' );
             },
 
             set: function set(v) {
@@ -61043,9 +60939,11 @@ exports.default = {
 
     methods: {
         getter: function getter(name) {
-            var item = this.$store.getters.getItemById(this.id);
-            if (typeof item != 'undefined') {
-                return item[name];
+            if (typeof this.id != 'undefined') {
+                var item = this.$store.getters.getItemById(this.id);
+                if (typeof item != 'undefined') {
+                    return item[name];
+                }
             }
         },
 
@@ -61056,13 +60954,13 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area\">\n\n    <input type=\"number\" min=\"0\" title=\"maximum score for this question\" class=\"form-control input\" aria-describedby=\"max-score-addon\" v-model=\"maxScore\">\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area input-group\">\n\n    <span class=\"input-group-addon\" id=\"max-score-addon\">{{ title }}</span>\n    <input type=\"number\" min=\"0\" title=\"maximum score for this question\" class=\"form-control input max-score-input\" aria-describedby=\"max-score-addon\" v-model=\"maxScore\">\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.max-score-area {\n    text-align: left\n}\n\ninput {\n    width: 6em;\n}\n\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -61071,7 +60969,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":372,"../../store/action-types":375,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],361:[function(require,module,exports){
+},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61080,13 +60978,17 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
 var _mutationTypes = require('../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
 
 var _Payload = require('../../models/Payload');
 
@@ -61096,64 +60998,68 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+/**
+ * This holds all the tools for editing an item. It drops down
+ * when called and has lots of tabs etc
+ *
+ * Created by adam on 2/18/17.
+ */
 exports.default = {
-    props: ['index', 'id'],
+    props: ["index", 'id'],
 
     data: function data() {
         return {
-            placeholders: {
-                questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
-                questionText: "Enter the full question text (optional)"
-            }
+            defaults: {
+                types: ['question', 'element']
+            },
+            // currentView: 'item-settings-question',
+            tabs: ['details', 'comments', 'stats', 'history', 'notes'],
+            hiding: true
+
         };
     },
 
     computed: {
+        tabTitle: function tabTitle() {
+            //  return this.tab.
+        },
 
-        questionText: {
-            get: function get() {
-                return this.getter('text');
-            },
+        tabActive: function tabActive() {},
 
-            set: function set(v) {
-                this.setter('text', v);
-            }
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        visible: function visible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
         }
+
     },
 
     methods: {
-        getter: function getter(name) {
-            var item = this.$store.getters.getItemById(this.id);
-            // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item != 'undefined') {
-                return item[name];
-            }
+        show: function show() {
+            console.log('itemSetting', 'CALLED', 'show');
+            this.$store.commit(mTypes.showItemSettings(_Payload2.default.factory({ index: this.index })));
         },
-
-        setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
-            this.$store.commit(mTypes.updateItem, pl);
+        hide: function hide() {
+            console.log('itemSetting', 'CALLED', 'hide');
+            this.$store.commit(mTypes.hideItemSettings(_Payload2.default.factory({ index: this.index })));
         }
+
     },
 
     directives: {},
 
-    events: {},
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
+            //this.toggle();
+        }
+    },
 
     mounted: function mounted() {}
 };
-
-/**
- * This is the settings component which contains
- * the more lengthy item text (like the prompt question)
- * as well as other settings, depending on which role it
- * is playing.
- *
- * todo Add an 'other uses of this quetion' area
- * Created by adam on 2/19/17.
- */
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Used by \"edit_question\" to hold fields and buttons for an individual question -->\n<div class=\"item-settings-detail-component\">\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <item-number :index=\"index\" :id=\"id\"></item-number>\n        </div>\n\n        <div class=\"col-md-6\">\n\n            <max-score :index=\"index\" :id=\"id\"></max-score>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"question-text-area col-md-12\">\n            <div class=\"form-group\">\n                        <textarea class=\"question-text form-control\" rows=\"3\" placeholder=\"Enter the full question text (optional)\" v-model=\"questionText\"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-tabs\" role=\"tablist\">\n                <li role=\"presentation\" v-for=\"tab in tabs\">\n                    <a v-bind:href=\"'#' + tab + index\" v-bind:aria-controls=\"tab + index\" role=\"tab\" data-toggle=\"tab\">\n                    <span class=\"tabTitle\">\n                        {{ tab }}\n                    </span>\n                    </a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class=\"tab-content\">\n\n                <div role=\"tabpanel\" class=\"tab-pane active\" v-bind:id=\"'details' + index\">\n                    <panel-detail :index=\"index\"></panel-detail>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane  \" v-bind:id=\"'comments' + index\">\n                    <panel-comments :index=\"index\"></panel-comments>\n\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane \" v-bind:id=\"'stats' + index\">\n                    <panel-stats :index=\"index\"></panel-stats>\n                    <p>Stats here</p>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane \" v-bind:id=\"'history' + index\">\n                    <panel-history :index=\"index\"></panel-history>\n\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane fade\" v-bind:id=\"'notes' + index\">\n                    <p>Notes to self about item</p>\n\n                    <panel-notes :index=\"index\"></panel-notes>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -61163,14 +61069,14 @@ if (module.hot) {(function () {  module.hot.accept()
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-0608cea0", module.exports)
+    hotAPI.createRecord("_v-7092e44a", module.exports)
   } else {
-    hotAPI.update("_v-0608cea0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-7092e44a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":372,"../../store/action-types":375,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],362:[function(require,module,exports){
+},{"../../models/Item":374,"../../models/Payload":375,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.itemName{\n    height: 100%;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.itemName {\n    margin-bottom: 0;\n    margin-top: 0;\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -61193,7 +61099,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//    import settingsButton from './buttons.item.settings.component.vue'
+//    import settingsButton from './buttons.settings-control.component.vue'
 //    import publicIndicator from './buttons.public-control.component.vue'
 //    //
 exports.default = {
@@ -61247,8 +61153,8 @@ exports.default = {
 
         name: {
             get: function get() {
-                var item = this.$store.getters.getItemById(this.id);
-                // let item = this.$store.getters.getItemByIndex( this.index );
+                //                    let item = this.$store.getters.getItemById( this.id );
+                var item = this.$store.getters.getItemByIndex(this.index);
                 if (typeof item != 'undefined') {
                     return item.name;
                 }
@@ -61261,7 +61167,9 @@ exports.default = {
         },
 
         public: function _public() {
-            var item = this.$store.getters.getItemById(this.id);
+            //                let item = this.$store.getters.getItemById( this.id );
+            var item = this.$store.getters.getItemByIndex(this.index);
+
             // let item = this.$store.getters.getItemByIndex( this.index );
             if (typeof item != 'undefined') {
                 return item.isPublic();
@@ -61276,7 +61184,7 @@ exports.default = {
          */
         openItemSettings: function openItemSettings() {
             console.log('itemName', 'CALLED', 'openItemSettings');
-            this.$dipatch('display-settings');
+            this.$store.dipatch('display-settings');
         },
 
         isPublic: function isPublic() {
@@ -61305,123 +61213,22 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-name-component input-group input-group-lg\">\n\n    <div class=\"input-group-addon\">\n        <item-number :index=\"index\" :id=\"id\"></item-number>\n    </div>\n\n    <input type=\"text\" class=\"itemName form-control\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n    <div class=\"input-group-btn\">\n        <settings-button :index=\"index\" :id=\"id\"></settings-button>\n\n        <public-indicator :index=\"index\" :id=\"id\">\n        </public-indicator>\n    </div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component input-group input-group-lg\">\n\n    <div class=\"input-group-addon\">\n        <item-number :index=\"index\" :id=\"id\"></item-number>\n    </div>\n\n    <input type=\"text\" class=\"itemName form-control\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n    <div class=\"input-group-btn\">\n        <settings-button :index=\"index\" :id=\"id\"></settings-button>\n\n        <public-indicator :index=\"index\" :id=\"id\">\n        </public-indicator>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.itemName{\n    height: 100%;\n}\n\n"] = false
+    __vueify_insert__.cache["\n.itemName {\n    margin-bottom: 0;\n    margin-top: 0;\n}\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-6eeebd5a", module.exports)
+    hotAPI.createRecord("_v-4ccc2008", module.exports)
   } else {
-    hotAPI.update("_v-6eeebd5a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":371,"../../models/Payload":372,"../../store/mutation-types":391,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],363:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-
-/**
- * Created by adam on 2/18/17.
- */
-//    import itemDetail from './item.detail.component.vue'
-//    import commentSetup from './comment.setup.component.vue'
-//
-
-
-exports.default = {
-    props: ["index", 'id'],
-
-    data: function data() {
-        return {
-            defaults: {
-                types: ['question', 'element']
-            },
-            // currentView: 'item-settings-question',
-            tabs: ['details', 'comments', 'stats', 'history', 'notes'],
-            hiding: true
-
-        };
-    },
-
-    computed: {
-        tabTitle: function tabTitle() {
-            //  return this.tab.
-        },
-
-        tabActive: function tabActive() {},
-
-        hidden: {
-            get: function get() {
-                console.log(this.hiding);
-                return this.hiding;
-            },
-            /**
-             * Maybe this should be disabled?
-             * @param v
-             */
-            set: function set(v) {
-                this.hiding = v;
-            }
-        }
-    },
-
-    methods: {
-        show: function show() {
-            console.log('itemSetting', 'CALLED', 'show');
-            this.hiding = false;
-        },
-        hide: function hide() {
-            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
-            this.hiding = true;
-            console.log(this.hiding);
-        },
-        toggle: function toggle() {
-            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
-
-            this.hiding = !this.hiding;
-
-            console.log(this.hiding);
-        }
-    },
-
-    directives: {},
-
-    events: {
-        'display-settings': function displaySettings() {
-            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
-            this.toggle();
-        }
-    },
-
-    mounted: function mounted() {}
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"well well-sm\" v-show=\"hidden\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-tabs\" role=\"tablist\">\n                <li role=\"presentation\" v-for=\"tab in tabs\">\n                    <a v-bind:href=\"'#' + tab + index\" v-bind:aria-controls=\"tab + index\" role=\"tab\" data-toggle=\"tab\">\n                    <span class=\"tabTitle\">\n                        {{ tab }}\n                    </span>\n                    </a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class=\"tab-content\">\n\n                <div role=\"tabpanel\" class=\"tab-pane active\" v-bind:id=\"'details' + index\">\n                    <item-settings-detail :index=\"index\"></item-settings-detail>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane  \" v-bind:id=\"'comments' + index\">\n                    <item-settings-comment-setup :index=\"index\"></item-settings-comment-setup>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane \" v-bind:id=\"'stats' + index\">\n                    <p>Stats here</p>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane \" v-bind:id=\"'history' + index\">\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role=\"tabpanel\" class=\"tab-pane fade\" v-bind:id=\"'notes' + index\">\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-6fe1e0f2", module.exports)
-  } else {
-    hotAPI.update("_v-6fe1e0f2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],364:[function(require,module,exports){
+},{"../../models/Item":374,"../../models/Payload":375,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61432,9 +61239,9 @@ Object.defineProperty(exports, "__esModule", {
 
 
 //    import deleteButton from './buttons.item.delete.component.vue'
-//    import settingsArea from './item.settings.component.vue'
+//    import itemEditPane from './item.edit-pane.component.vue'
 //    import depthControl from './buttons.depth-control.component.vue'
-//    import itemName from './item.name.component.vue'
+//    import itemName from './item.main.component.vue'
 
 exports.default = {
 
@@ -61459,7 +61266,7 @@ exports.default = {
     },
 
     //        components : {
-    //            'item-settings': settingsArea,
+    //            'item-settings': itemEditPane,
     //            'delete-item-button': deleteButton,
     //            'depth-control': depthControl,
     //            'item-name': itemName,
@@ -61541,7 +61348,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-name :index=\"index\" :id=\"id\"></item-name>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n            <slot name=\"head\">\n\n                <item-settings :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-settings>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-name :index=\"index\" :id=\"id\"></item-name>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n            <slot name=\"head\">\n\n                <item-edit-pane :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-edit-pane>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -61556,7 +61363,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-274cbdc8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],365:[function(require,module,exports){
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61616,7 +61423,7 @@ exports.default = {
     computed: {
         items: function items() {
             console.log('items', this);
-            return this.$store.getters.getAllItems; //[gTypes.getAllItems];
+            return this.$store.getters[gTypes.getAllItems];
         },
 
         numberOfItems: function numberOfItems() {
@@ -61747,7 +61554,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-150522d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":371,"../../models/Payload":372,"../../store/action-types":375,"../../store/getter-types":377,"../../store/mutation-types":391,"sortablejs":340,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],366:[function(require,module,exports){
+},{"../../models/Item":374,"../../models/Payload":375,"../../store/action-types":378,"../../store/getter-types":380,"../../store/mutation-types":395,"sortablejs":340,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61756,61 +61563,301 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _examNameComponent = require('./components/exam.name.component.vue');
+var _Comment = require('../../models/Comment');
 
-var _examNameComponent2 = _interopRequireDefault(_examNameComponent);
+var _Comment2 = _interopRequireDefault(_Comment);
 
-var _dashboardToolsComponent = require('./components/dashboard.tools.component.vue');
+var _Payload = require('../../models/Payload');
 
-var _dashboardToolsComponent2 = _interopRequireDefault(_dashboardToolsComponent);
+var _Payload2 = _interopRequireDefault(_Payload);
 
-var _itemCardsListComponent = require('./components/itemCards.list.component.vue');
+var _mutationTypes = require('../../store/mutation-types');
 
-var _itemCardsListComponent2 = _interopRequireDefault(_itemCardsListComponent);
+var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _itemNameComponent = require('./components/item.name.component.vue');
+var _actionTypes = require('../../store/action-types');
 
-var _itemNameComponent2 = _interopRequireDefault(_itemNameComponent);
+var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _itemSettingsComponent = require('./components/item.settings.component.vue');
-
-var _itemSettingsComponent2 = _interopRequireDefault(_itemSettingsComponent);
-
-var _itemDetailComponent = require('./components/item.detail.component.vue');
-
-var _itemDetailComponent2 = _interopRequireDefault(_itemDetailComponent);
-
-var _buttonsItemSettingsComponent = require('./components/buttons.item.settings.component.vue');
-
-var _buttonsItemSettingsComponent2 = _interopRequireDefault(_buttonsItemSettingsComponent);
-
-var _buttonsValenceComponent = require('./components/buttons.valence.component.vue');
+var _buttonsValenceComponent = require('./buttons.valence.component.vue');
 
 var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
 
-var _buttonsItemAddComponent = require('./components/buttons.item.add.component.vue');
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var _buttonsItemAddComponent2 = _interopRequireDefault(_buttonsItemAddComponent);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _buttonsItemDeleteComponent = require('./components/buttons.item.delete.component.vue');
+exports.default = {
+    components: {
+        'valence-button': _buttonsValenceComponent2.default
+    },
+    props: ['index'],
 
-var _buttonsItemDeleteComponent2 = _interopRequireDefault(_buttonsItemDeleteComponent);
+    data: function data() {
+        return {
 
-var _buttonsPublicControlComponent = require('./components/buttons.public-control.component.vue');
+            displayedValence: 'stock',
 
-var _buttonsPublicControlComponent2 = _interopRequireDefault(_buttonsPublicControlComponent);
+            defaults: {
+                commentText: ''
+            },
+            placeholders: {
+                elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
+                elementText: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student."
+            }
+        };
+    },
 
-var _itemCardsCardComponent = require('./components/itemCards.card.component.vue');
+    computed: {
 
-var _itemCardsCardComponent2 = _interopRequireDefault(_itemCardsCardComponent);
+        commentText: {
+            get: function get() {
+                var item = this.$store.getters.getItemByIndex(this.index);
 
-var _commentSetupComponent = require('./components/comment.setup.component.vue');
+                //make sure there is a comment object waiting for us
+                // if not, initialize it
+                if (item.comments.size === 0) {
+                    item.initializeComments();
+                }
 
-var _commentSetupComponent2 = _interopRequireDefault(_commentSetupComponent);
+                var comment = item.getComment(this.displayedValence);
+                console.log('commenet', comment);
+                if (typeof comment != 'undefined') {
+                    return comment.text;
+                }
+            },
 
-var _buttonsDepthControlComponent = require('./components/buttons.depth-control.component.vue');
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    index: this.index,
+                    updateValence: this.displayedValence,
+                    updateVal: v
+                });
 
-var _buttonsDepthControlComponent2 = _interopRequireDefault(_buttonsDepthControlComponent);
+                this.$store.commit(mTypes.updateComment, pl);
+            }
+        },
+
+        valences: function valences() {
+            return _Comment2.default.valences;
+        }
+
+    },
+
+    methods: {
+        getter: function getter(name) {
+            var item = this.$store.getters.getItemByIndex(this.index);
+            if (typeof item != 'undefined') {
+                return item[name];
+            }
+        },
+
+        setter: function setter(name, value) {
+            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+            this.$store.commit(mTypes.updateItem, pl);
+        }
+    },
+
+    directives: {},
+
+    events: {
+        'please-change-valence': function pleaseChangeValence(evt) {
+            console.log('caught please-change-valence', evt);
+            this.displayedValence = evt;
+        }
+    },
+
+    mounted: function mounted() {
+        //push a comment into the item
+
+    }
+};
+
+/**
+ * Created by adam on 2/19/17.
+ */
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Template used by 'edit_element' to hold the fields and buttons for an individual element.  -->\n<div class=\"item-settings-comment-setup-component\">\n    <div class=\"row\">\n        <div class=\"col-md-12 \">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the \"stock comment\") -->\n            <div class=\"form-group\">\n                    <textarea class=\"form-control\" rows=\"3\" v-bind:placeholder=\"placeholders.elementText\" v-model=\"commentText\"></textarea>\n            </div>\n\n            <div class=\"form-group\">\n                <div class=\"btn-group-justified\" role=\"group\" aria-label=\"valence buttons\">\n\n                    <valence-button v-for=\"[v, k] in valences\" :valence=\"v\"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-f0697d0e", module.exports)
+  } else {
+    hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Comment":371,"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"./buttons.valence.component.vue":354,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],365:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    props: ['index', 'id'],
+
+    data: function data() {
+        return {
+            placeholders: {
+                questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
+                questionText: "Enter the full question text (optional)"
+            }
+        };
+    },
+
+    computed: {
+
+        questionText: {
+            get: function get() {
+                return this.getter('text');
+            },
+
+            set: function set(v) {
+                this.setter('text', v);
+            }
+        }
+
+    },
+
+    methods: {
+        getter: function getter(name) {
+            var item = this.$store.getters.getItemById(this.id);
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if (typeof item != 'undefined') {
+                return item[name];
+            }
+        },
+
+        setter: function setter(name, value) {
+            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+            this.$store.commit(mTypes.updateItem, pl);
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/**
+ * This is the settings component which contains
+ * the more lengthy item text (like the prompt question)
+ * as well as other settings, depending on which role it
+ * is playing.
+ *
+ * todo Add an 'other uses of this quetion' area
+ * Created by adam on 2/19/17.
+ */
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Used by \"edit_question\" to hold fields and buttons for an individual question -->\n<div class=\"panel-detail-component\">\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <item-number :index=\"index\" :id=\"id\"></item-number>\n        </div>\n\n        <div class=\"col-md-6\">\n\n            <max-score :index=\"index\" :id=\"id\"></max-score>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"question-text-area col-md-12\">\n            <div class=\"form-group\">\n                        <textarea class=\"question-text form-control\" rows=\"3\" placeholder=\"Enter the full question text (optional)\" v-model=\"questionText\"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-56e5cd15", module.exports)
+  } else {
+    hotAPI.update("_v-56e5cd15", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],366:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+"use strict";
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-history-component\">\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            <p>Which exams clones of this item have been used on</p>\n\n        </div>\n    </div>\n\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-4d1a1dfe", module.exports)
+  } else {
+    hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],367:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+"use strict";
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-notes-component\">\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            \"notes to self go here\"\n        </div>\n    </div>\n\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-51a3ebaa", module.exports)
+  } else {
+    hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],368:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+"use strict";
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-stats-component\">\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            \"Stats go here\"\n        </div>\n    </div>\n\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-256838ee", module.exports)
+  } else {
+    hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],369:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _store = require('../store');
 
@@ -61818,45 +61865,63 @@ var _store2 = _interopRequireDefault(_store);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//    import examProperties from './components/exam.properties.component.vue'
-//    import propsDashboard from './components/dashboard.props.component.vue'
 exports.default = {
     store: _store2.default,
 
     //Components
     //exam
     components: {
-        'exam-name': _examNameComponent2.default,
-        //            'exam-properties': examProperties,
-        //dashboards and  tools
-        //            'props-dashboard': propsDashboard,
-        'tools-dashboard': _dashboardToolsComponent2.default,
-        'card-list': _itemCardsListComponent2.default,
-
-        //Item
-        'item-name': _itemNameComponent2.default,
-        'item-settings': _itemSettingsComponent2.default,
-        'item-settings-detail': _itemDetailComponent2.default,
-        //buttons
-        'settings-button': _buttonsItemSettingsComponent2.default,
-        'valence-button': _buttonsValenceComponent2.default,
-        'item-add-button': _buttonsItemAddComponent2.default,
-        'delete-item-button': _buttonsItemDeleteComponent2.default,
-        'public-indicator': _buttonsPublicControlComponent2.default,
-        // card structure
-        'item-card': _itemCardsCardComponent2.default,
-        //comments
-        'item-settings-comment-setup': _commentSetupComponent2.default,
-
-        'depth-control': _buttonsDepthControlComponent2.default
+        //            'exam-name': examName,
+        ////            'exam-properties': examProperties,
+        ////dashboards and  tools
+        ////            'props-dashboard': propsDashboard,
+        //            'tools-dashboard': toolsDashboard,
+        //            'card-list': cardList,
+        //
+        //
+        //            //Item
+        //            'item-name': itemName,
+        ////            'item-settings': settingsArea,
+        //            'item-settings-detail': itemDetail,
+        //            //buttons
+        //            'settings-button': settingsButton,
+        //            'valence-button': valenceButton,
+        //            'item-add-button': itemAddButton,
+        //            'delete-item-button': deleteButton,
+        //            'public-indicator': publicIndicator,
+        //            // card structure
+        //            'item-card': itemCard,
+        //            //comments
+        //            'item-settings-comment-setup': commentSetup,
+        //
+        //            'depth-control': depthControl,
     }
 };
 
 // Vuex store
 //this calls use vuex in addition to exposing all the modules
 //    import store from '../store'
+//
+//    import examName from './components/exam.name.component.vue'
+//    //    import examProperties from './components/exam.properties.component.vue'
+//    //    import propsDashboard from './components/dashboard.props.component.vue'
+//    import toolsDashboard from './components/dashboard.tools.component.vue'
+//    import cardList from './components/itemCards.list.component.vue'
+//
+//    import itemName from './components/item.main.component.vue'
+//    import itemEditPane from './components/item.edit-pane.component.vue'
+//    import itemDetail from './components/panel.detail.component.vue'
+//    import settingsButton from './components/buttons.settings-control.component.vue'
+//    import valenceButton from './components/buttons.valence.component.vue'
+//    import itemAddButton from './components/buttons.item.add.component.vue'
+//    import deleteButton from './components/buttons.item.delete.component.vue'
+//    import publicIndicator from './components/buttons.public-control.component.vue'
+//    import itemCard from './components/itemCards.card.component.vue'
+//    import commentSetup from './components/panel.comment-setup.component.vue'
+//
+//    import depthControl from './components/buttons.depth-control.component.vue'
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--<div id=\"app\">-->\n    <div id=\"examEditor\">\n\n        <!--<div class=\"row\">-->\n        <!--<div class=\"col-lg-8\">-->\n        <exam-name></exam-name>\n\n        <!--<exam-properties></exam-properties>-->\n\n        <div id=\"examEditorBody\" class=\"row\">\n\n            <div id=\"itemCol\" class=\"col-lg-9 well well-lg\">\n\n                <div class=\"itemRow row\">\n                    <div class=\"col-lg-12\">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id=\"infoCol\" class=\"col-lg-3\">\n\n                <div class=\"row\">\n                    <div class=\"col-lg-12\">\n                        <!--<props-dashboard></props-dashboard>-->\n                    </div>\n                </div>\n\n                <div class=\"row\">\n                    <div class=\"col-lg-12\">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    <!--</div>-->\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--<div id=\"app\">-->\n<div id=\"examEditor\">\n    <div class=\"row\">\n        <exam-name></exam-name>\n        <!--<exam-properties></exam-properties>-->\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n\n        <div id=\"itemCol\" class=\"col-lg-12 well well-lg\">\n\n            <div class=\"itemRow row\">\n                <card-list></card-list>\n            </div>\n\n        </div>\n    </div>\n    <div class=\"row\">\n\n        <div id=\"infoCol\" class=\"col-lg-3\">\n            <!--<exam-properties></exam-properties>-->\n            <div class=\"row\">\n\n                <!--<props-dashboard></props-dashboard>-->\n\n            </div>\n\n            <div class=\"row\">\n\n                temp location\n                <tools-dashboard></tools-dashboard>\n            </div>\n\n        </div>\n\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -61871,7 +61936,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":379,"./components/buttons.depth-control.component.vue":349,"./components/buttons.item.add.component.vue":350,"./components/buttons.item.delete.component.vue":351,"./components/buttons.item.settings.component.vue":352,"./components/buttons.public-control.component.vue":353,"./components/buttons.valence.component.vue":354,"./components/comment.setup.component.vue":355,"./components/dashboard.tools.component.vue":357,"./components/exam.name.component.vue":358,"./components/item.detail.component.vue":361,"./components/item.name.component.vue":362,"./components/item.settings.component.vue":363,"./components/itemCards.card.component.vue":364,"./components/itemCards.list.component.vue":365,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],367:[function(require,module,exports){
+},{"../store":382,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],370:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -61896,49 +61961,45 @@ var _dashboardToolsComponent = require('./components/dashboard.tools.component.v
 
 var _dashboardToolsComponent2 = _interopRequireDefault(_dashboardToolsComponent);
 
+var _itemEditPaneComponent = require('./components/item.edit-pane.component.vue');
+
+var _itemEditPaneComponent2 = _interopRequireDefault(_itemEditPaneComponent);
+
+var _panelCommentSetupComponent = require('./components/panel.comment-setup.component.vue');
+
+var _panelCommentSetupComponent2 = _interopRequireDefault(_panelCommentSetupComponent);
+
+var _panelDetailComponent = require('./components/panel.detail.component.vue');
+
+var _panelDetailComponent2 = _interopRequireDefault(_panelDetailComponent);
+
+var _panelStatsComponent = require('./components/panel.stats.component.vue');
+
+var _panelStatsComponent2 = _interopRequireDefault(_panelStatsComponent);
+
+var _panelHistoryComponent = require('./components/panel.history.component.vue');
+
+var _panelHistoryComponent2 = _interopRequireDefault(_panelHistoryComponent);
+
+var _panelNotesComponent = require('./components/panel.notes.component.vue');
+
+var _panelNotesComponent2 = _interopRequireDefault(_panelNotesComponent);
+
 var _itemCardsListComponent = require('./components/itemCards.list.component.vue');
 
 var _itemCardsListComponent2 = _interopRequireDefault(_itemCardsListComponent);
-
-var _itemNameComponent = require('./components/item.name.component.vue');
-
-var _itemNameComponent2 = _interopRequireDefault(_itemNameComponent);
-
-var _itemSettingsComponent = require('./components/item.settings.component.vue');
-
-var _itemSettingsComponent2 = _interopRequireDefault(_itemSettingsComponent);
-
-var _itemDetailComponent = require('./components/item.detail.component.vue');
-
-var _itemDetailComponent2 = _interopRequireDefault(_itemDetailComponent);
-
-var _buttonsItemSettingsComponent = require('./components/buttons.item.settings.component.vue');
-
-var _buttonsItemSettingsComponent2 = _interopRequireDefault(_buttonsItemSettingsComponent);
-
-var _buttonsValenceComponent = require('./components/buttons.valence.component.vue');
-
-var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
 
 var _buttonsItemAddComponent = require('./components/buttons.item.add.component.vue');
 
 var _buttonsItemAddComponent2 = _interopRequireDefault(_buttonsItemAddComponent);
 
-var _buttonsItemDeleteComponent = require('./components/buttons.item.delete.component.vue');
-
-var _buttonsItemDeleteComponent2 = _interopRequireDefault(_buttonsItemDeleteComponent);
-
-var _buttonsPublicControlComponent = require('./components/buttons.public-control.component.vue');
-
-var _buttonsPublicControlComponent2 = _interopRequireDefault(_buttonsPublicControlComponent);
-
 var _itemCardsCardComponent = require('./components/itemCards.card.component.vue');
 
 var _itemCardsCardComponent2 = _interopRequireDefault(_itemCardsCardComponent);
 
-var _commentSetupComponent = require('./components/comment.setup.component.vue');
+var _itemMainComponent = require('./components/item.main.component.vue');
 
-var _commentSetupComponent2 = _interopRequireDefault(_commentSetupComponent);
+var _itemMainComponent2 = _interopRequireDefault(_itemMainComponent);
 
 var _buttonsDepthControlComponent = require('./components/buttons.depth-control.component.vue');
 
@@ -61951,6 +62012,22 @@ var _fieldMaxScoreComponent2 = _interopRequireDefault(_fieldMaxScoreComponent);
 var _fieldItemNumberComponent = require('./components/field.item-number.component.vue');
 
 var _fieldItemNumberComponent2 = _interopRequireDefault(_fieldItemNumberComponent);
+
+var _buttonsSettingsControlComponent = require('./components/buttons.settings-control.component.vue');
+
+var _buttonsSettingsControlComponent2 = _interopRequireDefault(_buttonsSettingsControlComponent);
+
+var _buttonsValenceComponent = require('./components/buttons.valence.component.vue');
+
+var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
+
+var _buttonsItemDeleteComponent = require('./components/buttons.item.delete.component.vue');
+
+var _buttonsItemDeleteComponent2 = _interopRequireDefault(_buttonsItemDeleteComponent);
+
+var _buttonsPublicControlComponent = require('./components/buttons.public-control.component.vue');
+
+var _buttonsPublicControlComponent2 = _interopRequireDefault(_buttonsPublicControlComponent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61967,21 +62044,37 @@ require('./bootstrap');
 
 //    import examProperties from './components/exam.properties.component.vue'
 
+//item settings and properties edit panels
 
+
+//Item card list
+
+
+//Item card parts
+
+
+//Register components globally
 _vue2.default.component('exam-name', _examNameComponent2.default);
 // Vue.component( 'exam-properties', examProperties )
 _vue2.default.component('props-dashboard', _dashboardPropsComponent2.default);
 _vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
 // Vue.component( 'item-nav', itemNav )
 _vue2.default.component('item-add-button', _buttonsItemAddComponent2.default);
-_vue2.default.component('item-name', _itemNameComponent2.default);
+_vue2.default.component('item-name', _itemMainComponent2.default);
 _vue2.default.component('public-indicator', _buttonsPublicControlComponent2.default);
-_vue2.default.component('settings-button', _buttonsItemSettingsComponent2.default);
-_vue2.default.component('item-settings', _itemSettingsComponent2.default);
+_vue2.default.component('settings-button', _buttonsSettingsControlComponent2.default);
+_vue2.default.component('item-edit-pane', _itemEditPaneComponent2.default);
 _vue2.default.component('item-card', _itemCardsCardComponent2.default);
 _vue2.default.component('card-list', _itemCardsListComponent2.default);
-_vue2.default.component('item-settings-detail', _itemDetailComponent2.default);
-_vue2.default.component('item-settings-comment-setup', _commentSetupComponent2.default);
+
+//Panels
+_vue2.default.component('panel-detail', _panelDetailComponent2.default);
+_vue2.default.component('panel-comments', _panelCommentSetupComponent2.default);
+_vue2.default.component('panel-history', _panelHistoryComponent2.default);
+_vue2.default.component('panel-stats', _panelStatsComponent2.default);
+_vue2.default.component('panel-notes', _panelNotesComponent2.default);
+
+// Vue.component( 'item-settings-comment-setup', commentSetup )
 _vue2.default.component('valence-button', _buttonsValenceComponent2.default);
 _vue2.default.component('delete-item-button', _buttonsItemDeleteComponent2.default);
 _vue2.default.component('depth-control', _buttonsDepthControlComponent2.default);
@@ -62001,7 +62094,7 @@ new _vue2.default({
 
 }).$mount("#app");
 
-},{"./bootstrap":348,"./components/buttons.depth-control.component.vue":349,"./components/buttons.item.add.component.vue":350,"./components/buttons.item.delete.component.vue":351,"./components/buttons.item.settings.component.vue":352,"./components/buttons.public-control.component.vue":353,"./components/buttons.valence.component.vue":354,"./components/comment.setup.component.vue":355,"./components/dashboard.props.component.vue":356,"./components/dashboard.tools.component.vue":357,"./components/exam.name.component.vue":358,"./components/field.item-number.component.vue":359,"./components/field.max-score.component.vue":360,"./components/item.detail.component.vue":361,"./components/item.name.component.vue":362,"./components/item.settings.component.vue":363,"./components/itemCards.card.component.vue":364,"./components/itemCards.list.component.vue":365,"./new-setup.vue":366,"babel-polyfill":26,"vue/dist/vue.js":343}],368:[function(require,module,exports){
+},{"./bootstrap":348,"./components/buttons.depth-control.component.vue":349,"./components/buttons.item.add.component.vue":350,"./components/buttons.item.delete.component.vue":351,"./components/buttons.public-control.component.vue":352,"./components/buttons.settings-control.component.vue":353,"./components/buttons.valence.component.vue":354,"./components/dashboard.props.component.vue":355,"./components/dashboard.tools.component.vue":356,"./components/exam.name.component.vue":357,"./components/field.item-number.component.vue":358,"./components/field.max-score.component.vue":359,"./components/item.edit-pane.component.vue":360,"./components/item.main.component.vue":361,"./components/itemCards.card.component.vue":362,"./components/itemCards.list.component.vue":363,"./components/panel.comment-setup.component.vue":364,"./components/panel.detail.component.vue":365,"./components/panel.history.component.vue":366,"./components/panel.notes.component.vue":367,"./components/panel.stats.component.vue":368,"./new-setup.vue":369,"babel-polyfill":26,"vue/dist/vue.js":343}],371:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62105,7 +62198,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":370,"./Item":371}],369:[function(require,module,exports){
+},{"./IModel":373,"./Item":374}],372:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62265,7 +62358,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":371}],370:[function(require,module,exports){
+},{"./Item":374}],373:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62431,7 +62524,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],371:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62667,7 +62760,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":368,"./IModel":370}],372:[function(require,module,exports){
+},{"./Comment":371,"./IModel":373}],375:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62856,7 +62949,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],373:[function(require,module,exports){
+},{}],376:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63013,7 +63106,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":371}],374:[function(require,module,exports){
+},{"./Item":374}],377:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63304,7 +63397,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":370}],375:[function(require,module,exports){
+},{"./IModel":373}],378:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63383,7 +63476,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],376:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63631,7 +63724,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../api/controller":347,"../models/Exam":369,"../models/Payload":372,"../models/Student":374,"./action-types":375,"./mutation-types":391}],377:[function(require,module,exports){
+},{"../api/controller":347,"../models/Exam":372,"../models/Payload":375,"../models/Student":377,"./action-types":378,"./mutation-types":395}],380:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63646,9 +63739,62 @@ var getAllExams = exports.getAllExams = 'getAllExams';
 
 //items
 var getItemCount = exports.getItemCount = 'getItemCount';
+
+var getItem = exports.getItem = 'getItem';
+/**
+ * Returns the item object residing at the
+ * given index in the list.
+ * This does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
+
+/**
+ * Returns the item object with the given id.
+ * This is the preferred way of looking up objects.
+ * It is immutable across re-sorting and corresponds with
+ * the stored db value.
+ * Getting an object by this does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemById = exports.getItemById = 'getItemById';
+
+/**
+ * Returns list of items objects
+ * @param state
+ * @param getters
+ * @param payload
+ * @returns []
+ */
 var getAllItems = exports.getAllItems = 'getAllItems';
 
-},{}],378:[function(require,module,exports){
+var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
+
+/**
+ * Return list of Item objects
+ * @param state
+ * @param getters
+ * @param payload
+ * @returns []
+ */
+var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
+
+//Visibility settings
+var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
+
+},{}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63832,7 +63978,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],379:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -63946,6 +64092,10 @@ var _times = require('./modules/times.js');
 
 var _times2 = _interopRequireDefault(_times);
 
+var _visibility = require('./modules/visibility');
+
+var _visibility2 = _interopRequireDefault(_visibility);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -63994,15 +64144,15 @@ exports.default = new _vuex2.default.Store({
     questions: _questions2.default,
     settings: _settings2.default,
     students: _students2.default,
-    times: _times2.default
-
+    times: _times2.default,
+    visibility: _visibility2.default
   },
   state: state,
 
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":376,"./getters":378,"./modules/activeexam.js":380,"./modules/activestudent.js":381,"./modules/comments.js":382,"./modules/escores.js":383,"./modules/grades.js":384,"./modules/items.js":385,"./modules/qscores.js":386,"./modules/questions.js":387,"./modules/settings":388,"./modules/students.js":389,"./modules/times.js":390,"./mutations":392,"./state":393,"_process":338,"vue/dist/vue.js":343,"vuex":346}],380:[function(require,module,exports){
+},{"./actions":379,"./getters":381,"./modules/activeexam.js":383,"./modules/activestudent.js":384,"./modules/comments.js":385,"./modules/escores.js":386,"./modules/grades.js":387,"./modules/items.js":388,"./modules/qscores.js":389,"./modules/questions.js":390,"./modules/settings":391,"./modules/students.js":392,"./modules/times.js":393,"./modules/visibility":394,"./mutations":396,"./state":397,"_process":338,"vue/dist/vue.js":343,"vuex":346}],383:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64104,7 +64254,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":369,"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],381:[function(require,module,exports){
+},{"../../models/Exam":372,"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64243,7 +64393,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../../models/Student":374,"../action-types":375,"../mutation-types":391}],382:[function(require,module,exports){
+},{"../../models/Payload":375,"../../models/Student":377,"../action-types":378,"../mutation-types":395}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64426,7 +64576,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],383:[function(require,module,exports){
+},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64531,7 +64681,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],384:[function(require,module,exports){
+},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],387:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64710,7 +64860,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],385:[function(require,module,exports){
+},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64868,7 +65018,15 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     item.demote();
 }), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
-    state.indexMap.set(payload.index, payload.id);
+    Vue.set(state.indexMap, payload.index, payload.id);
+
+    // state.indexMap.set( payload.index, payload.id );
+}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, rootState, payload) {
+    // Payload.checkIfPayload( payload )
+    // let item = state.items[ payload.index ];
+    // item.togglePublic();
+    // Vue.set( state.items, payload.index, item );
+
 }), _mutations);
 
 /**
@@ -64945,7 +65103,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
     }
 }), _actions);
 
-var getters = _defineProperty({
+var getters = {
     /**
      * Returns the desired Item object
      * Payload can have any of the following identifiers,
@@ -64957,21 +65115,27 @@ var getters = _defineProperty({
      * @param getters
      * @param payload Object containing Item identifier
      */
-    getItem: function getItem(state, getters, payload) {
-        if (isItemsEmpty(state)) return false;
-
-        var index = payload.index,
-            id = payload.id;
-        //room for other ways of finding index
-
-        if (typeof id != 'undefined') {
-            return undefined.getItemById(state, getters, id);
-        }
-        if (typeof index != 'undefined') {
-            return undefined.getItemByIndex(state, getters, index);
-        }
-        //default case
-        throw new Error('bad input to getItem');
+    getItem: function getItem(state, getters, rootState) {
+        return function (payload) {
+            // [gTypes.getItem ]: ( state, getters, payload ) => {
+            console.log('getItem', state, payload);
+            if (isItemsEmpty(state)) return false;
+            if (_Payload2.default.checkIfPayload(payload)) {
+                console.log('getItem', payload);
+                var index = payload.index;
+                var _id2 = payload.id;
+                //room for other ways of finding index
+                if (typeof _id2 != 'undefined') {
+                    return undefined.getItemById(state, getters, _id2);
+                }
+                if (typeof index != 'undefined') {
+                    return undefined.getItemByIndex(state, getters, index);
+                }
+            }
+            /**/
+            //default case
+            // throw new Error( 'bad input to getItem' )
+        };
     },
 
     /**
@@ -64988,6 +65152,8 @@ var getters = _defineProperty({
      */
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
+
+            // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
             console.log('getItemByIndex', state, index);
             return function (state, index) {
                 return state.items[index];
@@ -65011,6 +65177,7 @@ var getters = _defineProperty({
      */
     getItemById: function getItemById(state, getters) {
         return function (id) {
+            // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
             console.log('getItemById', state, id);
             return function (state, id) {
                 var r = state.items.filter(function (i) {
@@ -65036,37 +65203,17 @@ var getters = _defineProperty({
         return state.items;
     },
 
-    getAllIndexesList: function getAllIndexesList(state, getters, rootState, payload) {
+    getAllIndexesList: function getAllIndexesList(state, getters, rootState) {
+
+        if (isItemsEmpty(state)) return [];
+        // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
         var out = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var _step$value = _slicedToArray(_step.value, 2),
-                    key = _step$value[0],
-                    val = _step$value[1];
-
-                // console.log( 'getAllIndexesList', key, val );
-                out.push(key);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-
-        return out;
+        return Object.keys(state.items);
+        // for ( let [ key, val ] of state.items ) {
+        //     // console.log( 'getAllIndexesList', key, val );
+        //     out.push( key );
+        // }
+        // return out;
     },
 
     /**
@@ -65078,17 +65225,19 @@ var getters = _defineProperty({
      */
     getAllItemsList: function getAllItemsList(state, getters) {
         return function (items) {
+
+            // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
             var out = [];
             // if ( state.items.size > 0 ) {
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
             try {
-                for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var _step2$value = _slicedToArray(_step2.value, 2),
-                        key = _step2$value[0],
-                        val = _step2$value[1];
+                for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _step$value = _slicedToArray(_step.value, 2),
+                        key = _step$value[0],
+                        val = _step$value[1];
 
                     // for ( let [ key, val ] of state.items.entries() ) {
                     // console.log( 'getAllItemsList', key, val );
@@ -65096,27 +65245,37 @@ var getters = _defineProperty({
                 }
                 // }
             } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
+                _didIteratorError = true;
+                _iteratorError = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
                     }
                 } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
+                    if (_didIteratorError) {
+                        throw _iteratorError;
                     }
                 }
             }
 
             return out;
         };
+    },
+
+    /**
+     * Returns the current count of items
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns {Number}
+     */
+    getItemCount: function getItemCount(state, getters) {
+        // [gTypes.getItemCount]: ( state, getters ) => {
+        return state.items.length;
     }
 
-}, gTypes.getItemCount, function (state, getters) {
-    return state.items.length;
-});
+};
 
 exports.default = {
     actions: actions,
@@ -65125,7 +65284,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":371,"../../models/Payload":372,"../../store/action-types":375,"../../store/getter-types":377,"../../store/mutation-types":391,"vue":344}],386:[function(require,module,exports){
+},{"../../models/Item":374,"../../models/Payload":375,"../../store/action-types":378,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65235,7 +65394,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],387:[function(require,module,exports){
+},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65374,7 +65533,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../../models/Question":373,"../action-types":375,"../mutation-types":391}],388:[function(require,module,exports){
+},{"../../models/Payload":375,"../../models/Question":376,"../action-types":378,"../mutation-types":395}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65443,7 +65602,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],389:[function(require,module,exports){
+},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65563,7 +65722,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":372,"../../models/Student":374,"../action-types":375,"../mutation-types":391}],390:[function(require,module,exports){
+},{"../../models/Payload":375,"../../models/Student":377,"../action-types":378,"../mutation-types":395}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65700,7 +65859,97 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":372,"../action-types":375,"../mutation-types":391}],391:[function(require,module,exports){
+},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],394:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations;
+
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = require('../getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This maintains the visibility of page elements
+                                                                                                                                                                                                                   * and their various parts.
+                                                                                                                                                                                                                   * Since the server doesn't need to know about the state
+                                                                                                                                                                                                                   * there is no need to work through the stored items
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 3/23/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    /** List of indexes of items for which the settings panel is visible */
+    itemsWithSettingsVisible: [0, 1] //The root item (the exam) is always visible
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.showItemSettings, function (state, payload) {
+    console.log('show called', payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+
+        if (typeof payload.index != 'undefined') {
+            if (!state.itemsWithSettingsVisible.includes(payload.index)) {
+
+                state.itemsWithSettingsVisible.push(payload.index);
+            }
+        }
+    }
+}), _defineProperty(_mutations, mTypes.hideItemSettings, function (state, payload) {
+    console.log('hide called', payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+        if (typeof payload.index != 'undefined') {
+            //get index of where the item index is stored
+            var index = state.itemsWithSettingsVisible.indexOf(payload.index);
+            console.log('in dex', index);
+            //todo renenable
+            //this covers index > -1  (not found) and index = 0 (the exam)
+            //so neither can be altered
+            // if ( index > 0 ) {
+            if (index > -1) state.itemsWithSettingsVisible.splice(index, 1);
+        }
+    }
+}), _mutations);
+// [mTypes.toggleItemSettings] : ( state, rootState, payload ) => {
+//     if(Payload.checkIfPayload(payload)) {
+//         if ( typeof payload.index != 'undefined' ) {
+//
+//         };
+
+var actions = {};
+
+var getters = _defineProperty({}, gTypes.isItemSettingsVisible, function (state, getters, rootState) {
+    return function (index) {
+        return state.itemsWithSettingsVisible.includes(index);
+    };
+});
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Payload":375,"../action-types":378,"../getter-types":380,"../mutation-types":395}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65783,7 +66032,7 @@ var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
-
+var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
 var updateComment = exports.updateComment = 'updateComment';
 
 //settings
@@ -65791,7 +66040,11 @@ var toggleDeleteButtonVisibility = exports.toggleDeleteButtonVisibility = 'toggl
 var toggleReorderMode = exports.toggleReorderMode = 'toggleReorderMode';
 var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback';
 
-},{}],392:[function(require,module,exports){
+//item settings
+var showItemSettings = exports.showItemSettings = 'showItemSettings';
+var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
+
+},{}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65825,7 +66078,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":391}],393:[function(require,module,exports){
+},{"./mutation-types":395}],397:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -65855,6 +66108,6 @@ exports.default = {
 
 };
 
-},{}]},{},[367]);
+},{}]},{},[370]);
 
 //# sourceMappingURL=new-setup-package.js.map

@@ -63,7 +63,7 @@
         computed: {
             items: function () {
                 console.log( 'items', this );
-                return this.$store.getters.getAllItems; //[gTypes.getAllItems];
+                return this.$store.getters[gTypes.getAllItems];
             },
 
             numberOfItems: function () {

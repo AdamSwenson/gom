@@ -20,26 +20,40 @@ import App from './new-setup.vue'
 
 import examName from './components/exam.name.component.vue'
 //    import examProperties from './components/exam.properties.component.vue'
+
 import propsDashboard from './components/dashboard.props.component.vue'
 import toolsDashboard from './components/dashboard.tools.component.vue'
+
+
+
+
+//item settings and properties edit panels
+import itemEditPane from './components/item.edit-pane.component.vue'
+import panelComments from './components/panel.comment-setup.component.vue'
+import panelDetail from './components/panel.detail.component.vue'
+import panelStats from './components/panel.stats.component.vue'
+import panelHistory from './components/panel.history.component.vue'
+import panelNotes from './components/panel.notes.component.vue'
+
+//Item card list
 import cardList from './components/itemCards.list.component.vue'
-
-import itemName from './components/item.name.component.vue'
-import settingsArea from './components/item.settings.component.vue'
-import itemDetail from './components/item.detail.component.vue'
-import settingsButton from './components/buttons.item.settings.component.vue'
-import valenceButton from './components/buttons.valence.component.vue'
 import itemAddButton from './components/buttons.item.add.component.vue'
-import deleteButton from './components/buttons.item.delete.component.vue'
-import publicIndicator from './components/buttons.public-control.component.vue'
-import itemCard from './components/itemCards.card.component.vue'
-import commentSetup from './components/comment.setup.component.vue'
 
+//Item card parts
+import itemCard from './components/itemCards.card.component.vue'
+import itemName from './components/item.main.component.vue'
 import depthControl from './components/buttons.depth-control.component.vue'
 import maxScore from './components/field.max-score.component.vue'
 import itemNumber from './components/field.item-number.component.vue'
 
+import settingsButton from './components/buttons.settings-control.component.vue'
+import valenceButton from './components/buttons.valence.component.vue'
+import deleteButton from './components/buttons.item.delete.component.vue'
+import publicIndicator from './components/buttons.public-control.component.vue'
 
+
+
+//Register components globally
 Vue.component( 'exam-name', examName )
 // Vue.component( 'exam-properties', examProperties )
 Vue.component( 'props-dashboard', propsDashboard )
@@ -49,11 +63,18 @@ Vue.component( 'item-add-button', itemAddButton )
 Vue.component( 'item-name', itemName )
 Vue.component( 'public-indicator', publicIndicator )
 Vue.component( 'settings-button', settingsButton )
-Vue.component( 'item-settings', settingsArea )
+Vue.component( 'item-edit-pane', itemEditPane )
 Vue.component( 'item-card', itemCard )
 Vue.component( 'card-list', cardList )
-Vue.component( 'item-settings-detail', itemDetail )
-Vue.component( 'item-settings-comment-setup', commentSetup )
+
+//Panels
+Vue.component( 'panel-detail', panelDetail )
+Vue.component( 'panel-comments', panelComments )
+Vue.component( 'panel-history', panelHistory )
+Vue.component( 'panel-stats', panelStats )
+Vue.component('panel-notes', panelNotes)
+
+// Vue.component( 'item-settings-comment-setup', commentSetup )
 Vue.component('valence-button', valenceButton)
 Vue.component('delete-item-button', deleteButton)
 Vue.component('depth-control', depthControl)
