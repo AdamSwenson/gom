@@ -60033,7 +60033,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-bedabc0c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],350:[function(require,module,exports){
+},{"../../models/Payload":376,"../../store/action-types":379,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],350:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60103,7 +60103,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4b0ad92d", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],351:[function(require,module,exports){
+},{"../../store/action-types":379,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],351:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -60188,7 +60188,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-344d0d66", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":378,"bootbox":27,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],352:[function(require,module,exports){
+},{"../../store/action-types":379,"bootbox":27,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],352:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60296,14 +60296,8 @@ exports.default = {
          * do the work.
          */
         togglePublic: function togglePublic() {
-            console.log('CALLED', 'togglePublic');
-
-            this.$store.commit(mTypes.toggleItemPublic);
-
-            //                let item = this.$store.getters.getItemById( this.id );
-            //                if ( typeof item != 'undefined' && item instanceof Item) {
-            //                    return item.togglePublic();
-            //                }
+            //                console.log( 'CALLED', 'togglePublic' );
+            this.$store.commit(mTypes.toggleItemPublic, _Payload2.default.factory({ index: this.index }));
         }
 
     },
@@ -60330,7 +60324,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":374,"../../models/Payload":375,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],353:[function(require,module,exports){
+},{"../../models/Item":375,"../../models/Payload":376,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],353:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60410,7 +60404,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7de0264c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":374,"../../models/Payload":375,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],354:[function(require,module,exports){
+},{"../../models/Item":375,"../../models/Payload":376,"../../store/getter-types":381,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60605,7 +60599,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-a586beac", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":378,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],356:[function(require,module,exports){
+},{"../../store/action-types":379,"../../store/getter-types":381,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -60694,7 +60688,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],357:[function(require,module,exports){
+},{"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],357:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 "use strict";
@@ -60816,6 +60810,81 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 exports.default = {
     props: ['index', 'id'],
+
+    data: function data() {
+        return {
+
+            placeHolders: {
+                privateName: "Enter a descriptive name for this item (e.g., Cat petting amount )"
+
+            }
+        };
+    },
+
+    computed: {
+
+        name: {
+            get: function get() {
+                //                    let item = this.$store.getters.getItemById( this.id );
+                var item = this.$store.getters.getItemByIndex(this.index);
+                if (typeof item != 'undefined') {
+                    return item.name;
+                }
+            },
+
+            set: function set(v) {
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'name', updateVal: v });
+                this.$store.commit(mTypes.updateItem, pl);
+            }
+        }
+
+    },
+
+    methods: {}
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<input type=\"text\" class=\"itemMain form-control\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-057ca4e5", module.exports)
+  } else {
+    hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Payload":376,"../../store/action-types":379,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],359:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    props: ['index', 'id'],
     data: function data() {
         return {
             placeholders: {}
@@ -60879,7 +60948,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],359:[function(require,module,exports){
+},{"../../models/Payload":376,"../../store/action-types":379,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -60969,7 +61038,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],360:[function(require,module,exports){
+},{"../../models/Payload":376,"../../store/action-types":379,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61074,9 +61143,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7092e44a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":374,"../../models/Payload":375,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],361:[function(require,module,exports){
+},{"../../models/Item":375,"../../models/Payload":376,"../../store/getter-types":381,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.itemName {\n    margin-bottom: 0;\n    margin-top: 0;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.itemName {\n  margin-bottom: 0;\n  margin-top: 0; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -61178,30 +61247,11 @@ exports.default = {
     },
 
     methods: {
-        /**
-         * Requests that the item properties area
-         * be displayed
-         */
-        openItemSettings: function openItemSettings() {
-            console.log('itemName', 'CALLED', 'openItemSettings');
-            this.$store.dipatch('display-settings');
-        },
 
         isPublic: function isPublic() {
             return this.public;
-        },
-        getter: function getter(name) {
-            var item = this.$store.getters.getItemById(this.id);
-            // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item != 'undefined') {
-                return item[name];
-            }
-        },
-
-        setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
-            this.$store.commit(mTypes.updateItem, pl);
         }
+
     },
 
     directives: {},
@@ -61213,13 +61263,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component input-group input-group-lg\">\n\n    <div class=\"input-group-addon\">\n        <item-number :index=\"index\" :id=\"id\"></item-number>\n    </div>\n\n    <input type=\"text\" class=\"itemName form-control\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n    <div class=\"input-group-btn\">\n        <settings-button :index=\"index\" :id=\"id\"></settings-button>\n\n        <public-indicator :index=\"index\" :id=\"id\">\n        </public-indicator>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component input-group input-group-lg\">\n\n    <span class=\"input-group-addon\">\n        <item-number :index=\"index\" :id=\"id\"></item-number>\n    </span>\n\n    <item-name :index=\"index\" :id=\"id\"></item-name>\n\n    <span class=\"input-group-btn\">\n        <settings-button :index=\"index\" :id=\"id\"></settings-button>\n\n        <public-indicator :index=\"index\" :id=\"id\">\n        </public-indicator>\n    </span>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.itemName {\n    margin-bottom: 0;\n    margin-top: 0;\n}\n\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\n.itemName {\n  margin-bottom: 0;\n  margin-top: 0; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -61228,7 +61278,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":374,"../../models/Payload":375,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],362:[function(require,module,exports){
+},{"../../models/Item":375,"../../models/Payload":376,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61241,7 +61291,7 @@ Object.defineProperty(exports, "__esModule", {
 //    import deleteButton from './buttons.item.delete.component.vue'
 //    import itemEditPane from './item.edit-pane.component.vue'
 //    import depthControl from './buttons.depth-control.component.vue'
-//    import itemName from './item.main.component.vue'
+//    import itemMain from './item.main.component.vue'
 
 exports.default = {
 
@@ -61269,7 +61319,7 @@ exports.default = {
     //            'item-settings': itemEditPane,
     //            'delete-item-button': deleteButton,
     //            'depth-control': depthControl,
-    //            'item-name': itemName,
+    //            'item-name': itemMain,
     //
     //        },
 
@@ -61341,14 +61391,14 @@ exports.default = {
 
     events: {
         'display-settings': function displaySettings() {
-            console.log('itemName', 'CAUGHT', 'display-settings', this.index);
+            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
         }
     },
 
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-name :index=\"index\" :id=\"id\"></item-name>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n            <slot name=\"head\">\n\n                <item-edit-pane :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-edit-pane>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-main :index=\"index\" :id=\"id\"></item-main>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n            <slot name=\"head\">\n\n                <item-edit-pane :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-edit-pane>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -61363,7 +61413,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-274cbdc8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],363:[function(require,module,exports){
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61554,7 +61604,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-150522d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":374,"../../models/Payload":375,"../../store/action-types":378,"../../store/getter-types":380,"../../store/mutation-types":395,"sortablejs":340,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],364:[function(require,module,exports){
+},{"../../models/Item":375,"../../models/Payload":376,"../../store/action-types":379,"../../store/getter-types":381,"../../store/mutation-types":396,"sortablejs":340,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61692,7 +61742,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":371,"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"./buttons.valence.component.vue":354,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],365:[function(require,module,exports){
+},{"../../models/Comment":372,"../../models/Payload":376,"../../store/action-types":379,"../../store/mutation-types":396,"./buttons.valence.component.vue":354,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61790,7 +61840,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e5cd15", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":375,"../../store/action-types":378,"../../store/mutation-types":395,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],366:[function(require,module,exports){
+},{"../../models/Payload":376,"../../store/action-types":379,"../../store/mutation-types":396,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 "use strict";
@@ -61810,7 +61860,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],367:[function(require,module,exports){
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 "use strict";
@@ -61830,7 +61880,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],368:[function(require,module,exports){
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 "use strict";
@@ -61850,7 +61900,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],369:[function(require,module,exports){
+},{"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],370:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -61880,7 +61930,7 @@ exports.default = {
         //
         //
         //            //Item
-        //            'item-name': itemName,
+        //            'item-name': itemMain,
         ////            'item-settings': settingsArea,
         //            'item-settings-detail': itemDetail,
         //            //buttons
@@ -61908,7 +61958,7 @@ exports.default = {
 //    import toolsDashboard from './components/dashboard.tools.component.vue'
 //    import cardList from './components/itemCards.list.component.vue'
 //
-//    import itemName from './components/item.main.component.vue'
+//    import itemMain from './components/item.main.component.vue'
 //    import itemEditPane from './components/item.edit-pane.component.vue'
 //    import itemDetail from './components/panel.detail.component.vue'
 //    import settingsButton from './components/buttons.settings-control.component.vue'
@@ -61936,7 +61986,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":382,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],370:[function(require,module,exports){
+},{"../store":383,"vue":344,"vue-hot-reload-api":342,"vueify/lib/insert-css":345}],371:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -62013,6 +62063,10 @@ var _fieldItemNumberComponent = require('./components/field.item-number.componen
 
 var _fieldItemNumberComponent2 = _interopRequireDefault(_fieldItemNumberComponent);
 
+var _fieldItemNameComponent = require('./components/field.item-name.component.vue');
+
+var _fieldItemNameComponent2 = _interopRequireDefault(_fieldItemNameComponent);
+
 var _buttonsSettingsControlComponent = require('./components/buttons.settings-control.component.vue');
 
 var _buttonsSettingsControlComponent2 = _interopRequireDefault(_buttonsSettingsControlComponent);
@@ -62060,7 +62114,8 @@ _vue2.default.component('props-dashboard', _dashboardPropsComponent2.default);
 _vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
 // Vue.component( 'item-nav', itemNav )
 _vue2.default.component('item-add-button', _buttonsItemAddComponent2.default);
-_vue2.default.component('item-name', _itemMainComponent2.default);
+_vue2.default.component('item-name', _fieldItemNameComponent2.default);
+_vue2.default.component('item-main', _itemMainComponent2.default);
 _vue2.default.component('public-indicator', _buttonsPublicControlComponent2.default);
 _vue2.default.component('settings-button', _buttonsSettingsControlComponent2.default);
 _vue2.default.component('item-edit-pane', _itemEditPaneComponent2.default);
@@ -62094,7 +62149,7 @@ new _vue2.default({
 
 }).$mount("#app");
 
-},{"./bootstrap":348,"./components/buttons.depth-control.component.vue":349,"./components/buttons.item.add.component.vue":350,"./components/buttons.item.delete.component.vue":351,"./components/buttons.public-control.component.vue":352,"./components/buttons.settings-control.component.vue":353,"./components/buttons.valence.component.vue":354,"./components/dashboard.props.component.vue":355,"./components/dashboard.tools.component.vue":356,"./components/exam.name.component.vue":357,"./components/field.item-number.component.vue":358,"./components/field.max-score.component.vue":359,"./components/item.edit-pane.component.vue":360,"./components/item.main.component.vue":361,"./components/itemCards.card.component.vue":362,"./components/itemCards.list.component.vue":363,"./components/panel.comment-setup.component.vue":364,"./components/panel.detail.component.vue":365,"./components/panel.history.component.vue":366,"./components/panel.notes.component.vue":367,"./components/panel.stats.component.vue":368,"./new-setup.vue":369,"babel-polyfill":26,"vue/dist/vue.js":343}],371:[function(require,module,exports){
+},{"./bootstrap":348,"./components/buttons.depth-control.component.vue":349,"./components/buttons.item.add.component.vue":350,"./components/buttons.item.delete.component.vue":351,"./components/buttons.public-control.component.vue":352,"./components/buttons.settings-control.component.vue":353,"./components/buttons.valence.component.vue":354,"./components/dashboard.props.component.vue":355,"./components/dashboard.tools.component.vue":356,"./components/exam.name.component.vue":357,"./components/field.item-name.component.vue":358,"./components/field.item-number.component.vue":359,"./components/field.max-score.component.vue":360,"./components/item.edit-pane.component.vue":361,"./components/item.main.component.vue":362,"./components/itemCards.card.component.vue":363,"./components/itemCards.list.component.vue":364,"./components/panel.comment-setup.component.vue":365,"./components/panel.detail.component.vue":366,"./components/panel.history.component.vue":367,"./components/panel.notes.component.vue":368,"./components/panel.stats.component.vue":369,"./new-setup.vue":370,"babel-polyfill":26,"vue/dist/vue.js":343}],372:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62198,7 +62253,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":373,"./Item":374}],372:[function(require,module,exports){
+},{"./IModel":374,"./Item":375}],373:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62358,7 +62413,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":374}],373:[function(require,module,exports){
+},{"./Item":375}],374:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62524,7 +62579,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],374:[function(require,module,exports){
+},{}],375:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62760,7 +62815,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":371,"./IModel":373}],375:[function(require,module,exports){
+},{"./Comment":372,"./IModel":374}],376:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62949,7 +63004,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],376:[function(require,module,exports){
+},{}],377:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63106,7 +63161,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":374}],377:[function(require,module,exports){
+},{"./Item":375}],378:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63397,7 +63452,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":373}],378:[function(require,module,exports){
+},{"./IModel":374}],379:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63476,7 +63531,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],379:[function(require,module,exports){
+},{}],380:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63724,7 +63779,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../api/controller":347,"../models/Exam":372,"../models/Payload":375,"../models/Student":377,"./action-types":378,"./mutation-types":395}],380:[function(require,module,exports){
+},{"../api/controller":347,"../models/Exam":373,"../models/Payload":376,"../models/Student":378,"./action-types":379,"./mutation-types":396}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63794,7 +63849,7 @@ var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 //Visibility settings
 var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 
-},{}],381:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -63978,7 +64033,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],382:[function(require,module,exports){
+},{}],383:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -64152,7 +64207,7 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":379,"./getters":381,"./modules/activeexam.js":383,"./modules/activestudent.js":384,"./modules/comments.js":385,"./modules/escores.js":386,"./modules/grades.js":387,"./modules/items.js":388,"./modules/qscores.js":389,"./modules/questions.js":390,"./modules/settings":391,"./modules/students.js":392,"./modules/times.js":393,"./modules/visibility":394,"./mutations":396,"./state":397,"_process":338,"vue/dist/vue.js":343,"vuex":346}],383:[function(require,module,exports){
+},{"./actions":380,"./getters":382,"./modules/activeexam.js":384,"./modules/activestudent.js":385,"./modules/comments.js":386,"./modules/escores.js":387,"./modules/grades.js":388,"./modules/items.js":389,"./modules/qscores.js":390,"./modules/questions.js":391,"./modules/settings":392,"./modules/students.js":393,"./modules/times.js":394,"./modules/visibility":395,"./mutations":397,"./state":398,"_process":338,"vue/dist/vue.js":343,"vuex":346}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64254,7 +64309,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":372,"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],384:[function(require,module,exports){
+},{"../../models/Exam":373,"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64393,7 +64448,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../../models/Student":377,"../action-types":378,"../mutation-types":395}],385:[function(require,module,exports){
+},{"../../models/Payload":376,"../../models/Student":378,"../action-types":379,"../mutation-types":396}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64576,7 +64631,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],386:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],387:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64681,7 +64736,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],387:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64860,7 +64915,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],388:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -64936,7 +64991,7 @@ var helpers = {
         if (typeof payload.id != 'undefined') {
             //get the item
             var item = state.items.filter(function (i) {
-                if (i.id === id) {
+                if (typeof i.id != 'undefined' && i.id === id) {
                     return i;
                 }
             });
@@ -65016,17 +65071,17 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
 
     var item = state.items[index];
     item.demote();
-}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
+}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     Vue.set(state.indexMap, payload.index, payload.id);
 
     // state.indexMap.set( payload.index, payload.id );
-}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, rootState, payload) {
-    // Payload.checkIfPayload( payload )
-    // let item = state.items[ payload.index ];
-    // item.togglePublic();
-    // Vue.set( state.items, payload.index, item );
-
+}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, payload) {
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var item = state.items[payload.index];
+        item.togglePublic();
+        Vue.set(state.items, payload.index, item);
+    }
 }), _mutations);
 
 /**
@@ -65115,7 +65170,7 @@ var getters = {
      * @param getters
      * @param payload Object containing Item identifier
      */
-    getItem: function getItem(state, getters, rootState) {
+    getItem: function getItem(state, getters) {
         return function (payload) {
             // [gTypes.getItem ]: ( state, getters, payload ) => {
             console.log('getItem', state, payload);
@@ -65152,6 +65207,9 @@ var getters = {
      */
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
+            if (_Payload2.default.checkIfPayload(index)) {
+                index = index.index;
+            }
 
             // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
             console.log('getItemByIndex', state, index);
@@ -65284,7 +65342,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":374,"../../models/Payload":375,"../../store/action-types":378,"../../store/getter-types":380,"../../store/mutation-types":395,"vue":344}],389:[function(require,module,exports){
+},{"../../models/Item":375,"../../models/Payload":376,"../../store/action-types":379,"../../store/getter-types":381,"../../store/mutation-types":396,"vue":344}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65394,7 +65452,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],390:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65533,7 +65591,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../../models/Question":376,"../action-types":378,"../mutation-types":395}],391:[function(require,module,exports){
+},{"../../models/Payload":376,"../../models/Question":377,"../action-types":379,"../mutation-types":396}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65602,7 +65660,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],392:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65722,7 +65780,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../../models/Student":377,"../action-types":378,"../mutation-types":395}],393:[function(require,module,exports){
+},{"../../models/Payload":376,"../../models/Student":378,"../action-types":379,"../mutation-types":396}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65859,7 +65917,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../mutation-types":395}],394:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../mutation-types":396}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -65949,7 +66007,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":375,"../action-types":378,"../getter-types":380,"../mutation-types":395}],395:[function(require,module,exports){
+},{"../../models/Payload":376,"../action-types":379,"../getter-types":381,"../mutation-types":396}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -66044,7 +66102,7 @@ var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback'
 var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 
-},{}],396:[function(require,module,exports){
+},{}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -66078,7 +66136,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":395}],397:[function(require,module,exports){
+},{"./mutation-types":396}],398:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -66108,6 +66166,6 @@ exports.default = {
 
 };
 
-},{}]},{},[370]);
+},{}]},{},[371]);
 
 //# sourceMappingURL=new-setup-package.js.map

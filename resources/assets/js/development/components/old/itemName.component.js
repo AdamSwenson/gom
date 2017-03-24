@@ -88,7 +88,7 @@ module.exports = {
          * be displayed
          */
         openItemSettings: function () {
-            console.log( 'itemName', 'CALLED', 'openItemSettings' );
+            console.log( 'itemMain', 'CALLED', 'openItemSettings' );
             this.$dipatch( 'display-settings' );
         },
 

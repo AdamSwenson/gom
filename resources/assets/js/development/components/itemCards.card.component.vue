@@ -5,10 +5,10 @@
          v-bind:class="offsetClass"
     >
         <div class="row">
-            <item-name
+            <item-main
                     :index="index"
                     :id="id"
-            ></item-name>
+            ></item-main>
 
         </div>
         <div class="row">
@@ -78,7 +78,7 @@
 //    import deleteButton from './buttons.item.delete.component.vue'
 //    import itemEditPane from './item.edit-pane.component.vue'
 //    import depthControl from './buttons.depth-control.component.vue'
-//    import itemName from './item.main.component.vue'
+//    import itemMain from './item.main.component.vue'
 
     export default{
 
@@ -106,7 +106,7 @@
 //            'item-settings': itemEditPane,
 //            'delete-item-button': deleteButton,
 //            'depth-control': depthControl,
-//            'item-name': itemName,
+//            'item-name': itemMain,
 //
 //        },
 
@@ -182,7 +182,7 @@
 
         events: {
             'display-settings': function () {
-                console.log( 'itemName', 'CAUGHT', 'display-settings', this.index );
+                console.log( 'itemMain', 'CAUGHT', 'display-settings', this.index );
             },
         },
 

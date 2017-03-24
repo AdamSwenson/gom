@@ -41,10 +41,11 @@ import itemAddButton from './components/buttons.item.add.component.vue'
 
 //Item card parts
 import itemCard from './components/itemCards.card.component.vue'
-import itemName from './components/item.main.component.vue'
+import itemMain from './components/item.main.component.vue'
 import depthControl from './components/buttons.depth-control.component.vue'
 import maxScore from './components/field.max-score.component.vue'
 import itemNumber from './components/field.item-number.component.vue'
+import itemName from './components/field.item-name.component.vue'
 
 import settingsButton from './components/buttons.settings-control.component.vue'
 import valenceButton from './components/buttons.valence.component.vue'
@@ -61,6 +62,7 @@ Vue.component( 'tools-dashboard', toolsDashboard )
 // Vue.component( 'item-nav', itemNav )
 Vue.component( 'item-add-button', itemAddButton )
 Vue.component( 'item-name', itemName )
+Vue.component( 'item-main', itemMain )
 Vue.component( 'public-indicator', publicIndicator )
 Vue.component( 'settings-button', settingsButton )
 Vue.component( 'item-edit-pane', itemEditPane )

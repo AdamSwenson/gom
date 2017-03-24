@@ -2,19 +2,16 @@
 
     <div class="item-main-component input-group input-group-lg">
 
-        <div class="input-group-addon">
+        <span class="input-group-addon">
             <item-number
                     :index="index"
                     :id="id"
             ></item-number>
-        </div>
+        </span>
 
-        <input type="text"
-               class="itemName form-control"
-               v-bind:placeholder="placeHolders.privateName"
-               v-model="name"
-        >
-        <div class="input-group-btn">
+        <item-name :index="index" :id="id"></item-name>
+
+        <span class="input-group-btn">
             <settings-button
                     :index="index"
                     :id="id"
@@ -25,17 +22,18 @@
                     :id="id"
             >
             </public-indicator>
-        </div>
+        </span>
     </div>
 </template>
 
-<style>
+<style lang="scss">
     .itemName {
         margin-bottom: 0;
         margin-top: 0;
     }
 
 </style>
+
 <script>
 
     import Item from '../../models/Item'
@@ -123,30 +121,11 @@
         },
 
         methods: {
-            /**
-             * Requests that the item properties area
-             * be displayed
-             */
-            openItemSettings: function () {
-                console.log( 'itemName', 'CALLED', 'openItemSettings' );
-                this.$store.dipatch( 'display-settings' );
-            },
 
             isPublic: function () {
                 return this.public;
             },
-            getter: function ( name ) {
-                let item = this.$store.getters.getItemById( this.id );
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item != 'undefined' ) {
-                    return item[ name ]
-                }
-            },
 
-            setter: function ( name, value ) {
-                let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
-                this.$store.commit( mTypes.updateItem, pl );
-            }
         },
 
         directives: {},

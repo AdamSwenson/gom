@@ -105,7 +105,7 @@ module.exports = {
 
     events: {
         'display-settings': function () {
-            console.log( 'itemName', 'CAUGHT', 'display-settings', this.index );
+            console.log( 'itemMain', 'CAUGHT', 'display-settings', this.index );
           },
     },
 

@@ -103,15 +103,8 @@
              * do the work.
              */
             togglePublic: function () {
-                console.log( 'CALLED', 'togglePublic' );
-
-                this.$store.commit( mTypes.toggleItemPublic )
-
-//                let item = this.$store.getters.getItemById( this.id );
-//                if ( typeof item != 'undefined' && item instanceof Item) {
-//                    return item.togglePublic();
-//                }
-
+//                console.log( 'CALLED', 'togglePublic' );
+                this.$store.commit( mTypes.toggleItemPublic , Payload.factory({index: this.index}));
             },
 
 

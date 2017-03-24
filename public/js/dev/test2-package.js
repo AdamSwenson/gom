@@ -21408,7 +21408,7 @@ var helpers = {
         if (typeof payload.id != 'undefined') {
             //get the item
             var item = state.items.filter(function (i) {
-                if (i.id === id) {
+                if (typeof i.id != 'undefined' && i.id === id) {
                     return i;
                 }
             });
@@ -21488,17 +21488,17 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
 
     var item = state.items[index];
     item.demote();
-}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
+}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     Vue.set(state.indexMap, payload.index, payload.id);
 
     // state.indexMap.set( payload.index, payload.id );
-}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, rootState, payload) {
-    // Payload.checkIfPayload( payload )
-    // let item = state.items[ payload.index ];
-    // item.togglePublic();
-    // Vue.set( state.items, payload.index, item );
-
+}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, payload) {
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var item = state.items[payload.index];
+        item.togglePublic();
+        Vue.set(state.items, payload.index, item);
+    }
 }), _mutations);
 
 /**
@@ -21587,7 +21587,7 @@ var getters = {
      * @param getters
      * @param payload Object containing Item identifier
      */
-    getItem: function getItem(state, getters, rootState) {
+    getItem: function getItem(state, getters) {
         return function (payload) {
             // [gTypes.getItem ]: ( state, getters, payload ) => {
             console.log('getItem', state, payload);
@@ -21624,6 +21624,9 @@ var getters = {
      */
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
+            if (_Payload2.default.checkIfPayload(index)) {
+                index = index.index;
+            }
 
             // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
             console.log('getItemByIndex', state, index);

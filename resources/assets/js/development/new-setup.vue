@@ -57,7 +57,7 @@
 //    import toolsDashboard from './components/dashboard.tools.component.vue'
 //    import cardList from './components/itemCards.list.component.vue'
 //
-//    import itemName from './components/item.main.component.vue'
+//    import itemMain from './components/item.main.component.vue'
 //    import itemEditPane from './components/item.edit-pane.component.vue'
 //    import itemDetail from './components/panel.detail.component.vue'
 //    import settingsButton from './components/buttons.settings-control.component.vue'
@@ -86,7 +86,7 @@
 //
 //
 //            //Item
-//            'item-name': itemName,
+//            'item-name': itemMain,
 ////            'item-settings': settingsArea,
 //            'item-settings-detail': itemDetail,
 //            //buttons
