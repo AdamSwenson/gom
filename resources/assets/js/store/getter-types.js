@@ -2,8 +2,24 @@
  * Created by adam on 3/21/17.
  */
 
+
+//Defined in getters (though the names there do not use the constants)
+//Exam
+export const getExamId = 'getExamId'
+export const isActive = 'isActive'
+export const getNumberGraded = 'getNumberGraded'
+export const getTotalExams = 'getTotalExams'
+export const getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent'
+export const getActiveStudentGradingTime = 'getActiveStudentGradingTime'
+export const getCommentTextForActiveStudent = 'getCommentTextForActiveStudent'
+export const getExamGradeForActiveStudent = 'getExamGradeForActiveStudent'
+export const getElementScoreForActiveStudent = 'getElementScoreForActiveStudent'
+
+
+//Exam(s)
 export const getExam = 'getExam'
 export const getAllExams = 'getAllExams'
+export const getActiveExamObj = 'getActiveExamObj'
 
 //items
 export const getItemCount = 'getItemCount'
@@ -61,3 +77,4 @@ export const getAllItemsList = 'getAllItemsList'
 
 //Visibility settings
 export const isItemSettingsVisible = 'isItemSettingsVisible'
+export const isExamSettingsVisible = 'isExamSettingsVisible'

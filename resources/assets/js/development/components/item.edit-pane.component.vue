@@ -1,5 +1,5 @@
 <template>
-    <div class="well well-sm"
+    <div class="item-edit-pane well well-sm"
          v-show="visible">
 
         <slot name="settingsBody">

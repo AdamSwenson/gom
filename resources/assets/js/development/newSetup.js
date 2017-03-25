@@ -10,27 +10,36 @@ require( './bootstrap' );
 import 'babel-polyfill'
 
 import Vue from  'vue/dist/vue.js'
-// import store from '../store'
-
 // import Vue from 'vue'
+
+
+// ES build is more efficient by reducing unneeded components with tree-shaking.
+// (Needs Webpack 2 or Rollup)
+// import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
+// Use commonjs version if es build is not working
+import BootstrapVue from 'bootstrap-vue';
+
+Vue.use(BootstrapVue);
+
+
 import App from './new-setup.vue'
 
+// ------------------------------- Globally register components
 
+import examMain from './components/exam.main.component.vue'
+import examEditPane from './components/exam.edit-pane.component.vue'
+// import panelExamDetail from './components/panel.exam-detail.component.vue'
 
-
-import examName from './components/exam.name.component.vue'
-//    import examProperties from './components/exam.properties.component.vue'
+import listDropdown from './components/field.list-dropdown.component.vue'
 
 import propsDashboard from './components/dashboard.props.component.vue'
 import toolsDashboard from './components/dashboard.tools.component.vue'
 
 
-
-
 //item settings and properties edit panels
 import itemEditPane from './components/item.edit-pane.component.vue'
 import panelComments from './components/panel.comment-setup.component.vue'
-import panelDetail from './components/panel.detail.component.vue'
+import panelDetail from './components/panel.item-detail.component.vue'
 import panelStats from './components/panel.stats.component.vue'
 import panelHistory from './components/panel.history.component.vue'
 import panelNotes from './components/panel.notes.component.vue'
@@ -55,8 +64,9 @@ import publicIndicator from './components/buttons.public-control.component.vue'
 
 
 //Register components globally
-Vue.component( 'exam-name', examName )
-// Vue.component( 'exam-properties', examProperties )
+Vue.component( 'exam-main', examMain )
+Vue.component( 'exam-edit-pane', examEditPane )
+
 Vue.component( 'props-dashboard', propsDashboard )
 Vue.component( 'tools-dashboard', toolsDashboard )
 // Vue.component( 'item-nav', itemNav )
@@ -84,6 +94,7 @@ Vue.component('depth-control', depthControl)
 Vue.component('max-score', maxScore)
 Vue.component('item-number', itemNumber)
 
+Vue.component('list-dropdown', listDropdown)
 
 
 new Vue( {

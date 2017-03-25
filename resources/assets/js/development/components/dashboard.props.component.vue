@@ -50,7 +50,6 @@
                 defaults: {
                     numberStudents: 0,
                     numberGraded: 0,
-
                 }
             };
         },

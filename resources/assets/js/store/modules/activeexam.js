@@ -27,9 +27,10 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.setActiveExam]: ( state, rootState, payload ) => {
-        Payload.checkIfPayload( payload );
-        state.activeExam = payload.obj;
+    [mTypes.setActiveExam]: ( state, payload ) => {
+        if(Payload.checkIfPayload( payload ) && typeof payload.obj != 'undefined'){
+            state.activeExam = payload.obj;
+        }
     },
 
 
@@ -43,8 +44,24 @@ const mutations = {
      */
     [mTypes.clearActiveExam]: ( state, rootState, payload ) => {
         //    Payload.checkIfPayload( payload );
-        state.activeExam = null;
-    }
+        state.activeExam = false;
+    },
+
+    /**
+     * Updates properties of the exam set as active.
+     *
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [mTypes.updateActiveExamProp]: ( state, payload ) => {
+
+        if ( Payload.checkIfPayload( payload ) && typeof payload.updateProp != 'undefined' ) {
+            let {updateProp, updateVal}  = payload;
+            Vue.set( state.activeExam, updateProp , updateVal );
+        }
+
+    },
 }
 
 const actions = {
@@ -65,14 +82,14 @@ const actions = {
         let obj;
         //check and see if an exam object has already been passed in
         if ( payload instanceof Exam ) {
-            obj = payload;
+            payload = Payload.factory( {obj: payload} );
         }
 
         //create the payload with the object
-        let pl = Payload.factory( {obj: obj} );
+        // let pl = Payload.factory( {obj: obj} );
 
         //Save the object
-        commit( mTypes.setActiveExam, pl );
+        commit( mTypes.setActiveExam, payload );
     },
 
     /**
@@ -91,7 +108,7 @@ const actions = {
 const getters = {
 
     getActiveExamId: ( state, getters, payload ) => {
-     return 0;
+        return 0;
         // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
     },
 
@@ -101,9 +118,13 @@ const getters = {
         // return state.activeExam.index;
     },
 
-    getActiveExamObj: ( state, getters ) => {
-        return typeof state.activeExam != 'undefined' ? state.activeExam : false;
-        // return state.activeExam;
+    /**
+     * Returns the exam currently being used or false if none set
+     * @param state
+     * @returns {*}
+     */
+    getActiveExamObj: ( state ) => {
+        return typeof state.activeExam != 'undefined' && state.activeExam ? state.activeExam : false;
     }
 
 };

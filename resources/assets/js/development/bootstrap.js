@@ -14,9 +14,13 @@ window.$ = window.jQuery = require('jquery');
 //set csrf token
 window.Laravel = {csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" )};
 
+/**
+ * Styling and templating libraries
+ */
 //Pull in bootstrap libraries
 require ('bootstrap');
 require('bootstrap-sass');
+
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -51,3 +55,4 @@ window.axios.defaults.headers.common = {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
+

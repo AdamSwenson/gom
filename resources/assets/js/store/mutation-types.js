@@ -15,6 +15,7 @@
 //active exam
 export const setActiveExam = 'setActiveExam';
 export const clearActiveExam = 'clearActiveExam'
+export const updateActiveExamProp = 'updateActiveExamProp'
 
 //activestudent
 export const setActiveStudent = 'setActiveStudent'
@@ -96,3 +97,4 @@ export const toggleSampleFeedback = 'toggleSampleFeedback'
 //item settings
 export const showItemSettings = 'showItemSettings'
 export const hideItemSettings = 'hideItemSettings'
+export const toggleExamSettings = 'toggleExamSettings'

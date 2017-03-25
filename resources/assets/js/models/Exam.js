@@ -96,6 +96,7 @@ export default class Exam extends Item{
             'id',
             'index',
             'name',
+            'publicName',
             'year',
             'term'
         ];

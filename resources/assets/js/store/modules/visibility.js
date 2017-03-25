@@ -14,12 +14,14 @@ import Payload from '../../models/Payload'
 
 const state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [ 0, 1 ] //The root item (the exam) is always visible
+    itemsWithSettingsVisible: [ 0, 1 ], //The root item (the exam) is always visible
+
+    examSettingsVisible: false
 };
 
 const mutations = {
 
-    [mTypes.showItemSettings]: ( state,payload ) => {
+    [mTypes.showItemSettings]: ( state, payload ) => {
         console.log( 'show called', payload );
         if ( Payload.checkIfPayload( payload ) ) {
 
@@ -33,7 +35,7 @@ const mutations = {
     },
 
     [mTypes.hideItemSettings]: ( state, payload ) => {
-        console.log( 'hide called',  payload );
+        console.log( 'hide called', payload );
         if ( Payload.checkIfPayload( payload ) ) {
             if ( typeof payload.index != 'undefined' ) {
                 //get index of where the item index is stored
@@ -47,8 +49,17 @@ const mutations = {
                     state.itemsWithSettingsVisible.splice( index, 1 );
             }
         }
-        
+
     },
+
+    /**
+     * Changes whether exam settings pane is visible
+     * @param state
+     * @param payload
+     */
+    [mTypes.toggleExamSettings]: ( state, payload ) => {
+        state.examSettingsVisible = !state.examSettingsVisible;
+    }
 }
 // [mTypes.toggleItemSettings] : ( state, rootState, payload ) => {
 //     if(Payload.checkIfPayload(payload)) {
@@ -69,7 +80,18 @@ const getters = {
      */
     [gTypes.isItemSettingsVisible]: ( state, getters, rootState ) => ( index ) => {
         return state.itemsWithSettingsVisible.includes( index )
+    },
+
+    /**
+     * Returns boolean of whether the settings pane for the exam should be showing
+     * @param state
+     * @param getters
+     * @param rootState
+     */
+    [gTypes.isExamSettingsVisible]: ( state) => {
+        return state.examSettingsVisible;
     }
+
 };
 
 

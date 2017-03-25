@@ -3,6 +3,8 @@
  *
  * Methods which make use of multiple modules should generally be kept here
  */
+import * as gTypes from './getter-types'
+
 
 /**
  * Helper function used by getters which tests for an index value and then

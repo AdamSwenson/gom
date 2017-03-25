@@ -1,84 +1,117 @@
 <template>
-    <!--<div id="app">-->
     <div id="examEditor">
+
         <div class="row">
-            <exam-name></exam-name>
-            <!--<exam-properties></exam-properties>-->
+            <exam-main></exam-main>
+        </div>
+        <div class="row">
+            <exam-edit-pane></exam-edit-pane>
         </div>
 
         <div id="examEditorBody"
-             class="row">
-
+             class="row"
+        >
             <div id="itemCol"
-                 class="col-lg-12 well well-lg">
+                 class="col-lg-10 well well-lg"
+            >
 
                 <div class="itemRow row">
                     <card-list></card-list>
                 </div>
 
             </div>
-        </div>
-        <div class="row">
+
+            <!--<div class="row">-->
 
             <div id="infoCol"
-                 class="col-lg-3"
+                 class="col-lg-2"
             >
-                <!--<exam-properties></exam-properties>-->
+
                 <div class="row">
-
-                    <!--<props-dashboard></props-dashboard>-->
-
+                    <props-dashboard></props-dashboard>
                 </div>
 
                 <div class="row">
-
-                    temp location
                     <tools-dashboard></tools-dashboard>
                 </div>
 
             </div>
 
         </div>
-
     </div>
 </template>
 
 <style>
+    @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
 
 </style>
 <script>
     // Vuex store
     //this calls use vuex in addition to exposing all the modules
     //    import store from '../store'
-//
-//    import examName from './components/exam.name.component.vue'
-//    //    import examProperties from './components/exam.properties.component.vue'
-//    //    import propsDashboard from './components/dashboard.props.component.vue'
-//    import toolsDashboard from './components/dashboard.tools.component.vue'
-//    import cardList from './components/itemCards.list.component.vue'
-//
-//    import itemMain from './components/item.main.component.vue'
-//    import itemEditPane from './components/item.edit-pane.component.vue'
-//    import itemDetail from './components/panel.detail.component.vue'
-//    import settingsButton from './components/buttons.settings-control.component.vue'
-//    import valenceButton from './components/buttons.valence.component.vue'
-//    import itemAddButton from './components/buttons.item.add.component.vue'
-//    import deleteButton from './components/buttons.item.delete.component.vue'
-//    import publicIndicator from './components/buttons.public-control.component.vue'
-//    import itemCard from './components/itemCards.card.component.vue'
-//    import commentSetup from './components/panel.comment-setup.component.vue'
-//
-//    import depthControl from './components/buttons.depth-control.component.vue'
+    //
+    //    import examName from './components/exam.main.component.vue'
+    //    //    import examEditPane from './components/exam.edit-pane.component.vue'
+    //    //    import propsDashboard from './components/dashboard.props.component.vue'
+    //    import toolsDashboard from './components/dashboard.tools.component.vue'
+    //    import cardList from './components/itemCards.list.component.vue'
+    //
+    //    import itemMain from './components/item.main.component.vue'
+    //    import itemEditPane from './components/item.edit-pane.component.vue'
+    //    import itemDetail from './components/panel.item-detail.component.vue'
+    //    import settingsButton from './components/buttons.settings-control.component.vue'
+    //    import valenceButton from './components/buttons.valence.component.vue'
+    //    import itemAddButton from './components/buttons.item.add.component.vue'
+    //    import deleteButton from './components/buttons.item.delete.component.vue'
+    //    import publicIndicator from './components/buttons.public-control.component.vue'
+    //    import itemCard from './components/itemCards.card.component.vue'
+    //    import commentSetup from './components/panel.comment-setup.component.vue'
+    //
+    //    import depthControl from './components/buttons.depth-control.component.vue'
     import store from '../store'
+
+    import Exam from '../models/Exam'
+    import Item from '../models/Item'
+    import Payload from '../models/Payload'
+
+    import * as aTypes from '../store/action-types'
+    import * as mTypes from '../store/mutation-types'
+    import * as gTypes from '../store/getter-types'
 
     export default {
         store,
 
-        //Components
-        //exam
+        data: function () {
+            return {
+                defaults: {},
+            };
+        },
+
+        computed: {},
+
+        methods: {},
+
+        directives: {},
+
+        events: {},
+
+        mounted: function () {
+            //create an exam object if one isn't set
+            //however don't ask the server to create an id just yet
+            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+            if ( !exam ) {
+                //create an exam object with index 0
+                let exam = Exam.factory( {index: 0} );
+                console.log( 'no exam set, creating one', exam );
+                this.$store.dispatch( aTypes.setActiveExam, Payload.factory( {obj: exam} ) );
+                //push into stack as root item
+                //todo
+            }
+        },
+
         components: {
 //            'exam-name': examName,
-////            'exam-properties': examProperties,
+////            'exam-properties': examEditPane,
 ////dashboards and  tools
 ////            'props-dashboard': propsDashboard,
 //            'tools-dashboard': toolsDashboard,
@@ -101,6 +134,7 @@
 //            'item-settings-comment-setup': commentSetup,
 //
 //            'depth-control': depthControl,
-        }
+        },
+
     }
 </script>
