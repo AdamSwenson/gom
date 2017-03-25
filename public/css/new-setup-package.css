@@ -3,4 +3,72 @@
   font-weight: 900;
 }
 
+.collapse-enter-active, .collapse-leave-active {
+  -webkit-transition: all .35s ease;
+  transition: all .35s ease;
+  overflow: hidden;
+  max-height: 100vh;
+}
+
+.collapse-enter, .collapse-leave-to {
+  max-height: 0;
+}
+
+.hidden {
+  opacity: 0 !important;
+}
+
+.modal {
+  display: block;
+}
+
+.progress-bar {
+  -webkit-transition: all .5s;
+  transition: all .5s;
+}
+
+table thead > tr > td.sorting, table thead > tr > td.sorting_asc, table thead > tr > td.sorting_desc, table thead > tr > th.sorting, table thead > tr > th.sorting_asc, table thead > tr > th.sorting_desc {
+  padding-right: 30px;
+}
+
+table thead > tr > td:active, table thead > tr > th:active {
+  outline: 0;
+}
+
+table thead .sorting, table thead .sorting_asc, table thead .sorting_asc_disabled, table thead .sorting_desc, table thead .sorting_desc_disabled {
+  cursor: pointer;
+  position: relative;
+}
+
+table thead .sorting:after, table thead .sorting:before, table thead .sorting_asc:after, table thead .sorting_asc:before, table thead .sorting_asc_disabled:after, table thead .sorting_asc_disabled:before, table thead .sorting_desc:after, table thead .sorting_desc:before, table thead .sorting_desc_disabled:after, table thead .sorting_desc_disabled:before {
+  position: absolute;
+  bottom: .9em;
+  display: block;
+  opacity: .3;
+}
+
+table thead .sorting:before, table thead .sorting_asc:before, table thead .sorting_asc_disabled:before, table thead .sorting_desc:before, table thead .sorting_desc_disabled:before {
+  right: 1em;
+  content: "\2191";
+}
+
+table thead .sorting:after, table thead .sorting_asc:after, table thead .sorting_asc_disabled:after, table thead .sorting_desc:after, table thead .sorting_desc_disabled:after {
+  right: .5em;
+  content: "\2193";
+}
+
+table thead .sorting_asc:before, table thead .sorting_desc:after {
+  opacity: 1;
+}
+
+table thead .sorting_asc_disabled:before, table thead .sorting_desc_disabled:after {
+  opacity: 0;
+}
+
+.tooltip {
+  display: block !important;
+  -webkit-transition: all .3s;
+  transition: all .3s;
+}
+
 /*# sourceMappingURL=new-setup-package.css.map */

@@ -1,18 +1,19 @@
 /**
  * Created by adam on 8/15/16.
  */
-
+import Comment from './Comment';
 import Item from './Item';
 
 export default class Exam extends Item{
 
     /**
      * Create a new exam object
-     * @param examId
-     * @param examIndex
+     * @param params
      */
     constructor( ...params ) {
         super();
+        Comment.initializeComments(this);
+
         // this._id; // = examId;
         // this._index; // = examIndex;
         // this._name; // = name;
@@ -21,7 +22,6 @@ export default class Exam extends Item{
 
         if(params.length > 0){
             //fill in from params
-
         }
     };
 

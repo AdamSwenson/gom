@@ -187,7 +187,7 @@ elixir( function ( mix ) {
 
     // mix.browserify('development/new-setup.vue', 'public/js/dev/new-setup-package.js');
     mix.browserify('development/newSetup.js', 'public/js/dev/new-setup-package.js');
-mix.sass(['development/newSetup.sass'], 'public/css/new-setup-package.css');
+mix.sass(['development/newSetup.sass', '../../../node_modules/bootstrap-vue/dist/bootstrap-vue.css' ], 'public/css/new-setup-package.css');
 
     //
     // elixir(function(mix) {

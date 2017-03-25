@@ -1,160 +1,168 @@
-<template>
-    <div class="item-edit-pane well well-sm"
-         v-show="visible">
+<!--<template>-->
+    <!--<div class="item-edit-pane well well-sm"-->
+         <!--v-show="visible">-->
 
-        <slot name="settingsBody">
-            <div>
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs"
-                    role="tablist">
-                    <li role="presentation"
-                        v-for="tab in tabs">
-                        <a v-bind:href="'#' + tab + index"
-                           v-bind:aria-controls="tab + index"
-                           role="tab"
-                           data-toggle="tab"
-                        >
-                        <span class="tabTitle">
-                            {{ tab }}
-                        </span>
-                        </a>
-                    </li>
-                </ul>
+        <!--<slot name="settingsBody">-->
+            <!--<div>-->
+                <!--&lt;!&ndash; Nav tabs &ndash;&gt;-->
+                <!--<ul class="nav nav-tabs"-->
+                    <!--role="tablist">-->
 
-                <!-- Tab panes -->
-                <div class="tab-content">
+                    <!--<li role="presentation"-->
+                        <!--v-for="tab in tabs">-->
+                        <!--<a v-bind:href="'#' + tab + index"-->
+                           <!--v-bind:aria-controls="tab + index"-->
+                           <!--role="tab"-->
+                           <!--data-toggle="tab"-->
+                        <!--&gt;-->
+                    <!--<span class="tabTitle">-->
+                    <!--{{ tab }}-->
+                    <!--</span>-->
+                        <!--</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
 
-                    <div role="tabpanel"
-                         class="tab-pane active"
-                         v-bind:id="'details' + index"
-                    >
-                        <panel-detail :index="index"></panel-detail>
-                    </div>
+                <!--&lt;!&ndash; Tab panes &ndash;&gt;-->
+                <!--<div class="tab-content">-->
 
-                    <div role="tabpanel"
-                         class="tab-pane  "
-                         v-bind:id="'comments' + index"
-                    >
-                        <panel-comments :index="index"></panel-comments>
+                <!--</div>-->
 
-                    </div>
+                <!--<div role="tabpanel"-->
+                     <!--class="tab-pane active"-->
+                     <!--v-bind:id="'details' + index"-->
+                <!--&gt;-->
 
-                    <div role="tabpanel"
-                         class="tab-pane "
-                         v-bind:id="'stats' + index"
-                    >
-                        <panel-stats :index="index"></panel-stats>
-                        <p>Stats here</p>
-                    </div>
+                    <!--<div role="tabpanel"-->
+                         <!--class="tab-pane active"-->
+                         <!--v-bind:id="'details' + index"-->
+                    <!--&gt;-->
+                        <!--<panel-detail :index="index"></panel-detail>-->
+                    <!--</div>-->
 
-                    <div role="tabpanel"
-                         class="tab-pane "
-                         v-bind:id="'history' + index"
-                    >
-                        <panel-history :index="index"></panel-history>
+                    <!--<div role="tabpanel"-->
+                         <!--class="tab-pane  "-->
+                         <!--v-bind:id="'comments' + index"-->
+                    <!--&gt;-->
+                        <!--<panel-comments :index="index"></panel-comments>-->
 
-                        <p>Which exams clones of this item have been used on</p>
-                    </div>
+                    <!--</div>-->
 
-                    <div role="tabpanel"
-                         class="tab-pane fade"
-                         v-bind:id="'notes' + index"
-                    >
-                        <p>Notes to self about item</p>
+                    <!--<div role="tabpanel"-->
+                         <!--class="tab-pane "-->
+                         <!--v-bind:id="'stats' + index"-->
+                    <!--&gt;-->
+                        <!--<panel-stats :index="index"></panel-stats>-->
+                        <!--<p>Stats here</p>-->
+                    <!--</div>-->
 
-                        <panel-notes :index="index"></panel-notes>
-                    </div>
+                    <!--<div role="tabpanel"-->
+                         <!--class="tab-pane "-->
+                         <!--v-bind:id="'history' + index"-->
+                    <!--&gt;-->
+                        <!--<panel-history :index="index"></panel-history>-->
 
-                </div>
+                        <!--<p>Which exams clones of this item have been used on</p>-->
+                    <!--</div>-->
 
-            </div>
+                    <!--<div role="tabpanel"-->
+                         <!--class="tab-pane fade"-->
+                         <!--v-bind:id="'notes' + index"-->
+                    <!--&gt;-->
+                        <!--<p>Notes to self about item</p>-->
 
-        </slot>
+                        <!--<panel-notes :index="index"></panel-notes>-->
+                    <!--</div>-->
 
-        <slot name="controlsArea"></slot>
-    </div>
+                <!--</div>-->
 
+            <!--</div>-->
 
-</template>
-<style>
+        <!--</slot>-->
 
-</style>
-<script>
-
-    import * as mTypes from '../../store/mutation-types'
-    import * as gTypes from '../../store/getter-types'
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
+        <!--<slot name="controlsArea"></slot>-->
+    <!--</div>-->
 
 
-    /**
-     * This holds all the tools for editing an item. It drops down
-     * when called and has lots of tabs etc
-     *
-     * Created by adam on 2/18/17.
-     */
-    export default {
-        props: [ "index", 'id' ],
+<!--</template>-->
+<!--<style>-->
 
-        data: function () {
-            return {
-                defaults: {
-                    types: [ 'question', 'element' ]
-                },
-                // currentView: 'item-settings-question',
-                tabs: [
-                    'details', 'comments', 'stats', 'history', 'notes'
-                ],
-                hiding: true,
+<!--</style>-->
+<!--<script>-->
 
-            };
-        },
+    <!--import * as mTypes from '../../store/mutation-types'-->
+    <!--import * as gTypes from '../../store/getter-types'-->
+    <!--import Item from '../../models/Item'-->
+    <!--import Payload from '../../models/Payload'-->
 
-        computed: {
-            tabTitle: function () {
-                //  return this.tab.
-            },
 
-            tabActive: function () {
+    <!--/**-->
+     <!--* This holds all the tools for editing an item. It drops down-->
+     <!--* when called and has lots of tabs etc-->
+     <!--*-->
+     <!--* Created by adam on 2/18/17.-->
+     <!--*/-->
+    <!--export default {-->
+        <!--props: [ "index", 'id' ],-->
 
-            },
+        <!--data: function () {-->
+            <!--return {-->
+                <!--defaults: {-->
+                    <!--types: [ 'question', 'element' ]-->
+                <!--},-->
+                <!--// currentView: 'item-settings-question',-->
+                <!--tabs: [-->
+                    <!--'details', 'comments', 'stats', 'history', 'notes'-->
+                <!--],-->
+                <!--hiding: true,-->
 
-            /**
-             * Returns true if the settings pane for this item should be displayed
-             */
-            visible: function () {
-                return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index )
-            }
+            <!--};-->
+        <!--},-->
 
-        },
+        <!--computed: {-->
+            <!--tabTitle: function () {-->
+                <!--//  return this.tab.-->
+            <!--},-->
 
-        methods: {
-            show: function () {
-                console.log( 'itemSetting', 'CALLED', 'show' );
-                this.$store.commit(mTypes.showItemSettings(Payload.factory({index: this.index})));
-            },
-            hide: function () {
-                console.log( 'itemSetting', 'CALLED', 'hide');
-                this.$store.commit(mTypes.hideItemSettings(Payload.factory({index: this.index})));
-            },
+            <!--tabActive: function () {-->
 
-        },
+            <!--},-->
 
-        directives: {},
+            <!--/**-->
+             <!--* Returns true if the settings pane for this item should be displayed-->
+             <!--*/-->
+            <!--visible: function () {-->
+                <!--return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index )-->
+            <!--}-->
 
-        events: {
-            'display-settings': function () {
-                console.log( 'itemSettings', 'CAUGHT', 'display-settings', this.hiding );
-                //this.toggle();
-            }
-        },
+        <!--},-->
 
-        mounted: function () {
-        },
-//        components : {
-//            'item-settings-detail': itemDetail,
-//            'item-settings-comment-setup': commentSetup,
-//        },
-    }
+        <!--methods: {-->
+            <!--show: function () {-->
+                <!--console.log( 'itemSetting', 'CALLED', 'show' );-->
+                <!--this.$store.commit( mTypes.showItemSettings( Payload.factory( {index: this.index} ) ) );-->
+            <!--},-->
+            <!--hide: function () {-->
+                <!--console.log( 'itemSetting', 'CALLED', 'hide' );-->
+                <!--this.$store.commit( mTypes.hideItemSettings( Payload.factory( {index: this.index} ) ) );-->
+            <!--},-->
 
-</script>
+        <!--},-->
+
+        <!--directives: {},-->
+
+        <!--events: {-->
+            <!--'display-settings': function () {-->
+                <!--console.log( 'itemSettings', 'CAUGHT', 'display-settings', this.hiding );-->
+                <!--//this.toggle();-->
+            <!--}-->
+        <!--},-->
+
+        <!--mounted: function () {-->
+        <!--},-->
+<!--//        components : {-->
+<!--//            'item-settings-detail': itemDetail,-->
+<!--//            'item-settings-comment-setup': commentSetup,-->
+<!--//        },-->
+    <!--}-->
+
+<!--</script>-->

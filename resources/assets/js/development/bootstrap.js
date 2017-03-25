@@ -20,6 +20,8 @@ window.Laravel = {csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" )};
 //Pull in bootstrap libraries
 require ('bootstrap');
 require('bootstrap-sass');
+// require('bootstrap-vue')
+// require('bootstrap-vue/dist/bootstrap-vue.css')
 
 
 /**

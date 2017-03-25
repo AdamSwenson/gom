@@ -9,10 +9,11 @@ import IModel from './IModel';
 
 export default class Item extends IModel {
     constructor() {
+
         super();
 
-        this.comments = new Map();
-
+        Comment.initializeComments(this);
+// console.log(this, 'init')
         /**
          * The maximum possible value of the item
          */
@@ -34,6 +35,9 @@ export default class Item extends IModel {
         //The id of the exam the item is associated with
         this.examId;
 
+
+
+// super.initializeComments();
     }
 
     /**
@@ -45,17 +49,7 @@ export default class Item extends IModel {
 
     }
 
-    /**
-     * Creates the expected empty comments in the comments array
-     */
-    initializeComments() {
-        if ( this.comments.size === 0 ) {
-            let me = this;
-            Comment.valences.forEach( function ( c ) {
-                me.addComment( c, Comment.factory( {valence: c} ) );
-            } );
-        }
-    }
+
 
     addComment( valence, comment ) {
         // this.comments.push( comment );

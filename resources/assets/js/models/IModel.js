@@ -2,10 +2,11 @@
  * Created by adam on 1/23/17.
  */
 
+// import Comment from './Comment';
 
 export default class IModel {
 
-    constructor(){
+    constructor() {
         /**
          * The db identifier of the model
          */
@@ -37,8 +38,24 @@ export default class IModel {
         /**
          * The possible values of this._type
          */
-        this.types = [ 'comment', 'element', 'question' ];
+        this.types = ['comment', 'element', 'question'];
 
+    }
+
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get valences() {
+        return [
+            'stock',
+            'absent',
+            'poor',
+            'good',
+            'excellent'
+        ];
     }
 
     /**
@@ -48,23 +65,23 @@ export default class IModel {
      * @param params
      * @returns {*}
      */
-    static fillObject( obj, params ) {
-        if ( typeof params != 'undefined' ) {
+    static fillObject(obj, params) {
+        if (typeof params !== 'undefined') {
 
             //fill any fillable values
-            this.fillableProps.forEach( function ( v ) {
+            this.fillableProps.forEach(function (v) {
                     // console.log( 'params', params, v );
-                    if ( typeof params[ v ] != 'undefined' ) {
-                        obj[ v ] = params[ v ];
+                    if (typeof params[v] != 'undefined') {
+                        obj[v] = params[v];
                     }
                 }
             )
 
             //fill any aliased values
-            for ( let v in this.aliasMap ) {
-                if ( typeof params[ v ] != 'undefined' ) {
+            for (let v in this.aliasMap) {
+                if (typeof params[v] != 'undefined') {
                     // console.log( 'alias', v, map[v] );
-                    obj[ this.aliasMap[ v ] ] = params[ v ];
+                    obj[this.aliasMap[v]] = params[v];
                 }
             }
         }
@@ -73,6 +90,7 @@ export default class IModel {
         //were no parameters
         return obj;
     }
+
     //
     // /* *************************** Id *************** */
     // /**

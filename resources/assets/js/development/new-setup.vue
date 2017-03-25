@@ -42,7 +42,7 @@
 </template>
 
 <style>
-    @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
+    /*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/
 
 </style>
 <script>
@@ -78,6 +78,7 @@
     import * as mTypes from '../store/mutation-types'
     import * as gTypes from '../store/getter-types'
 
+
     export default {
         store,
 
@@ -96,16 +97,20 @@
         events: {},
 
         mounted: function () {
-            //create an exam object if one isn't set
+            //On load the root exam object and first item are created but given no
+            //ids. thus we will eventually need to create an exam object if one isn't set
             //however don't ask the server to create an id just yet
-            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-            if ( !exam ) {
-                //create an exam object with index 0
-                let exam = Exam.factory( {index: 0} );
-                console.log( 'no exam set, creating one', exam );
-                this.$store.dispatch( aTypes.setActiveExam, Payload.factory( {obj: exam} ) );
-                //push into stack as root item
-                //todo
+            let exam = this.$store.getters[gTypes.getActiveExamObj];
+            if (!exam) {
+                //lookup the exam object that resides at index 0
+                //this will have either been newly created on page load
+                //or it will be an existing exam object loaded from the db
+                let exam = this.$store.getters[gTypes.getActiveExamObj];
+                //Call the set active exam method
+                //We do this rather than call the mutation directly
+                //because there may need to be various other events and
+                //things which need to happen depending on the context.
+                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
             }
         },
 

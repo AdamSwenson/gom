@@ -1,6 +1,7 @@
 <template>
     <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
     <div class="item-settings-detail-component">
+
         <div class="row">
             <div class="col-md-6">
                 <item-number
@@ -52,7 +53,7 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: [ 'index', 'id' ],
+        props: ['index', 'id'],
 
         data: function () {
             return {
@@ -67,29 +68,34 @@
 
             questionText: {
                 get: function () {
-                    return this.getter( 'text' );
+                    return this.getter('text');
 
                 },
 
-                set: function ( v ) {
-                    this.setter( 'text', v );
+                set: function (v) {
+                    this.setter('text', v);
                 }
             },
 
         },
 
         methods: {
-            getter: function ( name ) {
-                let item = this.$store.getters.getItemById( this.id );
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item != 'undefined' ) {
-                    return item[ name ]
+            getter: function (name) {
+//                let item = this.$store.getters.getItemById(this.id);
+                let item = this.$store.getters.getItemByIndex(this.index);
+                if (typeof item !== 'undefined') {
+                    return item[name]
                 }
             },
 
-            setter: function ( name, value ) {
-                let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
-                this.$store.commit( mTypes.updateItem, pl );
+            setter: function (name, value) {
+                let pl = Payload.factory({
+                        index: this.index,
+                        updateProp: name,
+                        updateVal: value
+                    }
+                );
+                this.$store.commit(mTypes.updateItem, pl);
             }
         },
 

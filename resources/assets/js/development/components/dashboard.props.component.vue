@@ -2,21 +2,26 @@
     <div id="props-dashboard" class="dashboard">
         <dl class="dl-horizontal">
 
-            <dt># items</dt>
+            <dt><span v-show="itemsComplete" class="text-success glyphicon glyphicon-ok"></span> # items</dt>
             <dd>{{ numberItems }}</dd>
 
             <dt>Max total score</dt>
             <dd>{{ perfectScore }}</dd>
             <!--<dd><input type="number" v-model="perfectScore" /></dd>-->
 
-            <dt># Students</dt>
+            <dt><span v-show="studentsComplete" class="glyphicon glyphicon-ok"></span> # Students</dt>
             <dd>{{ numberStudents}}</dd>
 
-            <dt># Graded</dt>
+            <dt> # Graded</dt>
             <dd>{{ numberGraded }}</dd>
 
             <dt>Time grading</dt>
             <dd>{{ timeGrading }}</dd>
+
+            <dt v-show="gradingComplete"><span class="glyphicon glyphicon-ok"></span></dt>
+            <dd v-show="gradingComplete">Grading Complete</dd>
+            <dt v-show="reviewingComplete"><span class="glyphicon glyphicon-ok"></span></dt>
+            <dd v-show="reviewingComplete">Reviewing Complete </dd>
 
         </dl>
 
@@ -34,6 +39,7 @@
     /**
      * This handles the display of various statistical features of the exam
      * Such as: the highest possible score, number of items, # students
+     * TODO: This should probably be made slicker and more informative
      * Created by adam on 2/15/17.
      */
 
@@ -50,6 +56,15 @@
                 defaults: {
                     numberStudents: 0,
                     numberGraded: 0,
+                },
+                //for steps which are complete
+                //when a certain number of things are done
+                //e.g., add one student or one question
+                //these are the thresholds the current amount
+                //is compared to
+                thresholds: {
+                    questions: 1,
+                    students: 1
                 }
             };
         },
@@ -60,8 +75,8 @@
              */
             numberItems: {
                 get: function () {
-                    console.log( this );
-                    let v = this.$store.getters[ gTypes.getItemCount ];
+                    console.log(this);
+                    let v = this.$store.getters[gTypes.getItemCount];
                     //if not set return placeholder
                     return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
                 }
@@ -112,14 +127,36 @@
             },
         },
 
-        methods: {},
+        methods: {
+            //checks on whether stage is complete
+            //returns boolean
+
+            itemsComplete: function () {
+                //if (numItemsWithIds > this.thresholds.items) return true;
+                return false;
+            },
+            studentsComplete: function () {
+                //if (numStudents > this.thresholds.students) return true;
+                return false;
+            },
+            setupComplete: function () {
+                return false;
+            },
+            gradingComplete: function () {
+                //if (numGraded > this.thresholds.graded) return true;
+                return false
+            },
+            reviewingComplete: function () {
+                return false;
+            }
+        },
 
         directives: {},
 
         events: {},
 
         mounted: function () {
-            console.log( 'props-dashboard ready', this.$store );
+            console.log('props-dashboard ready', this.$store);
         },
     };
 </script>

@@ -18730,10 +18730,27 @@ var Comment = function (_IModel) {
     _createClass(Comment, [{
         key: 'isStock',
         value: function isStock() {
-            if (this.valence == 'stock') {
-                return true;
+            return this.valence === 'stock';
+        }
+
+        /**
+         * Creates the expected empty comments in the comments array
+          on the iModel object passed in
+         */
+
+    }], [{
+        key: 'initializeComments',
+        value: function initializeComments(iModel) {
+            //create the comments map if it doesn't exist
+            if (typeof iModel.comments === 'undefined') {
+                iModel.comments = new Map();
             }
-            return false;
+            //Set the expected structure
+            if (iModel.comments.size === 0) {
+                Comment.valences.forEach(function (c) {
+                    iModel.addComment(c, Comment.factory({ valence: c }));
+                });
+            }
         }
 
         /**
@@ -18742,7 +18759,7 @@ var Comment = function (_IModel) {
          * @returns {[string,string]}
          */
 
-    }], [{
+    }, {
         key: 'identifiers',
 
 
@@ -18800,6 +18817,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Comment = require('./Comment');
+
+var _Comment2 = _interopRequireDefault(_Comment);
+
 var _Item2 = require('./Item');
 
 var _Item3 = _interopRequireDefault(_Item2);
@@ -18814,28 +18835,29 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Created by adam on 8/15/16.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
+
 var Exam = function (_Item) {
     _inherits(Exam, _Item);
 
     /**
      * Create a new exam object
-     * @param examId
-     * @param examIndex
+     * @param params
      */
     function Exam() {
         _classCallCheck(this, Exam);
 
+        var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
+
+        _Comment2.default.initializeComments(_this);
+
         // this._id; // = examId;
         // this._index; // = examIndex;
         // this._name; // = name;
-        var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
-
         _this._year; // = year;
         _this._term; // = term;
 
         if (arguments.length > 0) {
             //fill in from params
-
         }
         return _this;
     }
@@ -18951,7 +18973,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":35}],34:[function(require,module,exports){
+},{"./Comment":32,"./Item":35}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18965,6 +18987,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * Created by adam on 1/23/17.
  */
+
+// import Comment from './Comment';
 
 var IModel = function () {
     function IModel() {
@@ -19005,18 +19029,25 @@ var IModel = function () {
     }
 
     /**
-     * Iterate over the provided parameters and set the properties of the
-     * object.
-     * @param obj
-     * @param params
-     * @returns {*}
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
      */
 
 
     _createClass(IModel, null, [{
         key: 'fillObject',
+
+
+        /**
+         * Iterate over the provided parameters and set the properties of the
+         * object.
+         * @param obj
+         * @param params
+         * @returns {*}
+         */
         value: function fillObject(obj, params) {
-            if (typeof params != 'undefined') {
+            if (typeof params !== 'undefined') {
 
                 //fill any fillable values
                 this.fillableProps.forEach(function (v) {
@@ -19039,6 +19070,7 @@ var IModel = function () {
             //were no parameters
             return obj;
         }
+
         //
         // /* *************************** Id *************** */
         // /**
@@ -19110,6 +19142,11 @@ var IModel = function () {
         // }
         //
 
+    }, {
+        key: 'valences',
+        get: function get() {
+            return ['stock', 'absent', 'poor', 'good', 'excellent'];
+        }
     }]);
 
     return IModel;
@@ -19154,8 +19191,8 @@ var Item = function (_IModel) {
 
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
-        _this.comments = new Map();
-
+        _Comment2.default.initializeComments(_this);
+        // console.log(this, 'init')
         /**
          * The maximum possible value of the item
          */
@@ -19177,6 +19214,7 @@ var Item = function (_IModel) {
         //The id of the exam the item is associated with
         _this.examId;
 
+        // super.initializeComments();
         return _this;
     }
 
@@ -19190,21 +19228,6 @@ var Item = function (_IModel) {
         key: 'determineType',
         value: function determineType() {
             return this.depth > 0 ? 'element' : 'question';
-        }
-
-        /**
-         * Creates the expected empty comments in the comments array
-         */
-
-    }, {
-        key: 'initializeComments',
-        value: function initializeComments() {
-            if (this.comments.size === 0) {
-                var me = this;
-                _Comment2.default.valences.forEach(function (c) {
-                    me.addComment(c, _Comment2.default.factory({ valence: c }));
-                });
-            }
         }
     }, {
         key: 'addComment',
@@ -21519,6 +21542,10 @@ var _Item = require('../../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
 
+var _Exam = require('../../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -21544,7 +21571,7 @@ var state = {
     /**
      * Object indexed by Item id holding Item objects
      */
-    items: [],
+    items: [_Exam2.default.factory({ index: 0 }), _Item2.default.factory({ index: 1 })],
 
     /**
      * Mapping from older ItemIndex to new Item id value
@@ -21561,7 +21588,7 @@ var isItemsEmpty = function isItemsEmpty(state) {
 
 var helpers = {
     getItemFromPayload: function getItemFromPayload(state, payload) {
-        if (typeof payload.id != 'undefined') {
+        if (typeof payload.id !== 'undefined') {
             //get the item
             var item = state.items.filter(function (i) {
                 if (typeof i.id != 'undefined' && i.id === id) {
@@ -21607,29 +21634,33 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     console.log(mTypes.updateItem, payload, state);
     var itm = helpers.getItemFromPayload(state, payload);
+    if (typeof itm !== 'undefined') {
 
-    //Set the value so vue can see it
-    Vue.set(itm, payload.updateProp, payload.updateVal);
-    //Push the altered item back into the array
-    //set it in the array with vue
-    Vue.set(state.items, payload.index, itm);
-    // state.items.$set( payload.index, itm );
+        //Set the value so vue can see it
+        Vue.set(itm, payload.updateProp, payload.updateVal);
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
+    }
 }), _defineProperty(_mutations, mTypes.updateComment, function (state, payload) {
     console.log(mTypes.updateComment, payload, state);
     //get the item
     var itm = helpers.getItemFromPayload(state, payload);
-    // let itm = state.items[ payload.index ];
-    var comment = itm.getComment(payload.updateValence);
+    if (typeof itm !== 'undefined') {
+        // let itm = state.items[ payload.index ];
+        var comment = itm.getComment(payload.updateValence);
 
-    if (typeof comment != 'undefined') {
-        //Set the value so vue can see it
-        Vue.set(comment, 'text', payload.updateVal);
+        if (typeof comment !== 'undefined') {
+            //Set the value so vue can see it
+            Vue.set(comment, 'text', payload.updateVal);
+        }
+
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
     }
-
-    //Push the altered item back into the array
-    //set it in the array with vue
-    Vue.set(state.items, payload.index, itm);
-    // state.items.$set( payload.index, itm );
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
     console.log('items.mutations', mTypes.setItem, state, payload);
     Vue.set(state.items, payload.obj.index, payload.obj);
@@ -21915,7 +21946,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":35,"../../models/Payload":36,"../../store/action-types":39,"../../store/getter-types":41,"../../store/mutation-types":56,"vue":29}],50:[function(require,module,exports){
+},{"../../models/Exam":33,"../../models/Item":35,"../../models/Payload":36,"../../store/action-types":39,"../../store/getter-types":41,"../../store/mutation-types":56,"vue":29}],50:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22575,7 +22606,7 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.isItemSettingsVis
     return function (index) {
         return state.itemsWithSettingsVisible.includes(index);
     };
-}), _defineProperty(_getters, gTypes.isExamSettingsVisible, function (state, getters, rootState) {
+}), _defineProperty(_getters, gTypes.isExamSettingsVisible, function (state) {
     return state.examSettingsVisible;
 }), _getters);
 

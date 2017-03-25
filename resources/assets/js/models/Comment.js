@@ -14,12 +14,27 @@ export default class Comment extends IModel {
         this.valence = null;
     }
 
-    isStock (){
-        if (this.valence == 'stock'){
-            return true;
-        }
-        return false;
+    isStock() {
+        return this.valence === 'stock';
     }
+
+    /**
+     * Creates the expected empty comments in the comments array
+      on the iModel object passed in
+     */
+    static initializeComments(iModel) {
+        //create the comments map if it doesn't exist
+        if (typeof iModel.comments === 'undefined') {
+            iModel.comments = new Map();
+        }
+        //Set the expected structure
+        if (iModel.comments.size === 0) {
+            Comment.valences.forEach(function (c) {
+                iModel.addComment(c, Comment.factory({valence: c}));
+            });
+        }
+    }
+
 
     /**
      * Returns a list of strings which are property
@@ -72,8 +87,8 @@ export default class Comment extends IModel {
     }
 
 
-    static factory( params ) {
+    static factory(params) {
         let obj = new Comment();
-        return this.fillObject( obj, params );
+        return this.fillObject(obj, params);
     }
 }
