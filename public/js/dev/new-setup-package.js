@@ -67447,20 +67447,41 @@ var __vueify_style__ = __vueify_insert__.insert("\n\n")
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Comment = require('../../models/Comment');
+
+var _Comment2 = _interopRequireDefault(_Comment);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 exports.default = {
-    props: ['valence'],
+    props: ['index', 'valence'],
 
     data: function data() {
         return {};
     },
 
     computed: {
+        valences: function valences() {
+            return _Comment2.default.valences;
+        },
 
         active: function active() {
-            if (this.$parent.displayedValence == this.valence) {
-                return true;
-            }
-            return false;
+            return this.$parent.displayedValence === this.valence;
         },
 
         classObject: function classObject() {
@@ -67476,20 +67497,28 @@ exports.default = {
         /**
          * Called when the valence button is clicked
          */
-        selectValence: function selectValence() {
-            return this.sendRequest();
+        setValence: function setValence(valence) {
+            this.$parent.changeDisplayedValence(valence);
+
+            //            this.$store.commit(mTypes.setElementComment, Payload.factory({
+            //            index : this.index,
+            //                index: this.index,
+            //                updateProp: name,
+            //                updateVal: value
+            //            }))
+            //                return this.sendRequest();
         },
 
         /**
          * This sends the actual request(s)
          */
         sendRequest: function sendRequest() {
-            return this.$store.dispatch('please-change-valence', this.valence);
+            //  return emit('please-change-valence', this.valence);
         }
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-small valence-button\" v-bind:class=\"classObject\" v-on:click=\"selectValence\">{{ valence }}</button>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"valence-buttons form-group \">\n        <b-button-group size=\"sm\">\n        <b-button variant=\"primary\" v-on:click=\"setValence(valence)\" v-for=\"valence in valences\">{{valence}}</b-button>\n    </b-button-group>\n\n</div>\n\n    <!--<div class=\"btn-group\" role=\"group\">-->\n\n    <!--<button type=\"button\" class=\"btn btn-small valence-button\"-->\n    <!--v-bind:class=\"classObject\"-->\n    <!--v-on:click=\"selectValence\"-->\n    <!--&gt;{{ valence }}</button>-->\n<!--</div>-->\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67504,7 +67533,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5092195a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
+},{"../../models/Comment":378,"../../models/Item":381,"../../models/Payload":382,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67739,7 +67768,7 @@ exports.default = {
  * Created by adam on 2/15/17.
  */
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"setupToolDashboard\" class=\"dashboard\">\n\n    <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-danger\" v-on:click=\"toggleDeleteMode\">Remove items</button>\n        </li>\n\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-warning\" v-on:click=\"toggleReorderMode\">Reorder items</button>\n        </li>\n\n\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-primary\" v-on:click=\"showSampleFeedback\">View sample feedback</button>\n        </li>\n\n        <li class=\"list-group-item\">\n            <!--replace with toggle-->\n            <button class=\"btn btn-block btn-primary\" v-on:click=\"toggleHolesShown\">Show holes</button>\n        </li>\n    </ul>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"setupToolDashboard\" class=\"dashboard\">\n\n    <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-danger\" v-on:click=\"toggleDeleteMode\">Remove</button>\n        </li>\n\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-warning\" v-on:click=\"toggleReorderMode\">Reorder</button>\n        </li>\n\n\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-primary\" v-on:click=\"showSampleFeedback\">Sample feedback</button>\n        </li>\n\n        <li class=\"list-group-item\">\n            <!--replace with toggle-->\n            <button class=\"btn btn-block btn-primary\" v-on:click=\"toggleHolesShown\">Highlight holes</button>\n        </li>\n    </ul>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68531,7 +68560,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-main :index=\"index\" :id=\"id\"></item-main>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n            <slot name=\"head\">\n\n                <item-edit-pane :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-edit-pane>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-main :index=\"index\" :id=\"id\"></item-main>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n\n            <slot name=\"head\">\n\n                <item-edit-pane :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-edit-pane>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68886,7 +68915,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * Created by adam on 2/18/17.
  */
 exports.default = {
-    props: ["index", 'id'],
+    props: ['index'],
 
     data: function data() {
         return {
@@ -68957,10 +68986,13 @@ exports.default = {
         }
     },
 
-    mounted: function mounted() {}
+    mounted: function mounted() {
+        window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
+    }
+
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToComments\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Edit details</router-link>\n\n                    <!--<router-link :to=\"{name: 'comments', params: {index : index} }\">Edit details</router-link>-->\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToComments\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69018,15 +69050,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.default = {
     components: {
-        'valence-button': _buttonsValenceComponent2.default
-    },
+        valenceButtons: _buttonsValenceComponent2.default },
 
     props: ['index'],
 
     data: function data() {
         return {
 
-            displayedValence: 'stock',
+            displayed: 'stock',
 
             defaults: {
                 commentText: ''
@@ -69038,34 +69069,59 @@ exports.default = {
         };
     },
 
+    /*
+     One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
+     the same component instance will be reused. Since both routes render the same component, this is more efficient
+      than destroying the old instance and then creating a new one. However, this also means that the lifecycle
+      hooks of the component will not be called.
+     To react to params changes in the same component, you can simply watch the $route object:
+     */
+    watch: {
+        '$route': function $route(to, from) {
+            // react to route changes...
+        }
+    },
     computed: {
 
         commentText: {
             get: function get() {
-                var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item !== 'undefined') {
-                    //make sure there is a comment object waiting for us
-                    // if not, initialize it
-                    //                    if ( item.comments.size === 0 ) {
-                    //                        Comment.initializeComments(item);
-                    //                    }
 
-                    var comment = item.getComment(this.displayedValence);
-                    console.log('commenet', comment);
-                    if (typeof comment !== 'undefined') {
-                        return comment.text;
-                    }
-                }
+                var item = this.$store.getters.getItemByIndex(this.$route.params.index);
+                //                    let item = this.$store.getters.getItemByIndex(this.index);
+                window.console.log('panel.comment-setup.component', 'get', 80, item, this, this.$route.params.index);
+                //                    if ( typeof item !== 'undefined' ) {
+                var comment = item.getComment(this.displayed);
+                console.log('commenet', this.displayed, comment);
+                //                        if ( typeof comment !== 'undefined' ) {
+                return comment.text;
+                //                        }
+                //                    }
             },
 
             set: function set(v) {
+                window.console.log('panel.comment-setup.component', 'set', 97, this.index, this);
                 var pl = _Payload2.default.factory({
-                    index: this.index,
-                    updateValence: this.displayedValence,
+                    index: this.$route.params.index,
+                    updateValence: this.displayed,
                     updateVal: v
                 });
-
+                window.console.log('set', 101, pl);
                 this.$store.commit(mTypes.updateComment, pl);
+            }
+        },
+
+        displayedValence: {
+            get: function get() {
+                return this.displayed;
+            },
+
+            set: function set(newValence) {
+                if (newValence) {
+                    var idx = _Comment2.default.valences.indexOf(newValence);
+                    if (idx >= 0) {
+                        this.displayed = _Comment2.default.valences[idx];
+                    }
+                }
             }
         },
 
@@ -69077,15 +69133,26 @@ exports.default = {
 
     methods: {
         getter: function getter(name) {
-            var item = this.$store.getters.getItemByIndex(this.index);
+            var item = this.$store.getters.getItemByIndex(this.$route.params.index);
             if (typeof item !== 'undefined') {
                 return item[name];
             }
         },
 
         setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+            var pl = _Payload2.default.factory({ index: this.$route.params.index, updateProp: name, updateVal: value });
             this.$store.commit(mTypes.updateItem, pl);
+        },
+
+        /**
+         * Alters which valence is displayed.
+         * Called by child components
+         */
+        changeDisplayedValence: function changeDisplayedValence(newValence) {
+            window.console.log('changeDisplayedValence', 130, newValence);
+            if (newValence) {
+                this.displayedValence = newValence;
+            }
         }
     },
 
@@ -69099,12 +69166,13 @@ exports.default = {
     },
 
     mounted: function mounted() {
+        //            this.index = this.$route.params.index;
+        window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
         //push a comment into the item
-
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Template used by 'edit_element' to hold the fields and buttons for an individual element.  -->\n<div class=\"item-settings-comment-setup-component\">\n\n    <div class=\"row\">\n        <div class=\"col-md-12 \">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the \"stock comment\") -->\n            <div class=\"form-group\">\n                    <textarea class=\"form-control\" rows=\"3\" v-bind:placeholder=\"placeholders.elementText\" v-model=\"commentText\"></textarea>\n            </div>\n\n            <div class=\"form-group\">\n                <div class=\"btn-group-justified\" role=\"group\" aria-label=\"valence buttons\">\n\n                    <valence-button v-for=\"[item, index] in valences\" :valence=\"item\"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Template used by 'edit_element' to hold the fields and buttons for an individual element.  -->\n<div class=\"item-settings-comment-setup-component\">\n\n    <div class=\"row\">\n        <div class=\"col-md-12 \">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the \"stock comment\") -->\n            <div class=\"form-group\">\n                    <textarea class=\"form-control\" rows=\"3\" v-bind:placeholder=\"placeholders.elementText\" v-model=\"commentText\"></textarea>\n            </div>\n\n            <valence-buttons :index=\"index\"></valence-buttons>\n            <!--<div class=\"btn-group-justified\"-->\n            <!--role=\"group\"-->\n            <!--aria-label=\"valence buttons\">-->\n\n            <!--<valence-button-->\n            <!--v-for=\"v in valences\"-->\n            <!--:valence=\"v\"></valence-button>-->\n\n            <!--</div>-->\n            <!--</div>-->\n\n        </div>\n\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69737,7 +69805,7 @@ _vue2.default.component('card-list', _itemCardsListComponent2.default);
 
 //Panels
 _vue2.default.component('panel-detail', _panelItemDetailComponent2.default);
-_vue2.default.component('panel-comments', _panelCommentSetupComponent2.default);
+// Vue.component('panel-comments', panelComments)
 _vue2.default.component('panel-history', _panelHistoryComponent2.default);
 _vue2.default.component('panel-stats', _panelStatsComponent2.default);
 _vue2.default.component('panel-notes', _panelNotesComponent2.default);
@@ -69763,7 +69831,12 @@ _vue2.default.use(_vueRouter2.default);
 // either be an actual component constructor created via
 // Vue.extend(), or just a component options object.
 // We'll talk about nested routes later.
-var routes = [{ path: '/panel-comments/:index', components: { itemPanels: _panelCommentSetupComponent2.default }, props: true }, { path: '/panel-exam-detail/:index', components: { examPanels: _panelExamDetailComponent2.default }, props: true }, { path: '/panel-history/:index', components: { itemPanels: _panelHistoryComponent2.default }, props: true }, { path: '/panel-item-detail/:index', components: { itemPanels: _panelItemDetailComponent2.default }, props: true }, { path: '/panel-notes/:index', components: { itemPanels: _panelNotesComponent2.default }, props: true }, { path: '/panel-stats/:index', components: { itemPanels: _panelStatsComponent2.default }, props: true }];
+var routes = [{
+    name: 'comments',
+    path: '/panel-comments/:index',
+    components: { itemPanels: _panelCommentSetupComponent2.default },
+    props: true }, //props: (route) => {return route.index;}},
+{ path: '/panel-exam-detail/:index', components: { examPanels: _panelExamDetailComponent2.default }, props: true }, { path: '/panel-history/:index', components: { itemPanels: _panelHistoryComponent2.default }, props: true }, { path: '/panel-item-detail/:index', components: { itemPanels: _panelItemDetailComponent2.default }, props: true }, { path: '/panel-notes/:index', components: { itemPanels: _panelNotesComponent2.default }, props: true }, { path: '/panel-stats/:index', components: { itemPanels: _panelStatsComponent2.default }, props: true }];
 
 // 3. Create the router instance and pass the `routes` option
 // You can pass in additional options here, but let's
@@ -69849,8 +69922,13 @@ var Comment = function (_IModel) {
             //create the comments map if it doesn't exist
             if (typeof iModel.comments === 'undefined') {
                 iModel.comments = new Map();
+                // iModel.comments = {};
             }
             //Set the expected structure
+            // if (Object.keys(iModel.comments).length === 0) {
+            //     Comment.valences.forEach(function (c) {
+            //         iModel.addComment(c, Comment.factory({valence: c}));
+            //     });
             if (iModel.comments.size === 0) {
                 Comment.valences.forEach(function (c) {
                     iModel.addComment(c, Comment.factory({ valence: c }));
@@ -70338,6 +70416,7 @@ var Item = function (_IModel) {
         key: 'addComment',
         value: function addComment(valence, comment) {
             // this.comments.push( comment );
+            // Vue.set(this.comments, valence, comment );
             this.comments.set(valence, comment);
         }
     }, {
@@ -70621,18 +70700,18 @@ var Payload = function () {
         key: 'factory',
         value: function factory(params) {
             var p = new Payload();
-            if (typeof params != 'undefined') {
+            if (typeof params !== 'undefined') {
 
                 //fill any fillable values
                 this.fillableProps.forEach(function (v) {
-                    if (typeof params[v] != 'undefined') {
+                    if (typeof params[v] !== 'undefined') {
                         p[v] = params[v];
                     }
                 });
 
                 //fill any aliased values
                 for (var v in this.aliasMap) {
-                    if (typeof params[v] != 'undefined') {
+                    if (typeof params[v] !== 'undefined') {
                         // console.log( 'alias', v, map[v] );
                         p[this.aliasMap[v]] = params[v];
                     }
@@ -72201,7 +72280,7 @@ var isElementCommentsEmpty = function isElementCommentsEmpty(state) {
     return true;
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementComment, function (state, rootState, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementComment, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
 
     var commentText = payload.str;
@@ -72209,13 +72288,21 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementC
     var elementIndex = payload.index2;
 
     state.elementComments[studentIndex][elementIndex] = commentText;
-}), _defineProperty(_mutations, mTypes.loadElementComments, function (state, rootState, payload) {
+}), _defineProperty(_mutations, mTypes.loadElementComments, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.elementComments = payload.obj;
     // state.elementComments = elementCommentsJSON;
-}), _defineProperty(_mutations, mTypes.loadStockComments, function (state, rootState, payload) {
+}), _defineProperty(_mutations, mTypes.loadStockComments, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.stockComments = payload.obj;
+}), _defineProperty(_mutations, mTypes.updateCommentText, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    var commentText = payload.str;
+    var studentIndex = payload.index;
+    var elementIndex = payload.index2;
+
+    state.elementComments[studentIndex][elementIndex] = commentText;
 }), _mutations);
 
 var actions = _defineProperty({}, aTypes.storeCommentText, function (_ref, payload) {
@@ -72252,7 +72339,8 @@ var getters = {
     getElementComment: function getElementComment(state, getters, rootState, studentIndex, elementIndex) {
         if (isElementCommentsEmpty(state)) {
             return false;
-        };
+        }
+        ;
 
         return state.elementComments[studentIndex][elementIndex];
     },
@@ -72270,7 +72358,8 @@ var getters = {
     getCommentText: function getCommentText(state, getters, rootState, studentIndex, elementIndex, valence) {
         if (isElementCommentsEmpty(state)) {
             return false;
-        };
+        }
+        ;
 
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
@@ -72318,7 +72407,8 @@ var getters = {
     getStoredCommentText: function getStoredCommentText(state, getters, rootState, studentIndex, elementIndex) {
         if (isElementCommentsEmpty(state)) {
             return false;
-        };
+        }
+        ;
 
         return state.elementComments[studentIndex][elementIndex];
     }
@@ -72693,18 +72783,19 @@ var isItemsEmpty = function isItemsEmpty(state) {
 
 var helpers = {
     getItemFromPayload: function getItemFromPayload(state, payload) {
-        if (typeof payload.id !== 'undefined') {
-            //get the item
-            var item = state.items.filter(function (i) {
-                if (typeof i.id != 'undefined' && i.id === id) {
-                    return i;
-                }
-            });
-            return item;
-        } else {
-            //get the item
-            return state.items[payload.index];
-        }
+        return state.items[payload.index];
+        // if (typeof payload.id !== 'undefined') {
+        //     //get the item
+        //     var item = state.items.filter(function (i) {
+        //         if (typeof i.id != 'undefined' && i.id === id) {
+        //             return i;
+        //         }
+        //     });
+        //     return item;
+        // } else {
+        //     //get the item
+        //     return state.items[payload.index];
+        // }
     }
 };
 
@@ -72740,7 +72831,6 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     console.log(mTypes.updateItem, payload, state);
     var itm = helpers.getItemFromPayload(state, payload);
     if (typeof itm !== 'undefined') {
-
         //Set the value so vue can see it
         Vue.set(itm, payload.updateProp, payload.updateVal);
         //Push the altered item back into the array
@@ -72752,6 +72842,8 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     console.log(mTypes.updateComment, payload, state);
     //get the item
     var itm = helpers.getItemFromPayload(state, payload);
+    window.console.log('items', 'updateComment', 145, itm, state.items);
+
     if (typeof itm !== 'undefined') {
         // let itm = state.items[ payload.index ];
         var comment = itm.getComment(payload.updateValence);
@@ -72765,6 +72857,7 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
         //set it in the array with vue
         Vue.set(state.items, payload.index, itm);
         // state.items.$set( payload.index, itm );
+        window.console.log('items', 'updateComment', 145, itm, state.items);
     }
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
     console.log('items.mutations', mTypes.setItem, state, payload);
@@ -72806,13 +72899,13 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
         ItemObject = payload.ItemObject;
 
 
-    obj = typeof ItemObject != 'undefined' ? ItemObject : obj;
+    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
 
     //check and see if an Item object has already been passed in
     if (!obj instanceof _Item2.default) {
         //create a new Item
         var name = payload.name,
-            _id = payload.id,
+            id = payload.id,
             index = payload.index;
 
         var ItemJson = { name: name, ItemIndex: ItemIndex };
@@ -72887,12 +72980,12 @@ var getters = {
             if (_Payload2.default.checkIfPayload(payload)) {
                 console.log('getItem', payload);
                 var index = payload.index;
-                var _id2 = payload.id;
+                var id = payload.id;
                 //room for other ways of finding index
-                if (typeof _id2 != 'undefined') {
-                    return undefined.getItemById(state, getters, _id2);
+                if (typeof id !== 'undefined') {
+                    return undefined.getItemById(state, getters, id);
                 }
-                if (typeof index != 'undefined') {
+                if (typeof index !== 'undefined') {
                     return undefined.getItemByIndex(state, getters, index);
                 }
             }

@@ -16,6 +16,7 @@
 
             <div class="col-lg-12">
                 <div class="clearfix"></div>
+
                 <slot name="head">
 
                     <item-edit-pane

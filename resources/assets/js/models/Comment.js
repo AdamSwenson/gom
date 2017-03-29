@@ -26,8 +26,13 @@ export default class Comment extends IModel {
         //create the comments map if it doesn't exist
         if (typeof iModel.comments === 'undefined') {
             iModel.comments = new Map();
+        // iModel.comments = {};
         }
         //Set the expected structure
+        // if (Object.keys(iModel.comments).length === 0) {
+        //     Comment.valences.forEach(function (c) {
+        //         iModel.addComment(c, Comment.factory({valence: c}));
+        //     });
         if (iModel.comments.size === 0) {
             Comment.valences.forEach(function (c) {
                 iModel.addComment(c, Comment.factory({valence: c}));

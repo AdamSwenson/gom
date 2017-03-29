@@ -53,6 +53,7 @@ export default class Item extends IModel {
 
     addComment( valence, comment ) {
         // this.comments.push( comment );
+        // Vue.set(this.comments, valence, comment );
         this.comments.set( valence, comment );
     }
 

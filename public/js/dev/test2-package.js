@@ -18744,8 +18744,13 @@ var Comment = function (_IModel) {
             //create the comments map if it doesn't exist
             if (typeof iModel.comments === 'undefined') {
                 iModel.comments = new Map();
+                // iModel.comments = {};
             }
             //Set the expected structure
+            // if (Object.keys(iModel.comments).length === 0) {
+            //     Comment.valences.forEach(function (c) {
+            //         iModel.addComment(c, Comment.factory({valence: c}));
+            //     });
             if (iModel.comments.size === 0) {
                 Comment.valences.forEach(function (c) {
                     iModel.addComment(c, Comment.factory({ valence: c }));
@@ -19233,6 +19238,7 @@ var Item = function (_IModel) {
         key: 'addComment',
         value: function addComment(valence, comment) {
             // this.comments.push( comment );
+            // Vue.set(this.comments, valence, comment );
             this.comments.set(valence, comment);
         }
     }, {
@@ -19516,18 +19522,18 @@ var Payload = function () {
         key: 'factory',
         value: function factory(params) {
             var p = new Payload();
-            if (typeof params != 'undefined') {
+            if (typeof params !== 'undefined') {
 
                 //fill any fillable values
                 this.fillableProps.forEach(function (v) {
-                    if (typeof params[v] != 'undefined') {
+                    if (typeof params[v] !== 'undefined') {
                         p[v] = params[v];
                     }
                 });
 
                 //fill any aliased values
                 for (var v in this.aliasMap) {
-                    if (typeof params[v] != 'undefined') {
+                    if (typeof params[v] !== 'undefined') {
                         // console.log( 'alias', v, map[v] );
                         p[this.aliasMap[v]] = params[v];
                     }
@@ -21096,7 +21102,7 @@ var isElementCommentsEmpty = function isElementCommentsEmpty(state) {
     return true;
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementComment, function (state, rootState, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementComment, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
 
     var commentText = payload.str;
@@ -21104,13 +21110,21 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementC
     var elementIndex = payload.index2;
 
     state.elementComments[studentIndex][elementIndex] = commentText;
-}), _defineProperty(_mutations, mTypes.loadElementComments, function (state, rootState, payload) {
+}), _defineProperty(_mutations, mTypes.loadElementComments, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.elementComments = payload.obj;
     // state.elementComments = elementCommentsJSON;
-}), _defineProperty(_mutations, mTypes.loadStockComments, function (state, rootState, payload) {
+}), _defineProperty(_mutations, mTypes.loadStockComments, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.stockComments = payload.obj;
+}), _defineProperty(_mutations, mTypes.updateCommentText, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    var commentText = payload.str;
+    var studentIndex = payload.index;
+    var elementIndex = payload.index2;
+
+    state.elementComments[studentIndex][elementIndex] = commentText;
 }), _mutations);
 
 var actions = _defineProperty({}, aTypes.storeCommentText, function (_ref, payload) {
@@ -21147,7 +21161,8 @@ var getters = {
     getElementComment: function getElementComment(state, getters, rootState, studentIndex, elementIndex) {
         if (isElementCommentsEmpty(state)) {
             return false;
-        };
+        }
+        ;
 
         return state.elementComments[studentIndex][elementIndex];
     },
@@ -21165,7 +21180,8 @@ var getters = {
     getCommentText: function getCommentText(state, getters, rootState, studentIndex, elementIndex, valence) {
         if (isElementCommentsEmpty(state)) {
             return false;
-        };
+        }
+        ;
 
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
@@ -21213,7 +21229,8 @@ var getters = {
     getStoredCommentText: function getStoredCommentText(state, getters, rootState, studentIndex, elementIndex) {
         if (isElementCommentsEmpty(state)) {
             return false;
-        };
+        }
+        ;
 
         return state.elementComments[studentIndex][elementIndex];
     }
@@ -21588,18 +21605,19 @@ var isItemsEmpty = function isItemsEmpty(state) {
 
 var helpers = {
     getItemFromPayload: function getItemFromPayload(state, payload) {
-        if (typeof payload.id !== 'undefined') {
-            //get the item
-            var item = state.items.filter(function (i) {
-                if (typeof i.id != 'undefined' && i.id === id) {
-                    return i;
-                }
-            });
-            return item;
-        } else {
-            //get the item
-            return state.items[payload.index];
-        }
+        return state.items[payload.index];
+        // if (typeof payload.id !== 'undefined') {
+        //     //get the item
+        //     var item = state.items.filter(function (i) {
+        //         if (typeof i.id != 'undefined' && i.id === id) {
+        //             return i;
+        //         }
+        //     });
+        //     return item;
+        // } else {
+        //     //get the item
+        //     return state.items[payload.index];
+        // }
     }
 };
 
@@ -21635,7 +21653,6 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     console.log(mTypes.updateItem, payload, state);
     var itm = helpers.getItemFromPayload(state, payload);
     if (typeof itm !== 'undefined') {
-
         //Set the value so vue can see it
         Vue.set(itm, payload.updateProp, payload.updateVal);
         //Push the altered item back into the array
@@ -21647,6 +21664,8 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     console.log(mTypes.updateComment, payload, state);
     //get the item
     var itm = helpers.getItemFromPayload(state, payload);
+    window.console.log('items', 'updateComment', 145, itm, state.items);
+
     if (typeof itm !== 'undefined') {
         // let itm = state.items[ payload.index ];
         var comment = itm.getComment(payload.updateValence);
@@ -21660,6 +21679,7 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
         //set it in the array with vue
         Vue.set(state.items, payload.index, itm);
         // state.items.$set( payload.index, itm );
+        window.console.log('items', 'updateComment', 145, itm, state.items);
     }
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
     console.log('items.mutations', mTypes.setItem, state, payload);
@@ -21701,13 +21721,13 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
         ItemObject = payload.ItemObject;
 
 
-    obj = typeof ItemObject != 'undefined' ? ItemObject : obj;
+    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
 
     //check and see if an Item object has already been passed in
     if (!obj instanceof _Item2.default) {
         //create a new Item
         var name = payload.name,
-            _id = payload.id,
+            id = payload.id,
             index = payload.index;
 
         var ItemJson = { name: name, ItemIndex: ItemIndex };
@@ -21782,12 +21802,12 @@ var getters = {
             if (_Payload2.default.checkIfPayload(payload)) {
                 console.log('getItem', payload);
                 var index = payload.index;
-                var _id2 = payload.id;
+                var id = payload.id;
                 //room for other ways of finding index
-                if (typeof _id2 != 'undefined') {
-                    return undefined.getItemById(state, getters, _id2);
+                if (typeof id !== 'undefined') {
+                    return undefined.getItemById(state, getters, id);
                 }
-                if (typeof index != 'undefined') {
+                if (typeof index !== 'undefined') {
                     return undefined.getItemByIndex(state, getters, index);
                 }
             }

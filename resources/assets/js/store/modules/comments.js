@@ -23,23 +23,23 @@ const state = {
 
 };
 
-const isElementCommentsEmpty = (state) => {
-    if(Object.keys(state.elementComments).length > 0){
+const isElementCommentsEmpty = ( state ) => {
+    if ( Object.keys(state.elementComments).length > 0 ) {
         return false;
     }
     return true;
-}
+};
 
 const mutations = {
     /**
-     * Update the text of an element comment
+     * Update the text of an element comment for a student
      * @param state
      * @param rootState
      * @param payload
      */
-        [mTypes.setElementComment]( state, rootState, payload )
+        [mTypes.setElementComment]( state, payload )
     {
-        Payload.checkIfPayload( payload );
+        Payload.checkIfPayload(payload);
 
         let commentText = payload.str;
         let studentIndex = payload.index;
@@ -54,9 +54,9 @@ const mutations = {
      * @param rootState
      * @param elementCommentsJSON
      */
-        [mTypes.loadElementComments]( state, rootState, payload )
+        [mTypes.loadElementComments]( state, payload )
     {
-        Payload.checkIfPayload( payload );
+        Payload.checkIfPayload(payload);
         state.elementComments = payload.obj;
         // state.elementComments = elementCommentsJSON;
     },
@@ -67,10 +67,27 @@ const mutations = {
      * @param rootState
      * @param stockCommentsJSON
      */
-        [mTypes.loadStockComments]( state, rootState, payload )
+        [mTypes.loadStockComments]( state, payload )
     {
-        Payload.checkIfPayload( payload );
+        Payload.checkIfPayload(payload);
         state.stockComments = payload.obj;
+    },
+
+    /**
+     * Update the text of an element comment for a student
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+        [mTypes.updateCommentText]( state, payload )
+    {
+        Payload.checkIfPayload(payload);
+
+        let commentText = payload.str;
+        let studentIndex = payload.index;
+        let elementIndex = payload.index2;
+
+        state.elementComments[ studentIndex ][ elementIndex ] = commentText;
     },
 
 
@@ -97,13 +114,13 @@ const actions = {
      */
     [aTypes.storeCommentText]: ( {state, commit}, payload ) => {
 
-        let pl = Payload.factory( {
+        let pl = Payload.factory({
             index: payload.studentIndex,
             index2: payload.elementIndex,
             str: payload.commentText
-        } );
+        });
 
-        commit( mTypes.setElementComment, pl );
+        commit(mTypes.setElementComment, pl);
 
         // let studentIndex = payload.studentIndex;
         // let elementIndex = payload.elementIndex;
@@ -145,9 +162,12 @@ const getters = {
      * @returns {*}
      */
     getElementComment: ( state, getters, rootState, studentIndex, elementIndex ) => {
-        if ( isElementCommentsEmpty(state) ){ return false; };
+        if ( isElementCommentsEmpty(state) ) {
+            return false;
+        }
+        ;
 
-            return state.elementComments[ studentIndex ][ elementIndex ];
+        return state.elementComments[ studentIndex ][ elementIndex ];
 
     },
 
@@ -163,7 +183,10 @@ const getters = {
      * @returns {*}
      */
     getCommentText: ( state, getters, rootState, studentIndex, elementIndex, valence ) => {
-        if ( isElementCommentsEmpty(state) ){ return false; };
+        if ( isElementCommentsEmpty(state) ) {
+            return false;
+        }
+        ;
 
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
@@ -183,7 +206,7 @@ const getters = {
         let i = 0;
         //loop through the stock comments and look for a match
         //TODO should this be < ?
-        while ( isCustom && i <= state.valences.length ) {
+        while (isCustom && i <= state.valences.length) {
             var stock = state.stockComments[ elementIndex ][ i ];
             if ( stock == comment ) {
                 isCustom = false;
@@ -210,7 +233,10 @@ const getters = {
      * @private
      */
     getStoredCommentText: ( state, getters, rootState, studentIndex, elementIndex ) => {
-        if ( isElementCommentsEmpty(state) ){ return false; };
+        if ( isElementCommentsEmpty(state) ) {
+            return false;
+        }
+        ;
 
         return state.elementComments[ studentIndex ][ elementIndex ];
     }

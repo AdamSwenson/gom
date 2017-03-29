@@ -43,18 +43,19 @@ const isItemsEmpty = (state) => {
 
 const helpers = {
     getItemFromPayload(state, payload){
-        if (typeof payload.id !== 'undefined') {
-            //get the item
-            var item = state.items.filter(function (i) {
-                if (typeof i.id != 'undefined' && i.id === id) {
-                    return i;
-                }
-            });
-            return item;
-        } else {
-            //get the item
-            return state.items[payload.index];
-        }
+        return state.items[payload.index];
+        // if (typeof payload.id !== 'undefined') {
+        //     //get the item
+        //     var item = state.items.filter(function (i) {
+        //         if (typeof i.id != 'undefined' && i.id === id) {
+        //             return i;
+        //         }
+        //     });
+        //     return item;
+        // } else {
+        //     //get the item
+        //     return state.items[payload.index];
+        // }
     }
 };
 
@@ -129,6 +130,8 @@ const mutations = {
         console.log(mTypes.updateComment, payload, state);
         //get the item
         let itm = helpers.getItemFromPayload(state, payload);
+        window.console.log('items', 'updateComment', 145, itm,  state.items);
+
         if (typeof itm !== 'undefined') {
             // let itm = state.items[ payload.index ];
             let comment = itm.getComment(payload.updateValence);
@@ -142,6 +145,7 @@ const mutations = {
             //set it in the array with vue
             Vue.set(state.items, payload.index, itm);
             // state.items.$set( payload.index, itm );
+            window.console.log('items', 'updateComment', 145, itm,  state.items);
         }
     },
 
@@ -221,7 +225,7 @@ const buildPayloadFromInput = (state, rootState, payload) => {
     //either a json or an item object have been passed in
     let {ItemId, ItemIndex, obj, ItemObject} = payload;
 
-    obj = typeof ItemObject != 'undefined' ? ItemObject : obj;
+    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
 
     //check and see if an Item object has already been passed in
     if (!obj instanceof Item) {
@@ -322,10 +326,10 @@ const getters = {
             let index = payload.index;
             let id = payload.id;
             //room for other ways of finding index
-            if (typeof id != 'undefined') {
+            if (typeof id !== 'undefined') {
                 return this.getItemById(state, getters, id);
             }
-            if (typeof index != 'undefined') {
+            if (typeof index !== 'undefined') {
                 return this.getItemByIndex(state, getters, index);
             }
         }

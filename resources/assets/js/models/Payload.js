@@ -129,18 +129,18 @@ export default class Payload {
 
     static factory( params ) {
         let p = new Payload();
-        if ( typeof params != 'undefined' ) {
+        if ( typeof params !== 'undefined' ) {
 
             //fill any fillable values
             this.fillableProps.forEach( function ( v ) {
-                if ( typeof params[ v ] != 'undefined' ) {
+                if ( typeof params[ v ] !== 'undefined' ) {
                     p[ v ] = params[ v ];
                 }
             } );
 
             //fill any aliased values
             for ( let v in this.aliasMap ) {
-                if ( typeof params[ v ] != 'undefined' ) {
+                if ( typeof params[ v ] !== 'undefined' ) {
                     // console.log( 'alias', v, map[v] );
                     p[ this.aliasMap[ v ] ] = params[ v ];
                 }

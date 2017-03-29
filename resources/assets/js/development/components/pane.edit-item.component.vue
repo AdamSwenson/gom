@@ -8,7 +8,9 @@
                 <ul class="nav nav-pills"
                     role="tablist">
                     <li role="presentation">
-                        <router-link v-bind:to="routeToItemDetails">Edit details</router-link>
+                        <router-link :to="{name: 'comments', params: {index : index} }">Edit details</router-link>
+
+                        <!--<router-link :to="{name: 'comments', params: {index : index} }">Edit details</router-link>-->
                     </li>
 
                     <li role="presentation">
@@ -60,7 +62,7 @@
      * Created by adam on 2/18/17.
      */
     export default {
-        props: ["index", 'id'],
+        props: ['index'],
 
         data: function () {
             return {
@@ -138,11 +140,9 @@
         },
 
         mounted: function () {
+            window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
         },
-//        components : {
-//            'item-settings-detail': itemDetail,
-//            'item-settings-comment-setup': commentSetup,
-//        },
+
     }
 
 </script>

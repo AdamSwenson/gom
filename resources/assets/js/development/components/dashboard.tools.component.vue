@@ -6,14 +6,14 @@
                 <button
                         class="btn btn-block btn-danger"
                         v-on:click="toggleDeleteMode"
-                >Remove items</button>
+                >Remove</button>
             </li>
 
             <li class="list-group-item">
                 <button
                         class="btn btn-block btn-warning"
                         v-on:click="toggleReorderMode"
-                >Reorder items</button>
+                >Reorder</button>
             </li>
 
 
@@ -21,7 +21,7 @@
                 <button
                         class="btn btn-block btn-primary"
                         v-on:click="showSampleFeedback"
-                >View sample feedback</button>
+                >Sample feedback</button>
             </li>
 
             <li class="list-group-item">
@@ -29,7 +29,7 @@
                 <button
                         class="btn btn-block btn-primary"
                         v-on:click="toggleHolesShown"
-                >Show holes</button>
+                >Highlight holes</button>
             </li>
         </ul>
     </div>

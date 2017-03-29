@@ -16,17 +16,17 @@
                                 v-model="commentText"></textarea>
                 </div>
 
-                <div class="form-group">
-                    <div class="btn-group-justified"
-                         role="group"
-                         aria-label="valence buttons">
+                <valence-buttons :index="index"></valence-buttons>
+                <!--<div class="btn-group-justified"-->
+                <!--role="group"-->
+                <!--aria-label="valence buttons">-->
 
-                        <valence-button
-                                v-for="[item, index] in valences"
-                                :valence="item"></valence-button>
+                <!--<valence-button-->
+                <!--v-for="v in valences"-->
+                <!--:valence="v"></valence-button>-->
 
-                    </div>
-                </div>
+                <!--</div>-->
+                <!--</div>-->
 
             </div>
 
@@ -44,7 +44,7 @@
     import * as mTypes from '../../store/mutation-types';
     import * as aTypes from '../../store/action-types';
     import * as gTypes from '../../store/getter-types';
-    import valenceButton from './buttons.valence.component.vue'
+    import valenceButtons from './buttons.valence.component.vue'
 
     /**
      * The comment details setup area
@@ -52,15 +52,15 @@
      */
     export default {
         components: {
-            'valence-button': valenceButton,
+            valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
-        props: ['index'],
+        props: [ 'index' ],
 
         data: function () {
             return {
 
-                displayedValence: 'stock',
+                displayed: 'stock',
 
                 defaults: {
                     commentText: ''
@@ -72,36 +72,63 @@
             };
         },
 
+
+        /*
+         One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
+         the same component instance will be reused. Since both routes render the same component, this is more efficient
+          than destroying the old instance and then creating a new one. However, this also means that the lifecycle
+          hooks of the component will not be called.
+         To react to params changes in the same component, you can simply watch the $route object:
+         */
+        watch: {
+            '$route' (to, from) {
+                // react to route changes...
+            }
+        },
         computed: {
 
             commentText: {
                 get: function () {
-                    let item = this.$store.getters.getItemByIndex(this.index);
-                    if (typeof item !== 'undefined') {
-                        //make sure there is a comment object waiting for us
-                        // if not, initialize it
-//                    if ( item.comments.size === 0 ) {
-//                        Comment.initializeComments(item);
-//                    }
 
-                        let comment = item.getComment(this.displayedValence);
-                        console.log('commenet', comment);
-                        if (typeof comment !== 'undefined') {
-                            return comment.text;
-                        }
-                    }
+                    let item = this.$store.getters.getItemByIndex(this.$route.params.index);
+//                    let item = this.$store.getters.getItemByIndex(this.index);
+                    window.console.log('panel.comment-setup.component', 'get', 80, item, this, this.$route.params.index);
+//                    if ( typeof item !== 'undefined' ) {
+                    let comment = item.getComment(this.displayed);
+                    console.log('commenet', this.displayed,  comment);
+//                        if ( typeof comment !== 'undefined' ) {
+                    return comment.text;
+//                        }
+//                    }
                 },
 
-                set: function (v) {
+                set: function ( v ) {
+                    window.console.log('panel.comment-setup.component', 'set', 97, this.index, this);
                     let pl = Payload.factory({
-                        index: this.index,
-                        updateValence: this.displayedValence,
+                        index: this.$route.params.index,
+                        updateValence: this.displayed,
                         updateVal: v
                     });
-
+                    window.console.log('set', 101, pl);
                     this.$store.commit(mTypes.updateComment, pl);
                 }
             },
+
+            displayedValence: {
+                get: function () {
+                    return this.displayed;
+                },
+
+                set: function ( newValence ) {
+                    if ( newValence ) {
+                        let idx = Comment.valences.indexOf(newValence);
+                        if ( idx >= 0 ) {
+                            this.displayed = Comment.valences[ idx ];
+                        }
+                    }
+                }
+            },
+
 
             valences: function () {
                 return Comment.valences;
@@ -110,16 +137,28 @@
         },
 
         methods: {
-            getter: function (name) {
-                let item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item !== 'undefined') {
-                    return item[name]
+            getter: function ( name ) {
+                let item = this.$store.getters.getItemByIndex(this.$route.params.index);
+                if ( typeof item !== 'undefined' ) {
+                    return item[ name ]
                 }
             },
 
-            setter: function (name, value) {
-                let pl = Payload.factory({index: this.index, updateProp: name, updateVal: value});
+            setter: function ( name, value ) {
+                let pl = Payload.factory({index: this.$route.params.index, updateProp: name, updateVal: value});
                 this.$store.commit(mTypes.updateItem, pl);
+            },
+
+
+            /**
+             * Alters which valence is displayed.
+             * Called by child components
+             */
+            changeDisplayedValence: function ( newValence ) {
+                window.console.log('changeDisplayedValence', 130, newValence);
+                if ( newValence ) {
+                    this.displayedValence = newValence;
+                }
             }
         },
 
@@ -127,13 +166,15 @@
         directives: {},
 
         events: {
-            'please-change-valence': function (evt) {
+            'please-change-valence': function ( evt ) {
                 console.log('caught please-change-valence', evt);
                 this.displayedValence = evt;
             }
         },
 
         mounted: function () {
+//            this.index = this.$route.params.index;
+            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
             //push a comment into the item
 
         },

@@ -81,7 +81,7 @@ Vue.component('card-list', cardList)
 
 //Panels
 Vue.component('panel-detail', panelItemDetail)
-Vue.component('panel-comments', panelComments)
+// Vue.component('panel-comments', panelComments)
 Vue.component('panel-history', panelHistory)
 Vue.component('panel-stats', panelStats)
 Vue.component('panel-notes', panelNotes)
@@ -109,7 +109,13 @@ Vue.use(VueRouter);
 // Vue.extend(), or just a component options object.
 // We'll talk about nested routes later.
 const routes = [
-    {path: '/panel-comments/:index', components: {itemPanels: panelComments}, props: true},
+    {
+    name: 'comments',
+        path: '/panel-comments/:index',
+        components: {itemPanels: panelComments},
+        props: true, //{default: true}
+    }
+    , //props: (route) => {return route.index;}},
     {path: '/panel-exam-detail/:index', components: {examPanels: panelExamDetail}, props: true},
     {path: '/panel-history/:index', components: {itemPanels: panelHistory}, props: true},
     {path: '/panel-item-detail/:index', components: {itemPanels: panelItemDetail}, props: true},
