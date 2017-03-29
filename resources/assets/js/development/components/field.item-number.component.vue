@@ -32,7 +32,7 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: [ 'index', 'id' ],
+        props: [ 'index'],
         data: function () {
             return {
                 placeholders: {},
@@ -58,7 +58,9 @@
                 },
 
                 set: function ( v ) {
-                    this.setter( 'number', v );
+//                    this.setter( 'number', v );
+                    let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
+                    this.$store.commit( mTypes.updateItem, pl );
                     // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
                     // this.$store.commit( mTypes.updateItem, pl );
                 }
@@ -68,17 +70,6 @@
         },
 
         methods: {
-            getter: function ( name ) {
-                let item = this.$store.getters.getItemById( this.id );
-                if ( typeof item != 'undefined' ) {
-                    return item[ name ]
-                }
-            },
-
-            setter: function ( name, value ) {
-                let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
-                this.$store.commit( mTypes.updateItem, pl );
-            }
         }
     }
 

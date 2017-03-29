@@ -81,7 +81,7 @@ Vue.component('card-list', cardList)
 
 //Panels
 Vue.component('panel-detail', panelItemDetail)
-// Vue.component('panel-comments', panelComments)
+Vue.component('panel-comments', panelComments)
 Vue.component('panel-history', panelHistory)
 Vue.component('panel-stats', panelStats)
 Vue.component('panel-notes', panelNotes)

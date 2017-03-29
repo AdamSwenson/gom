@@ -6,7 +6,6 @@
             <div class="col-md-6">
                 <item-number
                         :index="index"
-                        :id="id"
                 ></item-number>
             </div>
 
@@ -14,7 +13,6 @@
 
                 <max-score
                         :index="index"
-                        :id="id"
                 ></max-score>
 
             </div>
@@ -53,10 +51,11 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: ['index', 'id'],
+//        props: ['index'],
 
         data: function () {
             return {
+            index : this.$route.params.index,
                 placeholders: {
                     questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
                     questionText: "Enter the full question text (optional)"

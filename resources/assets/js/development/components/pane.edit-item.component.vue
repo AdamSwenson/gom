@@ -8,13 +8,13 @@
                 <ul class="nav nav-pills"
                     role="tablist">
                     <li role="presentation">
-                        <router-link :to="{name: 'comments', params: {index : index} }">Edit details</router-link>
-
-                        <!--<router-link :to="{name: 'comments', params: {index : index} }">Edit details</router-link>-->
+                        <router-link v-bind:to="routeToItemDetails">Edit details</router-link>
                     </li>
 
                     <li role="presentation">
-                        <router-link v-bind:to="routeToComments">Setup feedback</router-link>
+                        <router-link :to="{name: 'comments', params: {index : index} }">Setup feedback</router-link>
+
+                        <!--<router-link :to="{name: 'comments', params: {index : index} }">Edit details</router-link>-->
                     </li>
 
                     <li role="presentation">

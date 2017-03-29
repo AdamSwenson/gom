@@ -68013,7 +68013,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 exports.default = {
-    props: ['index', 'id'],
+    props: ['index'],
     data: function data() {
         return {
             placeholders: {}
@@ -68038,7 +68038,9 @@ exports.default = {
             },
 
             set: function set(v) {
-                this.setter('number', v);
+                //                    this.setter( 'number', v );
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+                this.$store.commit(mTypes.updateItem, pl);
                 // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
                 // this.$store.commit( mTypes.updateItem, pl );
             }
@@ -68047,19 +68049,7 @@ exports.default = {
 
     },
 
-    methods: {
-        getter: function getter(name) {
-            var item = this.$store.getters.getItemById(this.id);
-            if (typeof item != 'undefined') {
-                return item[name];
-            }
-        },
-
-        setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
-            this.$store.commit(mTypes.updateItem, pl);
-        }
-    }
+    methods: {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"question-num-area\">\n    <label for=\"question-number-label\">{{ displayType }}</label>\n    <input type=\"number\" min=\"0\" id=\"question-number-label\" title=\"order of the item on the assignment\" v-model=\"questionNumber\">\n</div>\n\n"
@@ -68241,9 +68231,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 exports.default = {
-    props: ['index', 'id'],
+    //        props: [ 'index'],
+
     data: function data() {
         return {
+            index: this.$route.params.index,
+
             title: 'Max Score',
 
             placeholders: {
@@ -68256,38 +68249,25 @@ exports.default = {
 
         maxScore: {
             get: function get() {
-                if (typeof this.index != 'undefined') {
+                if (typeof this.index !== 'undefined') {
                     var item = this.$store.getters.getItemByIndex(this.index);
-                    if (typeof item != 'undefined') {
+                    if (typeof item !== 'undefined') {
                         return item.maxScore;
                     }
                 }
+
                 return this.placeholders.score;
-                //                        return this.getter( 'maxScore' );
             },
 
             set: function set(v) {
-                this.setter('maxScore', v);
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+                this.$store.commit(mTypes.updateItem, pl);
             }
 
         }
     },
 
-    methods: {
-        getter: function getter(name) {
-            if (typeof this.id != 'undefined') {
-                var item = this.$store.getters.getItemById(this.id);
-                if (typeof item != 'undefined') {
-                    return item[name];
-                }
-            }
-        },
-
-        setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
-            this.$store.commit(mTypes.updateItem, pl);
-        }
-    }
+    methods: {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area input-group\">\n\n    <span class=\"input-group-addon\" id=\"max-score-addon\">{{ title }}</span>\n    <input type=\"number\" min=\"0\" title=\"maximum score for this question\" class=\"form-control input max-score-input\" aria-describedby=\"max-score-addon\" v-model=\"maxScore\">\n</div>\n\n"
@@ -68992,7 +68972,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Edit details</router-link>\n\n                    <!--<router-link :to=\"{name: 'comments', params: {index : index} }\">Edit details</router-link>-->\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToComments\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n\n                    <!--<router-link :to=\"{name: 'comments', params: {index : index} }\">Edit details</router-link>-->\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69088,10 +69068,8 @@ exports.default = {
 
                 var item = this.$store.getters.getItemByIndex(this.$route.params.index);
                 //                    let item = this.$store.getters.getItemByIndex(this.index);
-                window.console.log('panel.comment-setup.component', 'get', 80, item, this, this.$route.params.index);
                 //                    if ( typeof item !== 'undefined' ) {
                 var comment = item.getComment(this.displayed);
-                console.log('commenet', this.displayed, comment);
                 //                        if ( typeof comment !== 'undefined' ) {
                 return comment.text;
                 //                        }
@@ -69166,9 +69144,7 @@ exports.default = {
     },
 
     mounted: function mounted() {
-        //            this.index = this.$route.params.index;
-        window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
-        //push a comment into the item
+        //            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
@@ -69328,7 +69304,42 @@ if (module.hot) {(function () {  module.hot.accept()
 },{"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
-"use strict";
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    //        props: ['index'],
+
+    data: function data() {
+        return {
+            index: this.$route.params.index,
+            placeholders: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {}
+};
 if (module.exports.__esModule) module.exports = module.exports.default
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-history-component\">\n <!--tab-pane\"-->\n    <!--role=\"tabpanel\"-->\n\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            <p>Which exams clones of this item have been used on</p>\n\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
@@ -69345,7 +69356,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69371,10 +69382,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 exports.default = {
-    props: ['index', 'id'],
+    //        props: ['index'],
 
     data: function data() {
         return {
+            index: this.$route.params.index,
             placeholders: {
                 questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
                 questionText: "Enter the full question text (optional)"
@@ -69432,7 +69444,7 @@ exports.default = {
  * Created by adam on 2/19/17.
  */
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Used by \"edit_question\" to hold fields and buttons for an individual question -->\n<div class=\"item-settings-detail-component\">\n\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <item-number :index=\"index\" :id=\"id\"></item-number>\n        </div>\n\n        <div class=\"col-md-6\">\n\n            <max-score :index=\"index\" :id=\"id\"></max-score>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"question-text-area col-md-12\">\n            <div class=\"form-group\">\n                        <textarea class=\"question-text form-control\" rows=\"3\" placeholder=\"Enter the full question text (optional)\" v-model=\"questionText\"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Used by \"edit_question\" to hold fields and buttons for an individual question -->\n<div class=\"item-settings-detail-component\">\n\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <item-number :index=\"index\"></item-number>\n        </div>\n\n        <div class=\"col-md-6\">\n\n            <max-score :index=\"index\"></max-score>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"question-text-area col-md-12\">\n            <div class=\"form-group\">\n                        <textarea class=\"question-text form-control\" rows=\"3\" placeholder=\"Enter the full question text (optional)\" v-model=\"questionText\"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69450,7 +69462,42 @@ if (module.hot) {(function () {  module.hot.accept()
 },{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],374:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
-"use strict";
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    //        props: ['index'],
+
+    data: function data() {
+        return {
+            index: this.$route.params.index,
+            placeholders: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {}
+};
 if (module.exports.__esModule) module.exports = module.exports.default
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-notes-component\">\n <!--tab-pane\"-->\n     <!--role=\"tabpanel\"-->\n\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            \"notes to self go here\"\n\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
@@ -69467,10 +69514,45 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
-"use strict";
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    //        props: ['index'],
+
+    data: function data() {
+        return {
+            index: this.$route.params.index,
+            placeholders: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {}
+};
 if (module.exports.__esModule) module.exports = module.exports.default
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-stats-component\">\n<!--<div class=\"panel-stats-component tab-pane\"-->\n     <!--role=\"tabpanel\"-->\n<!--&gt;-->\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            \"Stats go here\"\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
@@ -69487,7 +69569,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n\n")
 'use strict';
@@ -69805,7 +69887,7 @@ _vue2.default.component('card-list', _itemCardsListComponent2.default);
 
 //Panels
 _vue2.default.component('panel-detail', _panelItemDetailComponent2.default);
-// Vue.component('panel-comments', panelComments)
+_vue2.default.component('panel-comments', _panelCommentSetupComponent2.default);
 _vue2.default.component('panel-history', _panelHistoryComponent2.default);
 _vue2.default.component('panel-stats', _panelStatsComponent2.default);
 _vue2.default.component('panel-notes', _panelNotesComponent2.default);

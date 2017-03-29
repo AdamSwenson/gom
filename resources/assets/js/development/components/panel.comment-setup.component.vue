@@ -92,10 +92,8 @@
 
                     let item = this.$store.getters.getItemByIndex(this.$route.params.index);
 //                    let item = this.$store.getters.getItemByIndex(this.index);
-                    window.console.log('panel.comment-setup.component', 'get', 80, item, this, this.$route.params.index);
 //                    if ( typeof item !== 'undefined' ) {
                     let comment = item.getComment(this.displayed);
-                    console.log('commenet', this.displayed,  comment);
 //                        if ( typeof comment !== 'undefined' ) {
                     return comment.text;
 //                        }
@@ -173,10 +171,7 @@
         },
 
         mounted: function () {
-//            this.index = this.$route.params.index;
-            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
-            //push a comment into the item
-
+//            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
         },
     };
 </script>

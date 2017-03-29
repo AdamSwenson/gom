@@ -40,9 +40,12 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: [ 'index', 'id' ],
+//        props: [ 'index'],
+
         data: function () {
             return {
+                index : this.$route.params.index,
+
                 title: 'Max Score',
 
                 placeholders: {
@@ -55,37 +58,25 @@
 
             maxScore: {
                 get: function () {
-                    if ( typeof this.index != 'undefined' ) {
+                    if ( typeof this.index !== 'undefined' ) {
                         let item = this.$store.getters.getItemByIndex( this.index );
-                        if ( typeof item != 'undefined' ) {
+                        if ( typeof item !== 'undefined' ) {
                             return item.maxScore
                         }
                     }
+
                     return this.placeholders.score;
-//                        return this.getter( 'maxScore' );
                 },
 
                 set: function ( v ) {
-                    this.setter( 'maxScore', v )
+                    let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
+                    this.$store.commit( mTypes.updateItem, pl );
                 }
 
             },
         },
 
         methods: {
-            getter: function ( name ) {
-                if ( typeof this.id != 'undefined' ) {
-                    let item = this.$store.getters.getItemById( this.id );
-                    if ( typeof item != 'undefined' ) {
-                        return item[ name ]
-                    }
-                }
-            },
-
-            setter: function ( name, value ) {
-                let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
-                this.$store.commit( mTypes.updateItem, pl );
-            }
         }
     }
 
