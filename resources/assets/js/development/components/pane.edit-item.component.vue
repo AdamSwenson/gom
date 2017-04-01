@@ -1,47 +1,24 @@
 <template>
-    <div class="item-edit-pane well well-sm"
-         v-show="visible">
+    <div class="item-edit-pane "
+         v-show="visible"
+    >
 
         <slot name="settingsBody">
-            <div>
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills"
-                    role="tablist">
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToItemDetails">Edit details</router-link>
-                    </li>
 
-                    <li role="presentation">
-                        <router-link :to="{name: 'comments', params: {index : index} }">Setup feedback</router-link>
+            <edit-tabs :index="index"></edit-tabs>
 
-                        <!--<router-link :to="{name: 'comments', params: {index : index} }">Edit details</router-link>-->
-                    </li>
-
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToStats">Stats</router-link>
-                    </li>
-
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToHistory">History</router-link>
-                    </li>
-
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToNotes">Notes</router-link>
-                    </li>
-                </ul>
-
-                <!-- Tab panels -->
-                <div class="tab-panel-area">
+            <!-- Tab panels -->
+            <div class="tab-panel-area">
+                <div class="well well-sm">
                     <router-view name="itemPanels"></router-view>
                 </div>
-
             </div>
 
         </slot>
 
         <slot name="controlsArea"></slot>
-    </div>
 
+    </div>
 
 </template>
 <style>
@@ -62,12 +39,12 @@
      * Created by adam on 2/18/17.
      */
     export default {
-        props: ['index'],
+        props: [ 'index', 'is-exam' ],
 
         data: function () {
             return {
                 defaults: {
-                    types: ['question', 'element']
+                    types: [ 'question', 'element' ]
                 },
                 // currentView: 'item-settings-question',
                 tabs: [
@@ -79,41 +56,12 @@
         },
 
         computed: {
-            tabTitle: function () {
-                //  return this.tab.
-            },
-
-            tabActive: function () {
-
-            },
 
             /**
              * Returns true if the settings pane for this item should be displayed
              */
             visible: function () {
-                return this.$store.getters[gTypes.isItemSettingsVisible](this.index)
-            },
-
-            routeToItemDetails: function () {
-                return "/panel-item-detail/" + this.index;
-            },
-
-            routeToComments: function () {
-                return "/panel-comments/" + this.index;
-            },
-
-            routeToStats: function () {
-                return "/panel-stats/" + this.index;
-            },
-
-
-            routeToHistory: function () {
-                return "/panel-history/" + this.index;
-            },
-
-
-            routeToNotes: function () {
-                return "/panel-notes/" + this.index;
+                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
             },
 
         },
@@ -133,6 +81,10 @@
         directives: {},
 
         events: {
+        'collapse-all': function (  ) {
+            window.console.log('pane.edit-item.component', 'collapse-all', 85,);
+            this.hide();
+        },
             'display-settings': function () {
                 console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
                 //this.toggle();

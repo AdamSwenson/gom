@@ -67068,7 +67068,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-bedabc0c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],353:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],353:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67138,7 +67138,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4b0ad92d", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],354:[function(require,module,exports){
+},{"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -67223,7 +67223,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-344d0d66", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":385,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
+},{"../../store/action-types":386,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67359,7 +67359,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":381,"../../models/Payload":382,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67395,7 +67395,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.default = {
 
-    props: ['index', 'id'],
+    props: ['index'],
 
     data: function data() {
         return {};
@@ -67407,7 +67407,7 @@ exports.default = {
         toggleVis: function toggleVis() {
             console.log('buttons.settings-control', 'CALLED', 'toggle', this.index);
             var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-            console.log('isvis', isVis);
+            //                    console.log( 'isvis', isVis );
             if (isVis) {
                 //if comes back true, we know that currently visible
                 //call the mutation with our index
@@ -67439,7 +67439,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7de0264c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":381,"../../models/Payload":382,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67533,7 +67533,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5092195a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":378,"../../models/Item":381,"../../models/Payload":382,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
+},{"../../models/Comment":379,"../../models/Item":382,"../../models/Payload":383,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67694,7 +67694,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-a586beac", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
+},{"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67783,7 +67783,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67829,6 +67829,7 @@ exports.default = {
 
     data: function data() {
         return {
+            headingName: "future dropdown!",
             placeHolders: {
                 privateName: "Enter a descriptive name for this assignment (e.g., English 101 Exam #1)",
                 publicName: ""
@@ -67893,11 +67894,11 @@ exports.default = {
         //                //push into stack as root item
         //                //todo
         //            }
-        console.log('exam-main ready');
+        //            console.log( 'exam-main ready' );
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component\">\n    <div class=\"input-group input-group-lg\">\n\n    <span class=\"input-group-addon\" id=\"basic-addon1\">\n        Assignment Name\n    </span>\n\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n\n        <span class=\"input-group-btn\">\n            <button class=\"btn btn-primary\" v-on:click=\"toggleExamProperties\"><span class=\"glyphicon glyphicon-cog\"></span></button>\n    </span>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component\">\n    <div class=\"input-group input-group-lg\">\n\n        <div class=\"input-group-addon\" id=\"basic-addon1\">\n            {{headingName}}\n        </div>\n\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"0\"></settings-button>\n\n            <!--<button class=\"btn btn-primary\"-->\n            <!--v-on:click=\"toggleExamProperties\"-->\n            <!--&gt;<span class=\"glyphicon glyphicon-cog\"></span></button>-->\n        </div>\n\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67912,7 +67913,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":379,"../../models/Item":381,"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../models/Exam":380,"../../models/Item":382,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -67938,7 +67939,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 exports.default = {
-    props: ['index', 'id'],
+    props: ['index', 'described-id'],
 
     data: function data() {
         return {
@@ -67972,7 +67973,7 @@ exports.default = {
     methods: {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<input type=\"text\" class=\"itemMain form-control\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<input type=\"text\" class=\"itemMain form-control\" aria-describedby=\"basic-addon2\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67987,7 +67988,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -68052,7 +68053,7 @@ exports.default = {
     methods: {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"question-num-area\">\n    <label for=\"question-number-label\">{{ displayType }}</label>\n    <input type=\"number\" min=\"0\" id=\"question-number-label\" title=\"order of the item on the assignment\" v-model=\"questionNumber\">\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"question-num-area\">\n    <label for=\"question-number-label\">{{ displayType }}</label>\n    <input id=\"question-number-label\" type=\"number\" min=\"0\" title=\"order of the item on the assignment\" v-model=\"questionNumber\">\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68067,7 +68068,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
@@ -68205,7 +68206,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -68285,9 +68286,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.itemName {\n  margin-bottom: 0;\n  margin-top: 0; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68405,13 +68406,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component input-group input-group-lg\">\n\n    <span class=\"input-group-addon\">\n        <item-number :index=\"index\" :id=\"id\"></item-number>\n    </span>\n\n    <item-name :index=\"index\" :id=\"id\"></item-name>\n\n    <span class=\"input-group-btn\">\n        <settings-button :index=\"index\" :id=\"id\"></settings-button>\n\n        <public-indicator :index=\"index\" :id=\"id\">\n        </public-indicator>\n    </span>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component\">\n    <div class=\"input-group\">\n        <div class=\"input-group-addon\" id=\"basic-addon2\"># {{ index }}\n        <!--<div class=\"input-group-addon\" id=\"itemnum\">-->\n            <!--<item-number :index=\"index\"></item-number>-->\n        </div>\n\n        <item-name :index=\"index\"></item-name>\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"index\"></settings-button>\n\n            <public-indicator :index=\"index\"></public-indicator>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 2, stdin */\n.itemName {\n  margin-bottom: 0;\n  margin-top: 0; }\n"] = false
+    __vueify_insert__.cache["/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68420,15 +68421,34 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":381,"../../models/Payload":382,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //    import deleteButton from './buttons.item.delete.component.vue'
 //    import itemEditPane from './item.edit-pane.component.vue'
@@ -68466,6 +68486,13 @@ exports.default = {
     //        },
 
     computed: {
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        visible: function visible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+        },
+
         divId: function divId() {
             return "item-card-" + this.index;
         },
@@ -68483,17 +68510,22 @@ exports.default = {
 
         depth: {
             get: function get() {
-                var item = this.$store.getters.getItemById(this.id);
-                //                let item = this.$store.getters.getItemByIndex( this.index );
-                if (typeof item != 'undefined') {
+                //                    let item = this.$store.getters.getItemById(this.id);
+                var item = this.$store.getters.getItemByIndex(this.index);
+                if (typeof item !== 'undefined') {
                     return item.depth;
                 }
             },
             set: function set(v) {
-                var item = this.$store.getters.getItemById(this.id);
-                // let item = this.$store.getters.getItemByIndex( this.index );
+                //                    let item = this.$store.getters.getItemById(this.id);
+                var item = this.$store.getters.getItemByIndex(this.index);
                 if (typeof item != 'undefined') {
-                    this.$store.commit(Payload.factory({ id: this.id, index: this.index, updateProp: 'depth', updateVal: v }));
+                    this.$store.commit(_Payload2.default.factory({
+                        //                            id: this.id,
+                        index: this.index,
+                        updateProp: 'depth',
+                        updateVal: v
+                    }));
                 }
             }
         },
@@ -68540,13 +68572,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\">\n    <div class=\"row\">\n        <item-main :index=\"index\" :id=\"id\"></item-main>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"clearfix\"></div>\n\n        <div class=\"col-lg-12\">\n            <div class=\"clearfix\"></div>\n\n            <slot name=\"head\">\n\n                <item-edit-pane :index=\"index\" :id=\"id\">\n                    <!--is=\"currentView\"-->\n                    <div slot=\"controlsArea\">\n                        <div class=\"row\">\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                            <div class=\"col-md-10\"></div>\n\n                            <div class=\"col-md-1\">\n\n                                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n\n                            </div>\n\n                        </div>\n                    </div>\n\n                </item-edit-pane>\n            </slot>\n\n            <div class=\"clearfix\"></div>\n\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-lg-12\">\n            <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n        </div>\n         </div>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component panel panel-primary\" v-bind:class=\"offsetClass\">\n    <div class=\"panel-heading\">\n            <item-main :index=\"index\"></item-main>\n    </div>\n\n    <div class=\"panel-body\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n    </div>\n\n    <div class=\"panel-footer\" v-show=\"visible\">\n        <div class=\"clear-fix\"></div>\n        <div class=\"row\">\n            <div class=\"col-md-1\">\n                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n            </div>\n            <div class=\"col-md-10\">\n                <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n            </div>\n            <div class=\"col-md-1\">\n                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68555,7 +68587,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-274cbdc8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -68738,7 +68770,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list card-list-component\">\n    <!--<draggable v-model='items'>-->\n    <ul id=\"card-list\" class=\"list-group\">\n        <li class=\"item-cards list-group-item handle\" v-for=\"(item, index) in items\">\n            <item-card :index=\"item.index\" :id=\"item.id\"></item-card>\n        </li>\n    </ul>\n    <!--</div>-->\n\n    <div class=\"row\">\n        <div class=\"col-lg-12 \">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list card-list-component\">\n    <!--<draggable v-model='items'>-->\n    <ul id=\"card-list\" class=\"list-group\">\n        <li class=\"item-cards list-group-item list-group-item-warning handle\" v-for=\"(item, index) in items\">\n            <item-card :index=\"item.index\" :id=\"item.id\"></item-card>\n        </li>\n    </ul>\n    <!--</div>-->\n\n    <div class=\"row\">\n        <div class=\"col-lg-12 \">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68753,113 +68785,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-150522d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":381,"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = require('../../store/getter-types');
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _panelExamDetailComponent = require('./panel.exam-detail.component.vue');
-
-var _panelExamDetailComponent2 = _interopRequireDefault(_panelExamDetailComponent);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-// Vue.component('panel-exam-detail', panelExamDetail)
-
-exports.default = {
-
-    props: ['exam-id'],
-
-    data: function data() {
-        return {};
-    },
-
-    components: {
-        panelExamDetail: _panelExamDetailComponent2.default
-    },
-
-    computed: {
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        visible: function visible() {
-            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-        },
-
-        routeToExamDetails: function routeToExamDetails() {
-            return "/panel-exam-detail/" + this.index;
-        },
-
-        routeToComments: function routeToComments() {
-            return "/panel-comments/" + this.index;
-        },
-
-        routeToStats: function routeToStats() {
-            return "/panel-stats/" + this.index;
-        },
-
-        routeToHistory: function routeToHistory() {
-            return "/panel-history/" + this.index;
-        },
-
-        routeToNotes: function routeToNotes() {
-            return "/panel-notes/" + this.index;
-        }
-
-    },
-
-    methods: {
-        getExam: function getExam() {
-            //  return this.$store.getters[gTypes.getActiveExamObj];
-        }
-    },
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        console.log('exam-edit-pane ready');
-    }
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"exam-detail-pane well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToComments\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"examPanels\"></router-view>\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-484eb3d4", module.exports)
-  } else {
-    hotAPI.update("_v-484eb3d4", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"./panel.exam-detail.component.vue":371,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -68895,7 +68821,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * Created by adam on 2/18/17.
  */
 exports.default = {
-    props: ['index'],
+    props: ['index', 'is-exam'],
 
     data: function data() {
         return {
@@ -68921,6 +68847,10 @@ exports.default = {
          */
         visible: function visible() {
             return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+        },
+
+        routeToExamDetails: function routeToExamDetails() {
+            return "/panel-exam-detail/" + this.index;
         },
 
         routeToItemDetails: function routeToItemDetails() {
@@ -68967,12 +68897,205 @@ exports.default = {
     },
 
     mounted: function mounted() {
+        window.console.log('nav.edit-tabs.component', 'mounted', 136, this.index);
+    }
+
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <!-- Nav tabs -->\n    <ul class=\"nav nav-pills\" role=\"tablist\">\n\n        <li v-if=\"isExam\" role=\"presentation\">\n            <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n        </li>\n        <li v-else=\"\" role=\"presentation\">\n            <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link v-bind:to=\"routeToHistory\">History</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n        </li>\n    </ul>\n\n</div>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-56e8d0aa", module.exports)
+  } else {
+    hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _panelExamDetailComponent = require('./panel.exam-detail.component.vue');
+
+var _panelExamDetailComponent2 = _interopRequireDefault(_panelExamDetailComponent);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// Vue.component('panel-exam-detail', panelExamDetail)
+
+exports.default = {
+
+    props: ['index', 'exam-id'],
+
+    data: function data() {
+        return {};
+    },
+
+    components: {
+        panelExamDetail: _panelExamDetailComponent2.default
+    },
+
+    computed: {
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        visible: function visible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+        }
+
+    },
+
+    methods: {
+        getExam: function getExam() {
+            //  return this.$store.getters[gTypes.getActiveExamObj];
+        }
+    },
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        console.log('exam-edit-pane ready');
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"exam-detail-pane\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n\n        <edit-tabs :index=\"index\" :is-exam=\"true\"></edit-tabs>\n\n    <div class=\"tab-panel-area\">\n        <div class=\"well well-sm\">\n            <router-view name=\"examPanels\"></router-view>\n        </div>\n    </div>\n\n    </slot>\n\n</div>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-484eb3d4", module.exports)
+  } else {
+    hotAPI.update("_v-484eb3d4", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"./panel.exam-detail.component.vue":372,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * This holds all the tools for editing an item. It drops down
+ * when called and has lots of tabs etc
+ *
+ * Created by adam on 2/18/17.
+ */
+exports.default = {
+    props: ['index', 'is-exam'],
+
+    data: function data() {
+        return {
+            defaults: {
+                types: ['question', 'element']
+            },
+            // currentView: 'item-settings-question',
+            tabs: ['details', 'comments', 'stats', 'history', 'notes'],
+            hiding: true
+
+        };
+    },
+
+    computed: {
+
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        visible: function visible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+        }
+
+    },
+
+    methods: {
+        show: function show() {
+            console.log('itemSetting', 'CALLED', 'show');
+            this.$store.commit(mTypes.showItemSettings(_Payload2.default.factory({ index: this.index })));
+        },
+        hide: function hide() {
+            console.log('itemSetting', 'CALLED', 'hide');
+            this.$store.commit(mTypes.hideItemSettings(_Payload2.default.factory({ index: this.index })));
+        }
+
+    },
+
+    directives: {},
+
+    events: {
+        'collapse-all': function collapseAll() {
+            window.console.log('pane.edit-item.component', 'collapse-all', 85);
+            this.hide();
+        },
+        'display-settings': function displaySettings() {
+            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
+            //this.toggle();
+        }
+    },
+
+    mounted: function mounted() {
         window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
     }
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane well well-sm\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n        <div>\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n\n                    <!--<router-link :to=\"{name: 'comments', params: {index : index} }\">Edit details</router-link>-->\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane \" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n\n        <edit-tabs :index=\"index\"></edit-tabs>\n\n        <!-- Tab panels -->\n        <div class=\"tab-panel-area\">\n            <div class=\"well well-sm\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68987,7 +69110,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-31c02e0a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":381,"../../models/Payload":382,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69163,7 +69286,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":378,"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"./buttons.valence.component.vue":357,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+},{"../../models/Comment":379,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"./buttons.valence.component.vue":357,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69198,8 +69321,12 @@ exports.default = {
 
     data: function data() {
         return {
+            defaults: {
+                term: 'Term'
+            },
             placeholders: {
-                publicName: "If you would like students to see a different name for the exam, enter the name you would like them to see here" },
+                publicName: "If you would like students to see a different name for the exam, enter the name you would like them to see here"
+            },
 
             //0 index always has an exam
             index: 0,
@@ -69218,11 +69345,13 @@ exports.default = {
         publicName: {
             get: function get() {
                 var exam = this.getExam();
-                return exam.name;
-                //                    return this.$store.getters[ gTypes.getExam ]( Payload.factory( {examId: this.examId} ) );
+                if (exam && typeof exam.publicName !== 'undefined') {
+                    return exam.publicName;
+                }
             },
             set: function set(v) {
-                this.$store.commit(mTypes.updateActiveExamProp, _Payload2.default.factory({
+                this.$store.commit(mTypes.updateItem, _Payload2.default.factory({
+                    index: 0,
                     updateProp: 'publicName',
                     updateVal: v
                 }));
@@ -69231,11 +69360,19 @@ exports.default = {
 
         term: {
             get: function get() {
-                var exam = this.getExam(); //this.$store.getters[ gTypes.getActiveExamObj];
-                return exam.term;
+                var exam = this.getExam();
+                if (exam && typeof exam.term !== 'undefined') {
+                    return exam.term;
+                }
             },
-            set: function set() {
-                this.$store.commit(mTypes.updateActiveExamProp, _Payload2.default.factory({
+            //Sets the term
+            //Note, the input box allows the entered
+            //value not to be one of the standard values
+            //this is by design.
+            //We are not being too prescriptive, remember?
+            set: function set(v) {
+                this.$store.commit(mTypes.updateItem, _Payload2.default.factory({
+                    index: 0,
                     updateProp: 'term',
                     updateVal: v
                 }));
@@ -69243,16 +69380,18 @@ exports.default = {
         },
         year: {
             get: function get() {
-                var exam = this.getExam(); //                    let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+                var exam = this.getExam();
                 return exam.year;
             },
             set: function set(v) {
-                this.$store.commit(mTypes.updateActiveExamProp, _Payload2.default.factory({
+                this.$store.commit(mTypes.updateItem, _Payload2.default.factory({
+                    index: 0,
                     updateProp: 'year',
                     updateVal: v
                 }));
             }
         },
+
         years: function years() {
             return [2017, 2018];
         }
@@ -69260,8 +69399,12 @@ exports.default = {
     },
 
     methods: {
+        selectTerm: function selectTerm() {
+            window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
+        },
         getExam: function getExam() {
-            return this.$store.getters[gTypes.getActiveExamObj];
+            return this.$store.getters.getItemByIndex(0);
+            //                return this.$store.getters[ gTypes.getActiveExamObj ];
         },
 
         updateExam: function updateExam() {}
@@ -69277,7 +69420,9 @@ exports.default = {
         //check if exam id was provided,
         // if not, create a new exam object and set it
         // as active.
-        if (typeof this.examId == 'undefined') {}
+        //            if ( typeof this.examId == 'undefined' ) {
+        //
+        //            }
         //Also get ready to request an exam id from the server
         //as soon as the user does something which alters the store
 
@@ -69286,7 +69431,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"panel-exam-detail  \">\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n\n            <!-- name input -->\n            <div class=\"input-group\">\n                <span class=\"input-group-addon\" id=\"basic-addon1\">Public Assignment Name</span>\n                <input type=\"text\" class=\"form-control input-lg\" id=\"publicName\" name=\"publicName\" aria-describedby=\"basic-addon1\" v-model=\"publicName\" v-bind:placeholder=\"placeholders.publicName\">\n            </div>\n        </div>\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <b-dropdown v-bind:text=\"term\" variant=\"primary\" split=\"\" class=\"\">\n                <b-dropdown-item href=\"#\">Winter</b-dropdown-item>\n                <b-dropdown-item href=\"#\">Spring</b-dropdown-item>\n                <b-dropdown-item href=\"#\">Summer</b-dropdown-item>\n                <b-dropdown-item href=\"#\">Fall</b-dropdown-item>\n            </b-dropdown>\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n        <!--<list-dropdown type=\"term\"></list-dropdown>-->\n\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"panel-exam-detail  \">\n    <div class=\"row\">\n        <div class=\"col-md-11\">\n\n            <!-- name input -->\n            <div class=\"input-group\">\n                <span class=\"input-group-addon\" id=\"basic-addon1\">Public Assignment Name</span>\n                <input type=\"text\" class=\"form-control input-lg\" id=\"publicName\" name=\"publicName\" aria-describedby=\"basic-addon1\" v-model=\"publicName\" v-bind:placeholder=\"placeholders.publicName\">\n            </div>\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n\n            <div class=\"input-group\">\n                <div class=\"input-group-btn\">\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Term <span class=\"caret\"></span></button>\n                    <ul class=\"dropdown-menu\">\n                        <li v-for=\"term in terms\">\n                            <a href=\"#\">{{term}}</a>\n                        </li>\n                    </ul>\n                </div><!-- /btn-group -->\n                <input type=\"text\" class=\"form-control\" aria-label=\"term-text\" v-model=\"term\">\n            </div><!-- /input-group -->\n\n            <!--<b-dropdown v-bind:text=\"term\"-->\n            <!--variant=\"primary\"-->\n\n            <!--&gt;-->\n            <!--<b-dropdown-item href=\"#\">Winter</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Spring</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Summer</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Fall</b-dropdown-item>-->\n            <!--</b-dropdown>-->\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n        <!--<list-dropdown type=\"term\"></list-dropdown>-->\n\n    </div>\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n\n            <div class=\"input-group\">\n                <div class=\"input-group-btn\">\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Year <span class=\"caret\"></span></button>\n                    <ul class=\"dropdown-menu\">\n                        <li v-for=\"year in years\">\n                            <a href=\"#\">{{year}}</a>\n                        </li>\n                    </ul>\n                </div><!-- /btn-group -->\n                <input type=\"number\" class=\"form-control\" aria-label=\"year-text\" v-model=\"year\">\n            </div><!-- /input-group -->\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69301,7 +69446,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69356,7 +69501,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],374:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69459,7 +69604,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],374:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69490,16 +69635,29 @@ exports.default = {
     data: function data() {
         return {
             index: this.$route.params.index,
-            placeholders: {}
+            placeholders: {
+
+                noteText: "Write something you want to remember about this item here"
+            }
         };
     },
 
-    computed: {},
+    computed: {
+        noteText: {
+            get: function get() {},
+            set: function set(v) {}
+        }
 
-    methods: {}
+    },
+
+    methods: {
+        saveNote: function saveNote() {
+            window.console.log('panel.notes.component', 'saveNote', 65);
+        }
+    }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-notes-component\">\n <!--tab-pane\"-->\n     <!--role=\"tabpanel\"-->\n\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            \"notes to self go here\"\n\n        </div>\n    </div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel-notes-component\">\n    <!--tab-pane\"-->\n    <!--role=\"tabpanel\"-->\n\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n\n            <h3>Saved notes to self display here</h3>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            <h5>Add note to your future self</h5>\n            <div class=\"form-group\">\n                    <textarea class=\"form-control\" rows=\"3\" v-bind:placeholder=\"placeholders.noteText\" v-model=\"noteText\"></textarea>\n            </div>\n            <button class=\"btn btn-success\" v-on:click=\"saveNote\"><span class=\"glyphicon glyphicon-plus\"></span></button>\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69514,7 +69672,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69569,9 +69727,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":382,"../../store/action-types":385,"../../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n#itemCol.well {\n    background-color: #385a7f\n}\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69631,17 +69789,20 @@ exports.default = {
         //On load the root exam object and first item are created but given no
         //ids. thus we will eventually need to create an exam object if one isn't set
         //however don't ask the server to create an id just yet
-        var exam = this.$store.getters[gTypes.getActiveExamObj];
+        var exam = this.$store.getters[gTypes.getItem](_Payload2.default.factory({ index: 0 }));
+        //            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
         if (!exam) {
+            exam = new _Exam2.default();
             //lookup the exam object that resides at index 0
             //this will have either been newly created on page load
             //or it will be an existing exam object loaded from the db
-            var _exam = this.$store.getters[gTypes.getActiveExamObj];
+            //                let exam = this.$store.getters[ gTypes.getActiveExamObj ];
             //Call the set active exam method
             //We do this rather than call the mutation directly
             //because there may need to be various other events and
             //things which need to happen depending on the context.
-            this.$store.dispatch(aTypes.setActiveExam, _Payload2.default.factory({ obj: _exam }));
+            //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+            this.$store.getters[mTypes.setItem](_Payload2.default.factory({ index: 0, obj: exam }));
         }
     },
 
@@ -69697,13 +69858,13 @@ exports.default = {
 //
 //    import depthControl from './components/buttons.depth-control.component.vue'
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\">\n\n    <div class=\"row\">\n        <exam-main></exam-main>\n    </div>\n    <div class=\"row\">\n        <exam-edit-pane></exam-edit-pane>\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n        <div id=\"itemCol\" class=\"col-lg-10 well well-lg\">\n\n            <div class=\"itemRow row\">\n                <card-list></card-list>\n            </div>\n\n        </div>\n\n        <!--<div class=\"row\">-->\n\n        <div id=\"infoCol\" class=\"col-lg-2\">\n\n            <div class=\"row\">\n                <props-dashboard></props-dashboard>\n            </div>\n\n            <div class=\"row\">\n                <tools-dashboard></tools-dashboard>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\">\n <div class=\"row\">\n    <div class=\"col-lg-1\"></div>\n\n    <div class=\"examEditor col-lg-10\">\n        <div class=\"panel-heading\">\n            <exam-main></exam-main>\n        </div>\n\n        <div class=\"panel-body\">\n            <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n        </div>\n    </div>\n    <div class=\"col-lg-1\"></div>\n</div>\n\n<div id=\"examEditorBody\" class=\"row\">\n\n    <div class=\"col-lg-1\"></div>\n\n    <div id=\"itemCol\" class=\"col-lg-9 well well-sm  \">\n        <div class=\"itemRow row\">\n            <card-list></card-list>\n        </div>\n    </div>\n\n    <div id=\"infoCol\" class=\"col-lg-2 well well-sm\">\n\n        <div class=\"row\">\n            <props-dashboard></props-dashboard>\n        </div>\n\n        <div class=\"row\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n    </div>\n\n    <div class=\"col-lg-1\"></div>\n\n</div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n\n"] = false
+    __vueify_insert__.cache["\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n#itemCol.well {\n    background-color: #385a7f\n}\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -69712,7 +69873,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":379,"../models/Item":381,"../models/Payload":382,"../store":389,"../store/action-types":385,"../store/getter-types":387,"../store/mutation-types":402,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../models/Exam":380,"../models/Item":382,"../models/Payload":383,"../store":390,"../store/action-types":386,"../store/getter-types":388,"../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -69748,6 +69909,10 @@ var _paneEditExamComponent2 = _interopRequireDefault(_paneEditExamComponent);
 var _paneEditItemComponent = require('./components/pane.edit-item.component.vue');
 
 var _paneEditItemComponent2 = _interopRequireDefault(_paneEditItemComponent);
+
+var _navEditTabsComponent = require('./components/nav.edit-tabs.component.vue');
+
+var _navEditTabsComponent2 = _interopRequireDefault(_navEditTabsComponent);
 
 var _panelCommentSetupComponent = require('./components/panel.comment-setup.component.vue');
 
@@ -69891,6 +70056,7 @@ _vue2.default.component('panel-comments', _panelCommentSetupComponent2.default);
 _vue2.default.component('panel-history', _panelHistoryComponent2.default);
 _vue2.default.component('panel-stats', _panelStatsComponent2.default);
 _vue2.default.component('panel-notes', _panelNotesComponent2.default);
+_vue2.default.component('edit-tabs', _navEditTabsComponent2.default);
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
 _vue2.default.component('valence-button', _buttonsValenceComponent2.default);
@@ -69940,14 +70106,14 @@ var app = new _vue2.default({
     },
 
     mounted: function mounted() {
-        console.log('newSetup ready', this);
+        // console.log('newSetup ready', this);
     }
 
 }).$mount("#app");
 
 // Now the app has started!
 
-},{"./bootstrap":351,"./components/buttons.depth-control.component.vue":352,"./components/buttons.item.add.component.vue":353,"./components/buttons.item.delete.component.vue":354,"./components/buttons.public-control.component.vue":355,"./components/buttons.settings-control.component.vue":356,"./components/buttons.valence.component.vue":357,"./components/dashboard.props.component.vue":358,"./components/dashboard.tools.component.vue":359,"./components/exam.main.component.vue":360,"./components/field.item-name.component.vue":361,"./components/field.item-number.component.vue":362,"./components/field.list-dropdown.component.vue":363,"./components/field.max-score.component.vue":364,"./components/item.main.component.vue":365,"./components/itemCards.card.component.vue":366,"./components/itemCards.list.component.vue":367,"./components/pane.edit-exam.component.vue":368,"./components/pane.edit-item.component.vue":369,"./components/panel.comment-setup.component.vue":370,"./components/panel.exam-detail.component.vue":371,"./components/panel.history.component.vue":372,"./components/panel.item-detail.component.vue":373,"./components/panel.notes.component.vue":374,"./components/panel.stats.component.vue":375,"./new-setup.vue":376,"babel-polyfill":26,"bootstrap-vue":29,"vue-router":345,"vue/dist/vue.js":346}],378:[function(require,module,exports){
+},{"./bootstrap":351,"./components/buttons.depth-control.component.vue":352,"./components/buttons.item.add.component.vue":353,"./components/buttons.item.delete.component.vue":354,"./components/buttons.public-control.component.vue":355,"./components/buttons.settings-control.component.vue":356,"./components/buttons.valence.component.vue":357,"./components/dashboard.props.component.vue":358,"./components/dashboard.tools.component.vue":359,"./components/exam.main.component.vue":360,"./components/field.item-name.component.vue":361,"./components/field.item-number.component.vue":362,"./components/field.list-dropdown.component.vue":363,"./components/field.max-score.component.vue":364,"./components/item.main.component.vue":365,"./components/itemCards.card.component.vue":366,"./components/itemCards.list.component.vue":367,"./components/nav.edit-tabs.component.vue":368,"./components/pane.edit-exam.component.vue":369,"./components/pane.edit-item.component.vue":370,"./components/panel.comment-setup.component.vue":371,"./components/panel.exam-detail.component.vue":372,"./components/panel.history.component.vue":373,"./components/panel.item-detail.component.vue":374,"./components/panel.notes.component.vue":375,"./components/panel.stats.component.vue":376,"./new-setup.vue":377,"babel-polyfill":26,"bootstrap-vue":29,"vue-router":345,"vue/dist/vue.js":346}],379:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70073,7 +70239,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":380,"./Item":381}],379:[function(require,module,exports){
+},{"./IModel":381,"./Item":382}],380:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70238,7 +70404,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Comment":378,"./Item":381}],380:[function(require,module,exports){
+},{"./Comment":379,"./Item":382}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70419,7 +70585,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],381:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70457,7 +70623,7 @@ var Item = function (_IModel) {
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
         _Comment2.default.initializeComments(_this);
-        // console.log(this, 'init')
+        _this.publicName;
         /**
          * The maximum possible value of the item
          */
@@ -70625,7 +70791,7 @@ var Item = function (_IModel) {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'depth', 'name', 'number', 'text', 'maxScore'];
+            return ['id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
         }
     }, {
         key: 'aliasMap',
@@ -70642,7 +70808,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":378,"./IModel":380}],382:[function(require,module,exports){
+},{"./Comment":379,"./IModel":381}],383:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70831,7 +70997,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],383:[function(require,module,exports){
+},{}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70988,7 +71154,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":381}],384:[function(require,module,exports){
+},{"./Item":382}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71279,7 +71445,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":380}],385:[function(require,module,exports){
+},{"./IModel":381}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71358,7 +71524,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],386:[function(require,module,exports){
+},{}],387:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71606,7 +71772,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../api/controller":350,"../models/Exam":379,"../models/Payload":382,"../models/Student":384,"./action-types":385,"./mutation-types":402}],387:[function(require,module,exports){
+},{"../api/controller":350,"../models/Exam":380,"../models/Payload":383,"../models/Student":385,"./action-types":386,"./mutation-types":403}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71691,7 +71857,7 @@ var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
 
-},{}],388:[function(require,module,exports){
+},{}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71882,7 +72048,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{"./getter-types":387}],389:[function(require,module,exports){
+},{"./getter-types":388}],390:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -72056,7 +72222,7 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":386,"./getters":388,"./modules/activeexam.js":390,"./modules/activestudent.js":391,"./modules/comments.js":392,"./modules/escores.js":393,"./modules/grades.js":394,"./modules/items.js":395,"./modules/qscores.js":396,"./modules/questions.js":397,"./modules/settings":398,"./modules/students.js":399,"./modules/times.js":400,"./modules/visibility":401,"./mutations":403,"./state":404,"_process":339,"vue/dist/vue.js":346,"vuex":349}],390:[function(require,module,exports){
+},{"./actions":387,"./getters":389,"./modules/activeexam.js":391,"./modules/activestudent.js":392,"./modules/comments.js":393,"./modules/escores.js":394,"./modules/grades.js":395,"./modules/items.js":396,"./modules/qscores.js":397,"./modules/questions.js":398,"./modules/settings":399,"./modules/students.js":400,"./modules/times.js":401,"./modules/visibility":402,"./mutations":404,"./state":405,"_process":339,"vue/dist/vue.js":346,"vuex":349}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72109,12 +72275,32 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setActiveEx
     //    Payload.checkIfPayload( payload );
     state.activeExam = false;
 }), _defineProperty(_mutations, mTypes.updateActiveExamProp, function (state, payload) {
+    window.console.log('activeexam', '', 58, state, payload);
+    if (state.activeExam !== null) {
+        if (_Payload2.default.checkIfPayload(payload) && typeof payload.updateProp !== 'undefined') {
+            var updateProp = payload.updateProp,
+                updateVal = payload.updateVal;
 
-    if (_Payload2.default.checkIfPayload(payload) && typeof payload.updateProp != 'undefined') {
-        var updateProp = payload.updateProp,
-            updateVal = payload.updateVal;
+            Vue.set(state.activeExam, updateProp, updateVal);
+        }
+    } else {
+        window.console.log('activeexam', 'jjj', 65);
+        //check if the 0th item is the exam. If so,
+        //that's what we are supposed to be altering
+        //Hold up. You're probably pretty confused. Let me explain:
+        //because adam is a fake programmer, this is a kludge
+        //to work around his inability to plan. You see, the activeExam
+        //stuff is from the grading page. Adam partly hijacked it
+        //for the setup page. But then he decided to keep the exam
+        //as the 0th element of state.items. So really, the active exam
+        //is state.items[0].
+        //When adam's poor planning is fixed, this will not be necessary
+        if (typeof state.items[0] === 'undefined' && state.items[0] instanceof _Exam2.default) {
+            var _updateProp = payload.updateProp,
+                _updateVal = payload.updateVal;
 
-        Vue.set(state.activeExam, updateProp, updateVal);
+            Vue.set(state.items[0], _updateProp, _updateVal);
+        }
     }
 }), _mutations);
 
@@ -72171,7 +72357,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":379,"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],391:[function(require,module,exports){
+},{"../../models/Exam":380,"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72310,7 +72496,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../../models/Student":384,"../action-types":385,"../mutation-types":402}],392:[function(require,module,exports){
+},{"../../models/Payload":383,"../../models/Student":385,"../action-types":386,"../mutation-types":403}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72504,7 +72690,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],393:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72609,7 +72795,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],394:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72788,7 +72974,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],395:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73057,18 +73243,20 @@ var getters = {
     getItem: function getItem(state, getters) {
         return function (payload) {
             // [gTypes.getItem ]: ( state, getters, payload ) => {
-            console.log('getItem', state, payload);
+            // console.log('getItem', state, payload);
             if (isItemsEmpty(state)) return false;
             if (_Payload2.default.checkIfPayload(payload)) {
-                console.log('getItem', payload);
-                var index = payload.index;
-                var id = payload.id;
+                // console.log('getItem', payload);
+                var index = payload.index,
+                    id = payload.id;
+                // let id = payload.id;
                 //room for other ways of finding index
-                if (typeof id !== 'undefined') {
-                    return undefined.getItemById(state, getters, id);
-                }
+
                 if (typeof index !== 'undefined') {
-                    return undefined.getItemByIndex(state, getters, index);
+                    return getters.getItemByIndex(state, getters, index);
+                }
+                if (typeof id !== 'undefined') {
+                    return getters.getItemById(state, getters, id);
                 }
             }
             /**/
@@ -73096,7 +73284,7 @@ var getters = {
             }
 
             // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-            console.log('getItemByIndex', state, index);
+            window.console.log('items', 'getItemByIndex', 361, state, index);
             return function (state, index) {
                 return state.items[index];
             }(state, index);
@@ -73226,7 +73414,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":379,"../../models/Item":381,"../../models/Payload":382,"../../store/action-types":385,"../../store/getter-types":387,"../../store/mutation-types":402,"vue":347}],396:[function(require,module,exports){
+},{"../../models/Exam":380,"../../models/Item":382,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73336,7 +73524,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],397:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73475,7 +73663,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../../models/Question":383,"../action-types":385,"../mutation-types":402}],398:[function(require,module,exports){
+},{"../../models/Payload":383,"../../models/Question":384,"../action-types":386,"../mutation-types":403}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73544,7 +73732,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],399:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73664,7 +73852,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../../models/Student":384,"../action-types":385,"../mutation-types":402}],400:[function(require,module,exports){
+},{"../../models/Payload":383,"../../models/Student":385,"../action-types":386,"../mutation-types":403}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73801,7 +73989,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../mutation-types":402}],401:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73841,7 +74029,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [0, 1], //The root item (the exam) is always visible
+    itemsWithSettingsVisible: [1, 2], //The root item (the exam) is always visible, but it's settings aren't
 
     examSettingsVisible: false
 };
@@ -73897,7 +74085,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":382,"../action-types":385,"../getter-types":387,"../mutation-types":402}],402:[function(require,module,exports){
+},{"../../models/Payload":383,"../action-types":386,"../getter-types":388,"../mutation-types":403}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73994,7 +74182,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],403:[function(require,module,exports){
+},{}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74028,7 +74216,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":402}],404:[function(require,module,exports){
+},{"./mutation-types":403}],405:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74058,6 +74246,6 @@ exports.default = {
 
 };
 
-},{}]},{},[377]);
+},{}]},{},[378]);
 
 //# sourceMappingURL=new-setup-package.js.map

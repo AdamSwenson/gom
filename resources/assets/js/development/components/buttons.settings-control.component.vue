@@ -26,7 +26,7 @@
      */
     export default {
 
-        props: [ 'index', 'id' ],
+        props: [ 'index'],
 
         data: function () {
             return {};
@@ -37,8 +37,8 @@
         methods: {
                 toggleVis: function () {
                     console.log( 'buttons.settings-control', 'CALLED', 'toggle' , this.index);
-                    let isVis = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index )
-                    console.log( 'isvis', isVis );
+                    let isVis = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index );
+//                    console.log( 'isvis', isVis );
                     if(isVis){
                         //if comes back true, we know that currently visible
                         //call the mutation with our index

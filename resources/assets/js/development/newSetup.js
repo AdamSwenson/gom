@@ -32,6 +32,7 @@ import toolsDashboard from './components/dashboard.tools.component.vue'
 //Panes (main container for edit tools)
 import examEditPane from './components/pane.edit-exam.component.vue'
 import itemEditPane from './components/pane.edit-item.component.vue'
+import editTabs from './components/nav.edit-tabs.component.vue'
 
 //Panels (objects within pane)
 import panelComments from './components/panel.comment-setup.component.vue'
@@ -64,37 +65,38 @@ import publicIndicator from './components/buttons.public-control.component.vue'
 
 
 //Register components globally
-Vue.component('exam-main', examMain)
-Vue.component('exam-edit-pane', examEditPane)
+Vue.component('exam-main', examMain);
+Vue.component('exam-edit-pane', examEditPane);
 
-Vue.component('props-dashboard', propsDashboard)
-Vue.component('tools-dashboard', toolsDashboard)
+Vue.component('props-dashboard', propsDashboard);
+Vue.component('tools-dashboard', toolsDashboard);
 // Vue.component( 'item-nav', itemNav )
-Vue.component('item-add-button', itemAddButton)
-Vue.component('item-name', itemName)
-Vue.component('item-main', itemMain)
-Vue.component('public-indicator', publicIndicator)
-Vue.component('settings-button', settingsButton)
-Vue.component('item-edit-pane', itemEditPane)
-Vue.component('item-card', itemCard)
-Vue.component('card-list', cardList)
+Vue.component('item-add-button', itemAddButton);
+Vue.component('item-name', itemName);
+Vue.component('item-main', itemMain);
+Vue.component('public-indicator', publicIndicator);
+Vue.component('settings-button', settingsButton);
+Vue.component('item-edit-pane', itemEditPane);
+Vue.component('item-card', itemCard);
+Vue.component('card-list', cardList);
 
 //Panels
-Vue.component('panel-detail', panelItemDetail)
-Vue.component('panel-comments', panelComments)
-Vue.component('panel-history', panelHistory)
-Vue.component('panel-stats', panelStats)
-Vue.component('panel-notes', panelNotes)
+Vue.component('panel-detail', panelItemDetail);
+Vue.component('panel-comments', panelComments);
+Vue.component('panel-history', panelHistory);
+Vue.component('panel-stats', panelStats);
+Vue.component('panel-notes', panelNotes);
+Vue.component('edit-tabs', editTabs);
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
-Vue.component('valence-button', valenceButton)
-Vue.component('delete-item-button', deleteButton)
-Vue.component('depth-control', depthControl)
+Vue.component('valence-button', valenceButton);
+Vue.component('delete-item-button', deleteButton);
+Vue.component('depth-control', depthControl);
 
-Vue.component('max-score', maxScore)
-Vue.component('item-number', itemNumber)
+Vue.component('max-score', maxScore);
+Vue.component('item-number', itemNumber);
 
-Vue.component('list-dropdown', listDropdown)
+Vue.component('list-dropdown', listDropdown);
 
 
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
@@ -142,7 +144,7 @@ const app = new Vue({
     render: h => h(App),
 
     mounted: function () {
-        console.log('newSetup ready', this);
+        // console.log('newSetup ready', this);
     }
 
 }).$mount("#app");

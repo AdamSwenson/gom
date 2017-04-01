@@ -2,11 +2,11 @@
     <div id="examNameArea" class="exam-main-component">
         <div class="input-group input-group-lg">
 
-        <span class="input-group-addon"
-              id="basic-addon1"
-        >
-            Assignment Name
-        </span>
+            <div class="input-group-addon"
+                 id="basic-addon1"
+            >
+                {{headingName}}
+            </div>
 
             <input type="text"
                    class="form-control input-lg"
@@ -17,11 +17,13 @@
                    v-model="privateName"
             />
 
-            <span class="input-group-btn">
-                <button class="btn btn-primary"
-                        v-on:click="toggleExamProperties"
-                ><span class="glyphicon glyphicon-cog"></span></button>
-        </span>
+            <div class="input-group-btn">
+                <settings-button :index="0"></settings-button>
+
+                <!--<button class="btn btn-primary"-->
+                <!--v-on:click="toggleExamProperties"-->
+                <!--&gt;<span class="glyphicon glyphicon-cog"></span></button>-->
+            </div>
 
         </div>
     </div>
@@ -49,6 +51,7 @@
 
         data: function () {
             return {
+                headingName: "future dropdown!",
                 placeHolders: {
                     privateName: "Enter a descriptive name for this assignment (e.g., English 101 Exam #1)",
                     publicName: ""
@@ -76,10 +79,10 @@
             },
             set: function ( v ) {
                 //store the name in the data object
-                this.$store.commit( mTypes.updateActiveExamProp, Payload.factory( {
+                this.$store.commit(mTypes.updateActiveExamProp, Payload.factory({
                     updateProp: 'name',
                     updateVal: v
-                } ) );
+                }));
             },
         },
 
@@ -94,8 +97,8 @@
              * Requests that the exam properties area display or hide
              */
             toggleExamProperties: function () {
-                this.$store.commit( mTypes.toggleExamSettings );
-                console.log( 'toggleExamProperties clicked' );
+                this.$store.commit(mTypes.toggleExamSettings);
+                console.log('toggleExamProperties clicked');
             }
         },
 
@@ -114,7 +117,7 @@
 //                //push into stack as root item
 //                //todo
 //            }
-            console.log( 'exam-main ready' );
+//            console.log( 'exam-main ready' );
         },
     }
 

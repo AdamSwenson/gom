@@ -1,46 +1,22 @@
 <template>
     <!--This is the hideable area via which we edit the exam's properties-->
-    <div class="exam-detail-pane well well-sm"
-         v-show="visible">
+    <div class="exam-detail-pane"
+         v-show="visible"
+    >
 
         <slot name="settingsBody">
-            <div>
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills"
-                    role="tablist">
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToExamDetails">Edit details</router-link>
-                    </li>
 
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToComments">Setup feedback</router-link>
-                    </li>
+            <edit-tabs :index="index" :is-exam="true"></edit-tabs>
 
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToStats">Stats</router-link>
-                    </li>
-
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToHistory">History</router-link>
-                    </li>
-
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToNotes">Notes</router-link>
-                    </li>
-                </ul>
-
-                <!-- Tab panels -->
-                <div class="tab-panel-area">
-                    <router-view name="examPanels"></router-view>
-                </div>
-
+        <div class="tab-panel-area">
+            <div class="well well-sm">
+                <router-view name="examPanels"></router-view>
             </div>
+        </div>
 
         </slot>
 
-        <slot name="controlsArea"></slot>
     </div>
-
 
 </template>
 
@@ -61,7 +37,7 @@
 
     export default{
 
-        props: ['exam-id'],
+        props: [ 'index', 'exam-id' ],
 
         data: function () {
             return {};
@@ -76,29 +52,7 @@
              * Returns true if the settings pane for this item should be displayed
              */
             visible: function () {
-                return this.$store.getters[gTypes.isItemSettingsVisible](this.index)
-            },
-
-            routeToExamDetails: function () {
-                return "/panel-exam-detail/" + this.index;
-            },
-
-            routeToComments: function () {
-                return "/panel-comments/" + this.index;
-            },
-
-            routeToStats: function () {
-                return "/panel-stats/" + this.index;
-            },
-
-
-            routeToHistory: function () {
-                return "/panel-history/" + this.index;
-            },
-
-
-            routeToNotes: function () {
-                return "/panel-notes/" + this.index;
+                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
             },
 
 
@@ -106,7 +60,7 @@
 
         methods: {
             getExam: function () {
-              //  return this.$store.getters[gTypes.getActiveExamObj];
+                //  return this.$store.getters[gTypes.getActiveExamObj];
             },
         },
         directives: {},

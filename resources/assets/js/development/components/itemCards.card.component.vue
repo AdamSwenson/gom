@@ -1,89 +1,72 @@
 <template>
     <!--This represents a question or an element-->
     <div v-bind:id="divId"
-         class="item-card-component"
+         class="item-card-component panel panel-primary"
          v-bind:class="offsetClass"
     >
-        <div class="row">
-            <item-main
-                    :index="index"
-                    :id="id"
-            ></item-main>
-
+        <div class="panel-heading">
+                <item-main :index="index"></item-main>
         </div>
-        <div class="row">
-            <div class="clearfix"></div>
 
-            <div class="col-lg-12">
-                <div class="clearfix"></div>
+        <div class="panel-body" v-show="visible">
+            <item-edit-pane :index="index"></item-edit-pane>
+        </div>
 
-                <slot name="head">
-
-                    <item-edit-pane
+        <div class="panel-footer" v-show="visible" >
+            <div class="clear-fix"></div>
+            <div class="row">
+                <div class="col-md-1">
+                    <depth-control
+                            type="promote"
                             :index="index"
                             :id="id"
-                    >
-                        <!--is="currentView"-->
-                        <div slot="controlsArea">
-                            <div class="row">
-                                <div class="col-md-1">
-
-                                    <depth-control
-                                            type="demote"
-                                            :index="index"
-                                            :id="id"
-                                    ></depth-control>
-
-                                </div>
-
-                                <div class="col-md-10"></div>
-
-                                <div class="col-md-1">
-
-                                    <depth-control
-                                            type="promote"
-                                            :index="index"
-                                            :id="id"
-                                    ></depth-control>
-
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </item-edit-pane>
-                </slot>
-
-                <div class="clearfix"></div>
+                    ></depth-control>
+                </div>
+                <div class="col-md-10">
+                    <delete-item-button
+                            :index="index"
+                            :id="id"
+                    ></delete-item-button>
+                </div>
+                <div class="col-md-1">
+                    <depth-control
+                            type="demote"
+                            :index="index"
+                            :id="id"
+                    ></depth-control>
+                </div>
 
             </div>
 
         </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <delete-item-button
-                        :index="index"
-                        :id="id"
-                ></delete-item-button>
-            </div>
-             </div>
     </div>
-
 
 </template>
 <style>
+    .bottom-stripe {
+        /*line-height: 3em;*/
+        /*background-color: #385a7f;*/
+    }
+
+    /*li {*/
+    /*margin-bottom: 10em;*/
+    /*}*/
 
 </style>
 <script>
-//    import deleteButton from './buttons.item.delete.component.vue'
-//    import itemEditPane from './item.edit-pane.component.vue'
-//    import depthControl from './buttons.depth-control.component.vue'
-//    import itemMain from './item.main.component.vue'
+    //    import deleteButton from './buttons.item.delete.component.vue'
+    //    import itemEditPane from './item.edit-pane.component.vue'
+    //    import depthControl from './buttons.depth-control.component.vue'
+    //    import itemMain from './item.main.component.vue'
+
+    import Item from '../../models/Item'
+    import Payload from '../../models/Payload'
+    import * as mTypes from '../../store/mutation-types'
+    import * as gTypes from '../../store/getter-types'
 
     export default{
 
-        props: [ 'index' , 'id'],
+        props: [ 'index', 'id' ],
 
         data: function () {
             return {
@@ -112,7 +95,14 @@
 //        },
 
         computed: {
-            divId : function(){
+            /**
+             * Returns true if the settings pane for this item should be displayed
+             */
+            visible: function () {
+                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
+            },
+
+            divId: function () {
                 return "item-card-" + this.index
             },
 
@@ -129,18 +119,23 @@
 
             depth: {
                 get: function () {
-                    let item = this.$store.getters.getItemById( this.id );
-//                let item = this.$store.getters.getItemByIndex( this.index );
-                    if ( typeof item != 'undefined' ) {
+//                    let item = this.$store.getters.getItemById(this.id);
+                let item = this.$store.getters.getItemByIndex( this.index );
+                    if ( typeof item !== 'undefined' ) {
                         return item.depth
                     }
 
                 },
-                set: function (v) {
-                    let item = this.$store.getters.getItemById( this.id );
-                    // let item = this.$store.getters.getItemByIndex( this.index );
+                set: function ( v ) {
+//                    let item = this.$store.getters.getItemById(this.id);
+                     let item = this.$store.getters.getItemByIndex( this.index );
                     if ( typeof item != 'undefined' ) {
-                        this.$store.commit(Payload.factory({id: this.id, index: this.index, updateProp: 'depth', updateVal: v}));
+                        this.$store.commit(Payload.factory({
+//                            id: this.id,
+                            index: this.index,
+                            updateProp: 'depth',
+                            updateVal: v
+                        }));
                     }
                 }
             },
@@ -162,7 +157,7 @@
              * comments.
              */
             toggleCommentsOn: function () {
-                console.log( 'CALLED', 'toggleCommentsOn' );
+                console.log('CALLED', 'toggleCommentsOn');
                 this.isCommented = !this.isCommented;
             },
 
@@ -172,7 +167,7 @@
              * comments.
              */
             toggleNameVisibility: function () {
-                console.log( 'CALLED', 'toggleNameVisibility' );
+                console.log('CALLED', 'toggleNameVisibility');
                 this.isNamePublic = !this.isNamePublic;
             },
 
@@ -183,7 +178,7 @@
 
         events: {
             'display-settings': function () {
-                console.log( 'itemMain', 'CAUGHT', 'display-settings', this.index );
+                console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
             },
         },
 

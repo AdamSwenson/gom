@@ -14,7 +14,7 @@ import Payload from '../../models/Payload'
 
 const state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [ 0, 1 ], //The root item (the exam) is always visible
+    itemsWithSettingsVisible: [  1,2 ], //The root item (the exam) is always visible, but it's settings aren't
 
     examSettingsVisible: false
 };
@@ -60,7 +60,7 @@ const mutations = {
     [mTypes.toggleExamSettings]: ( state, payload ) => {
         state.examSettingsVisible = !state.examSettingsVisible;
     }
-}
+};
 // [mTypes.toggleItemSettings] : ( state, rootState, payload ) => {
 //     if(Payload.checkIfPayload(payload)) {
 //         if ( typeof payload.index != 'undefined' ) {

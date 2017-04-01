@@ -19197,7 +19197,7 @@ var Item = function (_IModel) {
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
         _Comment2.default.initializeComments(_this);
-        // console.log(this, 'init')
+        _this.publicName;
         /**
          * The maximum possible value of the item
          */
@@ -19365,7 +19365,7 @@ var Item = function (_IModel) {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'depth', 'name', 'number', 'text', 'maxScore'];
+            return ['id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
         }
     }, {
         key: 'aliasMap',
@@ -20849,12 +20849,32 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setActiveEx
     //    Payload.checkIfPayload( payload );
     state.activeExam = false;
 }), _defineProperty(_mutations, mTypes.updateActiveExamProp, function (state, payload) {
+    window.console.log('activeexam', '', 58, state, payload);
+    if (state.activeExam !== null) {
+        if (_Payload2.default.checkIfPayload(payload) && typeof payload.updateProp !== 'undefined') {
+            var updateProp = payload.updateProp,
+                updateVal = payload.updateVal;
 
-    if (_Payload2.default.checkIfPayload(payload) && typeof payload.updateProp != 'undefined') {
-        var updateProp = payload.updateProp,
-            updateVal = payload.updateVal;
+            Vue.set(state.activeExam, updateProp, updateVal);
+        }
+    } else {
+        window.console.log('activeexam', 'jjj', 65);
+        //check if the 0th item is the exam. If so,
+        //that's what we are supposed to be altering
+        //Hold up. You're probably pretty confused. Let me explain:
+        //because adam is a fake programmer, this is a kludge
+        //to work around his inability to plan. You see, the activeExam
+        //stuff is from the grading page. Adam partly hijacked it
+        //for the setup page. But then he decided to keep the exam
+        //as the 0th element of state.items. So really, the active exam
+        //is state.items[0].
+        //When adam's poor planning is fixed, this will not be necessary
+        if (typeof state.items[0] === 'undefined' && state.items[0] instanceof _Exam2.default) {
+            var _updateProp = payload.updateProp,
+                _updateVal = payload.updateVal;
 
-        Vue.set(state.activeExam, updateProp, updateVal);
+            Vue.set(state.items[0], _updateProp, _updateVal);
+        }
     }
 }), _mutations);
 
@@ -21797,18 +21817,20 @@ var getters = {
     getItem: function getItem(state, getters) {
         return function (payload) {
             // [gTypes.getItem ]: ( state, getters, payload ) => {
-            console.log('getItem', state, payload);
+            // console.log('getItem', state, payload);
             if (isItemsEmpty(state)) return false;
             if (_Payload2.default.checkIfPayload(payload)) {
-                console.log('getItem', payload);
-                var index = payload.index;
-                var id = payload.id;
+                // console.log('getItem', payload);
+                var index = payload.index,
+                    id = payload.id;
+                // let id = payload.id;
                 //room for other ways of finding index
-                if (typeof id !== 'undefined') {
-                    return undefined.getItemById(state, getters, id);
-                }
+
                 if (typeof index !== 'undefined') {
-                    return undefined.getItemByIndex(state, getters, index);
+                    return getters.getItemByIndex(state, getters, index);
+                }
+                if (typeof id !== 'undefined') {
+                    return getters.getItemById(state, getters, id);
                 }
             }
             /**/
@@ -21836,7 +21858,7 @@ var getters = {
             }
 
             // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-            console.log('getItemByIndex', state, index);
+            window.console.log('items', 'getItemByIndex', 361, state, index);
             return function (state, index) {
                 return state.items[index];
             }(state, index);
@@ -22581,7 +22603,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [0, 1], //The root item (the exam) is always visible
+    itemsWithSettingsVisible: [1, 2], //The root item (the exam) is always visible, but it's settings aren't
 
     examSettingsVisible: false
 };

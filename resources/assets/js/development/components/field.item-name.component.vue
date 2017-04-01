@@ -3,6 +3,7 @@
 
     <input type="text"
            class="itemMain form-control"
+           aria-describedby="basic-addon2"
            v-bind:placeholder="placeHolders.privateName"
            v-model="name"
     >
@@ -26,7 +27,7 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: [ 'index', 'id' ],
+        props: [ 'index',  'described-id' ],
 
 
         data: function () {

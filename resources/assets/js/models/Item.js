@@ -13,7 +13,7 @@ export default class Item extends IModel {
         super();
 
         Comment.initializeComments(this);
-// console.log(this, 'init')
+this.publicName;
         /**
          * The maximum possible value of the item
          */
@@ -161,6 +161,7 @@ export default class Item extends IModel {
             'index',
             'depth',
             'name',
+            'publicName',
             'number',
             'text',
             'maxScore'

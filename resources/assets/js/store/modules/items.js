@@ -319,18 +319,19 @@ const getters = {
      */
     getItem: (state, getters) => (payload) => {
         // [gTypes.getItem ]: ( state, getters, payload ) => {
-        console.log('getItem', state, payload);
+        // console.log('getItem', state, payload);
         if (isItemsEmpty(state)) return false;
         if (Payload.checkIfPayload(payload)) {
-            console.log('getItem', payload);
-            let index = payload.index;
-            let id = payload.id;
+            // console.log('getItem', payload);
+            let {index, id} = payload;
+            // let id = payload.id;
             //room for other ways of finding index
-            if (typeof id !== 'undefined') {
-                return this.getItemById(state, getters, id);
-            }
+
             if (typeof index !== 'undefined') {
-                return this.getItemByIndex(state, getters, index);
+                return getters.getItemByIndex(state, getters, index);
+            }
+            if (typeof id !== 'undefined') {
+                return getters.getItemById(state, getters, id);
             }
         }
         /**/
@@ -357,7 +358,7 @@ const getters = {
         }
 
         // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-        console.log('getItemByIndex', state, index);
+        window.console.log('items', 'getItemByIndex', 361, state,  index);
         return function (state, index) {
             return state.items[index];
         }(state, index)

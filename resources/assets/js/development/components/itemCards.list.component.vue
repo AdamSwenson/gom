@@ -3,7 +3,7 @@
         <!--<draggable v-model='items'>-->
         <ul id='card-list' class="list-group">
             <li
-                    class="item-cards list-group-item handle"
+                    class="item-cards list-group-item list-group-item-warning handle"
                     v-for="(item, index) in items"
             >
                 <item-card

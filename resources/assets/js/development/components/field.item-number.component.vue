@@ -1,13 +1,12 @@
 <template>
 
     <div class="question-num-area">
-        <label
-                for="question-number-label"
+        <label for="question-number-label"
         >{{ displayType }}</label>
         <input
+                id="question-number-label"
                 type="number"
                 min="0"
-                id="question-number-label"
                 title="order of the item on the assignment"
                 v-model="questionNumber"/>
     </div>
@@ -32,7 +31,7 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: [ 'index'],
+        props: [ 'index' ],
         data: function () {
             return {
                 placeholders: {},
@@ -59,8 +58,8 @@
 
                 set: function ( v ) {
 //                    this.setter( 'number', v );
-                    let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
-                    this.$store.commit( mTypes.updateItem, pl );
+                    let pl = Payload.factory({index: this.index, updateProp: name, updateVal: value});
+                    this.$store.commit(mTypes.updateItem, pl);
                     // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
                     // this.$store.commit( mTypes.updateItem, pl );
                 }
@@ -69,8 +68,7 @@
 
         },
 
-        methods: {
-        }
+        methods: {}
     }
 
 </script>

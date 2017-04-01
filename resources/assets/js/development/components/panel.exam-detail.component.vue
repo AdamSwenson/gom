@@ -2,7 +2,7 @@
     <!--This is the hideable area via which we edit the exam's properties-->
     <div class="panel-exam-detail  ">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-11">
 
                 <!-- name input -->
                 <div class="input-group">
@@ -18,6 +18,7 @@
                     >
                 </div>
             </div>
+
             <div class="col-md-1">
                 <span class="glyphicon glyphicon-question-sign"></span>
             </div>
@@ -25,16 +26,36 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
-                <b-dropdown v-bind:text="term"
-                            variant="primary"
-                            split class=""
-                >
-                    <b-dropdown-item href="#">Winter</b-dropdown-item>
-                    <b-dropdown-item href="#">Spring</b-dropdown-item>
-                    <b-dropdown-item href="#">Summer</b-dropdown-item>
-                    <b-dropdown-item href="#">Fall</b-dropdown-item>
-                </b-dropdown>
+            <div class="col-md-3">
+
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false">Term <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li v-for="term in terms">
+                                <a href="#">{{term}}</a>
+                            </li>
+                        </ul>
+                    </div><!-- /btn-group -->
+                    <input type="text"
+                           class="form-control" aria-label="term-text"
+                           v-model="term">
+                </div><!-- /input-group -->
+
+                <!--<b-dropdown v-bind:text="term"-->
+                <!--variant="primary"-->
+
+                <!--&gt;-->
+                <!--<b-dropdown-item href="#">Winter</b-dropdown-item>-->
+                <!--<b-dropdown-item href="#">Spring</b-dropdown-item>-->
+                <!--<b-dropdown-item href="#">Summer</b-dropdown-item>-->
+                <!--<b-dropdown-item href="#">Fall</b-dropdown-item>-->
+                <!--</b-dropdown>-->
             </div>
 
             <div class="col-md-1">
@@ -42,6 +63,29 @@
             </div>
             <!--<list-dropdown type="term"></list-dropdown>-->
 
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false">Year <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li v-for="year in years">
+                                <a href="#">{{year}}</a>
+                            </li>
+                        </ul>
+                    </div><!-- /btn-group -->
+                    <input type="number"
+                           class="form-control" aria-label="year-text"
+                           v-model="year">
+                </div><!-- /input-group -->
+            </div>
         </div>
     </div>
 
@@ -62,17 +106,21 @@
 
     export default{
 
-        props: ['exam-id'],
+        props: [ 'exam-id' ],
 
         data: function () {
             return {
-            placeholders :{
-                publicName : "If you would like students to see a different name for the exam, enter the name you would like them to see here"},
+                defaults: {
+                    term: 'Term'
+                },
+                placeholders: {
+                    publicName: "If you would like students to see a different name for the exam, enter the name you would like them to see here"
+                },
 
                 //0 index always has an exam
                 index: 0,
 
-                terms: ['fall', 'winter', 'spring', 'summer'],
+                terms: [ 'fall', 'winter', 'spring', 'summer' ],
             };
         },
 
@@ -86,11 +134,13 @@
             publicName: {
                 get: function () {
                     let exam = this.getExam();
-                    return exam.name;
-//                    return this.$store.getters[ gTypes.getExam ]( Payload.factory( {examId: this.examId} ) );
+                    if ( exam && typeof exam.publicName !== 'undefined' ) {
+                        return exam.publicName;
+                    }
                 },
-                set: function (v) {
-                    this.$store.commit(mTypes.updateActiveExamProp, Payload.factory({
+                set: function ( v ) {
+                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                        index: 0,
                         updateProp: 'publicName',
                         updateVal: v
                     }));
@@ -99,11 +149,20 @@
 
             term: {
                 get: function () {
-                    let exam = this.getExam(); //this.$store.getters[ gTypes.getActiveExamObj];
-                    return exam.term;
+                    let exam = this.getExam();
+                    if ( exam && typeof exam.term !== 'undefined' ) {
+                        return exam.term;
+                    }
+
                 },
-                set: function () {
-                    this.$store.commit(mTypes.updateActiveExamProp, Payload.factory({
+                //Sets the term
+                //Note, the input box allows the entered
+                //value not to be one of the standard values
+                //this is by design.
+                //We are not being too prescriptive, remember?
+                set: function ( v ) {
+                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                        index: 0,
                         updateProp: 'term',
                         updateVal: v
                     }));
@@ -111,26 +170,32 @@
             },
             year: {
                 get: function () {
-                    let exam = this.getExam() //                    let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+                    let exam = this.getExam();
                     return exam.year;
                 },
-                set: function (v) {
-                    this.$store.commit(mTypes.updateActiveExamProp, Payload.factory({
+                set: function ( v ) {
+                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                        index: 0,
                         updateProp: 'year',
                         updateVal: v
                     }));
 
                 }
             },
+
             years: function () {
-                return [2017, 2018];
+                return [ 2017, 2018 ];
             },
 
         },
 
         methods: {
+            selectTerm: function () {
+                window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
+            },
             getExam: function () {
-                return this.$store.getters[gTypes.getActiveExamObj];
+                return this.$store.getters.getItemByIndex(0);
+//                return this.$store.getters[ gTypes.getActiveExamObj ];
             },
 
             updateExam: function () {
@@ -148,9 +213,9 @@
             //check if exam id was provided,
             // if not, create a new exam object and set it
             // as active.
-            if (typeof this.examId == 'undefined') {
-
-            }
+//            if ( typeof this.examId == 'undefined' ) {
+//
+//            }
             //Also get ready to request an exam id from the server
             //as soon as the user does something which alters the store
 
