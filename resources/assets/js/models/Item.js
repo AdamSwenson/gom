@@ -65,14 +65,16 @@ this.publicName;
         return this.comments.get( valence );
     }
 
-    promote() {
-        this.depth += 1;
-    }
-
-    demote() {
+    promote()
+    {
         if ( this.depth > 0 ) {
             this.depth -= 1;
         }
+
+    }
+
+    demote() {
+        this.depth += 1;
     }
 
 

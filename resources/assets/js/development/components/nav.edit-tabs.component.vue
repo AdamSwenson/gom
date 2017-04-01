@@ -1,33 +1,46 @@
 <template>
     <div class="nav-edit-tabs-component">
-        <!-- Nav tabs -->
-        <ul class="nav nav-pills"
-            role="tablist">
+        <div class="row">
+            <div class="col-md-1">
+                <depth-control
+                        type="promote"
+                        :index="index"></depth-control>
+            </div>
+            <div class="col-md-10">
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills"
+                    role="tablist">
 
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToExamDetails">Edit details</router-link>
-            </li>
-            <li v-else role="presentation">
-                <router-link v-bind:to="routeToItemDetails">Edit details</router-link>
-            </li>
+                    <li v-if="isExam" role="presentation">
+                        <router-link v-bind:to="routeToExamDetails">Edit details</router-link>
+                    </li>
+                    <li v-else role="presentation">
+                        <router-link v-bind:to="routeToItemDetails">Edit details</router-link>
+                    </li>
 
-            <li role="presentation">
-                <router-link :to="{name: 'comments', params: {index : index} }">Setup feedback</router-link>
-            </li>
+                    <li role="presentation">
+                        <router-link :to="{name: 'comments', params: {index : index} }">Setup feedback</router-link>
+                    </li>
 
-            <li role="presentation">
-                <router-link v-bind:to="routeToStats">Stats</router-link>
-            </li>
+                    <li role="presentation">
+                        <router-link v-bind:to="routeToStats">Stats</router-link>
+                    </li>
 
-            <li role="presentation">
-                <router-link v-bind:to="routeToHistory">History</router-link>
-            </li>
+                    <li role="presentation">
+                        <router-link v-bind:to="routeToHistory">History</router-link>
+                    </li>
 
-            <li role="presentation">
-                <router-link v-bind:to="routeToNotes">Notes</router-link>
-            </li>
-        </ul>
-
+                    <li role="presentation">
+                        <router-link v-bind:to="routeToNotes">Notes</router-link>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-1">
+                <depth-control
+                        type="demote"
+                        :index="index"></depth-control>
+            </div>
+        </div>
     </div>
 
 </template>

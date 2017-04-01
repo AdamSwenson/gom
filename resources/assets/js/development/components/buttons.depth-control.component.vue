@@ -1,6 +1,5 @@
 <template>
-    <div
-            class="item-nav-component "
+    <div class="item-nav-component "
             v-on:click="goTo"
     >
         <div
@@ -55,11 +54,11 @@
             arrow: function () {
                 switch ( this.type ) {
                     case 'promote':
-                        return this.icons.rightArrow;
+                        return this.icons.leftArrow;
                         break;
 
                     case 'demote':
-                        return this.icons.leftArrow;
+                        return this.icons.rightArrow;
                         break;
 
                     default:

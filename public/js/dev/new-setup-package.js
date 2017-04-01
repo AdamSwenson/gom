@@ -66984,11 +66984,11 @@ exports.default = {
         arrow: function arrow() {
             switch (this.type) {
                 case 'promote':
-                    return this.icons.rightArrow;
+                    return this.icons.leftArrow;
                     break;
 
                 case 'demote':
-                    return this.icons.leftArrow;
+                    return this.icons.rightArrow;
                     break;
 
                 default:
@@ -68902,7 +68902,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <!-- Nav tabs -->\n    <ul class=\"nav nav-pills\" role=\"tablist\">\n\n        <li v-if=\"isExam\" role=\"presentation\">\n            <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n        </li>\n        <li v-else=\"\" role=\"presentation\">\n            <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link v-bind:to=\"routeToHistory\">History</router-link>\n        </li>\n\n        <li role=\"presentation\">\n            <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n        </li>\n    </ul>\n\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n    <div class=\"nav-edit-tabs-component\">\n<div class=\"row\">\n<div class=\"col-md-1\">\n    <depth-control type=\"promote\" :index=\"index\"></depth-control>\n            </div>\n<div class=\"col-md-10\">\n        <!-- Nav tabs -->\n        <ul class=\"nav nav-pills\" role=\"tablist\">\n\n            <li v-if=\"isExam\" role=\"presentation\">\n                <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n            </li>\n            <li v-else=\"\" role=\"presentation\">\n                <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link v-bind:to=\"routeToHistory\">History</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n            </li>\n        </ul>\n</div>\n<div class=\"col-md-1\">\n    <depth-control type=\"demote\" :index=\"index\"></depth-control>\n</div>\n</div>\n    </div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70680,14 +70680,14 @@ var Item = function (_IModel) {
     }, {
         key: 'promote',
         value: function promote() {
-            this.depth += 1;
+            if (this.depth > 0) {
+                this.depth -= 1;
+            }
         }
     }, {
         key: 'demote',
         value: function demote() {
-            if (this.depth > 0) {
-                this.depth -= 1;
-            }
+            this.depth += 1;
         }
 
         //

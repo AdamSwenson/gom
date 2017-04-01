@@ -19254,14 +19254,14 @@ var Item = function (_IModel) {
     }, {
         key: 'promote',
         value: function promote() {
-            this.depth += 1;
+            if (this.depth > 0) {
+                this.depth -= 1;
+            }
         }
     }, {
         key: 'demote',
         value: function demote() {
-            if (this.depth > 0) {
-                this.depth -= 1;
-            }
+            this.depth += 1;
         }
 
         //
