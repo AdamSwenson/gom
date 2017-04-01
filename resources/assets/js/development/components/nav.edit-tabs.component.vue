@@ -35,7 +35,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-1"  v-if="promotable">
+            <div class="col-md-1" v-if="demotable">
                 <depth-control
                         type="demote"
                         :index="index"></depth-control>
@@ -122,11 +122,17 @@
                 return "/panel-notes/" + this.index;
             },
 
-/**
-Exams fail this and thus don't have the arrows shown
-*/
-            promotable: function (  ) {
-            return this.index > 0;
+            /**
+             Exams fail this and thus don't have the arrows shown
+             */
+            promotable: function () {
+                return this.depth > 0;
+            },
+            /**
+             Only Exams fail this and thus don't have the right arrow shown
+             */
+            demotable: function () {
+                return this.index > 0 ;
             }
 
         },

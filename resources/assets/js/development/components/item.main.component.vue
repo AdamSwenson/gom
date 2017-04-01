@@ -92,7 +92,7 @@
                 get: function () {
 //                    let item = this.$store.getters.getItemById( this.id );
                     let item = this.$store.getters.getItemByIndex(this.index);
-                    if ( typeof item != 'undefined' ) {
+                    if ( typeof item !== 'undefined' ) {
                         return item.name;
                     }
                 },
@@ -108,7 +108,7 @@
                 let item = this.$store.getters.getItemByIndex(this.index);
 
                 // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item != 'undefined' ) {
+                if ( typeof item !== 'undefined' ) {
                     return item.isPublic();
                 }
             },

@@ -18610,7 +18610,7 @@ exports.default = {
             undefined.axios.get(api).then(function (response) {
                 console.log(response.data);
                 //return Item with the new id or other data loaded
-                if (typeof response.data.id != 'undefined') {
+                if (typeof response.data.id !== 'undefined') {
                     Model.id = response.data.id;
                 }
                 return Model;
@@ -20629,7 +20629,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
@@ -20751,51 +20751,94 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _vue2.default.use(_vuex2.default);
 
+/**
+ *This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+var apiPlugin = function apiPlugin(store) {
+    //         // socket.on('data', data => {
+    //         //     store.commit('receiveData', data)
+    //         // });
+    //         store.subscribe(mutation) => {
+    //             window.console.log('subscriber', 'mutation caught', 48, mutation);
+    //             // if (mutation.type === 'UPDATE_DATA') {
+    //             //     socket.emit('update', mutation.payload)
+    //             // }
+    //         })
+
+
+    // called when the store is initialized
+    store.subscribe(function (mutation, state) {
+        // called after every mutation.
+        // The mutation comes in the format of { type, payload }.
+        window.console.log('subscriber', 'mutation caught', 48, mutation);
+    });
+};
+
+// function createWebSocketPlugin () {
+//     return store => {
+//         // socket.on('data', data => {
+//         //     store.commit('receiveData', data)
+//         // });
+//         store.subscribe(mutation) => {
+//             window.console.log('subscriber', 'mutation caught', 48, mutation);
+//             // if (mutation.type === 'UPDATE_DATA') {
+//             //     socket.emit('update', mutation.payload)
+//             // }
+//         })
+//     }
+// }
+// const plugin = createWebSocketPlugin();
+
+
 var debug = process.env.NODE_ENV !== 'production';
 
 exports.default = new _vuex2.default.Store({
-  /**
-   * From instances and components where store has been
-   * injected, actions are called
-   * like so: store.dispatch( 'string-action-name' )
-   */
-  actions: actions,
-  getters: getters,
-  mutations: {
     /**
-     * Sets the current exam id
-     *
-     * @todo Extend to set from an exam object
-     *
-     * @param state
-     * @param payload
+     * From instances and components where store has been
+     * injected, actions are called
+     * like so: store.dispatch( 'string-action-name' )
      */
-    _setExamId: function _setExamId(state, payload) {
-      if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
-        state.examId = payload;
-      }
+    actions: actions,
+    getters: getters,
+    plugins: [apiPlugin],
 
-      window.console.log('setExamId', state);
-    }
-  },
+    mutations: {
+        /**
+         * Sets the current exam id
+         *
+         * @todo Extend to set from an exam object
+         *
+         * @param state
+         * @param payload
+         */
+        _setExamId: function _setExamId(state, payload) {
+            if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
+                state.examId = payload;
+            }
 
-  modules: {
-    activeexam: _activeexam2.default,
-    activestudent: _activestudent2.default,
-    comments: _comments2.default,
-    escores: _escores2.default,
-    items: _items2.default,
-    grades: _grades2.default,
-    qscores: _qscores2.default,
-    questions: _questions2.default,
-    settings: _settings2.default,
-    students: _students2.default,
-    times: _times2.default,
-    visibility: _visibility2.default
-  },
-  state: state,
+            window.console.log('setExamId', state);
+        }
+    },
 
-  strict: debug });
+    modules: {
+        activeexam: _activeexam2.default,
+        activestudent: _activestudent2.default,
+        comments: _comments2.default,
+        escores: _escores2.default,
+        items: _items2.default,
+        grades: _grades2.default,
+        qscores: _qscores2.default,
+        questions: _questions2.default,
+        settings: _settings2.default,
+        students: _students2.default,
+        times: _times2.default,
+        visibility: _visibility2.default
+    },
+    state: state,
+
+    strict: debug });
 
 }).call(this,require('_process'))
 },{"./actions":40,"./getters":42,"./modules/activeexam.js":44,"./modules/activestudent.js":45,"./modules/comments.js":46,"./modules/escores.js":47,"./modules/grades.js":48,"./modules/items.js":49,"./modules/qscores.js":50,"./modules/questions.js":51,"./modules/settings":52,"./modules/students.js":53,"./modules/times.js":54,"./modules/visibility":55,"./mutations":57,"./state":58,"_process":26,"vue/dist/vue.js":28,"vuex":30}],44:[function(require,module,exports){
@@ -21860,7 +21903,7 @@ var getters = {
             }
 
             // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-            window.console.log('items', 'getItemByIndex', 361, state, index);
+            // window.console.log('items', 'getItemByIndex', 361, state,  index);
             return function (state, index) {
                 return state.items[index];
             }(state, index);
@@ -21884,7 +21927,7 @@ var getters = {
     getItemById: function getItemById(state, getters) {
         return function (id) {
             // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
-            console.log('getItemById', state, id);
+            // console.log('getItemById', state, id);
             return function (state, id) {
                 var r = state.items.filter(function (i) {
                     if (i.id === id) {

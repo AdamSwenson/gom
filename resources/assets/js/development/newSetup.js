@@ -64,6 +64,9 @@ import deleteButton from './components/buttons.item.delete.component.vue'
 import publicIndicator from './components/buttons.public-control.component.vue'
 
 
+// import * as Subscriber from '../api/subscriber'
+// const plugin = Subscriber.createWebSocketPlugin();
+
 //Register components globally
 Vue.component('exam-main', examMain);
 Vue.component('exam-edit-pane', examEditPane);
@@ -99,6 +102,8 @@ Vue.component('item-number', itemNumber);
 Vue.component('list-dropdown', listDropdown);
 
 
+
+
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
 import VueRouter from 'vue-router'
 Vue.use(VueRouter);
@@ -112,17 +117,37 @@ Vue.use(VueRouter);
 // We'll talk about nested routes later.
 const routes = [
     {
-    name: 'comments',
+        name: 'comments',
         path: '/panel-comments/:index',
         components: {itemPanels: panelComments},
         props: true, //{default: true}
     }
     , //props: (route) => {return route.index;}},
-    {path: '/panel-exam-detail/:index', components: {examPanels: panelExamDetail}, props: true},
-    {path: '/panel-history/:index', components: {itemPanels: panelHistory}, props: true},
-    {path: '/panel-item-detail/:index', components: {itemPanels: panelItemDetail}, props: true},
-    {path: '/panel-notes/:index', components: {itemPanels: panelNotes}, props: true},
-    {path: '/panel-stats/:index', components: {itemPanels: panelStats}, props: true}
+    {
+        path: '/panel-exam-detail/:index',
+        components: {examPanels: panelExamDetail},
+        props: true
+    },
+    {
+        path: '/panel-history/:index',
+        components: {itemPanels: panelHistory},
+        props: true
+    },
+    {
+        path: '/panel-item-detail/:index',
+        components: {itemPanels: panelItemDetail},
+        props: true
+    },
+    {
+        path: '/panel-notes/:index',
+        components: {itemPanels: panelNotes},
+        props: true
+    },
+    {
+        path: '/panel-stats/:index',
+        components: {itemPanels: panelStats},
+        props: true
+    }
 ];
 
 // 3. Create the router instance and pass the `routes` option

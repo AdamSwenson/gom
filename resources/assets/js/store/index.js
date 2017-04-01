@@ -58,11 +58,52 @@ import visibility from './modules/visibility'
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
-Vue.use( Vuex )
+Vue.use(Vuex);
+
+/**
+ *This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+const apiPlugin = store => {
+//         // socket.on('data', data => {
+//         //     store.commit('receiveData', data)
+//         // });
+//         store.subscribe(mutation) => {
+//             window.console.log('subscriber', 'mutation caught', 48, mutation);
+//             // if (mutation.type === 'UPDATE_DATA') {
+//             //     socket.emit('update', mutation.payload)
+//             // }
+//         })
+
+
+    // called when the store is initialized
+    store.subscribe(( mutation, state ) => {
+        // called after every mutation.
+        // The mutation comes in the format of { type, payload }.
+        window.console.log('subscriber', 'mutation caught', 48, mutation);
+    })
+};
+
+// function createWebSocketPlugin () {
+//     return store => {
+//         // socket.on('data', data => {
+//         //     store.commit('receiveData', data)
+//         // });
+//         store.subscribe(mutation) => {
+//             window.console.log('subscriber', 'mutation caught', 48, mutation);
+//             // if (mutation.type === 'UPDATE_DATA') {
+//             //     socket.emit('update', mutation.payload)
+//             // }
+//         })
+//     }
+// }
+// const plugin = createWebSocketPlugin();
+
 
 const debug = process.env.NODE_ENV !== 'production'
 
-export default new Vuex.Store( {
+export default new Vuex.Store({
     /**
      * From instances and components where store has been
      * injected, actions are called
@@ -70,6 +111,8 @@ export default new Vuex.Store( {
      */
     actions,
     getters,
+    plugins: [ apiPlugin ],
+
     mutations: {
         /**
          * Sets the current exam id
@@ -84,7 +127,7 @@ export default new Vuex.Store( {
                 state.examId = payload;
             }
 
-            window.console.log( 'setExamId', state );
+            window.console.log('setExamId', state);
         }
     },
 
@@ -107,4 +150,4 @@ export default new Vuex.Store( {
     strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 
     // plugins: debug ? [createLogger()] : []
-} )
+})

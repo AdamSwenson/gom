@@ -107,6 +107,9 @@
         events: {},
 
         mounted: function () {
+
+
+
             //create an exam object if one isn't set
             //however don't ask the server to create an id just yet
 //            if ( !this.getExam() ) {

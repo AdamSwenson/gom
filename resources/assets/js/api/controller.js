@@ -11,7 +11,7 @@ axios.defaults.baseURL = routeRoot;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 // This wrapper bind axios to Vue or this if you're using single file component.
-Vue.use( VueAxios, axios )
+Vue.use( VueAxios, axios );
 
 export default {
     _connection: null,
@@ -78,7 +78,7 @@ export default {
                 .then( ( response ) => {
                     console.log( response.data )
                     //return Item with the new id or other data loaded
-                    if ( typeof response.data.id != 'undefined' ) {
+                    if ( typeof response.data.id !== 'undefined' ) {
                         Model.id = response.data.id;
                     }
                     return Model;

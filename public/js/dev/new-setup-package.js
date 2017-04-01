@@ -66790,7 +66790,7 @@ exports.default = {
             undefined.axios.get(api).then(function (response) {
                 console.log(response.data);
                 //return Item with the new id or other data loaded
-                if (typeof response.data.id != 'undefined') {
+                if (typeof response.data.id !== 'undefined') {
                     Model.id = response.data.id;
                 }
                 return Model;
@@ -67884,6 +67884,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
+
         //create an exam object if one isn't set
         //however don't ask the server to create an id just yet
         //            if ( !this.getExam() ) {
@@ -68367,7 +68368,7 @@ exports.default = {
             get: function get() {
                 //                    let item = this.$store.getters.getItemById( this.id );
                 var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item != 'undefined') {
+                if (typeof item !== 'undefined') {
                     return item.name;
                 }
             },
@@ -68383,7 +68384,7 @@ exports.default = {
             var item = this.$store.getters.getItemByIndex(this.index);
 
             // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item != 'undefined') {
+            if (typeof item !== 'undefined') {
                 return item.isPublic();
             }
         }
@@ -68874,9 +68875,15 @@ exports.default = {
         },
 
         /**
-        Exams fail this and thus don't have the arrows shown
-        */
+         Exams fail this and thus don't have the arrows shown
+         */
         promotable: function promotable() {
+            return this.depth > 0;
+        },
+        /**
+         Only Exams fail this and thus don't have the right arrow shown
+         */
+        demotable: function demotable() {
             return this.index > 0;
         }
 
@@ -68909,7 +68916,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-if=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\" v-if=\"promotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </div>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-if=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\" v-if=\"demotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69793,10 +69800,11 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
+
         //On load the root exam object and first item are created but given no
         //ids. thus we will eventually need to create an exam object if one isn't set
         //however don't ask the server to create an id just yet
-        var exam = this.store.getters.gTypes.getItem(_Payload2.default.factory({ index: 0 }));
+        var exam = this.$store.getters.gTypes.getItem(_Payload2.default.factory({ index: 0 }));
         //            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
         if (!exam) {
             exam = new _Exam2.default();
@@ -69809,7 +69817,7 @@ exports.default = {
             //because there may need to be various other events and
             //things which need to happen depending on the context.
             //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-            this.store.getters[mTypes.setItem](_Payload2.default.factory({ index: 0, obj: exam }));
+            this.$store.getters[mTypes.setItem](_Payload2.default.factory({ index: 0, obj: exam }));
         }
     },
 
@@ -69865,7 +69873,7 @@ exports.default = {
 //
 //    import depthControl from './components/buttons.depth-control.component.vue'
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\">\n <div class=\"row\">\n    <div class=\"col-lg-1\"></div>\n\n    <div class=\"examEditor col-lg-10\">\n        <div class=\"panel-heading\">\n            <exam-main></exam-main>\n        </div>\n\n        <div class=\"panel-body\">\n            <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n        </div>\n    </div>\n    <div class=\"col-lg-1\"></div>\n</div>\n\n<div id=\"examEditorBody\" class=\"row\">\n\n    <div class=\"col-lg-1\"></div>\n\n    <div id=\"itemCol\" class=\"col-lg-9 well well-sm  \">\n        <div class=\"itemRow row\">\n            <card-list></card-list>\n        </div>\n    </div>\n\n    <div id=\"infoCol\" class=\"col-lg-2 well well-sm\">\n\n        <div class=\"row\">\n            <props-dashboard></props-dashboard>\n        </div>\n\n        <div class=\"row\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n    </div>\n\n    <div class=\"col-lg-1\"></div>\n\n</div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\">\n    <div class=\"row\">\n        <div class=\"col-lg-1\"></div>\n\n        <div class=\"examEditor col-lg-10\">\n            <div class=\"panel-heading\">\n                <exam-main></exam-main>\n            </div>\n\n            <div class=\"panel-body\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n        <div class=\"col-lg-1\"></div>\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n\n        <div class=\"col-lg-1\"></div>\n\n        <div id=\"itemCol\" class=\"col-lg-9 well well-sm  \">\n            <div class=\"itemRow row\">\n                <card-list></card-list>\n            </div>\n        </div>\n\n        <div id=\"infoCol\" class=\"col-lg-2 well well-sm\">\n\n            <div class=\"row\">\n                <props-dashboard></props-dashboard>\n            </div>\n\n            <div class=\"row\">\n                <tools-dashboard></tools-dashboard>\n            </div>\n\n        </div>\n\n        <div class=\"col-lg-1\"></div>\n\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70041,6 +70049,9 @@ _vue2.default.use(_bootstrapVue2.default);
 //Other buttons
 
 
+// import * as Subscriber from '../api/subscriber'
+// const plugin = Subscriber.createWebSocketPlugin();
+
 //Register components globally
 _vue2.default.component('exam-main', _examMainComponent2.default);
 _vue2.default.component('exam-edit-pane', _paneEditExamComponent2.default);
@@ -70091,7 +70102,27 @@ var routes = [{
     path: '/panel-comments/:index',
     components: { itemPanels: _panelCommentSetupComponent2.default },
     props: true }, //props: (route) => {return route.index;}},
-{ path: '/panel-exam-detail/:index', components: { examPanels: _panelExamDetailComponent2.default }, props: true }, { path: '/panel-history/:index', components: { itemPanels: _panelHistoryComponent2.default }, props: true }, { path: '/panel-item-detail/:index', components: { itemPanels: _panelItemDetailComponent2.default }, props: true }, { path: '/panel-notes/:index', components: { itemPanels: _panelNotesComponent2.default }, props: true }, { path: '/panel-stats/:index', components: { itemPanels: _panelStatsComponent2.default }, props: true }];
+{
+    path: '/panel-exam-detail/:index',
+    components: { examPanels: _panelExamDetailComponent2.default },
+    props: true
+}, {
+    path: '/panel-history/:index',
+    components: { itemPanels: _panelHistoryComponent2.default },
+    props: true
+}, {
+    path: '/panel-item-detail/:index',
+    components: { itemPanels: _panelItemDetailComponent2.default },
+    props: true
+}, {
+    path: '/panel-notes/:index',
+    components: { itemPanels: _panelNotesComponent2.default },
+    props: true
+}, {
+    path: '/panel-stats/:index',
+    components: { itemPanels: _panelStatsComponent2.default },
+    props: true
+}];
 
 // 3. Create the router instance and pass the `routes` option
 // You can pass in additional options here, but let's
@@ -72062,7 +72093,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
@@ -72184,51 +72215,94 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _vue2.default.use(_vuex2.default);
 
+/**
+ *This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+var apiPlugin = function apiPlugin(store) {
+    //         // socket.on('data', data => {
+    //         //     store.commit('receiveData', data)
+    //         // });
+    //         store.subscribe(mutation) => {
+    //             window.console.log('subscriber', 'mutation caught', 48, mutation);
+    //             // if (mutation.type === 'UPDATE_DATA') {
+    //             //     socket.emit('update', mutation.payload)
+    //             // }
+    //         })
+
+
+    // called when the store is initialized
+    store.subscribe(function (mutation, state) {
+        // called after every mutation.
+        // The mutation comes in the format of { type, payload }.
+        window.console.log('subscriber', 'mutation caught', 48, mutation);
+    });
+};
+
+// function createWebSocketPlugin () {
+//     return store => {
+//         // socket.on('data', data => {
+//         //     store.commit('receiveData', data)
+//         // });
+//         store.subscribe(mutation) => {
+//             window.console.log('subscriber', 'mutation caught', 48, mutation);
+//             // if (mutation.type === 'UPDATE_DATA') {
+//             //     socket.emit('update', mutation.payload)
+//             // }
+//         })
+//     }
+// }
+// const plugin = createWebSocketPlugin();
+
+
 var debug = process.env.NODE_ENV !== 'production';
 
 exports.default = new _vuex2.default.Store({
-  /**
-   * From instances and components where store has been
-   * injected, actions are called
-   * like so: store.dispatch( 'string-action-name' )
-   */
-  actions: actions,
-  getters: getters,
-  mutations: {
     /**
-     * Sets the current exam id
-     *
-     * @todo Extend to set from an exam object
-     *
-     * @param state
-     * @param payload
+     * From instances and components where store has been
+     * injected, actions are called
+     * like so: store.dispatch( 'string-action-name' )
      */
-    _setExamId: function _setExamId(state, payload) {
-      if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
-        state.examId = payload;
-      }
+    actions: actions,
+    getters: getters,
+    plugins: [apiPlugin],
 
-      window.console.log('setExamId', state);
-    }
-  },
+    mutations: {
+        /**
+         * Sets the current exam id
+         *
+         * @todo Extend to set from an exam object
+         *
+         * @param state
+         * @param payload
+         */
+        _setExamId: function _setExamId(state, payload) {
+            if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
+                state.examId = payload;
+            }
 
-  modules: {
-    activeexam: _activeexam2.default,
-    activestudent: _activestudent2.default,
-    comments: _comments2.default,
-    escores: _escores2.default,
-    items: _items2.default,
-    grades: _grades2.default,
-    qscores: _qscores2.default,
-    questions: _questions2.default,
-    settings: _settings2.default,
-    students: _students2.default,
-    times: _times2.default,
-    visibility: _visibility2.default
-  },
-  state: state,
+            window.console.log('setExamId', state);
+        }
+    },
 
-  strict: debug });
+    modules: {
+        activeexam: _activeexam2.default,
+        activestudent: _activestudent2.default,
+        comments: _comments2.default,
+        escores: _escores2.default,
+        items: _items2.default,
+        grades: _grades2.default,
+        qscores: _qscores2.default,
+        questions: _questions2.default,
+        settings: _settings2.default,
+        students: _students2.default,
+        times: _times2.default,
+        visibility: _visibility2.default
+    },
+    state: state,
+
+    strict: debug });
 
 }).call(this,require('_process'))
 },{"./actions":387,"./getters":389,"./modules/activeexam.js":391,"./modules/activestudent.js":392,"./modules/comments.js":393,"./modules/escores.js":394,"./modules/grades.js":395,"./modules/items.js":396,"./modules/qscores.js":397,"./modules/questions.js":398,"./modules/settings":399,"./modules/students.js":400,"./modules/times.js":401,"./modules/visibility":402,"./mutations":404,"./state":405,"_process":339,"vue/dist/vue.js":346,"vuex":349}],391:[function(require,module,exports){
@@ -73293,7 +73367,7 @@ var getters = {
             }
 
             // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-            window.console.log('items', 'getItemByIndex', 361, state, index);
+            // window.console.log('items', 'getItemByIndex', 361, state,  index);
             return function (state, index) {
                 return state.items[index];
             }(state, index);
@@ -73317,7 +73391,7 @@ var getters = {
     getItemById: function getItemById(state, getters) {
         return function (id) {
             // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
-            console.log('getItemById', state, id);
+            // console.log('getItemById', state, id);
             return function (state, id) {
                 var r = state.items.filter(function (i) {
                     if (i.id === id) {

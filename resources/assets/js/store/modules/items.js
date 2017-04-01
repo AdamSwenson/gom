@@ -358,7 +358,7 @@ const getters = {
         }
 
         // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-        window.console.log('items', 'getItemByIndex', 361, state,  index);
+        // window.console.log('items', 'getItemByIndex', 361, state,  index);
         return function (state, index) {
             return state.items[index];
         }(state, index)
@@ -380,7 +380,7 @@ const getters = {
      */
     getItemById: (state, getters) => (id) => {
         // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
-        console.log('getItemById', state, id);
+        // console.log('getItemById', state, id);
         return function (state, id) {
             var r = state.items.filter(function (i) {
                 if (i.id === id) {
