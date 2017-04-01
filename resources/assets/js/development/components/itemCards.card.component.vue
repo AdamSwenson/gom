@@ -5,41 +5,39 @@
          v-bind:class="offsetClass"
     >
         <div class="panel-heading">
-                <item-main :index="index"></item-main>
+            <item-main :index="index"></item-main>
         </div>
 
         <div class="panel-body" v-show="visible">
             <item-edit-pane :index="index"></item-edit-pane>
-        </div>
-
-        <div class="panel-footer" v-show="visible" >
-            <div class="clear-fix"></div>
-            <div class="row">
-                <div class="col-md-1">
-                    <depth-control
-                            type="promote"
-                            :index="index"
-                            :id="id"
-                    ></depth-control>
-                </div>
-                <div class="col-md-10">
-                    <delete-item-button
-                            :index="index"
-                            :id="id"
-                    ></delete-item-button>
-                </div>
-                <div class="col-md-1">
-                    <depth-control
-                            type="demote"
-                            :index="index"
-                            :id="id"
-                    ></depth-control>
-                </div>
-
-            </div>
-
+            <delete-item-button
+                    :index="index"
+            ></delete-item-button>
         </div>
     </div>
+
+    <!--<div class="panel-footer" v-show="visible" >-->
+    <!--<div class="clear-fix"></div>-->
+    <!--<div class="row">-->
+    <!--<div class="col-md-1">-->
+    <!--<depth-control-->
+    <!--type="promote"-->
+    <!--:index="index"-->
+    <!--:id="id"-->
+    <!--&gt;</depth-control>-->
+    <!--</div>-->
+    <!--<div class="col-md-10">-->
+    <!--</div>&lt;!&ndash;&ndash;&gt;-->
+    <!--<div class="col-md-1">-->
+    <!--<depth-control-->
+    <!--type="demote"-->
+    <!--:index="index"-->
+    <!--:id="id"-->
+    <!--&gt;</depth-control>-->
+    <!--</div>-->
+
+    <!--</div>&lt;!&ndash;&ndash;&gt;-->
+    <!--</div>-->
 
 </template>
 <style>
@@ -66,7 +64,7 @@
 
     export default{
 
-        props: [ 'index', 'id' ],
+        props: [ 'index' ],
 
         data: function () {
             return {
@@ -120,7 +118,7 @@
             depth: {
                 get: function () {
 //                    let item = this.$store.getters.getItemById(this.id);
-                let item = this.$store.getters.getItemByIndex( this.index );
+                    let item = this.$store.getters.getItemByIndex(this.index);
                     if ( typeof item !== 'undefined' ) {
                         return item.depth
                     }
@@ -128,8 +126,8 @@
                 },
                 set: function ( v ) {
 //                    let item = this.$store.getters.getItemById(this.id);
-                     let item = this.$store.getters.getItemByIndex( this.index );
-                    if ( typeof item != 'undefined' ) {
+                    let item = this.$store.getters.getItemByIndex(this.index);
+                    if ( typeof item !== 'undefined' ) {
                         this.$store.commit(Payload.factory({
 //                            id: this.id,
                             index: this.index,

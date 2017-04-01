@@ -19197,7 +19197,9 @@ var Item = function (_IModel) {
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
         _Comment2.default.initializeComments(_this);
+
         _this.publicName;
+
         /**
          * The maximum possible value of the item
          */

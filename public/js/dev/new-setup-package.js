@@ -68457,7 +68457,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = {
 
-    props: ['index', 'id'],
+    props: ['index'],
 
     data: function data() {
         return {
@@ -68519,7 +68519,7 @@ exports.default = {
             set: function set(v) {
                 //                    let item = this.$store.getters.getItemById(this.id);
                 var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item != 'undefined') {
+                if (typeof item !== 'undefined') {
                     this.$store.commit(_Payload2.default.factory({
                         //                            id: this.id,
                         index: this.index,
@@ -68572,7 +68572,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component panel panel-primary\" v-bind:class=\"offsetClass\">\n    <div class=\"panel-heading\">\n            <item-main :index=\"index\"></item-main>\n    </div>\n\n    <div class=\"panel-body\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n    </div>\n\n    <div class=\"panel-footer\" v-show=\"visible\">\n        <div class=\"clear-fix\"></div>\n        <div class=\"row\">\n            <div class=\"col-md-1\">\n                <depth-control type=\"promote\" :index=\"index\" :id=\"id\"></depth-control>\n            </div>\n            <div class=\"col-md-10\">\n                <delete-item-button :index=\"index\" :id=\"id\"></delete-item-button>\n            </div>\n            <div class=\"col-md-1\">\n                <depth-control type=\"demote\" :index=\"index\" :id=\"id\"></depth-control>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component panel panel-primary\" v-bind:class=\"offsetClass\">\n    <div class=\"panel-heading\">\n        <item-main :index=\"index\"></item-main>\n    </div>\n\n    <div class=\"panel-body\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n        <delete-item-button :index=\"index\"></delete-item-button>\n    </div>\n</div>\n\n<!--<div class=\"panel-footer\" v-show=\"visible\" >-->\n<!--<div class=\"clear-fix\"></div>-->\n<!--<div class=\"row\">-->\n<!--<div class=\"col-md-1\">-->\n<!--<depth-control-->\n<!--type=\"promote\"-->\n<!--:index=\"index\"-->\n<!--:id=\"id\"-->\n<!--&gt;</depth-control>-->\n<!--</div>-->\n<!--<div class=\"col-md-10\">-->\n<!--</div>&lt;!&ndash;&ndash;&gt;-->\n<!--<div class=\"col-md-1\">-->\n<!--<depth-control-->\n<!--type=\"demote\"-->\n<!--:index=\"index\"-->\n<!--:id=\"id\"-->\n<!--&gt;</depth-control>-->\n<!--</div>-->\n\n<!--</div>&lt;!&ndash;&ndash;&gt;-->\n<!--</div>-->\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68871,6 +68871,13 @@ exports.default = {
 
         routeToNotes: function routeToNotes() {
             return "/panel-notes/" + this.index;
+        },
+
+        /**
+        Exams fail this and thus don't have the arrows shown
+        */
+        promotable: function promotable() {
+            return this.index > 0;
         }
 
     },
@@ -68891,18 +68898,18 @@ exports.default = {
 
     events: {
         'display-settings': function displaySettings() {
-            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
+            //                console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
             //this.toggle();
         }
     },
 
     mounted: function mounted() {
-        window.console.log('nav.edit-tabs.component', 'mounted', 136, this.index);
+        //            window.console.log('nav.edit-tabs.component', 'mounted', 136, this.index);
     }
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n    <div class=\"nav-edit-tabs-component\">\n<div class=\"row\">\n<div class=\"col-md-1\">\n    <depth-control type=\"promote\" :index=\"index\"></depth-control>\n            </div>\n<div class=\"col-md-10\">\n        <!-- Nav tabs -->\n        <ul class=\"nav nav-pills\" role=\"tablist\">\n\n            <li v-if=\"isExam\" role=\"presentation\">\n                <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n            </li>\n            <li v-else=\"\" role=\"presentation\">\n                <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link v-bind:to=\"routeToHistory\">History</router-link>\n            </li>\n\n            <li role=\"presentation\">\n                <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n            </li>\n        </ul>\n</div>\n<div class=\"col-md-1\">\n    <depth-control type=\"demote\" :index=\"index\"></depth-control>\n</div>\n</div>\n    </div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-if=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\" v-if=\"promotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69789,7 +69796,7 @@ exports.default = {
         //On load the root exam object and first item are created but given no
         //ids. thus we will eventually need to create an exam object if one isn't set
         //however don't ask the server to create an id just yet
-        var exam = this.$store.getters[gTypes.getItem](_Payload2.default.factory({ index: 0 }));
+        var exam = this.store.getters.gTypes.getItem(_Payload2.default.factory({ index: 0 }));
         //            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
         if (!exam) {
             exam = new _Exam2.default();
@@ -69802,7 +69809,7 @@ exports.default = {
             //because there may need to be various other events and
             //things which need to happen depending on the context.
             //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-            this.$store.getters[mTypes.setItem](_Payload2.default.factory({ index: 0, obj: exam }));
+            this.store.getters[mTypes.setItem](_Payload2.default.factory({ index: 0, obj: exam }));
         }
     },
 
@@ -70623,7 +70630,9 @@ var Item = function (_IModel) {
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
         _Comment2.default.initializeComments(_this);
+
         _this.publicName;
+
         /**
          * The maximum possible value of the item
          */

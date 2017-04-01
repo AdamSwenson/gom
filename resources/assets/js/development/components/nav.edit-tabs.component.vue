@@ -1,7 +1,7 @@
 <template>
     <div class="nav-edit-tabs-component">
         <div class="row">
-            <div class="col-md-1">
+            <div class="col-md-1" v-if="promotable">
                 <depth-control
                         type="promote"
                         :index="index"></depth-control>
@@ -35,7 +35,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-1">
+            <div class="col-md-1"  v-if="promotable">
                 <depth-control
                         type="demote"
                         :index="index"></depth-control>
@@ -122,6 +122,13 @@
                 return "/panel-notes/" + this.index;
             },
 
+/**
+Exams fail this and thus don't have the arrows shown
+*/
+            promotable: function (  ) {
+            return this.index > 0;
+            }
+
         },
 
         methods: {
@@ -140,13 +147,13 @@
 
         events: {
             'display-settings': function () {
-                console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
+//                console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
                 //this.toggle();
             }
         },
 
         mounted: function () {
-            window.console.log('nav.edit-tabs.component', 'mounted', 136, this.index);
+//            window.console.log('nav.edit-tabs.component', 'mounted', 136, this.index);
         },
 
     }

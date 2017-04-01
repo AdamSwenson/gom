@@ -13,7 +13,9 @@ export default class Item extends IModel {
         super();
 
         Comment.initializeComments(this);
-this.publicName;
+
+        this.publicName;
+
         /**
          * The maximum possible value of the item
          */
@@ -36,7 +38,6 @@ this.publicName;
         this.examId;
 
 
-
 // super.initializeComments();
     }
 
@@ -44,29 +45,27 @@ this.publicName;
      * utility for determining which of the older types
      * this item belongs to
      */
-    determineType(){
+    determineType() {
         return this.depth > 0 ? 'element' : 'question';
 
     }
 
 
-
     addComment( valence, comment ) {
         // this.comments.push( comment );
         // Vue.set(this.comments, valence, comment );
-        this.comments.set( valence, comment );
+        this.comments.set(valence, comment);
     }
 
     getStockComment() {
-        return this.getComment( 'stock' );
+        return this.getComment('stock');
     }
 
     getComment( valence ) {
-        return this.comments.get( valence );
+        return this.comments.get(valence);
     }
 
-    promote()
-    {
+    promote() {
         if ( this.depth > 0 ) {
             this.depth -= 1;
         }
@@ -114,9 +113,9 @@ this.publicName;
     }
 
     togglePublic() {
-        console.log( 'Item', 'CALLED', 'togglePublic', this._public );
+        console.log('Item', 'CALLED', 'togglePublic', this._public);
         this._public = !this._public;
-        console.log( this._public );
+        console.log(this._public);
     }
 
 
@@ -147,7 +146,7 @@ this.publicName;
      * requests to send to the server
      * @returns {string}
      */
-    static className(){
+    static className() {
         return 'item';
     }
 
@@ -181,6 +180,6 @@ this.publicName;
 
     static factory( params ) {
         let obj = new Item();
-        return this.fillObject( obj, params );
+        return this.fillObject(obj, params);
     }
 }

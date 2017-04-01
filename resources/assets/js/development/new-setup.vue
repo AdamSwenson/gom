@@ -113,7 +113,7 @@
             //On load the root exam object and first item are created but given no
             //ids. thus we will eventually need to create an exam object if one isn't set
             //however don't ask the server to create an id just yet
-            let exam = this.$store.getters[ gTypes.getItem ](Payload.factory({index: 0}));
+            let exam = this.store.getters.gTypes.getItem(Payload.factory({index: 0}));
 //            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
             if ( !exam ) {
             exam = new Exam();
@@ -126,7 +126,7 @@
                 //because there may need to be various other events and
                 //things which need to happen depending on the context.
 //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-            this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+            this.store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
             }
         },
 
