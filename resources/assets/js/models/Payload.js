@@ -11,6 +11,9 @@ export default class Payload {
         //the index value of the object
         this._index;
 
+        /** Whether to fail to notify subscribers of the mutation */
+        this.mutateSilently = false;
+
         /**
          * Where there is a compound index (e.g., obj[studentIndex][questionIndex],
          * this holds the child value (i.e., questionIndex)
@@ -44,6 +47,23 @@ export default class Payload {
     /*  ************************* Identifier values ************************* */
     get id() {
         return this._id;
+    }
+
+    /**
+    * Retrieve the index where it is possible
+    * different fields could have different values.
+    * This enforces the order of precedence between the fields
+    */
+    static getIndex(payload) {
+        if ( this.checkIfPayload(payload) ) {
+            //If an object is set, that object's index
+            //is always correct.
+            if ( typeof payload.obj !== 'undefined' && typeof payload.obj.index !== 'undefined' ) {
+                return payload.obj.index;
+            } else {
+                return payload.index;
+            }
+        }
     }
 
     set id( val ) {

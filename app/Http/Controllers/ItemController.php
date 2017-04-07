@@ -5,7 +5,17 @@ namespace App\Http\Controllers;
 use App\Element;
 use App\Exam;
 use App\Http\Requests\ItemRequest;
+use App\Item;
+use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
 use App\Question;
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Element\IElementRepository;
+use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Question\IQuestionRepository;
+use App\Repositories\Student\IStudentRepository;
+use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -13,81 +23,76 @@ class ItemController extends Controller
     public $type;
     public $exam;
 
+    /**@var IExamRepository */
+    protected $examDao;
+
+    /**@var IQuestionRepository */
+    protected $questionDao;
+    /** @var IQuestionAssignmentRepository */
+    protected $questionAssignmentDao;
+
+    protected $questions;
+    protected $requestIds;
+    /** @var IStudentRepository */
+    protected $studentDao;
+    /** @var IElementRepository */
+    private $elementDao;
+
+
+    public function __construct(
+        IExamRepository $examDao,
+        IElementRepository $elementDao,
+        IElementAssignmentRepository $elementAssignmentDao,
+        IQuestionAssignmentRepository $questionAssignmentDao,
+        IStudentRepository $studentDao,
+        IQuestionRepository $questionDao
+    )
+    {
+        //dev
+        Auth::loginUsingId(1);
+
+//        $this->middleware('auth');
+        $this->examDao = $examDao;
+        $this->questionAssignmentDao = $questionAssignmentDao;
+        $this->studentDao = $studentDao;
+        $this->questionDao = $questionDao;
+        $this->elementDao = $elementDao;
+    }
+
 // ---------------------------------- Helpers
-    /**
-     * Sets the $type value from the request
-     * @param ItemRequest $request
-     */
-    protected function determineItemType(ItemRequest $request)
-    {
-        //The request will be coming in with potentially a few
-        //of the item fields filled in. However, we are only concerned with
-        //figuring out what kind of item is being requested and its relationships,
-        //and then creating those and returning the relevant ids so that
-        //they can be set on the client
-        switch ($request) {
-            case $this->isExam($request):
-                //Set the type as exam
-                $this->type = Exam::class;
-                break;
-            case $this->isQuestion($request):
-                $this->type = Question::class;
-                break;
-            case $this->isElement($request):
-                $this->type = Element::class;
-                break;
-            default:
-                //todo add error case
-        }
 
+// ------------------------ particular methods
+    public function handleExam( $request )
+    {
+        $term = $request->input('term') ? $request->input('term') : Carbon::now()->year;
+        $year = $request->input('year') ? $request->input('year') : Carbon::now()->year;
+        $name = $request->input('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
+        $exam = $this->examDao->save_new_exam($year, $term, $name);
+
+        if ( $exam ) {
+            $this->dispatch(new UpdateAllStoredExamStats());
+        }
+        $exam->index = 0;
+        return $exam;
     }
 
-    /**
-     * Returns true if the request concerns an element,
-     * returns false otherwise
-     * @param ItemRequest $request
-     * @return bool
-     */
-    protected function isElement(ItemRequest $request)
+    public function handleQuestion( $request )
     {
-        //If it wasn't an exam, it was either a question or element
-        //We figure this out from the depth
-        if ($request->input('depth') > 0) {
-            return true;
-        }
-        return false;
-    }
 
-    /**
-     * Returns true if the request concerns an exam,
-     * returns false otherwise
-     * @param ItemRequest $request
-     * @return bool
-     */
-    protected function isExam(ItemRequest $request)
-    {
-        //Exams are the root element with an index of 0 and a depth of 0
-        if ($request->input('index') == 0 && $request->input('depth') == 0) {
-            return true;
-        }
-        return false;
-    }
+        //Check that user owns the exam
+//        $exam = Exam::findOrFail($request->input('examId'));
+        //$this->authorize('access-object', $exam);
 
+        //store and return the question
+        $question = $this->questionDao->createQuestion($request->input('name'),
+            $request->input('text'),
+            $request->input('maxScore'));
 
-    /**
-     * Returns true if the request concerns a question,
-     * returns false otherwise
-     * @param ItemRequest $request
-     * @return bool
-     */
-    protected function isQuestion(ItemRequest $request)
-    {
-        //If it wasn't an exam, it was either a question or element
-        //We figure this out from the depth
-        if ($request->input('index') > 0 && $request->input('depth') == 0) {
-            return true;
-        }
-        return false;
+        //associate it with the exam
+//        $questionAssignment = $this->questionAssignmentDao->record($request->input('examId'), $question->getId(),
+        //          $request->input('questionNumber'));
+
+        return $question;
     }
 
 
@@ -109,10 +114,10 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
-    }
+//    public function create()
+//    {
+//        //
+//    }
 
     /**
      * Store a newly created resource in storage.
@@ -124,109 +129,78 @@ class ItemController extends Controller
      * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ItemRequest $request)
+    public function store( ItemRequest $request )
     {
-        //The request will be coming in with potentially a few
-        //of the item fields filled in. However, we are only concerned with
-        //figuring out what kind of item is being requested and its relationships,
-        //and then creating those and returning the relevant ids so that
-        //they can be set on the client
-        $this->determineItemType($request);
 
-        switch ($this->type) {
-            case Exam::class:
-                return new Exam();
-                //todo eventually should redirect and use common action or job
-//                return redirect()->action('ExamController@store');
-                break;
-
-            case Element::class:
-                //todo eventually should redirect and use common action or job
-                //make new element
-                return new Element();
-                break;
-            case Question::class;
-                //make new question
-                //todo eventually should redirect and use common action or job
-                return new Question();
-                break;
-            default:
-                //todo add error
-        }
-
+        return $this->handleStoreAndUpdate($request);
     }
+
+//
+//        //The request will be coming in with potentially a few
+//        //of the item fields filled in. However, we are only concerned with
+//        //figuring out what kind of item is being requested and its relationships,
+//        //and then creating those and returning the relevant ids so that
+//        //they can be set on the client
+//        $this->determineItemType($request);
+//
+//        switch ( $this->type ) {
+//            case Exam::class:
+//                return $this->handleExam($request);
+//                //return new Exam();
+//                //todo eventually should redirect and use common action or job
+////                return redirect()->action('ExamController@store');
+//                break;
+//
+//            case Element::class:
+//                //todo eventually should redirect and use common action or job
+//                //make new element
+//                return new Element();
+//                break;
+//            case Question::class;
+//                //make new question
+//                //todo eventually should redirect and use common action or job
+//                return $this->handleQuestion($request);
+//                break;
+//            default:
+//                //todo add error
+//        }
+
 
     /**
      * Display the specified resource.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ItemRequest $request)
-    {
-        $this->determineItemType($request);
-
-        switch ($this->type) {
-            case Exam::class:
-                break;
-
-            case Element::class:
-                //make new element
-                break;
-            case Question::class;
-                //make new question
-                break;
-        }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
      * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function edit(ItemRequest $request)
+    public function show( ItemRequest $request )
     {
-        $this->determineItemType($request);
 
-        switch ($this->type) {
-            case Exam::class:
-                break;
+        return Item::loadItemFromRequest($request);
+    }
 
-            case Element::class:
-                //make new element
-                break;
-            case Question::class;
-                //make new question
-                break;
-        }
+    /**
+     * Show the form for editing the exam with all its constituents.
+     * GET    /items/{item}/edit    edit    items.edit
+     * @param ItemRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit( Item $item, ItemRequest $request )
+    {
+        $exam = Exam::find($item->id);
+        return view('development.newsetup', ['exam' => $exam]);
 
     }
 
     /**
-     * Update the specified resource in storage.
+     * Receives PUT/PATCH
+     * Updates the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update( ItemRequest $request )
     {
-        $this->determineItemType($request);
-
-        switch ($this->type) {
-            case Exam::class:
-
-                break;
-
-            case Element::class:
-                //make new element
-                break;
-
-            case Question::class;
-                //make new question
-                break;
-        }
-
+        return $this->handleStoreAndUpdate($request);
     }
 
     /**
@@ -235,11 +209,11 @@ class ItemController extends Controller
      * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ItemRequest $request)
+    public function destroy( ItemRequest $request )
     {
         $this->determineItemType($request);
 
-        switch ($this->type) {
+        switch ( $this->type ) {
             case Exam::class:
                 break;
 
@@ -252,4 +226,62 @@ class ItemController extends Controller
                 break;
         }
     }
+
+    /**
+     * @param ItemRequest $request
+     * @return Item|array
+     */
+    protected function handleStoreAndUpdate( ItemRequest $request )
+    {
+
+        //This will create the item if it didn't exist and
+        //update it otherwise.
+        $item = Item::loadItemFromRequest($request);
+
+//        if ( $item ) {
+
+        //Now we need to do anything specific based on
+        //the kind of OG model the item represents.
+        switch ( $item ) {
+
+            case $item instanceof Question:
+                if ( !$request->has('examId') ) {
+                    //stop here if no exam id was sent
+                    return $item;
+                }
+
+                //translate the idx into the OG question number
+                $questionNumber = $request->has('idx') ? $request->input('idx')[0] : $request->input('index');
+                //now we need to make sure the associations are taken care of
+                //that is, we need to map the idx from the $request to the
+                //question and element assignments
+                //associate it with the exam
+                $assignment = $this->questionAssignmentDao->record($request->input('examId'), $item->id, $questionNumber);
+
+                //store the question assignment id in the item
+                $item->questionAssignment = $assignment;
+                return $item;
+
+                break;
+
+            case $item instanceof Element:
+
+                break;
+
+            case $item instanceof Exam:
+//                    $this->dispatch(new UpdateStoredExamStats($exam));
+//
+                $this->dispatch(new UpdateAllStoredExamStats());
+
+                return $item;
+                break;
+            default:
+                //if there was nothing special to do
+                //or no item was created, fall through
+        }
+//        }
+        return $item;
+    }
+
+
 }

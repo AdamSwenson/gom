@@ -30,7 +30,7 @@ require('bootstrap-sass');
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = require('vue');
+// window.Vue = require('vue');
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -45,6 +45,9 @@ window.axios.defaults.headers.common = {
     'X-Requested-With': 'XMLHttpRequest'
 };
 
+window.axios.defaults.baseURL = routeRoot;
+
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
@@ -58,3 +61,4 @@ window.axios.defaults.headers.common = {
 //     key: 'your-pusher-key'
 // });
 
+import 'babel-polyfill'

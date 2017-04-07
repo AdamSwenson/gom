@@ -22,10 +22,11 @@ class ItemRequest extends Request
     public function rules()
     {
         return [
-
-            'index' => 'required|min:0|max:225',
-            'depth' => 'required|min:0|max:225',
-            'text' => '',
+        'idx' => 'array',
+            'index' => 'max:225',
+            'depth' => 'max:225',
+            'maxScore' => 'number|max:225',
+            'text' => 'max:225',
             'examid' => 'exams' //check that corresponds to something in the db
         ];
     }

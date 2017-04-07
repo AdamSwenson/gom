@@ -1,1395 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = require('./lib/axios');
-},{"./lib/axios":3}],2:[function(require,module,exports){
-(function (process){
-'use strict';
-
-var utils = require('./../utils');
-var settle = require('./../core/settle');
-var buildURL = require('./../helpers/buildURL');
-var parseHeaders = require('./../helpers/parseHeaders');
-var isURLSameOrigin = require('./../helpers/isURLSameOrigin');
-var createError = require('../core/createError');
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || require('./../helpers/btoa');
-
-module.exports = function xhrAdapter(config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    var requestData = config.data;
-    var requestHeaders = config.headers;
-
-    if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
-    }
-
-    var request = new XMLHttpRequest();
-    var loadEvent = 'onreadystatechange';
-    var xDomain = false;
-
-    // For IE 8/9 CORS support
-    // Only supports POST and GET calls and doesn't returns the response headers.
-    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-    if (process.env.NODE_ENV !== 'test' &&
-        typeof window !== 'undefined' &&
-        window.XDomainRequest && !('withCredentials' in request) &&
-        !isURLSameOrigin(config.url)) {
-      request = new window.XDomainRequest();
-      loadEvent = 'onload';
-      xDomain = true;
-      request.onprogress = function handleProgress() {};
-      request.ontimeout = function handleTimeout() {};
-    }
-
-    // HTTP basic authentication
-    if (config.auth) {
-      var username = config.auth.username || '';
-      var password = config.auth.password || '';
-      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
-    }
-
-    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
-
-    // Set the request timeout in MS
-    request.timeout = config.timeout;
-
-    // Listen for ready state
-    request[loadEvent] = function handleLoad() {
-      if (!request || (request.readyState !== 4 && !xDomain)) {
-        return;
-      }
-
-      // The request errored out and we didn't get a response, this will be
-      // handled by onerror instead
-      // With one exception: request that using file: protocol, most browsers
-      // will return status as 0 even though it's a successful request
-      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-        return;
-      }
-
-      // Prepare the response
-      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
-      var response = {
-        data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
-        status: request.status === 1223 ? 204 : request.status,
-        statusText: request.status === 1223 ? 'No Content' : request.statusText,
-        headers: responseHeaders,
-        config: config,
-        request: request
-      };
-
-      settle(resolve, reject, response);
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(createError('Network Error', config));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED'));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Add xsrf header
-    // This is only done if running in a standard browser environment.
-    // Specifically not if we're in a web worker, or react-native.
-    if (utils.isStandardBrowserEnv()) {
-      var cookies = require('./../helpers/cookies');
-
-      // Add xsrf header
-      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
-          cookies.read(config.xsrfCookieName) :
-          undefined;
-
-      if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
-      }
-    }
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
-          // Remove Content-Type if data is undefined
-          delete requestHeaders[key];
-        } else {
-          // Otherwise add header to the request
-          request.setRequestHeader(key, val);
-        }
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (config.withCredentials) {
-      request.withCredentials = true;
-    }
-
-    // Add responseType to request if needed
-    if (config.responseType) {
-      try {
-        request.responseType = config.responseType;
-      } catch (e) {
-        if (request.responseType !== 'json') {
-          throw e;
-        }
-      }
-    }
-
-    // Handle progress if needed
-    if (typeof config.onDownloadProgress === 'function') {
-      request.addEventListener('progress', config.onDownloadProgress);
-    }
-
-    // Not all browsers support upload events
-    if (typeof config.onUploadProgress === 'function' && request.upload) {
-      request.upload.addEventListener('progress', config.onUploadProgress);
-    }
-
-    if (config.cancelToken) {
-      // Handle cancellation
-      config.cancelToken.promise.then(function onCanceled(cancel) {
-        if (!request) {
-          return;
-        }
-
-        request.abort();
-        reject(cancel);
-        // Clean up request
-        request = null;
-      });
-    }
-
-    if (requestData === undefined) {
-      requestData = null;
-    }
-
-    // Send the request
-    request.send(requestData);
-  });
-};
-
-}).call(this,require('_process'))
-},{"../core/createError":9,"./../core/settle":12,"./../helpers/btoa":16,"./../helpers/buildURL":17,"./../helpers/cookies":19,"./../helpers/isURLSameOrigin":21,"./../helpers/parseHeaders":23,"./../utils":25,"_process":26}],3:[function(require,module,exports){
-'use strict';
-
-var utils = require('./utils');
-var bind = require('./helpers/bind');
-var Axios = require('./core/Axios');
-var defaults = require('./defaults');
-
-/**
- * Create an instance of Axios
- *
- * @param {Object} defaultConfig The default config for the instance
- * @return {Axios} A new instance of Axios
- */
-function createInstance(defaultConfig) {
-  var context = new Axios(defaultConfig);
-  var instance = bind(Axios.prototype.request, context);
-
-  // Copy axios.prototype to instance
-  utils.extend(instance, Axios.prototype, context);
-
-  // Copy context to instance
-  utils.extend(instance, context);
-
-  return instance;
-}
-
-// Create the default instance to be exported
-var axios = createInstance(defaults);
-
-// Expose Axios class to allow class inheritance
-axios.Axios = Axios;
-
-// Factory for creating new instances
-axios.create = function create(instanceConfig) {
-  return createInstance(utils.merge(defaults, instanceConfig));
-};
-
-// Expose Cancel & CancelToken
-axios.Cancel = require('./cancel/Cancel');
-axios.CancelToken = require('./cancel/CancelToken');
-axios.isCancel = require('./cancel/isCancel');
-
-// Expose all/spread
-axios.all = function all(promises) {
-  return Promise.all(promises);
-};
-axios.spread = require('./helpers/spread');
-
-module.exports = axios;
-
-// Allow use of default import syntax in TypeScript
-module.exports.default = axios;
-
-},{"./cancel/Cancel":4,"./cancel/CancelToken":5,"./cancel/isCancel":6,"./core/Axios":7,"./defaults":14,"./helpers/bind":15,"./helpers/spread":24,"./utils":25}],4:[function(require,module,exports){
-'use strict';
-
-/**
- * A `Cancel` is an object that is thrown when an operation is canceled.
- *
- * @class
- * @param {string=} message The message.
- */
-function Cancel(message) {
-  this.message = message;
-}
-
-Cancel.prototype.toString = function toString() {
-  return 'Cancel' + (this.message ? ': ' + this.message : '');
-};
-
-Cancel.prototype.__CANCEL__ = true;
-
-module.exports = Cancel;
-
-},{}],5:[function(require,module,exports){
-'use strict';
-
-var Cancel = require('./Cancel');
-
-/**
- * A `CancelToken` is an object that can be used to request cancellation of an operation.
- *
- * @class
- * @param {Function} executor The executor function.
- */
-function CancelToken(executor) {
-  if (typeof executor !== 'function') {
-    throw new TypeError('executor must be a function.');
-  }
-
-  var resolvePromise;
-  this.promise = new Promise(function promiseExecutor(resolve) {
-    resolvePromise = resolve;
-  });
-
-  var token = this;
-  executor(function cancel(message) {
-    if (token.reason) {
-      // Cancellation has already been requested
-      return;
-    }
-
-    token.reason = new Cancel(message);
-    resolvePromise(token.reason);
-  });
-}
-
-/**
- * Throws a `Cancel` if cancellation has been requested.
- */
-CancelToken.prototype.throwIfRequested = function throwIfRequested() {
-  if (this.reason) {
-    throw this.reason;
-  }
-};
-
-/**
- * Returns an object that contains a new `CancelToken` and a function that, when called,
- * cancels the `CancelToken`.
- */
-CancelToken.source = function source() {
-  var cancel;
-  var token = new CancelToken(function executor(c) {
-    cancel = c;
-  });
-  return {
-    token: token,
-    cancel: cancel
-  };
-};
-
-module.exports = CancelToken;
-
-},{"./Cancel":4}],6:[function(require,module,exports){
-'use strict';
-
-module.exports = function isCancel(value) {
-  return !!(value && value.__CANCEL__);
-};
-
-},{}],7:[function(require,module,exports){
-'use strict';
-
-var defaults = require('./../defaults');
-var utils = require('./../utils');
-var InterceptorManager = require('./InterceptorManager');
-var dispatchRequest = require('./dispatchRequest');
-var isAbsoluteURL = require('./../helpers/isAbsoluteURL');
-var combineURLs = require('./../helpers/combineURLs');
-
-/**
- * Create a new instance of Axios
- *
- * @param {Object} instanceConfig The default config for the instance
- */
-function Axios(instanceConfig) {
-  this.defaults = instanceConfig;
-  this.interceptors = {
-    request: new InterceptorManager(),
-    response: new InterceptorManager()
-  };
-}
-
-/**
- * Dispatch a request
- *
- * @param {Object} config The config specific for this request (merged with this.defaults)
- */
-Axios.prototype.request = function request(config) {
-  /*eslint no-param-reassign:0*/
-  // Allow for axios('example/url'[, config]) a la fetch API
-  if (typeof config === 'string') {
-    config = utils.merge({
-      url: arguments[0]
-    }, arguments[1]);
-  }
-
-  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
-
-  // Support baseURL config
-  if (config.baseURL && !isAbsoluteURL(config.url)) {
-    config.url = combineURLs(config.baseURL, config.url);
-  }
-
-  // Hook up interceptors middleware
-  var chain = [dispatchRequest, undefined];
-  var promise = Promise.resolve(config);
-
-  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-    chain.unshift(interceptor.fulfilled, interceptor.rejected);
-  });
-
-  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
-    chain.push(interceptor.fulfilled, interceptor.rejected);
-  });
-
-  while (chain.length) {
-    promise = promise.then(chain.shift(), chain.shift());
-  }
-
-  return promise;
-};
-
-// Provide aliases for supported request methods
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, config) {
-    return this.request(utils.merge(config || {}, {
-      method: method,
-      url: url
-    }));
-  };
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, data, config) {
-    return this.request(utils.merge(config || {}, {
-      method: method,
-      url: url,
-      data: data
-    }));
-  };
-});
-
-module.exports = Axios;
-
-},{"./../defaults":14,"./../helpers/combineURLs":18,"./../helpers/isAbsoluteURL":20,"./../utils":25,"./InterceptorManager":8,"./dispatchRequest":10}],8:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-
-function InterceptorManager() {
-  this.handlers = [];
-}
-
-/**
- * Add a new interceptor to the stack
- *
- * @param {Function} fulfilled The function to handle `then` for a `Promise`
- * @param {Function} rejected The function to handle `reject` for a `Promise`
- *
- * @return {Number} An ID used to remove interceptor later
- */
-InterceptorManager.prototype.use = function use(fulfilled, rejected) {
-  this.handlers.push({
-    fulfilled: fulfilled,
-    rejected: rejected
-  });
-  return this.handlers.length - 1;
-};
-
-/**
- * Remove an interceptor from the stack
- *
- * @param {Number} id The ID that was returned by `use`
- */
-InterceptorManager.prototype.eject = function eject(id) {
-  if (this.handlers[id]) {
-    this.handlers[id] = null;
-  }
-};
-
-/**
- * Iterate over all the registered interceptors
- *
- * This method is particularly useful for skipping over any
- * interceptors that may have become `null` calling `eject`.
- *
- * @param {Function} fn The function to call for each interceptor
- */
-InterceptorManager.prototype.forEach = function forEach(fn) {
-  utils.forEach(this.handlers, function forEachHandler(h) {
-    if (h !== null) {
-      fn(h);
-    }
-  });
-};
-
-module.exports = InterceptorManager;
-
-},{"./../utils":25}],9:[function(require,module,exports){
-'use strict';
-
-var enhanceError = require('./enhanceError');
-
-/**
- * Create an Error with the specified message, config, error code, and response.
- *
- * @param {string} message The error message.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- @ @param {Object} [response] The response.
- * @returns {Error} The created error.
- */
-module.exports = function createError(message, config, code, response) {
-  var error = new Error(message);
-  return enhanceError(error, config, code, response);
-};
-
-},{"./enhanceError":11}],10:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-var transformData = require('./transformData');
-var isCancel = require('../cancel/isCancel');
-var defaults = require('../defaults');
-
-/**
- * Throws a `Cancel` if cancellation has been requested.
- */
-function throwIfCancellationRequested(config) {
-  if (config.cancelToken) {
-    config.cancelToken.throwIfRequested();
-  }
-}
-
-/**
- * Dispatch a request to the server using the configured adapter.
- *
- * @param {object} config The config that is to be used for the request
- * @returns {Promise} The Promise to be fulfilled
- */
-module.exports = function dispatchRequest(config) {
-  throwIfCancellationRequested(config);
-
-  // Ensure headers exist
-  config.headers = config.headers || {};
-
-  // Transform request data
-  config.data = transformData(
-    config.data,
-    config.headers,
-    config.transformRequest
-  );
-
-  // Flatten headers
-  config.headers = utils.merge(
-    config.headers.common || {},
-    config.headers[config.method] || {},
-    config.headers || {}
-  );
-
-  utils.forEach(
-    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
-    function cleanHeaderConfig(method) {
-      delete config.headers[method];
-    }
-  );
-
-  var adapter = config.adapter || defaults.adapter;
-
-  return adapter(config).then(function onAdapterResolution(response) {
-    throwIfCancellationRequested(config);
-
-    // Transform response data
-    response.data = transformData(
-      response.data,
-      response.headers,
-      config.transformResponse
-    );
-
-    return response;
-  }, function onAdapterRejection(reason) {
-    if (!isCancel(reason)) {
-      throwIfCancellationRequested(config);
-
-      // Transform response data
-      if (reason && reason.response) {
-        reason.response.data = transformData(
-          reason.response.data,
-          reason.response.headers,
-          config.transformResponse
-        );
-      }
-    }
-
-    return Promise.reject(reason);
-  });
-};
-
-},{"../cancel/isCancel":6,"../defaults":14,"./../utils":25,"./transformData":13}],11:[function(require,module,exports){
-'use strict';
-
-/**
- * Update an Error with the specified config, error code, and response.
- *
- * @param {Error} error The error to update.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- @ @param {Object} [response] The response.
- * @returns {Error} The error.
- */
-module.exports = function enhanceError(error, config, code, response) {
-  error.config = config;
-  if (code) {
-    error.code = code;
-  }
-  error.response = response;
-  return error;
-};
-
-},{}],12:[function(require,module,exports){
-'use strict';
-
-var createError = require('./createError');
-
-/**
- * Resolve or reject a Promise based on response status.
- *
- * @param {Function} resolve A function that resolves the promise.
- * @param {Function} reject A function that rejects the promise.
- * @param {object} response The response.
- */
-module.exports = function settle(resolve, reject, response) {
-  var validateStatus = response.config.validateStatus;
-  // Note: status is not exposed by XDomainRequest
-  if (!response.status || !validateStatus || validateStatus(response.status)) {
-    resolve(response);
-  } else {
-    reject(createError(
-      'Request failed with status code ' + response.status,
-      response.config,
-      null,
-      response
-    ));
-  }
-};
-
-},{"./createError":9}],13:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-
-/**
- * Transform the data for a request or a response
- *
- * @param {Object|String} data The data to be transformed
- * @param {Array} headers The headers for the request or response
- * @param {Array|Function} fns A single function or Array of functions
- * @returns {*} The resulting transformed data
- */
-module.exports = function transformData(data, headers, fns) {
-  /*eslint no-param-reassign:0*/
-  utils.forEach(fns, function transform(fn) {
-    data = fn(data, headers);
-  });
-
-  return data;
-};
-
-},{"./../utils":25}],14:[function(require,module,exports){
-(function (process){
-'use strict';
-
-var utils = require('./utils');
-var normalizeHeaderName = require('./helpers/normalizeHeaderName');
-
-var PROTECTION_PREFIX = /^\)\]\}',?\n/;
-var DEFAULT_CONTENT_TYPE = {
-  'Content-Type': 'application/x-www-form-urlencoded'
-};
-
-function setContentTypeIfUnset(headers, value) {
-  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-    headers['Content-Type'] = value;
-  }
-}
-
-function getDefaultAdapter() {
-  var adapter;
-  if (typeof XMLHttpRequest !== 'undefined') {
-    // For browsers use XHR adapter
-    adapter = require('./adapters/xhr');
-  } else if (typeof process !== 'undefined') {
-    // For node use HTTP adapter
-    adapter = require('./adapters/http');
-  }
-  return adapter;
-}
-
-var defaults = {
-  adapter: getDefaultAdapter(),
-
-  transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Content-Type');
-    if (utils.isFormData(data) ||
-      utils.isArrayBuffer(data) ||
-      utils.isStream(data) ||
-      utils.isFile(data) ||
-      utils.isBlob(data)
-    ) {
-      return data;
-    }
-    if (utils.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils.isURLSearchParams(data)) {
-      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
-      return data.toString();
-    }
-    if (utils.isObject(data)) {
-      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
-      return JSON.stringify(data);
-    }
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    /*eslint no-param-reassign:0*/
-    if (typeof data === 'string') {
-      data = data.replace(PROTECTION_PREFIX, '');
-      try {
-        data = JSON.parse(data);
-      } catch (e) { /* Ignore */ }
-    }
-    return data;
-  }],
-
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  }
-};
-
-defaults.headers = {
-  common: {
-    'Accept': 'application/json, text/plain, */*'
-  }
-};
-
-utils.forEach(['delete', 'get', 'head'], function forEachMehtodNoData(method) {
-  defaults.headers[method] = {};
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
-});
-
-module.exports = defaults;
-
-}).call(this,require('_process'))
-},{"./adapters/http":2,"./adapters/xhr":2,"./helpers/normalizeHeaderName":22,"./utils":25,"_process":26}],15:[function(require,module,exports){
-'use strict';
-
-module.exports = function bind(fn, thisArg) {
-  return function wrap() {
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-    return fn.apply(thisArg, args);
-  };
-};
-
-},{}],16:[function(require,module,exports){
-'use strict';
-
-// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
-
-var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-function E() {
-  this.message = 'String contains an invalid character';
-}
-E.prototype = new Error;
-E.prototype.code = 5;
-E.prototype.name = 'InvalidCharacterError';
-
-function btoa(input) {
-  var str = String(input);
-  var output = '';
-  for (
-    // initialize result and counter
-    var block, charCode, idx = 0, map = chars;
-    // if the next str index does not exist:
-    //   change the mapping table to "="
-    //   check if d has no fractional digits
-    str.charAt(idx | 0) || (map = '=', idx % 1);
-    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-  ) {
-    charCode = str.charCodeAt(idx += 3 / 4);
-    if (charCode > 0xFF) {
-      throw new E();
-    }
-    block = block << 8 | charCode;
-  }
-  return output;
-}
-
-module.exports = btoa;
-
-},{}],17:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-
-function encode(val) {
-  return encodeURIComponent(val).
-    replace(/%40/gi, '@').
-    replace(/%3A/gi, ':').
-    replace(/%24/g, '$').
-    replace(/%2C/gi, ',').
-    replace(/%20/g, '+').
-    replace(/%5B/gi, '[').
-    replace(/%5D/gi, ']');
-}
-
-/**
- * Build a URL by appending params to the end
- *
- * @param {string} url The base of the url (e.g., http://www.google.com)
- * @param {object} [params] The params to be appended
- * @returns {string} The formatted url
- */
-module.exports = function buildURL(url, params, paramsSerializer) {
-  /*eslint no-param-reassign:0*/
-  if (!params) {
-    return url;
-  }
-
-  var serializedParams;
-  if (paramsSerializer) {
-    serializedParams = paramsSerializer(params);
-  } else if (utils.isURLSearchParams(params)) {
-    serializedParams = params.toString();
-  } else {
-    var parts = [];
-
-    utils.forEach(params, function serialize(val, key) {
-      if (val === null || typeof val === 'undefined') {
-        return;
-      }
-
-      if (utils.isArray(val)) {
-        key = key + '[]';
-      }
-
-      if (!utils.isArray(val)) {
-        val = [val];
-      }
-
-      utils.forEach(val, function parseValue(v) {
-        if (utils.isDate(v)) {
-          v = v.toISOString();
-        } else if (utils.isObject(v)) {
-          v = JSON.stringify(v);
-        }
-        parts.push(encode(key) + '=' + encode(v));
-      });
-    });
-
-    serializedParams = parts.join('&');
-  }
-
-  if (serializedParams) {
-    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
-  }
-
-  return url;
-};
-
-},{"./../utils":25}],18:[function(require,module,exports){
-'use strict';
-
-/**
- * Creates a new URL by combining the specified URLs
- *
- * @param {string} baseURL The base URL
- * @param {string} relativeURL The relative URL
- * @returns {string} The combined URL
- */
-module.exports = function combineURLs(baseURL, relativeURL) {
-  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '');
-};
-
-},{}],19:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-
-module.exports = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs support document.cookie
-  (function standardBrowserEnv() {
-    return {
-      write: function write(name, value, expires, path, domain, secure) {
-        var cookie = [];
-        cookie.push(name + '=' + encodeURIComponent(value));
-
-        if (utils.isNumber(expires)) {
-          cookie.push('expires=' + new Date(expires).toGMTString());
-        }
-
-        if (utils.isString(path)) {
-          cookie.push('path=' + path);
-        }
-
-        if (utils.isString(domain)) {
-          cookie.push('domain=' + domain);
-        }
-
-        if (secure === true) {
-          cookie.push('secure');
-        }
-
-        document.cookie = cookie.join('; ');
-      },
-
-      read: function read(name) {
-        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-        return (match ? decodeURIComponent(match[3]) : null);
-      },
-
-      remove: function remove(name) {
-        this.write(name, '', Date.now() - 86400000);
-      }
-    };
-  })() :
-
-  // Non standard browser env (web workers, react-native) lack needed support.
-  (function nonStandardBrowserEnv() {
-    return {
-      write: function write() {},
-      read: function read() { return null; },
-      remove: function remove() {}
-    };
-  })()
-);
-
-},{"./../utils":25}],20:[function(require,module,exports){
-'use strict';
-
-/**
- * Determines whether the specified URL is absolute
- *
- * @param {string} url The URL to test
- * @returns {boolean} True if the specified URL is absolute, otherwise false
- */
-module.exports = function isAbsoluteURL(url) {
-  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
-  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
-  // by any combination of letters, digits, plus, period, or hyphen.
-  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
-};
-
-},{}],21:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-
-module.exports = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs have full support of the APIs needed to test
-  // whether the request URL is of the same origin as current location.
-  (function standardBrowserEnv() {
-    var msie = /(msie|trident)/i.test(navigator.userAgent);
-    var urlParsingNode = document.createElement('a');
-    var originURL;
-
-    /**
-    * Parse a URL to discover it's components
-    *
-    * @param {String} url The URL to be parsed
-    * @returns {Object}
-    */
-    function resolveURL(url) {
-      var href = url;
-
-      if (msie) {
-        // IE needs attribute set twice to normalize properties
-        urlParsingNode.setAttribute('href', href);
-        href = urlParsingNode.href;
-      }
-
-      urlParsingNode.setAttribute('href', href);
-
-      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-      return {
-        href: urlParsingNode.href,
-        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-        host: urlParsingNode.host,
-        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-        hostname: urlParsingNode.hostname,
-        port: urlParsingNode.port,
-        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-                  urlParsingNode.pathname :
-                  '/' + urlParsingNode.pathname
-      };
-    }
-
-    originURL = resolveURL(window.location.href);
-
-    /**
-    * Determine if a URL shares the same origin as the current location
-    *
-    * @param {String} requestURL The URL to test
-    * @returns {boolean} True if URL shares the same origin, otherwise false
-    */
-    return function isURLSameOrigin(requestURL) {
-      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-      return (parsed.protocol === originURL.protocol &&
-            parsed.host === originURL.host);
-    };
-  })() :
-
-  // Non standard browser envs (web workers, react-native) lack needed support.
-  (function nonStandardBrowserEnv() {
-    return function isURLSameOrigin() {
-      return true;
-    };
-  })()
-);
-
-},{"./../utils":25}],22:[function(require,module,exports){
-'use strict';
-
-var utils = require('../utils');
-
-module.exports = function normalizeHeaderName(headers, normalizedName) {
-  utils.forEach(headers, function processHeader(value, name) {
-    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
-      headers[normalizedName] = value;
-      delete headers[name];
-    }
-  });
-};
-
-},{"../utils":25}],23:[function(require,module,exports){
-'use strict';
-
-var utils = require('./../utils');
-
-/**
- * Parse headers into an object
- *
- * ```
- * Date: Wed, 27 Aug 2014 08:58:49 GMT
- * Content-Type: application/json
- * Connection: keep-alive
- * Transfer-Encoding: chunked
- * ```
- *
- * @param {String} headers Headers needing to be parsed
- * @returns {Object} Headers parsed into an object
- */
-module.exports = function parseHeaders(headers) {
-  var parsed = {};
-  var key;
-  var val;
-  var i;
-
-  if (!headers) { return parsed; }
-
-  utils.forEach(headers.split('\n'), function parser(line) {
-    i = line.indexOf(':');
-    key = utils.trim(line.substr(0, i)).toLowerCase();
-    val = utils.trim(line.substr(i + 1));
-
-    if (key) {
-      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-    }
-  });
-
-  return parsed;
-};
-
-},{"./../utils":25}],24:[function(require,module,exports){
-'use strict';
-
-/**
- * Syntactic sugar for invoking a function and expanding an array for arguments.
- *
- * Common use case would be to use `Function.prototype.apply`.
- *
- *  ```js
- *  function f(x, y, z) {}
- *  var args = [1, 2, 3];
- *  f.apply(null, args);
- *  ```
- *
- * With `spread` this example can be re-written.
- *
- *  ```js
- *  spread(function(x, y, z) {})([1, 2, 3]);
- *  ```
- *
- * @param {Function} callback
- * @returns {Function}
- */
-module.exports = function spread(callback) {
-  return function wrap(arr) {
-    return callback.apply(null, arr);
-  };
-};
-
-},{}],25:[function(require,module,exports){
-'use strict';
-
-var bind = require('./helpers/bind');
-
-/*global toString:true*/
-
-// utils is a library of generic helper functions non-specific to axios
-
-var toString = Object.prototype.toString;
-
-/**
- * Determine if a value is an Array
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Array, otherwise false
- */
-function isArray(val) {
-  return toString.call(val) === '[object Array]';
-}
-
-/**
- * Determine if a value is an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an ArrayBuffer, otherwise false
- */
-function isArrayBuffer(val) {
-  return toString.call(val) === '[object ArrayBuffer]';
-}
-
-/**
- * Determine if a value is a FormData
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an FormData, otherwise false
- */
-function isFormData(val) {
-  return (typeof FormData !== 'undefined') && (val instanceof FormData);
-}
-
-/**
- * Determine if a value is a view on an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
- */
-function isArrayBufferView(val) {
-  var result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
-  } else {
-    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
-  }
-  return result;
-}
-
-/**
- * Determine if a value is a String
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a String, otherwise false
- */
-function isString(val) {
-  return typeof val === 'string';
-}
-
-/**
- * Determine if a value is a Number
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Number, otherwise false
- */
-function isNumber(val) {
-  return typeof val === 'number';
-}
-
-/**
- * Determine if a value is undefined
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-function isUndefined(val) {
-  return typeof val === 'undefined';
-}
-
-/**
- * Determine if a value is an Object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Object, otherwise false
- */
-function isObject(val) {
-  return val !== null && typeof val === 'object';
-}
-
-/**
- * Determine if a value is a Date
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Date, otherwise false
- */
-function isDate(val) {
-  return toString.call(val) === '[object Date]';
-}
-
-/**
- * Determine if a value is a File
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a File, otherwise false
- */
-function isFile(val) {
-  return toString.call(val) === '[object File]';
-}
-
-/**
- * Determine if a value is a Blob
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Blob, otherwise false
- */
-function isBlob(val) {
-  return toString.call(val) === '[object Blob]';
-}
-
-/**
- * Determine if a value is a Function
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Function, otherwise false
- */
-function isFunction(val) {
-  return toString.call(val) === '[object Function]';
-}
-
-/**
- * Determine if a value is a Stream
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Stream, otherwise false
- */
-function isStream(val) {
-  return isObject(val) && isFunction(val.pipe);
-}
-
-/**
- * Determine if a value is a URLSearchParams object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a URLSearchParams object, otherwise false
- */
-function isURLSearchParams(val) {
-  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
-}
-
-/**
- * Trim excess whitespace off the beginning and end of a string
- *
- * @param {String} str The String to trim
- * @returns {String} The String freed of excess whitespace
- */
-function trim(str) {
-  return str.replace(/^\s*/, '').replace(/\s*$/, '');
-}
-
-/**
- * Determine if we're running in a standard browser environment
- *
- * This allows axios to run in a web worker, and react-native.
- * Both environments support XMLHttpRequest, but not fully standard globals.
- *
- * web workers:
- *  typeof window -> undefined
- *  typeof document -> undefined
- *
- * react-native:
- *  typeof document.createElement -> undefined
- */
-function isStandardBrowserEnv() {
-  return (
-    typeof window !== 'undefined' &&
-    typeof document !== 'undefined' &&
-    typeof document.createElement === 'function'
-  );
-}
-
-/**
- * Iterate over an Array or an Object invoking a function for each item.
- *
- * If `obj` is an Array callback will be called passing
- * the value, index, and complete array for each item.
- *
- * If 'obj' is an Object callback will be called passing
- * the value, key, and complete object for each property.
- *
- * @param {Object|Array} obj The object to iterate
- * @param {Function} fn The callback to invoke for each item
- */
-function forEach(obj, fn) {
-  // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
-    return;
-  }
-
-  // Force an array if not already something iterable
-  if (typeof obj !== 'object' && !isArray(obj)) {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
-  }
-
-  if (isArray(obj)) {
-    // Iterate over array values
-    for (var i = 0, l = obj.length; i < l; i++) {
-      fn.call(null, obj[i], i, obj);
-    }
-  } else {
-    // Iterate over object keys
-    for (var key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        fn.call(null, obj[key], key, obj);
-      }
-    }
-  }
-}
-
-/**
- * Accepts varargs expecting each argument to be an object, then
- * immutably merges the properties of each object and returns result.
- *
- * When multiple objects contain the same key the later object in
- * the arguments list will take precedence.
- *
- * Example:
- *
- * ```js
- * var result = merge({foo: 123}, {foo: 456});
- * console.log(result.foo); // outputs 456
- * ```
- *
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function merge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
-      result[key] = merge(result[key], val);
-    } else {
-      result[key] = val;
-    }
-  }
-
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Extends object a by mutably adding to it the properties of object b.
- *
- * @param {Object} a The object to be extended
- * @param {Object} b The object to copy properties from
- * @param {Object} thisArg The object to bind function to
- * @return {Object} The resulting value of object a
- */
-function extend(a, b, thisArg) {
-  forEach(b, function assignValue(val, key) {
-    if (thisArg && typeof val === 'function') {
-      a[key] = bind(val, thisArg);
-    } else {
-      a[key] = val;
-    }
-  });
-  return a;
-}
-
-module.exports = {
-  isArray: isArray,
-  isArrayBuffer: isArrayBuffer,
-  isFormData: isFormData,
-  isArrayBufferView: isArrayBufferView,
-  isString: isString,
-  isNumber: isNumber,
-  isObject: isObject,
-  isUndefined: isUndefined,
-  isDate: isDate,
-  isFile: isFile,
-  isBlob: isBlob,
-  isFunction: isFunction,
-  isStream: isStream,
-  isURLSearchParams: isURLSearchParams,
-  isStandardBrowserEnv: isStandardBrowserEnv,
-  forEach: forEach,
-  merge: merge,
-  extend: extend,
-  trim: trim
-};
-
-},{"./helpers/bind":15}],26:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1571,12 +180,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],27:[function(require,module,exports){
-"use strict";var _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(o){return typeof o}:function(o){return o&&"function"==typeof Symbol&&o.constructor===Symbol&&o!==Symbol.prototype?"symbol":typeof o};!function(){function o(e,t){if(!o.installed){if(!t)return void console.error("You have to install axios");e.axios=t,Object.defineProperties(e.prototype,{axios:{get:function(){return t}},$http:{get:function(){return t}}})}}"object"==("undefined"==typeof exports?"undefined":_typeof(exports))?module.exports=o:"function"==typeof define&&define.amd?define([],function(){return o}):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
-},{}],28:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 (function (global){
 /*!
- * Vue.js v2.2.5
+ * Vue.js v2.2.6
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -3672,6 +2279,9 @@ function lifecycleMixin (Vue) {
     }
     // call the last hook...
     vm._isDestroyed = true;
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+    // fire destroyed hook
     callHook(vm, 'destroyed');
     // turn off all instance listeners.
     vm.$off();
@@ -3679,8 +2289,8 @@ function lifecycleMixin (Vue) {
     if (vm.$el) {
       vm.$el.__vue__ = null;
     }
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null);
+    // remove reference to DOM nodes (prevents leak)
+    vm.$options._parentElm = vm.$options._refElm = null;
   };
 }
 
@@ -4341,6 +2951,15 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    {
+      if (getter === undefined) {
+        warn(
+          ("No getter function has been defined for computed property \"" + key + "\"."),
+          vm
+        );
+        getter = noop;
+      }
+    }
     // create internal watcher for the computed property.
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
 
@@ -4753,7 +3372,7 @@ function extractProps (data, Ctor, tag) {
         ) {
           tip(
             "Prop \"" + keyInLowerCase + "\" is passed to component " +
-            (formatComponentName(tag || Ctor)) + ", but the delared prop name is" +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
             " \"" + key + "\". " +
             "Note that HTML attributes are case-insensitive and camelCased " +
             "props need to use their kebab-case equivalents when using in-DOM " +
@@ -5732,7 +4351,7 @@ Object.defineProperty(Vue$3.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Vue$3.version = '2.2.5';
+Vue$3.version = '2.2.6';
 
 /*  */
 
@@ -10881,10 +9500,10 @@ return Vue$3;
 })));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],29:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (process,global){
 /*!
- * Vue.js v2.2.5
+ * Vue.js v2.2.6
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -12972,6 +11591,9 @@ function lifecycleMixin (Vue) {
     }
     // call the last hook...
     vm._isDestroyed = true;
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+    // fire destroyed hook
     callHook(vm, 'destroyed');
     // turn off all instance listeners.
     vm.$off();
@@ -12979,8 +11601,8 @@ function lifecycleMixin (Vue) {
     if (vm.$el) {
       vm.$el.__vue__ = null;
     }
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null);
+    // remove reference to DOM nodes (prevents leak)
+    vm.$options._parentElm = vm.$options._refElm = null;
   };
 }
 
@@ -13645,6 +12267,15 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    if (process.env.NODE_ENV !== 'production') {
+      if (getter === undefined) {
+        warn(
+          ("No getter function has been defined for computed property \"" + key + "\"."),
+          vm
+        );
+        getter = noop;
+      }
+    }
     // create internal watcher for the computed property.
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
 
@@ -14057,7 +12688,7 @@ function extractProps (data, Ctor, tag) {
         ) {
           tip(
             "Prop \"" + keyInLowerCase + "\" is passed to component " +
-            (formatComponentName(tag || Ctor)) + ", but the delared prop name is" +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
             " \"" + key + "\". " +
             "Note that HTML attributes are case-insensitive and camelCased " +
             "props need to use their kebab-case equivalents when using in-DOM " +
@@ -15042,7 +13673,7 @@ Object.defineProperty(Vue$2.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Vue$2.version = '2.2.5';
+Vue$2.version = '2.2.6';
 
 /*  */
 
@@ -17704,7 +16335,7 @@ setTimeout(function () {
 module.exports = Vue$2;
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":26}],30:[function(require,module,exports){
+},{"_process":1}],4:[function(require,module,exports){
 /**
  * vuex v2.2.1
  * (c) 2017 Evan You
@@ -18517,37 +17148,263 @@ return index;
 
 })));
 
-},{}],31:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _vue = require('vue');
+exports.default = function (store) {
+    // Called after every mutation.
+    // The mutation comes in the format of { type, payload }.
+    // Thus this will catch the new item on the first mutation committing
+    // it.
+    store.subscribe(function (mutation) {
+        var type = mutation.type,
+            payload = mutation.payload;
 
-var _vue2 = _interopRequireDefault(_vue);
+        switch (type) {
+            case mTypes.setItem:
+                if (typeof payload !== 'undefined' && !payload.mutateSilently) {
 
-var _axios = require('axios');
+                    var _item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
 
-var _axios2 = _interopRequireDefault(_axios);
+                    if (!_item instanceof _Exam2.default) {
 
-var _vueAxios = require('vue-axios');
+                        _item.examId = store.getters.getExamId;
+                    }
 
-var _vueAxios2 = _interopRequireDefault(_vueAxios);
+                    if (_item && _item.isNew()) {
+                        //id === 'undefined' || payload.obj.id === -1)
+                        //All IModels have an id of -1 when they are initially created.
+                        //This is replaced with the real id once one is returned from the server.
+                        //Thus, this request is to create the item.
+                        //When the server has done this, it will send back an id
+                        window.axios.post('items', _item).then(function (response) {
+                            handleResponse(store, _item, response);
+                        }).catch(function (error) {
+                            errorHandling(error);
+                        });
+                    }
+                }
+                break;
+            //Now we allow the request to continue in case it wasn't just
+            //asking to create something. If the model already has an id,
+            //the type property will tell us which mutation was called so we can
+            //make the appropriate api request
+            // switch ( type ) {
+            //We do NOT listen any further to
+            //case mTypes.setItem:
+            //That way we can avoid a loop because
+            //we have to set the result of the request for ids somehow
+            //Note: we were listening above, so calling setItem the first time
+
+            case mTypes.updateItem:
+                var item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
+
+                if (!item instanceof _Exam2.default) {
+
+                    item.examId = store.getters.getExamId;
+                }
+
+                //put/patch
+                window.axios.put('items/' + item.id, item).then(function (response) {
+                    //     handleResponse(store, item, response);
+                }).catch(function (error) {
+                    errorHandling(error);
+                });
+                break;
+
+            case mTypes.demoteItem:
+                break;
+            case mTypes.promoteItem:
+                break;
+            default:
+
+        }
+    });
+};
+
+var _actionTypes = require('../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = require('../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = require('../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_axios2.default.defaults.baseURL = routeRoot;
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-// This wrapper bind axios to Vue or this if you're using single file component.
+/**
+ * Created by adam on 4/1/17.
+ */
+// import Vue from 'vue'
+// import axios from 'axios'
+// import VueAxios from 'vue-axios'
+//
+// axios.defaults.headers.common = {
+//     'X-CSRF-TOKEN': window.Laravel.csrfToken,
+//     'X-Requested-With': 'XMLHttpRequest'
+// };
+//
+// axios.defaults.baseURL = routeRoot;
+// // axios.defaults.headers.common['X-CSRF-TOKEN'] = document.head.querySelector("[name=csrf-token]").content;
+// // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+//
+// // This wrapper bind axios to Vue or this if you're using single file component.
+// Vue.use(VueAxios, axios);
+
+var errorHandling = function errorHandling(error) {
+    if (error.response) {
+        // The request was made, but the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+    } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+    }
+    console.log(error.config);
+};
+
+var handleResponse = function handleResponse(store, item, response) {
+    window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+    if (typeof response.data === 'undefined') return false;
+
+    //return Item with the new id or other data loaded
+    if (typeof response.data !== 'undefined') {
+
+        switch (item.kind) {
+            case 'exam':
+                if (typeof item.index !== 'undefined' && item.index === 0) {
+                    _Exam2.default.fillableProps.forEach(function (p) {
+                        if (p !== 'index') {
+                            // window.console.log('apiPlugin', 50, p);
+                            if (Object.keys(response.data).includes(p)) {
+                                store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                                    index: item.index,
+                                    updateProp: p,
+                                    updateVal: response.data[p],
+                                    mutateSilently: true
+                                }));
+                            }
+                        }
+                    });
+                }
+                break;
+
+            case 'item':
+                _Item2.default.fillableProps.forEach(function (p) {
+                    if (p !== 'index') {
+                        if (Object.keys(response.data).includes(p)) {
+                            store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                                index: item.index,
+                                updateProp: p,
+                                updateVal: response.data[p],
+                                mutateSilently: true
+                            }));
+                        }
+                    }
+                });
+                break;
+            default:
+        }
+    }
+};
+
+// const conn = {
+//
+//     /**
+//      * Asks the server to create the given model.
+//      * The server returns an id for the model.
+//      * This returns the id
+//      *
+//      */
+//     createModel: ( item ) => {
+//         let api = 'items'; //hits the resource's store method (create would've returned the form to create)
+//
+//         window.axios
+//             .post(api, item)
+//             .then(( response ) => {
+//                 // handleResponse(item, response);
+//                 return response;
+//             })
+//             .catch(function ( error ) {
+//                 errorHandling(error);
+//             });
+//     },
+//
+//     /**
+//      * Asks the server to update the given item
+//      * @param Item
+//      */
+//     updateModel: ( Model ) => {
+//         if ( Model.id && Model.id > 0 ) {
+//
+//             let api = 'items/' + Model.id;
+//
+//             window.axios
+//                 .put(api, Model)
+//                 .then(( response ) => {
+//                     return response;
+//                     // if (response.status == 200 ){
+//                     //    return callback(response);
+//                     // }
+//                     //
+//                     // console.log( response.data )
+//                     // //return Item with the new id loaded
+//                     // return Model;
+//                 })
+//                 .catch(function ( error ) {
+//                     errorHandling(error);
+//                     console.log(error);
+//                 });
+//         }
+//     }
+// };
+/**
+ *This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ * Called when the store is initialized
+ */
+;
+
+},{"../models/Exam":9,"../models/Item":11,"../models/Payload":12,"../store/action-types":15,"../store/getter-types":17,"../store/mutation-types":32}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 /**
  * Created by adam on 3/20/17.
  */
-_vue2.default.use(_vueAxios2.default, _axios2.default);
+// import Vue from 'vue'
+// import axios from 'axios'
 
+/**
+ * this is the component for using axios inside of a vue or vuex process
+ */
 exports.default = {
     _connection: null,
 
@@ -18575,18 +17432,8 @@ exports.default = {
     },
 
     methods: {
-        /**
-         * Utility for creating most of the route to the _api
-         * @param type
-         * @returns {*}
-         */
-        makeRoute: function makeRoute(type) {
-            if (undefined.routeRoot) {
-                return undefined.routeRoot + undefined.routeBase[type];
-            }
-        },
 
-        _errorHandling: function _errorHandling(error) {
+        errorHandling: function errorHandling(error) {
             if (error.response) {
                 // The request was made, but the server responded with a status code
                 // that falls out of the range of 2xx
@@ -18601,93 +17448,65 @@ exports.default = {
         },
 
         /**
-         * Asks the server to create the given model
-         * @param IModel
+         * Asks the server to create a new model.
+         * The server returns an id for the model on success.
+         * This returns the id on success
+         *
          */
-        createModel: function createModel(Model) {
-            var api = undefined.makeRoute(Model.className) + '/create';
+        getIdForNewModel: function getIdForNewModel() {
 
-            undefined.axios.get(api).then(function (response) {
+            var api = 'items'; //hits the resource's store method (create would've returned the form to create)
+
+            undefined.$axios.post(api).then(function (response) {
                 console.log(response.data);
                 //return Item with the new id or other data loaded
                 if (typeof response.data.id !== 'undefined') {
-                    Model.id = response.data.id;
-                }
-                return Model;
-            }).catch(function (error) {
-                this._errorHandling(error);
-            });
-        },
-
-        /**
-         * Asks the server to get the given model
-         * @param IModel
-         */
-        readModel: function readModel(Model) {
-            var api = undefined.makeRoute(Model.className) + '/' + Model.id;
-
-            undefined.axios.get(api).then(function (response) {
-
-                console.log(response.data);
-                //return Item with the new id or other data loaded
-                if (typeof response.data.id != 'undefined') {
-                    Model.id = response.data.id;
-                }
-                return Model;
-            }).catch(function (error) {
-                this._errorHandling(error);
-                console.log(error);
-            });
-        },
-
-        /**
-         * Asks the server to create the given item
-         * @param Item
-         */
-        updateModel: function updateModel(Model) {
-            var api = undefined.makeRoute(Model.className) + '/' + Model.id;
-
-            undefined.axios.put(api, Model).then(function (response) {
-
-                // if (response.status == 200 ){
-                return callback(response);
-                // }
-                //
-                // console.log( response.data )
-                // //return Item with the new id loaded
-                // return Model;
-            }).catch(function (error) {
-                this._errorHandling(error);
-                console.log(error);
-            });
-        },
-
-        /**
-         * Asks the server to create the given item
-         * @param Item
-         */
-        deleteModel: function deleteModel(Model, callback) {
-
-            var api = undefined.makeRoute(Model.className()) + '/' + Model.id;
-
-            undefined.axios.delete(api).then(function (response) {
-                if (response.status == 200) {
-                    return callback(response);
+                    return response.data.id;
                 }
             }).catch(function (error) {
-                this._errorHandling(error);
-                console.log(error);
+                this.errorHandling(error);
             });
         }
 
     }
 
-    // this.$http.get( _api ).then( ( response ) => {
-    //     console.log( response.data )
-    // } )
 };
 
-},{"axios":1,"vue":29,"vue-axios":27}],32:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (store) {
+    // const socket = new WebSocket('wss:' + socketRoute);
+
+
+    //         // socket.on('data', data => {
+    //         //     store.commit('receiveData', data)
+    //         // });
+    // called when the store is initialized
+    store.subscribe(function (mutation, state) {
+        // called after every mutation.
+        // The mutation comes in the format of { type, payload }.
+        // window.console.log('websocket subscriber', 'mutation caught', 48, mutation);
+    });
+};
+
+/**
+ * Created by adam on 4/1/17.
+ */
+
+var socketRoute = '';
+
+/**
+ * This subscribes a websocket
+ * to mutations in the store.
+ */
+;
+
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18813,7 +17632,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":34,"./Item":35}],33:[function(require,module,exports){
+},{"./IModel":10,"./Item":11}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18821,6 +17640,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _Comment = require('./Comment');
 
@@ -18854,13 +17675,15 @@ var Exam = function (_Item) {
         var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
 
         _Comment2.default.initializeComments(_this);
+        /**
+         * The db identifier of the model
+         */
+        _this.id = -1;
 
-        // this._id; // = examId;
-        // this._index; // = examIndex;
         // this._name; // = name;
-        _this._year; // = year;
-        _this._term; // = term;
-
+        _this.year; // = year;
+        _this.term; // = term;
+        _this.kind = 'exam';
         if (arguments.length > 0) {
             //fill in from params
         }
@@ -18868,6 +17691,28 @@ var Exam = function (_Item) {
     }
 
     _createClass(Exam, [{
+        key: 'isNew',
+
+
+        /* *************************** Props ************* */
+
+        //
+        // get year(){ return this._year; }
+        // set year(v){ this._year = v; }
+        //
+        // get term(){ return this._term; }
+        // set term(v){ this._term = v; }
+
+        value: function isNew() {
+            return this.id === -1;
+        }
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }, {
         key: 'examId',
 
 
@@ -18882,6 +17727,9 @@ var Exam = function (_Item) {
                 return null;
             }
             return this.id;
+        },
+        set: function set(v) {
+            this.id = v;
         }
 
         /* *************************** Index ************* */
@@ -18901,31 +17749,6 @@ var Exam = function (_Item) {
             }
             return this.index;
         }
-
-        /* *************************** Props ************* */
-
-    }, {
-        key: 'year',
-        get: function get() {
-            return this._year;
-        },
-        set: function set(v) {
-            this._year = v;
-        }
-    }, {
-        key: 'term',
-        get: function get() {
-            return this._term;
-        },
-        set: function set(v) {
-            this._term = v;
-        }
-
-        /**
-         * Returns a list of fields which may
-         * be used to look up an exam from the store
-         */
-
     }], [{
         key: 'examIdentifiers',
         value: function examIdentifiers() {
@@ -18943,13 +17766,14 @@ var Exam = function (_Item) {
         value: function className() {
             return 'exam';
         }
-
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
-
+    }, {
+        key: 'getAliasMap',
+        value: function getAliasMap() {
+            return {
+                examId: 'id',
+                examIndex: 'index'
+            };
+        }
     }, {
         key: 'factory',
         value: function factory(params) {
@@ -18960,16 +17784,18 @@ var Exam = function (_Item) {
         }
     }, {
         key: 'fillableProps',
+
+
+        // get idx (){return  [ 0,  0];}
+
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
         get: function get() {
-            return ['id', 'index', 'name', 'publicName', 'year', 'term'];
-        }
-    }, {
-        key: 'aliasMap',
-        get: function get() {
-            return {
-                examId: 'id',
-                examIndex: 'index'
-            };
+            return ['year', 'term'].concat(_get(Exam.__proto__ || Object.getPrototypeOf(Exam), 'fillableProps', this));
         }
     }]);
 
@@ -18978,7 +17804,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Comment":32,"./Item":35}],34:[function(require,module,exports){
+},{"./Comment":8,"./Item":11}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18999,10 +17825,8 @@ var IModel = function () {
     function IModel() {
         _classCallCheck(this, IModel);
 
-        /**
-         * The db identifier of the model
-         */
-        this.id;
+        // this.idx;
+
 
         /**
          * The stored order of the item overall
@@ -19012,7 +17836,7 @@ var IModel = function () {
         /** The nickname or title by which this item is identified */
         this.name;
 
-        this.number = null;
+        // this.number = null;
 
         /**
          * The full length text of the item.
@@ -19021,16 +17845,20 @@ var IModel = function () {
          */
         this.text = '';
 
+        this.publicName;
+
+        /**
+         * The maximum possible value of the item
+         */
+        this.maxScore;
+
+        this.kind;
+
         /**
          * The secondary locator value
          * Q1 E2 = index 0, depth 3
          */
         this.depth = 0;
-
-        /**
-         * The possible values of this._type
-         */
-        this.types = ['comment', 'element', 'question'];
     }
 
     /**
@@ -19053,9 +17881,9 @@ var IModel = function () {
          */
         value: function fillObject(obj, params) {
             if (typeof params !== 'undefined') {
-
+                var fillableProps = this.fillableProps;
                 //fill any fillable values
-                this.fillableProps.forEach(function (v) {
+                fillableProps.forEach(function (v) {
                     // console.log( 'params', params, v );
                     if (typeof params[v] != 'undefined') {
                         obj[v] = params[v];
@@ -19148,6 +17976,29 @@ var IModel = function () {
         //
 
     }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['idx', 'id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
+        }
+
+        /**
+         * The possible values of this._type
+         */
+
+    }, {
+        key: 'types',
+        get: function get() {
+
+            return ['comment', 'element', 'question'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
         key: 'valences',
         get: function get() {
             return ['stock', 'absent', 'poor', 'good', 'excellent'];
@@ -19159,7 +18010,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],35:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19167,6 +18018,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } }; /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * This is the model which can be either a question
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * or an element.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Created by adam on 2/17/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
 var _Comment = require('./Comment');
 
@@ -19182,28 +18039,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This is the model which can be either a question
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or an element.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 2/17/17.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Item = function (_IModel) {
     _inherits(Item, _IModel);
 
+    _createClass(Item, null, [{
+        key: 'fillableProps',
+
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+        get: function get() {
+            return [].concat(_get(Item.__proto__ || Object.getPrototypeOf(Item), 'fillableProps', this));
+        }
+    }]);
+
     function Item() {
         _classCallCheck(this, Item);
 
+        /**
+         * The db identifier of the model
+         */
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+
+        _this.id = -1;
 
         _Comment2.default.initializeComments(_this);
 
-        _this.publicName;
+        // this.idx = [ this.index,  this.depth];
 
-        /**
-         * The maximum possible value of the item
-         */
-        _this.maxScore;
+        _this.kind = 'item';
 
         /**
          * Whether the item is currently set to
@@ -19218,20 +18087,28 @@ var Item = function (_IModel) {
          */
         _this._public = false;
 
-        //The id of the exam the item is associated with
-        _this.examId;
+        /** The DB question assignment id or elementAssignmentId if applicable */
+        _this.assignmentId = -1;
 
-        // super.initializeComments();
+        //The id of the exam the item is associated with
+        // this.examId = -1;
+
+        // this.props = super.fillableProps;
         return _this;
     }
 
-    /**
-     * utility for determining which of the older types
-     * this item belongs to
-     */
-
-
     _createClass(Item, [{
+        key: 'isNew',
+        value: function isNew() {
+            return this.id === -1;
+        }
+
+        /**
+         * utility for determining which of the older types
+         * this item belongs to
+         */
+
+    }, {
         key: 'determineType',
         value: function determineType() {
             return this.depth > 0 ? 'element' : 'question';
@@ -19324,6 +18201,11 @@ var Item = function (_IModel) {
          */
 
     }, {
+        key: 'idx',
+        get: function get() {
+            return [this.index, this.depth];
+        }
+    }, {
         key: 'type',
         get: function get() {
             return this.determineType();
@@ -19351,13 +18233,6 @@ var Item = function (_IModel) {
         value: function className() {
             return 'item';
         }
-
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
-
     }, {
         key: 'factory',
         value: function factory(params) {
@@ -19365,16 +18240,13 @@ var Item = function (_IModel) {
             return this.fillObject(obj, params);
         }
     }, {
-        key: 'fillableProps',
-        get: function get() {
-            return ['id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
-        }
-    }, {
         key: 'aliasMap',
         get: function get() {
             return {
                 ItemId: 'id',
-                ItemIndex: 'index'
+                ItemIndex: 'index',
+                questionName: 'name',
+                questionText: 'text'
             };
         }
     }]);
@@ -19384,7 +18256,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":32,"./IModel":34}],36:[function(require,module,exports){
+},{"./Comment":8,"./IModel":10}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19411,6 +18283,9 @@ var Payload = function () {
         this._id;
         //the index value of the object
         this._index;
+
+        /** Whether to fail to notify subscribers of the mutation */
+        this.mutateSilently = false;
 
         /**
          * Where there is a compound index (e.g., obj[studentIndex][questionIndex],
@@ -19449,7 +18324,14 @@ var Payload = function () {
         key: 'id',
         get: function get() {
             return this._id;
-        },
+        }
+
+        /**
+        * Retrieve the index where it is possible
+        * different fields could have different values.
+        * This enforces the order of precedence between the fields
+        */
+        ,
         set: function set(val) {
             //todo numeric check
             this._id = val;
@@ -19521,6 +18403,19 @@ var Payload = function () {
          */
 
     }], [{
+        key: 'getIndex',
+        value: function getIndex(payload) {
+            if (this.checkIfPayload(payload)) {
+                //If an object is set, that object's index
+                //is always correct.
+                if (typeof payload.obj !== 'undefined' && typeof payload.obj.index !== 'undefined') {
+                    return payload.obj.index;
+                } else {
+                    return payload.index;
+                }
+            }
+        }
+    }, {
         key: 'factory',
         value: function factory(params) {
             var p = new Payload();
@@ -19573,7 +18468,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],37:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19730,7 +18625,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":35}],38:[function(require,module,exports){
+},{"./Item":11}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20021,7 +18916,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":34}],39:[function(require,module,exports){
+},{"./IModel":10}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20036,6 +18931,7 @@ Object.defineProperty(exports, "__esModule", {
 // they are described in actions.js
 var createExam = exports.createExam = 'createExam';
 var updateExam = exports.updateExam = 'updateExam';
+var createItem = exports.createItem = 'createItem';
 
 var addStudent = exports.addStudent = 'addStudent';
 
@@ -20094,23 +18990,18 @@ var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime'
 var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 
 //items
-var createItem = exports.createItem = 'createItem';
 var deleteItem = exports.deleteItem = 'deleteItem';
 var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],40:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.actions = undefined;
-
-var _actions;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; //Root actions for the vuex instance
+exports.updateExam = exports.createItem = exports.createExam = undefined;
 
 var _mutationTypes = require('./mutation-types');
 
@@ -20128,6 +19019,10 @@ var _Exam = require('../models/Exam');
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
+var _Item = require('../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
 var _Payload = require('../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
@@ -20140,215 +19035,345 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+// export const actions = {
 
-var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.createExam, function (_ref, payload) {
+/**
+ * Creates a new exam on the client, sets
+ * it as the active exam, and requests an
+ * exam id from the server
+ * @param state
+ * @param commit
+ * @param payload
+ */
+var createExam = exports.createExam = function createExam(_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
+    window.console.log('actions', 'createExam', 22);
     //instantiate the new exam
-    var exam = new _Exam2.default();
+    var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
+    //set it in the items list
+    //this will call the api lister.
+    commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
+    //set it as active (in case anything is depending on the older structure)
+    // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+};
 
-    //set it as active
-    commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+/**
+ * Called when a brand new item needs to be created and inserted into
+ * the store.
+ * This handles the creation of the item and then the subsequent actions
+ * like notifying the server
+ *
+ * @param state
+ * @param commit
+ */
+//Root actions for the vuex instance
 
-    //request id for it from server
-    api.createModel(exam, function (response) {
-        //when the server responds, store the id
-        exam.id = response.data.id;
-        commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-    });
-}), _defineProperty(_actions, aTypes.updateExam, function (_ref2, payload) {
+var createItem = exports.createItem = function createItem(_ref2) {
     var state = _ref2.state,
         commit = _ref2.commit;
+
+    window.console.log('actions', 'createItem', 42, state.items);
+    //figure out what the index should be based on
+    //what is already in the list of items
+    var len = Object.keys(state.items).length;
+    // let len = state.getItemCount(); //items.length;
+    window.console.log('actions', 'createItem', 47, len, state.items.length);
+    var index = 1 + len;
+    //set the item index
+    // let index = len === 1 ? len : len + 1;
+
+    var item = _Item2.default.factory({ index: index }); //.factory( {id: id, index: index} );
+    window.console.log('actions', 'createItem', 51, index, item);
+    //Calling this mutation will trigger the api listener
+    commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item }));
+    commit(mTypes.updateOrder);
+};
+
+/**
+ * The payload should contain the exam that is presently set
+ * as the active exam, but with updated properties. This
+ * will replace the exam stored, so that vue can see the change
+ * @param state
+ * @param commit
+ * @param payload
+ */
+var updateExam = exports.updateExam = function updateExam(_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
 
 
     //set it as active
     commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
     //request server update
-}), _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
+};
 
-    // [aTypes.setActiveStudentId](state, rootState, payload){
+// // /**
+// //  * Sets the id of the exam currently being worked on
+// //  * @param commit
+// //  * @param examId
+// //  */
+// // export const setExamId = ( {commit}, examId ) => {
+// //     commit( '_setExamId', examId );
+// // };
+// //
+// // export const activeStudentIdGetDecor = ( {state, commit}, payload ) => {
+// //
+// // };
+//
+//     /**
+//      * Handles figuring out how to set the active student from the given
+//      * the id in the provided payload
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload
+//      */
+//
+//     [aTypes.setActiveStudentId]: ( {state, commit}, payload ) => {
+//         // [aTypes.setActiveStudentId](state, rootState, payload){
+//
+//         console.log( aTypes.setActiveStudentId, 'is deprecated!' );
+//         console.log( aTypes.setActiveStudentId, payload );
+//         payload = state.activeStudent;
+//
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//
+//         // let studentId;
+//         //
+//         // //number passed in
+//         // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
+//         //     studentId = payload;
+//         // }
+//         //
+//         //
+//         // //object passed in
+//         // //todo add object case
+//         // console.log('studentId', studentId);
+//         // if (Number.isInteger(studentId)) {
+//         //     commit(mTypes.setId, Payload.factory({num: studentId}));
+//         // }
+//     },
+//
+//     /**
+//      * Handles figuring out how to set the active student given
+//      * the provided index payload
+//      * @deprecated
+//      * @param state
+//      * @param commit
+//      * @param payload
+//      */
+//     [ aTypes.setActiveStudentIndex ]: ( {state, commit}, payload ) => {
+//
+//         console.log( aTypes.setActiveStudentIndex, 'is deprecated!' );
+//         payload = state.activeStudent;
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//         // let studentIndex;
+//         // switch (typeof (payload)) {
+//         //     case 'number':
+//         //         if (Number.isInteger(payload)) {
+//         //             studentIndex = payload;
+//         //         }
+//         //         break;
+//         //     case 'object':
+//         //         //todo write if object
+//         //
+//         //         break;
+//         //     default:
+//         // }
+//         //
+//         // if (Number.isInteger(studentIndex)) {
+//         //     commit(mTypes.setIndex, studentIndex);
+//         // }
+//     },
+//
+//     /**
+//      * Handles figuring out how to set a student object as active
+//      * from the provided payload
+//      * @deprecated
+//      * @param student
+//      * @param rootState
+//      * @param payload
+//      */
+//     [ aTypes.setActiveStudentObject ]: ( {state, commit}, payload ) => {
+//         console.log( aTypes.setActiveStudentObject, 'is deprecated!' );
+//         [ aTypes.setActiveStudent ]( state, commit, payload );
+//         // // let student;
+//         //
+//         // // if (payload instanceof Student) {
+//         // //     student = payload;
+//         // // }
+//         // // switch(typeof (payload)){
+//         // //     case 'number':
+//         // //         if(Number.isInteger(payload)){
+//         // //             studentIndex = payload;
+//         // //         }
+//         // //         break;
+//         // //     case 'object':
+//         // //         //todo write if object
+//         // //
+//         // //         break;
+//         // //     default:
+//         // // }
+//         //
+//         // //Call the mutation
+//         // if (payload instanceof Student) {
+//         //     commit(mTypes.setStudentObject, payload);
+//         // }
+//     },
+//     /**
+//      * Updates the state's stored index for the currently selected
+//      * to the index specified in the payload.
+//      * Does not update id or student; those must be called separately
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload
+//      */
+//         [aTypes.setIndex]( {state, commit}, payload ){
+//         console.log( aTypes.setIndex, 'is deprecated!' );
+//         console.log( aTypes.setIndex, payload );
+//         payload = state.activeStudent;
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//     },
+//
+//     /**
+//      * Updates the state's stored student id for the currently
+//      * selected student to the id specified in the payload.
+//      * Does not update index or student; those must be called separately
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload integer
+//      * @returns {boolean}
+//      */
+//         [aTypes.setId]( {state, commit}, payload )
+//     {
+//         console.log( aTypes.setId, 'is deprecated!' );
+//         payload = state.activeStudent;
+//
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//     },
+//
+//     /**
+//      * Sets the state's stored student object to the
+//      * object specified in the payload.
+//      * Does not update index or id. Those must be called separately.
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload Student
+//      */
+//         [aTypes.setStudentObject]( {state, commit}, payload )
+//     {
+//         payload = state.activeStudent;
+//
+//         if ( typeof (payload) == 'object' && payload instanceof Student ) {
+//             commit( mTypes.setActiveStudent, Payload.factory( {obj: payload} ) )
+//             // state.student = payload;
+//         }
+//     },
+//
+//
+//     // -------------------- from times
+//
+//     /**
+//      * Handles figuring out how to set the time of the the currently
+//      * selected student from the provided payload
+//      * @returns {boolean}
+//      */
+//         [aTypes.setActiveStudentTime]( {state, commit}, payload )
+//     {
+//
+//         let studentIndex = state.activeStudent.index;
+//         let time;
+//
+//         switch ( typeof (payload) ) {
+//             case 'number':
+//                 if ( Number.isInteger( payload ) ) {
+//                     //go straight to recording
+//                     time = payload;
+//                 }
+//                 break;
+//
+//             //object with expected key
+//             case 'object':
+//                 //todo write if object
+//                 break;
+//
+//             //other allowed types
+//             // todo
+//
+//             //numeric string
+//             // todo
+//             default:
+//             //todo
+//         }
+//
+//         //Call the mutation
+//         if ( typeof(time) == 'number' ) {
+//             commit( mTypes.setTime, time );
+//         }
+//     },
+//
+//     /**
+//      * Increases the stored time for the student currently being graded by the specified
+//      * amount.
+//      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
+//      */
+//     [aTypes.increaseActiveStudentGradingTime]: ( {state, commit}, payload ) => {
+//         let studentIndex = state.activeStudent.index;
+//         state.examGradingTimes[ studentIndex ] += payload.timeToAdd;
+//     },
+//
+// // qscores
+//
+//
+//     /**
+//      * Save a question score for the currently active student
+//      * @param state
+//      * @param commit
+//      * @param payload
+//      */
+//     [aTypes.storeQuestionScoreForActiveStudent]: ( {state, commit}, payload ) => {
+//         // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+//         let {questionIndex, score} = payload;
+//         let studentIndex = state.activeStudent.index;
+//         //type checking
+//
+//         let out = Payload.factory( {index2: questionIndex, index: studentIndex, num: score} );
+//
+//         commit( mTypes.setQuestionScore, out );
+//     },
+//
+//     // escores
+//
+//     [aTypes.storeElementScoreForActiveStudent]( {state, commit}, payload ) {
+//         let studentIndex = state.getActiveStudentIndex();
+//         let {elementIndex, score} = payload;
+//         //type checks
+//
+//         if ( typeof (score) == 'undefined' ) {
+//             //score may have been named differently
+//             score = payload.elementScore;
+//         }
+//
+//
+//         let out = Payload.factory( {
+//             index: studentIndex,
+//             index2: elementIndex,
+//             num: score
+//         } );
+//
+//         commit( mTypes.setElementScore, out );
+//     },
 
-    console.log(aTypes.setActiveStudentId, 'is deprecated!');
-    console.log(aTypes.setActiveStudentId, payload);
-    payload = state.activeStudent;
 
-    actions[aTypes.setActiveStudent](state, commit, payload);
+// }
+// ;
 
-    // let studentId;
-    //
-    // //number passed in
-    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
-    //     studentId = payload;
-    // }
-    //
-    //
-    // //object passed in
-    // //todo add object case
-    // console.log('studentId', studentId);
-    // if (Number.isInteger(studentId)) {
-    //     commit(mTypes.setId, Payload.factory({num: studentId}));
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-
-    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-    // let studentIndex;
-    // switch (typeof (payload)) {
-    //     case 'number':
-    //         if (Number.isInteger(payload)) {
-    //             studentIndex = payload;
-    //         }
-    //         break;
-    //     case 'object':
-    //         //todo write if object
-    //
-    //         break;
-    //     default:
-    // }
-    //
-    // if (Number.isInteger(studentIndex)) {
-    //     commit(mTypes.setIndex, studentIndex);
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
-
-    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
-    [aTypes.setActiveStudent](state, commit, payload);
-    // // let student;
-    //
-    // // if (payload instanceof Student) {
-    // //     student = payload;
-    // // }
-    // // switch(typeof (payload)){
-    // //     case 'number':
-    // //         if(Number.isInteger(payload)){
-    // //             studentIndex = payload;
-    // //         }
-    // //         break;
-    // //     case 'object':
-    // //         //todo write if object
-    // //
-    // //         break;
-    // //     default:
-    // // }
-    //
-    // //Call the mutation
-    // if (payload instanceof Student) {
-    //     commit(mTypes.setStudentObject, payload);
-    // }
-}), _defineProperty(_actions, aTypes.setIndex, function (_ref6, payload) {
-    var state = _ref6.state,
-        commit = _ref6.commit;
-
-    console.log(aTypes.setIndex, 'is deprecated!');
-    console.log(aTypes.setIndex, payload);
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setId, function (_ref7, payload) {
-    var state = _ref7.state,
-        commit = _ref7.commit;
-
-    console.log(aTypes.setId, 'is deprecated!');
-    payload = state.activeStudent;
-
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref8, payload) {
-    var state = _ref8.state,
-        commit = _ref8.commit;
-
-    payload = state.activeStudent;
-
-    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
-        commit(mTypes.setActiveStudent, _Payload2.default.factory({ obj: payload }));
-        // state.student = payload;
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref9, payload) {
-    var state = _ref9.state,
-        commit = _ref9.commit;
-
-
-    var studentIndex = state.activeStudent.index;
-    var time = void 0;
-
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                //go straight to recording
-                time = payload;
-            }
-            break;
-
-        //object with expected key
-        case 'object':
-            //todo write if object
-            break;
-
-        //other allowed types
-        // todo
-
-        //numeric string
-        // todo
-        default:
-        //todo
-    }
-
-    //Call the mutation
-    if (typeof time == 'number') {
-        commit(mTypes.setTime, time);
-    }
-}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref10, payload) {
-    var state = _ref10.state,
-        commit = _ref10.commit;
-
-    var studentIndex = state.activeStudent.index;
-    state.examGradingTimes[studentIndex] += payload.timeToAdd;
-}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref11, payload) {
-    var state = _ref11.state,
-        commit = _ref11.commit;
-
-    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-    var questionIndex = payload.questionIndex,
-        score = payload.score;
-
-    var studentIndex = state.activeStudent.index;
-    //type checking
-
-    var out = _Payload2.default.factory({ index2: questionIndex, index: studentIndex, num: score });
-
-    commit(mTypes.setQuestionScore, out);
-}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref12, payload) {
-    var state = _ref12.state,
-        commit = _ref12.commit;
-
-    var studentIndex = state.getActiveStudentIndex();
-    var elementIndex = payload.elementIndex,
-        score = payload.score;
-    //type checks
-
-    if (typeof score == 'undefined') {
-        //score may have been named differently
-        score = payload.elementScore;
-    }
-
-    var out = _Payload2.default.factory({
-        index: studentIndex,
-        index2: elementIndex,
-        num: score
-    });
-
-    commit(mTypes.setElementScore, out);
-}), _actions);
-
-},{"../api/controller":31,"../models/Exam":33,"../models/Payload":36,"../models/Student":38,"./action-types":39,"./mutation-types":56}],41:[function(require,module,exports){
+},{"../api/controller":6,"../models/Exam":9,"../models/Item":11,"../models/Payload":12,"../models/Student":14,"./action-types":15,"./mutation-types":32}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20433,7 +19458,7 @@ var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
 
-},{}],42:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20474,9 +19499,15 @@ var validateIndex = function validateIndex(index) {
  * Methods which make use of multiple modules should generally be kept here
  */
 var getExamId = exports.getExamId = function getExamId(state) {
-    if (typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined') {
-        return state.activeExam.id;
+    var exam = state.items[0];
+    if (exam) {
+        return exam.id;
     }
+    //
+    //
+    // if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
+    //     return state.activeExam.id;
+    // }
     return null;
 };
 
@@ -20624,51 +19655,13 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{"./getter-types":41}],43:[function(require,module,exports){
+},{"./getter-types":17}],19:[function(require,module,exports){
 (function (process){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                                               * Created by adam on 1/10/17.
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * Notes about how to use
-                                                                                                                                                                                                                                                                               * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               const app = new Vue({
-                                                                                                                                                                                                                                                                                el: '#app',
-                                                                                                                                                                                                                                                                                // provide the store using the "store" option.
-                                                                                                                                                                                                                                                                                // this will inject the store instance to all child components.
-                                                                                                                                                                                                                                                                                store,
-                                                                                                                                                                                                                                                                                components: { Counter },
-                                                                                                                                                                                                                                                                                template: `
-                                                                                                                                                                                                                                                                                  <div class="app">
-                                                                                                                                                                                                                                                                                    <counter></counter>
-                                                                                                                                                                                                                                                                                  </div>
-                                                                                                                                                                                                                                                                                `
-                                                                                                                                                                                                                                                                              })
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               const Counter = {
-                                                                                                                                                                                                                                                                                template: `<div>{{ count }}</div>`,
-                                                                                                                                                                                                                                                                                computed: {
-                                                                                                                                                                                                                                                                                  count () {
-                                                                                                                                                                                                                                                                                    return this.$store.state.count
-                                                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               */
-
-// import Vue from 'vue'
-
 
 var _vue = require('vue/dist/vue.js');
 
@@ -20742,6 +19735,14 @@ var _visibility = require('./modules/visibility');
 
 var _visibility2 = _interopRequireDefault(_visibility);
 
+var _apiPlugin = require('../api/apiPlugin');
+
+var _apiPlugin2 = _interopRequireDefault(_apiPlugin);
+
+var _websocketPlugin = require('../api/websocketPlugin');
+
+var _websocketPlugin2 = _interopRequireDefault(_websocketPlugin);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -20749,99 +19750,89 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
+/**
+ * Created by adam on 1/10/17.
+ *
+ * Notes about how to use
+ * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
+
+ Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
+
+ const app = new Vue({
+  el: '#app',
+  // provide the store using the "store" option.
+  // this will inject the store instance to all child components.
+  store,
+  components: { Counter },
+  template: `
+    <div class="app">
+      <counter></counter>
+    </div>
+  `
+})
+
+ By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
+
+ const Counter = {
+  template: `<div>{{ count }}</div>`,
+  computed: {
+    count () {
+      return this.$store.state.count
+    }
+  }
+}
+
+ *
+ */
+
 _vue2.default.use(_vuex2.default);
 
 /**
- *This subscribes the api package which
+ * This subscribes the api package which
  * handles data exchange with the server
  * to mutations in the store.
  */
-var apiPlugin = function apiPlugin(store) {
-    //         // socket.on('data', data => {
-    //         //     store.commit('receiveData', data)
-    //         // });
-    //         store.subscribe(mutation) => {
-    //             window.console.log('subscriber', 'mutation caught', 48, mutation);
-    //             // if (mutation.type === 'UPDATE_DATA') {
-    //             //     socket.emit('update', mutation.payload)
-    //             // }
-    //         })
 
-
-    // called when the store is initialized
-    store.subscribe(function (mutation, state) {
-        // called after every mutation.
-        // The mutation comes in the format of { type, payload }.
-        window.console.log('subscriber', 'mutation caught', 48, mutation);
-    });
-};
-
-// function createWebSocketPlugin () {
-//     return store => {
-//         // socket.on('data', data => {
-//         //     store.commit('receiveData', data)
-//         // });
-//         store.subscribe(mutation) => {
-//             window.console.log('subscriber', 'mutation caught', 48, mutation);
-//             // if (mutation.type === 'UPDATE_DATA') {
-//             //     socket.emit('update', mutation.payload)
-//             // }
-//         })
-//     }
-// }
-// const plugin = createWebSocketPlugin();
+// import Vue from 'vue'
 
 
 var debug = process.env.NODE_ENV !== 'production';
 
 exports.default = new _vuex2.default.Store({
-    /**
-     * From instances and components where store has been
-     * injected, actions are called
-     * like so: store.dispatch( 'string-action-name' )
-     */
-    actions: actions,
-    getters: getters,
-    plugins: [apiPlugin],
 
-    mutations: {
-        /**
-         * Sets the current exam id
-         *
-         * @todo Extend to set from an exam object
-         *
-         * @param state
-         * @param payload
-         */
-        _setExamId: function _setExamId(state, payload) {
-            if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
-                state.examId = payload;
-            }
+  strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 
-            window.console.log('setExamId', state);
-        }
-    },
+  /**
+   * From instances and components where store has been
+   * injected, actions are called
+   * like so: store.dispatch( 'string-action-name' )
+   */
+  actions: actions,
+  getters: getters,
+  mutations: mutations,
+  state: state,
 
-    modules: {
-        activeexam: _activeexam2.default,
-        activestudent: _activestudent2.default,
-        comments: _comments2.default,
-        escores: _escores2.default,
-        items: _items2.default,
-        grades: _grades2.default,
-        qscores: _qscores2.default,
-        questions: _questions2.default,
-        settings: _settings2.default,
-        students: _students2.default,
-        times: _times2.default,
-        visibility: _visibility2.default
-    },
-    state: state,
+  plugins: [_apiPlugin2.default, _websocketPlugin2.default],
 
-    strict: debug });
+  modules: {
+    activeexam: _activeexam2.default,
+    activestudent: _activestudent2.default,
+    comments: _comments2.default,
+    escores: _escores2.default,
+    items: _items2.default,
+    grades: _grades2.default,
+    qscores: _qscores2.default,
+    questions: _questions2.default,
+    settings: _settings2.default,
+    students: _students2.default,
+    times: _times2.default,
+    visibility: _visibility2.default
+  }
+
+});
 
 }).call(this,require('_process'))
-},{"./actions":40,"./getters":42,"./modules/activeexam.js":44,"./modules/activestudent.js":45,"./modules/comments.js":46,"./modules/escores.js":47,"./modules/grades.js":48,"./modules/items.js":49,"./modules/qscores.js":50,"./modules/questions.js":51,"./modules/settings":52,"./modules/students.js":53,"./modules/times.js":54,"./modules/visibility":55,"./mutations":57,"./state":58,"_process":26,"vue/dist/vue.js":28,"vuex":30}],44:[function(require,module,exports){
+},{"../api/apiPlugin":5,"../api/websocketPlugin":7,"./actions":16,"./getters":18,"./modules/activeexam.js":20,"./modules/activestudent.js":21,"./modules/comments.js":22,"./modules/escores.js":23,"./modules/grades.js":24,"./modules/items.js":25,"./modules/qscores.js":26,"./modules/questions.js":27,"./modules/settings":28,"./modules/students.js":29,"./modules/times.js":30,"./modules/visibility":31,"./mutations":33,"./state":34,"_process":1,"vue/dist/vue.js":2,"vuex":4}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20976,7 +19967,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":33,"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],45:[function(require,module,exports){
+},{"../../models/Exam":9,"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21115,7 +20106,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../../models/Student":38,"../action-types":39,"../mutation-types":56}],46:[function(require,module,exports){
+},{"../../models/Payload":12,"../../models/Student":14,"../action-types":15,"../mutation-types":32}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21309,7 +20300,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],47:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21414,7 +20405,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],48:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21593,7 +20584,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],49:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21652,9 +20643,24 @@ var state = {
 
     /**
      * Object indexed by Item id holding Item objects
+     On load the root exam object and first item are created but given no
+     ids. thus we will eventually need to create an exam object if one isn't set
+      However don't ask the server to create an id just yet
+     lookup the exam object that resides at index 0
+     this will have either been newly created on page load
+     or it will be an existing exam object loaded from the db
+     let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+     //Call the set active exam method
+     //We do this rather than call the mutation directly
+     //because there may need to be various other events and
+     //things which need to happen depending on the context.
+     //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+     this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+     }
      */
-    items: [_Exam2.default.factory({ index: 0 }), _Item2.default.factory({ index: 1 })],
+    items: [],
 
+    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
     /**
      * Mapping from older ItemIndex to new Item id value
      */
@@ -21697,26 +20703,42 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
         Vue.set(item, 'index', i);
         //set it in the array with vue
         Vue.set(state.items, i, item);
-        // state.items.$set( i, item );
     }
 }), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
-    console.log(mTypes.addNewItem, state, payload);
-    var len = state.items.length;
-    //set the item index
-    var index = len == 0 || 1 ? len : len + 1;
+    // console.log(mTypes.addNewItem, state, payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var obj = payload.obj;
 
-    //to be replaced with lookup from server
-    var id = Math.floor(Math.random() * (999999999 - 1111111111 + 1)) + 1111111111;
-
-    var item = new _Item2.default(); //.factory( {id: id, index: index} );
-    Vue.set(item, 'index', index);
-    Vue.set(item, 'id', id);
-    //set it in the array with vue
-    Vue.set(state.items, index, item);
-    // state.items.$set( index, item );
+        Vue.set(state.items, obj.index, obj);
+    }
+    //case where something just hands an item
+    else {
+            if (payload instanceof _Item2.default) {
+                //call the action addNewItem on it
+                //set its new index on the item
+                //add it to the list
+            }
+        }
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
-    console.log(mTypes.updateItem, payload, state);
-    var itm = helpers.getItemFromPayload(state, payload);
+    // console.log(mTypes.updateItem, payload, state);
+    var itm = state.items[payload.index];
+
+    // let itm = helpers.getItemFromPayload(state, payload);
+    // window.console.log('items', 143, itm);
+    if (typeof itm !== 'undefined') {
+        //Set the value so vue can see it
+        Vue.set(itm, payload.updateProp, payload.updateVal);
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
+    }
+}), _defineProperty(_mutations, mTypes.updateItemSilently, function (state, payload) {
+    // console.log(mTypes.updateItemSilently, payload, state);
+    var itm = state.items[payload.index];
+
+    // let itm = helpers.getItemFromPayload(state, payload);
+    // window.console.log('items', 143, itm);
     if (typeof itm !== 'undefined') {
         //Set the value so vue can see it
         Vue.set(itm, payload.updateProp, payload.updateVal);
@@ -21748,8 +20770,9 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     }
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
     console.log('items.mutations', mTypes.setItem, state, payload);
-    Vue.set(state.items, payload.obj.index, payload.obj);
-    // state.items.$set( payload.obj.index, payload.obj );
+    if (_Payload2.default.checkIfPayload(payload)) {
+        Vue.set(state.items, payload.obj.index, payload.obj);
+    }
 }), _defineProperty(_mutations, mTypes.promoteItem, function (state, payload) {
     var index = payload.index;
 
@@ -21806,15 +20829,9 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, function (_ref) {
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.deleteItem, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
-
-    console.log(aTypes.createItem, state);
-    commit(mTypes.addNewItem);
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
 
     console.log(aTypes.deleteItem, state, commit, payload);
     //check if payload has correct structure
@@ -21893,7 +20910,6 @@ var getters = {
      * yet run.
      * @param state
      * @param getters
-     * @param rootState
      * @param index
      */
     getItemByIndex: function getItemByIndex(state, getters) {
@@ -22033,7 +21049,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":33,"../../models/Item":35,"../../models/Payload":36,"../../store/action-types":39,"../../store/getter-types":41,"../../store/mutation-types":56,"vue":29}],50:[function(require,module,exports){
+},{"../../models/Exam":9,"../../models/Item":11,"../../models/Payload":12,"../../store/action-types":15,"../../store/getter-types":17,"../../store/mutation-types":32,"vue":3}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22143,7 +21159,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],51:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22282,7 +21298,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../../models/Question":37,"../action-types":39,"../mutation-types":56}],52:[function(require,module,exports){
+},{"../../models/Payload":12,"../../models/Question":13,"../action-types":15,"../mutation-types":32}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22351,7 +21367,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],53:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22471,7 +21487,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../../models/Student":38,"../action-types":39,"../mutation-types":56}],54:[function(require,module,exports){
+},{"../../models/Payload":12,"../../models/Student":14,"../action-types":15,"../mutation-types":32}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22608,7 +21624,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../mutation-types":56}],55:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../mutation-types":32}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22704,7 +21720,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":36,"../action-types":39,"../getter-types":41,"../mutation-types":56}],56:[function(require,module,exports){
+},{"../../models/Payload":12,"../action-types":15,"../getter-types":17,"../mutation-types":32}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22786,6 +21802,7 @@ var demoteItem = exports.demoteItem = 'demoteItem';
 
 var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
+var updateItemSilently = exports.updateItemSilently = 'updateItemSilently';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
 var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
@@ -22801,7 +21818,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],57:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22835,7 +21852,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":56}],58:[function(require,module,exports){
+},{"./mutation-types":32}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22865,6 +21882,6 @@ exports.default = {
 
 };
 
-},{}]},{},[43]);
+},{}]},{},[19]);
 
 //# sourceMappingURL=test2-package.js.map

@@ -8,18 +8,31 @@ import Comment from './Comment';
 import IModel from './IModel';
 
 export default class Item extends IModel {
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+
+        ].concat(super.fillableProps);
+    };
+
     constructor() {
 
         super();
+        /**
+         * The db identifier of the model
+         */
+        this.id = -1;
 
         Comment.initializeComments(this);
 
-        this.publicName;
+        // this.idx = [ this.index,  this.depth];
 
-        /**
-         * The maximum possible value of the item
-         */
-        this.maxScore;
+        this.kind = 'item';
 
         /**
          * Whether the item is currently set to
@@ -34,11 +47,20 @@ export default class Item extends IModel {
          */
         this._public = false;
 
+        /** The DB question assignment id or elementAssignmentId if applicable */
+        this.assignmentId = -1;
+
         //The id of the exam the item is associated with
-        this.examId;
+        // this.examId = -1;
+
+        // this.props = super.fillableProps;
+    }
+
+    get idx (){return  [ this.index,  this.depth];}
 
 
-// super.initializeComments();
+    isNew() {
+        return this.id === -1;
     }
 
     /**
@@ -151,28 +173,13 @@ export default class Item extends IModel {
     }
 
 
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        return [
-            'id',
-            'index',
-            'depth',
-            'name',
-            'publicName',
-            'number',
-            'text',
-            'maxScore'
-        ];
-    }
 
     static get aliasMap() {
         return {
             ItemId: 'id',
-            ItemIndex: 'index'
+            ItemIndex: 'index',
+            questionName : 'name',
+            questionText : 'text'
         };
 
     }

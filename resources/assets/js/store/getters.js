@@ -28,9 +28,15 @@ const validateIndex = ( index ) => {
  * @param state
  */
 export const getExamId = ( state ) => {
-    if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
-        return state.activeExam.id;
+    let exam = state.items[ 0 ];
+    if ( exam ) {
+        return exam.id;
     }
+    //
+    //
+    // if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
+    //     return state.activeExam.id;
+    // }
     return null;
 };
 
@@ -59,11 +65,11 @@ export const isActive = ( state ) => {
 export const getNumberGraded = ( state ) => {
     let graded = 0;
     if ( typeof state.examGrades != 'undefined' ) {
-        if ( Object.keys( state.examGrades ).length > 0 ) {
+        if ( Object.keys(state.examGrades).length > 0 ) {
             //Loop through each exam (via studentIndex as key)
-            for ( let i = 0; i < Object.keys( state.examGrades ).length; i++ ) {
+            for (let i = 0; i < Object.keys(state.examGrades).length; i++) {
                 //Make sure the stored exam total score is up to date
-                state.updateExamGrade( i );
+                state.updateExamGrade(i);
                 //this will be the string 'letter grade' if
                 //no grade has been entered. Thus we check
                 //whether it is a number 0 or greater
@@ -85,8 +91,8 @@ export const getTotalExams = ( state ) => {
     let total = 0;
 
     if ( typeof state.examGrades != 'undefined' ) {
-        if ( Object.keys( state.examGrades ).length > 0 ) {
-            total = Object.keys( state.examGrades ).length;
+        if ( Object.keys(state.examGrades).length > 0 ) {
+            total = Object.keys(state.examGrades).length;
         }
     }
     return total;
@@ -105,9 +111,9 @@ export const getTotalExams = ( state ) => {
 export const getQuestionScoreForActiveStudent = ( state, getters, rootState, questionIndex ) => {
     if ( typeof state.activeStudent == 'undefined' ) return false;
 
-    let idx = getters.getActiveStudentIndex( state, getters, rootState );
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
     if ( idx == null ) return '';
-    return getters.getQuestionScore( state, getters, rootState, idx, questionIndex );
+    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
     // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
 };
 
@@ -124,9 +130,9 @@ export const getQuestionScoreForActiveStudent = ( state, getters, rootState, que
 export const getActiveStudentGradingTime = ( state, getters, rootState ) => {
     if ( typeof state.activeStudent == 'undefined' ) return false;
 
-    let idx = getters.getActiveStudentIndex( state, getters, rootState );
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
     if ( idx == null ) return '';
-    return getters.getStudentGradingTime( state, getters, idx );
+    return getters.getStudentGradingTime(state, getters, idx);
     // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
 };
 
@@ -145,11 +151,11 @@ export const getCommentTextForActiveStudent = ( state, getters, rootState, eleme
     if ( typeof state.activeStudent == 'undefined' ) return false;
 
     //If no student is set, the comment field should be blank
-    let idx = getters.getActiveStudentIndex( state, getters, rootState );
-    validateIndex( idx );
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
 //    if ( idx == null ) return '';
 
-    return getters.getCommentText( state, getters, rootState, idx, elementIndex, valence );
+    return getters.getCommentText(state, getters, rootState, idx, elementIndex, valence);
 };
 
 
@@ -166,20 +172,20 @@ export const getCommentTextForActiveStudent = ( state, getters, rootState, eleme
 export const getExamGradeForActiveStudent = ( state, getters, rootState ) => {
     if ( typeof state.activeStudent == 'undefined' ) return false;
 
-    let idx = getters.getActiveStudentIndex( state, getters, rootState );
-    validateIndex( idx );
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
     // if ( idx == null ) return '';
-    return getters.getExamGrade( state, getters, rootState, idx );
+    return getters.getExamGrade(state, getters, rootState, idx);
 };
 
 //------------ escores
 export const getElementScoreForActiveStudent = ( state, getters, rootState, elementIndex ) => {
     if ( typeof state.activeStudent == 'undefined' ) return false;
 
-    let idx = getters.getActiveStudentIndex( state, getters, rootState );
-    validateIndex( idx );
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
     // if ( idx == null ) return '';
-    return getters.getElementScore( state, getters, rootState, idx, elementIndex );//state.elementScores[state.activeStudentIndex][elementIndex];
+    return getters.getElementScore(state, getters, rootState, idx, elementIndex);//state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
 

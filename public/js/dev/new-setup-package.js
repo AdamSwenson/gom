@@ -5129,8 +5129,8 @@ var bButton = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
         }
     },
     methods: {
-        onclick: function onclick() {
-            this.$emit('click');
+        onclick: function onclick(e) {
+            this.$emit('click', e);
         }
     }
 };
@@ -5264,7 +5264,15 @@ var cardGroup = {render: function(){var _vm=this;var _h=_vm.$createElement;var _
 // const inBrowser = typeof window !== 'undefined';
 
 // pulled from http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
+function uniqueId() {
+    var text = '';
+    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+    for (var i = 0; i < 5; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
 
 // Check if browser support css3 transitions
 function csstransitions() {
@@ -5486,12 +5494,6 @@ var collapse = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             }
             this$1.toggle();
         });
-
-        this.$root.$on('hidden::dropdown', function (target) {
-            if (target !== this$1.id) {
-                this$1.show = false;
-            }
-        });
     }
 };
 
@@ -5588,9 +5590,10 @@ var dropdown = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
         clickOutListener: function clickOutListener() {
             this.visible = false;
         },
-        click: function click() {
+        click: function click(e) {
             if (this.split) {
-                this.$emit('click');
+                this.$emit('click', e);
+                this.$root.$emit('shown::dropdown', this);
             } else {
                 this.toggle();
             }
@@ -5598,7 +5601,7 @@ var dropdown = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
     }
 };
 
-var Link = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c(_vm.componentType,{tag:"a",attrs:{"active-class":_vm.activeClass,"to":_vm.to,"href":_vm.hrefString,"exact":_vm.exact}},[_vm._t("default")],2)},staticRenderFns: [],
+var bLink = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c(_vm.componentType,{tag:"a",attrs:{"active-class":_vm.activeClass,"to":_vm.to,"href":_vm.hrefString,"exact":_vm.exact},on:{"click":_vm.click}},[_vm._t("default")],2)},staticRenderFns: [],
     computed: {
         componentType: function componentType() {
             return (this.$router && this.to) ? 'router-link' : 'a';
@@ -5626,11 +5629,17 @@ var Link = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm
             type: Boolean,
             default: false
         }
+    },
+    methods: {
+        click: function click(e) {
+            this.$emit('click', e);
+            this.$root.$emit('shown::dropdown', this);
+        }
     }
 };
 
-var dropdownItem = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c(_vm.componentType,{tag:"a",staticClass:"dropdown-item",attrs:{"to":_vm.toObject,"href":_vm.hrefString}},[_vm._t("default")],2)},staticRenderFns: [],
-    extends: Link
+var dropdownItem = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c(_vm.componentType,{tag:"a",staticClass:"dropdown-item",attrs:{"to":_vm.to,"href":_vm.hrefString},on:{"click":_vm.click}},[_vm._t("default")],2)},staticRenderFns: [],
+    extends: bLink
 };
 
 var dropdownSelect = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"dropdown-select",class:{open: _vm.show, dropdown: !_vm.dropup, dropup: _vm.dropup}},[_c('button',{class:['btn','dropdown',_vm.dropdownToggle,_vm.btnVariant,_vm.btnSize],attrs:{"id":_vm.id,"role":"button","aria-haspopup":"true","aria-expanded":"show","disabled":_vm.disabled},on:{"click":function($event){$event.preventDefault();_vm.toggle($event);}}},[_c('span',{staticClass:"checked-items",domProps:{"innerHTML":_vm._s(_vm.displayItem)}})]),_c('ul',{staticClass:"dropdown-menu",class:{'dropdown-menu-right' : _vm.position == 'right'},attrs:{"aria-labelledby":"dLabel"}},_vm._l((_vm.list),function(item){return _c('li',[_c('button',{staticClass:"dropdown-item",attrs:{"click":_vm.select(item)}},[_vm._v(_vm._s(item.text))])])}))])},staticRenderFns: [],
@@ -5773,7 +5782,12 @@ var form = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm
     }
 };
 
-var formFieldset = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:['form-group','row',_vm.inputState]},[(_vm.label)?_c('label',{class:['col-form-label',_vm.labelLayout],attrs:{"for":_vm.for_id},domProps:{"innerHTML":_vm._s(_vm.label)}}):_vm._e(),_c('div',{class:_vm.inputLayout},[_vm._t("default"),(_vm.feedback)?_c('div',{staticClass:"form-text text-muted",domProps:{"innerHTML":_vm._s(_vm.feedback)}}):_vm._e(),(_vm.description)?_c('small',{staticClass:"form-text text-muted",domProps:{"innerHTML":_vm._s(_vm.description)}}):_vm._e()],2)])},staticRenderFns: [],
+var formFieldset = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:['form-group','row',_vm.inputState]},[(_vm.label)?_c('label',{class:['col-form-label',_vm.labelLayout],attrs:{"for":_vm.target},domProps:{"innerHTML":_vm._s(_vm.label)}}):_vm._e(),_c('div',{ref:"content",class:_vm.inputLayout},[_vm._t("default"),(_vm.feedback)?_c('div',{staticClass:"form-text text-muted",domProps:{"innerHTML":_vm._s(_vm.feedback)}}):_vm._e(),(_vm.description)?_c('small',{staticClass:"form-text text-muted",domProps:{"innerHTML":_vm._s(_vm.description)}}):_vm._e()],2)])},staticRenderFns: [],
+    data: function data() {
+        return {
+            target: null
+        };
+    },
     computed: {
         inputState: function inputState() {
             return this.state ? ("has-" + (this.state)) : '';
@@ -5785,11 +5799,14 @@ var formFieldset = {render: function(){var _vm=this;var _h=_vm.$createElement;va
             return this.horizontal ? ('col-sm-' + (12 - this.labelSize)) : 'col-12';
         }
     },
+    mounted: function mounted() {
+        var content = this.$refs.content;
+        if (!content) {
+            return;
+        }
+        this.target = content.children[0].id;
+    },
     props: {
-        for_id: {
-            type: String,
-            default: null
-        },
         state: {
             type: String,
             default: null
@@ -5817,25 +5834,60 @@ var formFieldset = {render: function(){var _vm=this;var _h=_vm.$createElement;va
     }
 };
 
-var formCheckbox = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('label',{class:[_vm.custom?'custom-control':null,_vm.custom?'custom-checkbox':null,_vm.inline?'form-check-inline':null]},[_c('input',{class:[_vm.custom?'custom-control-input':null],attrs:{"type":"checkbox","id":_vm.id,"name":_vm.name,"disabled":_vm.disabled},domProps:{"value":_vm.value,"checked":_vm.checked===_vm.value},on:{"change":function($event){_vm.$emit('change',$event.target.checked?_vm.value:_vm.uncheckedValue);}}}),_vm._v(" "),(_vm.custom)?_c('span',{staticClass:"custom-control-indicator"}):_vm._e(),_vm._v(" "),_c('span',{class:[_vm.custom?'custom-control-description':null]},[_vm._t("default")],2)])},staticRenderFns: [],
+var formMixin = {
+    computed: {
+        inputClass: function inputClass() {
+            return [
+                this.size ? ("form-control-" + (this.size)) : null,
+                this.state ? ("form-control-" + (this.state)) : null
+            ];
+        },
+        custom: function custom() {
+            return !this.plain;
+        }
+    },
+    props: {
+        name: {
+            type: String
+        },
+        id: {
+            type: String,
+            default: uniqueId
+        },
+        disabled: {
+            type: Boolean
+        },
+        plain: {
+            type: Boolean,
+            default: false
+        },
+        state: {
+            type: String
+        },
+        size: {
+            type: String
+        }
+    }
+};
+
+var formCheckBoxMixin = {
+    computed: {
+        checkboxClass: function checkboxClass() {
+            return {
+                'custom-control': this.custom,
+                'form-check-inline': this.inline
+            };
+        }
+    }
+};
+
+var formCheckbox = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('label',{class:[_vm.inputClass,_vm.checkboxClass,_vm.custom?'custom-checkbox':null]},[_c('input',{class:[_vm.custom?'custom-control-input':null],attrs:{"type":"checkbox","id":_vm.id,"name":_vm.name,"disabled":_vm.disabled},domProps:{"value":_vm.value,"checked":_vm.checked===_vm.value},on:{"change":function($event){_vm.$emit('change',$event.target.checked?_vm.value:_vm.uncheckedValue);}}}),_vm._v(" "),(_vm.custom)?_c('span',{staticClass:"custom-control-indicator"}):_vm._e(),_vm._v(" "),_c('span',{class:[_vm.custom?'custom-control-description':null]},[_vm._t("default")],2)])},staticRenderFns: [],
+    mixins: [formMixin, formCheckBoxMixin],
     model: {
         prop: 'checked',
         event: 'change'
     },
-    computed: {
-        inputState: function inputState() {
-            return this.state ? ("has-" + (this.state)) : '';
-        }
-    },
     props: {
-        id: {
-            type: String,
-            default: null
-        },
-        name: {
-            type: String,
-            default: null
-        },
         value: {
             default: true
         },
@@ -5843,18 +5895,6 @@ var formCheckbox = {render: function(){var _vm=this;var _h=_vm.$createElement;va
             default: false
         },
         checked: {
-            default: true
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        },
-        inline: {
-            type: Boolean,
-            default: true
-        },
-        custom: {
-            type: Boolean,
             default: true
         }
     }
@@ -5923,8 +5963,8 @@ var formOptions = {
     }
 };
 
-var formRadio = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('fieldset',{class:['form-group',this.stacked?'custom-controls-stacked':'',_vm.inputState]},_vm._l((_vm.formOptions),function(option){return _c('label',{class:['custom-control','custom-radio']},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.localValue),expression:"localValue"}],staticClass:"custom-control-input",attrs:{"type":"radio","id":option.id,"disabled":option.disabled},domProps:{"value":option.value,"checked":_vm._q(_vm.localValue,option.value)},on:{"__c":function($event){_vm.localValue=option.value;}}}),_vm._v(" "),_c('span',{staticClass:"custom-control-indicator"}),_vm._v(" "),_c('span',{staticClass:"custom-control-description",domProps:{"innerHTML":_vm._s(option.text)}})])}))},staticRenderFns: [],
-    mixins: [formOptions],
+var formRadio = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:[_vm.inputClass,this.stacked?'custom-controls-stacked':'']},_vm._l((_vm.formOptions),function(option){return _c('label',{class:[_vm.checkboxClass,_vm.custom?'custom-radio':null]},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.localValue),expression:"localValue"}],ref:"inputs",refInFor:true,class:_vm.custom?'custom-control-input':null,attrs:{"type":"radio","name":option.name,"id":option.id,"disabled":option.disabled},domProps:{"value":option.value,"checked":_vm._q(_vm.localValue,option.value)},on:{"__c":function($event){_vm.localValue=option.value;}}}),_vm._v(" "),(_vm.custom)?_c('span',{staticClass:"custom-control-indicator"}):_vm._e(),_vm._v(" "),_c('span',{class:_vm.custom?'custom-control-description':null,domProps:{"innerHTML":_vm._s(option.text)}})])}))},staticRenderFns: [],
+    mixins: [formMixin, formCheckBoxMixin, formOptions],
     data: function data() {
         return {
             localValue: this.value
@@ -5946,10 +5986,6 @@ var formRadio = {render: function(){var _vm=this;var _h=_vm.$createElement;var _
             type: Boolean,
             default: false
         },
-        state: {
-            type: String,
-            default: null
-        },
         returnObject: {
             type: Boolean,
             default: false
@@ -5957,14 +5993,11 @@ var formRadio = {render: function(){var _vm=this;var _h=_vm.$createElement;var _
     }
 };
 
-var formInput = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return (!_vm.textarea)?_c('input',{ref:"input",class:['form-control',_vm.inputState,_vm.inputSize],attrs:{"type":_vm.type,"name":_vm.name,"id":_vm.$parent.for_id,"placeholder":_vm.placeholder},domProps:{"value":_vm.value},on:{"input":function($event){_vm.onInput($event.target.value);},"change":function($event){_vm.onChange($event.target.value);},"keyup":function($event){_vm.onKeyUp($event);}}}):_c('textarea',{ref:"input",class:['form-control',_vm.inputState,_vm.inputSize],attrs:{"type":_vm.type,"name":_vm.name,"id":_vm.$parent.for_id,"placeholder":_vm.placeholder,"rows":_vm.rows},domProps:{"value":_vm.value},on:{"input":function($event){_vm.onInput($event.target.value);},"change":function($event){_vm.onChange($event.target.value);},"keyup":function($event){_vm.onKeyUp($event);}}})},staticRenderFns: [],
+var formInput = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c(_vm.textarea?'textarea':'input',{ref:"input",tag:"input",class:['form-control',_vm.inputClass],attrs:{"type":_vm.type,"name":_vm.name,"id":_vm.id || ('b_'+_vm._uid),"disabled":_vm.disabled,"rows":_vm.rows || _vm.rowsCount,"placeholder":_vm.placeholder},domProps:{"value":_vm.value},on:{"input":function($event){_vm.onInput($event.target.value);},"change":function($event){_vm.onChange($event.target.value);},"keyup":function($event){_vm.onKeyUp($event);},"focus":function($event){_vm.$emit('focus');},"blur":function($event){_vm.$emit('blur');}}})},staticRenderFns: [],
+    mixins: [formMixin],
     computed: {
-        inputState: function inputState() {
-            var state = this.state || this.$parent.state;
-            return state ? ("form-control-" + state) : '';
-        },
-        inputSize: function inputSize() {
-            return this.size ? ("form-control-" + (this.size)) : '';
+        rowsCount: function rowsCount() {
+            return (this.value || '').split('\n').length;
         }
     },
     methods: {
@@ -5995,41 +6028,23 @@ var formInput = {render: function(){var _vm=this;var _h=_vm.$createElement;var _
     },
     props: {
         value: {
-            type: [String, Number],
             default: null
         },
         type: {
             type: String,
             default: 'text'
         },
-
-        name: {
-            type: String,
-            default: null
-        },
         placeholder: {
             type: String,
             default: null
         },
-
-        size: {
-            type: String,
-            default: null
-        },
-
         rows: {
             type: Number,
             default: null
         },
-
         textarea: {
             type: Boolean,
             default: false
-        },
-
-        state: {
-            type: String,
-            default: null
         },
         formatter: {
             type: Function
@@ -6041,87 +6056,196 @@ var formInput = {render: function(){var _vm=this;var _h=_vm.$createElement;var _
     }
 };
 
-var formFile = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('label',{class:['custom-file',_vm.unique_class],attrs:{"lang":_vm.lang}},[_c('input',{staticClass:"custom-file-input",attrs:{"type":"file","id":_vm.id},on:{"change":_vm.onFileChange}}),_vm._v(" "),_c('span',{staticClass:"custom-file-control"})])},staticRenderFns: [],
+var formFile = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('label',{class:[_vm.custom?'custom-file':null,_vm.inputClass],on:{"dragover":function($event){$event.stopPropagation();$event.preventDefault();_vm.dragover($event);}}},[(_vm.dragging)?_c('span',{staticClass:"drop-here",attrs:{"data-drop":_vm.dropLabel},on:{"dragover":function($event){$event.stopPropagation();$event.preventDefault();_vm.dragover($event);},"drop":function($event){$event.stopPropagation();$event.preventDefault();_vm.drop($event);},"dragleave":function($event){$event.stopPropagation();$event.preventDefault();_vm.dragging=false;}}}):_vm._e(),_c('input',{ref:"input",staticClass:"custom-file-input",attrs:{"type":"file","name":_vm.name,"id":_vm.id,"disabled":_vm.disabled,"accept":_vm.accept,"multiple":_vm.multiple,"webkitdirectory":_vm.directory},on:{"change":_vm.onFileChange}}),_vm._v(" "),(_vm.custom)?_c('span',{class:['custom-file-control',_vm.dragging?'dragging':null,_vm.inputClass],attrs:{"data-choose":_vm.computedChooseLabel,"data-selected":_vm.selectedLabel}}):_vm._e()])},staticRenderFns: [],
+    mixins: [formMixin],
     data: function data() {
         return {
-            selectedFile: null
+            selectedFile: null,
+            dragging: false
         };
     },
     computed: {
         selectedLabel: function selectedLabel() {
-            if (!this.selectedFile) {
-                return this.browseLabel;
+            if (!this.selectedFile || this.selectedFile.length === 0) {
+                return this.placeholder || 'No file chosen';
             }
+
+            if (this.multiple) {
+                if (this.selectedFile.length === 1) {
+                    return this.selectedFile[0].name;
+                }
+
+                return this.selectedFormat
+                    .replace(':names', this.selectedFile.map(function (file) { return file.name; }).join(','))
+                    .replace(':count', this.selectedFile.length);
+            }
+
             return this.selectedFile.name;
         },
-        unique_class: function unique_class() {
-            return 'form_file_' + this._uid;
+        computedChooseLabel: function computedChooseLabel() {
+            return this.chooseLabel || (this.multiple ? 'Choose Files' : 'Choose File');
         }
     },
     watch: {
-        selectedFile: function selectedFile(newVal) {
-            this.$emit('input', newVal);
+        selectedFile: function selectedFile(newVal, oldVal) {
+            if (newVal === oldVal) {
+                return;
+            }
+
+            if (!newVal && this.multiple) {
+                this.$emit('input', []);
+            } else {
+                this.$emit('input', newVal);
+            }
         }
     },
     methods: {
         onFileChange: function onFileChange(e) {
+            var this$1 = this;
+
+            // Always emit original event
             this.$emit('change', e);
 
-            var files = e.target.files || e.dataTransfer.files;
+            // Check if special `items` prop is available on event (drop mode)
+            // Can be disabled by setting no-traverse
+            var items = e.dataTransfer && e.dataTransfer.items;
+            if (items && !this.noTraverse) {
+                var queue = [];
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i].webkitGetAsEntry();
+                    if (item) {
+                        queue.push(this$1.traverseFileTree(item));
+                    }
+                }
+                Promise.all(queue).then(function (filesArr) {
+                    this$1.setFiles(Array.prototype.concat.apply([], filesArr));
+                });
+                return;
+            }
 
-            if (!files || files.length === 0) {
+            // Normal handling
+            this.setFiles(e.target.files || e.dataTransfer.files);
+        },
+        setFiles: function setFiles(files) {
+            var this$1 = this;
+
+            if (!files) {
                 this.selectedFile = null;
                 return;
             }
 
-            this.selectedFile = files[0];
+            if (!this.multiple) {
+                this.selectedFile = files[0];
+                return;
+            }
+
+            // Convert files to array
+            var filesArray = [];
+            for (var i = 0; i < files.length; i++) {
+                if (files[i].type.match(this$1.accept)) {
+                    filesArray.push(files[i]);
+                }
+            }
+
+            this.selectedFile = filesArray;
+        },
+        dragover: function dragover(e) {
+            if (this.noDrop) {
+                return;
+            }
+
+            this.dragging = true;
+            e.dataTransfer.dropEffect = 'copy';
+        },
+        drop: function drop(e) {
+            if (this.noDrop) {
+                return;
+            }
+
+            this.dragging = false;
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                this.onFileChange(e);
+            }
+        },
+        traverseFileTree: function traverseFileTree(item, path) {
+            var this$1 = this;
+
+            // Based on http://stackoverflow.com/questions/3590058
+            return new Promise(function (resolve) {
+                path = path || '';
+                if (item.isFile) {
+                    // Get file
+                    item.file(function (file) {
+                        file.$path = path; // Inject $path to file obj
+                        resolve(file);
+                    });
+                } else if (item.isDirectory) {
+                    // Get folder contents
+                    item.createReader().readEntries(function (entries) {
+                        var queue = [];
+                        for (var i = 0; i < entries.length; i++) {
+                            queue.push(this$1.traverseFileTree(entries[i], path + item.name + '/'));
+                        }
+                        Promise.all(queue).then(function (filesArr) {
+                            resolve(Array.prototype.concat.apply([], filesArr));
+                        });
+                    });
+                }
+            });
         }
     },
     props: {
-        id: {
+        accept: {
+            type: String,
+            default: ''
+        },
+        placeholder: {
             type: String,
             default: null
         },
-        lang: {
-            type: String,
-            default: 'en'
-        },
-        browseLabel: {
-            type: String,
-            default: 'Browse'
-        },
         chooseLabel: {
             type: String,
-            default: 'Choose file...'
+            default: null
+        },
+        multiple: {
+            type: Boolean,
+            default: false
+        },
+        directory: {
+            type: Boolean,
+            default: false
+        },
+        noTraverse: {
+            type: Boolean,
+            default: false
+        },
+        selectedFormat: {
+            type: String,
+            default: ':count Files'
+        },
+        noDrop: {
+            type: Boolean,
+            default: false
+        },
+        dropLabel: {
+            type: String,
+            default: 'Drop files here'
         }
     }
 };
 
-var formSelect = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.localValue),expression:"localValue"}],class:['form-control','custom-select',_vm.inputSize],attrs:{"disabled":_vm.disabled},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.localValue=$event.target.multiple ? $$selectedVal : $$selectedVal[0];}}},_vm._l((_vm.formOptions),function(option){return _c('option',{attrs:{"disabled":option.disabled},domProps:{"value":option.value,"innerHTML":_vm._s(option.text)}})}))},staticRenderFns: [],
-    mixins: [formOptions],
+var formSelect = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.localValue),expression:"localValue"}],ref:"input",class:[_vm.inputClass,_vm.custom?'custom-select':null],attrs:{"name":_vm.name,"id":_vm.id,"disabled":_vm.disabled},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.localValue=$event.target.multiple ? $$selectedVal : $$selectedVal[0];}}},_vm._l((_vm.formOptions),function(option){return _c('option',{attrs:{"disabled":option.disabled},domProps:{"value":option.value,"innerHTML":_vm._s(option.text)}})}))},staticRenderFns: [],
+    mixins: [formMixin, formOptions],
     data: function data() {
         return {
             localValue: this.value
         };
-    },
-    computed: {
-        inputSize: function inputSize() {
-            return this.size ? ("form-control-" + (this.size)) : null;
-        }
     },
     props: {
         value: {},
         options: {
             type: [Array, Object],
             required: true
-        },
-        size: {
-            type: String,
-            default: ''
-        },
-        disabled: {
-            type: Boolean,
-            default: false
         },
         returnObject: {
             type: Boolean,
@@ -6269,7 +6393,7 @@ var media = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_v
     }
 };
 
-var modal = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('transition-group',{attrs:{"enter-class":"hidden","enter-to-class":"show","enter-active-class":"","leave-class":"show","leave-active-class":"","leave-to-class":"hidden"},on:{"after-enter":_vm.afterEnter}},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.visible),expression:"visible"}],key:"modal",class:['modal',{fade :_vm.fade}],attrs:{"id":_vm.id},on:{"click":function($event){_vm.onClickOut($event);}}},[_c('div',{class:['modal-dialog','modal-'+_vm.size]},[_c('div',{staticClass:"modal-content"},[(!_vm.hideHeader)?_c('div',{staticClass:"modal-header"},[_vm._t("modal-header",[_c('h5',{staticClass:"modal-title"},[_vm._t("modal-title",[_vm._v(_vm._s(_vm.title))])],2),_c('button',{staticClass:"close",attrs:{"type":"button","aria-label":"Close"},on:{"click":_vm.hide}},[_c('span',{attrs:{"aria-hidden":"true"}},[_vm._v("×")])])])],2):_vm._e(),_c('div',{staticClass:"modal-body"},[_vm._t("default")],2),(!_vm.hideFooter)?_c('div',{staticClass:"modal-footer"},[_vm._t("modal-footer",[_c('b-btn',{attrs:{"variant":"secondary"},on:{"click":function($event){_vm.hide(false);}}},[_vm._v(_vm._s(_vm.closeTitle))]),_c('b-btn',{attrs:{"variant":"primary"},on:{"click":function($event){_vm.hide(true);}}},[_vm._v(_vm._s(_vm.okTitle))])])],2):_vm._e()])])]),(_vm.visible)?_c('div',{key:"modal-backdrop",class:['modal-backdrop',{fade: _vm.fade}]}):_vm._e()])],1)},staticRenderFns: [],
+var modal = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('transition-group',{attrs:{"enter-class":"hidden","enter-to-class":"show","enter-active-class":"","leave-class":"show","leave-active-class":"","leave-to-class":"hidden"},on:{"after-enter":_vm.afterEnter}},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.visible),expression:"visible"}],key:"modal",class:['modal',{fade :_vm.fade}],attrs:{"id":_vm.id}},[_c('div',{class:['modal-dialog','modal-'+_vm.size]},[_c('div',{staticClass:"modal-content"},[(!_vm.hideHeader)?_c('div',{staticClass:"modal-header"},[_vm._t("modal-header",[_c('h5',{staticClass:"modal-title"},[_vm._t("modal-title",[_vm._v(_vm._s(_vm.title))])],2),_c('button',{staticClass:"close",attrs:{"type":"button","aria-label":"Close"},on:{"click":_vm.hide}},[_c('span',{attrs:{"aria-hidden":"true"}},[_vm._v("×")])])])],2):_vm._e(),_c('div',{staticClass:"modal-body"},[_vm._t("default")],2),(!_vm.hideFooter)?_c('div',{staticClass:"modal-footer"},[_vm._t("modal-footer",[_c('b-btn',{attrs:{"variant":"secondary"},on:{"click":function($event){_vm.hide(false);}}},[_vm._v(_vm._s(_vm.closeTitle))]),_c('b-btn',{attrs:{"variant":"primary"},on:{"click":function($event){_vm.hide(true);}}},[_vm._v(_vm._s(_vm.okTitle))])])],2):_vm._e()])])]),(_vm.visible)?_c('div',{key:"modal-backdrop",class:['modal-backdrop',{fade: _vm.fade}],on:{"click":function($event){_vm.onClickOut($event);}}}):_vm._e()])],1)},staticRenderFns: [],
     data: function data() {
         return {
             visible: false
@@ -6439,6 +6563,9 @@ var nav = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm.
 };
 
 var navItem = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{staticClass:"nav-item",on:{"click":_vm.onclick}},[_c('b-link',{class:_vm.classObject,attrs:{"to":_vm.to,"href":_vm.href,"exact":_vm.exact}},[_vm._t("default")],2)],1)},staticRenderFns: [],
+    components: {
+        bLink: bLink
+    },
     computed: {
         classObject: function classObject() {
             return [
@@ -6468,19 +6595,21 @@ var navItem = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
         }
     },
     methods: {
-        onclick: function onclick() {
+        onclick: function onclick(e) {
             // Hide all drop-downs including navbar-toggle
-            this.$root.$emit('hidden::dropdown', this);
-
-            this.$emit('click');
+            this.$root.$emit('shown::dropdown', this);
+            this.$emit('click', e);
         }
     }
 };
 
-var navItemDropdown = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{class:{'nav-item': true, show: _vm.show,dropdown: !_vm.dropup, dropup: _vm.dropup}},[_c('a',{class:['nav-link', _vm.dropdownToggle],attrs:{"href":"","aria-haspopup":"true","aria-expanded":_vm.show,"disabled":_vm.disabled},on:{"click":function($event){$event.stopPropagation();$event.preventDefault();_vm.toggle($event);}}},[_vm._t("text",[_vm._v(_vm._s(_vm.text))])],2),_c('div',{class:{'dropdown-menu': true, 'dropdown-menu-right': _vm.rightAlignment}},[_vm._t("default")],2)])},staticRenderFns: [],
+var navItemDropdown = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{class:{'nav-item': true, show: _vm.visible,dropdown: !_vm.dropup, dropup: _vm.dropup}},[_c('a',{class:['nav-link', _vm.dropdownToggle],attrs:{"href":"","aria-haspopup":"true","aria-expanded":_vm.visible,"disabled":_vm.disabled},on:{"click":function($event){$event.stopPropagation();$event.preventDefault();_vm.toggle($event);}}},[_vm._t("text",[_vm._v(_vm._s(_vm.text))])],2),_c('div',{class:{'dropdown-menu': true, 'dropdown-menu-right': _vm.rightAlignment}},[_vm._t("default")],2)])},staticRenderFns: [],
+    mixins: [
+        clickOut
+    ],
     data: function data() {
         return {
-            show: false
+            visible: false
         };
     },
     computed: {
@@ -6514,40 +6643,38 @@ var navItemDropdown = {render: function(){var _vm=this;var _h=_vm.$createElement
     created: function created() {
         var this$1 = this;
 
+        // To keep one dropdown opened at page
         this.$root.$on('shown::dropdown', function (el) {
             if (el !== this$1) {
-                this$1.clickOut();
+                this$1.close();
             }
         });
     },
-    mounted: function mounted() {
-        if (typeof document !== 'undefined') {
-            document.documentElement.addEventListener('click', this.clickOut);
-        }
-    },
-    destroyed: function destroyed() {
-        if (typeof document !== 'undefined') {
-            document.removeEventListener('click', this.clickOut);
-        }
-    },
-    methods: {
-        setShow: function setShow(state) {
-            if (this.show === state) {
+    watch: {
+        visible: function visible(state, old) {
+            if (state === old) {
                 return; // Avoid duplicated emits
             }
-            this.show = state;
 
-            if (this.show) {
+            if (state) {
                 this.$root.$emit('shown::dropdown', this);
             } else {
                 this.$root.$emit('hidden::dropdown', this);
             }
-        },
+        }
+    },
+    methods: {
         toggle: function toggle() {
-            this.setShow(!this.show);
+            this.visible = !this.visible;
         },
-        clickOut: function clickOut() {
-            this.setShow(false);
+        open: function open() {
+            this.visible = true;
+        },
+        close: function close() {
+            this.visible = false;
+        },
+        clickOutListener: function clickOutListener() {
+            this.close();
         }
     }
 };
@@ -6735,7 +6862,7 @@ var triggerListeners = {
     focus: {focus: 'show', blur: 'hide'}
 };
 
-var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('span',{ref:"trigger"},[_vm._t("default")],2),_c('div',{ref:"popover",class:['popover',_vm.popoverAlignment],attrs:{"tabindex":"-1"},on:{"focus":function($event){_vm.$emit('focus');},"blur":function($event){_vm.$emit('blur');}}},[_c('div',{staticClass:"popover-arrow"}),(_vm.title)?_c('h3',{staticClass:"popover-title",domProps:{"innerHTML":_vm._s(_vm.title)}}):_vm._e(),_c('div',{staticClass:"popover-content"},[_c('div',{staticClass:"popover-content-wrapper"},[_vm._t("content",[_c('span',{domProps:{"innerHTML":_vm._s(_vm.content)}})])],2)])])])},staticRenderFns: [],
+var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('span',{ref:"trigger"},[_vm._t("default")],2),_c('div',{ref:"popover",class:['popover',_vm.popoverAlignment],style:(_vm.popoverStyle),attrs:{"tabindex":"-1"},on:{"focus":function($event){_vm.$emit('focus');},"blur":function($event){_vm.$emit('blur');}}},[_c('div',{staticClass:"popover-arrow"}),(_vm.title)?_c('h3',{staticClass:"popover-title",domProps:{"innerHTML":_vm._s(_vm.title)}}):_vm._e(),_c('div',{staticClass:"popover-content"},[_c('div',{staticClass:"popover-content-wrapper"},[_vm._t("content",[_c('span',{domProps:{"innerHTML":_vm._s(_vm.content)}})])],2)])])])},staticRenderFns: [],
     props: {
         placement: {
             type: String,
@@ -6812,6 +6939,10 @@ var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
             validator: function validator(value) {
                 return value >= 0;
             }
+        },
+        popoverStyle: {
+            type: Object,
+            default: null
         }
     },
 
@@ -6924,6 +7055,14 @@ var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
 
         constraints: function constraints() {
             this.setOptions();
+        },
+
+        content: function content() {
+            this.refreshPosition();
+        },
+
+        title: function title() {
+            this.refreshPosition();
         }
     },
 
@@ -6943,7 +7082,7 @@ var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
             this._tether = new Tether(this.tetherOptions);
 
             // Make sure the popup is rendered in the correct location
-            this._tether.position();
+            this.refreshPosition();
 
             this.$root.$emit('shown::popover');
         },
@@ -6958,6 +7097,19 @@ var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
         },
 
         /**
+         * Refresh the Popover position in order to respond to changes
+         */
+        refreshPosition: function refreshPosition() {
+            var this$1 = this;
+
+            if (this.showState === true) {
+                this.$nextTick(function () {
+                    this$1._tether.position();
+                });
+            }
+        },
+
+        /**
          * Hide popover and fire event
          */
         hidePopover: function hidePopover() {
@@ -6967,6 +7119,7 @@ var popover = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
 
             if (this._tether) {
                 this._tether.destroy();
+                this._tether = null;
             }
         },
 
@@ -7501,7 +7654,7 @@ var components = Object.freeze({
 	bSlide: carouselSlide,
 	bCarousel: carousel,
 	bCollapse: collapse,
-	bLink: Link
+	bLink: bLink
 });
 
 var all_listen_types = {hover: true, click: true, focus: true};
@@ -47454,7 +47607,7 @@ function format (id) {
 },{}],345:[function(require,module,exports){
 (function (process){
 /**
-  * vue-router v2.2.1
+  * vue-router v2.3.1
   * (c) 2017 Evan You
   * @license MIT
   */
@@ -48904,7 +49057,8 @@ function getScrollPosition () {
 }
 
 function getElementPosition (el) {
-  var docRect = document.documentElement.getBoundingClientRect();
+  var docEl = document.documentElement;
+  var docRect = docEl.getBoundingClientRect();
   var elRect = el.getBoundingClientRect();
   return {
     x: elRect.left - docRect.left,
@@ -49135,7 +49289,7 @@ function normalizeBase (base) {
     if (inBrowser) {
       // respect <base> tag
       var baseEl = document.querySelector('base');
-      base = baseEl ? baseEl.getAttribute('href') : '/';
+      base = (baseEl && baseEl.getAttribute('href')) || '/';
     } else {
       base = '/';
     }
@@ -49350,9 +49504,11 @@ var HTML5History = (function (History$$1) {
   HTML5History.prototype.push = function push (location, onComplete, onAbort) {
     var this$1 = this;
 
+    var ref = this;
+    var fromRoute = ref.current;
     this.transitionTo(location, function (route) {
       pushState(cleanPath(this$1.base + route.fullPath));
-      handleScroll(this$1.router, route, this$1.current, false);
+      handleScroll(this$1.router, route, fromRoute, false);
       onComplete && onComplete(route);
     }, onAbort);
   };
@@ -49360,9 +49516,11 @@ var HTML5History = (function (History$$1) {
   HTML5History.prototype.replace = function replace (location, onComplete, onAbort) {
     var this$1 = this;
 
+    var ref = this;
+    var fromRoute = ref.current;
     this.transitionTo(location, function (route) {
       replaceState(cleanPath(this$1.base + route.fullPath));
-      handleScroll(this$1.router, route, this$1.current, false);
+      handleScroll(this$1.router, route, fromRoute, false);
       onComplete && onComplete(route);
     }, onAbort);
   };
@@ -49724,7 +49882,7 @@ function createHref (base, fullPath, mode) {
 }
 
 VueRouter.install = install;
-VueRouter.version = '2.2.1';
+VueRouter.version = '2.3.1';
 
 if (inBrowser && window.Vue) {
   window.Vue.use(VueRouter);
@@ -49736,7 +49894,7 @@ module.exports = VueRouter;
 },{"_process":339}],346:[function(require,module,exports){
 (function (global){
 /*!
- * Vue.js v2.2.5
+ * Vue.js v2.2.6
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -51832,6 +51990,9 @@ function lifecycleMixin (Vue) {
     }
     // call the last hook...
     vm._isDestroyed = true;
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+    // fire destroyed hook
     callHook(vm, 'destroyed');
     // turn off all instance listeners.
     vm.$off();
@@ -51839,8 +52000,8 @@ function lifecycleMixin (Vue) {
     if (vm.$el) {
       vm.$el.__vue__ = null;
     }
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null);
+    // remove reference to DOM nodes (prevents leak)
+    vm.$options._parentElm = vm.$options._refElm = null;
   };
 }
 
@@ -52501,6 +52662,15 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    {
+      if (getter === undefined) {
+        warn(
+          ("No getter function has been defined for computed property \"" + key + "\"."),
+          vm
+        );
+        getter = noop;
+      }
+    }
     // create internal watcher for the computed property.
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
 
@@ -52913,7 +53083,7 @@ function extractProps (data, Ctor, tag) {
         ) {
           tip(
             "Prop \"" + keyInLowerCase + "\" is passed to component " +
-            (formatComponentName(tag || Ctor)) + ", but the delared prop name is" +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
             " \"" + key + "\". " +
             "Note that HTML attributes are case-insensitive and camelCased " +
             "props need to use their kebab-case equivalents when using in-DOM " +
@@ -53892,7 +54062,7 @@ Object.defineProperty(Vue$3.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Vue$3.version = '2.2.5';
+Vue$3.version = '2.2.6';
 
 /*  */
 
@@ -59044,7 +59214,7 @@ return Vue$3;
 },{}],347:[function(require,module,exports){
 (function (process,global){
 /*!
- * Vue.js v2.2.5
+ * Vue.js v2.2.6
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -61132,6 +61302,9 @@ function lifecycleMixin (Vue) {
     }
     // call the last hook...
     vm._isDestroyed = true;
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+    // fire destroyed hook
     callHook(vm, 'destroyed');
     // turn off all instance listeners.
     vm.$off();
@@ -61139,8 +61312,8 @@ function lifecycleMixin (Vue) {
     if (vm.$el) {
       vm.$el.__vue__ = null;
     }
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null);
+    // remove reference to DOM nodes (prevents leak)
+    vm.$options._parentElm = vm.$options._refElm = null;
   };
 }
 
@@ -61805,6 +61978,15 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    if (process.env.NODE_ENV !== 'production') {
+      if (getter === undefined) {
+        warn(
+          ("No getter function has been defined for computed property \"" + key + "\"."),
+          vm
+        );
+        getter = noop;
+      }
+    }
     // create internal watcher for the computed property.
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
 
@@ -62217,7 +62399,7 @@ function extractProps (data, Ctor, tag) {
         ) {
           tip(
             "Prop \"" + keyInLowerCase + "\" is passed to component " +
-            (formatComponentName(tag || Ctor)) + ", but the delared prop name is" +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
             " \"" + key + "\". " +
             "Note that HTML attributes are case-insensitive and camelCased " +
             "props need to use their kebab-case equivalents when using in-DOM " +
@@ -63202,7 +63384,7 @@ Object.defineProperty(Vue$2.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Vue$2.version = '2.2.5';
+Vue$2.version = '2.2.6';
 
 /*  */
 
@@ -66704,30 +66886,256 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _vue = require('vue');
+exports.default = function (store) {
+    // Called after every mutation.
+    // The mutation comes in the format of { type, payload }.
+    // Thus this will catch the new item on the first mutation committing
+    // it.
+    store.subscribe(function (mutation) {
+        var type = mutation.type,
+            payload = mutation.payload;
 
-var _vue2 = _interopRequireDefault(_vue);
+        switch (type) {
+            case mTypes.setItem:
+                if (typeof payload !== 'undefined' && !payload.mutateSilently) {
 
-var _axios = require('axios');
+                    var _item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
 
-var _axios2 = _interopRequireDefault(_axios);
+                    if (!_item instanceof _Exam2.default) {
 
-var _vueAxios = require('vue-axios');
+                        _item.examId = store.getters.getExamId;
+                    }
 
-var _vueAxios2 = _interopRequireDefault(_vueAxios);
+                    if (_item && _item.isNew()) {
+                        //id === 'undefined' || payload.obj.id === -1)
+                        //All IModels have an id of -1 when they are initially created.
+                        //This is replaced with the real id once one is returned from the server.
+                        //Thus, this request is to create the item.
+                        //When the server has done this, it will send back an id
+                        window.axios.post('items', _item).then(function (response) {
+                            handleResponse(store, _item, response);
+                        }).catch(function (error) {
+                            errorHandling(error);
+                        });
+                    }
+                }
+                break;
+            //Now we allow the request to continue in case it wasn't just
+            //asking to create something. If the model already has an id,
+            //the type property will tell us which mutation was called so we can
+            //make the appropriate api request
+            // switch ( type ) {
+            //We do NOT listen any further to
+            //case mTypes.setItem:
+            //That way we can avoid a loop because
+            //we have to set the result of the request for ids somehow
+            //Note: we were listening above, so calling setItem the first time
+
+            case mTypes.updateItem:
+                var item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
+
+                if (!item instanceof _Exam2.default) {
+
+                    item.examId = store.getters.getExamId;
+                }
+
+                //put/patch
+                window.axios.put('items/' + item.id, item).then(function (response) {
+                    //     handleResponse(store, item, response);
+                }).catch(function (error) {
+                    errorHandling(error);
+                });
+                break;
+
+            case mTypes.demoteItem:
+                break;
+            case mTypes.promoteItem:
+                break;
+            default:
+
+        }
+    });
+};
+
+var _actionTypes = require('../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = require('../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = require('../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_axios2.default.defaults.baseURL = routeRoot;
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-// This wrapper bind axios to Vue or this if you're using single file component.
+/**
+ * Created by adam on 4/1/17.
+ */
+// import Vue from 'vue'
+// import axios from 'axios'
+// import VueAxios from 'vue-axios'
+//
+// axios.defaults.headers.common = {
+//     'X-CSRF-TOKEN': window.Laravel.csrfToken,
+//     'X-Requested-With': 'XMLHttpRequest'
+// };
+//
+// axios.defaults.baseURL = routeRoot;
+// // axios.defaults.headers.common['X-CSRF-TOKEN'] = document.head.querySelector("[name=csrf-token]").content;
+// // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+//
+// // This wrapper bind axios to Vue or this if you're using single file component.
+// Vue.use(VueAxios, axios);
+
+var errorHandling = function errorHandling(error) {
+    if (error.response) {
+        // The request was made, but the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+    } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+    }
+    console.log(error.config);
+};
+
+var handleResponse = function handleResponse(store, item, response) {
+    window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+    if (typeof response.data === 'undefined') return false;
+
+    //return Item with the new id or other data loaded
+    if (typeof response.data !== 'undefined') {
+
+        switch (item.kind) {
+            case 'exam':
+                if (typeof item.index !== 'undefined' && item.index === 0) {
+                    _Exam2.default.fillableProps.forEach(function (p) {
+                        if (p !== 'index') {
+                            // window.console.log('apiPlugin', 50, p);
+                            if (Object.keys(response.data).includes(p)) {
+                                store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                                    index: item.index,
+                                    updateProp: p,
+                                    updateVal: response.data[p],
+                                    mutateSilently: true
+                                }));
+                            }
+                        }
+                    });
+                }
+                break;
+
+            case 'item':
+                _Item2.default.fillableProps.forEach(function (p) {
+                    if (p !== 'index') {
+                        if (Object.keys(response.data).includes(p)) {
+                            store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                                index: item.index,
+                                updateProp: p,
+                                updateVal: response.data[p],
+                                mutateSilently: true
+                            }));
+                        }
+                    }
+                });
+                break;
+            default:
+        }
+    }
+};
+
+// const conn = {
+//
+//     /**
+//      * Asks the server to create the given model.
+//      * The server returns an id for the model.
+//      * This returns the id
+//      *
+//      */
+//     createModel: ( item ) => {
+//         let api = 'items'; //hits the resource's store method (create would've returned the form to create)
+//
+//         window.axios
+//             .post(api, item)
+//             .then(( response ) => {
+//                 // handleResponse(item, response);
+//                 return response;
+//             })
+//             .catch(function ( error ) {
+//                 errorHandling(error);
+//             });
+//     },
+//
+//     /**
+//      * Asks the server to update the given item
+//      * @param Item
+//      */
+//     updateModel: ( Model ) => {
+//         if ( Model.id && Model.id > 0 ) {
+//
+//             let api = 'items/' + Model.id;
+//
+//             window.axios
+//                 .put(api, Model)
+//                 .then(( response ) => {
+//                     return response;
+//                     // if (response.status == 200 ){
+//                     //    return callback(response);
+//                     // }
+//                     //
+//                     // console.log( response.data )
+//                     // //return Item with the new id loaded
+//                     // return Model;
+//                 })
+//                 .catch(function ( error ) {
+//                     errorHandling(error);
+//                     console.log(error);
+//                 });
+//         }
+//     }
+// };
+/**
+ *This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ * Called when the store is initialized
+ */
+;
+
+},{"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../store/action-types":388,"../store/getter-types":390,"../store/mutation-types":405}],351:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 /**
  * Created by adam on 3/20/17.
  */
-_vue2.default.use(_vueAxios2.default, _axios2.default);
+// import Vue from 'vue'
+// import axios from 'axios'
 
+/**
+ * this is the component for using axios inside of a vue or vuex process
+ */
 exports.default = {
     _connection: null,
 
@@ -66755,18 +67163,8 @@ exports.default = {
     },
 
     methods: {
-        /**
-         * Utility for creating most of the route to the _api
-         * @param type
-         * @returns {*}
-         */
-        makeRoute: function makeRoute(type) {
-            if (undefined.routeRoot) {
-                return undefined.routeRoot + undefined.routeBase[type];
-            }
-        },
 
-        _errorHandling: function _errorHandling(error) {
+        errorHandling: function errorHandling(error) {
             if (error.response) {
                 // The request was made, but the server responded with a status code
                 // that falls out of the range of 2xx
@@ -66781,94 +67179,68 @@ exports.default = {
         },
 
         /**
-         * Asks the server to create the given model
-         * @param IModel
+         * Asks the server to create a new model.
+         * The server returns an id for the model on success.
+         * This returns the id on success
+         *
          */
-        createModel: function createModel(Model) {
-            var api = undefined.makeRoute(Model.className) + '/create';
+        getIdForNewModel: function getIdForNewModel() {
 
-            undefined.axios.get(api).then(function (response) {
+            var api = 'items'; //hits the resource's store method (create would've returned the form to create)
+
+            undefined.$axios.post(api).then(function (response) {
                 console.log(response.data);
                 //return Item with the new id or other data loaded
                 if (typeof response.data.id !== 'undefined') {
-                    Model.id = response.data.id;
-                }
-                return Model;
-            }).catch(function (error) {
-                this._errorHandling(error);
-            });
-        },
-
-        /**
-         * Asks the server to get the given model
-         * @param IModel
-         */
-        readModel: function readModel(Model) {
-            var api = undefined.makeRoute(Model.className) + '/' + Model.id;
-
-            undefined.axios.get(api).then(function (response) {
-
-                console.log(response.data);
-                //return Item with the new id or other data loaded
-                if (typeof response.data.id != 'undefined') {
-                    Model.id = response.data.id;
-                }
-                return Model;
-            }).catch(function (error) {
-                this._errorHandling(error);
-                console.log(error);
-            });
-        },
-
-        /**
-         * Asks the server to create the given item
-         * @param Item
-         */
-        updateModel: function updateModel(Model) {
-            var api = undefined.makeRoute(Model.className) + '/' + Model.id;
-
-            undefined.axios.put(api, Model).then(function (response) {
-
-                // if (response.status == 200 ){
-                return callback(response);
-                // }
-                //
-                // console.log( response.data )
-                // //return Item with the new id loaded
-                // return Model;
-            }).catch(function (error) {
-                this._errorHandling(error);
-                console.log(error);
-            });
-        },
-
-        /**
-         * Asks the server to create the given item
-         * @param Item
-         */
-        deleteModel: function deleteModel(Model, callback) {
-
-            var api = undefined.makeRoute(Model.className()) + '/' + Model.id;
-
-            undefined.axios.delete(api).then(function (response) {
-                if (response.status == 200) {
-                    return callback(response);
+                    return response.data.id;
                 }
             }).catch(function (error) {
-                this._errorHandling(error);
-                console.log(error);
+                this.errorHandling(error);
             });
         }
 
     }
 
-    // this.$http.get( _api ).then( ( response ) => {
-    //     console.log( response.data )
-    // } )
 };
 
-},{"axios":1,"vue":347,"vue-axios":343}],351:[function(require,module,exports){
+},{}],352:[function(require,module,exports){
 'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (store) {
+    // const socket = new WebSocket('wss:' + socketRoute);
+
+
+    //         // socket.on('data', data => {
+    //         //     store.commit('receiveData', data)
+    //         // });
+    // called when the store is initialized
+    store.subscribe(function (mutation, state) {
+        // called after every mutation.
+        // The mutation comes in the format of { type, payload }.
+        // window.console.log('websocket subscriber', 'mutation caught', 48, mutation);
+    });
+};
+
+/**
+ * Created by adam on 4/1/17.
+ */
+
+var socketRoute = '';
+
+/**
+ * This subscribes a websocket
+ * to mutations in the store.
+ */
+;
+
+},{}],353:[function(require,module,exports){
+'use strict';
+
+require('babel-polyfill');
 
 /**
  * This file bootstraps the application
@@ -66902,7 +67274,7 @@ require('bootstrap-sass');
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = require('vue');
+// window.Vue = require('vue');
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -66917,6 +67289,8 @@ window.axios.defaults.headers.common = {
   'X-Requested-With': 'XMLHttpRequest'
 };
 
+window.axios.defaults.baseURL = routeRoot;
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
@@ -66930,7 +67304,7 @@ window.axios.defaults.headers.common = {
 //     key: 'your-pusher-key'
 // });
 
-},{"axios":1,"bootstrap":30,"bootstrap-sass":28,"jquery":337,"lodash":338,"vue":347}],352:[function(require,module,exports){
+},{"axios":1,"babel-polyfill":26,"bootstrap":30,"bootstrap-sass":28,"jquery":337,"lodash":338}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67068,7 +67442,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-bedabc0c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],353:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67138,7 +67512,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4b0ad92d", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],354:[function(require,module,exports){
+},{"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -67223,7 +67597,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-344d0d66", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":386,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
+},{"../../store/action-types":388,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67359,7 +67733,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67439,7 +67813,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7de0264c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67533,7 +67907,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5092195a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":379,"../../models/Item":382,"../../models/Payload":383,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
+},{"../../models/Comment":381,"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67595,7 +67969,6 @@ exports.default = {
          */
         numberItems: {
             get: function get() {
-                console.log(this);
                 var v = this.$store.getters[gTypes.getItemCount];
                 //if not set return placeholder
                 return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
@@ -67694,7 +68067,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-a586beac", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
+},{"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67783,7 +68156,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67850,24 +68223,26 @@ exports.default = {
         privateName: {
             get: function get() {
                 var exam = this.getExam();
-                if (exam) {
+                if (exam && typeof exam.name !== 'undefined') {
                     return exam.name;
                 }
+            },
+            set: function set(v) {
+                //store the name in the data object
+                this.$store.commit(mTypes.updateItem, _Payload2.default.factory({
+                    index: 0,
+                    updateProp: 'name',
+                    updateVal: v
+                }));
             }
-        },
-        set: function set(v) {
-            //store the name in the data object
-            this.$store.commit(mTypes.updateActiveExamProp, _Payload2.default.factory({
-                updateProp: 'name',
-                updateVal: v
-            }));
         }
     },
 
     methods: {
 
         getExam: function getExam() {
-            return this.$store.getters[gTypes.getActiveExamObj];
+            return this.$store.getters.getItemByIndex(0);
+            //                return this.$store.getters[ gTypes.getActiveExamObj ];
         },
 
         /**
@@ -67884,22 +68259,14 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
+        this.$store.dispatch('createExam');
+        this.$store.dispatch('createItem');
 
-        //create an exam object if one isn't set
-        //however don't ask the server to create an id just yet
-        //            if ( !this.getExam() ) {
-        //                //create an exam object with index 0
-        //                let exam = Exam.factory( {index: 0} );
-        //                console.log( 'no exam set, creating one', exam );
-        //                this.$store.dispatch( aTypes.setActiveExam, Payload.factory( {obj: exam} ) );
-        //                //push into stack as root item
-        //                //todo
-        //            }
         //            console.log( 'exam-main ready' );
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component\">\n    <div class=\"input-group input-group-lg\">\n\n        <div class=\"input-group-addon\" id=\"basic-addon1\">\n            {{headingName}}\n        </div>\n\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"0\"></settings-button>\n\n            <!--<button class=\"btn btn-primary\"-->\n            <!--v-on:click=\"toggleExamProperties\"-->\n            <!--&gt;<span class=\"glyphicon glyphicon-cog\"></span></button>-->\n        </div>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component\">\n    <div class=\"input-group input-group-lg\">\n\n        <div class=\"input-group-addon\" id=\"basic-addon1\">\n            {{headingName}}\n\n\n        </div>\n\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"0\"></settings-button>\n\n            <!--<button class=\"btn btn-primary\"-->\n            <!--v-on:click=\"toggleExamProperties\"-->\n            <!--&gt;<span class=\"glyphicon glyphicon-cog\"></span></button>-->\n        </div>\n\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67914,7 +68281,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":380,"../../models/Item":382,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../models/Exam":382,"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -67989,7 +68356,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -68069,7 +68436,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
@@ -68207,7 +68574,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -68258,11 +68625,15 @@ exports.default = {
                     }
                 }
 
-                return this.placeholders.score;
+                //                    return this.placeholders.score;
             },
 
-            set: function set(v) {
-                var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+            set: function set(value) {
+                var pl = _Payload2.default.factory({
+                    index: this.index,
+                    updateProp: 'maxScore',
+                    updateVal: value
+                });
                 this.$store.commit(mTypes.updateItem, pl);
             }
 
@@ -68272,7 +68643,7 @@ exports.default = {
     methods: {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area input-group\">\n\n    <span class=\"input-group-addon\" id=\"max-score-addon\">{{ title }}</span>\n    <input type=\"number\" min=\"0\" title=\"maximum score for this question\" class=\"form-control input max-score-input\" aria-describedby=\"max-score-addon\" v-model=\"maxScore\">\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- max grade -->\n<div class=\"max-score-area input-group\">\n\n    <span class=\"input-group-addon\" id=\"max-score-addon\">{{ title }}</span>\n    <input type=\"number\" title=\"maximum score for this question\" class=\"form-control input max-score-input\" aria-describedby=\"max-score-addon\" v-model=\"maxScore\">\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68287,7 +68658,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n")
 'use strict';
@@ -68422,7 +68793,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n")
 'use strict';
@@ -68588,7 +68959,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-274cbdc8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -68649,9 +69020,7 @@ exports.default = {
         //Return everything in the items tree execpt the root
         //The root is the exam. It gets special treatment.
         items: function items() {
-            console.log('items', this);
             var orig = this.$store.getters[gTypes.getAllItems];
-            console.log('orig', orig);
             //filter out the exam and return everything else
             return orig.filter(function (obj) {
                 return obj.index > 0;
@@ -68688,7 +69057,7 @@ exports.default = {
     },
 
     mounted: function mounted() {
-        this.addItem();
+        //            this.addItem();
         var me = this;
         try {
             var qList = document.getElementById('card-list');
@@ -68786,7 +69155,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-150522d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -68931,7 +69300,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69017,7 +69386,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-484eb3d4", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"./panel.exam-detail.component.vue":372,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"./panel.exam-detail.component.vue":374,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69124,7 +69493,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-31c02e0a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":382,"../../models/Payload":383,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69300,7 +69669,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":379,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"./buttons.valence.component.vue":357,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
+},{"../../models/Comment":381,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"./buttons.valence.component.vue":359,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],374:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69395,7 +69764,9 @@ exports.default = {
         year: {
             get: function get() {
                 var exam = this.getExam();
-                return exam.year;
+                if (exam && typeof exam.year !== 'undefined') {
+                    return exam.year;
+                }
             },
             set: function set(v) {
                 this.$store.commit(mTypes.updateItem, _Payload2.default.factory({
@@ -69414,7 +69785,7 @@ exports.default = {
 
     methods: {
         selectTerm: function selectTerm() {
-            window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
+            //                window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
         },
         getExam: function getExam() {
             return this.$store.getters.getItemByIndex(0);
@@ -69430,17 +69801,6 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-
-        //check if exam id was provided,
-        // if not, create a new exam object and set it
-        // as active.
-        //            if ( typeof this.examId == 'undefined' ) {
-        //
-        //            }
-        //Also get ready to request an exam id from the server
-        //as soon as the user does something which alters the store
-
-
         console.log('exam-edit-pane ready');
     }
 };
@@ -69460,7 +69820,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69515,7 +69875,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],374:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69618,7 +69978,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69686,7 +70046,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69741,7 +70101,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":383,"../../store/action-types":386,"../../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n#itemCol.well {\n    background-color: #385a7f\n}\n")
 'use strict';
@@ -69749,10 +70109,6 @@ var __vueify_style__ = __vueify_insert__.insert("\n/*@import '../node_modules/bo
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _store = require('../store');
-
-var _store2 = _interopRequireDefault(_store);
 
 var _Exam = require('../models/Exam');
 
@@ -69778,6 +70134,10 @@ var _getterTypes = require('../store/getter-types');
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
+var _store = require('../store');
+
+var _store2 = _interopRequireDefault(_store);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -69801,77 +70161,12 @@ exports.default = {
 
     mounted: function mounted() {
 
-        //On load the root exam object and first item are created but given no
-        //ids. thus we will eventually need to create an exam object if one isn't set
-        //however don't ask the server to create an id just yet
-        var exam = this.$store.getters.gTypes.getItem(_Payload2.default.factory({ index: 0 }));
-        //            let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-        if (!exam) {
-            exam = new _Exam2.default();
-            //lookup the exam object that resides at index 0
-            //this will have either been newly created on page load
-            //or it will be an existing exam object loaded from the db
-            //                let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-            //Call the set active exam method
-            //We do this rather than call the mutation directly
-            //because there may need to be various other events and
-            //things which need to happen depending on the context.
-            //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-            this.$store.getters[mTypes.setItem](_Payload2.default.factory({ index: 0, obj: exam }));
-        }
+        //
     },
 
-    components: {
-        //            'exam-name': examName,
-        ////            'exam-properties': examEditPane,
-        ////dashboards and  tools
-        ////            'props-dashboard': propsDashboard,
-        //            'tools-dashboard': toolsDashboard,
-        //            'card-list': cardList,
-        //
-        //
-        //            //Item
-        //            'item-name': itemMain,
-        ////            'item-settings': settingsArea,
-        //            'item-settings-detail': itemDetail,
-        //            //buttons
-        //            'settings-button': settingsButton,
-        //            'valence-button': valenceButton,
-        //            'item-add-button': itemAddButton,
-        //            'delete-item-button': deleteButton,
-        //            'public-indicator': publicIndicator,
-        //            // card structure
-        //            'item-card': itemCard,
-        //            //comments
-        //            'item-settings-comment-setup': commentSetup,
-        //
-        //            'depth-control': depthControl,
-    }
+    components: {}
 
 };
-
-// Vuex store
-//this calls use vuex in addition to exposing all the modules
-//    import store from '../store'
-//
-//    import examName from './components/exam.main.component.vue'
-//    //    import examEditPane from './components/exam.edit-pane.component.vue'
-//    //    import propsDashboard from './components/dashboard.props.component.vue'
-//    import toolsDashboard from './components/dashboard.tools.component.vue'
-//    import cardList from './components/itemCards.list.component.vue'
-//
-//    import itemMain from './components/item.main.component.vue'
-//    import itemEditPane from './components/item.edit-pane.component.vue'
-//    import itemDetail from './components/panel.item-detail.component.vue'
-//    import settingsButton from './components/buttons.settings-control.component.vue'
-//    import valenceButton from './components/buttons.valence.component.vue'
-//    import itemAddButton from './components/buttons.item.add.component.vue'
-//    import deleteButton from './components/buttons.item.delete.component.vue'
-//    import publicIndicator from './components/buttons.public-control.component.vue'
-//    import itemCard from './components/itemCards.card.component.vue'
-//    import commentSetup from './components/panel.comment-setup.component.vue'
-//
-//    import depthControl from './components/buttons.depth-control.component.vue'
 if (module.exports.__esModule) module.exports = module.exports.default
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\">\n    <div class=\"row\">\n        <div class=\"col-lg-1\"></div>\n\n        <div class=\"examEditor col-lg-10\">\n            <div class=\"panel-heading\">\n                <exam-main></exam-main>\n            </div>\n\n            <div class=\"panel-body\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n        <div class=\"col-lg-1\"></div>\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n\n        <div class=\"col-lg-1\"></div>\n\n        <div id=\"itemCol\" class=\"col-lg-9 well well-sm  \">\n            <div class=\"itemRow row\">\n                <card-list></card-list>\n            </div>\n        </div>\n\n        <div id=\"infoCol\" class=\"col-lg-2 well well-sm\">\n\n            <div class=\"row\">\n                <props-dashboard></props-dashboard>\n            </div>\n\n            <div class=\"row\">\n                <tools-dashboard></tools-dashboard>\n            </div>\n\n        </div>\n\n        <div class=\"col-lg-1\"></div>\n\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
@@ -69888,10 +70183,8 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":380,"../models/Item":382,"../models/Payload":383,"../store":390,"../store/action-types":386,"../store/getter-types":388,"../store/mutation-types":403,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
+},{"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../store":392,"../store/action-types":388,"../store/getter-types":390,"../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 'use strict';
-
-require('babel-polyfill');
 
 var _vue = require('vue/dist/vue.js');
 
@@ -70005,6 +70298,14 @@ var _buttonsPublicControlComponent = require('./components/buttons.public-contro
 
 var _buttonsPublicControlComponent2 = _interopRequireDefault(_buttonsPublicControlComponent);
 
+var _controller = require('../api/controller');
+
+var _controller2 = _interopRequireDefault(_controller);
+
+var _vueAxios = require('vue-axios');
+
+var _vueAxios2 = _interopRequireDefault(_vueAxios);
+
 var _vueRouter = require('vue-router');
 
 var _vueRouter2 = _interopRequireDefault(_vueRouter);
@@ -70016,19 +70317,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Created by adam on 2/15/17.
  */
 
-//require the file which contains all dependencies etc
-require('./bootstrap');
-// import Vue from 'vue'
-
+_vue2.default.use(_bootstrapVue2.default);
 
 // ES build is more efficient by reducing unneeded components with tree-shaking.
 // (Needs Webpack 2 or Rollup)
 // import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
 // Use commonjs version if es build is not working
-
-_vue2.default.use(_bootstrapVue2.default);
-
-// ------------------------------- Globally register components
 
 
 //Panes (main container for edit tools)
@@ -70049,8 +70343,18 @@ _vue2.default.use(_bootstrapVue2.default);
 //Other buttons
 
 
-// import * as Subscriber from '../api/subscriber'
-// const plugin = Subscriber.createWebSocketPlugin();
+//Server request handlers
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+axios.defaults.baseURL = routeRoot;
+
+// This wrapper bind axios to Vue or this if you're using single file component.
+_vue2.default.use(_vueAxios2.default, window.axios);
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
+_vue2.default.component('api', _controller2.default);
 
 //Register components globally
 _vue2.default.component('exam-main', _examMainComponent2.default);
@@ -70086,6 +70390,7 @@ _vue2.default.component('item-number', _fieldItemNumberComponent2.default);
 
 _vue2.default.component('list-dropdown', _fieldListDropdownComponent2.default);
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
 
 _vue2.default.use(_vueRouter2.default);
@@ -70151,7 +70456,7 @@ var app = new _vue2.default({
 
 // Now the app has started!
 
-},{"./bootstrap":351,"./components/buttons.depth-control.component.vue":352,"./components/buttons.item.add.component.vue":353,"./components/buttons.item.delete.component.vue":354,"./components/buttons.public-control.component.vue":355,"./components/buttons.settings-control.component.vue":356,"./components/buttons.valence.component.vue":357,"./components/dashboard.props.component.vue":358,"./components/dashboard.tools.component.vue":359,"./components/exam.main.component.vue":360,"./components/field.item-name.component.vue":361,"./components/field.item-number.component.vue":362,"./components/field.list-dropdown.component.vue":363,"./components/field.max-score.component.vue":364,"./components/item.main.component.vue":365,"./components/itemCards.card.component.vue":366,"./components/itemCards.list.component.vue":367,"./components/nav.edit-tabs.component.vue":368,"./components/pane.edit-exam.component.vue":369,"./components/pane.edit-item.component.vue":370,"./components/panel.comment-setup.component.vue":371,"./components/panel.exam-detail.component.vue":372,"./components/panel.history.component.vue":373,"./components/panel.item-detail.component.vue":374,"./components/panel.notes.component.vue":375,"./components/panel.stats.component.vue":376,"./new-setup.vue":377,"babel-polyfill":26,"bootstrap-vue":29,"vue-router":345,"vue/dist/vue.js":346}],379:[function(require,module,exports){
+},{"../api/controller":351,"./components/buttons.depth-control.component.vue":354,"./components/buttons.item.add.component.vue":355,"./components/buttons.item.delete.component.vue":356,"./components/buttons.public-control.component.vue":357,"./components/buttons.settings-control.component.vue":358,"./components/buttons.valence.component.vue":359,"./components/dashboard.props.component.vue":360,"./components/dashboard.tools.component.vue":361,"./components/exam.main.component.vue":362,"./components/field.item-name.component.vue":363,"./components/field.item-number.component.vue":364,"./components/field.list-dropdown.component.vue":365,"./components/field.max-score.component.vue":366,"./components/item.main.component.vue":367,"./components/itemCards.card.component.vue":368,"./components/itemCards.list.component.vue":369,"./components/nav.edit-tabs.component.vue":370,"./components/pane.edit-exam.component.vue":371,"./components/pane.edit-item.component.vue":372,"./components/panel.comment-setup.component.vue":373,"./components/panel.exam-detail.component.vue":374,"./components/panel.history.component.vue":375,"./components/panel.item-detail.component.vue":376,"./components/panel.notes.component.vue":377,"./components/panel.stats.component.vue":378,"./new-setup.vue":379,"bootstrap-vue":29,"vue-axios":343,"vue-router":345,"vue/dist/vue.js":346}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70277,7 +70582,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":381,"./Item":382}],380:[function(require,module,exports){
+},{"./IModel":383,"./Item":384}],382:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70285,6 +70590,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _Comment = require('./Comment');
 
@@ -70318,13 +70625,15 @@ var Exam = function (_Item) {
         var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
 
         _Comment2.default.initializeComments(_this);
+        /**
+         * The db identifier of the model
+         */
+        _this.id = -1;
 
-        // this._id; // = examId;
-        // this._index; // = examIndex;
         // this._name; // = name;
-        _this._year; // = year;
-        _this._term; // = term;
-
+        _this.year; // = year;
+        _this.term; // = term;
+        _this.kind = 'exam';
         if (arguments.length > 0) {
             //fill in from params
         }
@@ -70332,6 +70641,28 @@ var Exam = function (_Item) {
     }
 
     _createClass(Exam, [{
+        key: 'isNew',
+
+
+        /* *************************** Props ************* */
+
+        //
+        // get year(){ return this._year; }
+        // set year(v){ this._year = v; }
+        //
+        // get term(){ return this._term; }
+        // set term(v){ this._term = v; }
+
+        value: function isNew() {
+            return this.id === -1;
+        }
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }, {
         key: 'examId',
 
 
@@ -70346,6 +70677,9 @@ var Exam = function (_Item) {
                 return null;
             }
             return this.id;
+        },
+        set: function set(v) {
+            this.id = v;
         }
 
         /* *************************** Index ************* */
@@ -70365,31 +70699,6 @@ var Exam = function (_Item) {
             }
             return this.index;
         }
-
-        /* *************************** Props ************* */
-
-    }, {
-        key: 'year',
-        get: function get() {
-            return this._year;
-        },
-        set: function set(v) {
-            this._year = v;
-        }
-    }, {
-        key: 'term',
-        get: function get() {
-            return this._term;
-        },
-        set: function set(v) {
-            this._term = v;
-        }
-
-        /**
-         * Returns a list of fields which may
-         * be used to look up an exam from the store
-         */
-
     }], [{
         key: 'examIdentifiers',
         value: function examIdentifiers() {
@@ -70407,13 +70716,14 @@ var Exam = function (_Item) {
         value: function className() {
             return 'exam';
         }
-
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
-
+    }, {
+        key: 'getAliasMap',
+        value: function getAliasMap() {
+            return {
+                examId: 'id',
+                examIndex: 'index'
+            };
+        }
     }, {
         key: 'factory',
         value: function factory(params) {
@@ -70424,16 +70734,18 @@ var Exam = function (_Item) {
         }
     }, {
         key: 'fillableProps',
+
+
+        // get idx (){return  [ 0,  0];}
+
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
         get: function get() {
-            return ['id', 'index', 'name', 'publicName', 'year', 'term'];
-        }
-    }, {
-        key: 'aliasMap',
-        get: function get() {
-            return {
-                examId: 'id',
-                examIndex: 'index'
-            };
+            return ['year', 'term'].concat(_get(Exam.__proto__ || Object.getPrototypeOf(Exam), 'fillableProps', this));
         }
     }]);
 
@@ -70442,7 +70754,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Comment":379,"./Item":382}],381:[function(require,module,exports){
+},{"./Comment":381,"./Item":384}],383:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70463,10 +70775,8 @@ var IModel = function () {
     function IModel() {
         _classCallCheck(this, IModel);
 
-        /**
-         * The db identifier of the model
-         */
-        this.id;
+        // this.idx;
+
 
         /**
          * The stored order of the item overall
@@ -70476,7 +70786,7 @@ var IModel = function () {
         /** The nickname or title by which this item is identified */
         this.name;
 
-        this.number = null;
+        // this.number = null;
 
         /**
          * The full length text of the item.
@@ -70485,16 +70795,20 @@ var IModel = function () {
          */
         this.text = '';
 
+        this.publicName;
+
+        /**
+         * The maximum possible value of the item
+         */
+        this.maxScore;
+
+        this.kind;
+
         /**
          * The secondary locator value
          * Q1 E2 = index 0, depth 3
          */
         this.depth = 0;
-
-        /**
-         * The possible values of this._type
-         */
-        this.types = ['comment', 'element', 'question'];
     }
 
     /**
@@ -70517,9 +70831,9 @@ var IModel = function () {
          */
         value: function fillObject(obj, params) {
             if (typeof params !== 'undefined') {
-
+                var fillableProps = this.fillableProps;
                 //fill any fillable values
-                this.fillableProps.forEach(function (v) {
+                fillableProps.forEach(function (v) {
                     // console.log( 'params', params, v );
                     if (typeof params[v] != 'undefined') {
                         obj[v] = params[v];
@@ -70612,6 +70926,29 @@ var IModel = function () {
         //
 
     }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['idx', 'id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
+        }
+
+        /**
+         * The possible values of this._type
+         */
+
+    }, {
+        key: 'types',
+        get: function get() {
+
+            return ['comment', 'element', 'question'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
         key: 'valences',
         get: function get() {
             return ['stock', 'absent', 'poor', 'good', 'excellent'];
@@ -70623,7 +70960,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],382:[function(require,module,exports){
+},{}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70631,6 +70968,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } }; /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * This is the model which can be either a question
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * or an element.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Created by adam on 2/17/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
 var _Comment = require('./Comment');
 
@@ -70646,28 +70989,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This is the model which can be either a question
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or an element.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 2/17/17.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Item = function (_IModel) {
     _inherits(Item, _IModel);
 
+    _createClass(Item, null, [{
+        key: 'fillableProps',
+
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+        get: function get() {
+            return [].concat(_get(Item.__proto__ || Object.getPrototypeOf(Item), 'fillableProps', this));
+        }
+    }]);
+
     function Item() {
         _classCallCheck(this, Item);
 
+        /**
+         * The db identifier of the model
+         */
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+
+        _this.id = -1;
 
         _Comment2.default.initializeComments(_this);
 
-        _this.publicName;
+        // this.idx = [ this.index,  this.depth];
 
-        /**
-         * The maximum possible value of the item
-         */
-        _this.maxScore;
+        _this.kind = 'item';
 
         /**
          * Whether the item is currently set to
@@ -70682,20 +71037,28 @@ var Item = function (_IModel) {
          */
         _this._public = false;
 
-        //The id of the exam the item is associated with
-        _this.examId;
+        /** The DB question assignment id or elementAssignmentId if applicable */
+        _this.assignmentId = -1;
 
-        // super.initializeComments();
+        //The id of the exam the item is associated with
+        // this.examId = -1;
+
+        // this.props = super.fillableProps;
         return _this;
     }
 
-    /**
-     * utility for determining which of the older types
-     * this item belongs to
-     */
-
-
     _createClass(Item, [{
+        key: 'isNew',
+        value: function isNew() {
+            return this.id === -1;
+        }
+
+        /**
+         * utility for determining which of the older types
+         * this item belongs to
+         */
+
+    }, {
         key: 'determineType',
         value: function determineType() {
             return this.depth > 0 ? 'element' : 'question';
@@ -70788,6 +71151,11 @@ var Item = function (_IModel) {
          */
 
     }, {
+        key: 'idx',
+        get: function get() {
+            return [this.index, this.depth];
+        }
+    }, {
         key: 'type',
         get: function get() {
             return this.determineType();
@@ -70815,13 +71183,6 @@ var Item = function (_IModel) {
         value: function className() {
             return 'item';
         }
-
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
-
     }, {
         key: 'factory',
         value: function factory(params) {
@@ -70829,16 +71190,13 @@ var Item = function (_IModel) {
             return this.fillObject(obj, params);
         }
     }, {
-        key: 'fillableProps',
-        get: function get() {
-            return ['id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
-        }
-    }, {
         key: 'aliasMap',
         get: function get() {
             return {
                 ItemId: 'id',
-                ItemIndex: 'index'
+                ItemIndex: 'index',
+                questionName: 'name',
+                questionText: 'text'
             };
         }
     }]);
@@ -70848,7 +71206,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":379,"./IModel":381}],383:[function(require,module,exports){
+},{"./Comment":381,"./IModel":383}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70875,6 +71233,9 @@ var Payload = function () {
         this._id;
         //the index value of the object
         this._index;
+
+        /** Whether to fail to notify subscribers of the mutation */
+        this.mutateSilently = false;
 
         /**
          * Where there is a compound index (e.g., obj[studentIndex][questionIndex],
@@ -70913,7 +71274,14 @@ var Payload = function () {
         key: 'id',
         get: function get() {
             return this._id;
-        },
+        }
+
+        /**
+        * Retrieve the index where it is possible
+        * different fields could have different values.
+        * This enforces the order of precedence between the fields
+        */
+        ,
         set: function set(val) {
             //todo numeric check
             this._id = val;
@@ -70985,6 +71353,19 @@ var Payload = function () {
          */
 
     }], [{
+        key: 'getIndex',
+        value: function getIndex(payload) {
+            if (this.checkIfPayload(payload)) {
+                //If an object is set, that object's index
+                //is always correct.
+                if (typeof payload.obj !== 'undefined' && typeof payload.obj.index !== 'undefined') {
+                    return payload.obj.index;
+                } else {
+                    return payload.index;
+                }
+            }
+        }
+    }, {
         key: 'factory',
         value: function factory(params) {
             var p = new Payload();
@@ -71037,7 +71418,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],384:[function(require,module,exports){
+},{}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71194,7 +71575,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":382}],385:[function(require,module,exports){
+},{"./Item":384}],387:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71485,7 +71866,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":381}],386:[function(require,module,exports){
+},{"./IModel":383}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71500,6 +71881,7 @@ Object.defineProperty(exports, "__esModule", {
 // they are described in actions.js
 var createExam = exports.createExam = 'createExam';
 var updateExam = exports.updateExam = 'updateExam';
+var createItem = exports.createItem = 'createItem';
 
 var addStudent = exports.addStudent = 'addStudent';
 
@@ -71558,23 +71940,18 @@ var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime'
 var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 
 //items
-var createItem = exports.createItem = 'createItem';
 var deleteItem = exports.deleteItem = 'deleteItem';
 var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],387:[function(require,module,exports){
+},{}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.actions = undefined;
-
-var _actions;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; //Root actions for the vuex instance
+exports.updateExam = exports.createItem = exports.createExam = undefined;
 
 var _mutationTypes = require('./mutation-types');
 
@@ -71592,6 +71969,10 @@ var _Exam = require('../models/Exam');
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
+var _Item = require('../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
 var _Payload = require('../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
@@ -71604,215 +71985,345 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+// export const actions = {
 
-var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.createExam, function (_ref, payload) {
+/**
+ * Creates a new exam on the client, sets
+ * it as the active exam, and requests an
+ * exam id from the server
+ * @param state
+ * @param commit
+ * @param payload
+ */
+var createExam = exports.createExam = function createExam(_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
+    window.console.log('actions', 'createExam', 22);
     //instantiate the new exam
-    var exam = new _Exam2.default();
+    var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
+    //set it in the items list
+    //this will call the api lister.
+    commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
+    //set it as active (in case anything is depending on the older structure)
+    // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+};
 
-    //set it as active
-    commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+/**
+ * Called when a brand new item needs to be created and inserted into
+ * the store.
+ * This handles the creation of the item and then the subsequent actions
+ * like notifying the server
+ *
+ * @param state
+ * @param commit
+ */
+//Root actions for the vuex instance
 
-    //request id for it from server
-    api.createModel(exam, function (response) {
-        //when the server responds, store the id
-        exam.id = response.data.id;
-        commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-    });
-}), _defineProperty(_actions, aTypes.updateExam, function (_ref2, payload) {
+var createItem = exports.createItem = function createItem(_ref2) {
     var state = _ref2.state,
         commit = _ref2.commit;
+
+    window.console.log('actions', 'createItem', 42, state.items);
+    //figure out what the index should be based on
+    //what is already in the list of items
+    var len = Object.keys(state.items).length;
+    // let len = state.getItemCount(); //items.length;
+    window.console.log('actions', 'createItem', 47, len, state.items.length);
+    var index = 1 + len;
+    //set the item index
+    // let index = len === 1 ? len : len + 1;
+
+    var item = _Item2.default.factory({ index: index }); //.factory( {id: id, index: index} );
+    window.console.log('actions', 'createItem', 51, index, item);
+    //Calling this mutation will trigger the api listener
+    commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item }));
+    commit(mTypes.updateOrder);
+};
+
+/**
+ * The payload should contain the exam that is presently set
+ * as the active exam, but with updated properties. This
+ * will replace the exam stored, so that vue can see the change
+ * @param state
+ * @param commit
+ * @param payload
+ */
+var updateExam = exports.updateExam = function updateExam(_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
 
 
     //set it as active
     commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
     //request server update
-}), _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
+};
 
-    // [aTypes.setActiveStudentId](state, rootState, payload){
+// // /**
+// //  * Sets the id of the exam currently being worked on
+// //  * @param commit
+// //  * @param examId
+// //  */
+// // export const setExamId = ( {commit}, examId ) => {
+// //     commit( '_setExamId', examId );
+// // };
+// //
+// // export const activeStudentIdGetDecor = ( {state, commit}, payload ) => {
+// //
+// // };
+//
+//     /**
+//      * Handles figuring out how to set the active student from the given
+//      * the id in the provided payload
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload
+//      */
+//
+//     [aTypes.setActiveStudentId]: ( {state, commit}, payload ) => {
+//         // [aTypes.setActiveStudentId](state, rootState, payload){
+//
+//         console.log( aTypes.setActiveStudentId, 'is deprecated!' );
+//         console.log( aTypes.setActiveStudentId, payload );
+//         payload = state.activeStudent;
+//
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//
+//         // let studentId;
+//         //
+//         // //number passed in
+//         // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
+//         //     studentId = payload;
+//         // }
+//         //
+//         //
+//         // //object passed in
+//         // //todo add object case
+//         // console.log('studentId', studentId);
+//         // if (Number.isInteger(studentId)) {
+//         //     commit(mTypes.setId, Payload.factory({num: studentId}));
+//         // }
+//     },
+//
+//     /**
+//      * Handles figuring out how to set the active student given
+//      * the provided index payload
+//      * @deprecated
+//      * @param state
+//      * @param commit
+//      * @param payload
+//      */
+//     [ aTypes.setActiveStudentIndex ]: ( {state, commit}, payload ) => {
+//
+//         console.log( aTypes.setActiveStudentIndex, 'is deprecated!' );
+//         payload = state.activeStudent;
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//         // let studentIndex;
+//         // switch (typeof (payload)) {
+//         //     case 'number':
+//         //         if (Number.isInteger(payload)) {
+//         //             studentIndex = payload;
+//         //         }
+//         //         break;
+//         //     case 'object':
+//         //         //todo write if object
+//         //
+//         //         break;
+//         //     default:
+//         // }
+//         //
+//         // if (Number.isInteger(studentIndex)) {
+//         //     commit(mTypes.setIndex, studentIndex);
+//         // }
+//     },
+//
+//     /**
+//      * Handles figuring out how to set a student object as active
+//      * from the provided payload
+//      * @deprecated
+//      * @param student
+//      * @param rootState
+//      * @param payload
+//      */
+//     [ aTypes.setActiveStudentObject ]: ( {state, commit}, payload ) => {
+//         console.log( aTypes.setActiveStudentObject, 'is deprecated!' );
+//         [ aTypes.setActiveStudent ]( state, commit, payload );
+//         // // let student;
+//         //
+//         // // if (payload instanceof Student) {
+//         // //     student = payload;
+//         // // }
+//         // // switch(typeof (payload)){
+//         // //     case 'number':
+//         // //         if(Number.isInteger(payload)){
+//         // //             studentIndex = payload;
+//         // //         }
+//         // //         break;
+//         // //     case 'object':
+//         // //         //todo write if object
+//         // //
+//         // //         break;
+//         // //     default:
+//         // // }
+//         //
+//         // //Call the mutation
+//         // if (payload instanceof Student) {
+//         //     commit(mTypes.setStudentObject, payload);
+//         // }
+//     },
+//     /**
+//      * Updates the state's stored index for the currently selected
+//      * to the index specified in the payload.
+//      * Does not update id or student; those must be called separately
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload
+//      */
+//         [aTypes.setIndex]( {state, commit}, payload ){
+//         console.log( aTypes.setIndex, 'is deprecated!' );
+//         console.log( aTypes.setIndex, payload );
+//         payload = state.activeStudent;
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//     },
+//
+//     /**
+//      * Updates the state's stored student id for the currently
+//      * selected student to the id specified in the payload.
+//      * Does not update index or student; those must be called separately
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload integer
+//      * @returns {boolean}
+//      */
+//         [aTypes.setId]( {state, commit}, payload )
+//     {
+//         console.log( aTypes.setId, 'is deprecated!' );
+//         payload = state.activeStudent;
+//
+//         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+//     },
+//
+//     /**
+//      * Sets the state's stored student object to the
+//      * object specified in the payload.
+//      * Does not update index or id. Those must be called separately.
+//      * @deprecated
+//      * @param state
+//      * @param rootState
+//      * @param payload Student
+//      */
+//         [aTypes.setStudentObject]( {state, commit}, payload )
+//     {
+//         payload = state.activeStudent;
+//
+//         if ( typeof (payload) == 'object' && payload instanceof Student ) {
+//             commit( mTypes.setActiveStudent, Payload.factory( {obj: payload} ) )
+//             // state.student = payload;
+//         }
+//     },
+//
+//
+//     // -------------------- from times
+//
+//     /**
+//      * Handles figuring out how to set the time of the the currently
+//      * selected student from the provided payload
+//      * @returns {boolean}
+//      */
+//         [aTypes.setActiveStudentTime]( {state, commit}, payload )
+//     {
+//
+//         let studentIndex = state.activeStudent.index;
+//         let time;
+//
+//         switch ( typeof (payload) ) {
+//             case 'number':
+//                 if ( Number.isInteger( payload ) ) {
+//                     //go straight to recording
+//                     time = payload;
+//                 }
+//                 break;
+//
+//             //object with expected key
+//             case 'object':
+//                 //todo write if object
+//                 break;
+//
+//             //other allowed types
+//             // todo
+//
+//             //numeric string
+//             // todo
+//             default:
+//             //todo
+//         }
+//
+//         //Call the mutation
+//         if ( typeof(time) == 'number' ) {
+//             commit( mTypes.setTime, time );
+//         }
+//     },
+//
+//     /**
+//      * Increases the stored time for the student currently being graded by the specified
+//      * amount.
+//      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
+//      */
+//     [aTypes.increaseActiveStudentGradingTime]: ( {state, commit}, payload ) => {
+//         let studentIndex = state.activeStudent.index;
+//         state.examGradingTimes[ studentIndex ] += payload.timeToAdd;
+//     },
+//
+// // qscores
+//
+//
+//     /**
+//      * Save a question score for the currently active student
+//      * @param state
+//      * @param commit
+//      * @param payload
+//      */
+//     [aTypes.storeQuestionScoreForActiveStudent]: ( {state, commit}, payload ) => {
+//         // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+//         let {questionIndex, score} = payload;
+//         let studentIndex = state.activeStudent.index;
+//         //type checking
+//
+//         let out = Payload.factory( {index2: questionIndex, index: studentIndex, num: score} );
+//
+//         commit( mTypes.setQuestionScore, out );
+//     },
+//
+//     // escores
+//
+//     [aTypes.storeElementScoreForActiveStudent]( {state, commit}, payload ) {
+//         let studentIndex = state.getActiveStudentIndex();
+//         let {elementIndex, score} = payload;
+//         //type checks
+//
+//         if ( typeof (score) == 'undefined' ) {
+//             //score may have been named differently
+//             score = payload.elementScore;
+//         }
+//
+//
+//         let out = Payload.factory( {
+//             index: studentIndex,
+//             index2: elementIndex,
+//             num: score
+//         } );
+//
+//         commit( mTypes.setElementScore, out );
+//     },
 
-    console.log(aTypes.setActiveStudentId, 'is deprecated!');
-    console.log(aTypes.setActiveStudentId, payload);
-    payload = state.activeStudent;
 
-    actions[aTypes.setActiveStudent](state, commit, payload);
+// }
+// ;
 
-    // let studentId;
-    //
-    // //number passed in
-    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
-    //     studentId = payload;
-    // }
-    //
-    //
-    // //object passed in
-    // //todo add object case
-    // console.log('studentId', studentId);
-    // if (Number.isInteger(studentId)) {
-    //     commit(mTypes.setId, Payload.factory({num: studentId}));
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-
-    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-    // let studentIndex;
-    // switch (typeof (payload)) {
-    //     case 'number':
-    //         if (Number.isInteger(payload)) {
-    //             studentIndex = payload;
-    //         }
-    //         break;
-    //     case 'object':
-    //         //todo write if object
-    //
-    //         break;
-    //     default:
-    // }
-    //
-    // if (Number.isInteger(studentIndex)) {
-    //     commit(mTypes.setIndex, studentIndex);
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
-
-    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
-    [aTypes.setActiveStudent](state, commit, payload);
-    // // let student;
-    //
-    // // if (payload instanceof Student) {
-    // //     student = payload;
-    // // }
-    // // switch(typeof (payload)){
-    // //     case 'number':
-    // //         if(Number.isInteger(payload)){
-    // //             studentIndex = payload;
-    // //         }
-    // //         break;
-    // //     case 'object':
-    // //         //todo write if object
-    // //
-    // //         break;
-    // //     default:
-    // // }
-    //
-    // //Call the mutation
-    // if (payload instanceof Student) {
-    //     commit(mTypes.setStudentObject, payload);
-    // }
-}), _defineProperty(_actions, aTypes.setIndex, function (_ref6, payload) {
-    var state = _ref6.state,
-        commit = _ref6.commit;
-
-    console.log(aTypes.setIndex, 'is deprecated!');
-    console.log(aTypes.setIndex, payload);
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setId, function (_ref7, payload) {
-    var state = _ref7.state,
-        commit = _ref7.commit;
-
-    console.log(aTypes.setId, 'is deprecated!');
-    payload = state.activeStudent;
-
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref8, payload) {
-    var state = _ref8.state,
-        commit = _ref8.commit;
-
-    payload = state.activeStudent;
-
-    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
-        commit(mTypes.setActiveStudent, _Payload2.default.factory({ obj: payload }));
-        // state.student = payload;
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref9, payload) {
-    var state = _ref9.state,
-        commit = _ref9.commit;
-
-
-    var studentIndex = state.activeStudent.index;
-    var time = void 0;
-
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                //go straight to recording
-                time = payload;
-            }
-            break;
-
-        //object with expected key
-        case 'object':
-            //todo write if object
-            break;
-
-        //other allowed types
-        // todo
-
-        //numeric string
-        // todo
-        default:
-        //todo
-    }
-
-    //Call the mutation
-    if (typeof time == 'number') {
-        commit(mTypes.setTime, time);
-    }
-}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref10, payload) {
-    var state = _ref10.state,
-        commit = _ref10.commit;
-
-    var studentIndex = state.activeStudent.index;
-    state.examGradingTimes[studentIndex] += payload.timeToAdd;
-}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref11, payload) {
-    var state = _ref11.state,
-        commit = _ref11.commit;
-
-    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-    var questionIndex = payload.questionIndex,
-        score = payload.score;
-
-    var studentIndex = state.activeStudent.index;
-    //type checking
-
-    var out = _Payload2.default.factory({ index2: questionIndex, index: studentIndex, num: score });
-
-    commit(mTypes.setQuestionScore, out);
-}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref12, payload) {
-    var state = _ref12.state,
-        commit = _ref12.commit;
-
-    var studentIndex = state.getActiveStudentIndex();
-    var elementIndex = payload.elementIndex,
-        score = payload.score;
-    //type checks
-
-    if (typeof score == 'undefined') {
-        //score may have been named differently
-        score = payload.elementScore;
-    }
-
-    var out = _Payload2.default.factory({
-        index: studentIndex,
-        index2: elementIndex,
-        num: score
-    });
-
-    commit(mTypes.setElementScore, out);
-}), _actions);
-
-},{"../api/controller":350,"../models/Exam":380,"../models/Payload":383,"../models/Student":385,"./action-types":386,"./mutation-types":403}],388:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../models/Student":387,"./action-types":388,"./mutation-types":405}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71897,7 +72408,7 @@ var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
 
-},{}],389:[function(require,module,exports){
+},{}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71938,9 +72449,15 @@ var validateIndex = function validateIndex(index) {
  * Methods which make use of multiple modules should generally be kept here
  */
 var getExamId = exports.getExamId = function getExamId(state) {
-    if (typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined') {
-        return state.activeExam.id;
+    var exam = state.items[0];
+    if (exam) {
+        return exam.id;
     }
+    //
+    //
+    // if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
+    //     return state.activeExam.id;
+    // }
     return null;
 };
 
@@ -72088,51 +72605,13 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{"./getter-types":388}],390:[function(require,module,exports){
+},{"./getter-types":390}],392:[function(require,module,exports){
 (function (process){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                                               * Created by adam on 1/10/17.
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * Notes about how to use
-                                                                                                                                                                                                                                                                               * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               const app = new Vue({
-                                                                                                                                                                                                                                                                                el: '#app',
-                                                                                                                                                                                                                                                                                // provide the store using the "store" option.
-                                                                                                                                                                                                                                                                                // this will inject the store instance to all child components.
-                                                                                                                                                                                                                                                                                store,
-                                                                                                                                                                                                                                                                                components: { Counter },
-                                                                                                                                                                                                                                                                                template: `
-                                                                                                                                                                                                                                                                                  <div class="app">
-                                                                                                                                                                                                                                                                                    <counter></counter>
-                                                                                                                                                                                                                                                                                  </div>
-                                                                                                                                                                                                                                                                                `
-                                                                                                                                                                                                                                                                              })
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               const Counter = {
-                                                                                                                                                                                                                                                                                template: `<div>{{ count }}</div>`,
-                                                                                                                                                                                                                                                                                computed: {
-                                                                                                                                                                                                                                                                                  count () {
-                                                                                                                                                                                                                                                                                    return this.$store.state.count
-                                                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               */
-
-// import Vue from 'vue'
-
 
 var _vue = require('vue/dist/vue.js');
 
@@ -72206,6 +72685,14 @@ var _visibility = require('./modules/visibility');
 
 var _visibility2 = _interopRequireDefault(_visibility);
 
+var _apiPlugin = require('../api/apiPlugin');
+
+var _apiPlugin2 = _interopRequireDefault(_apiPlugin);
+
+var _websocketPlugin = require('../api/websocketPlugin');
+
+var _websocketPlugin2 = _interopRequireDefault(_websocketPlugin);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -72213,99 +72700,89 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
+/**
+ * Created by adam on 1/10/17.
+ *
+ * Notes about how to use
+ * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
+
+ Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
+
+ const app = new Vue({
+  el: '#app',
+  // provide the store using the "store" option.
+  // this will inject the store instance to all child components.
+  store,
+  components: { Counter },
+  template: `
+    <div class="app">
+      <counter></counter>
+    </div>
+  `
+})
+
+ By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
+
+ const Counter = {
+  template: `<div>{{ count }}</div>`,
+  computed: {
+    count () {
+      return this.$store.state.count
+    }
+  }
+}
+
+ *
+ */
+
 _vue2.default.use(_vuex2.default);
 
 /**
- *This subscribes the api package which
+ * This subscribes the api package which
  * handles data exchange with the server
  * to mutations in the store.
  */
-var apiPlugin = function apiPlugin(store) {
-    //         // socket.on('data', data => {
-    //         //     store.commit('receiveData', data)
-    //         // });
-    //         store.subscribe(mutation) => {
-    //             window.console.log('subscriber', 'mutation caught', 48, mutation);
-    //             // if (mutation.type === 'UPDATE_DATA') {
-    //             //     socket.emit('update', mutation.payload)
-    //             // }
-    //         })
 
-
-    // called when the store is initialized
-    store.subscribe(function (mutation, state) {
-        // called after every mutation.
-        // The mutation comes in the format of { type, payload }.
-        window.console.log('subscriber', 'mutation caught', 48, mutation);
-    });
-};
-
-// function createWebSocketPlugin () {
-//     return store => {
-//         // socket.on('data', data => {
-//         //     store.commit('receiveData', data)
-//         // });
-//         store.subscribe(mutation) => {
-//             window.console.log('subscriber', 'mutation caught', 48, mutation);
-//             // if (mutation.type === 'UPDATE_DATA') {
-//             //     socket.emit('update', mutation.payload)
-//             // }
-//         })
-//     }
-// }
-// const plugin = createWebSocketPlugin();
+// import Vue from 'vue'
 
 
 var debug = process.env.NODE_ENV !== 'production';
 
 exports.default = new _vuex2.default.Store({
-    /**
-     * From instances and components where store has been
-     * injected, actions are called
-     * like so: store.dispatch( 'string-action-name' )
-     */
-    actions: actions,
-    getters: getters,
-    plugins: [apiPlugin],
 
-    mutations: {
-        /**
-         * Sets the current exam id
-         *
-         * @todo Extend to set from an exam object
-         *
-         * @param state
-         * @param payload
-         */
-        _setExamId: function _setExamId(state, payload) {
-            if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
-                state.examId = payload;
-            }
+  strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 
-            window.console.log('setExamId', state);
-        }
-    },
+  /**
+   * From instances and components where store has been
+   * injected, actions are called
+   * like so: store.dispatch( 'string-action-name' )
+   */
+  actions: actions,
+  getters: getters,
+  mutations: mutations,
+  state: state,
 
-    modules: {
-        activeexam: _activeexam2.default,
-        activestudent: _activestudent2.default,
-        comments: _comments2.default,
-        escores: _escores2.default,
-        items: _items2.default,
-        grades: _grades2.default,
-        qscores: _qscores2.default,
-        questions: _questions2.default,
-        settings: _settings2.default,
-        students: _students2.default,
-        times: _times2.default,
-        visibility: _visibility2.default
-    },
-    state: state,
+  plugins: [_apiPlugin2.default, _websocketPlugin2.default],
 
-    strict: debug });
+  modules: {
+    activeexam: _activeexam2.default,
+    activestudent: _activestudent2.default,
+    comments: _comments2.default,
+    escores: _escores2.default,
+    items: _items2.default,
+    grades: _grades2.default,
+    qscores: _qscores2.default,
+    questions: _questions2.default,
+    settings: _settings2.default,
+    students: _students2.default,
+    times: _times2.default,
+    visibility: _visibility2.default
+  }
+
+});
 
 }).call(this,require('_process'))
-},{"./actions":387,"./getters":389,"./modules/activeexam.js":391,"./modules/activestudent.js":392,"./modules/comments.js":393,"./modules/escores.js":394,"./modules/grades.js":395,"./modules/items.js":396,"./modules/qscores.js":397,"./modules/questions.js":398,"./modules/settings":399,"./modules/students.js":400,"./modules/times.js":401,"./modules/visibility":402,"./mutations":404,"./state":405,"_process":339,"vue/dist/vue.js":346,"vuex":349}],391:[function(require,module,exports){
+},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":389,"./getters":391,"./modules/activeexam.js":393,"./modules/activestudent.js":394,"./modules/comments.js":395,"./modules/escores.js":396,"./modules/grades.js":397,"./modules/items.js":398,"./modules/qscores.js":399,"./modules/questions.js":400,"./modules/settings":401,"./modules/students.js":402,"./modules/times.js":403,"./modules/visibility":404,"./mutations":406,"./state":407,"_process":339,"vue/dist/vue.js":346,"vuex":349}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72440,7 +72917,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":380,"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],392:[function(require,module,exports){
+},{"../../models/Exam":382,"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72579,7 +73056,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../../models/Student":385,"../action-types":386,"../mutation-types":403}],393:[function(require,module,exports){
+},{"../../models/Payload":385,"../../models/Student":387,"../action-types":388,"../mutation-types":405}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72773,7 +73250,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],394:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72878,7 +73355,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],395:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73057,7 +73534,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],396:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73116,9 +73593,24 @@ var state = {
 
     /**
      * Object indexed by Item id holding Item objects
+     On load the root exam object and first item are created but given no
+     ids. thus we will eventually need to create an exam object if one isn't set
+      However don't ask the server to create an id just yet
+     lookup the exam object that resides at index 0
+     this will have either been newly created on page load
+     or it will be an existing exam object loaded from the db
+     let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+     //Call the set active exam method
+     //We do this rather than call the mutation directly
+     //because there may need to be various other events and
+     //things which need to happen depending on the context.
+     //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+     this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+     }
      */
-    items: [_Exam2.default.factory({ index: 0 }), _Item2.default.factory({ index: 1 })],
+    items: [],
 
+    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
     /**
      * Mapping from older ItemIndex to new Item id value
      */
@@ -73161,26 +73653,42 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
         Vue.set(item, 'index', i);
         //set it in the array with vue
         Vue.set(state.items, i, item);
-        // state.items.$set( i, item );
     }
 }), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
-    console.log(mTypes.addNewItem, state, payload);
-    var len = state.items.length;
-    //set the item index
-    var index = len == 0 || 1 ? len : len + 1;
+    // console.log(mTypes.addNewItem, state, payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var obj = payload.obj;
 
-    //to be replaced with lookup from server
-    var id = Math.floor(Math.random() * (999999999 - 1111111111 + 1)) + 1111111111;
-
-    var item = new _Item2.default(); //.factory( {id: id, index: index} );
-    Vue.set(item, 'index', index);
-    Vue.set(item, 'id', id);
-    //set it in the array with vue
-    Vue.set(state.items, index, item);
-    // state.items.$set( index, item );
+        Vue.set(state.items, obj.index, obj);
+    }
+    //case where something just hands an item
+    else {
+            if (payload instanceof _Item2.default) {
+                //call the action addNewItem on it
+                //set its new index on the item
+                //add it to the list
+            }
+        }
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
-    console.log(mTypes.updateItem, payload, state);
-    var itm = helpers.getItemFromPayload(state, payload);
+    // console.log(mTypes.updateItem, payload, state);
+    var itm = state.items[payload.index];
+
+    // let itm = helpers.getItemFromPayload(state, payload);
+    // window.console.log('items', 143, itm);
+    if (typeof itm !== 'undefined') {
+        //Set the value so vue can see it
+        Vue.set(itm, payload.updateProp, payload.updateVal);
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
+    }
+}), _defineProperty(_mutations, mTypes.updateItemSilently, function (state, payload) {
+    // console.log(mTypes.updateItemSilently, payload, state);
+    var itm = state.items[payload.index];
+
+    // let itm = helpers.getItemFromPayload(state, payload);
+    // window.console.log('items', 143, itm);
     if (typeof itm !== 'undefined') {
         //Set the value so vue can see it
         Vue.set(itm, payload.updateProp, payload.updateVal);
@@ -73212,8 +73720,9 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     }
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
     console.log('items.mutations', mTypes.setItem, state, payload);
-    Vue.set(state.items, payload.obj.index, payload.obj);
-    // state.items.$set( payload.obj.index, payload.obj );
+    if (_Payload2.default.checkIfPayload(payload)) {
+        Vue.set(state.items, payload.obj.index, payload.obj);
+    }
 }), _defineProperty(_mutations, mTypes.promoteItem, function (state, payload) {
     var index = payload.index;
 
@@ -73270,15 +73779,9 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, function (_ref) {
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.deleteItem, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
-
-    console.log(aTypes.createItem, state);
-    commit(mTypes.addNewItem);
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
 
     console.log(aTypes.deleteItem, state, commit, payload);
     //check if payload has correct structure
@@ -73357,7 +73860,6 @@ var getters = {
      * yet run.
      * @param state
      * @param getters
-     * @param rootState
      * @param index
      */
     getItemByIndex: function getItemByIndex(state, getters) {
@@ -73497,7 +73999,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":380,"../../models/Item":382,"../../models/Payload":383,"../../store/action-types":386,"../../store/getter-types":388,"../../store/mutation-types":403,"vue":347}],397:[function(require,module,exports){
+},{"../../models/Exam":382,"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73607,7 +74109,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],398:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73746,7 +74248,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../../models/Question":384,"../action-types":386,"../mutation-types":403}],399:[function(require,module,exports){
+},{"../../models/Payload":385,"../../models/Question":386,"../action-types":388,"../mutation-types":405}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73815,7 +74317,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],400:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73935,7 +74437,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../../models/Student":385,"../action-types":386,"../mutation-types":403}],401:[function(require,module,exports){
+},{"../../models/Payload":385,"../../models/Student":387,"../action-types":388,"../mutation-types":405}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74072,7 +74574,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../mutation-types":403}],402:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74168,7 +74670,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":383,"../action-types":386,"../getter-types":388,"../mutation-types":403}],403:[function(require,module,exports){
+},{"../../models/Payload":385,"../action-types":388,"../getter-types":390,"../mutation-types":405}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74250,6 +74752,7 @@ var demoteItem = exports.demoteItem = 'demoteItem';
 
 var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
+var updateItemSilently = exports.updateItemSilently = 'updateItemSilently';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
 var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
@@ -74265,7 +74768,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],404:[function(require,module,exports){
+},{}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74299,7 +74802,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":403}],405:[function(require,module,exports){
+},{"./mutation-types":405}],407:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74329,6 +74832,6 @@ exports.default = {
 
 };
 
-},{}]},{},[378]);
+},{}]},{},[353,380]);
 
 //# sourceMappingURL=new-setup-package.js.map

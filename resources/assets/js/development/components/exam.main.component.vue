@@ -6,6 +6,8 @@
                  id="basic-addon1"
             >
                 {{headingName}}
+
+
             </div>
 
             <input type="text"
@@ -72,25 +74,27 @@
             privateName: {
                 get: function () {
                     let exam = this.getExam();
-                    if ( exam ) {
+                    if ( exam && typeof exam.name !== 'undefined' ) {
                         return exam.name;
                     }
+                },
+                set: function ( v ) {
+                    //store the name in the data object
+                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                        index: 0,
+                        updateProp: 'name',
+                        updateVal: v
+                    }));
                 }
-            },
-            set: function ( v ) {
-                //store the name in the data object
-                this.$store.commit(mTypes.updateActiveExamProp, Payload.factory({
-                    updateProp: 'name',
-                    updateVal: v
-                }));
-            },
+            }
         },
 
 
         methods: {
 
             getExam: function () {
-                return this.$store.getters[ gTypes.getActiveExamObj ];
+                return this.$store.getters.getItemByIndex(0);
+//                return this.$store.getters[ gTypes.getActiveExamObj ];
             },
 
             /**
@@ -107,19 +111,9 @@
         events: {},
 
         mounted: function () {
+            this.$store.dispatch('createExam' );
+            this.$store.dispatch('createItem');
 
-
-
-            //create an exam object if one isn't set
-            //however don't ask the server to create an id just yet
-//            if ( !this.getExam() ) {
-//                //create an exam object with index 0
-//                let exam = Exam.factory( {index: 0} );
-//                console.log( 'no exam set, creating one', exam );
-//                this.$store.dispatch( aTypes.setActiveExam, Payload.factory( {obj: exam} ) );
-//                //push into stack as root item
-//                //todo
-//            }
 //            console.log( 'exam-main ready' );
         },
     }

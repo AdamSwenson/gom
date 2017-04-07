@@ -25,25 +25,41 @@ const state = {
 
     /**
      * Object indexed by Item id holding Item objects
-     */
-    items: [Exam.factory({index: 0}), Item.factory({index: 1})],
+     On load the root exam object and first item are created but given no
+     ids. thus we will eventually need to create an exam object if one isn't set
 
+     However don't ask the server to create an id just yet
+     lookup the exam object that resides at index 0
+     this will have either been newly created on page load
+     or it will be an existing exam object loaded from the db
+     let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+     //Call the set active exam method
+     //We do this rather than call the mutation directly
+     //because there may need to be various other events and
+     //things which need to happen depending on the context.
+     //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+     this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+     }
+     */
+    items: [ ],
+
+    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
 };
 
-const isItemsEmpty = (state) => {
-    if (state.items.length > 0) {
+const isItemsEmpty = ( state ) => {
+    if ( state.items.length > 0 ) {
         return false;
     }
     return true;
 };
 
 const helpers = {
-    getItemFromPayload(state, payload){
-        return state.items[payload.index];
+    getItemFromPayload( state, payload ){
+        return state.items[ payload.index ];
         // if (typeof payload.id !== 'undefined') {
         //     //get the item
         //     var item = state.items.filter(function (i) {
@@ -61,43 +77,43 @@ const helpers = {
 
 const mutations = {
 
-    [mTypes.updateOrder]: (state, payload) => {
+    [mTypes.updateOrder]: ( state, payload ) => {
         console.log(mTypes.updateOrder, state, payload);
 
         //this just requires us to match list indexes w the
         //property of the item
         for (let i = 0; i < state.items.length; i++) {
-            let item = state.items[i];
+            let item = state.items[ i ];
             //set the property on the object
             Vue.set(item, 'index', i);
             //set it in the array with vue
             Vue.set(state.items, i, item);
-            // state.items.$set( i, item );
-        }
+         }
     },
 
     /**
-     * Creates a new item and pushes it into storage
+     * Pushes item into storage
+     * essentially the same as setItem. But has own name so that api
+     * will call for creation rather than update
      *
      * @param state
-     * @param rootState
      * @param payload Expecting Item object to be in payload.obj
      */
-    [mTypes.addNewItem]: (state, payload) => {
-        console.log(mTypes.addNewItem, state, payload);
-        let len = state.items.length;
-        //set the item index
-        let index = len == 0 || 1 ? len : len + 1;
+    [mTypes.addNewItem]: ( state, payload ) => {
+        // console.log(mTypes.addNewItem, state, payload);
+        if ( Payload.checkIfPayload(payload) ) {
+            let {obj} = payload;
+            Vue.set(state.items, obj.index, obj);
+        }
+        //case where something just hands an item
+        else {
+            if ( payload instanceof Item ) {
+                //call the action addNewItem on it
+                //set its new index on the item
+                //add it to the list
+            }
+        }
 
-        //to be replaced with lookup from server
-        let id = Math.floor(Math.random() * (999999999 - 1111111111 + 1)) + 1111111111;
-
-        let item = new Item(); //.factory( {id: id, index: index} );
-        Vue.set(item, 'index', index);
-        Vue.set(item, 'id', id);
-        //set it in the array with vue
-        Vue.set(state.items, index, item);
-        // state.items.$set( index, item );
     },
 
 
@@ -107,10 +123,13 @@ const mutations = {
      * @param state
      * @param payload
      */
-    [mTypes.updateItem]: (state, payload) => {
-        console.log(mTypes.updateItem, payload, state);
-        let itm = helpers.getItemFromPayload(state, payload);
-        if (typeof itm !== 'undefined') {
+    [mTypes.updateItem]: ( state, payload ) => {
+        // console.log(mTypes.updateItem, payload, state);
+        let itm = state.items[payload.index];
+
+        // let itm = helpers.getItemFromPayload(state, payload);
+        // window.console.log('items', 143, itm);
+        if ( typeof itm !== 'undefined' ) {
             //Set the value so vue can see it
             Vue.set(itm, payload.updateProp, payload.updateVal);
             //Push the altered item back into the array
@@ -126,17 +145,40 @@ const mutations = {
      * @param state
      * @param payload
      */
-    [mTypes.updateComment]: (state, payload) => {
+    [mTypes.updateItemSilently]: ( state, payload ) => {
+        // console.log(mTypes.updateItemSilently, payload, state);
+        let itm = state.items[payload.index];
+
+        // let itm = helpers.getItemFromPayload(state, payload);
+        // window.console.log('items', 143, itm);
+        if ( typeof itm !== 'undefined' ) {
+            //Set the value so vue can see it
+            Vue.set(itm, payload.updateProp, payload.updateVal);
+            //Push the altered item back into the array
+            //set it in the array with vue
+            Vue.set(state.items, payload.index, itm);
+            // state.items.$set( payload.index, itm );
+        }
+    },
+
+
+    /**
+     * Alters the the property named in updateProp to have the
+     * the value set in updateVal
+     * @param state
+     * @param payload
+     */
+    [mTypes.updateComment]: ( state, payload ) => {
         console.log(mTypes.updateComment, payload, state);
         //get the item
         let itm = helpers.getItemFromPayload(state, payload);
-        window.console.log('items', 'updateComment', 145, itm,  state.items);
+        window.console.log('items', 'updateComment', 145, itm, state.items);
 
-        if (typeof itm !== 'undefined') {
+        if ( typeof itm !== 'undefined' ) {
             // let itm = state.items[ payload.index ];
             let comment = itm.getComment(payload.updateValence);
 
-            if (typeof comment !== 'undefined') {
+            if ( typeof comment !== 'undefined' ) {
                 //Set the value so vue can see it
                 Vue.set(comment, 'text', payload.updateVal);
             }
@@ -145,7 +187,7 @@ const mutations = {
             //set it in the array with vue
             Vue.set(state.items, payload.index, itm);
             // state.items.$set( payload.index, itm );
-            window.console.log('items', 'updateComment', 145, itm,  state.items);
+            window.console.log('items', 'updateComment', 145, itm, state.items);
         }
     },
 
@@ -153,15 +195,17 @@ const mutations = {
     /**
      * Push an Item into storage at a particular index
      * Payload should have keys: obj, index
+     This is not watched by the api, so it can be called without
+     triggering an update to the server
      *
      * @param state
-     * @param rootState
      * @param payload Expecting Item object to be in payload.obj
      */
-    [mTypes.setItem]: (state, payload) => {
+    [mTypes.setItem]: ( state, payload ) => {
         console.log('items.mutations', mTypes.setItem, state, payload);
-        Vue.set(state.items, payload.obj.index, payload.obj);
-        // state.items.$set( payload.obj.index, payload.obj );
+        if ( Payload.checkIfPayload(payload) ) {
+            Vue.set(state.items, payload.obj.index, payload.obj);
+        }
     },
 
     /**
@@ -170,9 +214,9 @@ const mutations = {
      * @param state
      * @param payload
      */
-    [mTypes.promoteItem]: (state, payload) => {
+    [mTypes.promoteItem]: ( state, payload ) => {
         let {index} = payload;
-        let item = state.items[index];
+        let item = state.items[ index ];
         item.promote();
     },
 
@@ -182,9 +226,9 @@ const mutations = {
      * @param state
      * @param payload
      */
-    [mTypes.demoteItem]: (state, payload) => {
+    [mTypes.demoteItem]: ( state, payload ) => {
         let {index} = payload;
-        let item = state.items[index];
+        let item = state.items[ index ];
         item.demote();
     },
 
@@ -197,7 +241,7 @@ const mutations = {
      * @param rootState
      * @param payload Array with keys: ItemIndex, ItemId
      */
-    [mTypes.addItemIndexMapping]: (state, payload) => {
+    [mTypes.addItemIndexMapping]: ( state, payload ) => {
         Payload.checkIfPayload(payload);
         Vue.set(state.indexMap, payload.index, payload.id);
 
@@ -205,9 +249,9 @@ const mutations = {
     },
 
 
-    [mTypes.toggleItemPublic]: (state, payload) => {
-        if (Payload.checkIfPayload(payload)) {
-            let item = state.items[payload.index];
+    [mTypes.toggleItemPublic]: ( state, payload ) => {
+        if ( Payload.checkIfPayload(payload) ) {
+            let item = state.items[ payload.index ];
             item.togglePublic();
             Vue.set(state.items, payload.index, item);
         }
@@ -221,14 +265,14 @@ const mutations = {
  * and return a payload object containing it
  * @param input
  */
-const buildPayloadFromInput = (state, rootState, payload) => {
+const buildPayloadFromInput = ( state, rootState, payload ) => {
     //either a json or an item object have been passed in
     let {ItemId, ItemIndex, obj, ItemObject} = payload;
 
     obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
 
     //check and see if an Item object has already been passed in
-    if (!obj instanceof Item) {
+    if ( !obj instanceof Item ) {
         //create a new Item
         let {name, id, index} = payload;
         let ItemJson = {name, ItemIndex};
@@ -243,26 +287,13 @@ const buildPayloadFromInput = (state, rootState, payload) => {
 };
 
 const actions = {
-    /**
-     * Called when a brand new item needs to be created and inserted into
-     * the store.
-     * This handles the creation of the item and then the subsequent actions
-     * like notifying the server
-     *
-     * @param state
-     * @param commit
-     */
-    [aTypes.createItem]: ({state, commit}) => {
-        console.log(aTypes.createItem, state);
-        commit(mTypes.addNewItem);
-    },
 
     /**
      * Handles the removal of an item
      * @param state
      * @param commit
      */
-    [aTypes.deleteItem]: ({state, commit}, payload) => {
+    [aTypes.deleteItem]: ( {state, commit}, payload ) => {
         console.log(aTypes.deleteItem, state, commit, payload);
         //check if payload has correct structure
         let {index, id} = payload;
@@ -288,18 +319,18 @@ const actions = {
      * @param rootState
      * @param payload
      */
-    [aTypes.loadItems]: (state, rootState, payload) => {
+    [aTypes.loadItems]: ( state, rootState, payload ) => {
         //check if payload has correct structure
         //todo
 
         //push each record from the payload into the store
         for (let i = 0; i < payload.length; i++) {
-            let record = payload[i];
+            let record = payload[ i ];
             //check if record has correct structure
             //todo
 
             //add to Items and add index mapping
-            [aTypes.addNewItem](state, rootState, record);
+            [ aTypes.addNewItem ](state, rootState, record);
         }
     },
 
@@ -317,20 +348,20 @@ const getters = {
      * @param getters
      * @param payload Object containing Item identifier
      */
-    getItem: (state, getters) => (payload) => {
+    getItem: ( state, getters ) => ( payload ) => {
         // [gTypes.getItem ]: ( state, getters, payload ) => {
         // console.log('getItem', state, payload);
-        if (isItemsEmpty(state)) return false;
-        if (Payload.checkIfPayload(payload)) {
+        if ( isItemsEmpty(state) ) return false;
+        if ( Payload.checkIfPayload(payload) ) {
             // console.log('getItem', payload);
             let {index, id} = payload;
             // let id = payload.id;
             //room for other ways of finding index
 
-            if (typeof index !== 'undefined') {
+            if ( typeof index !== 'undefined' ) {
                 return getters.getItemByIndex(state, getters, index);
             }
-            if (typeof id !== 'undefined') {
+            if ( typeof id !== 'undefined' ) {
                 return getters.getItemById(state, getters, id);
             }
         }
@@ -349,18 +380,17 @@ const getters = {
      * yet run.
      * @param state
      * @param getters
-     * @param rootState
      * @param index
      */
-    getItemByIndex: (state, getters) => (index) => {
-        if (Payload.checkIfPayload(index)) {
+    getItemByIndex: ( state, getters ) => ( index ) => {
+        if ( Payload.checkIfPayload(index) ) {
             index = index.index;
         }
 
         // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
         // window.console.log('items', 'getItemByIndex', 361, state,  index);
-        return function (state, index) {
-            return state.items[index];
+        return function ( state, index ) {
+            return state.items[ index ];
         }(state, index)
     },
 
@@ -378,16 +408,16 @@ const getters = {
      * @param rootState
      * @param index
      */
-    getItemById: (state, getters) => (id) => {
+    getItemById: ( state, getters ) => ( id ) => {
         // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
         // console.log('getItemById', state, id);
-        return function (state, id) {
-            var r = state.items.filter(function (i) {
-                if (i.id === id) {
+        return function ( state, id ) {
+            var r = state.items.filter(function ( i ) {
+                if ( i.id === id ) {
                     return i;
                 }
             });
-            return r[0];
+            return r[ 0 ];
         }(state, id)
 
     },
@@ -400,15 +430,15 @@ const getters = {
      * @param payload
      * @returns []
      */
-    getAllItems: (state, getters, rootState) => {
+    getAllItems: ( state, getters, rootState ) => {
 
         // [gTypes.getAllItems] : ( state, getters, rootState ) => {
         return state.items;
     },
 
-    getAllIndexesList: (state, getters, rootState) => {
+    getAllIndexesList: ( state, getters, rootState ) => {
 
-        if (isItemsEmpty(state)) return []
+        if ( isItemsEmpty(state) ) return []
         // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
         let out = [];
         return Object.keys(state.items)
@@ -427,12 +457,12 @@ const getters = {
      * @param payload
      * @returns []
      */
-    getAllItemsList: (state, getters) => (items) => {
+    getAllItemsList: ( state, getters ) => ( items ) => {
 
         // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
         let out = [];
         // if ( state.items.size > 0 ) {
-        for (let [key, val] of items) {
+        for (let [ key, val ] of items) {
             // for ( let [ key, val ] of state.items.entries() ) {
             // console.log( 'getAllItemsList', key, val );
             out.push(val);
@@ -448,7 +478,7 @@ const getters = {
      * @param payload
      * @returns {Number}
      */
-    getItemCount: (state, getters) => {
+    getItemCount: ( state, getters ) => {
         // [gTypes.getItemCount]: ( state, getters ) => {
         return state.items.length;
     },

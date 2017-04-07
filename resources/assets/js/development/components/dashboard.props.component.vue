@@ -75,7 +75,6 @@
              */
             numberItems: {
                 get: function () {
-                    console.log(this);
                     let v = this.$store.getters[gTypes.getItemCount];
                     //if not set return placeholder
                     return typeof v != 'undefined' ? v : this.placeHolders.numberItems;

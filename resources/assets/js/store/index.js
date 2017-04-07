@@ -36,6 +36,7 @@
 import Vue from  'vue/dist/vue.js'
 // import Vue from 'vue'
 import Vuex from 'vuex'
+
 import * as actions from './actions'
 import * as getters from './getters'
 import * as mutations from './mutations'
@@ -61,49 +62,20 @@ import visibility from './modules/visibility'
 Vue.use(Vuex);
 
 /**
- *This subscribes the api package which
+ * This subscribes the api package which
  * handles data exchange with the server
  * to mutations in the store.
  */
-const apiPlugin = store => {
-//         // socket.on('data', data => {
-//         //     store.commit('receiveData', data)
-//         // });
-//         store.subscribe(mutation) => {
-//             window.console.log('subscriber', 'mutation caught', 48, mutation);
-//             // if (mutation.type === 'UPDATE_DATA') {
-//             //     socket.emit('update', mutation.payload)
-//             // }
-//         })
+import apiPlugin from '../api/apiPlugin';
+import websocketPlugin from '../api/websocketPlugin';
 
 
-    // called when the store is initialized
-    store.subscribe(( mutation, state ) => {
-        // called after every mutation.
-        // The mutation comes in the format of { type, payload }.
-        window.console.log('subscriber', 'mutation caught', 48, mutation);
-    })
-};
-
-// function createWebSocketPlugin () {
-//     return store => {
-//         // socket.on('data', data => {
-//         //     store.commit('receiveData', data)
-//         // });
-//         store.subscribe(mutation) => {
-//             window.console.log('subscriber', 'mutation caught', 48, mutation);
-//             // if (mutation.type === 'UPDATE_DATA') {
-//             //     socket.emit('update', mutation.payload)
-//             // }
-//         })
-//     }
-// }
-// const plugin = createWebSocketPlugin();
-
-
-const debug = process.env.NODE_ENV !== 'production'
+const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
+
+    strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
+
     /**
      * From instances and components where store has been
      * injected, actions are called
@@ -111,25 +83,10 @@ export default new Vuex.Store({
      */
     actions,
     getters,
-    plugins: [ apiPlugin ],
+    mutations,
+    state,
 
-    mutations: {
-        /**
-         * Sets the current exam id
-         *
-         * @todo Extend to set from an exam object
-         *
-         * @param state
-         * @param payload
-         */
-        _setExamId( state, payload ) {
-            if ( typeof (payload) == Number ) {
-                state.examId = payload;
-            }
-
-            window.console.log('setExamId', state);
-        }
-    },
+    plugins: [ apiPlugin, websocketPlugin ],
 
     modules: {
         activeexam,
@@ -145,9 +102,7 @@ export default new Vuex.Store({
         times,
         visibility
     },
-    state,
 
-    strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 
     // plugins: debug ? [createLogger()] : []
 })

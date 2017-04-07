@@ -63,6 +63,8 @@ class Exam extends BaseModel
 
     protected $guarded = ['user_id', 'id'];
 
+    public $index = 0;
+
 //    protected $fillable = [
 //        'term',
 //        'name',
@@ -72,13 +74,21 @@ class Exam extends BaseModel
 //    ];
 
     protected $casts = [
-        'term'                => 'string',
-        'name'                => 'string',
-        'year'                => 'year',
-        'locked'              => 'boolean',
-        'released'            => 'boolean',
+        'term' => 'string',
+        'name' => 'string',
+        'year' => 'year',
+        'locked' => 'boolean',
+        'released' => 'boolean',
         'previously_released' => 'boolean',
+        'other' => 'array'
     ];
+
+
+    //new props
+    public function getText(){}
+
+
+    public function getNumber(){}
 
 # -------------------------- Helpful methods
 
@@ -113,8 +123,7 @@ class Exam extends BaseModel
      */
     public function isReleased()
     {
-        if ( ! empty($this->attributes['released']) && $this->attributes['released'] == true )
-        {
+        if ( !empty($this->attributes['released']) && $this->attributes['released'] == true ) {
             return true;
         }
 
@@ -135,8 +144,7 @@ class Exam extends BaseModel
         WHERE qa.exam_id = :examId;
 MYSQL;
         $result = DB::select($query, ['examId' => $this->attributes['id']]);
-        if ( $result[0]->numberGraded > 0 )
-        {
+        if ( $result[0]->numberGraded > 0 ) {
             return true;
         }
 
@@ -149,8 +157,7 @@ MYSQL;
      */
     public function wasPreviouslyReleased()
     {
-        if ( ! empty($this->attributes['previously_released']) && $this->attributes['previously_released'] == true )
-        {
+        if ( !empty($this->attributes['previously_released']) && $this->attributes['previously_released'] == true ) {
             return true;
         }
 
@@ -167,10 +174,8 @@ MYSQL;
     {
         $students = [];
         $classes = $this->classes;
-        foreach ( $classes as $c )
-        {
-            foreach ( $c->students as $s )
-            {
+        foreach ( $classes as $c ) {
+            foreach ( $c->students as $s ) {
                 $students[] = $s;
             }
         }
@@ -191,11 +196,9 @@ MYSQL;
 
         $questions = $this->questions;
 
-        if ( ! empty($questions) && count($questions) > 0 )
-        {
+        if ( !empty($questions) && count($questions) > 0 ) {
             $students = $this->getAllAssociatedStudents();
-            if ( ! empty($students) && count($students) > 0 )
-            {
+            if ( !empty($students) && count($students) > 0 ) {
                 return true;
             }
 
@@ -215,7 +218,7 @@ MYSQL;
      * @param $kumiId
      * @return mixed
      */
-    public function scopeOnClasses($query, $kumiId)
+    public function scopeOnClasses( $query, $kumiId )
     {
         return $query->where('kumi_id = ?', $kumiId);
     }
@@ -225,7 +228,7 @@ MYSQL;
      * @param $query
      * @return mixed
      */
-    public function scopeUnlocked($query)
+    public function scopeUnlocked( $query )
     {
         return $query->whereLocked(0);
     }
@@ -235,7 +238,7 @@ MYSQL;
      * @param $query
      * @return mixed
      */
-    public function scopeUnreleased($query)
+    public function scopeUnreleased( $query )
     {
         return $query->whereReleased(0);
     }
@@ -245,7 +248,7 @@ MYSQL;
      * @param $query
      * @return mixed
      */
-    public function scopeReleased($query)
+    public function scopeReleased( $query )
     {
         return $query->whereReleased(1);
     }
@@ -257,7 +260,7 @@ MYSQL;
      * @param string $term
      * @return $this|void
      */
-    public function setTerm($term)
+    public function setTerm( $term )
     {
         $this->attributes['term'] = $term;
     }
@@ -267,7 +270,7 @@ MYSQL;
      * @param string $name
      * @return $this The current object (for fluent API support)
      */
-    public function setName($name)
+    public function setName( $name )
     {
         $this->attributes['name'] = $name;
     }
@@ -277,7 +280,7 @@ MYSQL;
      * @param int|string $year
      * @return $this|\Exam|void
      */
-    public function setYear($year)
+    public function setYear( $year )
     {
         $this->attributes['year'] = $year;
     }
@@ -335,8 +338,8 @@ MYSQL;
     public function questions()
     {
         return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
-        
-        
+
+
         /*The third argument is the name of the foreign key on the intermediate model,
         the fourth argument is the name of the foreign key on the final model, and 
         the fifth argument is the local key:*/
@@ -458,7 +461,7 @@ MYSQL;
      * @param $value
      * @return $this|\Exam The current object (for fluent API support)
      */
-    public function setLocked($value)
+    public function setLocked( $value )
     {
         $this->attributes['locked'] = $value;
     }
@@ -469,7 +472,7 @@ MYSQL;
      * @param $value
      * @return $this|\Exam The current object (for fluent API support)
      */
-    public function setReleased($value)
+    public function setReleased( $value )
     {
         $this->attributes['released'] = $value;
     }

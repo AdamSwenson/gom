@@ -13554,7 +13554,7 @@ process.umask = function() { return 0; };
 },{}],18:[function(require,module,exports){
 (function (process,global){
 /*!
- * Vue.js v2.2.5
+ * Vue.js v2.2.6
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -15642,6 +15642,9 @@ function lifecycleMixin (Vue) {
     }
     // call the last hook...
     vm._isDestroyed = true;
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+    // fire destroyed hook
     callHook(vm, 'destroyed');
     // turn off all instance listeners.
     vm.$off();
@@ -15649,8 +15652,8 @@ function lifecycleMixin (Vue) {
     if (vm.$el) {
       vm.$el.__vue__ = null;
     }
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null);
+    // remove reference to DOM nodes (prevents leak)
+    vm.$options._parentElm = vm.$options._refElm = null;
   };
 }
 
@@ -16315,6 +16318,15 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    if (process.env.NODE_ENV !== 'production') {
+      if (getter === undefined) {
+        warn(
+          ("No getter function has been defined for computed property \"" + key + "\"."),
+          vm
+        );
+        getter = noop;
+      }
+    }
     // create internal watcher for the computed property.
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
 
@@ -16727,7 +16739,7 @@ function extractProps (data, Ctor, tag) {
         ) {
           tip(
             "Prop \"" + keyInLowerCase + "\" is passed to component " +
-            (formatComponentName(tag || Ctor)) + ", but the delared prop name is" +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
             " \"" + key + "\". " +
             "Note that HTML attributes are case-insensitive and camelCased " +
             "props need to use their kebab-case equivalents when using in-DOM " +
@@ -17712,7 +17724,7 @@ Object.defineProperty(Vue$2.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Vue$2.version = '2.2.5';
+Vue$2.version = '2.2.6';
 
 /*  */
 
@@ -21004,7 +21016,7 @@ module.exports = '\n<input\n        id="{{ toggleId }}"\n        class="exam-rel
 },{}],26:[function(require,module,exports){
 module.exports = '<div>\n\n\n\n    <a class="btn btn-info"\n       title="Exam Analytics"\n       href="{{ analyticsTarget }}"\n    ><span\n            class="glyphicon glyphicon-stats"\n            aria-hidden="true"\n    ></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ qualityControlsTarget }}"\n       title="Quality Control"\n    >\n        <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ backupTarget }}"\n       title="Export Scores to Csv"\n    >\n        <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>\n    </a>\n    <a class="btn btn-info"\n       title="Student Controls"\n       href="{{ studentControlsTarget }}"\n    >\n        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>\n\n</div>';
 },{}],27:[function(require,module,exports){
-'use strict';
+"use strict";
 
 /**
  * Created by adam on 3/23/16.
@@ -21016,14 +21028,20 @@ var $ = require('jquery');
  * Load the Jira issue collector
  */
 module.exports = function () {
+    // Requires jQuery!
+    $.ajax({
+        url: "https://merpco.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/m2bzpb/b/c/0fe61a73be0a039e2366ef5aaa54d24c/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=27c8650e",
+        type: "get",
+        cache: true,
+        dataType: "script"
+    });
 
-  // $.ajax( {
-  //     url: "https://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
-  //     type: "get",
-  //     cache: true,
-  //     dataType: "script"
-  // } );
-
+    // $.ajax( {
+    //     url: "https://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
+    //     type: "get",
+    //     cache: true,
+    //     dataType: "script"
+    // } );
 };
 
 },{"jquery":16}],28:[function(require,module,exports){

@@ -64,9 +64,7 @@
             //Return everything in the items tree execpt the root
             //The root is the exam. It gets special treatment.
             items: function () {
-                console.log('items', this);
                 let orig = this.$store.getters[gTypes.getAllItems];
-                console.log('orig', orig);
                 //filter out the exam and return everything else
                 return  orig.filter((obj) => { return obj.index >  0; });
             },
@@ -101,7 +99,7 @@
         },
 
         mounted: function () {
-            this.addItem();
+//            this.addItem();
             let me = this;
             try {
                 var qList = document.getElementById('card-list');

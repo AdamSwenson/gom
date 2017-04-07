@@ -171,7 +171,9 @@
             year: {
                 get: function () {
                     let exam = this.getExam();
-                    return exam.year;
+                    if ( exam && typeof exam.year !== 'undefined' ) {
+                        return exam.year;
+                    }
                 },
                 set: function ( v ) {
                     this.$store.commit(mTypes.updateItem, Payload.factory({
@@ -191,7 +193,7 @@
 
         methods: {
             selectTerm: function () {
-                window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
+//                window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
             },
             getExam: function () {
                 return this.$store.getters.getItemByIndex(0);
@@ -209,17 +211,6 @@
         events: {},
 
         mounted: function () {
-
-            //check if exam id was provided,
-            // if not, create a new exam object and set it
-            // as active.
-//            if ( typeof this.examId == 'undefined' ) {
-//
-//            }
-            //Also get ready to request an exam id from the server
-            //as soon as the user does something which alters the store
-
-
             console.log('exam-edit-pane ready');
         },
     };

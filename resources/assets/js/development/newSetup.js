@@ -3,15 +3,7 @@
  * Created by adam on 2/15/17.
  */
 
-
-//require the file which contains all dependencies etc
-require('./bootstrap');
-
-import 'babel-polyfill'
-
 import Vue from  'vue/dist/vue.js'
-// import Vue from 'vue'
-
 
 // ES build is more efficient by reducing unneeded components with tree-shaking.
 // (Needs Webpack 2 or Rollup)
@@ -20,10 +12,8 @@ import Vue from  'vue/dist/vue.js'
 import BootstrapVue from 'bootstrap-vue';
 Vue.use(BootstrapVue);
 
-
 import App from './new-setup.vue'
 
-// ------------------------------- Globally register components
 import listDropdown from './components/field.list-dropdown.component.vue'
 
 import propsDashboard from './components/dashboard.props.component.vue'
@@ -63,9 +53,20 @@ import valenceButton from './components/buttons.valence.component.vue'
 import deleteButton from './components/buttons.item.delete.component.vue'
 import publicIndicator from './components/buttons.public-control.component.vue'
 
+//Server request handlers
+import api from '../api/controller'
 
-// import * as Subscriber from '../api/subscriber'
-// const plugin = Subscriber.createWebSocketPlugin();
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+import VueAxios from 'vue-axios'
+axios.defaults.baseURL = routeRoot;
+
+// This wrapper bind axios to Vue or this if you're using single file component.
+Vue.use(VueAxios, window.axios);
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
+Vue.component('api', api);
 
 //Register components globally
 Vue.component('exam-main', examMain);
@@ -103,7 +104,7 @@ Vue.component('list-dropdown', listDropdown);
 
 
 
-
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
 import VueRouter from 'vue-router'
 Vue.use(VueRouter);

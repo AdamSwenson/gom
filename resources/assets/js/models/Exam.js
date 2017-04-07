@@ -4,7 +4,8 @@
 import Comment from './Comment';
 import Item from './Item';
 
-export default class Exam extends Item{
+export default class Exam extends Item {
+
 
     /**
      * Create a new exam object
@@ -13,17 +14,38 @@ export default class Exam extends Item{
     constructor( ...params ) {
         super();
         Comment.initializeComments(this);
+        /**
+         * The db identifier of the model
+         */
+        this.id = -1;
 
-        // this._id; // = examId;
-        // this._index; // = examIndex;
         // this._name; // = name;
-        this._year; // = year;
-        this._term;// = term;
-
-        if(params.length > 0){
+        this.year; // = year;
+        this.term;// = term;
+        this.kind = 'exam';
+        if ( params.length > 0 ) {
             //fill in from params
         }
     };
+
+    // get idx (){return  [ 0,  0];}
+
+
+
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'year',
+            'term'
+        ].concat(super.fillableProps);
+
+    };
+
 
     /* *************************** Id *************** */
     /**
@@ -32,10 +54,14 @@ export default class Exam extends Item{
      * we oblige them with a nice alias.
      */
     get examId() {
-        if (typeof this.id == 'undefined'){
+        if ( typeof this.id == 'undefined' ) {
             return null;
         }
         return this.id;
+    }
+
+    set examId( v ) {
+        this.id = v;
     }
 
     /* *************************** Index ************* */
@@ -47,22 +73,25 @@ export default class Exam extends Item{
      * @returns {*}
      */
     get examIndex() {
-        if (typeof this.index == 'undefined'){
+        if ( typeof this.index == 'undefined' ) {
             return null;
         }
-            return this.index;
+        return this.index;
 
     }
 
     /* *************************** Props ************* */
 
+    //
+    // get year(){ return this._year; }
+    // set year(v){ this._year = v; }
+    //
+    // get term(){ return this._term; }
+    // set term(v){ this._term = v; }
 
-    get year(){ return this._year; }
-    set year(v){ this._year = v; }
-
-    get term(){ return this._term; }
-    set term(v){ this._term = v; }
-
+    isNew() {
+        return this.id === -1;
+    }
 
 
     /**
@@ -82,27 +111,12 @@ export default class Exam extends Item{
      * requests to send to the server
      * @returns {string}
      */
-    static className(){
+    static className() {
         return 'exam';
     }
 
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        return [
-            'id',
-            'index',
-            'name',
-            'publicName',
-            'year',
-            'term'
-        ];
-    }
 
-    static get aliasMap() {
+    static getAliasMap() {
         return {
             examId: 'id',
             examIndex: 'index'
@@ -117,7 +131,6 @@ export default class Exam extends Item{
 //         //were no parameters
         return this.fillObject(exam, params);
     }
-
 
 
 }

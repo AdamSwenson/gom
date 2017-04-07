@@ -1,18 +1,12 @@
 /**
  * Created by adam on 3/20/17.
  */
-import Vue from 'vue'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+// import Vue from 'vue'
+// import axios from 'axios'
 
-
-axios.defaults.baseURL = routeRoot;
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
-// This wrapper bind axios to Vue or this if you're using single file component.
-Vue.use( VueAxios, axios );
-
+/**
+ * this is the component for using axios inside of a vue or vuex process
+ */
 export default {
     _connection: null,
 
@@ -40,20 +34,9 @@ export default {
     },
 
     methods: {
-        /**
-         * Utility for creating most of the route to the _api
-         * @param type
-         * @returns {*}
-         */
-        makeRoute: ( type ) => {
-            if ( this.routeRoot ) {
-                return this.routeRoot + this.routeBase[ type ];
-            }
 
-        },
-
-        _errorHandling: (error) => {
-            if (error.response) {
+        errorHandling: ( error ) => {
+            if ( error.response ) {
                 // The request was made, but the server responded with a status code
                 // that falls out of the range of 2xx
                 console.log(error.response.data);
@@ -67,98 +50,100 @@ export default {
         },
 
         /**
-         * Asks the server to create the given model
-         * @param IModel
+         * Asks the server to create a new model.
+         * The server returns an id for the model on success.
+         * This returns the id on success
+         *
          */
-        createModel: ( Model ) => {
-            let api = this.makeRoute( Model.className) + '/create';
+        getIdForNewModel: (  ) => {
 
-            this.axios
-                .get( api )
-                .then( ( response ) => {
-                    console.log( response.data )
+            let api = 'items'; //hits the resource's store method (create would've returned the form to create)
+
+            this.$axios
+                .post(api)
+                .then(( response ) => {
+                    console.log(response.data);
                     //return Item with the new id or other data loaded
                     if ( typeof response.data.id !== 'undefined' ) {
-                        Model.id = response.data.id;
+                        return response.data.id;
                     }
-                    return Model;
-                } )
-                .catch( function ( error ) {
-                    this._errorHandling(error);
-                } );
+                })
+                .catch(function ( error ) {
+                    this.errorHandling(error);
+                });
         },
 
-
-        /**
-         * Asks the server to get the given model
-         * @param IModel
-         */
-        readModel: ( Model ) => {
-            let api = this.makeRoute( Model.className) + '/' + Model.id;
-
-            this.axios
-                .get( api )
-                .then( ( response ) => {
-
-                    console.log( response.data )
-                    //return Item with the new id or other data loaded
-                    if ( typeof response.data.id != 'undefined' ) {
-                        Model.id = response.data.id;
-                    }
-                    return Model;
-                } )
-                .catch( function ( error ) {
-                    this._errorHandling(error);
-                    console.log( error );
-                } );
-        },
-
-        /**
-         * Asks the server to create the given item
-         * @param Item
-         */
-        updateModel: (Model ) => {
-            let api = this.makeRoute(Model.className) + '/' + Model.id;
-
-            this.axios
-                .put( api, Model )
-                .then( ( response ) => {
-
-                   // if (response.status == 200 ){
-                        return callback(response);
-                    // }
-                    //
-                    // console.log( response.data )
-                    // //return Item with the new id loaded
-                    // return Model;
-                } )
-                .catch( function ( error ) {
-                    this._errorHandling(error);
-                    console.log( error );
-                } );
-        },
-
-
-        /**
-         * Asks the server to create the given item
-         * @param Item
-         */
-        deleteModel: ( Model , callback) => {
-
-            let api = this.makeRoute(Model.className()) + '/' + Model.id;
-
-            this.axios
-                .delete( api )
-                .then( ( response ) => {
-                    if (response.status == 200 ){
-                        return callback(response);
-                    }
-                } )
-                .catch( function ( error ) {
-                    this._errorHandling(error);
-                    console.log( error );
-                } );
-        },
+        //
+        // /**
+        //  * Asks the server to get the given model
+        //  * @param IModel
+        //  */
+        // readModel: ( Model ) => {
+        //     let api = this.makeRoute(Model.className) + '/' + Model.id;
+        //
+        //     this.axios
+        //         .get(api)
+        //         .then(( response ) => {
+        //
+        //             console.log(response.data)
+        //             //return Item with the new id or other data loaded
+        //             if ( typeof response.data.id !== 'undefined' ) {
+        //                 Model.id = response.data.id;
+        //             }
+        //             return Model;
+        //         })
+        //         .catch(function ( error ) {
+        //             this._errorHandling(error);
+        //             console.log(error);
+        //         });
+        // },
+        //
+        // /**
+        //  * Asks the server to create the given item
+        //  * @param Item
+        //  */
+        // updateModel: ( Model ) => {
+        //     let api = this.makeRoute(Model.className) + '/' + Model.id;
+        //
+        //     this.axios
+        //         .put(api, Model)
+        //         .then(( response ) => {
+        //
+        //             // if (response.status == 200 ){
+        //             return callback(response);
+        //             // }
+        //             //
+        //             // console.log( response.data )
+        //             // //return Item with the new id loaded
+        //             // return Model;
+        //         })
+        //         .catch(function ( error ) {
+        //             this._errorHandling(error);
+        //             console.log(error);
+        //         });
+        // },
+        //
+        //
+        // /**
+        //  * Asks the server to create the given item
+        //  * @param Item
+        //  */
+        // deleteModel: ( Model, callback ) => {
+        //
+        //     let api = this.makeRoute(Model.className()) + '/' + Model.id;
+        //
+        //     this.axios
+        //         .delete(api)
+        //         .then(( response ) => {
+        //             if ( response.status == 200 ) {
+        //                 return callback(response);
+        //             }
+        //         })
+        //         .catch(function ( error ) {
+        //             this._errorHandling(error);
+        //             console.log(error);
+        //         });
+        // },
 
     }
 

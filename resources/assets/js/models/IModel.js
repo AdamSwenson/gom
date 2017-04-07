@@ -7,10 +7,9 @@
 export default class IModel {
 
     constructor() {
-        /**
-         * The db identifier of the model
-         */
-        this.id;
+
+        // this.idx;
+
 
         /**
          * The stored order of the item overall
@@ -20,7 +19,7 @@ export default class IModel {
         /** The nickname or title by which this item is identified */
         this.name;
 
-        this.number = null;
+        // this.number = null;
 
         /**
          * The full length text of the item.
@@ -29,19 +28,53 @@ export default class IModel {
          */
         this.text = '';
 
+        this.publicName;
+
+
+        /**
+         * The maximum possible value of the item
+         */
+        this.maxScore;
+
+        this.kind;
+
+
         /**
          * The secondary locator value
          * Q1 E2 = index 0, depth 3
          */
         this.depth = 0;
 
-        /**
-         * The possible values of this._type
-         */
-        this.types = ['comment', 'element', 'question'];
 
     }
 
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'idx',
+            'id',
+            'index',
+            'depth',
+            'name',
+            'publicName',
+            'number',
+            'text',
+            'maxScore'
+        ];
+    }
+
+    /**
+     * The possible values of this._type
+     */
+    static get types() {
+
+        return [ 'comment', 'element', 'question' ];
+    }
 
     /**
      * Returns a list of strings which are property
@@ -65,23 +98,23 @@ export default class IModel {
      * @param params
      * @returns {*}
      */
-    static fillObject(obj, params) {
-        if (typeof params !== 'undefined') {
-
+    static fillObject( obj, params ) {
+        if ( typeof params !== 'undefined' ) {
+            let fillableProps = this.fillableProps;
             //fill any fillable values
-            this.fillableProps.forEach(function (v) {
+            fillableProps.forEach(function ( v ) {
                     // console.log( 'params', params, v );
-                    if (typeof params[v] != 'undefined') {
-                        obj[v] = params[v];
+                    if ( typeof params[ v ] != 'undefined' ) {
+                        obj[ v ] = params[ v ];
                     }
                 }
             )
 
             //fill any aliased values
             for (let v in this.aliasMap) {
-                if (typeof params[v] != 'undefined') {
+                if ( typeof params[ v ] != 'undefined' ) {
                     // console.log( 'alias', v, map[v] );
-                    obj[this.aliasMap[v]] = params[v];
+                    obj[ this.aliasMap[ v ] ] = params[ v ];
                 }
             }
         }

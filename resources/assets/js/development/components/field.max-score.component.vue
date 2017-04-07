@@ -7,7 +7,6 @@
         >{{ title }}</span>
         <input
                 type="number"
-                min="0"
                 title="maximum score for this question"
                 class="form-control input max-score-input"
                 aria-describedby="max-score-addon"
@@ -44,7 +43,7 @@
 
         data: function () {
             return {
-                index : this.$route.params.index,
+                index: this.$route.params.index,
 
                 title: 'Max Score',
 
@@ -59,25 +58,28 @@
             maxScore: {
                 get: function () {
                     if ( typeof this.index !== 'undefined' ) {
-                        let item = this.$store.getters.getItemByIndex( this.index );
+                        let item = this.$store.getters.getItemByIndex(this.index);
                         if ( typeof item !== 'undefined' ) {
                             return item.maxScore
                         }
                     }
 
-                    return this.placeholders.score;
+//                    return this.placeholders.score;
                 },
 
-                set: function ( v ) {
-                    let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
-                    this.$store.commit( mTypes.updateItem, pl );
+                set: function ( value ) {
+                    let pl = Payload.factory({
+                        index: this.index,
+                        updateProp: 'maxScore',
+                        updateVal: value
+                    });
+                    this.$store.commit(mTypes.updateItem, pl);
                 }
 
             },
         },
 
-        methods: {
-        }
+        methods: {}
     }
 
 

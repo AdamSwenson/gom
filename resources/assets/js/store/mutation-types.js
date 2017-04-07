@@ -83,7 +83,8 @@ export const promoteItem = 'promoteItem'
 export const demoteItem = 'demoteItem'
 
 export const updateItemName = 'updateItemName'
-export const updateItem = 'updateItem'
+export const updateItem = 'updateItem';
+export const updateItemSilently = 'updateItemSilently';
 export const setItemNameByIndex = 'setItemNameByIndex'
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
 export const toggleItemPublic = 'toggleItemPublic'
