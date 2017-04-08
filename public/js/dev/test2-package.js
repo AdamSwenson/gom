@@ -17164,6 +17164,13 @@ exports.default = function (store) {
         var type = mutation.type,
             payload = mutation.payload;
 
+        //Check if mutateSilently has been set
+        //If it has, respect its privacy
+
+        if (typeof payload !== 'undefined' && payload.mutateSilently) {
+            return false;
+        }
+
         switch (type) {
             case mTypes.setItem:
                 if (typeof payload !== 'undefined' && !payload.mutateSilently) {
@@ -17172,8 +17179,11 @@ exports.default = function (store) {
 
                     if (!_item instanceof _Exam2.default) {
 
-                        _item.examId = store.getters.getExamId;
+                        _item.examId = store.getters.currentExam.id;
                     }
+                    // item.examId = item instanceof Exam ? item.id : store.getters.currentExam.id;
+
+                    window.console.log('apiPlugin', 'setItem', 170, _item);
 
                     if (_item && _item.isNew()) {
                         //id === 'undefined' || payload.obj.id === -1)
@@ -17205,8 +17215,10 @@ exports.default = function (store) {
 
                 if (!item instanceof _Exam2.default) {
 
-                    item.examId = store.getters.getExamId;
+                    item.examId = store.getters.currentExam.id;
                 }
+
+                window.console.log('apiPlugin', 'updateItem', 211, item);
 
                 //put/patch
                 window.axios.put('items/' + item.id, item).then(function (response) {
@@ -18085,13 +18097,13 @@ var Item = function (_IModel) {
          * @type {boolean}
          * @private
          */
-        _this._public = false;
+        _this.publicity = false;
 
         /** The DB question assignment id or elementAssignmentId if applicable */
         _this.assignmentId = -1;
 
         //The id of the exam the item is associated with
-        // this.examId = -1;
+        _this.examId = -1;
 
         // this.props = super.fillableProps;
         return _this;
@@ -18164,7 +18176,7 @@ var Item = function (_IModel) {
     }, {
         key: 'isPublic',
         value: function isPublic() {
-            return this._public;
+            return this.publicity;
         }
 
         /**
@@ -18174,7 +18186,7 @@ var Item = function (_IModel) {
     }, {
         key: 'makePublic',
         value: function makePublic() {
-            this._public = true;
+            this.publicity = true;
         }
 
         /**
@@ -18184,14 +18196,14 @@ var Item = function (_IModel) {
     }, {
         key: 'hide',
         value: function hide() {
-            this._public = false;
+            this.publicity = false;
         }
     }, {
         key: 'togglePublic',
         value: function togglePublic() {
-            console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this._public = !this._public;
-            console.log(this._public);
+            console.log('Item', 'CALLED', 'togglePublic', this.publicity);
+            this.publicity = !this.publicity;
+            console.log(this.publicity);
         }
 
         /* *************************** Type *************** */
@@ -19001,7 +19013,7 @@ var updateItemName = exports.updateItemName = 'updateItemName';
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.updateExam = exports.createItem = exports.createExam = undefined;
+exports.setupOnMount = exports.updateExam = exports.createItem = exports.createExam = undefined;
 
 var _mutationTypes = require('./mutation-types');
 
@@ -19035,6 +19047,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+var standardTimeout = 1000;
+
 // export const actions = {
 
 /**
@@ -19045,18 +19059,25 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * @param commit
  * @param payload
  */
+//Root actions for the vuex instance
+
 var createExam = exports.createExam = function createExam(_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
-    window.console.log('actions', 'createExam', 22);
-    //instantiate the new exam
-    var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
-    //set it in the items list
-    //this will call the api lister.
-    commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
-    //set it as active (in case anything is depending on the older structure)
-    // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+
+            //instantiate the new exam
+            var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
+            //set it in the items list
+            //this will call the api lister.
+            commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
+            //set it as active (in case anything is depending on the older structure)
+            // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+            resolve();
+        }, standardTimeout);
+    });
 };
 
 /**
@@ -19068,28 +19089,43 @@ var createExam = exports.createExam = function createExam(_ref, payload) {
  * @param state
  * @param commit
  */
-//Root actions for the vuex instance
-
 var createItem = exports.createItem = function createItem(_ref2) {
     var state = _ref2.state,
-        commit = _ref2.commit;
+        commit = _ref2.commit,
+        getters = _ref2.getters;
 
-    window.console.log('actions', 'createItem', 42, state.items);
+    // window.console.log('actions', 'createItem', 42, state.items);
     //figure out what the index should be based on
     //what is already in the list of items
     var len = Object.keys(state.items).length;
     // let len = state.getItemCount(); //items.length;
-    window.console.log('actions', 'createItem', 47, len, state.items.length);
+    // window.console.log('actions', 'createItem', 47, len, state.items.length);
     var index = 1 + len;
+
+    var item = _Item2.default.factory({ index: index }); //.factory( {id: id, index: index} );
+
+    if (len > 0) {
+        var _exam = getters.currentExam;
+        item.examId = _exam ? _exam.id : null;
+
+        window.console.log('actions', 'createItem', 55, item);
+    }
     //set the item index
     // let index = len === 1 ? len : len + 1;
 
-    var item = _Item2.default.factory({ index: index }); //.factory( {id: id, index: index} );
-    window.console.log('actions', 'createItem', 51, index, item);
-    //Calling this mutation will trigger the api listener
-    commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item }));
-    commit(mTypes.updateOrder);
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item }));
+            resolve();
+        }, standardTimeout);
+    });
 };
+
+// window.console.log('actions', 'createItem', 51, index, item);
+//Calling this mutation will trigger the api listener
+
+// commit(mTypes.updateOrder);
+
 
 /**
  * The payload should contain the exam that is presently set
@@ -19106,8 +19142,56 @@ var updateExam = exports.updateExam = function updateExam(_ref3, payload) {
 
     //set it as active
     commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-    //request server update
 };
+
+/**
+ * These are actions which different parts of the gom
+ * call to when they initialize.
+ *
+ */
+/** This is what gets run when the root instance is mounted for the setup page */
+var setupOnMount = exports.setupOnMount = function setupOnMount(_ref4) {
+    var state = _ref4.state,
+        commit = _ref4.commit,
+        dispatch = _ref4.dispatch;
+
+    //Check and see if the server gave us data to start off with.
+    //Grab any preloaded data from the div on the page where the server would've put it
+    var examData = JSON.parse(document.getElementById('loadedExam').getAttribute('data'));
+
+    window.console.log('actions', 'setupOnMount', 87, examData);
+
+    //if there was exam data, load an exam from it
+    if (typeof examData != 'undefined') {
+
+        //first make sure the index is what we expect
+        examData.index = 0;
+
+        var _exam2 = _Exam2.default.factory(examData); //.factory( {id: id, index: index} );
+
+        //set it in the items list without calling the api listener
+        commit(mTypes.setItem, _Payload2.default.factory({
+            index: 0,
+            obj: _exam2,
+            mutateSilently: true
+        }));
+    } else {
+
+        //if there was no exam data, this is a new setup page
+        //so do all the default initialization for that
+        dispatch(aTypes.createExam).then(function () {
+            dispatch(aTypes.createItem).then(function () {
+                commit(mTypes.updateOrder);
+            });
+        });
+    }
+};
+
+//     /** This is what gets run when the root instance is mounted for the grading page */
+//     gradeOnMount: () => {
+//     }
+// };
+
 
 // // /**
 // //  * Sets the id of the exam currently being worked on
@@ -19464,7 +19548,7 @@ var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisib
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getElementScoreForActiveStudent = exports.getExamGradeForActiveStudent = exports.getCommentTextForActiveStudent = exports.getActiveStudentGradingTime = exports.getQuestionScoreForActiveStudent = exports.getTotalExams = exports.getNumberGraded = exports.isActive = exports.getExamId = undefined;
+exports.getElementScoreForActiveStudent = exports.getExamGradeForActiveStudent = exports.getCommentTextForActiveStudent = exports.getActiveStudentGradingTime = exports.getQuestionScoreForActiveStudent = exports.getTotalExams = exports.getNumberGraded = exports.isActive = undefined;
 
 var _getterTypes = require('./getter-types');
 
@@ -19489,33 +19573,15 @@ var validateIndex = function validateIndex(index) {
 };
 
 /**
- * Poorly named shortcut for getting the db id of
- * the currently active exam.
- * @param state
+ * Returns true if some student is set as active.
+ * Saves the trouble of other methods having to figure out whether a student
+ * is set as active student (which can run into trouble if, for example, the
+ * active student has index 0 and the consuming method interprets this as false).
  */
 /**
  * Root getters for the vuex instance
  *
  * Methods which make use of multiple modules should generally be kept here
- */
-var getExamId = exports.getExamId = function getExamId(state) {
-    var exam = state.items[0];
-    if (exam) {
-        return exam.id;
-    }
-    //
-    //
-    // if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
-    //     return state.activeExam.id;
-    // }
-    return null;
-};
-
-/**
- * Returns true if some student is set as active.
- * Saves the trouble of other methods having to figure out whether a student
- * is set as active student (which can run into trouble if, for example, the
- * active student has index 0 and the consuming method interprets this as false).
  */
 var isActive = exports.isActive = function isActive(state) {
     if (typeof state.activeStudent == 'undefined') return false;
@@ -20699,10 +20765,12 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     //property of the item
     for (var i = 0; i < state.items.length; i++) {
         var item = state.items[i];
-        //set the property on the object
-        Vue.set(item, 'index', i);
-        //set it in the array with vue
-        Vue.set(state.items, i, item);
+        if (typeof item !== 'undefined') {
+            //set the property on the object
+            Vue.set(item, 'index', i);
+            //set it in the array with vue
+            Vue.set(state.items, i, item);
+        }
     }
 }), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
     // console.log(mTypes.addNewItem, state, payload);
@@ -20959,7 +21027,7 @@ var getters = {
      * Returns list of items objects
      * @param state
      * @param getters
-     * @param payload
+     * @param rootState
      * @returns []
      */
     getAllItems: function getAllItems(state, getters, rootState) {
@@ -21038,6 +21106,14 @@ var getters = {
     getItemCount: function getItemCount(state, getters) {
         // [gTypes.getItemCount]: ( state, getters ) => {
         return state.items.length;
+    },
+
+    /**
+     * Poorly named shortcut for getting the currently active exam.
+     * @param state
+     */
+    currentExam: function currentExam(state) {
+        return state.items[0];
     }
 
 };

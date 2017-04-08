@@ -1,33 +1,120 @@
 <template>
     <div id="props-dashboard" class="dashboard">
-        <dl class="dl-horizontal">
+        <!--<ul class="list-group">-->
+            <!--<li class="list-group-item">-->
+                <!--<dl class="dl-horizontal">-->
+                    <!--<dt><span v-show="itemsComplete" class="text-success glyphicon glyphicon-ok"></span> # items</dt>-->
+                    <!--<dd>{{ numberItems }}</dd>-->
 
-            <dt><span v-show="itemsComplete" class="text-success glyphicon glyphicon-ok"></span> # items</dt>
-            <dd>{{ numberItems }}</dd>
+                    <!--<dt>Max total score</dt>-->
+                    <!--<dd>{{ perfectScore }}</dd>-->
 
-            <dt>Max total score</dt>
-            <dd>{{ perfectScore }}</dd>
-            <!--<dd><input type="number" v-model="perfectScore" /></dd>-->
+                    <!--<dt><span v-show="studentsComplete" class="glyphicon glyphicon-ok"></span> # Students</dt>-->
+                    <!--<dd>{{ numberStudents}}</dd>-->
 
-            <dt><span v-show="studentsComplete" class="glyphicon glyphicon-ok"></span> # Students</dt>
-            <dd>{{ numberStudents}}</dd>
+                    <!--<dt> # Graded</dt>-->
+                    <!--<dd>{{ numberGraded }}</dd>-->
 
-            <dt> # Graded</dt>
-            <dd>{{ numberGraded }}</dd>
+                    <!--<dt>Time grading</dt>-->
+                    <!--<dd>{{ timeGrading }}</dd>-->
 
-            <dt>Time grading</dt>
-            <dd>{{ timeGrading }}</dd>
+                <!--</dl>-->
+            <!--</li>-->
 
-            <dt v-show="gradingComplete"><span class="glyphicon glyphicon-ok"></span></dt>
-            <dd v-show="gradingComplete">Grading Complete</dd>
-            <dt v-show="reviewingComplete"><span class="glyphicon glyphicon-ok"></span></dt>
-            <dd v-show="reviewingComplete">Reviewing Complete </dd>
+            <!--<li class="list-group-item">-->
+            <!--<dl class="dl-horizontal">-->
 
-        </dl>
+            <!--<dt>Max total score</dt>-->
+            <!--<dd>{{ perfectScore }}</dd>-->
+            <!--</dl>-->
+            <!--</li>-->
+            <!--&lt;!&ndash;<dd><input type="number" v-model="perfectScore" /></dd>&ndash;&gt;-->
+            <!--<li class="list-group-item">-->
+            <!--<dl class="dl-horizontal">-->
+            <!--<dt><span v-show="studentsComplete" class="glyphicon glyphicon-ok"></span> # Students</dt>-->
+            <!--<dd>{{ numberStudents}}</dd>-->
+            <!--</dl>-->
+            <!--</li>-->
 
+            <!--<li class="list-group-item">-->
+            <!--<dl class="dl-horizontal">-->
+            <!--<dt> # Graded</dt>-->
+            <!--<dd>{{ numberGraded }}</dd>-->
+            <!--</dl>-->
+            <!--</li>-->
+
+            <!--<li class="list-group-item">-->
+            <!--<dl class="dl-horizontal">-->
+            <!--<dt>Time grading</dt>-->
+            <!--<dd>{{ timeGrading }}</dd>-->
+            <!--</dl>-->
+            <!--</li>-->
+
+        <h5>Progress</h5>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <h6><span v-show="setupComplete" class="glyphicon glyphicon-ok"></span> Setup </h6>
+
+
+                <dl class="dl-horizontal">
+                    <dt><span v-show="itemsComplete" class="text-success glyphicon glyphicon-ok"></span> # items</dt>
+                    <dd>{{ numberItems }}</dd>
+
+                    <dt>Max total score</dt>
+                    <dd>{{ perfectScore }}</dd>
+
+                    <dt><span v-show="studentsComplete" class="glyphicon glyphicon-ok"></span> # Students</dt>
+                    <dd>{{ numberStudents}}</dd>
+                </dl>
+            </li>
+
+            <li class="list-group-item">
+                <h6><span v-show="gradingComplete" class="glyphicon glyphicon-ok"></span> Grading </h6>
+                <dl class="dl-horizontal">
+
+                    <dt> # Graded</dt>
+                    <dd>{{ numberGraded }}</dd>
+
+                    <dt>Time grading</dt>
+                    <dd>{{ timeGrading }}</dd>
+
+                </dl>
+            </li>
+
+            <li class="list-group-item">
+                <h6><span v-show="reviewingComplete" class="glyphicon glyphicon-ok"></span> Reviewing</h6>
+            </li>
+        </ul>
     </div>
+
+    <!---->
+    <!--<dl class="dl-horizontal list-group">-->
+
+
+    <!--<dt><span v-show="itemsComplete" class="text-success glyphicon glyphicon-ok"></span> # items</dt>-->
+    <!--<dd>{{ numberItems }}</dd>-->
+
+    <!--<dt>Max total score</dt>-->
+    <!--<dd>{{ perfectScore }}</dd>-->
+    <!--&lt;!&ndash;<dd><input type="number" v-model="perfectScore" /></dd>&ndash;&gt;-->
+
+    <!--<dt><span v-show="studentsComplete" class="glyphicon glyphicon-ok"></span> # Students</dt>-->
+    <!--<dd>{{ numberStudents}}</dd>-->
+
+    <!--<dt> # Graded</dt>-->
+    <!--<dd>{{ numberGraded }}</dd>-->
+
+    <!--<dt>Time grading</dt>-->
+    <!--<dd>{{ timeGrading }}</dd>-->
+
+
+    <!--</dl>-->
+
 </template>
 <style>
+    ul {
+
+    }
 
 </style>
 <script>
@@ -75,7 +162,7 @@
              */
             numberItems: {
                 get: function () {
-                    let v = this.$store.getters[gTypes.getItemCount];
+                    let v = this.$store.getters[ gTypes.getItemCount ];
                     //if not set return placeholder
                     return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
                 }
@@ -155,7 +242,7 @@
         events: {},
 
         mounted: function () {
-            console.log('props-dashboard ready', this.$store);
+//            console.log('props-dashboard ready', this.$store);
         },
     };
 </script>

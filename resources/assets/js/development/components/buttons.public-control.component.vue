@@ -3,7 +3,7 @@
     <button
             type="button"
             class="btn public-indicator"
-            v-bind:class="{'btn-warning': public}"
+            v-bind:class="{'btn-warning': publicity}"
             v-on:click="togglePublic"
     >
         <span v-bind:class="icon"></span>
@@ -16,7 +16,7 @@
 <script>
     import Item from '../../models/Item'
     import Payload from '../../models/Payload'
-
+    import * as aTypes from '../../store/action-types'
     import * as mTypes from '../../store/mutation-types'
 
     /**
@@ -39,14 +39,14 @@
      */
     export default {
 
-        props: [ 'index', 'id' ],
+        props: [ 'index' ],
 
         data: function () {
             return {
 
                 styles: {
                     public: 'bg-warning',
-                    private: ''
+                    private: 'bg-default'
                 },
 
                 icons: {
@@ -59,8 +59,11 @@
         },
 
         computed: {
-            public: function () {
-                return this.$parent.public;
+            publicity: function () {
+                let item = this.$store.getters.getItemByIndex(this.index);
+                if ( typeof item !== 'undefined' ) {
+                    return item.isPublic();
+                }
             },
 
             /**
@@ -70,12 +73,12 @@
              * @returns {string}
              */
             styling: function () {
-                return this.public ? this.styles.public : this.styles.private;
+                return this.publicity ? this.styles.public : this.styles.private;
             },
 
 
             icon: function () {
-                if ( this.public ) {
+                if ( this.publicity ) {
                     return this.icons.eye.open;
                 }
                 return this.icons.eye.close;
@@ -90,11 +93,23 @@
              * @returns {*}
              */
             isPublic: function () {
-                return this.public;
+                let item = this.$store.getters.getItemByIndex(this.index);
+
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                if ( typeof item !== 'undefined' ) {
+                    return item.isPublic();
+                }
             },
 
+            /**
+             * Returns boolean for whether the thing
+             * this is attached to is hidden from students
+             * (or potentially others, if there was a use).
+             * Just a semantically useful shortcut
+             * @returns {*}
+             */
             isPrivate: function () {
-                return !this.public;
+                return !this.isPublic;
             },
 
             /**
@@ -104,18 +119,23 @@
              */
             togglePublic: function () {
 //                console.log( 'CALLED', 'togglePublic' );
-                this.$store.commit( mTypes.toggleItemPublic , Payload.factory({index: this.index}));
+                this.$store.dispatch(aTypes.toggleItemPublic, Payload.factory({index: this.index}));
             },
 
 
-        },
+        }
+        ,
 
-        directives: {},
+        directives: {}
+        ,
 
-        events: {},
+        events: {}
+        ,
 
         mounted: function () {
-        },
-    };
+        }
+        ,
+    }
+    ;
 
 </script>

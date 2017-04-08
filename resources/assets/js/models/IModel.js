@@ -64,7 +64,10 @@ export default class IModel {
             'publicName',
             'number',
             'text',
-            'maxScore'
+            'maxScore',
+            'publicity',
+            'locked',
+            'released'
         ];
     }
 
@@ -96,9 +99,10 @@ export default class IModel {
      * object.
      * @param obj
      * @param params
+     * @param aliasMap
      * @returns {*}
      */
-    static fillObject( obj, params ) {
+    static fillObject( obj, params, aliasMap ) {
         if ( typeof params !== 'undefined' ) {
             let fillableProps = this.fillableProps;
             //fill any fillable values
@@ -108,13 +112,13 @@ export default class IModel {
                         obj[ v ] = params[ v ];
                     }
                 }
-            )
+            );
 
             //fill any aliased values
-            for (let v in this.aliasMap) {
+            for (let v in aliasMap) {
                 if ( typeof params[ v ] != 'undefined' ) {
-                    // console.log( 'alias', v, map[v] );
-                    obj[ this.aliasMap[ v ] ] = params[ v ];
+                    // window.console.log('IModel', 'fillObject', 116, v);
+                    obj[ aliasMap[ v ] ] = params[ v ];
                 }
             }
         }

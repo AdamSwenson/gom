@@ -40,7 +40,7 @@ const errorHandling = ( error ) => {
 };
 
 const handleResponse = ( store, item, response ) => {
-    window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+    // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
     if ( typeof response.data === 'undefined' ) return false;
 
     //return Item with the new id or other data loaded
@@ -82,6 +82,58 @@ const handleResponse = ( store, item, response ) => {
             default:
         }
     }
+};
+
+
+/**
+ * Handles the call to the server to update
+ * properties of an item which already has an id
+ * @param store
+ * @param item
+ */
+const updateItem = ( store, item ) => {
+    // if ( !item instanceof Exam ) {
+
+        item.examId = store.getters.currentExam.id;
+    // }
+    //put/patch
+    window.axios
+        .put('items/' + item.id, item)
+        .then(( response ) => {
+                handleResponse(store, item, response);
+        })
+        .catch(function ( error ) {
+            errorHandling(error);
+        });
+};
+
+/**
+ * Handles the actual call to the server to create an
+ * item which doesn't have an id yet.
+ * @param store
+ * @param item
+ */
+const createItem = ( store, item ) => {
+    if ( item && item.isNew() ) {
+        // if ( !item instanceof Exam ) {
+            item.examId = store.getters.currentExam.id;
+        // }
+
+        //id === 'undefined' || payload.obj.id === -1)
+        //All IModels have an id of -1 when they are initially created.
+        //This is replaced with the real id once one is returned from the server.
+        //Thus, this request is to create the item.
+        //When the server has done this, it will send back an id
+        window.axios
+            .post('items', item)
+            .then(( response ) => {
+                handleResponse(store, item, response);
+            })
+            .catch(function ( error ) {
+                errorHandling(error);
+            });
+    }
+
 };
 
 
@@ -147,37 +199,54 @@ export default function ( store ) {
     // Thus this will catch the new item on the first mutation committing
     // it.
     store.subscribe(( mutation ) => {
-
         let {type, payload} = mutation;
+
+        //Check if mutateSilently has been set
+        //If it has, respect its privacy
+        if ( typeof payload !== 'undefined' && payload.mutateSilently ) {
+            return false;
+        }
+
         switch ( type ) {
+            //this is the operation of pushing an item into the array
             case mTypes.setItem:
                 if ( typeof payload !== 'undefined' && !payload.mutateSilently ) {
 
                     let item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
 
-                    if ( !item instanceof Exam ) {
+                    window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', item, payload);
 
-                        item.examId = store.getters.getExamId;
-                    }
+                    if ( item ) {
+                        if ( !item instanceof Exam ) {
 
-
-                    if ( item && item.isNew() ) {
-                        //id === 'undefined' || payload.obj.id === -1)
-                        //All IModels have an id of -1 when they are initially created.
-                        //This is replaced with the real id once one is returned from the server.
-                        //Thus, this request is to create the item.
-                        //When the server has done this, it will send back an id
-                        window.axios
-                            .post('items', item)
-                            .then(( response ) => {
-                                handleResponse(store, item, response);
-                            })
-                            .catch(function ( error ) {
-                                errorHandling(error);
-                            });
+                            item.examId = store.getters.currentExam.id;
+                        }
+                        if ( item.isNew() ) {
+                            createItem(store, item);
+                            payload.callback();
+                        }
+                        else {
+                            updateItem(store, item);
+                            payload.callback();
+                        }
                     }
                 }
                 break;
+            // //id === 'undefined' || payload.obj.id === -1)
+            // //All IModels have an id of -1 when they are initially created.
+            // //This is replaced with the real id once one is returned from the server.
+            // //Thus, this request is to create the item.
+            // //When the server has done this, it will send back an id
+            // window.axios
+            //     .post('items', item)
+            //     .then(( response ) => {
+            //         handleResponse(store, item, response);
+            //     })
+            //     .catch(function ( error ) {
+            //         errorHandling(error);
+            //     });
+
+
             //Now we allow the request to continue in case it wasn't just
             //asking to create something. If the model already has an id,
             //the type property will tell us which mutation was called so we can
@@ -191,21 +260,26 @@ export default function ( store ) {
 
             case mTypes.updateItem:
                 let item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
-
-                if ( !item instanceof Exam ) {
-
-                    item.examId = store.getters.getExamId;
-                }
-
-                //put/patch
-                window.axios
-                    .put('items/' + item.id, item)
-                    .then(( response ) => {
-                        //     handleResponse(store, item, response);
-                    })
-                    .catch(function ( error ) {
-                        errorHandling(error);
-                    });
+                updateItem(store,  item);
+                payload.callback();
+                //
+                // if ( !item instanceof Exam ) {
+                //
+                //     item.examId = store.getters.currentExam.id;
+                // }
+                //
+                // window.console.log('apiPlugin', 'updateItem', 211, item);
+                //
+                //
+                // //put/patch
+                // window.axios
+                //     .put('items/' + item.id, item)
+                //     .then(( response ) => {
+                //         //     handleResponse(store, item, response);
+                //     })
+                //     .catch(function ( error ) {
+                //         errorHandling(error);
+                //     });
                 break;
 
             case mTypes.demoteItem:
@@ -215,5 +289,7 @@ export default function ( store ) {
             default:
 
         }
+
     });
+
 };

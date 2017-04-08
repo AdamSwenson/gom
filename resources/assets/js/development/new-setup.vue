@@ -1,9 +1,12 @@
 <template>
-    <div id="examEditor">
-        <div class="row">
-            <div class="col-lg-1"></div>
+    <div id="examEditor"
+         class="setup-main">
+        <div id="examEditorHead"
+             class="row"
+        >
+            <div class="col-md-1"></div>
 
-            <div class="examEditor col-lg-10">
+            <div class="panel col-md-10">
                 <div class="panel-heading">
                     <exam-main></exam-main>
                 </div>
@@ -15,47 +18,69 @@
                     ></exam-edit-pane>
                 </div>
             </div>
-            <div class="col-lg-1"></div>
+            <div class="col-md-1"></div>
         </div>
 
         <div id="examEditorBody"
              class="row"
         >
-
-            <div class="col-lg-1"></div>
+            <div class="col-md-1"></div>
 
             <div id="itemCol"
-                 class="col-lg-9 well well-sm  "
+                 class="col-md-8"
             >
-                <div class="itemRow row">
-                    <card-list></card-list>
-                </div>
+                <card-list></card-list>
             </div>
 
             <div id="infoCol"
-                 class="col-lg-2 well well-sm"
+                 class="col-md-2"
             >
-
-                <div class="row">
+                <!--<div class="row">-->
                     <props-dashboard></props-dashboard>
-                </div>
+                <!--</div>-->
 
-                <div class="row">
+                <!--<div class="row">-->
                     <tools-dashboard></tools-dashboard>
-                </div>
+                <!--</div>-->
 
             </div>
-
-            <div class="col-lg-1"></div>
+            <div class="col-md-1"></div>
 
         </div>
     </div>
 </template>
 
-<style>
+<style lang="scss">
     /*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/
-    #itemCol.well {
-        background-color: #385a7f
+    /*#itemCol.well {*/
+    /*background-color: #2b417f*/
+    /*}*/
+
+    .setup-main {
+        background-color: #00496C
+        /*background-color: #2b417f*/
+    }
+
+    #examEditorHead {
+        .panel {
+            background-color: #FFFDF4
+        }
+
+    }
+
+    #examEditorBody {
+            /*background: rgba(0, 0, 0, 0) url("http://localhost:8000/images/styling/cover.png") repeat-y scroll 0 0;*/
+            /*padding: 0 30px;*/
+        /*padding-left: 5%;*/
+        /*padding-right: 5%;*/
+        /*background-color: #385a7f*/
+    }
+    #itemCol{
+        background-color: #FFFDF4;
+    }
+
+    #infoCol{
+        background-color: #FFFDF4;
     }
 </style>
 <script>
@@ -71,6 +96,7 @@
     import store from '../store'
 
     export default {
+
         store,
 
         data: function () {
@@ -88,13 +114,10 @@
         events: {},
 
         mounted: function () {
-
-
-//
+            store.dispatch('setupOnMount');
         },
 
-        components: {
-        },
+        components: {},
 
     }
 </script>

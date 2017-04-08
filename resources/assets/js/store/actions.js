@@ -1,5 +1,7 @@
 //Root actions for the vuex instance
 
+window._ = require('lodash');
+
 import * as mTypes from './mutation-types'
 import * as aTypes from './action-types'
 import Student from '../models/Student'
@@ -7,6 +9,8 @@ import Exam from '../models/Exam'
 import Item from '../models/Item'
 import Payload from '../models/Payload'
 import * as api from '../api/controller'
+
+const standardTimeout = 1000;
 
 // export const actions = {
 
@@ -19,14 +23,17 @@ import * as api from '../api/controller'
  * @param payload
  */
 export const createExam = ( {state, commit}, payload ) => {
-    window.console.log('actions', 'createExam', 22,);
-    //instantiate the new exam
-    let exam = Exam.factory({index: 0}); //.factory( {id: id, index: index} );
-    //set it in the items list
-    //this will call the api lister.
-    commit(mTypes.setItem, Payload.factory({index: 0, obj: exam}));
-    //set it as active (in case anything is depending on the older structure)
-    // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+    return new Promise(( resolve, reject ) => {
+        //instantiate the new exam
+        let exam = Exam.factory({index: 0}); //.factory( {id: id, index: index} );
+        //set it in the items list
+        //this will call the api lister.
+        commit(mTypes.setItem, Payload.factory({index: 0, obj: exam}));
+        //set it as active (in case anything is depending on the older structure)
+        // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+        resolve()
+    });
+
 };
 
 
@@ -39,23 +46,28 @@ export const createExam = ( {state, commit}, payload ) => {
  * @param state
  * @param commit
  */
-export const createItem = ( {state, commit} ) => {
-    window.console.log('actions', 'createItem', 42, state.items);
+export const createItem = ( {state, commit, dispatch, getters} ) => {
     //figure out what the index should be based on
     //what is already in the list of items
-    let len = Object.keys(state.items).length;
-    // let len = state.getItemCount(); //items.length;
-    window.console.log('actions', 'createItem', 47, len, state.items.length);
-        let index =  1 + len ;
-        //set the item index
-        // let index = len === 1 ? len : len + 1;
+    let index = getters.getNextIndex;
+    let item = Item.factory({index: index});
 
-        let item = Item.factory({index: index}); //.factory( {id: id, index: index} );
-        window.console.log('actions', 'createItem', 51, index,  item);
-        //Calling this mutation will trigger the api listener
-        commit(mTypes.setItem, Payload.factory({index: index, obj: item}));
-        commit(mTypes.updateOrder);
+    if ( index > 0 ) {
+        let exam = getters.currentExam;
+        item.examId = exam ? exam.id : null;
+    }
+    window.console.log('actions', 'createItem', 62, item);
 
+    let p = new Promise(( resolve, reject ) => {
+        commit(mTypes.setItem, Payload.factory({index: index, obj: item, callback: resolve}));
+    });
+
+    return p.then(() => {
+        return new Promise(( resolve, reject ) => {
+            dispatch(aTypes.cleanupItems);
+            resolve()
+        });
+    })
 };
 
 
@@ -71,8 +83,133 @@ export const updateExam = ( {state, commit}, payload ) => {
 
     //set it as active
     commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
-    //request server update
 };
+
+
+export const parseExamData = ( {state, commit, dispatch} ) => {
+    return new Promise(( resolve, reject ) => {
+        //Check and see if the server gave us data to start off with.
+        //Grab any preloaded data from the div on the page where the server would've put it
+        let examData = JSON.parse(document.getElementById('loadedExam').getAttribute('data'));
+        // window.console.log('actions', 'parseExamData', 103, examData);
+        //there was exam data, load an exam from it
+        if ( typeof examData != 'undefined' ) {
+            //first make sure the index is what we expect
+            examData.index = 0;
+            let exam = Exam.factory(examData); //.factory( {id: id, index: index} );
+            //set it in the items list without calling the api listener
+            commit(mTypes.setItem, Payload.factory({
+                index: 0,
+                obj: exam,
+                mutateSilently: true
+            }));
+        } else {
+            dispatch(aTypes.createExam).then(() => {
+                return true;
+            });
+        }
+        resolve();
+    });
+};
+
+export const parseItemData = ( {state, commit, dispatch} ) => {
+    return new Promise(( resolve, reject ) => {
+        //Check and see if the server gave us data to start off with.
+        //Grab any pre loaded data from the div on the page where the server would've put it
+        let data = JSON.parse(document.getElementById('loadedItems').getAttribute('data'));
+        // window.console.log('actions', 'parseItemData', 128, data);
+
+        //if there was item data, load items from it
+        if ( typeof data !== 'undefined' ) {
+            _.forEach(data, function ( d, i ) {
+                d.index = i;
+                let item = Item.factory(d); //.factory( {id: id, index: index} );
+                //set it in the items list without calling the api listener
+                commit(mTypes.setItem, Payload.factory({
+                    obj: item,
+                    mutateSilently: true
+                }));
+            });
+        } else {
+
+            dispatch(aTypes.createItem).then(() => {
+                return true;
+            });
+        }
+        resolve();
+    });
+};
+
+
+//
+//
+//  // && typeof data.id !== 'undefined' ) {
+//
+// }
+//
+//     for (let i = 0; i < data.length; i++) {
+// if ( typeof data !== 'undefined' && data.length > 0 ) {
+//
+//     for (let i = 0; i < data.length; i++) {
+//         let p = {
+//             id: data[ i ].id,
+//             index: data[ i ].index,
+//             name: data[ i ].questionName,
+//             text: data[ i ].questionText
+//         };
+//         item : Item.factory(data[i]); //.factory( {id: id, index: index} );
+//
+//         //set it in the items list without calling the api listener
+//         commit(mTypes.setItem, Payload.factory({
+//             index: i + 1,
+//             obj: exam,
+//             mutateSilently: true
+//         }));
+//     }
+//
+// } else {
+//
+//             dispatch(aTypes.createItem).then(() => {
+//                 return true;
+//             });
+//
+//         }
+//         resolve()
+//     });
+//
+// };
+
+
+/**
+ * These are actions which different parts of the gom
+ * call to when they initialize.
+ *
+ */
+/** This is what gets run when the root instance is mounted for the setup page */
+export const setupOnMount = ( {state, commit, dispatch} ) => {
+    dispatch('parseExamData').then(() => {
+        dispatch('parseItemData');
+    });
+
+};
+//
+// else
+// {
+//
+//     //if there was no exam data, this is a new setup page
+//     //so do all the default initialization for that
+//     dispatch(aTypes.createExam).then(() => {
+//         dispatch(aTypes.createItem).then(() => {
+//             commit(mTypes.updateOrder);
+//         });
+//
+//     });
+
+
+//     /** This is what gets run when the root instance is mounted for the grading page */
+//     gradeOnMount: () => {
+//     }
+// };
 
 
 // // /**

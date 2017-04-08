@@ -36,7 +36,7 @@
 
         methods: {
                 toggleVis: function () {
-                    console.log( 'buttons.settings-control', 'CALLED', 'toggle' , this.index);
+//                    console.log( 'buttons.settings-control', 'CALLED', 'toggle' , this.index);
                     let isVis = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index );
 //                    console.log( 'isvis', isVis );
                     if(isVis){

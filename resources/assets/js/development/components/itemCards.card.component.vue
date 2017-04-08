@@ -1,7 +1,7 @@
 <template>
     <!--This represents a question or an element-->
     <div v-bind:id="divId"
-         class="item-card-component panel panel-primary"
+         class="item-card-component panel"
          v-bind:class="offsetClass"
     >
         <div class="panel-heading">
@@ -16,31 +16,12 @@
         </div>
     </div>
 
-    <!--<div class="panel-footer" v-show="visible" >-->
-    <!--<div class="clear-fix"></div>-->
-    <!--<div class="row">-->
-    <!--<div class="col-md-1">-->
-    <!--<depth-control-->
-    <!--type="promote"-->
-    <!--:index="index"-->
-    <!--:id="id"-->
-    <!--&gt;</depth-control>-->
-    <!--</div>-->
-    <!--<div class="col-md-10">-->
-    <!--</div>&lt;!&ndash;&ndash;&gt;-->
-    <!--<div class="col-md-1">-->
-    <!--<depth-control-->
-    <!--type="demote"-->
-    <!--:index="index"-->
-    <!--:id="id"-->
-    <!--&gt;</depth-control>-->
-    <!--</div>-->
-
-    <!--</div>&lt;!&ndash;&ndash;&gt;-->
-    <!--</div>-->
-
 </template>
 <style>
+    .panel-heading{
+
+        background-color: #FFFDF4;
+    }
     .bottom-stripe {
         /*line-height: 3em;*/
         /*background-color: #385a7f;*/

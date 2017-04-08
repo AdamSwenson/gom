@@ -18,6 +18,10 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
+/**
+ * Class ItemController
+ * @package App\Http\Controllers
+ */
 class ItemController extends Controller
 {
     public $type;
@@ -37,6 +41,10 @@ class ItemController extends Controller
     protected $studentDao;
     /** @var IElementRepository */
     private $elementDao;
+    /**
+     * @var IElementAssignmentRepository
+     */
+    private $elementAssignmentDao;
 
 
     public function __construct(
@@ -57,6 +65,7 @@ class ItemController extends Controller
         $this->studentDao = $studentDao;
         $this->questionDao = $questionDao;
         $this->elementDao = $elementDao;
+        $this->elementAssignmentDao = $elementAssignmentDao;
     }
 
 // ---------------------------------- Helpers
@@ -135,60 +144,57 @@ class ItemController extends Controller
         return $this->handleStoreAndUpdate($request);
     }
 
-//
-//        //The request will be coming in with potentially a few
-//        //of the item fields filled in. However, we are only concerned with
-//        //figuring out what kind of item is being requested and its relationships,
-//        //and then creating those and returning the relevant ids so that
-//        //they can be set on the client
-//        $this->determineItemType($request);
-//
-//        switch ( $this->type ) {
-//            case Exam::class:
-//                return $this->handleExam($request);
-//                //return new Exam();
-//                //todo eventually should redirect and use common action or job
-////                return redirect()->action('ExamController@store');
-//                break;
-//
-//            case Element::class:
-//                //todo eventually should redirect and use common action or job
-//                //make new element
-//                return new Element();
-//                break;
-//            case Question::class;
-//                //make new question
-//                //todo eventually should redirect and use common action or job
-//                return $this->handleQuestion($request);
-//                break;
-//            default:
-//                //todo add error
-//        }
-
 
     /**
-     * Display the specified resource.
+     * Display the specified exam.
+     * We use the show route to dependency inject an exam
+     * Thus this route should not be used for question and element items
+     *
+     * Called on the route:
+     *      GET 	/items/{exam} 	show 	items.show
      *
      * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function show( ItemRequest $request )
+    public function show(Exam $exam) //Item $item, ItemRequest $request )
     {
+        $items = [];
 
-        return Item::loadItemFromRequest($request);
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
+        foreach ( $questionAssignments as $qAssignment )
+        {
+            $index = $qAssignment->getQuestionNumber();
+            $question = $qAssignment->getQuestion();
+            $items[$index] = $question;
+            //$allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $index);
+
+
+            //['maxScore' => $question->maxScore, 'name' => $question->name, 'id' => $question->id];
+        }
+        //get items
+        // load all current student scores & comments
+ //       $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
+
+        return view('development.newsetup', ['exam' => $exam, 'items' => $items]);
     }
 
     /**
-     * Show the form for editing the exam with all its constituents.
-     * GET    /items/{item}/edit    edit    items.edit
+     * This route is used for getting question and element items
+     *      GET    /items/{item}/edit    edit    items.edit
+     * TODO Figure out what the fuck to do to get the item
+     *
+     * @param Item $item
      * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
     public function edit( Item $item, ItemRequest $request )
     {
-        $exam = Exam::find($item->id);
-        return view('development.newsetup', ['exam' => $exam]);
-
+        return $item;
+//        $exam = Exam::find($item->id);
+//        return view('development.newsetup', ['exam' => $exam]);
+//But it should've been overridden in routes/web so is actually:
+//        *      GET    /items/{exam}/edit    edit    items.edit
+//    *
     }
 
     /**
@@ -252,6 +258,7 @@ class ItemController extends Controller
 
                 //translate the idx into the OG question number
                 $questionNumber = $request->has('idx') ? $request->input('idx')[0] : $request->input('index');
+
                 //now we need to make sure the associations are taken care of
                 //that is, we need to map the idx from the $request to the
                 //question and element assignments

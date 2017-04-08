@@ -14,6 +14,7 @@ window.$ = window.jQuery = require('jquery');
 //set csrf token
 window.Laravel = {csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" )};
 
+
 /**
  * Styling and templating libraries
  */
@@ -46,6 +47,7 @@ window.axios.defaults.headers.common = {
 };
 
 window.axios.defaults.baseURL = routeRoot;
+
 
 
 /**

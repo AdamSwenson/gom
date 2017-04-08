@@ -151,7 +151,17 @@ Route::get('dev/test', 'TestController@test');
 //Route::get('dev/home', 'TestController@home');
 Route::get('dev/newsetup', 'TestController@newSetup');
 
-Route::resource('items', 'ItemController');
+
+//We never ask for a question or element with the show method/route
+//so we define the show route to use the exam id. This will get hit
+//before the resource show route below. However, if somehow this route
+//didn't get hit, we may have a problem.
+//When we want those directly, we use the edit route
+Route::get('items/{exam}', 'ItemController@show');
+
+Route::resource('items', 'ItemController'); //, ['parameters' => [
+//    'item' => 'exam'
+//]]);
 
 //Auth::routes();
 

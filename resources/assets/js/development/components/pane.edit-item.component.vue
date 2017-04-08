@@ -68,11 +68,11 @@
 
         methods: {
             show: function () {
-                console.log('itemSetting', 'CALLED', 'show');
+//                console.log('itemSetting', 'CALLED', 'show');
                 this.$store.commit(mTypes.showItemSettings(Payload.factory({index: this.index})));
             },
             hide: function () {
-                console.log('itemSetting', 'CALLED', 'hide');
+//                console.log('itemSetting', 'CALLED', 'hide');
                 this.$store.commit(mTypes.hideItemSettings(Payload.factory({index: this.index})));
             },
 
@@ -82,7 +82,7 @@
 
         events: {
         'collapse-all': function (  ) {
-            window.console.log('pane.edit-item.component', 'collapse-all', 85,);
+//            window.console.log('pane.edit-item.component', 'collapse-all', 85,);
             this.hide();
         },
             'display-settings': function () {
@@ -92,7 +92,7 @@
         },
 
         mounted: function () {
-            window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
+//            window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
         },
 
     }

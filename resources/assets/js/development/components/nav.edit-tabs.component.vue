@@ -139,11 +139,11 @@
 
         methods: {
             show: function () {
-                console.log('itemSetting', 'CALLED', 'show');
+//                console.log('itemSetting', 'CALLED', 'show');
                 this.$store.commit(mTypes.showItemSettings(Payload.factory({index: this.index})));
             },
             hide: function () {
-                console.log('itemSetting', 'CALLED', 'hide');
+//                console.log('itemSetting', 'CALLED', 'hide');
                 this.$store.commit(mTypes.hideItemSettings(Payload.factory({index: this.index})));
             },
 

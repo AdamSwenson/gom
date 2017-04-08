@@ -170,6 +170,7 @@ const app = new Vue({
     render: h => h(App),
 
     mounted: function () {
+
         // console.log('newSetup ready', this);
     }
 

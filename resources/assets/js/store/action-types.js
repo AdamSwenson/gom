@@ -74,3 +74,7 @@ export const deleteItem = 'deleteItem';
 export const addNewItem = 'addNewItem';
 export const loadItems = 'loadItems';
 export const updateItemName = 'updateItemName';
+export const promoteItem = 'promoteItem';
+export const demoteItem = 'demoteItem';
+export const cleanupItems = 'cleanupItems';
+export const toggleItemPublic = 'toggleItemPublic';

@@ -45,13 +45,14 @@ export default class Item extends IModel {
          * @type {boolean}
          * @private
          */
-        this._public = false;
+        this.publicity = false;
 
         /** The DB question assignment id or elementAssignmentId if applicable */
         this.assignmentId = -1;
 
         //The id of the exam the item is associated with
-        // this.examId = -1;
+        this.examId = -1;
+
 
         // this.props = super.fillableProps;
     }
@@ -117,27 +118,27 @@ export default class Item extends IModel {
      * @returns {boolean|*}
      */
     isPublic() {
-        return this._public;
+        return this.publicity;
     }
 
     /**
      * Makes able to appear in student-viewable outputs
      */
     makePublic() {
-        this._public = true;
+        this.publicity = true;
     }
 
     /**
      * Makes no longer visible to students
      */
     hide() {
-        this._public = false;
+        this.publicity = false;
     }
 
     togglePublic() {
-        console.log('Item', 'CALLED', 'togglePublic', this._public);
-        this._public = !this._public;
-        console.log(this._public);
+        // console.log('Item', 'CALLED', 'togglePublic', this._public);
+        this.publicity = !this.publicity;
+        // console.log(this._public);
     }
 
 
@@ -187,6 +188,6 @@ export default class Item extends IModel {
 
     static factory( params ) {
         let obj = new Item();
-        return this.fillObject(obj, params);
+        return this.fillObject(obj, params, Item.aliasMap);
     }
 }

@@ -68,7 +68,7 @@
         events: {},
 
         mounted: function () {
-            console.log('exam-edit-pane ready');
+//            console.log('exam-edit-pane ready');
         },
     };
 </script>

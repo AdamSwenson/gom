@@ -1,21 +1,21 @@
-<template>
-    <div class="card-list card-list-component">
-        <!--<draggable v-model='items'>-->
-        <ul id='card-list' class="list-group">
-            <li
-                    class="item-cards list-group-item list-group-item-warning handle"
-                    v-for="(item, index) in items"
-            >
-                <item-card
-                        :index="item.index"
-                        :id="item.id"
-                ></item-card>
-            </li>
-        </ul>
-        <!--</div>-->
+<template xmlns="http://www.w3.org/1999/html">
+    <div class="card-list-component">
+        <div class="row card-list">
+            <!--<draggable v-model='items'>-->
+            <ul id='card-list' class="list-group">
+                <li
+                        class="item-cards list-group-item  handle"
+                        v-for="(item, index) in items"
+                >
+                    <item-card
+                            :index="item.index"
+                    ></item-card>
+                </li>
+            </ul>
+        </div>
 
         <div class="row">
-            <div class="col-lg-12 ">
+            <div class="col-md-10">
                 <div class="text-right">
                     <item-add-button></item-add-button>
                 </div>
@@ -23,8 +23,13 @@
         </div>
         <!--</draggable>-->
     </div>
+
 </template>
 <style>
+    .list-group-item{
+
+        background-color: #FFFDF4;
+    }
 
 </style>
 <script>
@@ -64,9 +69,11 @@
             //Return everything in the items tree execpt the root
             //The root is the exam. It gets special treatment.
             items: function () {
-                let orig = this.$store.getters[gTypes.getAllItems];
+                let orig = this.$store.getters[ gTypes.getAllItems ];
                 //filter out the exam and return everything else
-                return  orig.filter((obj) => { return obj.index >  0; });
+                return orig.filter(( obj ) => {
+                    return obj.index > 0;
+                });
             },
 
             numberOfItems: function () {
@@ -109,56 +116,56 @@
                     handle: '.handle',  // Drag handle selector within list items
                     ghostClass: "sortable-ghost", // Class name for the drop placeholder
 
-                    onSort: function (evt) {
+                    onSort: function ( evt ) {
                         me.$store.commit(mTypes.updateOrder);
                     },
 
-                    setData: function (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
+                    setData: function ( /** DataTransfer */dataTransfer, /** HTMLElement*/dragEl ) {
                         dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
                     },
 
                     // Element is chosen
-                    onChoose: function (/**Event*/evt) {
+                    onChoose: function ( /**Event*/evt ) {
                         evt.oldIndex;  // element index within parent
                     },
 
                     // Element dragging started
-                    onStart: function (/**Event*/evt) {
+                    onStart: function ( /**Event*/evt ) {
                         evt.oldIndex;  // element index within parent
                     },
 
                     // Element dragging ended
-                    onEnd: function (/**Event*/evt) {
+                    onEnd: function ( /**Event*/evt ) {
                         evt.oldIndex;  // element's old index within parent
                         evt.newIndex;  // element's new index within parent
                     },
 
                     // Element is dropped into the list from another list
-                    onAdd: function (/**Event*/evt) {
+                    onAdd: function ( /**Event*/evt ) {
                         var itemEl = evt.item;  // dragged HTMLElement
                         evt.from;  // previous list
                         // + indexes from onEnd
                     },
 
                     // Changed sorting within list
-                    onUpdate: function (/**Event*/evt) {
+                    onUpdate: function ( /**Event*/evt ) {
                         var itemEl = evt.item;  // dragged HTMLElement
                         // + indexes from onEnd
                     },
 
 
                     // Element is removed from the list into another list
-                    onRemove: function (/**Event*/evt) {
+                    onRemove: function ( /**Event*/evt ) {
                         // same properties as onUpdate
                     },
 
                     // Attempt to drag a filtered element
-                    onFilter: function (/**Event*/evt) {
+                    onFilter: function ( /**Event*/evt ) {
                         var itemEl = evt.item;  // HTMLElement receiving the `mousedown|tapstart` event.
                     },
 
                     // Event when you move an item in the list or between lists
-                    onMove: function (/**Event*/evt, /**Event*/originalEvent) {
+                    onMove: function ( /**Event*/evt, /**Event*/originalEvent ) {
                         // Example: http://jsbin.com/tuyafe/1/edit?js,output
                         evt.dragged; // dragged HTMLElement
                         evt.draggedRect; // TextRectangle {left, top, right и bottom}
@@ -169,7 +176,7 @@
                     },
 
                     // Called when creating a clone of element
-                    onClone: function (/**Event*/evt) {
+                    onClone: function ( /**Event*/evt ) {
                         var origEl = evt.item;
                         var cloneEl = evt.clone;
                     }

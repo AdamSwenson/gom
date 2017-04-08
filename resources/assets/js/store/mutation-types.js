@@ -79,15 +79,12 @@ export const loadItems = 'loadItems'
 export const updateOrder = 'updateOrder'
 
 
-export const promoteItem = 'promoteItem'
-export const demoteItem = 'demoteItem'
-
 export const updateItemName = 'updateItemName'
 export const updateItem = 'updateItem';
 export const updateItemSilently = 'updateItemSilently';
 export const setItemNameByIndex = 'setItemNameByIndex'
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
-export const toggleItemPublic = 'toggleItemPublic'
+
 export const updateComment = 'updateComment'
 
 //settings

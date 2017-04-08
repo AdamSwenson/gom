@@ -5,7 +5,7 @@
             <div class="input-group-addon"
                  id="basic-addon2"
             ># {{ index }}
-            <!--<div class="input-group-addon" id="itemnum">-->
+                <!--<div class="input-group-addon" id="itemnum">-->
                 <!--<item-number :index="index"></item-number>-->
             </div>
 
@@ -32,7 +32,7 @@
 
     import Item from '../../models/Item'
     import Payload from '../../models/Payload'
-
+    import * as aTypes from '../../store/action-types'
     import * as mTypes from '../../store/mutation-types'
     //    import settingsButton from './buttons.settings-control.component.vue'
     //    import publicIndicator from './buttons.public-control.component.vue'
@@ -46,7 +46,7 @@
 //            'public-indicator': publicIndicator,
 //        },
 
-        props: [ 'index', 'id' ],
+        props: [ 'index'],
 
 
         data: function () {
@@ -66,7 +66,6 @@
                 },
 
                 defaults: {
-                    item: new Item(),
                     type: '-'
                 },
             };
@@ -87,38 +86,25 @@
                 set: function ( v ) {
                 }
             },
+//
+//            name: {
+//                get: function () {
+////                    let item = this.$store.getters.getItemById( this.id );
+//                    let item = this.$store.getters.getItemByIndex(this.index);
+//                    if ( typeof item !== 'undefined' ) {
+//                        return item.name;
+//                    }
+//                },
+//
+//                set: function ( v ) {
+//                    let pl = Payload.factory({ index: this.index, updateProp: 'name', updateVal: v});
+//                    this.$store.commit(mTypes.updateItem, pl);
+//                }
+//            },
 
-            name: {
-                get: function () {
-//                    let item = this.$store.getters.getItemById( this.id );
-                    let item = this.$store.getters.getItemByIndex(this.index);
-                    if ( typeof item !== 'undefined' ) {
-                        return item.name;
-                    }
-                },
-
-                set: function ( v ) {
-                    let pl = Payload.factory({id: this.id, index: this.index, updateProp: 'name', updateVal: v});
-                    this.$store.commit(mTypes.updateItem, pl);
-                }
-            },
-
-            public: function () {
-//                let item = this.$store.getters.getItemById( this.id );
-                let item = this.$store.getters.getItemByIndex(this.index);
-
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item !== 'undefined' ) {
-                    return item.isPublic();
-                }
-            },
         },
 
         methods: {
-
-            isPublic: function () {
-                return this.public;
-            },
 
         },
 

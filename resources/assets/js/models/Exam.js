@@ -116,7 +116,7 @@ export default class Exam extends Item {
     }
 
 
-    static getAliasMap() {
+    static get aliasMap() {
         return {
             examId: 'id',
             examIndex: 'index'
@@ -129,7 +129,7 @@ export default class Exam extends Item {
         let exam = new Exam();
 // //we will still return an empty exam if there
 //         //were no parameters
-        return this.fillObject(exam, params);
+        return this.fillObject(exam, params, Exam.aliasMap);
     }
 
 

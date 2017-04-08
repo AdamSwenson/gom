@@ -14,6 +14,50 @@
   max-height: 0;
 }
 
+.custom-file-control {
+  overflow: hidden;
+}
+
+.custom-file-control {
+  overflow: hidden;
+}
+
+.custom-file-control.dragging {
+  overflow: hidden;
+  -webkit-filter: blur(3px);
+  filter: blur(3px);
+}
+
+.custom-file-control::after {
+  content: attr(data-selected);
+}
+
+.custom-file-control::before {
+  content: attr(data-choose);
+}
+
+.custom-file .drop-here {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 3px;
+  z-index: 99999;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.custom-file .drop-here::before {
+  color: #fff;
+  content: attr(data-drop);
+}
+
 .hidden {
   opacity: 0 !important;
 }

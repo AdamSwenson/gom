@@ -111,8 +111,6 @@
         events: {},
 
         mounted: function () {
-            this.$store.dispatch('createExam' );
-            this.$store.dispatch('createItem');
 
 //            console.log( 'exam-main ready' );
         },

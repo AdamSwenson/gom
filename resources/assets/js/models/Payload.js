@@ -42,6 +42,21 @@ export default class Payload {
 
         /** When used to update a comment, this indicates the valence */
         this.updateValence;
+
+        this._successCallback;
+
+    }
+
+    get callback(){
+        if (typeof this._successCallback === 'undefined'){
+            //dummy callable
+            return ()=>{return true;}
+        }
+        return this._successCallback();
+    }
+
+    set callback(v){
+        this._successCallback = v;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -134,7 +149,7 @@ export default class Payload {
      */
     static get fillableProps() {
         return [
-            'id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence'
+            'id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence', 'callback'
         ];
     }
 

@@ -22,23 +22,6 @@ const validateIndex = ( index ) => {
     return true;
 };
 
-/**
- * Poorly named shortcut for getting the db id of
- * the currently active exam.
- * @param state
- */
-export const getExamId = ( state ) => {
-    let exam = state.items[ 0 ];
-    if ( exam ) {
-        return exam.id;
-    }
-    //
-    //
-    // if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
-    //     return state.activeExam.id;
-    // }
-    return null;
-};
 
 /**
  * Returns true if some student is set as active.

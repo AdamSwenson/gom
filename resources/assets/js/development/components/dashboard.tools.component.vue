@@ -99,7 +99,7 @@
         events: {},
 
         mounted: function () {
-            console.log( 'tools-dashboard ready' );
+//            console.log( 'tools-dashboard ready' );
         },
     };
 </script>

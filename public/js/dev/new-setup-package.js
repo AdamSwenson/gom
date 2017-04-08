@@ -66895,31 +66895,52 @@ exports.default = function (store) {
         var type = mutation.type,
             payload = mutation.payload;
 
+        //Check if mutateSilently has been set
+        //If it has, respect its privacy
+
+        if (typeof payload !== 'undefined' && payload.mutateSilently) {
+            return false;
+        }
+
         switch (type) {
+            //this is the operation of pushing an item into the array
             case mTypes.setItem:
                 if (typeof payload !== 'undefined' && !payload.mutateSilently) {
 
                     var _item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
 
-                    if (!_item instanceof _Exam2.default) {
+                    window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', _item, payload);
 
-                        _item.examId = store.getters.getExamId;
-                    }
+                    if (_item) {
+                        if (!_item instanceof _Exam2.default) {
 
-                    if (_item && _item.isNew()) {
-                        //id === 'undefined' || payload.obj.id === -1)
-                        //All IModels have an id of -1 when they are initially created.
-                        //This is replaced with the real id once one is returned from the server.
-                        //Thus, this request is to create the item.
-                        //When the server has done this, it will send back an id
-                        window.axios.post('items', _item).then(function (response) {
-                            handleResponse(store, _item, response);
-                        }).catch(function (error) {
-                            errorHandling(error);
-                        });
+                            _item.examId = store.getters.currentExam.id;
+                        }
+                        if (_item.isNew()) {
+                            createItem(store, _item);
+                            payload.callback();
+                        } else {
+                            updateItem(store, _item);
+                            payload.callback();
+                        }
                     }
                 }
                 break;
+            // //id === 'undefined' || payload.obj.id === -1)
+            // //All IModels have an id of -1 when they are initially created.
+            // //This is replaced with the real id once one is returned from the server.
+            // //Thus, this request is to create the item.
+            // //When the server has done this, it will send back an id
+            // window.axios
+            //     .post('items', item)
+            //     .then(( response ) => {
+            //         handleResponse(store, item, response);
+            //     })
+            //     .catch(function ( error ) {
+            //         errorHandling(error);
+            //     });
+
+
             //Now we allow the request to continue in case it wasn't just
             //asking to create something. If the model already has an id,
             //the type property will tell us which mutation was called so we can
@@ -66933,18 +66954,26 @@ exports.default = function (store) {
 
             case mTypes.updateItem:
                 var item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
-
-                if (!item instanceof _Exam2.default) {
-
-                    item.examId = store.getters.getExamId;
-                }
-
-                //put/patch
-                window.axios.put('items/' + item.id, item).then(function (response) {
-                    //     handleResponse(store, item, response);
-                }).catch(function (error) {
-                    errorHandling(error);
-                });
+                updateItem(store, item);
+                payload.callback();
+                //
+                // if ( !item instanceof Exam ) {
+                //
+                //     item.examId = store.getters.currentExam.id;
+                // }
+                //
+                // window.console.log('apiPlugin', 'updateItem', 211, item);
+                //
+                //
+                // //put/patch
+                // window.axios
+                //     .put('items/' + item.id, item)
+                //     .then(( response ) => {
+                //         //     handleResponse(store, item, response);
+                //     })
+                //     .catch(function ( error ) {
+                //         errorHandling(error);
+                //     });
                 break;
 
             case mTypes.demoteItem:
@@ -67019,7 +67048,7 @@ var errorHandling = function errorHandling(error) {
 };
 
 var handleResponse = function handleResponse(store, item, response) {
-    window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+    // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
     if (typeof response.data === 'undefined') return false;
 
     //return Item with the new id or other data loaded
@@ -67060,6 +67089,50 @@ var handleResponse = function handleResponse(store, item, response) {
                 break;
             default:
         }
+    }
+};
+
+/**
+ * Handles the call to the server to update
+ * properties of an item which already has an id
+ * @param store
+ * @param item
+ */
+var updateItem = function updateItem(store, item) {
+    // if ( !item instanceof Exam ) {
+
+    item.examId = store.getters.currentExam.id;
+    // }
+    //put/patch
+    window.axios.put('items/' + item.id, item).then(function (response) {
+        handleResponse(store, item, response);
+    }).catch(function (error) {
+        errorHandling(error);
+    });
+};
+
+/**
+ * Handles the actual call to the server to create an
+ * item which doesn't have an id yet.
+ * @param store
+ * @param item
+ */
+var createItem = function createItem(store, item) {
+    if (item && item.isNew()) {
+        // if ( !item instanceof Exam ) {
+        item.examId = store.getters.currentExam.id;
+        // }
+
+        //id === 'undefined' || payload.obj.id === -1)
+        //All IModels have an id of -1 when they are initially created.
+        //This is replaced with the real id once one is returned from the server.
+        //Thus, this request is to create the item.
+        //When the server has done this, it will send back an id
+        window.axios.post('items', item).then(function (response) {
+            handleResponse(store, item, response);
+        }).catch(function (error) {
+            errorHandling(error);
+        });
     }
 };
 
@@ -67614,6 +67687,10 @@ var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
 var _mutationTypes = require('../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
@@ -67642,14 +67719,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.default = {
 
-    props: ['index', 'id'],
+    props: ['index'],
 
     data: function data() {
         return {
 
             styles: {
                 public: 'bg-warning',
-                private: ''
+                private: 'bg-default'
             },
 
             icons: {
@@ -67662,8 +67739,11 @@ exports.default = {
     },
 
     computed: {
-        public: function _public() {
-            return this.$parent.public;
+        publicity: function publicity() {
+            var item = this.$store.getters.getItemByIndex(this.index);
+            if (typeof item !== 'undefined') {
+                return item.isPublic();
+            }
         },
 
         /**
@@ -67673,11 +67753,11 @@ exports.default = {
          * @returns {string}
          */
         styling: function styling() {
-            return this.public ? this.styles.public : this.styles.private;
+            return this.publicity ? this.styles.public : this.styles.private;
         },
 
         icon: function icon() {
-            if (this.public) {
+            if (this.publicity) {
                 return this.icons.eye.open;
             }
             return this.icons.eye.close;
@@ -67692,11 +67772,23 @@ exports.default = {
          * @returns {*}
          */
         isPublic: function isPublic() {
-            return this.public;
+            var item = this.$store.getters.getItemByIndex(this.index);
+
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if (typeof item !== 'undefined') {
+                return item.isPublic();
+            }
         },
 
+        /**
+         * Returns boolean for whether the thing
+         * this is attached to is hidden from students
+         * (or potentially others, if there was a use).
+         * Just a semantically useful shortcut
+         * @returns {*}
+         */
         isPrivate: function isPrivate() {
-            return !this.public;
+            return !this.isPublic;
         },
 
         /**
@@ -67706,7 +67798,7 @@ exports.default = {
          */
         togglePublic: function togglePublic() {
             //                console.log( 'CALLED', 'togglePublic' );
-            this.$store.commit(mTypes.toggleItemPublic, _Payload2.default.factory({ index: this.index }));
+            this.$store.dispatch(aTypes.toggleItemPublic, _Payload2.default.factory({ index: this.index }));
         }
 
     },
@@ -67716,9 +67808,10 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
+
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn public-indicator\" v-bind:class=\"{'btn-warning': public}\" v-on:click=\"togglePublic\">\n    <span v-bind:class=\"icon\"></span>\n</button>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn public-indicator\" v-bind:class=\"{'btn-warning': publicity}\" v-on:click=\"togglePublic\">\n    <span v-bind:class=\"icon\"></span>\n</button>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67733,7 +67826,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -67779,7 +67872,7 @@ exports.default = {
 
     methods: {
         toggleVis: function toggleVis() {
-            console.log('buttons.settings-control', 'CALLED', 'toggle', this.index);
+            //                    console.log( 'buttons.settings-control', 'CALLED', 'toggle' , this.index);
             var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.index);
             //                    console.log( 'isvis', isVis );
             if (isVis) {
@@ -67909,7 +68002,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Comment":381,"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\nul {\n\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68048,17 +68141,17 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-        console.log('props-dashboard ready', this.$store);
+        //            console.log('props-dashboard ready', this.$store);
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"props-dashboard\" class=\"dashboard\">\n    <dl class=\"dl-horizontal\">\n\n        <dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type=\"number\" v-model=\"perfectScore\" /></dd>-->\n\n        <dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt> # Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n        <dt v-show=\"gradingComplete\"><span class=\"glyphicon glyphicon-ok\"></span></dt>\n        <dd v-show=\"gradingComplete\">Grading Complete</dd>\n        <dt v-show=\"reviewingComplete\"><span class=\"glyphicon glyphicon-ok\"></span></dt>\n        <dd v-show=\"reviewingComplete\">Reviewing Complete </dd>\n\n    </dl>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"props-dashboard\" class=\"dashboard\">\n    <!--<ul class=\"list-group\">-->\n        <!--<li class=\"list-group-item\">-->\n            <!--<dl class=\"dl-horizontal\">-->\n                <!--<dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>-->\n                <!--<dd>{{ numberItems }}</dd>-->\n\n                <!--<dt>Max total score</dt>-->\n                <!--<dd>{{ perfectScore }}</dd>-->\n\n                <!--<dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>-->\n                <!--<dd>{{ numberStudents}}</dd>-->\n\n                <!--<dt> # Graded</dt>-->\n                <!--<dd>{{ numberGraded }}</dd>-->\n\n                <!--<dt>Time grading</dt>-->\n                <!--<dd>{{ timeGrading }}</dd>-->\n\n            <!--</dl>-->\n        <!--</li>-->\n\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n\n        <!--<dt>Max total score</dt>-->\n        <!--<dd>{{ perfectScore }}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n        <!--&lt;!&ndash;<dd><input type=\"number\" v-model=\"perfectScore\" /></dd>&ndash;&gt;-->\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n        <!--<dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>-->\n        <!--<dd>{{ numberStudents}}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n        <!--<dt> # Graded</dt>-->\n        <!--<dd>{{ numberGraded }}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n        <!--<dt>Time grading</dt>-->\n        <!--<dd>{{ timeGrading }}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n\n    <h5>Progress</h5>\n    <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n            <h6><span v-show=\"setupComplete\" class=\"glyphicon glyphicon-ok\"></span> Setup </h6>\n\n\n            <dl class=\"dl-horizontal\">\n                <dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>\n                <dd>{{ numberItems }}</dd>\n\n                <dt>Max total score</dt>\n                <dd>{{ perfectScore }}</dd>\n\n                <dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>\n                <dd>{{ numberStudents}}</dd>\n            </dl>\n        </li>\n\n        <li class=\"list-group-item\">\n            <h6><span v-show=\"gradingComplete\" class=\"glyphicon glyphicon-ok\"></span> Grading </h6>\n            <dl class=\"dl-horizontal\">\n\n                <dt> # Graded</dt>\n                <dd>{{ numberGraded }}</dd>\n\n                <dt>Time grading</dt>\n                <dd>{{ timeGrading }}</dd>\n\n            </dl>\n        </li>\n\n        <li class=\"list-group-item\">\n            <h6><span v-show=\"reviewingComplete\" class=\"glyphicon glyphicon-ok\"></span> Reviewing</h6>\n        </li>\n    </ul>\n</div>\n\n<!---->\n<!--<dl class=\"dl-horizontal list-group\">-->\n\n\n<!--<dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>-->\n<!--<dd>{{ numberItems }}</dd>-->\n\n<!--<dt>Max total score</dt>-->\n<!--<dd>{{ perfectScore }}</dd>-->\n<!--&lt;!&ndash;<dd><input type=\"number\" v-model=\"perfectScore\" /></dd>&ndash;&gt;-->\n\n<!--<dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>-->\n<!--<dd>{{ numberStudents}}</dd>-->\n\n<!--<dt> # Graded</dt>-->\n<!--<dd>{{ numberGraded }}</dd>-->\n\n<!--<dt>Time grading</dt>-->\n<!--<dd>{{ timeGrading }}</dd>-->\n\n\n<!--</dl>-->\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["\nul {\n\n}\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68133,7 +68226,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-        console.log('tools-dashboard ready');
+        //            console.log( 'tools-dashboard ready' );
     }
 };
 
@@ -68259,8 +68352,6 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-        this.$store.dispatch('createExam');
-        this.$store.dispatch('createItem');
 
         //            console.log( 'exam-main ready' );
     }
@@ -68675,6 +68766,10 @@ var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
 var _mutationTypes = require('../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
@@ -68695,7 +68790,7 @@ exports.default = {
     //            'public-indicator': publicIndicator,
     //        },
 
-    props: ['index', 'id'],
+    props: ['index'],
 
     data: function data() {
         return {
@@ -68714,7 +68809,6 @@ exports.default = {
             },
 
             defaults: {
-                item: new _Item2.default(),
                 type: '-'
             }
         };
@@ -68733,41 +68827,10 @@ exports.default = {
                 //if element, return order
             },
             set: function set(v) {}
-        },
-
-        name: {
-            get: function get() {
-                //                    let item = this.$store.getters.getItemById( this.id );
-                var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item !== 'undefined') {
-                    return item.name;
-                }
-            },
-
-            set: function set(v) {
-                var pl = _Payload2.default.factory({ id: this.id, index: this.index, updateProp: 'name', updateVal: v });
-                this.$store.commit(mTypes.updateItem, pl);
-            }
-        },
-
-        public: function _public() {
-            //                let item = this.$store.getters.getItemById( this.id );
-            var item = this.$store.getters.getItemByIndex(this.index);
-
-            // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item !== 'undefined') {
-                return item.isPublic();
-            }
         }
     },
 
-    methods: {
-
-        isPublic: function isPublic() {
-            return this.public;
-        }
-
-    },
+    methods: {},
 
     directives: {},
 
@@ -68778,7 +68841,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component\">\n    <div class=\"input-group\">\n        <div class=\"input-group-addon\" id=\"basic-addon2\"># {{ index }}\n        <!--<div class=\"input-group-addon\" id=\"itemnum\">-->\n            <!--<item-number :index=\"index\"></item-number>-->\n        </div>\n\n        <item-name :index=\"index\"></item-name>\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"index\"></settings-button>\n\n            <public-indicator :index=\"index\"></public-indicator>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component\">\n    <div class=\"input-group\">\n        <div class=\"input-group-addon\" id=\"basic-addon2\"># {{ index }}\n            <!--<div class=\"input-group-addon\" id=\"itemnum\">-->\n            <!--<item-number :index=\"index\"></item-number>-->\n        </div>\n\n        <item-name :index=\"index\"></item-name>\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"index\"></settings-button>\n\n            <public-indicator :index=\"index\"></public-indicator>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68793,9 +68856,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.panel-heading{\n\n    background-color: #FFFDF4;\n}\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68944,13 +69007,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component panel panel-primary\" v-bind:class=\"offsetClass\">\n    <div class=\"panel-heading\">\n        <item-main :index=\"index\"></item-main>\n    </div>\n\n    <div class=\"panel-body\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n        <delete-item-button :index=\"index\"></delete-item-button>\n    </div>\n</div>\n\n<!--<div class=\"panel-footer\" v-show=\"visible\" >-->\n<!--<div class=\"clear-fix\"></div>-->\n<!--<div class=\"row\">-->\n<!--<div class=\"col-md-1\">-->\n<!--<depth-control-->\n<!--type=\"promote\"-->\n<!--:index=\"index\"-->\n<!--:id=\"id\"-->\n<!--&gt;</depth-control>-->\n<!--</div>-->\n<!--<div class=\"col-md-10\">-->\n<!--</div>&lt;!&ndash;&ndash;&gt;-->\n<!--<div class=\"col-md-1\">-->\n<!--<depth-control-->\n<!--type=\"demote\"-->\n<!--:index=\"index\"-->\n<!--:id=\"id\"-->\n<!--&gt;</depth-control>-->\n<!--</div>-->\n\n<!--</div>&lt;!&ndash;&ndash;&gt;-->\n<!--</div>-->\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component panel\" v-bind:class=\"offsetClass\">\n    <div class=\"panel-heading\">\n        <item-main :index=\"index\"></item-main>\n    </div>\n\n    <div class=\"panel-body\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n        <delete-item-button :index=\"index\"></delete-item-button>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n"] = false
+    __vueify_insert__.cache["\n.panel-heading{\n\n    background-color: #FFFDF4;\n}\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68961,7 +69024,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.list-group-item{\n\n    background-color: #FFFDF4;\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69140,13 +69203,13 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list card-list-component\">\n    <!--<draggable v-model='items'>-->\n    <ul id=\"card-list\" class=\"list-group\">\n        <li class=\"item-cards list-group-item list-group-item-warning handle\" v-for=\"(item, index) in items\">\n            <item-card :index=\"item.index\" :id=\"item.id\"></item-card>\n        </li>\n    </ul>\n    <!--</div>-->\n\n    <div class=\"row\">\n        <div class=\"col-lg-12 \">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n    <div class=\"row card-list\">\n        <!--<draggable v-model='items'>-->\n        <ul id=\"card-list\" class=\"list-group\">\n            <li class=\"item-cards list-group-item  handle\" v-for=\"(item, index) in items\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-10\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["\n.list-group-item{\n\n    background-color: #FFFDF4;\n}\n\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -69260,11 +69323,11 @@ exports.default = {
 
     methods: {
         show: function show() {
-            console.log('itemSetting', 'CALLED', 'show');
+            //                console.log('itemSetting', 'CALLED', 'show');
             this.$store.commit(mTypes.showItemSettings(_Payload2.default.factory({ index: this.index })));
         },
         hide: function hide() {
-            console.log('itemSetting', 'CALLED', 'hide');
+            //                console.log('itemSetting', 'CALLED', 'hide');
             this.$store.commit(mTypes.hideItemSettings(_Payload2.default.factory({ index: this.index })));
         }
 
@@ -69367,7 +69430,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-        console.log('exam-edit-pane ready');
+        //            console.log('exam-edit-pane ready');
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
@@ -69449,11 +69512,11 @@ exports.default = {
 
     methods: {
         show: function show() {
-            console.log('itemSetting', 'CALLED', 'show');
+            //                console.log('itemSetting', 'CALLED', 'show');
             this.$store.commit(mTypes.showItemSettings(_Payload2.default.factory({ index: this.index })));
         },
         hide: function hide() {
-            console.log('itemSetting', 'CALLED', 'hide');
+            //                console.log('itemSetting', 'CALLED', 'hide');
             this.$store.commit(mTypes.hideItemSettings(_Payload2.default.factory({ index: this.index })));
         }
 
@@ -69463,7 +69526,7 @@ exports.default = {
 
     events: {
         'collapse-all': function collapseAll() {
-            window.console.log('pane.edit-item.component', 'collapse-all', 85);
+            //            window.console.log('pane.edit-item.component', 'collapse-all', 85,);
             this.hide();
         },
         'display-settings': function displaySettings() {
@@ -69473,7 +69536,7 @@ exports.default = {
     },
 
     mounted: function mounted() {
-        window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
+        //            window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
     }
 
 };
@@ -70103,7 +70166,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n#itemCol.well {\n    background-color: #385a7f\n}\n")
+var __vueify_style__ = __vueify_insert__.insert("/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  background-color: #00496C; }\n\n/* line 13, stdin */\n#examEditorHead .panel {\n  background-color: #FFFDF4; }\n\n/* line 19, stdin */\n#examEditorBody {\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 26, stdin */\n#itemCol {\n  background-color: #FFFDF4; }\n\n/* line 30, stdin */\n#infoCol {\n  background-color: #FFFDF4; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70143,6 +70206,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+
     store: _store2.default,
 
     data: function data() {
@@ -70160,21 +70224,20 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-
-        //
+        _store2.default.dispatch('setupOnMount');
     },
 
     components: {}
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\">\n    <div class=\"row\">\n        <div class=\"col-lg-1\"></div>\n\n        <div class=\"examEditor col-lg-10\">\n            <div class=\"panel-heading\">\n                <exam-main></exam-main>\n            </div>\n\n            <div class=\"panel-body\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n        <div class=\"col-lg-1\"></div>\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n\n        <div class=\"col-lg-1\"></div>\n\n        <div id=\"itemCol\" class=\"col-lg-9 well well-sm  \">\n            <div class=\"itemRow row\">\n                <card-list></card-list>\n            </div>\n        </div>\n\n        <div id=\"infoCol\" class=\"col-lg-2 well well-sm\">\n\n            <div class=\"row\">\n                <props-dashboard></props-dashboard>\n            </div>\n\n            <div class=\"row\">\n                <tools-dashboard></tools-dashboard>\n            </div>\n\n        </div>\n\n        <div class=\"col-lg-1\"></div>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\" class=\"setup-main\">\n    <div id=\"examEditorHead\" class=\"row\">\n        <div class=\"col-md-1\"></div>\n\n        <div class=\"panel col-md-10\">\n            <div class=\"panel-heading\">\n                <exam-main></exam-main>\n            </div>\n\n            <div class=\"panel-body\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n        <div class=\"col-md-1\"></div>\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n        <div class=\"col-md-1\"></div>\n\n        <div id=\"itemCol\" class=\"col-md-8\">\n            <card-list></card-list>\n        </div>\n\n        <div id=\"infoCol\" class=\"col-md-2\">\n            <!--<div class=\"row\">-->\n                <props-dashboard></props-dashboard>\n            <!--</div>-->\n\n            <!--<div class=\"row\">-->\n                <tools-dashboard></tools-dashboard>\n            <!--</div>-->\n\n        </div>\n        <div class=\"col-md-1\"></div>\n\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n#itemCol.well {\n    background-color: #385a7f\n}\n"] = false
+    __vueify_insert__.cache["/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  background-color: #00496C; }\n\n/* line 13, stdin */\n#examEditorHead .panel {\n  background-color: #FFFDF4; }\n\n/* line 19, stdin */\n#examEditorBody {\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 26, stdin */\n#itemCol {\n  background-color: #FFFDF4; }\n\n/* line 30, stdin */\n#infoCol {\n  background-color: #FFFDF4; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -70449,6 +70512,7 @@ var app = new _vue2.default({
     },
 
     mounted: function mounted() {
+
         // console.log('newSetup ready', this);
     }
 
@@ -70717,20 +70781,12 @@ var Exam = function (_Item) {
             return 'exam';
         }
     }, {
-        key: 'getAliasMap',
-        value: function getAliasMap() {
-            return {
-                examId: 'id',
-                examIndex: 'index'
-            };
-        }
-    }, {
         key: 'factory',
         value: function factory(params) {
             var exam = new Exam();
             // //we will still return an empty exam if there
             //         //were no parameters
-            return this.fillObject(exam, params);
+            return this.fillObject(exam, params, Exam.aliasMap);
         }
     }, {
         key: 'fillableProps',
@@ -70746,6 +70802,14 @@ var Exam = function (_Item) {
          */
         get: function get() {
             return ['year', 'term'].concat(_get(Exam.__proto__ || Object.getPrototypeOf(Exam), 'fillableProps', this));
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                examId: 'id',
+                examIndex: 'index'
+            };
         }
     }]);
 
@@ -70827,9 +70891,10 @@ var IModel = function () {
          * object.
          * @param obj
          * @param params
+         * @param aliasMap
          * @returns {*}
          */
-        value: function fillObject(obj, params) {
+        value: function fillObject(obj, params, aliasMap) {
             if (typeof params !== 'undefined') {
                 var fillableProps = this.fillableProps;
                 //fill any fillable values
@@ -70841,10 +70906,10 @@ var IModel = function () {
                 });
 
                 //fill any aliased values
-                for (var v in this.aliasMap) {
+                for (var v in aliasMap) {
                     if (typeof params[v] != 'undefined') {
-                        // console.log( 'alias', v, map[v] );
-                        obj[this.aliasMap[v]] = params[v];
+                        // window.console.log('IModel', 'fillObject', 116, v);
+                        obj[aliasMap[v]] = params[v];
                     }
                 }
             }
@@ -70928,7 +70993,7 @@ var IModel = function () {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['idx', 'id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore'];
+            return ['idx', 'id', 'index', 'depth', 'name', 'publicName', 'number', 'text', 'maxScore', 'publicity', 'locked', 'released'];
         }
 
         /**
@@ -71035,13 +71100,13 @@ var Item = function (_IModel) {
          * @type {boolean}
          * @private
          */
-        _this._public = false;
+        _this.publicity = false;
 
         /** The DB question assignment id or elementAssignmentId if applicable */
         _this.assignmentId = -1;
 
         //The id of the exam the item is associated with
-        // this.examId = -1;
+        _this.examId = -1;
 
         // this.props = super.fillableProps;
         return _this;
@@ -71114,7 +71179,7 @@ var Item = function (_IModel) {
     }, {
         key: 'isPublic',
         value: function isPublic() {
-            return this._public;
+            return this.publicity;
         }
 
         /**
@@ -71124,7 +71189,7 @@ var Item = function (_IModel) {
     }, {
         key: 'makePublic',
         value: function makePublic() {
-            this._public = true;
+            this.publicity = true;
         }
 
         /**
@@ -71134,14 +71199,14 @@ var Item = function (_IModel) {
     }, {
         key: 'hide',
         value: function hide() {
-            this._public = false;
+            this.publicity = false;
         }
     }, {
         key: 'togglePublic',
         value: function togglePublic() {
-            console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this._public = !this._public;
-            console.log(this._public);
+            // console.log('Item', 'CALLED', 'togglePublic', this._public);
+            this.publicity = !this.publicity;
+            // console.log(this._public);
         }
 
         /* *************************** Type *************** */
@@ -71187,7 +71252,7 @@ var Item = function (_IModel) {
         key: 'factory',
         value: function factory(params) {
             var obj = new Item();
-            return this.fillObject(obj, params);
+            return this.fillObject(obj, params, Item.aliasMap);
         }
     }, {
         key: 'aliasMap',
@@ -71265,12 +71330,28 @@ var Payload = function () {
 
         /** When used to update a comment, this indicates the valence */
         this.updateValence;
+
+        this._successCallback;
     }
 
-    /*  ************************* Identifier values ************************* */
-
-
     _createClass(Payload, [{
+        key: 'callback',
+        get: function get() {
+            if (typeof this._successCallback === 'undefined') {
+                //dummy callable
+                return function () {
+                    return true;
+                };
+            }
+            return this._successCallback();
+        },
+        set: function set(v) {
+            this._successCallback = v;
+        }
+
+        /*  ************************* Identifier values ************************* */
+
+    }, {
         key: 'id',
         get: function get() {
             return this._id;
@@ -71401,7 +71482,7 @@ var Payload = function () {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence'];
+            return ['id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence', 'callback'];
         }
     }, {
         key: 'aliasMap',
@@ -71944,6 +72025,10 @@ var deleteItem = exports.deleteItem = 'deleteItem';
 var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
+var promoteItem = exports.promoteItem = 'promoteItem';
+var demoteItem = exports.demoteItem = 'demoteItem';
+var cleanupItems = exports.cleanupItems = 'cleanupItems';
+var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
 
 },{}],389:[function(require,module,exports){
 'use strict';
@@ -71951,7 +72036,7 @@ var updateItemName = exports.updateItemName = 'updateItemName';
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.updateExam = exports.createItem = exports.createExam = undefined;
+exports.setupOnMount = exports.parseItemData = exports.parseExamData = exports.updateExam = exports.createItem = exports.createExam = undefined;
 
 var _mutationTypes = require('./mutation-types');
 
@@ -71985,6 +72070,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+//Root actions for the vuex instance
+
+window._ = require('lodash');
+
+var standardTimeout = 1000;
+
 // export const actions = {
 
 /**
@@ -71999,14 +72090,16 @@ var createExam = exports.createExam = function createExam(_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
-    window.console.log('actions', 'createExam', 22);
-    //instantiate the new exam
-    var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
-    //set it in the items list
-    //this will call the api lister.
-    commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
-    //set it as active (in case anything is depending on the older structure)
-    // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+    return new Promise(function (resolve, reject) {
+        //instantiate the new exam
+        var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
+        //set it in the items list
+        //this will call the api lister.
+        commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
+        //set it as active (in case anything is depending on the older structure)
+        // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+        resolve();
+    });
 };
 
 /**
@@ -72018,27 +72111,33 @@ var createExam = exports.createExam = function createExam(_ref, payload) {
  * @param state
  * @param commit
  */
-//Root actions for the vuex instance
-
 var createItem = exports.createItem = function createItem(_ref2) {
     var state = _ref2.state,
-        commit = _ref2.commit;
+        commit = _ref2.commit,
+        dispatch = _ref2.dispatch,
+        getters = _ref2.getters;
 
-    window.console.log('actions', 'createItem', 42, state.items);
     //figure out what the index should be based on
     //what is already in the list of items
-    var len = Object.keys(state.items).length;
-    // let len = state.getItemCount(); //items.length;
-    window.console.log('actions', 'createItem', 47, len, state.items.length);
-    var index = 1 + len;
-    //set the item index
-    // let index = len === 1 ? len : len + 1;
+    var index = getters.getNextIndex;
+    var item = _Item2.default.factory({ index: index });
 
-    var item = _Item2.default.factory({ index: index }); //.factory( {id: id, index: index} );
-    window.console.log('actions', 'createItem', 51, index, item);
-    //Calling this mutation will trigger the api listener
-    commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item }));
-    commit(mTypes.updateOrder);
+    if (index > 0) {
+        var _exam = getters.currentExam;
+        item.examId = _exam ? _exam.id : null;
+    }
+    window.console.log('actions', 'createItem', 62, item);
+
+    var p = new Promise(function (resolve, reject) {
+        commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item, callback: resolve }));
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            dispatch(aTypes.cleanupItems);
+            resolve();
+        });
+    });
 };
 
 /**
@@ -72056,8 +72155,143 @@ var updateExam = exports.updateExam = function updateExam(_ref3, payload) {
 
     //set it as active
     commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-    //request server update
 };
+
+var parseExamData = exports.parseExamData = function parseExamData(_ref4) {
+    var state = _ref4.state,
+        commit = _ref4.commit,
+        dispatch = _ref4.dispatch;
+
+    return new Promise(function (resolve, reject) {
+        //Check and see if the server gave us data to start off with.
+        //Grab any preloaded data from the div on the page where the server would've put it
+        var examData = JSON.parse(document.getElementById('loadedExam').getAttribute('data'));
+        // window.console.log('actions', 'parseExamData', 103, examData);
+        //there was exam data, load an exam from it
+        if (typeof examData != 'undefined') {
+            //first make sure the index is what we expect
+            examData.index = 0;
+            var _exam2 = _Exam2.default.factory(examData); //.factory( {id: id, index: index} );
+            //set it in the items list without calling the api listener
+            commit(mTypes.setItem, _Payload2.default.factory({
+                index: 0,
+                obj: _exam2,
+                mutateSilently: true
+            }));
+        } else {
+            dispatch(aTypes.createExam).then(function () {
+                return true;
+            });
+        }
+        resolve();
+    });
+};
+
+var parseItemData = exports.parseItemData = function parseItemData(_ref5) {
+    var state = _ref5.state,
+        commit = _ref5.commit,
+        dispatch = _ref5.dispatch;
+
+    return new Promise(function (resolve, reject) {
+        //Check and see if the server gave us data to start off with.
+        //Grab any pre loaded data from the div on the page where the server would've put it
+        var data = JSON.parse(document.getElementById('loadedItems').getAttribute('data'));
+        // window.console.log('actions', 'parseItemData', 128, data);
+
+        //if there was item data, load items from it
+        if (typeof data !== 'undefined') {
+            _.forEach(data, function (d, i) {
+                d.index = i;
+                var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
+                //set it in the items list without calling the api listener
+                commit(mTypes.setItem, _Payload2.default.factory({
+                    obj: item,
+                    mutateSilently: true
+                }));
+            });
+        } else {
+
+            dispatch(aTypes.createItem).then(function () {
+                return true;
+            });
+        }
+        resolve();
+    });
+};
+
+//
+//
+//  // && typeof data.id !== 'undefined' ) {
+//
+// }
+//
+//     for (let i = 0; i < data.length; i++) {
+// if ( typeof data !== 'undefined' && data.length > 0 ) {
+//
+//     for (let i = 0; i < data.length; i++) {
+//         let p = {
+//             id: data[ i ].id,
+//             index: data[ i ].index,
+//             name: data[ i ].questionName,
+//             text: data[ i ].questionText
+//         };
+//         item : Item.factory(data[i]); //.factory( {id: id, index: index} );
+//
+//         //set it in the items list without calling the api listener
+//         commit(mTypes.setItem, Payload.factory({
+//             index: i + 1,
+//             obj: exam,
+//             mutateSilently: true
+//         }));
+//     }
+//
+// } else {
+//
+//             dispatch(aTypes.createItem).then(() => {
+//                 return true;
+//             });
+//
+//         }
+//         resolve()
+//     });
+//
+// };
+
+
+/**
+ * These are actions which different parts of the gom
+ * call to when they initialize.
+ *
+ */
+/** This is what gets run when the root instance is mounted for the setup page */
+var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
+    var state = _ref6.state,
+        commit = _ref6.commit,
+        dispatch = _ref6.dispatch;
+
+    dispatch('parseExamData').then(function () {
+        dispatch('parseItemData');
+    });
+};
+//
+// else
+// {
+//
+//     //if there was no exam data, this is a new setup page
+//     //so do all the default initialization for that
+//     dispatch(aTypes.createExam).then(() => {
+//         dispatch(aTypes.createItem).then(() => {
+//             commit(mTypes.updateOrder);
+//         });
+//
+//     });
+
+
+//     /** This is what gets run when the root instance is mounted for the grading page */
+//     gradeOnMount: () => {
+//     }
+// };
+
 
 // // /**
 // //  * Sets the id of the exam currently being worked on
@@ -72323,7 +72557,7 @@ var updateExam = exports.updateExam = function updateExam(_ref3, payload) {
 // }
 // ;
 
-},{"../api/controller":351,"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../models/Student":387,"./action-types":388,"./mutation-types":405}],390:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../models/Student":387,"./action-types":388,"./mutation-types":405,"lodash":338}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72414,7 +72648,7 @@ var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisib
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getElementScoreForActiveStudent = exports.getExamGradeForActiveStudent = exports.getCommentTextForActiveStudent = exports.getActiveStudentGradingTime = exports.getQuestionScoreForActiveStudent = exports.getTotalExams = exports.getNumberGraded = exports.isActive = exports.getExamId = undefined;
+exports.getElementScoreForActiveStudent = exports.getExamGradeForActiveStudent = exports.getCommentTextForActiveStudent = exports.getActiveStudentGradingTime = exports.getQuestionScoreForActiveStudent = exports.getTotalExams = exports.getNumberGraded = exports.isActive = undefined;
 
 var _getterTypes = require('./getter-types');
 
@@ -72439,33 +72673,15 @@ var validateIndex = function validateIndex(index) {
 };
 
 /**
- * Poorly named shortcut for getting the db id of
- * the currently active exam.
- * @param state
+ * Returns true if some student is set as active.
+ * Saves the trouble of other methods having to figure out whether a student
+ * is set as active student (which can run into trouble if, for example, the
+ * active student has index 0 and the consuming method interprets this as false).
  */
 /**
  * Root getters for the vuex instance
  *
  * Methods which make use of multiple modules should generally be kept here
- */
-var getExamId = exports.getExamId = function getExamId(state) {
-    var exam = state.items[0];
-    if (exam) {
-        return exam.id;
-    }
-    //
-    //
-    // if ( typeof state.activeExam != 'undefined' && typeof state.activeExam.id != 'undefined' ) {
-    //     return state.activeExam.id;
-    // }
-    return null;
-};
-
-/**
- * Returns true if some student is set as active.
- * Saves the trouble of other methods having to figure out whether a student
- * is set as active student (which can run into trouble if, for example, the
- * active student has index 0 and the consuming method interprets this as false).
  */
 var isActive = exports.isActive = function isActive(state) {
     if (typeof state.activeStudent == 'undefined') return false;
@@ -73577,6 +73793,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var Vue = require('vue');
 
+window._ = require('lodash');
+
+var standardTimeout = 1000;
+
 /**
  * The older version used an index value to do lots of stuff.
  * Given the prospect of using a websocket connection or connecting
@@ -73642,17 +73862,30 @@ var helpers = {
     }
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
-    console.log(mTypes.updateOrder, state, payload);
+var mutations = (_mutations = {
 
-    //this just requires us to match list indexes w the
+    //utility, not called from outside
+    cleanupEmptyItems: function cleanupEmptyItems(state) {
+        for (var i = 0; i < state.items.length; i++) {
+            if (typeof state.items[i] === 'undefined') {
+                state.items.splice(i, 1);
+            }
+        }
+    }
+
+}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
+    // console.log(mTypes.updateOrder, state, payload);
+    // this just requires us to match list indexes w the
     //property of the item
     for (var i = 0; i < state.items.length; i++) {
         var item = state.items[i];
-        //set the property on the object
-        Vue.set(item, 'index', i);
-        //set it in the array with vue
-        Vue.set(state.items, i, item);
+        // window.console.log('items', 'updateOrder', 87, i, item);
+        if (typeof item !== 'undefined') {
+            //set the property on the object
+            Vue.set(item, 'index', i);
+            //set it in the array with vue
+            Vue.set(state.items, i, item);
+        }
     }
 }), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
     // console.log(mTypes.addNewItem, state, payload);
@@ -73669,19 +73902,18 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
                 //add it to the list
             }
         }
+
+    // mTypes.updateOrder(state, payload);
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     // console.log(mTypes.updateItem, payload, state);
     var itm = state.items[payload.index];
 
-    // let itm = helpers.getItemFromPayload(state, payload);
-    // window.console.log('items', 143, itm);
     if (typeof itm !== 'undefined') {
         //Set the value so vue can see it
         Vue.set(itm, payload.updateProp, payload.updateVal);
         //Push the altered item back into the array
         //set it in the array with vue
         Vue.set(state.items, payload.index, itm);
-        // state.items.$set( payload.index, itm );
     }
 }), _defineProperty(_mutations, mTypes.updateItemSilently, function (state, payload) {
     // console.log(mTypes.updateItemSilently, payload, state);
@@ -73719,31 +73951,15 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
         window.console.log('items', 'updateComment', 145, itm, state.items);
     }
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
-    console.log('items.mutations', mTypes.setItem, state, payload);
+    // console.log('items.mutations', mTypes.setItem, state, payload);
     if (_Payload2.default.checkIfPayload(payload)) {
         Vue.set(state.items, payload.obj.index, payload.obj);
     }
-}), _defineProperty(_mutations, mTypes.promoteItem, function (state, payload) {
-    var index = payload.index;
-
-    var item = state.items[index];
-    item.promote();
-}), _defineProperty(_mutations, mTypes.demoteItem, function (state, payload) {
-    var index = payload.index;
-
-    var item = state.items[index];
-    item.demote();
 }), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     Vue.set(state.indexMap, payload.index, payload.id);
 
     // state.indexMap.set( payload.index, payload.id );
-}), _defineProperty(_mutations, mTypes.toggleItemPublic, function (state, payload) {
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var item = state.items[payload.index];
-        item.togglePublic();
-        Vue.set(state.items, payload.index, item);
-    }
 }), _mutations);
 
 /**
@@ -73779,9 +73995,30 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.deleteItem, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.cleanupItems, function (_ref) {
+    var dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+
+    var p = new Promise(function (resolve, reject) {
+        // setTimeout(() => {
+        commit('cleanupEmptyItems');
+        resolve();
+        // }, standardTimeout);
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            // setTimeout(() => {
+            commit(mTypes.updateOrder);
+            resolve();
+            // }, standardTimeout);
+        });
+    });
+}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
 
     console.log(aTypes.deleteItem, state, commit, payload);
     //check if payload has correct structure
@@ -73799,18 +74036,37 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.deleteItem, funct
 
     //reorder index
     //todo write
-}), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
-    //check if payload has correct structure
-    //todo
+}), _defineProperty(_actions, aTypes.promoteItem, function (state, payload) {
+    var index = payload.index;
 
-    //push each record from the payload into the store
-    for (var i = 0; i < payload.length; i++) {
-        var record = payload[i];
-        //check if record has correct structure
-        //todo
+    var item = state.items[index];
+    item.promote();
+}), _defineProperty(_actions, aTypes.demoteItem, function (state, payload) {
+    var index = payload.index;
 
-        //add to Items and add index mapping
-        [aTypes.addNewItem](state, rootState, record);
+    var item = state.items[index];
+    item.demote();
+}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref3, payload) {
+    var state = _ref3.state,
+        dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
+
+    window.console.log('items', 'toggleItemPublic', 365, payload);
+
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var item = getters.getItemByIndex(payload.index);
+
+        commit(mTypes.updateItem, _Payload2.default.factory({ index: item.index, updateProp: 'publicity', updateVal: !item.publicity }));
+        // //get the item
+        // let item = getters.getItemByIndex(payload.index);
+        // //flip its value internally
+        // item.togglePublic();
+        // if ( item.index === payload.index ) {
+        //     //update the item through vuex
+        //     commit(mTypes.setItem, Payload.factory({obj: item}));
+        // }
+        //            Vue.set(state.items, payload.index, item);
     }
 }), _actions);
 
@@ -73832,11 +74088,8 @@ var getters = {
             // console.log('getItem', state, payload);
             if (isItemsEmpty(state)) return false;
             if (_Payload2.default.checkIfPayload(payload)) {
-                // console.log('getItem', payload);
                 var index = payload.index,
                     id = payload.id;
-                // let id = payload.id;
-                //room for other ways of finding index
 
                 if (typeof index !== 'undefined') {
                     return getters.getItemByIndex(state, getters, index);
@@ -73845,9 +74098,6 @@ var getters = {
                     return getters.getItemById(state, getters, id);
                 }
             }
-            /**/
-            //default case
-            // throw new Error( 'bad input to getItem' )
         };
     },
 
@@ -73867,12 +74117,20 @@ var getters = {
             if (_Payload2.default.checkIfPayload(index)) {
                 index = index.index;
             }
-
-            // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-            // window.console.log('items', 'getItemByIndex', 361, state,  index);
             return function (state, index) {
-                return state.items[index];
+                var r = state.items.filter(function (i) {
+                    if (i.index === index) {
+                        return i;
+                    }
+                });
+                return r[0];
             }(state, index);
+
+            // // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
+            // // window.console.log('items', 'getItemByIndex', 361, state,  index);
+            // return function ( state, index ) {
+            //     return state.items[ index ];
+            // }(state, index)
         };
     },
 
@@ -73909,7 +74167,7 @@ var getters = {
      * Returns list of items objects
      * @param state
      * @param getters
-     * @param payload
+     * @param rootState
      * @returns []
      */
     getAllItems: function getAllItems(state, getters, rootState) {
@@ -73917,6 +74175,8 @@ var getters = {
         // [gTypes.getAllItems] : ( state, getters, rootState ) => {
         return state.items;
     },
+
+    getSortedItems: function getSortedItems(state) {},
 
     getAllIndexesList: function getAllIndexesList(state, getters, rootState) {
 
@@ -73988,6 +74248,18 @@ var getters = {
     getItemCount: function getItemCount(state, getters) {
         // [gTypes.getItemCount]: ( state, getters ) => {
         return state.items.length;
+    },
+
+    getNextIndex: function getNextIndex(state, getters) {
+        return _.sortedIndex(state.items);
+    },
+
+    /**
+     * Poorly named shortcut for getting the currently active exam.
+     * @param state
+     */
+    currentExam: function currentExam(state) {
+        return state.items[0];
     }
 
 };
@@ -73999,7 +74271,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":382,"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347}],399:[function(require,module,exports){
+},{"../../models/Exam":382,"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"lodash":338,"vue":347}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74747,15 +75019,12 @@ var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
 var updateOrder = exports.updateOrder = 'updateOrder';
 
-var promoteItem = exports.promoteItem = 'promoteItem';
-var demoteItem = exports.demoteItem = 'demoteItem';
-
 var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
 var updateItemSilently = exports.updateItemSilently = 'updateItemSilently';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
-var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
+
 var updateComment = exports.updateComment = 'updateComment';
 
 //settings

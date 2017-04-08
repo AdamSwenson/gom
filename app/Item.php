@@ -61,44 +61,41 @@ class Item extends Model
         $examEditable = ['id', 'name'];
         //not editable: text, number, comments
 
-        $questionEditable = ['id'];
-
-        $elementEditable = ['id' ];
+        $id = $request->has('id') ? $request->input('id') : null;
 
         switch ( self::determineItemType($request) ) {
 
             case Exam::class:
-                $id = $request->has('id') ? $request->input('id') : null;
-
-                $term = $request->has('term') ? $request->input('term') : Carbon::now()->year;
-                $year = $request->has('year') ? $request->input('year') : Carbon::now()->year;
-                $name = $request->has('name') ? $request->input('name') : self::makeDefaultExamName();
-
-                $d = ['id'=> $id, 'term' => $term, 'year' => $year, 'name' => $name];
-                $item = Exam::updateOrCreate($d);
+                $item = Exam::firstOrCreate(['id' => $id]);
+                $item->term = $request->has('term') ? $request->input('term') : Carbon::now()->year;
+                $item->year = $request->has('year') ? $request->input('year') : Carbon::now()->year;
+                $item->name = $request->has('name') ? $request->input('name') : self::makeDefaultExamName();
                 break;
 
             case Element::class:
-                $name = $request->has('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
+                $item = Element::firstOrCreate(['id' => $id]);
+                $item->elementName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
+                $item->displayText = $request->has('text') ? $request->input('text') : '';
 
-                $d = $request->only($elementEditable) + ['elementName' => $name];
-                $item = Element::updateOrCreate($d);
+//                $name = $request->has('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
+//                $d = ['id'=> $id, 'elementName' => $name];
+//                $item = Element::updateOrCreate($d);
                 break;
 
             case Question::class:
-                $name = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
-
-                $text = $request->has('text') ? $request->input('text') : '';
-
-
-                $d = $request->only($questionEditable) + ['questionName' => $name, 'questionText' => $text];
-                $item = Question::updateOrCreate($d);
+                $item = Question::firstOrCreate(['id' => $id]);
+                $item->questionName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
+                $item->questionText = $request->has('text') ? $request->input('text') : '';
                 break;
 
             default:
         }
+        if($item){
+            $item->save();
 
-        return $item;
+            return $item;
+        }
+
 
     }
 
