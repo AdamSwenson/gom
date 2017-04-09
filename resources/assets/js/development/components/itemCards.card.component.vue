@@ -1,35 +1,45 @@
 <template>
+
     <!--This represents a question or an element-->
     <div v-bind:id="divId"
-         class="item-card-component panel"
+         class="item-card-component"
          v-bind:class="offsetClass"
+         v-bind:data-id="index"
     >
-        <div class="panel-heading">
-            <item-main :index="index"></item-main>
+
+        <item-main :index="index"></item-main>
+
+        <div class="row" v-show="visible">
+            <item-edit-pane :index="index"></item-edit-pane>
         </div>
 
-        <div class="panel-body" v-show="visible">
-            <item-edit-pane :index="index"></item-edit-pane>
-            <delete-item-button
-                    :index="index"
-            ></delete-item-button>
+        <div class="row" v-show="visible">
+            <div class="col-md-2 text-left">
+                <delete-item-button :index="index"></delete-item-button>
+            </div>
+
+            <div class="col-md-9 text-right">
+                <public-indicator :index="index"></public-indicator>
+            </div>
         </div>
     </div>
 
 </template>
-<style>
-    .panel-heading{
+<style lang="scss">
+    .item-card-component {
+        /*width: 80%;*/
 
-        background-color: #FFFDF4;
-    }
-    .bottom-stripe {
-        /*line-height: 3em;*/
-        /*background-color: #385a7f;*/
-    }
+        .panel-heading {
 
-    /*li {*/
-    /*margin-bottom: 10em;*/
-    /*}*/
+            /*background-color: #FFFDF4;*/
+        }
+
+        .bottom-stripe {
+            /*line-height: 3em;*/
+            /*background-color: #385a7f;*/
+        }
+
+    }
 
 </style>
 <script>

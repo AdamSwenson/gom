@@ -1,26 +1,40 @@
 <template>
 
-    <div class="item-main-component">
-        <div class="input-group">
-            <div class="input-group-addon"
-                 id="basic-addon2"
-            ># {{ index }}
-                <!--<div class="input-group-addon" id="itemnum">-->
-                <!--<item-number :index="index"></item-number>-->
-            </div>
-
+    <div class="item-main-component row">
+        <div class="col-md-1"><h4># {{ index }}</h4></div>
+        <div class="col-md-6">
             <item-name :index="index"></item-name>
-
-            <div class="input-group-btn">
-                <settings-button :index="index"></settings-button>
-
-                <public-indicator :index="index"></public-indicator>
-            </div>
+        </div>
+        <div class="col-md-1">
+            <settings-button :index="index"></settings-button>
         </div>
     </div>
+
+    <!--<div class="input-group">-->
+    <!--<div class="input-group-addon"-->
+    <!--id="basic-addon2"-->
+    <!--&gt;# {{ index }}-->
+    <!--<div class="input-group-addon" id="itemnum">-->
+    <!--<item-number :index="index"></item-number>-->
+    <!--</div>-->
+
+
+    <!--<div class="input-group-btn">-->
+    <!--<settings-button :index="index"></settings-button>-->
+
+    <!--<public-indicator :index="index"></public-indicator>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 </template>
 
 <style lang="scss">
+    h4 {
+        text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
+        0 2px 3px rgba(0, 0, 0, .8),
+        0 10px 30px rgba(0, 0, 0, .5);
+    }
+
     /*.itemName {*/
     /*margin-bottom: 0;*/
     /*margin-top: 0;*/
@@ -46,7 +60,7 @@
 //            'public-indicator': publicIndicator,
 //        },
 
-        props: [ 'index'],
+        props: [ 'index' ],
 
 
         data: function () {
@@ -104,9 +118,7 @@
 
         },
 
-        methods: {
-
-        },
+        methods: {},
 
         directives: {},
 

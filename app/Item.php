@@ -23,7 +23,7 @@ class Item extends Model
     public $name;
     public $publicName;
     public $text;
-    public $maxScore;
+    public $max_score;
 
 
     protected $guarded = ['user_id', 'id'];
@@ -36,9 +36,25 @@ class Item extends Model
         'name',
         'publicName',
         'text',
+        'max_score',
         'maxScore'
     ];
 
+    public function __get( $key )
+    {
+        if($key === 'maxScore'){
+            return $this->max_score;
+        }
+
+    }
+
+    public function __set( $key, $value )
+    {
+        if($key === 'maxScore'){
+            $this->max_score = $value;
+        }
+
+    }
 
     public function __construct()
     {
@@ -77,6 +93,7 @@ class Item extends Model
                 $item->elementName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
                 $item->displayText = $request->has('text') ? $request->input('text') : '';
 
+                $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
 //                $name = $request->has('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
 //                $d = ['id'=> $id, 'elementName' => $name];
 //                $item = Element::updateOrCreate($d);
@@ -86,11 +103,12 @@ class Item extends Model
                 $item = Question::firstOrCreate(['id' => $id]);
                 $item->questionName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
                 $item->questionText = $request->has('text') ? $request->input('text') : '';
+                $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
                 break;
 
             default:
         }
-        if($item){
+        if(isset($item)){
             $item->save();
 
             return $item;

@@ -1,7 +1,7 @@
 <template>
 
     <button type="button"
-            class="btn settings-button"
+            class="btn settings-button btn-lg btn-info"
             v-on:click="toggleVis"
     >
         <span class="glyphicon glyphicon-cog"></span>

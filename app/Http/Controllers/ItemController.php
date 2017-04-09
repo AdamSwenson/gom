@@ -151,18 +151,17 @@ class ItemController extends Controller
      * Thus this route should not be used for question and element items
      *
      * Called on the route:
-     *      GET 	/items/{exam} 	show 	items.show
+     *      GET    /items/{exam}    show    items.show
      *
      * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Exam $exam) //Item $item, ItemRequest $request )
+    public function show( Exam $exam ) //Item $item, ItemRequest $request )
     {
         $items = [];
 
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-        foreach ( $questionAssignments as $qAssignment )
-        {
+        foreach ( $questionAssignments as $qAssignment ) {
             $index = $qAssignment->getQuestionNumber();
             $question = $qAssignment->getQuestion();
             $items[$index] = $question;
@@ -173,7 +172,7 @@ class ItemController extends Controller
         }
         //get items
         // load all current student scores & comments
- //       $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
+        //       $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
 
         return view('development.newsetup', ['exam' => $exam, 'items' => $items]);
     }
@@ -198,7 +197,7 @@ class ItemController extends Controller
     }
 
     /**
-     * Receives PUT/PATCH
+     * Receives PUT
      * Updates the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
@@ -208,6 +207,45 @@ class ItemController extends Controller
     {
         return $this->handleStoreAndUpdate($request);
     }
+
+
+    /**
+     * This handles updating the order etc when passed
+     * the list of items.
+     * Receives PATCH
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateAll( Exam $exam, ItemRequest $request )
+    {
+        if ( $request->has('itemsList') ) {
+
+            $this->questionAssignmentDao->updateAll($exam, $request);
+            return $this->questions;
+        }
+//        return $this->handleStoreAndUpdate($request);
+    }
+
+
+
+    public function updateOrder(  $exam, ItemRequest $request )
+    {
+        //this should probably be a job
+        //it can run async. The client doesn't really need to know what's
+        //going on as long as the server catches up.
+        //Separating the item data from the positional/assignment info
+        //lets this be separated off into a job if we want...
+        if ( $request->has('order') ) {
+        $existingIds = $this->questionAssignmentDao->updateItemOrder($exam, $request->input('order'));
+
+            return $existingIds;
+        }
+//        return $this->handleStoreAndUpdate($request);
+    }
+
+
+
 
     /**
      * Remove the specified resource from storage.

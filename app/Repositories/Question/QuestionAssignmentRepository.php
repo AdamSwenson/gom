@@ -12,6 +12,7 @@ namespace App\Repositories\Question;
 use App\Exam;
 use App\Http\Controllers\helpers\assignments\AssignmentHelper;
 use App\Http\Requests\QuestionRequest;
+use App\Http\Requests\Request;
 use App\Question;
 use App\QuestionAssignment;
 use Illuminate\Support\Facades\DB;
@@ -55,7 +56,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param $question_number
      * @return QuestionAssignment
      */
-    public function load($examId, $question_number)
+    public function load( $examId, $question_number )
     {
         return QuestionAssignment::onExam($examId)->questionNumber($question_number)->firstOrFail();
     }
@@ -66,7 +67,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param $questionId
      * @return mixed
      */
-    public function loadQuestionNumberById($examId, $questionId)
+    public function loadQuestionNumberById( $examId, $questionId )
     {
         $q = Question::findOrFail($questionId);
         $questionNumber = $q->getQuestionNumber($examId);
@@ -84,7 +85,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param integer $question_number
      * @return Question
      */
-    public function record($examId, $questionId, $question_number)
+    public function record( $examId, $questionId, $question_number )
     {
         $q = Question::findOrFail($questionId);
         $q->setQuestionNumber($examId, $question_number);
@@ -99,7 +100,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param $examId
      * @return QuestionAssignment
      */
-    public function load_all_for_exam($examId)
+    public function load_all_for_exam( $examId )
     {
         return QuestionAssignment::onExam($examId)->orderBy('question_number')->get();
     }
@@ -110,7 +111,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param integer $questionId
      * @return mixed
      */
-    function remove($examId, $questionId)
+    function remove( $examId, $questionId )
     {
         $qa = QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
         return $qa->delete();
@@ -126,7 +127,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param QuestionRequest $request
      * @throws \Exception
      */
-    public function updateAll(Exam $exam, QuestionRequest $request)
+    public function updateAll( Exam $exam, Request $request )
     {
         $this->exam = $exam;
 
@@ -136,11 +137,20 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
         //Load array of questionIds currently used in question assignments for the exam
         $this->getExistingQuestionIds($exam->getId());
 
-        //Record assignments
+        return $this->handleAssignmentUpdate($exam, $this->existingIds, $this->requestIds, $this->questions);
+
+    }
+
+    public function updateItemOrder( $exam, $order )
+    {
+        $this->exam = $exam;
+
+        //Load array of questionIds currently used in question assignments for the exam
+        $this->getExistingQuestionIds($exam->getId());
+
         $this->helper = app()->make('App\Http\Controllers\helpers\assignments\IAssignmentHelper');
 
-        switch ($this->helper->determineCase($this->existingIds, $this->requestIds))
-        {
+        switch ( $this->helper->determineCase($this->existingIds, $order) ) {
             case AssignmentHelper::CASE_NO_CHANGE:
                 //do nothing
                 break;
@@ -151,9 +161,10 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
                 break;
 
             case AssignmentHelper::CASE_PURE_ADDITION:
+                //load the as yet unassociated questions
+                $questions = Question::findMany($this->helper->newIds);
                 //add new assignments (no effect on scores)
-                foreach ($this->questions as $q)
-                {
+                foreach ( $questions as $q ) {
                     $this->record($exam->getId(), $q[1]->getId(), $q[0]);
                 }
                 break;
@@ -166,6 +177,13 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
             default:
                 throw new \Exception('Case not covered by assignmentHelper');
         }
+
+        $this->getExistingQuestionIds($exam->getId());
+
+        return $this->existingIds;
+
+
+
     }
 
     /**
@@ -174,8 +192,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      */
     public function deleteQuestions()
     {
-        if (count($this->helper->deletedIds) > 0)
-        {
+        if ( count($this->helper->deletedIds) > 0 ) {
             Question::destroy($this->helper->deletedIds);
         }
     }
@@ -187,14 +204,12 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      */
     public function handleImpure()
     {
-        if( !empty($this->exam) && !empty($this->requestIds))
-        {
+        if ( !empty($this->exam) && !empty($this->requestIds) ) {
             /*
              * This all needs to be inside the transaction. If, for example, it fails before the cleanup step,
              * the user will be very confused by having questions 6-10 when she thought she had 1-5.
              */
-            DB::transaction(function ()
-            {
+            DB::transaction(function () {
 
                 /* If a question was deleted, no need for fancy assignment nonsense. Just delete
                    that bad boy and let it cascade to assignments and scores.*/
@@ -208,8 +223,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
                    we will lose the associated scores. So we're going to temporarily assign each question a question number
                    that is higher than any existing score (we will insert new questions and update the question_number of
                    already assigned questions).*/
-                foreach ($this->requestIds as $id)
-                {
+                foreach ( $this->requestIds as $id ) {
                     //this is the ordinal value which temporarily replaces the question number
                     $newSort += 1;
                     $query = <<<MYSQL
@@ -239,8 +253,7 @@ MYSQL;
                  * do via joins or directly on the database), it is much cleaner just to save it in the db. Hence the extra step.
                  */
                 $assigns = QuestionAssignment::where('exam_id', $this->exam->getId())->orderBy('question_number')->get();
-                for ($i = 0; $i < count($assigns); $i++)
-                {
+                for ( $i = 0; $i < count($assigns); $i++ ) {
                     $assigns[$i]->question_number = $i + 1;
                     $assigns[$i]->update();
                 }
@@ -254,7 +267,7 @@ MYSQL;
      * @param integer $examId
      * @return integer mixed
      */
-    public function getMaxQuestionNumber($examId)
+    public function getMaxQuestionNumber( $examId )
     {
         $query = <<<MYSQL
             SELECT MAX(question_number) AS max
@@ -272,8 +285,12 @@ MYSQL;
      * assigned on this exam and stores them in $this->existingIds
      * @param integer $examId
      */
-    public function getExistingQuestionIds($examId)
+    public function getExistingQuestionIds( $examId )
     {
+        //clear out the current list
+        $this->existingIds = [];
+
+
         $query = <<<MYSQL
             SELECT question_id
             FROM question_assignments
@@ -281,8 +298,7 @@ MYSQL;
             ORDER BY question_number
 MYSQL;
         $values = ['examId' => $examId];
-        foreach (\DB::select($query, $values) as $obj)
-        {
+        foreach ( \DB::select($query, $values) as $obj ) {
             $this->existingIds[] = $obj->question_id;
         }
     }
@@ -299,33 +315,95 @@ MYSQL;
      *
      * @param QuestionRequest $request
      */
-    public function makeAndLoad(QuestionRequest $request)
+    public function makeAndLoad( Request $request )
     {
         $questionDao = app()->make('App\Repositories\Question\IQuestionRepository');
         $i = 1;
-        while ($request->input('questionName' . $i))
-        {
-            // new questions arrive with id == 0
-            if (($request->input('questionId' . $i)) == 0)
-            {
-                $question = $questionDao->createQuestion(
-                    $request->input('questionName' . $i),
-                    $request->input('questionText' . $i),
-                    $request->input('maxScore' . $i));
+        if ( $request->has('requestVersion') && $request->input('requestVersion') >= 1 ) {
+            //the request comes from the new style setup
+            while ($request->input('index')) {
+                if ( $request->has('id') && $request->input('id') == -1 ) {
 
-            } else // other items already exist and should be updated
-            {
-                $question = $questionDao->updateQuestion(
-                    $request->input('questionId' . $i),
-                    $request->input('questionName' . $i),
-                    $request->input('questionText' . $i),
-                    $request->input('maxScore' . $i));
+                    $question = $questionDao->createQuestion(
+                        $request->input('name'),
+                        $request->input('text'),
+                        $request->input('maxScore'));
+                } else // other items already exist and should be updated
+                {
+                    $question = $questionDao->updateQuestion(
+                        $request->input('id'),
+                        $request->input('name'),
+                        $request->input('text'),
+                        $request->input('maxScore'));
+                }
+                //Store the question and its order for assignment
+                $this->questions[] = [$i, $question];
+                //Store the id of the question
+                $this->requestIds[] = $question->getId();
+                $i++;
             }
-            //Store the question and its order for assignment
-            $this->questions[] = [$i, $question];
-            //Store the id of the question
-            $this->requestIds[] = $question->getId();
-            $i++;
+
+        } else {
+
+
+            while ($request->input('questionName' . $i)) {
+                // new questions arrive with id == 0
+                if ( ($request->input('questionId' . $i)) == 0 ) {
+                    $question = $questionDao->createQuestion(
+                        $request->input('questionName' . $i),
+                        $request->input('questionText' . $i),
+                        $request->input('maxScore' . $i));
+
+                } else // other items already exist and should be updated
+                {
+                    $question = $questionDao->updateQuestion(
+                        $request->input('questionId' . $i),
+                        $request->input('questionName' . $i),
+                        $request->input('questionText' . $i),
+                        $request->input('maxScore' . $i));
+                }
+                //Store the question and its order for assignment
+                $this->questions[] = [$i, $question];
+                //Store the id of the question
+                $this->requestIds[] = $question->getId();
+                $i++;
+            }
+        }
+    }
+
+    /**
+     * @param Exam $exam
+     * @throws \Exception
+     */
+    protected function handleAssignmentUpdate( Exam $exam, $existingIds, $requestIds, $questions )
+    {
+        //Record assignments
+        $this->helper = app()->make('App\Http\Controllers\helpers\assignments\IAssignmentHelper');
+
+        switch ( $this->helper->determineCase($existingIds, $requestIds) ) {
+            case AssignmentHelper::CASE_NO_CHANGE:
+                //do nothing
+                break;
+
+            case AssignmentHelper::CASE_PURE_DELETION:
+                //delete all the existing assignments (should cascade to delete scores)
+                $this->deleteQuestions();
+                break;
+
+            case AssignmentHelper::CASE_PURE_ADDITION:
+                //add new assignments (no effect on scores)
+                foreach ( $questions as $q ) {
+                    $this->record($exam->getId(), $q[1]->getId(), $q[0]);
+                }
+                break;
+
+            case AssignmentHelper::CASE_IMPURE:
+                //Some potentially confusing mix of additions, deletions, and reordering has happened
+                $this->handleImpure();
+                break;
+
+            default:
+                throw new \Exception('Case not covered by assignmentHelper');
         }
     }
 

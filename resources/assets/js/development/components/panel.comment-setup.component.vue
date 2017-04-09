@@ -76,12 +76,12 @@
         /*
          One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
          the same component instance will be reused. Since both routes render the same component, this is more efficient
-          than destroying the old instance and then creating a new one. However, this also means that the lifecycle
-          hooks of the component will not be called.
+         than destroying the old instance and then creating a new one. However, this also means that the lifecycle
+         hooks of the component will not be called.
          To react to params changes in the same component, you can simply watch the $route object:
          */
         watch: {
-            '$route' (to, from) {
+            '$route' ( to, from ) {
                 // react to route changes...
             }
         },
@@ -89,15 +89,13 @@
 
             commentText: {
                 get: function () {
-
                     let item = this.$store.getters.getItemByIndex(this.$route.params.index);
-//                    let item = this.$store.getters.getItemByIndex(this.index);
-//                    if ( typeof item !== 'undefined' ) {
-                    let comment = item.getComment(this.displayed);
-//                        if ( typeof comment !== 'undefined' ) {
-                    return comment.text;
-//                        }
-//                    }
+                    if ( typeof item !== 'undefined' ) {
+                        let comment = item.getComment(this.displayed);
+                        if ( typeof comment !== 'undefined' ) {
+                            return comment.text;
+                        }
+                    }
                 },
 
                 set: function ( v ) {

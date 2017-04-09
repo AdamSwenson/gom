@@ -1,25 +1,24 @@
 <template>
     <div class="nav-edit-tabs-component">
         <div class="row">
-            <div class="col-md-1" v-if="promotable">
-                <depth-control
-                        type="promote"
-                        :index="index"></depth-control>
+            <div class="col-md-1" v-show="promotable">
+                <depth-control type="promote" :index="index"></depth-control>
             </div>
+
             <div class="col-md-10">
                 <!-- Nav tabs -->
-                <ul class="nav nav-pills"
+                <ul class="nav nav-tabs"
                     role="tablist">
 
-                    <li v-if="isExam" role="presentation">
-                        <router-link v-bind:to="routeToExamDetails">Edit details</router-link>
+                    <li v-if="isExam" role="presentation" active>
+                        <router-link v-bind:to="routeToExamDetails">Details</router-link>
                     </li>
-                    <li v-else role="presentation">
-                        <router-link v-bind:to="routeToItemDetails">Edit details</router-link>
+                    <li v-else role="presentation" active>
+                        <router-link v-bind:to="routeToItemDetails">Details</router-link>
                     </li>
 
                     <li role="presentation">
-                        <router-link :to="{name: 'comments', params: {index : index} }">Setup feedback</router-link>
+                        <router-link :to="{name: 'comments', params: {index : index} }">Feedback</router-link>
                     </li>
 
                     <li role="presentation">
@@ -35,10 +34,11 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-1" v-if="demotable">
-                <depth-control
-                        type="demote"
-                        :index="index"></depth-control>
+            <div class="col-md-1">
+                <span v-show="demotable">
+                <depth-control type="demote" :index="index"></depth-control>
+            </span>
+
             </div>
         </div>
     </div>
@@ -132,7 +132,7 @@
              Only Exams fail this and thus don't have the right arrow shown
              */
             demotable: function () {
-                return this.index > 0 ;
+                return this.index > 0;
             }
 
         },

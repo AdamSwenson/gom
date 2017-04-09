@@ -17,6 +17,7 @@
 // // This wrapper bind axios to Vue or this if you're using single file component.
 // Vue.use(VueAxios, axios);
 
+window._ = require('lodash');
 import * as aTypes from '../store/action-types';
 import * as mTypes from '../store/mutation-types';
 import * as gTypes from '../store/getter-types';
@@ -24,6 +25,8 @@ import * as gTypes from '../store/getter-types';
 import Payload from '../models/Payload'
 import Exam from '../models/Exam'
 import Item from '../models/Item'
+
+const REQUEST_VERSION = 1;
 
 const errorHandling = ( error ) => {
     if ( error.response ) {
@@ -53,9 +56,10 @@ const handleResponse = ( store, item, response ) => {
                         if ( p !== 'index' ) {
                             // window.console.log('apiPlugin', 50, p);
                             if ( Object.keys(response.data).includes(p) ) {
+                                let jsProp = (p === 'max_score') ? 'maxScore' : p;
                                 store.commit(mTypes.updateItemSilently, Payload.factory({
                                     index: item.index,
-                                    updateProp: p,
+                                    updateProp: jsProp,
                                     updateVal: response.data[ p ],
                                     mutateSilently: true
                                 }));
@@ -78,6 +82,17 @@ const handleResponse = ( store, item, response ) => {
                         }
                     }
                 });
+
+                _.forEach( Item.aliasMap, function ( v, k ) {
+                    if ( Object.keys(response.data).includes(k) ) {
+                        store.commit(mTypes.updateItemSilently, Payload.factory({
+                            index: item.index,
+                            updateProp: v,
+                            updateVal: response.data[ k ],
+                            mutateSilently: true
+                        }));
+                    }
+                });
                 break;
             default:
         }
@@ -94,13 +109,14 @@ const handleResponse = ( store, item, response ) => {
 const updateItem = ( store, item ) => {
     // if ( !item instanceof Exam ) {
 
-        item.examId = store.getters.currentExam.id;
+    item.examId = store.getters.currentExam.id;
+    item.requestVersion = REQUEST_VERSION;
     // }
     //put/patch
     window.axios
-        .put('items/' + item.id, item)
+        .put('items/' + item.examId, item)
         .then(( response ) => {
-                handleResponse(store, item, response);
+            handleResponse(store, item, response);
         })
         .catch(function ( error ) {
             errorHandling(error);
@@ -116,7 +132,8 @@ const updateItem = ( store, item ) => {
 const createItem = ( store, item ) => {
     if ( item && item.isNew() ) {
         // if ( !item instanceof Exam ) {
-            item.examId = store.getters.currentExam.id;
+        item.requestVersion = REQUEST_VERSION;
+        item.examId = store.getters.currentExam.id;
         // }
 
         //id === 'undefined' || payload.obj.id === -1)
@@ -136,6 +153,43 @@ const createItem = ( store, item ) => {
 
 };
 
+/**
+ * Asks the server to update the order of items
+ * @param store
+ */
+const updateItemsOrder = ( store ) => {
+    let items = store.getters.getAllItems;
+    let examId = store.getters.currentExam.id;
+
+    let payload = {
+        examId: examId,
+        requestVersion: REQUEST_VERSION,
+        order: []
+    };
+
+    //build an array of ids to send
+    //note that we start at 1 so the exam id
+    //is not included
+    for (let i = 1; i < items.length; i++) {
+        payload.order.push(items[ i ].id);
+    }
+
+    window.console.log('apiPlugin', 'updateItemsOrder', 158, payload);
+
+    if ( items && examId ) {
+        let route = 'items/' + examId + '/order';
+        window.axios
+            .put(route, payload)
+            .then(( response ) => {
+                window.console.log('apiPlugin', '####', 169, response);
+                //  handleResponse(store, items, response);
+            })
+            .catch(function ( error ) {
+                errorHandling(error);
+            });
+
+    }
+};
 
 // const conn = {
 //
@@ -214,7 +268,7 @@ export default function ( store ) {
 
                     let item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
 
-                    window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', item, payload);
+                    // window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', item, payload);
 
                     if ( item ) {
                         if ( !item instanceof Exam ) {
@@ -229,23 +283,10 @@ export default function ( store ) {
                             updateItem(store, item);
                             payload.callback();
                         }
+
                     }
                 }
                 break;
-            // //id === 'undefined' || payload.obj.id === -1)
-            // //All IModels have an id of -1 when they are initially created.
-            // //This is replaced with the real id once one is returned from the server.
-            // //Thus, this request is to create the item.
-            // //When the server has done this, it will send back an id
-            // window.axios
-            //     .post('items', item)
-            //     .then(( response ) => {
-            //         handleResponse(store, item, response);
-            //     })
-            //     .catch(function ( error ) {
-            //         errorHandling(error);
-            //     });
-
 
             //Now we allow the request to continue in case it wasn't just
             //asking to create something. If the model already has an id,
@@ -259,27 +300,14 @@ export default function ( store ) {
             //Note: we were listening above, so calling setItem the first time
 
             case mTypes.updateItem:
-                let item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
-                updateItem(store,  item);
+                //on update calls, the object might not have been assembled.
+                //so we need to try to get the item from the index too
+                let item = _.isObject(payload.obj) ? payload.obj : store.getters.getItemByIndex(payload.index);
+                if ( item instanceof Item ) {
+                    updateItem(store, item);
+                }
                 payload.callback();
-                //
-                // if ( !item instanceof Exam ) {
-                //
-                //     item.examId = store.getters.currentExam.id;
-                // }
-                //
-                // window.console.log('apiPlugin', 'updateItem', 211, item);
-                //
-                //
-                // //put/patch
-                // window.axios
-                //     .put('items/' + item.id, item)
-                //     .then(( response ) => {
-                //         //     handleResponse(store, item, response);
-                //     })
-                //     .catch(function ( error ) {
-                //         errorHandling(error);
-                //     });
+
                 break;
 
             case mTypes.demoteItem:
@@ -289,6 +317,9 @@ export default function ( store ) {
             default:
 
         }
+
+        //todo temp disabled so can better see traffic
+        // updateItemsOrder(store);
 
     });
 

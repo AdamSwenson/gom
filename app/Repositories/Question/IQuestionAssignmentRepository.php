@@ -35,6 +35,9 @@ interface IQuestionAssignmentRepository
      * @return mixed
      */
 
+    public function updateItemOrder( $exam, $order );
+
+
     public function loadQuestionNumberById($examId, $questionId);
 
     /**

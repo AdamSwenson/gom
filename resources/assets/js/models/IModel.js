@@ -34,7 +34,7 @@ export default class IModel {
         /**
          * The maximum possible value of the item
          */
-        this.maxScore;
+        this.maxScore =100;
 
         this.kind;
 

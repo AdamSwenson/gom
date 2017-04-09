@@ -338,10 +338,11 @@ const actions = {
      * @param state
      * @param payload
      */
-    [ aTypes.promoteItem ]: ( state, payload ) => {
+    [ aTypes.promoteItem ]: ( {state, dispatch, commit, getters}, payload ) => {
         let {index} = payload;
-        let item = state.items[ index ];
+        let item = getters.getItemByIndex(index);
         item.promote();
+        commit(mTypes.setItem, Payload.factory({obj: item}))
     },
 
     /**
@@ -350,10 +351,11 @@ const actions = {
      * @param state
      * @param payload
      */
-    [ aTypes.demoteItem ]: ( state, payload ) => {
+    [ aTypes.demoteItem ]: ( {state, dispatch, commit, getters}, payload ) => {
         let {index} = payload;
-        let item = state.items[ index ];
+        let item = getters.getItemByIndex(index);
         item.demote();
+        commit(mTypes.setItem, Payload.factory({obj: item}))
     },
 
     [ aTypes.toggleItemPublic ]: ( {state, dispatch, commit, getters}, payload ) => {

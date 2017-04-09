@@ -180,7 +180,8 @@ export default class Item extends IModel {
             ItemId: 'id',
             ItemIndex: 'index',
             questionName : 'name',
-            questionText : 'text'
+            questionText : 'text',
+            max_score: 'maxScore'
         };
 
     }

@@ -32,11 +32,12 @@
 
 </style>
 <script>
-
+window._ = require('lodash');
     import * as aTypes from '../../store/action-types';
     import * as mTypes from '../../store/mutation-types';
 
     import Payload from '../../models/Payload'
+    import Item from '../../models/Item'
 
     export default {
 //        props: [ 'index'],
@@ -50,6 +51,9 @@
                 placeholders: {
                     'score': 100
                 },
+                defaults:{
+                    score:100
+                }
             };
         },
 
@@ -57,25 +61,33 @@
 
             maxScore: {
                 get: function () {
-                    if ( typeof this.index !== 'undefined' ) {
-                        let item = this.$store.getters.getItemByIndex(this.index);
-                        if ( typeof item !== 'undefined' ) {
-                            return item.maxScore
-                        }
+                    let item = this.$store.getters.getItemByIndex(this.index);
+                    if (item instanceof Item){
+                        return item.maxScore
                     }
-
-//                    return this.placeholders.score;
+//
+//                    if ( typeof this.index !== 'undefined' ) {
+//                        let item = this.$store.getters.getItemByIndex(this.index);
+//                        if ( typeof item !== 'undefined' ) {
+//                            if (typeof item.maxScore === 'undefined'){
+//                                return this.defaults.score;
+//                            }
+//                            return item.maxScore
+//                        }
+//                    }
                 },
 
                 set: function ( value ) {
-                    let pl = Payload.factory({
-                        index: this.index,
-                        updateProp: 'maxScore',
-                        updateVal: value
-                    });
-                    this.$store.commit(mTypes.updateItem, pl);
+                    let item = this.$store.getters.getItemByIndex(this.index);
+                    if ( item instanceof Item ) {
+                        let pl = Payload.factory({
+                            index: this.index,
+                            updateProp: 'maxScore',
+                            updateVal: _.toInteger(value)
+                        });
+                        this.$store.commit(mTypes.updateItem, pl);
+                    }
                 }
-
             },
         },
 

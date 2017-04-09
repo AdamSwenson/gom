@@ -1,21 +1,10 @@
 <template>
     <!--This is the hideable area via which we edit the exam's properties-->
-    <div class="exam-detail-pane"
-         v-show="visible"
-    >
-
-        <slot name="settingsBody">
-
-            <edit-tabs :index="index" :is-exam="true"></edit-tabs>
-
+    <div class="exam-detail-pane">
+        <edit-tabs :index="index" :is-exam="true"></edit-tabs>
         <div class="tab-panel-area">
-            <div class="well well-sm">
-                <router-view name="examPanels"></router-view>
-            </div>
+            <router-view name="examPanels"></router-view>
         </div>
-
-        </slot>
-
     </div>
 
 </template>

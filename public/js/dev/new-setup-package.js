@@ -66909,7 +66909,7 @@ exports.default = function (store) {
 
                     var _item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
 
-                    window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', _item, payload);
+                    // window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', item, payload);
 
                     if (_item) {
                         if (!_item instanceof _Exam2.default) {
@@ -66926,20 +66926,6 @@ exports.default = function (store) {
                     }
                 }
                 break;
-            // //id === 'undefined' || payload.obj.id === -1)
-            // //All IModels have an id of -1 when they are initially created.
-            // //This is replaced with the real id once one is returned from the server.
-            // //Thus, this request is to create the item.
-            // //When the server has done this, it will send back an id
-            // window.axios
-            //     .post('items', item)
-            //     .then(( response ) => {
-            //         handleResponse(store, item, response);
-            //     })
-            //     .catch(function ( error ) {
-            //         errorHandling(error);
-            //     });
-
 
             //Now we allow the request to continue in case it wasn't just
             //asking to create something. If the model already has an id,
@@ -66953,27 +66939,14 @@ exports.default = function (store) {
             //Note: we were listening above, so calling setItem the first time
 
             case mTypes.updateItem:
-                var item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
-                updateItem(store, item);
+                //on update calls, the object might not have been assembled.
+                //so we need to try to get the item from the index too
+                var item = _.isObject(payload.obj) ? payload.obj : store.getters.getItemByIndex(payload.index);
+                if (item instanceof _Item2.default) {
+                    updateItem(store, item);
+                }
                 payload.callback();
-                //
-                // if ( !item instanceof Exam ) {
-                //
-                //     item.examId = store.getters.currentExam.id;
-                // }
-                //
-                // window.console.log('apiPlugin', 'updateItem', 211, item);
-                //
-                //
-                // //put/patch
-                // window.axios
-                //     .put('items/' + item.id, item)
-                //     .then(( response ) => {
-                //         //     handleResponse(store, item, response);
-                //     })
-                //     .catch(function ( error ) {
-                //         errorHandling(error);
-                //     });
+
                 break;
 
             case mTypes.demoteItem:
@@ -66983,6 +66956,9 @@ exports.default = function (store) {
             default:
 
         }
+
+        //todo temp disabled so can better see traffic
+        // updateItemsOrder(store);
     });
 };
 
@@ -67033,6 +67009,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // // This wrapper bind axios to Vue or this if you're using single file component.
 // Vue.use(VueAxios, axios);
 
+window._ = require('lodash');
+
+
+var REQUEST_VERSION = 1;
+
 var errorHandling = function errorHandling(error) {
     if (error.response) {
         // The request was made, but the server responded with a status code
@@ -67061,9 +67042,10 @@ var handleResponse = function handleResponse(store, item, response) {
                         if (p !== 'index') {
                             // window.console.log('apiPlugin', 50, p);
                             if (Object.keys(response.data).includes(p)) {
+                                var jsProp = p === 'max_score' ? 'maxScore' : p;
                                 store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
                                     index: item.index,
-                                    updateProp: p,
+                                    updateProp: jsProp,
                                     updateVal: response.data[p],
                                     mutateSilently: true
                                 }));
@@ -67086,6 +67068,17 @@ var handleResponse = function handleResponse(store, item, response) {
                         }
                     }
                 });
+
+                _.forEach(_Item2.default.aliasMap, function (v, k) {
+                    if (Object.keys(response.data).includes(k)) {
+                        store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                            index: item.index,
+                            updateProp: v,
+                            updateVal: response.data[k],
+                            mutateSilently: true
+                        }));
+                    }
+                });
                 break;
             default:
         }
@@ -67102,9 +67095,10 @@ var updateItem = function updateItem(store, item) {
     // if ( !item instanceof Exam ) {
 
     item.examId = store.getters.currentExam.id;
+    item.requestVersion = REQUEST_VERSION;
     // }
     //put/patch
-    window.axios.put('items/' + item.id, item).then(function (response) {
+    window.axios.put('items/' + item.examId, item).then(function (response) {
         handleResponse(store, item, response);
     }).catch(function (error) {
         errorHandling(error);
@@ -67120,6 +67114,7 @@ var updateItem = function updateItem(store, item) {
 var createItem = function createItem(store, item) {
     if (item && item.isNew()) {
         // if ( !item instanceof Exam ) {
+        item.requestVersion = REQUEST_VERSION;
         item.examId = store.getters.currentExam.id;
         // }
 
@@ -67130,6 +67125,40 @@ var createItem = function createItem(store, item) {
         //When the server has done this, it will send back an id
         window.axios.post('items', item).then(function (response) {
             handleResponse(store, item, response);
+        }).catch(function (error) {
+            errorHandling(error);
+        });
+    }
+};
+
+/**
+ * Asks the server to update the order of items
+ * @param store
+ */
+var updateItemsOrder = function updateItemsOrder(store) {
+    var items = store.getters.getAllItems;
+    var examId = store.getters.currentExam.id;
+
+    var payload = {
+        examId: examId,
+        requestVersion: REQUEST_VERSION,
+        order: []
+    };
+
+    //build an array of ids to send
+    //note that we start at 1 so the exam id
+    //is not included
+    for (var i = 1; i < items.length; i++) {
+        payload.order.push(items[i].id);
+    }
+
+    window.console.log('apiPlugin', 'updateItemsOrder', 158, payload);
+
+    if (items && examId) {
+        var route = 'items/' + examId + '/order';
+        window.axios.put(route, payload).then(function (response) {
+            window.console.log('apiPlugin', '####', 169, response);
+            //  handleResponse(store, items, response);
         }).catch(function (error) {
             errorHandling(error);
         });
@@ -67194,7 +67223,7 @@ var createItem = function createItem(store, item) {
  */
 ;
 
-},{"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../store/action-types":388,"../store/getter-types":390,"../store/mutation-types":405}],351:[function(require,module,exports){
+},{"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../store/action-types":388,"../store/getter-types":390,"../store/mutation-types":405,"lodash":338}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67474,7 +67503,7 @@ exports.default = {
         promoteItem: function promoteItem() {
             console.log('CALLED', 'promoteItem');
             var pl = _Payload2.default.factory({ index: this.index });
-            this.$store.commit(mTypes.promoteItem, pl);
+            this.$store.dispatch(aTypes.promoteItem, pl);
         },
 
         /**
@@ -67483,7 +67512,7 @@ exports.default = {
         demoteItem: function demoteItem() {
             console.log('CALLED', 'demoteItem');
             var pl = _Payload2.default.factory({ index: this.index });
-            this.$store.commit(mTypes.demoteItem, pl);
+            this.$store.dispatch(aTypes.demoteItem, pl);
         }
     },
 
@@ -67492,7 +67521,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-        console.log('itemNav ready ', this.type);
+        //            console.log( 'itemNav ready ', this.type );
     }
 };
 
@@ -67891,7 +67920,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn settings-button\" v-on:click=\"toggleVis\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn settings-button btn-lg btn-info\" v-on:click=\"toggleVis\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68109,10 +68138,7 @@ exports.default = {
                 //if not set return placeholder
                 return this.placeHolders.timeGrading;
             }
-        }
-    },
-
-    methods: {
+        },
         //checks on whether stage is complete
         //returns boolean
 
@@ -68136,6 +68162,8 @@ exports.default = {
         }
     },
 
+    methods: {},
+
     directives: {},
 
     events: {},
@@ -68145,7 +68173,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"props-dashboard\" class=\"dashboard\">\n    <!--<ul class=\"list-group\">-->\n        <!--<li class=\"list-group-item\">-->\n            <!--<dl class=\"dl-horizontal\">-->\n                <!--<dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>-->\n                <!--<dd>{{ numberItems }}</dd>-->\n\n                <!--<dt>Max total score</dt>-->\n                <!--<dd>{{ perfectScore }}</dd>-->\n\n                <!--<dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>-->\n                <!--<dd>{{ numberStudents}}</dd>-->\n\n                <!--<dt> # Graded</dt>-->\n                <!--<dd>{{ numberGraded }}</dd>-->\n\n                <!--<dt>Time grading</dt>-->\n                <!--<dd>{{ timeGrading }}</dd>-->\n\n            <!--</dl>-->\n        <!--</li>-->\n\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n\n        <!--<dt>Max total score</dt>-->\n        <!--<dd>{{ perfectScore }}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n        <!--&lt;!&ndash;<dd><input type=\"number\" v-model=\"perfectScore\" /></dd>&ndash;&gt;-->\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n        <!--<dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>-->\n        <!--<dd>{{ numberStudents}}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n        <!--<dt> # Graded</dt>-->\n        <!--<dd>{{ numberGraded }}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n\n        <!--<li class=\"list-group-item\">-->\n        <!--<dl class=\"dl-horizontal\">-->\n        <!--<dt>Time grading</dt>-->\n        <!--<dd>{{ timeGrading }}</dd>-->\n        <!--</dl>-->\n        <!--</li>-->\n\n    <h5>Progress</h5>\n    <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n            <h6><span v-show=\"setupComplete\" class=\"glyphicon glyphicon-ok\"></span> Setup </h6>\n\n\n            <dl class=\"dl-horizontal\">\n                <dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>\n                <dd>{{ numberItems }}</dd>\n\n                <dt>Max total score</dt>\n                <dd>{{ perfectScore }}</dd>\n\n                <dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>\n                <dd>{{ numberStudents}}</dd>\n            </dl>\n        </li>\n\n        <li class=\"list-group-item\">\n            <h6><span v-show=\"gradingComplete\" class=\"glyphicon glyphicon-ok\"></span> Grading </h6>\n            <dl class=\"dl-horizontal\">\n\n                <dt> # Graded</dt>\n                <dd>{{ numberGraded }}</dd>\n\n                <dt>Time grading</dt>\n                <dd>{{ timeGrading }}</dd>\n\n            </dl>\n        </li>\n\n        <li class=\"list-group-item\">\n            <h6><span v-show=\"reviewingComplete\" class=\"glyphicon glyphicon-ok\"></span> Reviewing</h6>\n        </li>\n    </ul>\n</div>\n\n<!---->\n<!--<dl class=\"dl-horizontal list-group\">-->\n\n\n<!--<dt><span v-show=\"itemsComplete\" class=\"text-success glyphicon glyphicon-ok\"></span> # items</dt>-->\n<!--<dd>{{ numberItems }}</dd>-->\n\n<!--<dt>Max total score</dt>-->\n<!--<dd>{{ perfectScore }}</dd>-->\n<!--&lt;!&ndash;<dd><input type=\"number\" v-model=\"perfectScore\" /></dd>&ndash;&gt;-->\n\n<!--<dt><span v-show=\"studentsComplete\" class=\"glyphicon glyphicon-ok\"></span> # Students</dt>-->\n<!--<dd>{{ numberStudents}}</dd>-->\n\n<!--<dt> # Graded</dt>-->\n<!--<dd>{{ numberGraded }}</dd>-->\n\n<!--<dt>Time grading</dt>-->\n<!--<dd>{{ timeGrading }}</dd>-->\n\n\n<!--</dl>-->\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"progress-dashboard\" class=\"dashboard\">\n    <div class=\"row\">\n        <div class=\"panel col-md-3\" v-bind:class=\"{'panel-success' : setupComplete }\">\n            <div class=\"panel-heading\">\n                <h6><span v-show=\"setupComplete\"><span class=\"glyphicon glyphicon-ok\"></span></span> Setup </h6>\n            </div>\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\">\n                    # Items <span class=\"badge\">{{ numberItems }}</span>\n                </li>\n\n                <li class=\"list-group-item\">\n                    Max total score <span class=\"badge\">{{ perfectScore }}</span>\n                </li>\n\n                <li class=\"list-group-item\">\n                    # Students <span class=\"badge\">{{ numberStudents }}</span>\n                </li>\n\n            </ul>\n        </div>\n        <div class=\"panel col-md-3\" v-bind:class=\"{'panel-success' : gradingComplete }\">\n            <div class=\"panel-heading\">\n                <h6><span v-show=\"gradingComplete\"></span> <span class=\"glyphicon glyphicon-ok\"></span> Grading\n                </h6>\n            </div>\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\">\n                    # Graded <span class=\"badge\">{{ numberGraded }}</span>\n                </li>\n                <li class=\"list-group-item\">\n                    Time grading <span class=\"badge\">{{ timeGrading }}</span>\n                </li>\n            </ul>\n\n        </div>\n\n        <div class=\"panel col-md-3\">\n            <div class=\"panel-heading\">\n                <h6><span v-show=\"reviewingComplete\"> <span class=\"glyphicon glyphicon-ok\"></span></span> Reviewing\n                </h6>\n            </div>\n\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\">\n                </li>\n            </ul>\n\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68155,14 +68183,14 @@ if (module.hot) {(function () {  module.hot.accept()
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-a586beac", module.exports)
+    hotAPI.createRecord("_v-4476cea1", module.exports)
   } else {
-    hotAPI.update("_v-a586beac", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-4476cea1", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
 },{"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68234,13 +68262,13 @@ exports.default = {
  * Created by adam on 2/15/17.
  */
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"setupToolDashboard\" class=\"dashboard\">\n\n    <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-danger\" v-on:click=\"toggleDeleteMode\">Remove</button>\n        </li>\n\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-warning\" v-on:click=\"toggleReorderMode\">Reorder</button>\n        </li>\n\n\n        <li class=\"list-group-item\">\n            <button class=\"btn btn-block btn-primary\" v-on:click=\"showSampleFeedback\">Sample feedback</button>\n        </li>\n\n        <li class=\"list-group-item\">\n            <!--replace with toggle-->\n            <button class=\"btn btn-block btn-primary\" v-on:click=\"toggleHolesShown\">Highlight holes</button>\n        </li>\n    </ul>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"setupToolDashboard\" class=\"dashboard\">\n\n    <div class=\"btn-toolbar\">\n        <div class=\"btn-group\" role=\"group\" aria-label=\"Setup tool buttons\">\n            <button class=\"btn btn-warning\" v-on:click=\"toggleDeleteMode\">Remove\n            </button>\n\n            <button class=\"btn btn-primary\" v-on:click=\"showSampleFeedback\">Sample feedback\n            </button>\n\n            <!--replace with toggle-->\n\n            <button class=\"btn btn-primary\" v-on:click=\"toggleHolesShown\">Highlight holes\n            </button>\n        </div>\n    </div>\n\n\n    <!--<ul class=\"list-group list-inline\">-->\n    <!--<li class=\"list-group-item\">-->\n    <!--<button-->\n    <!--class=\"btn btn-block btn-danger\"-->\n    <!--v-on:click=\"toggleDeleteMode\"-->\n    <!--&gt;Remove</button>-->\n    <!--</li>-->\n\n    <!--<li class=\"list-group-item\">-->\n    <!--<button-->\n    <!--class=\"btn btn-block btn-warning\"-->\n    <!--v-on:click=\"toggleReorderMode\"-->\n    <!--&gt;Reorder</button>-->\n    <!--</li>-->\n\n\n    <!--<li class=\"list-group-item\">-->\n    <!--<button-->\n    <!--class=\"btn btn-block btn-primary\"-->\n    <!--v-on:click=\"showSampleFeedback\"-->\n    <!--&gt;Sample feedback</button>-->\n    <!--</li>-->\n\n    <!--<li class=\"list-group-item\">-->\n    <!--&lt;!&ndash;replace with toggle&ndash;&gt;-->\n    <!--<button-->\n    <!--class=\"btn btn-block btn-primary\"-->\n    <!--v-on:click=\"toggleHolesShown\"-->\n    <!--&gt;Highlight holes</button>-->\n    <!--</li>-->\n    <!--</ul>-->\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68357,7 +68385,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component\">\n    <div class=\"input-group input-group-lg\">\n\n        <div class=\"input-group-addon\" id=\"basic-addon1\">\n            {{headingName}}\n\n\n        </div>\n\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"0\"></settings-button>\n\n            <!--<button class=\"btn btn-primary\"-->\n            <!--v-on:click=\"toggleExamProperties\"-->\n            <!--&gt;<span class=\"glyphicon glyphicon-cog\"></span></button>-->\n        </div>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component row\">\n    <div class=\"col-lg-2\">\n        <h4>{{headingName}}</h4>\n    </div>\n\n    <div class=\"col-lg-6\">\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n    </div>\n\n    <div class=\"col-lg-2 text-right\">\n        <settings-button :index=\"0\"></settings-button>\n    </div>\n\n</div>\n\n\n<!--<div id=\"examNameArea\" class=\"exam-main-component\">-->\n<!--<div class=\"input-group input-group-lg\">-->\n\n<!--<div class=\"input-group-addon\"-->\n<!--id=\"basic-addon1\"-->\n<!--&gt;-->\n<!--{{headingName}}-->\n\n\n<!--</div>-->\n\n<!--<input type=\"text\"-->\n<!--class=\"form-control input-lg\"-->\n<!--id=\"privateName\"-->\n<!--name=\"privateName\"-->\n<!--aria-describedby=\"basic-addon1\"-->\n<!--v-bind:placeholder=\"placeHolders.privateName\"-->\n<!--v-model=\"privateName\"-->\n<!--/>-->\n\n<!--<div class=\"input-group-btn\">-->\n<!--<settings-button :index=\"0\"></settings-button>-->\n\n<!--&lt;!&ndash;<button class=\"btn btn-primary\"&ndash;&gt;-->\n<!--&lt;!&ndash;v-on:click=\"toggleExamProperties\"&ndash;&gt;-->\n<!--&lt;!&ndash;&gt;<span class=\"glyphicon glyphicon-cog\"></span></button>&ndash;&gt;-->\n<!--</div>-->\n\n<!--</div>-->\n<!--</div>-->\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68686,10 +68714,15 @@ var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+window._ = require('lodash');
 exports.default = {
     //        props: [ 'index'],
 
@@ -68701,6 +68734,9 @@ exports.default = {
 
             placeholders: {
                 'score': 100
+            },
+            defaults: {
+                score: 100
             }
         };
     },
@@ -68709,25 +68745,33 @@ exports.default = {
 
         maxScore: {
             get: function get() {
-                if (typeof this.index !== 'undefined') {
-                    var item = this.$store.getters.getItemByIndex(this.index);
-                    if (typeof item !== 'undefined') {
-                        return item.maxScore;
-                    }
+                var item = this.$store.getters.getItemByIndex(this.index);
+                if (item instanceof _Item2.default) {
+                    return item.maxScore;
                 }
-
-                //                    return this.placeholders.score;
+                //
+                //                    if ( typeof this.index !== 'undefined' ) {
+                //                        let item = this.$store.getters.getItemByIndex(this.index);
+                //                        if ( typeof item !== 'undefined' ) {
+                //                            if (typeof item.maxScore === 'undefined'){
+                //                                return this.defaults.score;
+                //                            }
+                //                            return item.maxScore
+                //                        }
+                //                    }
             },
 
             set: function set(value) {
-                var pl = _Payload2.default.factory({
-                    index: this.index,
-                    updateProp: 'maxScore',
-                    updateVal: value
-                });
-                this.$store.commit(mTypes.updateItem, pl);
+                var item = this.$store.getters.getItemByIndex(this.index);
+                if (item instanceof _Item2.default) {
+                    var pl = _Payload2.default.factory({
+                        index: this.index,
+                        updateProp: 'maxScore',
+                        updateVal: _.toInteger(value)
+                    });
+                    this.$store.commit(mTypes.updateItem, pl);
+                }
             }
-
         }
     },
 
@@ -68749,9 +68793,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\nh4 {\n  text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n\n/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68841,13 +68885,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component\">\n    <div class=\"input-group\">\n        <div class=\"input-group-addon\" id=\"basic-addon2\"># {{ index }}\n            <!--<div class=\"input-group-addon\" id=\"itemnum\">-->\n            <!--<item-number :index=\"index\"></item-number>-->\n        </div>\n\n        <item-name :index=\"index\"></item-name>\n\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"index\"></settings-button>\n\n            <public-indicator :index=\"index\"></public-indicator>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component row\">\n    <div class=\"col-md-1\"><h4># {{ index }}</h4></div>\n    <div class=\"col-md-6\">\n        <item-name :index=\"index\"></item-name>\n    </div>\n    <div class=\"col-md-1\">\n        <settings-button :index=\"index\"></settings-button>\n    </div>\n</div>\n\n<!--<div class=\"input-group\">-->\n<!--<div class=\"input-group-addon\"-->\n<!--id=\"basic-addon2\"-->\n<!--&gt;# {{ index }}-->\n<!--<div class=\"input-group-addon\" id=\"itemnum\">-->\n<!--<item-number :index=\"index\"></item-number>-->\n<!--</div>-->\n\n\n<!--<div class=\"input-group-btn\">-->\n<!--<settings-button :index=\"index\"></settings-button>-->\n\n<!--<public-indicator :index=\"index\"></public-indicator>-->\n<!--</div>-->\n<!--</div>-->\n<!--</div>-->\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\nh4 {\n  text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n\n/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68858,7 +68902,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.panel-heading{\n\n    background-color: #FFFDF4;\n}\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 5, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 10, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69007,13 +69051,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component panel\" v-bind:class=\"offsetClass\">\n    <div class=\"panel-heading\">\n        <item-main :index=\"index\"></item-main>\n    </div>\n\n    <div class=\"panel-body\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n        <delete-item-button :index=\"index\"></delete-item-button>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\" v-bind:data-id=\"index\">\n\n    <item-main :index=\"index\"></item-main>\n\n    <div class=\"row\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n    </div>\n\n    <div class=\"row\" v-show=\"visible\">\n        <div class=\"col-md-2 text-left\">\n            <delete-item-button :index=\"index\"></delete-item-button>\n        </div>\n\n        <div class=\"col-md-9 text-right\">\n            <public-indicator :index=\"index\"></public-indicator>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.panel-heading{\n\n    background-color: #FFFDF4;\n}\n.bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/\n}\n\n/*li {*/\n/*margin-bottom: 10em;*/\n/*}*/\n\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 5, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 10, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -69024,7 +69068,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.list-group-item{\n\n    background-color: #FFFDF4;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 5, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69090,6 +69134,68 @@ exports.default = {
             });
         },
 
+        actualOrder: function actualOrder() {
+            var a = [];
+            var f = [];
+            var c = document.getElementsByClassName("item-card-component");
+            for (var i = 0; i < c.length; i++) {
+                window.console.log('itemCards.list.component', 'actualOrder', 89, c[i]);
+                a.push(c[i].getAttribute('id'));
+            }
+            _.forEach(a, function () {
+                var d = _.split(this, '-', 3);
+                f.push(d[2]);
+            });
+            return f;
+        },
+
+        order: function order() {
+            var orig = this.$store.getters[gTypes.getAllItems];
+            var ids = [];
+            for (var i = 1; i < orig.length; i++) {
+                ids.push(orig[i].id);
+            }
+            return ids;
+            //
+            //                return orig.filter(( obj ) => {
+            //                    return obj.index > 0;
+            //                }).id;
+            //
+            //
+            //                let i = 0;
+            //                let ids = [];
+            //                _.forEach(orig, function ( )  {
+            //                    window.console.log('itemCards.list.component', '', 90, this);
+            //                   ids.push(this.id);
+            //                });
+            //                return ids;
+            //                //filter out the exam and return everything else
+            //                return orig.filter(( obj ) => {
+            //                    if (obj.index > 0){
+            //                        ids.push(obj.id);
+            //                        window.console.log('itemCards.list.component', '', 93, ids);
+            ////                        i += 1;
+            //                        return true;
+            //                    }
+            //                });
+
+
+            //
+            //                let cards = document.getElementsByClassName('item-card-component');
+            //                let out = [];
+            //                for (let i=0; i<cards.length; i++){
+            //                    let did = cards[i].getAttribute('data-id');
+            //                    out.push(did);
+            //                    window.console.log('itemCards.list.component', 'order', 88, did);
+            //                }
+            //return out;
+            //                let orig = this.$store.getters[ gTypes.getAllItems ];
+            //                //filter out the exam and return everything else
+            //                return orig.filter(( obj ) => {
+            //                    return obj.index > 0;
+            //                });
+        },
+
         numberOfItems: function numberOfItems() {
             return this.$store.getters.getItemCount;
         }
@@ -69106,6 +69212,7 @@ exports.default = {
         addItem: function addItem() {
             console.log('cardList.component', 'methods', 'setItem', this.$store);
             this.$store.dispatch(aTypes.createItem);
+            window.console.log('itemCards.list.component', 'addItem', 116, this.order);
         }
 
     },
@@ -69129,8 +69236,32 @@ exports.default = {
                 animation: 150,
                 handle: '.handle', // Drag handle selector within list items
                 ghostClass: "sortable-ghost", // Class name for the drop placeholder
+                dataIdAttr: 'data-id',
+
+                store: {
+                    /**
+                     * Get the order of elements. Called once during initialization.
+                     * @param   {Sortable}  sortable
+                     * @returns {Array}
+                     */
+                    get: function get(sortable) {
+                        //                            var order = localStorage.getItem(sortable.options.group.name);
+                        //                            return order ? order.split('|') : [];
+                    },
+
+                    /**
+                     * Save the order of elements. Called onEnd (when the item is dropped).
+                     * @param {Sortable}  sortable
+                     */
+                    set: function set(sortable) {
+                        window.console.log('itemCards.list.component', 'set', 141, sortable.childNodes);
+                        var order = sortable.toArray();
+                        window.console.log('itemCards.list.component', 'set', 142, order);
+                    }
+                },
 
                 onSort: function onSort(evt) {
+                    window.console.log('itemCards.list.component', 'onSort', 148, evt);
                     me.$store.commit(mTypes.updateOrder);
                 },
 
@@ -69203,13 +69334,13 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n    <div class=\"row card-list\">\n        <!--<draggable v-model='items'>-->\n        <ul id=\"card-list\" class=\"list-group\">\n            <li class=\"item-cards list-group-item  handle\" v-for=\"(item, index) in items\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-10\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n\n    <div class=\"row card-list\">\n        <!--<draggable v-model='items'>-->\n        <ul id=\"card-list\" class=\"list-group\">\n            <li class=\"item-cards list-group-item  handle\" v-for=\"(item, index) in items\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-7\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n        <div class=\"col-md-5\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.list-group-item{\n\n    background-color: #FFFDF4;\n}\n\n"] = false
+    __vueify_insert__.cache["/* line 5, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -69348,7 +69479,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-if=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-pills\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Edit details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Edit details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Setup feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\" v-if=\"demotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </div>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-show=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-tabs\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\" active=\"\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\" active=\"\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\">\n            <span v-show=\"demotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </span>\n\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69434,7 +69565,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"exam-detail-pane\" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n\n        <edit-tabs :index=\"index\" :is-exam=\"true\"></edit-tabs>\n\n    <div class=\"tab-panel-area\">\n        <div class=\"well well-sm\">\n            <router-view name=\"examPanels\"></router-view>\n        </div>\n    </div>\n\n    </slot>\n\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"exam-detail-pane\">\n    <edit-tabs :index=\"index\" :is-exam=\"true\"></edit-tabs>\n    <div class=\"tab-panel-area\">\n        <router-view name=\"examPanels\"></router-view>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69541,7 +69672,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-edit-pane \" v-show=\"visible\">\n\n    <slot name=\"settingsBody\">\n\n        <edit-tabs :index=\"index\"></edit-tabs>\n\n        <!-- Tab panels -->\n        <div class=\"tab-panel-area\">\n            <div class=\"well well-sm\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n        </div>\n\n    </slot>\n\n    <slot name=\"controlsArea\"></slot>\n\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-edit-pane \">\n\n        <edit-tabs :index=\"index\"></edit-tabs>\n\n        <!-- Tab panels -->\n        <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n        </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69621,8 +69752,8 @@ exports.default = {
     /*
      One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
      the same component instance will be reused. Since both routes render the same component, this is more efficient
-      than destroying the old instance and then creating a new one. However, this also means that the lifecycle
-      hooks of the component will not be called.
+     than destroying the old instance and then creating a new one. However, this also means that the lifecycle
+     hooks of the component will not be called.
      To react to params changes in the same component, you can simply watch the $route object:
      */
     watch: {
@@ -69634,15 +69765,13 @@ exports.default = {
 
         commentText: {
             get: function get() {
-
                 var item = this.$store.getters.getItemByIndex(this.$route.params.index);
-                //                    let item = this.$store.getters.getItemByIndex(this.index);
-                //                    if ( typeof item !== 'undefined' ) {
-                var comment = item.getComment(this.displayed);
-                //                        if ( typeof comment !== 'undefined' ) {
-                return comment.text;
-                //                        }
-                //                    }
+                if (typeof item !== 'undefined') {
+                    var comment = item.getComment(this.displayed);
+                    if (typeof comment !== 'undefined') {
+                        return comment.text;
+                    }
+                }
             },
 
             set: function set(v) {
@@ -70166,7 +70295,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  background-color: #00496C; }\n\n/* line 13, stdin */\n#examEditorHead .panel {\n  background-color: #FFFDF4; }\n\n/* line 19, stdin */\n#examEditorBody {\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 26, stdin */\n#itemCol {\n  background-color: #FFFDF4; }\n\n/* line 30, stdin */\n#infoCol {\n  background-color: #FFFDF4; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  /*background-color: #00496C;*/\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768);\n  /*background-color: #2b417f*/ }\n\n/* line 14, stdin */\n#examEditorHead {\n  /*background-color: #00496C;*/ }\n  /* line 17, stdin */\n  #examEditorHead .panel {\n    background-color: #FFFDF4; }\n\n/* line 23, stdin */\n#examEditorBody {\n  /*background-color: #00496C*/\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 33, stdin */\n.itemCol {\n  /*background-color: #FFFDF4;*/\n  border-color: #990002;\n  border-width: thin;\n  border-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/\n  /*border-width : 10px;*/\n  /*border-right-color: #990002;*/\n  /*border-right-width: thin;*/\n  /*border-right-style: solid;*/\n  /*border-left-color: #990002;*/\n  /*border-left-width: thin;*/\n  /*border-left-style: solid;*/\n  /*padding-left: 1px;*/\n  /*padding-right: 1px;*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 58, stdin */\n#infoCol {\n  /*background-color: #00496C;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70231,13 +70360,13 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\" class=\"setup-main\">\n    <div id=\"examEditorHead\" class=\"row\">\n        <div class=\"col-md-1\"></div>\n\n        <div class=\"panel col-md-10\">\n            <div class=\"panel-heading\">\n                <exam-main></exam-main>\n            </div>\n\n            <div class=\"panel-body\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n        <div class=\"col-md-1\"></div>\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n        <div class=\"col-md-1\"></div>\n\n        <div id=\"itemCol\" class=\"col-md-8\">\n            <card-list></card-list>\n        </div>\n\n        <div id=\"infoCol\" class=\"col-md-2\">\n            <!--<div class=\"row\">-->\n                <props-dashboard></props-dashboard>\n            <!--</div>-->\n\n            <!--<div class=\"row\">-->\n                <tools-dashboard></tools-dashboard>\n            <!--</div>-->\n\n        </div>\n        <div class=\"col-md-1\"></div>\n\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\" class=\"setup-main\">\n    <div id=\"examEditorHead\">\n        <div class=\"row\">\n            <div class=\"col-md-1 col-lg-2\"></div>\n            <div class=\" itemCol col-md-10 col-lg-8\">\n                <exam-main></exam-main>\n            </div>\n            <div class=\"col-md-1 col-lg-2\"></div>\n        </div>\n\n        <div class=\"row\">\n            <div class=\"col-md-1 col-lg-2\"></div>\n            <div class=\" itemCol col-md-10 col-lg-8\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n        <div class=\"col-md-1 col-lg-3\"></div>\n\n\n        <div class=\"itemCol col-md-10 col-lg-6\">\n            <card-list></card-list>\n        </div>\n\n        <div class=\"col-md-1 col-lg-3\"></div>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"col-md-1 col-lg-3\"></div>\n        <div class=\"col-md-10 col-lg-6\"><p></p></div>\n        <div class=\"col-md-1 col-lg-3\"></div>\n    </div>\n\n    <div id=\"infoCol\" class=\"row\">\n        <div class=\"col-md-1 col-lg-3\"></div>\n        <div class=\"col-md-10 col-lg-6\">\n            <progress-dashboard></progress-dashboard>\n        </div>\n\n        <div class=\"col-md-1 col-lg-3\"></div>\n\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  background-color: #00496C; }\n\n/* line 13, stdin */\n#examEditorHead .panel {\n  background-color: #FFFDF4; }\n\n/* line 19, stdin */\n#examEditorBody {\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 26, stdin */\n#itemCol {\n  background-color: #FFFDF4; }\n\n/* line 30, stdin */\n#infoCol {\n  background-color: #FFFDF4; }\n"] = false
+    __vueify_insert__.cache["/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  /*background-color: #00496C;*/\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768);\n  /*background-color: #2b417f*/ }\n\n/* line 14, stdin */\n#examEditorHead {\n  /*background-color: #00496C;*/ }\n  /* line 17, stdin */\n  #examEditorHead .panel {\n    background-color: #FFFDF4; }\n\n/* line 23, stdin */\n#examEditorBody {\n  /*background-color: #00496C*/\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 33, stdin */\n.itemCol {\n  /*background-color: #FFFDF4;*/\n  border-color: #990002;\n  border-width: thin;\n  border-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/\n  /*border-width : 10px;*/\n  /*border-right-color: #990002;*/\n  /*border-right-width: thin;*/\n  /*border-right-style: solid;*/\n  /*border-left-color: #990002;*/\n  /*border-left-width: thin;*/\n  /*border-left-style: solid;*/\n  /*padding-left: 1px;*/\n  /*padding-right: 1px;*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 58, stdin */\n#infoCol {\n  /*background-color: #00496C;*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -70265,9 +70394,9 @@ var _fieldListDropdownComponent = require('./components/field.list-dropdown.comp
 
 var _fieldListDropdownComponent2 = _interopRequireDefault(_fieldListDropdownComponent);
 
-var _dashboardPropsComponent = require('./components/dashboard.props.component.vue');
+var _dashboardProgressComponent = require('./components/dashboard.progress.component.vue');
 
-var _dashboardPropsComponent2 = _interopRequireDefault(_dashboardPropsComponent);
+var _dashboardProgressComponent2 = _interopRequireDefault(_dashboardProgressComponent);
 
 var _dashboardToolsComponent = require('./components/dashboard.tools.component.vue');
 
@@ -70423,7 +70552,7 @@ _vue2.default.component('api', _controller2.default);
 _vue2.default.component('exam-main', _examMainComponent2.default);
 _vue2.default.component('exam-edit-pane', _paneEditExamComponent2.default);
 
-_vue2.default.component('props-dashboard', _dashboardPropsComponent2.default);
+_vue2.default.component('progress-dashboard', _dashboardProgressComponent2.default);
 _vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
 // Vue.component( 'item-nav', itemNav )
 _vue2.default.component('item-add-button', _buttonsItemAddComponent2.default);
@@ -70520,7 +70649,7 @@ var app = new _vue2.default({
 
 // Now the app has started!
 
-},{"../api/controller":351,"./components/buttons.depth-control.component.vue":354,"./components/buttons.item.add.component.vue":355,"./components/buttons.item.delete.component.vue":356,"./components/buttons.public-control.component.vue":357,"./components/buttons.settings-control.component.vue":358,"./components/buttons.valence.component.vue":359,"./components/dashboard.props.component.vue":360,"./components/dashboard.tools.component.vue":361,"./components/exam.main.component.vue":362,"./components/field.item-name.component.vue":363,"./components/field.item-number.component.vue":364,"./components/field.list-dropdown.component.vue":365,"./components/field.max-score.component.vue":366,"./components/item.main.component.vue":367,"./components/itemCards.card.component.vue":368,"./components/itemCards.list.component.vue":369,"./components/nav.edit-tabs.component.vue":370,"./components/pane.edit-exam.component.vue":371,"./components/pane.edit-item.component.vue":372,"./components/panel.comment-setup.component.vue":373,"./components/panel.exam-detail.component.vue":374,"./components/panel.history.component.vue":375,"./components/panel.item-detail.component.vue":376,"./components/panel.notes.component.vue":377,"./components/panel.stats.component.vue":378,"./new-setup.vue":379,"bootstrap-vue":29,"vue-axios":343,"vue-router":345,"vue/dist/vue.js":346}],381:[function(require,module,exports){
+},{"../api/controller":351,"./components/buttons.depth-control.component.vue":354,"./components/buttons.item.add.component.vue":355,"./components/buttons.item.delete.component.vue":356,"./components/buttons.public-control.component.vue":357,"./components/buttons.settings-control.component.vue":358,"./components/buttons.valence.component.vue":359,"./components/dashboard.progress.component.vue":360,"./components/dashboard.tools.component.vue":361,"./components/exam.main.component.vue":362,"./components/field.item-name.component.vue":363,"./components/field.item-number.component.vue":364,"./components/field.list-dropdown.component.vue":365,"./components/field.max-score.component.vue":366,"./components/item.main.component.vue":367,"./components/itemCards.card.component.vue":368,"./components/itemCards.list.component.vue":369,"./components/nav.edit-tabs.component.vue":370,"./components/pane.edit-exam.component.vue":371,"./components/pane.edit-item.component.vue":372,"./components/panel.comment-setup.component.vue":373,"./components/panel.exam-detail.component.vue":374,"./components/panel.history.component.vue":375,"./components/panel.item-detail.component.vue":376,"./components/panel.notes.component.vue":377,"./components/panel.stats.component.vue":378,"./new-setup.vue":379,"bootstrap-vue":29,"vue-axios":343,"vue-router":345,"vue/dist/vue.js":346}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70864,7 +70993,7 @@ var IModel = function () {
         /**
          * The maximum possible value of the item
          */
-        this.maxScore;
+        this.maxScore = 100;
 
         this.kind;
 
@@ -71261,7 +71390,8 @@ var Item = function (_IModel) {
                 ItemId: 'id',
                 ItemIndex: 'index',
                 questionName: 'name',
-                questionText: 'text'
+                questionText: 'text',
+                max_score: 'maxScore'
             };
         }
     }]);
@@ -74036,21 +74166,31 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.cleanupItems, fun
 
     //reorder index
     //todo write
-}), _defineProperty(_actions, aTypes.promoteItem, function (state, payload) {
-    var index = payload.index;
-
-    var item = state.items[index];
-    item.promote();
-}), _defineProperty(_actions, aTypes.demoteItem, function (state, payload) {
-    var index = payload.index;
-
-    var item = state.items[index];
-    item.demote();
-}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref3, payload) {
+}), _defineProperty(_actions, aTypes.promoteItem, function (_ref3, payload) {
     var state = _ref3.state,
         dispatch = _ref3.dispatch,
         commit = _ref3.commit,
         getters = _ref3.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.promote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_actions, aTypes.demoteItem, function (_ref4, payload) {
+    var state = _ref4.state,
+        dispatch = _ref4.dispatch,
+        commit = _ref4.commit,
+        getters = _ref4.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.demote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref5, payload) {
+    var state = _ref5.state,
+        dispatch = _ref5.dispatch,
+        commit = _ref5.commit,
+        getters = _ref5.getters;
 
     window.console.log('items', 'toggleItemPublic', 365, payload);
 

@@ -1,13 +1,10 @@
 <template>
-    <div class="item-nav-component "
+    <div
+            class="item-nav-component "
             v-on:click="goTo"
     >
-        <div
-                class="nav-arrow text-center"
-        >
-            <span
-                    v-bind:class="arrow"
-            ></span>
+        <div class="nav-arrow text-center">
+            <span v-bind:class="arrow"></span>
         </div>
     </div>
 </template>
@@ -20,7 +17,6 @@
      */
     import * as aTypes from '../../store/action-types';
     import * as mTypes from '../../store/mutation-types';
-
     import Payload from '../../models/Payload'
 
     /**
@@ -99,7 +95,7 @@
             promoteItem: function () {
                 console.log( 'CALLED', 'promoteItem' );
                 let pl = Payload.factory( {index: this.index} );
-                this.$store.commit( mTypes.promoteItem, pl );
+                this.$store.dispatch( aTypes.promoteItem, pl );
             },
 
             /**
@@ -108,7 +104,7 @@
             demoteItem: function () {
                 console.log( 'CALLED', 'demoteItem' );
                 let pl = Payload.factory( {index: this.index} );
-                this.$store.commit( mTypes.demoteItem, pl );
+                this.$store.dispatch( aTypes.demoteItem, pl );
             },
         },
 
@@ -117,7 +113,7 @@
         events: {},
 
         mounted: function () {
-            console.log( 'itemNav ready ', this.type );
+//            console.log( 'itemNav ready ', this.type );
         },
     };
 </script>

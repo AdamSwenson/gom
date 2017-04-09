@@ -17,6 +17,9 @@
 
     {{ method_field('PUT') }}
 
+    {{ method_field('PATCH') }}
+
+
     {{ method_field('DELETE') }}
     <input type="hidden" id="routeRoot" data="{{ url('') }}" />
 

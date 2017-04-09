@@ -158,7 +158,9 @@ Route::get('dev/newsetup', 'TestController@newSetup');
 //didn't get hit, we may have a problem.
 //When we want those directly, we use the edit route
 Route::get('items/{exam}', 'ItemController@show');
-
+Route::put('items/{exam}/order', 'ItemController@updateOrder');
+Route::put('items/{exam}', 'ItemController@update');
+Route::patch('items/{exam}', 'ItemController@updateAll');
 Route::resource('items', 'ItemController'); //, ['parameters' => [
 //    'item' => 'exam'
 //]]);

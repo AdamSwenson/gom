@@ -16,7 +16,7 @@ import App from './new-setup.vue'
 
 import listDropdown from './components/field.list-dropdown.component.vue'
 
-import propsDashboard from './components/dashboard.props.component.vue'
+import progressDashboard from './components/dashboard.progress.component.vue'
 import toolsDashboard from './components/dashboard.tools.component.vue'
 
 //Panes (main container for edit tools)
@@ -72,7 +72,7 @@ Vue.component('api', api);
 Vue.component('exam-main', examMain);
 Vue.component('exam-edit-pane', examEditPane);
 
-Vue.component('props-dashboard', propsDashboard);
+Vue.component('progress-dashboard', progressDashboard);
 Vue.component('tools-dashboard', toolsDashboard);
 // Vue.component( 'item-nav', itemNav )
 Vue.component('item-add-button', itemAddButton);

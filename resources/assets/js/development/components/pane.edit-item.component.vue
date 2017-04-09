@@ -1,23 +1,13 @@
 <template>
-    <div class="item-edit-pane "
-         v-show="visible"
-    >
 
-        <slot name="settingsBody">
+    <div class="item-edit-pane ">
 
             <edit-tabs :index="index"></edit-tabs>
 
             <!-- Tab panels -->
             <div class="tab-panel-area">
-                <div class="well well-sm">
                     <router-view name="itemPanels"></router-view>
-                </div>
             </div>
-
-        </slot>
-
-        <slot name="controlsArea"></slot>
-
     </div>
 
 </template>
