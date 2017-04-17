@@ -319,7 +319,7 @@ export default function ( store ) {
         }
 
         //todo temp disabled so can better see traffic
-        // updateItemsOrder(store);
+       // updateItemsOrder(store);
 
     });
 

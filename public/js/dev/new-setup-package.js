@@ -67223,7 +67223,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
  */
 ;
 
-},{"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../store/action-types":388,"../store/getter-types":390,"../store/mutation-types":405,"lodash":338}],351:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":406,"lodash":338}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67408,475 +67408,274 @@ window.axios.defaults.baseURL = routeRoot;
 
 },{"axios":1,"babel-polyfill":26,"bootstrap":30,"bootstrap-sass":28,"jquery":337,"lodash":338}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _actionTypes = require('../../store/action-types');
+var _actionTypes = require('../../../store/action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _mutationTypes = require('../../store/mutation-types');
+var _mutationTypes = require('../../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _Payload = require('../../models/Payload');
+var _getterTypes = require('../../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+var Sortable = require('sortablejs');
+
+//    import itemCard from './itemCard.component.vue'
+//    import itemAddButton from './buttons.item.add.component.vue'
+
+//For Vue.js 2.0
+// var draggable = require('vuedraggable')
+
+//    var Sortable = require('sortablejs');
+
 /**
- * These make an item into a child of another or makes them into siblings.
+ * Holds the item cards. Serves as their outer parent
  *
- * @type {{template: *, props: Array, data: module.exports.data, computed: {}, methods: {}, directives: {}, events: {}, ready: module.exports.ready}}
+ * Created by adam on 2/19/17.
  */
 exports.default = {
 
-    props: ['index', 'type' //promote, demote
-    ],
-
-    data: function data() {
-        return {
-            icons: {
-                leftArrow: 'glyphicon glyphicon-arrow-left',
-                rightArrow: 'glyphicon glyphicon-arrow-right'
-                // leftArrow: 'glyphicon glyphicon-chevron-left',
-                // rightArrow: 'glyphicon glyphicon-chevron-right'
-            }
-        };
-    },
-
-    computed: {
-
-        /**
-         * Returns the appropriate icon
-         */
-        arrow: function arrow() {
-            switch (this.type) {
-                case 'promote':
-                    return this.icons.leftArrow;
-                    break;
-
-                case 'demote':
-                    return this.icons.rightArrow;
-                    break;
-
-                default:
-                    return '';
-            }
-        }
-    },
-
-    methods: {
-        showLeft: function showLeft() {
-            var item = this.$store.getters.getItemByIndex(this.index);
-            //  if(item.depth > 0){
-            return true;
-            //}
-            //return false;
-        },
-
-        goTo: function goTo() {
-            switch (this.type) {
-                case 'promote':
-                    return this.promoteItem();
-                    break;
-
-                case 'demote':
-                    return this.demoteItem();
-                    break;
-
-                default:
-            }
-        },
-
-        /**
-         * Requests that the item be made into a sibling of its former parent
-         *
-         */
-        promoteItem: function promoteItem() {
-            console.log('CALLED', 'promoteItem');
-            var pl = _Payload2.default.factory({ index: this.index });
-            this.$store.dispatch(aTypes.promoteItem, pl);
-        },
-
-        /**
-         * Requests that an item be made a child of another
-         */
-        demoteItem: function demoteItem() {
-            console.log('CALLED', 'demoteItem');
-            var pl = _Payload2.default.factory({ index: this.index });
-            this.$store.dispatch(aTypes.demoteItem, pl);
-        }
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        //            console.log( 'itemNav ready ', this.type );
-    }
-};
-
-/**
- * Created by adam on 2/17/17.
- */
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-nav-component \" v-on:click=\"goTo\">\n    <div class=\"nav-arrow text-center\">\n        <span v-bind:class=\"arrow\"></span>\n    </div>\n</div>\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-bedabc0c", module.exports)
-  } else {
-    hotAPI.update("_v-bedabc0c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.default = {
     props: [],
 
     data: function data() {
-        return {};
-    },
-
-    computed: {},
-
-    methods: {
-        /**
-         * Called on click.
-         * It in turn calls a handler
-         */
-        addItem: function addItem() {
-            console.log('CALLED', 'addItem');
-            this.sendRequest();
-        },
-
-        /**
-         * This sends the actual request(s)
-         */
-        sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.createItem);
-        }
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        console.log('itemAddButton', 'ready', this.$store);
-    }
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"btn btn-info\" v-on:click=\"addItem\">\n    <span class=\"glyphicon glyphicon-plus\"></span>\n    <span class=\"hidden-md\"> Add item</span>\n</button>\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-4b0ad92d", module.exports)
-  } else {
-    hotAPI.update("_v-4b0ad92d", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var bootbox = require('bootbox');
-
-exports.default = {
-    props: ['index', 'id'],
-
-    computed: {
-        visible: function visible() {
-            return this.$store.getters.isDeleteVisible;
-        }
-    },
-
-    methods: {
-        isVisible: function isVisible() {
-            return this.$store.getters.isDeleteVisible;
-        },
-
-        /**
-         * Called when the button is clicked. Handles
-         * the request for deletion.
-         */
-        remove: function remove() {
-            console.log('deleteItem pressed');
-            var me = this;
-            bootbox.dialog({
-                className: 'confirmationModal',
-                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all scores associated with the item </p>",
-                title: "Delete",
-                buttons: {
-                    success: {
-                        label: 'Cancel',
-                        className: "btn-sm bnt-primary cancelQuestionDelete",
-                        callback: function callback() {}
-                    },
-                    danger: {
-                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm confirmQuestionDelete",
-                        callback: function callback() {
-                            me.sendRequest();
-                        }
-                    }
-                }
-            });
-        },
-
-        /**
-         * This sends the actual request(s) for deletion
-         */
-        sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.deleteItem, { index: this.index, id: this.id });
-        }
-    },
-
-    mounted: function mounted() {}
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"deleteButton \">\n    <button v-if=\"visible\" class=\"btn btn-danger btn-block js-remove \" v-on:click=\"remove\">\n        <span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span> Delete\n    </button>\n</div>\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-344d0d66", module.exports)
-  } else {
-    hotAPI.update("_v-344d0d66", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../store/action-types":388,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = require('../../models/Item');
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * This is the indicator which tells the user whether the thing it
- * is attached to is visible to the public.
- * On being clicked it emits an event and listens for a request
- * to change from public to hidden or vice versa.
- *
- * This can be used for anything potentially public.
- * That is, it can be used by:
- *      Exam
- *      ExamName
- *      Question
- *      QuestionName
- *      Element
- *      ElementName
- *      Comment
- *
- * Created by adam on 2/17/17.
- */
-exports.default = {
-
-    props: ['index'],
-
-    data: function data() {
         return {
+            defaults: {},
+            options: {
+                group: 'items', //name must be common to drag between lists
+                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                animation: 150,
+                handle: '.handle', // Drag handle selector within list items
+                ghostClass: "sortable-ghost", // Class name for the drop placeholder
+                dataIdAttr: 'data-id',
 
-            styles: {
-                public: 'bg-warning',
-                private: 'bg-default'
-            },
+                //                    onEnd: this.reorder,
+                store: {
+                    /**
+                     * Get the order of elements. Called once during initialization.
+                     * @param   {Sortable}  sortable
+                     * @returns {Array}
+                     */
+                    get: function get(sortable) {},
 
-            icons: {
-                eye: {
-                    open: 'glyphicon glyphicon-eye-open',
-                    close: 'glyphicon glyphicon-eye-close'
+                    /**
+                     * Save the order of elements. Called onEnd (when the item is dropped).
+                     * @param {Sortable}  sortable
+                     */
+                    set: function set(sortable) {
+                        var newOrder = me.determineOrdering();
+                        window.console.log('cardList.component', 'onSet', 297, 'newOrder', newOrder);
+                    }
+                },
+
+                onSort: function onSort(evt) {
+                    var newOrder = me.determineOrdering();
+                    window.console.log('cardList.component', 'onSort', 297, 'newOrder', newOrder);
                 }
             }
         };
     },
 
     computed: {
-        publicity: function publicity() {
-            var item = this.$store.getters.getItemByIndex(this.index);
-            if (typeof item !== 'undefined') {
-                return item.isPublic();
-            }
+        //Return everything in the items tree execpt the root
+        //The root is the exam. It gets special treatment.
+        items: function items() {
+            var orig = this.$store.getters[gTypes.getAllItems];
+            //filter out the exam and return everything else
+            return orig.filter(function (obj) {
+                return obj.index > 0;
+            });
         },
 
-        /**
-         * This alters the styling of the indicator
-         * to help highlight the possibility that others
-         * may see the thing it is attached to
-         * @returns {string}
-         */
-        styling: function styling() {
-            return this.publicity ? this.styles.public : this.styles.private;
+        actualOrder: function actualOrder() {
+            var newOrderOfIds = [];
+            var els = document.getElementsByClassName('item-card-component');
+            for (var i = 0; i < els.length; i++) {
+                newOrderOfIds.push(els[i].getAttribute('data-id'));
+                //                    console.log(els[i].getAttribute('data-id'));
+            }
+            return newOrderOfIds;
+            //
+            //
+            //                let a = [];
+            //                let f = [];
+            //                let c = document.getElementsByClassName("item-card-component");
+            //                for (let i = 0; i < c.length; i++) {
+            //                    window.console.log('itemCards.list.component', 'actualOrder', 89, c[ i ]);
+            //                    a.push(c[ i ].getAttribute('id'));
+            //                }
+            //                _.forEach(a, function () {
+            //                    let d = _.split(this, '-', 3);
+            //                    f.push(d[ 2 ]);
+            //                });
+            //                return f;
         },
 
-        icon: function icon() {
-            if (this.publicity) {
-                return this.icons.eye.open;
+        order: function order() {
+            var orig = this.$store.getters[gTypes.getAllItems];
+            var ids = [];
+            for (var i = 1; i < orig.length; i++) {
+                ids.push(orig[i].id);
             }
-            return this.icons.eye.close;
+            return ids;
+        },
+
+        numberOfItems: function numberOfItems() {
+            return this.$store.getters.getItemCount;
         }
+
     },
+
+    //
+    //                return orig.filter(( obj ) => {
+    //                    return obj.index > 0;
+    //                }).id;
+    //
+    //
+    //                let i = 0;
+    //                let ids = [];
+    //                _.forEach(orig, function ( )  {
+    //                    window.console.log('itemCards.list.component', '', 90, this);
+    //                   ids.push(this.id);
+    //                });
+    //                return ids;
+    //                //filter out the exam and return everything else
+    //                return orig.filter(( obj ) => {
+    //                    if (obj.index > 0){
+    //                        ids.push(obj.id);
+    //                        window.console.log('itemCards.list.component', '', 93, ids);
+    ////                        i += 1;
+    //                        return true;
+    //                    }
+    //                });
 
     methods: {
-        /**
-         * Returns boolean for whether the thing
-         * this is attached to is visible to students
-         * (or potentially others, if there was a use).
-         * @returns {*}
-         */
-        isPublic: function isPublic() {
-            var item = this.$store.getters.getItemByIndex(this.index);
+        reorder: function reorder(_ref) {
+            var oldIndex = _ref.oldIndex,
+                newIndex = _ref.newIndex;
 
-            // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item !== 'undefined') {
-                return item.isPublic();
+            var movedItem = this.items.splice(oldIndex, 1)[0];
+            this.items.splice(newIndex, 0, movedItem);
+        },
+
+
+        determineOrdering: function determineOrdering() {
+            //                return this.actualOrder;
+            var newOrderOfIds = [];
+            var els = document.getElementsByClassName('item-card-component');
+            for (var i = 0; i < els.length; i++) {
+                newOrderOfIds.push(els[i].getAttribute('data-id'));
+                //                    console.log(els[i].getAttribute('data-id'));
             }
+            return newOrderOfIds;
         },
 
         /**
-         * Returns boolean for whether the thing
-         * this is attached to is hidden from students
-         * (or potentially others, if there was a use).
-         * Just a semantically useful shortcut
-         * @returns {*}
+         * This creates a new default item and pushes
+         * onto stack
+         * later this should be able to accept positional
+         * and type info
          */
-        isPrivate: function isPrivate() {
-            return !this.isPublic;
-        },
-
-        /**
-         * Called when the indicator is clicked.
-         * It subsequently calls other functions to
-         * do the work.
-         */
-        togglePublic: function togglePublic() {
-            //                console.log( 'CALLED', 'togglePublic' );
-            this.$store.dispatch(aTypes.toggleItemPublic, _Payload2.default.factory({ index: this.index }));
+        addItem: function addItem() {
+            console.log('cardList.component', 'methods', 'setItem', this.$store);
+            this.$store.dispatch(aTypes.createItem);
+            window.console.log('itemCards.list.component', 'addItem', 116, this.order);
         }
 
     },
 
-    directives: {},
+    directives: {
+        'sortable': {
+            inserted: function inserted(el, binding) {
+                var sortable = new Sortable(el, binding.value || {});
+            }
+        }
+    },
 
-    events: {},
+    events: {
+        'add-item': function addItem() {
+            console.log('cardList', 'CAUGHT', 'add-item');
+            this.addItem();
+        }
+    },
 
-    mounted: function mounted() {}
+    mounted: function mounted() {
+        //            this.$store.commit('addMappedItem', [0,1,1], {thing: 'taco'});
+        this.$store.commit('addMappedItem', { idx: [0], item: 'taco' });
 
+        console.log('cardList ready');
+    }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn public-indicator\" v-bind:class=\"{'btn-warning': publicity}\" v-on:click=\"togglePublic\">\n    <span v-bind:class=\"icon\"></span>\n</button>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n\n    <div class=\"row card-list\">\n\n        <ul id=\"card-list\" class=\"list-group col-md-9 col-lg-10\">\n            <li class=\"item-cards list-group-item  handle\" v-for=\"item in items\" :key=\"item.index\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-7\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n        <div class=\"col-md-5\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>   v-sortable=\"options\"-->\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-65727aa0", module.exports)
+    hotAPI.createRecord("_v-447dcb94", module.exports)
   } else {
-    hotAPI.update("_v-65727aa0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-447dcb94", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],358:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":406,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _Item = require('../../models/Item');
+var _buttonsItemDeleteComponent = require('../input/buttons.item.delete.component.vue');
+
+var _buttonsItemDeleteComponent2 = _interopRequireDefault(_buttonsItemDeleteComponent);
+
+var _panelExamDetailComponent = require('../panel.exam-detail.component.vue');
+
+var _panelExamDetailComponent2 = _interopRequireDefault(_panelExamDetailComponent);
+
+var _Item = require('../../../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
 
-var _Payload = require('../../models/Payload');
+var _Payload = require('../../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _mutationTypes = require('../../store/mutation-types');
+var _actionTypes = require('../../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = require('../../store/getter-types');
+var _getterTypes = require('../../../store/getter-types');
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -67884,154 +67683,464 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Handles showing and hiding the item settings pane
- *
- * Created by adam on 2/18/17.
- */
 exports.default = {
 
     props: ['index'],
-
-    data: function data() {
-        return {};
-    },
-
-    computed: {},
-
-    methods: {
-        toggleVis: function toggleVis() {
-            //                    console.log( 'buttons.settings-control', 'CALLED', 'toggle' , this.index);
-            var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-            //                    console.log( 'isvis', isVis );
-            if (isVis) {
-                //if comes back true, we know that currently visible
-                //call the mutation with our index
-                this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({ index: this.index }));
-            } else {
-                //                    let mutation = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index ) ? mTypes.showItemSettings : mTypes.hideItemSettings;
-
-                //call the mutation to show with our index
-                this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({ index: this.index }));
-            }
-        }
-    },
-
-    mounted: function mounted() {}
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"btn settings-button btn-lg btn-info\" v-on:click=\"toggleVis\">\n    <span class=\"glyphicon glyphicon-cog\"></span>\n</button>\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-7de0264c", module.exports)
-  } else {
-    hotAPI.update("_v-7de0264c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = require('../../models/Item');
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Comment = require('../../models/Comment');
-
-var _Comment2 = _interopRequireDefault(_Comment);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-    props: ['index', 'valence'],
+    components: { 'delete-button': _buttonsItemDeleteComponent2.default },
 
     data: function data() {
         return {};
     },
 
     computed: {
-        valences: function valences() {
-            return _Comment2.default.valences;
-        },
-
-        active: function active() {
-            return this.$parent.displayedValence === this.valence;
-        },
-
-        classObject: function classObject() {
-            return {
-                'btn-info': this.active,
-                'btn-primary': !this.active
-            };
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        paneVisible: function paneVisible() {
+            return this.$store.getters[gTypes.isExamSettingsVisible];
         }
-
     },
 
     methods: {
         /**
-         * Called when the valence button is clicked
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
          */
-        setValence: function setValence(valence) {
-            this.$parent.changeDisplayedValence(valence);
-
-            //            this.$store.commit(mTypes.setElementComment, Payload.factory({
-            //            index : this.index,
-            //                index: this.index,
-            //                updateProp: name,
-            //                updateVal: value
-            //            }))
-            //                return this.sendRequest();
+        toggleCommentsOn: function toggleCommentsOn() {
+            console.log('CALLED', 'toggleCommentsOn');
+            this.isCommented = !this.isCommented;
         },
 
         /**
-         * This sends the actual request(s)
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
          */
-        sendRequest: function sendRequest() {
-            //  return emit('please-change-valence', this.valence);
+        toggleNameVisibility: function toggleNameVisibility() {
+            console.log('CALLED', 'toggleNameVisibility');
+            this.isNamePublic = !this.isNamePublic;
         }
-    }
+
+    },
+
+    directives: {},
+
+    events: {
+        'please-hide-all': function pleaseHideAll() {
+            this.$dispatch(mTypes.hideItemSettings, _Payload2.default.factory({ index: 0 }));
+        },
+        'please-show-all': function pleaseShowAll() {
+            this.$dispatch(mTypes.showItemSettingsItemSettings, _Payload2.default.factory({ index: 0 }));
+        },
+
+        'display-settings': function displaySettings() {
+            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
+        }
+    },
+
+    mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"valence-buttons form-group \">\n        <b-button-group size=\"sm\">\n        <b-button variant=\"primary\" v-on:click=\"setValence(valence)\" v-for=\"valence in valences\">{{valence}}</b-button>\n    </b-button-group>\n\n</div>\n\n    <!--<div class=\"btn-group\" role=\"group\">-->\n\n    <!--<button type=\"button\" class=\"btn btn-small valence-button\"-->\n    <!--v-bind:class=\"classObject\"-->\n    <!--v-on:click=\"selectValence\"-->\n    <!--&gt;{{ valence }}</button>-->\n<!--</div>-->\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"exam-card-component\">\n\n    <div class=\"row\">\n        <div class=\"col-md-12 text-left \">\n\n            <exam-main></exam-main>\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-12 text-left \">\n            <progress-dashboard></progress-dashboard>\n        </div>\n    </div>\n\n    <div class=\"exam-edit-pane row\" v-show=\"paneVisible\">\n        <div class=\"col-md-12\">\n\n            <edit-tabs :index=\"index\" :is-exam=\"true\"></edit-tabs>\n\n            <div class=\"tab-panel-area\">\n                <router-view name=\"examPanels\"></router-view>\n            </div>\n        </div>\n    </div>\n\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"col-md-12 text-left \">\n            <div class=\"btn-group\" role=\"group\" aria-label=\"Item tool buttons\">\n\n                <delete-button :index=\"index\"></delete-button>\n\n                <public-indicator :index=\"index\"></public-indicator>\n            </div>\n        </div>\n    </div>\n\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
+    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-5092195a", module.exports)
+    hotAPI.createRecord("_v-5ecd1dd5", module.exports)
   } else {
-    hotAPI.update("_v-5092195a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-5ecd1dd5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":381,"../../models/Item":384,"../../models/Payload":385,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":406,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\nul {\n\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = require('../../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//    import deleteButton from './buttons.item.delete.component.vue'
+//    import itemEditPane from './item.edit-pane.component.vue'
+//    import depthControl from './buttons.depth-control.component.vue'
+//    import itemMain from './item.main.component.vue'
+
+exports.default = {
+
+    props: ['index', 'parent-index'],
+
+    data: function data() {
+        return {
+
+            defaults: {
+                depth: null,
+                index: null,
+                type: null,
+                //how much one unit of depth will be offset
+                tabOffset: 2
+            },
+            isCommented: false,
+            /**
+             * Whether students can see the name of the item
+             */
+            isNamePublic: false
+        };
+    },
+
+    computed: {
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        paneVisible: function paneVisible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+        },
+
+        divId: function divId() {
+            return "item-card-" + this.index;
+        },
+
+        /**
+         * Returns the bootstrap class for the depth
+         */
+        offsetClass: function offsetClass() {
+            if (this.depth > 0) {
+                var amt = this.defaults.tabOffset * this.depth;
+                var col = "col-md-offset-" + amt;
+                return col;
+            }
+        },
+
+        ddepth: function ddepth() {
+
+            //start with the current instance
+            //that way, if we are at the root,
+            //the while won't run
+            //todo or do I need the other kind?
+            var current = this.$parent;
+            var d = 0;
+            var limit = 5;
+            while (_.isEmpty(current) && d < limit) {
+                //we aren't at the root, so
+                //increment our depth counter
+                d++;
+                //and set the parent of the parent as current
+                current = current.$parent;
+            }
+            return d;
+        },
+
+        depth: {
+            get: function get() {
+                //                    let item = this.$store.getters.getItemById(this.id);
+                var item = this.$store.getters.getItemByIndex(this.index);
+                if (typeof item !== 'undefined') {
+                    return item.depth;
+                }
+            },
+            set: function set(v) {
+                //                    let item = this.$store.getters.getItemById(this.id);
+                var item = this.$store.getters.getItemByIndex(this.index);
+                if (typeof item !== 'undefined') {
+                    this.$store.commit(_Payload2.default.factory({
+                        //                            id: this.id,
+                        index: this.index,
+                        updateProp: 'depth',
+                        updateVal: v
+                    }));
+                }
+            }
+        },
+
+        type: {
+            get: function get() {
+                return this.defaults.index;
+            },
+            set: function set() {}
+        }
+    },
+
+    methods: {
+
+        //            addSibling: function ( rel="younger" ) {
+        //                switch (rel){
+        //                    case 'older':
+        //                        break;
+        //                    case 'younger':
+        //                        break;
+        //                    default:
+        //                }
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleCommentsOn: function toggleCommentsOn() {
+            console.log('CALLED', 'toggleCommentsOn');
+            this.isCommented = !this.isCommented;
+        },
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleNameVisibility: function toggleNameVisibility() {
+            console.log('CALLED', 'toggleNameVisibility');
+            this.isNamePublic = !this.isNamePublic;
+        }
+
+    },
+
+    directives: {},
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
+        }
+    },
+
+    mounted: function mounted() {}
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\" v-bind:data-id=\"index\" v-bind:data-index=\"index\" v-bind:data-parent-index=\"parentIndex\">\n    <div class=\"row\">\n        <div class=\"col-md-12 text-left\">\n            <item-main :index=\"index\"></item-main>\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"col-md-12 text-left\">\n            <edit-tabs :index=\"index\" :is-exam=\"false\"></edit-tabs>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"button-row col-md-12 text-left\">\n            <div class=\"btn-group\" role=\"group\" aria-label=\"Item tool buttons\">\n\n                <delete-item-button :index=\"index\"></delete-item-button>\n\n                <public-indicator :index=\"index\"></public-indicator>\n                <button class=\"btn btn-warning\">Clone</button>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <sub-list></sub-list>\n    </div>\n</div>\n\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-35f0e86e", module.exports)
+  } else {
+    hotAPI.update("_v-35f0e86e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = require('../../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Sortable = require('sortablejs');
+
+exports.default = {
+
+    props: [],
+
+    data: function data() {
+        return {
+            defaults: {},
+            options: {
+                group: 'items', //name must be common to drag between lists
+                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                animation: 150,
+                handle: '.handle', // Drag handle selector within list items
+                ghostClass: "sortable-ghost", // Class name for the drop placeholder
+                dataIdAttr: 'data-id',
+
+                store: {
+                    /**
+                     * Get the order of elements. Called once during initialization.
+                     * @param   {Sortable}  sortable
+                     * @returns {Array}
+                     */
+                    get: function get(sortable) {},
+
+                    /**
+                     * Save the order of elements. Called onEnd (when the item is dropped).
+                     * @param {Sortable}  sortable
+                     */
+                    set: function set(sortable) {
+                        var newOrder = me.determineOrdering();
+                        window.console.log('cardList.component', 'onSet', 297, 'newOrder', newOrder);
+                    }
+                },
+
+                onSort: function onSort(evt) {
+                    var newOrder = me.determineOrdering();
+                    window.console.log('cardList.component', 'onSort', 297, 'newOrder', newOrder);
+                }
+
+            }
+        };
+    },
+
+    computed: {
+        sublistId: function sublistId() {
+            return 'card-sub-list' + this.$parent.index;
+        },
+        sublistClass: function sublistClass() {
+            return 'sublist-' + this.$parent.index;
+        },
+
+        //note that in this case,
+        //we want depth and index to be tightly coupled
+        depth: function depth() {
+            return this.$parent.depth;
+        },
+
+        index: function index() {
+            return this.$parent.index;
+        },
+
+        parentIndex: function parentIndex() {
+            return this.$parent.$parent.index;
+        },
+
+        offset: function offset() {
+            return "col-min-offset" + this.depth;
+        },
+        items: function items() {
+            //                return [];
+            //todo filter by parent index
+            //Return everything in the items tree execpt the root
+            //The root is the exam. It gets special treatment.
+            var orig = this.$store.getters[gTypes.getAllItems];
+            if (orig.length > 0) {
+                //filter out the exam and return everything else
+                return orig.filter(function (obj) {
+                    return obj.index > 0;
+                });
+            }
+            return [];
+        },
+
+        actualOrder: function actualOrder() {
+            var newOrderOfIds = [];
+            var els = document.getElementsByClassName('item-card-component');
+            for (var i = 0; i < els.length; i++) {
+                newOrderOfIds.push(els[i].getAttribute('data-id'));
+                //                    console.log(els[i].getAttribute('data-id'));
+            }
+            return newOrderOfIds;
+        }
+    },
+
+    methods: {},
+
+    //
+    //        directives: {
+    //            'sortable': {
+    //                inserted: function ( el, binding ) {
+    //                    var sortable = new Sortable( el, binding.value || {} );
+    //                }
+    //            }
+    //        },
+
+
+    events: {},
+
+    mounted: function mounted() {
+        var me = this;
+
+        try {
+            //                var qList = document.getElementById( me.sublistId );
+            //                var editableList = Sortable.create( qList, {
+            //                    group: 'items', //name must be common to drag between lists
+            //                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+            //                    animation: 150,
+            //                    handle: '.handle',  // Drag handle selector within list items
+            //                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
+            //                    dataIdAttr: 'data-id',
+            //
+            //                    store: {
+            //                        /**
+            //                         * Get the order of elements. Called once during initialization.
+            //                         * @param   {Sortable}  sortable
+            //                         * @returns {Array}
+            //                         */
+            //                        get: function ( sortable ) {
+            //                        },
+            //
+            //                        /**
+            //                         * Save the order of elements. Called onEnd (when the item is dropped).
+            //                         * @param {Sortable}  sortable
+            //                         */
+            //                        set: function ( sortable ) {
+            //                            let newOrder = me.determineOrdering();
+            //                            window.console.log( 'cardList.component', 'onSet', 297, 'newOrder', newOrder );
+            //
+            //                        }
+            //                    },
+            //
+            //
+            //                    onSort: function ( evt ) {
+            //                        let newOrder = me.determineOrdering();
+            //                        window.console.log( 'cardList.component', 'onSort', 297, 'newOrder', newOrder );
+            //
+            //                    },
+            //
+            //                } );
+        } catch (e) {
+            window.console.log(e);
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component \" v-bind:class=\"offset\">\n\n    <div class=\"row card-list\">\n        <!--<ul :id=\"sublistId\" class=\"list-group col-md-9 col-lg-9\" v-sortable=\"options\">-->\n            <!--<li class=\"item-cards list-group-item  handle\"-->\n                <!--v-bind:class=\"sublistClass\"-->\n                <!--v-for=\"item in items\" :key=\"item.index\"-->\n            <!--&gt;-->\n                <!--<item-card :index=\"item.index\" :parent-index=\"index\"></item-card>-->\n            <!--</li>-->\n        <!--</ul>-->\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-49f731a6", module.exports)
+  } else {
+    hotAPI.update("_v-49f731a6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":406,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68173,13 +68282,13 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"progress-dashboard\" class=\"dashboard\">\n    <div class=\"row\">\n        <div class=\"panel col-md-3\" v-bind:class=\"{'panel-success' : setupComplete }\">\n            <div class=\"panel-heading\">\n                <h6><span v-show=\"setupComplete\"><span class=\"glyphicon glyphicon-ok\"></span></span> Setup </h6>\n            </div>\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\">\n                    # Items <span class=\"badge\">{{ numberItems }}</span>\n                </li>\n\n                <li class=\"list-group-item\">\n                    Max total score <span class=\"badge\">{{ perfectScore }}</span>\n                </li>\n\n                <li class=\"list-group-item\">\n                    # Students <span class=\"badge\">{{ numberStudents }}</span>\n                </li>\n\n            </ul>\n        </div>\n        <div class=\"panel col-md-3\" v-bind:class=\"{'panel-success' : gradingComplete }\">\n            <div class=\"panel-heading\">\n                <h6><span v-show=\"gradingComplete\"></span> <span class=\"glyphicon glyphicon-ok\"></span> Grading\n                </h6>\n            </div>\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\">\n                    # Graded <span class=\"badge\">{{ numberGraded }}</span>\n                </li>\n                <li class=\"list-group-item\">\n                    Time grading <span class=\"badge\">{{ timeGrading }}</span>\n                </li>\n            </ul>\n\n        </div>\n\n        <div class=\"panel col-md-3\">\n            <div class=\"panel-heading\">\n                <h6><span v-show=\"reviewingComplete\"> <span class=\"glyphicon glyphicon-ok\"></span></span> Reviewing\n                </h6>\n            </div>\n\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\">\n                </li>\n            </ul>\n\n        </div>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"progress-dashboard\" class=\"dashboard text-align-center\">\n    <ul id=\"progressIndicator\" class=\"list-inline\">\n\n        <li id=\"progressSetup\" v-bind:class=\"{'bg-success' : setupComplete }\">\n            <ul class=\"list-inline\">\n                <li class=\"group-cell\">\n                    <h5><span v-show=\"setupComplete\"><span class=\"glyphicon glyphicon-ok\"></span></span> Setup </h5>\n                </li>\n\n                <li>\n                    Items <span class=\"badge\">{{ numberItems }}</span>\n                </li>\n\n                <li>\n                    Max total score <span class=\"badge\">{{ perfectScore }}</span>\n                </li>\n                <li>\n                    Students <span class=\"badge\">{{ numberStudents }}</span>\n                </li>\n            </ul>\n        </li>\n\n\n        <li id=\"progressGrading\">\n            <ul class=\"list-inline\" v-bind:class=\"{'bg-success' : gradingComplete }\">\n\n                <li class=\"group-cell\">\n                    <h5><span v-show=\"gradingComplete\"></span> <span class=\"glyphicon glyphicon-ok\"></span> Grading\n                    </h5>\n                </li>\n\n                <li>\n                    Graded <span class=\"badge\">{{ numberGraded }}</span>\n                </li>\n\n                <li>\n                    Time grading <span class=\"badge\">{{ timeGrading }}</span>\n                </li>\n            </ul>\n        </li>\n\n        <li id=\"progressReviewing\">\n            <ul class=\"list-inline\">\n                <li class=\"group-cell\">\n                    <h5>\n                        <span v-show=\"reviewingComplete\">\n                            <span class=\"glyphicon glyphicon-ok\"></span>\n                        </span> Reviewing\n                    </h5>\n                </li>\n\n            </ul>\n        </li>\n\n    </ul>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\nul {\n\n}\n\n"] = false
+    __vueify_insert__.cache["/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68188,7 +68297,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4476cea1", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
 'use strict';
@@ -68277,7 +68386,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -68385,7 +68494,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component row\">\n    <div class=\"col-lg-2\">\n        <h4>{{headingName}}</h4>\n    </div>\n\n    <div class=\"col-lg-6\">\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n    </div>\n\n    <div class=\"col-lg-2 text-right\">\n        <settings-button :index=\"0\"></settings-button>\n    </div>\n\n</div>\n\n\n<!--<div id=\"examNameArea\" class=\"exam-main-component\">-->\n<!--<div class=\"input-group input-group-lg\">-->\n\n<!--<div class=\"input-group-addon\"-->\n<!--id=\"basic-addon1\"-->\n<!--&gt;-->\n<!--{{headingName}}-->\n\n\n<!--</div>-->\n\n<!--<input type=\"text\"-->\n<!--class=\"form-control input-lg\"-->\n<!--id=\"privateName\"-->\n<!--name=\"privateName\"-->\n<!--aria-describedby=\"basic-addon1\"-->\n<!--v-bind:placeholder=\"placeHolders.privateName\"-->\n<!--v-model=\"privateName\"-->\n<!--/>-->\n\n<!--<div class=\"input-group-btn\">-->\n<!--<settings-button :index=\"0\"></settings-button>-->\n\n<!--&lt;!&ndash;<button class=\"btn btn-primary\"&ndash;&gt;-->\n<!--&lt;!&ndash;v-on:click=\"toggleExamProperties\"&ndash;&gt;-->\n<!--&lt;!&ndash;&gt;<span class=\"glyphicon glyphicon-cog\"></span></button>&ndash;&gt;-->\n<!--</div>-->\n\n<!--</div>-->\n<!--</div>-->\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examNameArea\" class=\"exam-main-component\">\n    <div class=\"input-group\">\n        <input type=\"text\" class=\"form-control input-lg\" id=\"privateName\" name=\"privateName\" aria-describedby=\"basic-addon1\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"privateName\">\n        <div class=\"input-group-btn\">\n            <settings-button :index=\"0\"></settings-button>\n        </div>\n    </div>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68400,9 +68509,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":382,"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68460,13 +68569,13 @@ exports.default = {
     methods: {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<input type=\"text\" class=\"itemMain form-control\" aria-describedby=\"basic-addon2\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<input type=\"text\" class=\"item-name-component form-control input-lg\" aria-describedby=\"basic-addon2\" v-bind:placeholder=\"placeHolders.privateName\" v-model=\"name\">\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n"] = false
+    __vueify_insert__.cache["/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68475,7 +68584,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -68555,7 +68664,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
@@ -68693,7 +68802,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -68793,9 +68902,649 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\nh4 {\n  text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n\n/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * These make an item into a child of another or makes them into siblings.
+ *
+ * @type {{template: *, props: Array, data: module.exports.data, computed: {}, methods: {}, directives: {}, events: {}, ready: module.exports.ready}}
+ */
+exports.default = {
+
+    props: ['index', 'type' //promote, demote
+    ],
+
+    data: function data() {
+        return {
+            icons: {
+                leftArrow: 'glyphicon glyphicon-arrow-left',
+                rightArrow: 'glyphicon glyphicon-arrow-right'
+                // leftArrow: 'glyphicon glyphicon-chevron-left',
+                // rightArrow: 'glyphicon glyphicon-chevron-right'
+            }
+        };
+    },
+
+    computed: {
+
+        /**
+         * Returns the appropriate icon
+         */
+        arrow: function arrow() {
+            switch (this.type) {
+                case 'promote':
+                    return this.icons.leftArrow;
+                    break;
+
+                case 'demote':
+                    return this.icons.rightArrow;
+                    break;
+
+                default:
+                    return '';
+            }
+        }
+    },
+
+    methods: {
+        showLeft: function showLeft() {
+            var item = this.$store.getters.getItemByIndex(this.index);
+            //  if(item.depth > 0){
+            return true;
+            //}
+            //return false;
+        },
+
+        goTo: function goTo() {
+            switch (this.type) {
+                case 'promote':
+                    return this.promoteItem();
+                    break;
+
+                case 'demote':
+                    return this.demoteItem();
+                    break;
+
+                default:
+            }
+        },
+
+        /**
+         * Requests that the item be made into a sibling of its former parent
+         *
+         */
+        promoteItem: function promoteItem() {
+            console.log('CALLED', 'promoteItem');
+            var pl = _Payload2.default.factory({ index: this.index });
+            this.$store.dispatch(aTypes.promoteItem, pl);
+        },
+
+        /**
+         * Requests that an item be made a child of another
+         */
+        demoteItem: function demoteItem() {
+            console.log('CALLED', 'demoteItem');
+            var pl = _Payload2.default.factory({ index: this.index });
+            this.$store.dispatch(aTypes.demoteItem, pl);
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        //            console.log( 'itemNav ready ', this.type );
+    }
+};
+
+/**
+ * Created by adam on 2/17/17.
+ */
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"item-nav-component \" v-on:click=\"goTo\">\n    <div class=\"nav-arrow text-center\">\n        <span v-bind:class=\"arrow\"></span>\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-989fbf16", module.exports)
+  } else {
+    hotAPI.update("_v-989fbf16", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    props: [],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {},
+
+    methods: {
+        /**
+         * Called on click.
+         * It in turn calls a handler
+         */
+        addItem: function addItem() {
+            console.log('CALLED', 'addItem');
+            this.sendRequest();
+        },
+
+        /**
+         * This sends the actual request(s)
+         */
+        sendRequest: function sendRequest() {
+            this.$store.dispatch(aTypes.createItem);
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        console.log('itemAddButton', 'ready', this.$store);
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"btn btn-info\" v-on:click=\"addItem\">\n    <span class=\"glyphicon glyphicon-plus\"></span>\n    <span class=\"hidden-md\"> Add item</span>\n</button>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-4850f9d2", module.exports)
+  } else {
+    hotAPI.update("_v-4850f9d2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../store/action-types":389,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = require('../../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var bootbox = require('bootbox');
+
+exports.default = {
+    props: ['index', 'id'],
+
+    computed: {
+        visible: function visible() {
+            return this.$store.getters.isDeleteVisible;
+        }
+    },
+
+    methods: {
+        isVisible: function isVisible() {
+            return this.$store.getters.isDeleteVisible;
+        },
+
+        /**
+         * Called when the button is clicked. Handles
+         * the request for deletion.
+         */
+        remove: function remove() {
+            console.log('deleteItem pressed');
+            var me = this;
+            bootbox.dialog({
+                className: 'confirmationModal',
+                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all scores associated with the item </p>",
+                title: "Delete",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm bnt-primary cancelQuestionDelete",
+                        callback: function callback() {}
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                        className: "btn-danger btn-sm confirmQuestionDelete",
+                        callback: function callback() {
+                            me.sendRequest();
+                        }
+                    }
+                }
+            });
+        },
+
+        /**
+         * This sends the actual request(s) for deletion
+         */
+        sendRequest: function sendRequest() {
+            this.$store.dispatch(aTypes.deleteItem, { index: this.index, id: this.id });
+        }
+    },
+
+    mounted: function mounted() {}
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"deleteButton btn btn-danger btn-md js-remove \" v-on:click=\"remove\">\n    <span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span> Delete\n</button>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-acab4af0", module.exports)
+  } else {
+    hotAPI.update("_v-acab4af0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../store/action-types":389,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = require('../../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _actionTypes = require('../../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * This is the indicator which tells the user whether the thing it
+ * is attached to is visible to the public.
+ * On being clicked it emits an event and listens for a request
+ * to change from public to hidden or vice versa.
+ *
+ * This can be used for anything potentially public.
+ * That is, it can be used by:
+ *      Exam
+ *      ExamName
+ *      Question
+ *      QuestionName
+ *      Element
+ *      ElementName
+ *      Comment
+ *
+ * Created by adam on 2/17/17.
+ */
+exports.default = {
+
+    props: ['index'],
+
+    data: function data() {
+        return {
+
+            styles: {
+                public: 'bg-warning',
+                private: 'bg-default'
+            },
+
+            icons: {
+                eye: {
+                    open: 'glyphicon glyphicon-eye-open',
+                    close: 'glyphicon glyphicon-eye-close'
+                }
+            }
+        };
+    },
+
+    computed: {
+        publicity: function publicity() {
+            var item = this.$store.getters.getItemByIndex(this.index);
+            if (typeof item !== 'undefined') {
+                return item.isPublic();
+            }
+        },
+
+        /**
+         * This alters the styling of the indicator
+         * to help highlight the possibility that others
+         * may see the thing it is attached to
+         * @returns {string}
+         */
+        styling: function styling() {
+            return this.publicity ? this.styles.public : this.styles.private;
+        },
+
+        icon: function icon() {
+            if (this.publicity) {
+                return this.icons.eye.open;
+            }
+            return this.icons.eye.close;
+        }
+    },
+
+    methods: {
+        /**
+         * Returns boolean for whether the thing
+         * this is attached to is visible to students
+         * (or potentially others, if there was a use).
+         * @returns {*}
+         */
+        isPublic: function isPublic() {
+            var item = this.$store.getters.getItemByIndex(this.index);
+
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if (typeof item !== 'undefined') {
+                return item.isPublic();
+            }
+        },
+
+        /**
+         * Returns boolean for whether the thing
+         * this is attached to is hidden from students
+         * (or potentially others, if there was a use).
+         * Just a semantically useful shortcut
+         * @returns {*}
+         */
+        isPrivate: function isPrivate() {
+            return !this.isPublic;
+        },
+
+        /**
+         * Called when the indicator is clicked.
+         * It subsequently calls other functions to
+         * do the work.
+         */
+        togglePublic: function togglePublic() {
+            //                console.log( 'CALLED', 'togglePublic' );
+            this.$store.dispatch(aTypes.toggleItemPublic, _Payload2.default.factory({ index: this.index }));
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<button type=\"button\" class=\"public-indicator btn btn-primary btn-md\" v-bind:class=\"{'btn-warning': publicity}\" v-on:click=\"togglePublic\">\n    <span v-bind:class=\"icon\"></span> Visible in student feedback\n</button>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-93f668f6", module.exports)
+  } else {
+    hotAPI.update("_v-93f668f6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = require('../../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _actionTypes = require('../../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Handles showing and hiding the item settings pane
+ *
+ * Created by adam on 2/18/17.
+ */
+exports.default = {
+
+    props: ['index'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {},
+
+    methods: {
+        addOlderSibling: function addOlderSibling() {
+            this.$store.dispatch(aTypes.addOlderSibling, _Payload2.default.factory({ index: this.index }));
+        },
+
+        addYoungerSibling: function addYoungerSibling() {
+            this.$store.dispatch(aTypes.addYoungerSibling, _Payload2.default.factory({ index: this.index }));
+        },
+
+        toggleVis: function toggleVis() {
+            if (this.index === 0) {
+                //exam case
+                this.$store.commit(mTypes.toggleExamSettings);
+            } else if (this.index > 0) {
+                //item cases
+                var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.index);
+                if (isVis) {
+                    //if comes back true, we know that currently visible
+                    //call the mutation with our index
+                    this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({ index: this.index }));
+                } else {
+
+                    //call the mutation to show with our index
+                    this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({ index: this.index }));
+                    this.$router.push({ name: 'item-detail', params: { index: this.index, active: 'details' } });
+                }
+            }
+        }
+    },
+
+    mounted: function mounted() {}
+
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"input-group-btn\">\n    <button type=\"button\" class=\"btn settings-button btn-info\" v-on:click=\"toggleVis\">\n        <span class=\"glyphicon glyphicon-cog\"></span>\n    </button>\n\n    <button type=\"button\" class=\"addSibling btn btn-warning\" v-on:click=\"addOlderSibling\">\n        <span class=\"glyphicon glyphicon-chevron-up\"></span>\n    </button>\n\n    <button type=\"button\" class=\"addSibling btn btn-warning \" v-on:click=\"addYoungerSibling\">\n        <span class=\"glyphicon glyphicon-chevron-down\"></span>\n    </button>\n</div>\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-3651987f", module.exports)
+  } else {
+    hotAPI.update("_v-3651987f", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = require('../../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Comment = require('../../../models/Comment');
+
+var _Comment2 = _interopRequireDefault(_Comment);
+
+var _mutationTypes = require('../../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    props: ['index', 'valence'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {
+        valences: function valences() {
+            return _Comment2.default.valences;
+        },
+
+        active: function active() {
+            return this.$parent.displayedValence === this.valence;
+        },
+
+        classObject: function classObject() {
+            return {
+                'btn-info': this.active,
+                'btn-primary': !this.active
+            };
+        }
+
+    },
+
+    methods: {
+        /**
+         * Called when the valence button is clicked
+         */
+        setValence: function setValence(valence) {
+            this.$parent.changeDisplayedValence(valence);
+
+            //            this.$store.commit(mTypes.setElementComment, Payload.factory({
+            //            index : this.index,
+            //                index: this.index,
+            //                updateProp: name,
+            //                updateVal: value
+            //            }))
+            //                return this.sendRequest();
+        },
+
+        /**
+         * This sends the actual request(s)
+         */
+        sendRequest: function sendRequest() {
+            //  return emit('please-change-valence', this.valence);
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"valence-buttons form-group \">\n        <b-button-group size=\"sm\">\n        <b-button variant=\"primary\" v-on:click=\"setValence(valence)\" v-for=\"valence in valences\">{{valence}}</b-button>\n    </b-button-group>\n\n</div>\n\n    <!--<div class=\"btn-group\" role=\"group\">-->\n\n    <!--<button type=\"button\" class=\"btn btn-small valence-button\"-->\n    <!--v-bind:class=\"classObject\"-->\n    <!--v-on:click=\"selectValence\"-->\n    <!--&gt;{{ valence }}</button>-->\n<!--</div>-->\n\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-7487aa0e", module.exports)
+  } else {
+    hotAPI.update("_v-7487aa0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":386,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h4 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68885,13 +69634,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component row\">\n    <div class=\"col-md-1\"><h4># {{ index }}</h4></div>\n    <div class=\"col-md-6\">\n        <item-name :index=\"index\"></item-name>\n    </div>\n    <div class=\"col-md-1\">\n        <settings-button :index=\"index\"></settings-button>\n    </div>\n</div>\n\n<!--<div class=\"input-group\">-->\n<!--<div class=\"input-group-addon\"-->\n<!--id=\"basic-addon2\"-->\n<!--&gt;# {{ index }}-->\n<!--<div class=\"input-group-addon\" id=\"itemnum\">-->\n<!--<item-number :index=\"index\"></item-number>-->\n<!--</div>-->\n\n\n<!--<div class=\"input-group-btn\">-->\n<!--<settings-button :index=\"index\"></settings-button>-->\n\n<!--<public-indicator :index=\"index\"></public-indicator>-->\n<!--</div>-->\n<!--</div>-->\n<!--</div>-->\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component \">\n    <div class=\"row\">\n        <div class=\"col-md-2 col-lg-2\">\n            <h4># {{ index }}</h4>\n        </div>\n        <div class=\"col-md-10 col-lg-10\">\n            <div class=\"input-group\">\n                <item-name :index=\"index\"></item-name>\n\n                    <settings-button :index=\"index\"></settings-button>\n            </div>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 2, stdin */\nh4 {\n  text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n\n/*.itemName {*/\n/*margin-bottom: 0;*/\n/*margin-top: 0;*/\n/*}*/\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h4 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68900,456 +69649,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 5, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 10, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = require('../../models/Item');
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = require('../../store/getter-types');
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//    import deleteButton from './buttons.item.delete.component.vue'
-//    import itemEditPane from './item.edit-pane.component.vue'
-//    import depthControl from './buttons.depth-control.component.vue'
-//    import itemMain from './item.main.component.vue'
-
-exports.default = {
-
-    props: ['index'],
-
-    data: function data() {
-        return {
-
-            defaults: {
-                depth: null,
-                index: null,
-                type: null,
-                //how much one unit of depth will be offset
-                tabOffset: 2
-            },
-            isCommented: false,
-            /**
-             * Whether students can see the name of the item
-             */
-            isNamePublic: false
-        };
-    },
-
-    //        components : {
-    //            'item-settings': itemEditPane,
-    //            'delete-item-button': deleteButton,
-    //            'depth-control': depthControl,
-    //            'item-name': itemMain,
-    //
-    //        },
-
-    computed: {
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        visible: function visible() {
-            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-        },
-
-        divId: function divId() {
-            return "item-card-" + this.index;
-        },
-
-        /**
-         * Returns the bootstrap class for the depth
-         */
-        offsetClass: function offsetClass() {
-            if (this.depth > 0) {
-                var amt = this.defaults.tabOffset * this.depth;
-                var col = "col-md-offset-" + amt;
-                return col;
-            }
-        },
-
-        depth: {
-            get: function get() {
-                //                    let item = this.$store.getters.getItemById(this.id);
-                var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item !== 'undefined') {
-                    return item.depth;
-                }
-            },
-            set: function set(v) {
-                //                    let item = this.$store.getters.getItemById(this.id);
-                var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item !== 'undefined') {
-                    this.$store.commit(_Payload2.default.factory({
-                        //                            id: this.id,
-                        index: this.index,
-                        updateProp: 'depth',
-                        updateVal: v
-                    }));
-                }
-            }
-        },
-
-        type: {
-            get: function get() {
-                return this.defaults.index;
-            },
-            set: function set() {}
-        }
-    },
-
-    methods: {
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleCommentsOn: function toggleCommentsOn() {
-            console.log('CALLED', 'toggleCommentsOn');
-            this.isCommented = !this.isCommented;
-        },
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleNameVisibility: function toggleNameVisibility() {
-            console.log('CALLED', 'toggleNameVisibility');
-            this.isNamePublic = !this.isNamePublic;
-        }
-
-    },
-
-    directives: {},
-
-    events: {
-        'display-settings': function displaySettings() {
-            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
-        }
-    },
-
-    mounted: function mounted() {}
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\" v-bind:data-id=\"index\">\n\n    <item-main :index=\"index\"></item-main>\n\n    <div class=\"row\" v-show=\"visible\">\n        <item-edit-pane :index=\"index\"></item-edit-pane>\n    </div>\n\n    <div class=\"row\" v-show=\"visible\">\n        <div class=\"col-md-2 text-left\">\n            <delete-item-button :index=\"index\"></delete-item-button>\n        </div>\n\n        <div class=\"col-md-9 text-right\">\n            <public-indicator :index=\"index\"></public-indicator>\n        </div>\n    </div>\n</div>\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 2, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 5, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 10, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-274cbdc8", module.exports)
-  } else {
-    hotAPI.update("_v-274cbdc8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 5, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = require('../../store/getter-types');
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = require('../../models/Item');
-
-var _Item2 = _interopRequireDefault(_Item);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-//    import itemCard from './itemCards.card.component.vue'
-//    import itemAddButton from './buttons.item.add.component.vue'
-
-//For Vue.js 2.0
-// var draggable = require('vuedraggable')
-
-var Sortable = require('sortablejs');
-
-/**
- * Holds the item cards. Serves as their outer parent
- *
- * Created by adam on 2/19/17.
- */
-exports.default = {
-
-    props: [],
-    //        components: {
-    //            'item-card': itemCard,
-    //            'item-add-button': itemAddButton,
-    //        },
-    data: function data() {
-        return {};
-    },
-
-    computed: {
-        //Return everything in the items tree execpt the root
-        //The root is the exam. It gets special treatment.
-        items: function items() {
-            var orig = this.$store.getters[gTypes.getAllItems];
-            //filter out the exam and return everything else
-            return orig.filter(function (obj) {
-                return obj.index > 0;
-            });
-        },
-
-        actualOrder: function actualOrder() {
-            var a = [];
-            var f = [];
-            var c = document.getElementsByClassName("item-card-component");
-            for (var i = 0; i < c.length; i++) {
-                window.console.log('itemCards.list.component', 'actualOrder', 89, c[i]);
-                a.push(c[i].getAttribute('id'));
-            }
-            _.forEach(a, function () {
-                var d = _.split(this, '-', 3);
-                f.push(d[2]);
-            });
-            return f;
-        },
-
-        order: function order() {
-            var orig = this.$store.getters[gTypes.getAllItems];
-            var ids = [];
-            for (var i = 1; i < orig.length; i++) {
-                ids.push(orig[i].id);
-            }
-            return ids;
-            //
-            //                return orig.filter(( obj ) => {
-            //                    return obj.index > 0;
-            //                }).id;
-            //
-            //
-            //                let i = 0;
-            //                let ids = [];
-            //                _.forEach(orig, function ( )  {
-            //                    window.console.log('itemCards.list.component', '', 90, this);
-            //                   ids.push(this.id);
-            //                });
-            //                return ids;
-            //                //filter out the exam and return everything else
-            //                return orig.filter(( obj ) => {
-            //                    if (obj.index > 0){
-            //                        ids.push(obj.id);
-            //                        window.console.log('itemCards.list.component', '', 93, ids);
-            ////                        i += 1;
-            //                        return true;
-            //                    }
-            //                });
-
-
-            //
-            //                let cards = document.getElementsByClassName('item-card-component');
-            //                let out = [];
-            //                for (let i=0; i<cards.length; i++){
-            //                    let did = cards[i].getAttribute('data-id');
-            //                    out.push(did);
-            //                    window.console.log('itemCards.list.component', 'order', 88, did);
-            //                }
-            //return out;
-            //                let orig = this.$store.getters[ gTypes.getAllItems ];
-            //                //filter out the exam and return everything else
-            //                return orig.filter(( obj ) => {
-            //                    return obj.index > 0;
-            //                });
-        },
-
-        numberOfItems: function numberOfItems() {
-            return this.$store.getters.getItemCount;
-        }
-
-    },
-
-    methods: {
-        /**
-         * This creates a new default item and pushes
-         * onto stack
-         * later this should be able to accept positional
-         * and type info
-         */
-        addItem: function addItem() {
-            console.log('cardList.component', 'methods', 'setItem', this.$store);
-            this.$store.dispatch(aTypes.createItem);
-            window.console.log('itemCards.list.component', 'addItem', 116, this.order);
-        }
-
-    },
-
-    directives: {},
-
-    events: {
-        'add-item': function addItem() {
-            console.log('cardList', 'CAUGHT', 'add-item');
-            this.addItem();
-        }
-    },
-
-    mounted: function mounted() {
-        //            this.addItem();
-        var me = this;
-        try {
-            var qList = document.getElementById('card-list');
-            var editableList = Sortable.create(qList, {
-                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                animation: 150,
-                handle: '.handle', // Drag handle selector within list items
-                ghostClass: "sortable-ghost", // Class name for the drop placeholder
-                dataIdAttr: 'data-id',
-
-                store: {
-                    /**
-                     * Get the order of elements. Called once during initialization.
-                     * @param   {Sortable}  sortable
-                     * @returns {Array}
-                     */
-                    get: function get(sortable) {
-                        //                            var order = localStorage.getItem(sortable.options.group.name);
-                        //                            return order ? order.split('|') : [];
-                    },
-
-                    /**
-                     * Save the order of elements. Called onEnd (when the item is dropped).
-                     * @param {Sortable}  sortable
-                     */
-                    set: function set(sortable) {
-                        window.console.log('itemCards.list.component', 'set', 141, sortable.childNodes);
-                        var order = sortable.toArray();
-                        window.console.log('itemCards.list.component', 'set', 142, order);
-                    }
-                },
-
-                onSort: function onSort(evt) {
-                    window.console.log('itemCards.list.component', 'onSort', 148, evt);
-                    me.$store.commit(mTypes.updateOrder);
-                },
-
-                setData: function setData( /** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
-                    dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
-                },
-
-                // Element is chosen
-                onChoose: function onChoose( /**Event*/evt) {
-                    evt.oldIndex; // element index within parent
-                },
-
-                // Element dragging started
-                onStart: function onStart( /**Event*/evt) {
-                    evt.oldIndex; // element index within parent
-                },
-
-                // Element dragging ended
-                onEnd: function onEnd( /**Event*/evt) {
-                    evt.oldIndex; // element's old index within parent
-                    evt.newIndex; // element's new index within parent
-                },
-
-                // Element is dropped into the list from another list
-                onAdd: function onAdd( /**Event*/evt) {
-                    var itemEl = evt.item; // dragged HTMLElement
-                    evt.from; // previous list
-                    // + indexes from onEnd
-                },
-
-                // Changed sorting within list
-                onUpdate: function onUpdate( /**Event*/evt) {
-                    var itemEl = evt.item; // dragged HTMLElement
-                    // + indexes from onEnd
-                },
-
-                // Element is removed from the list into another list
-                onRemove: function onRemove( /**Event*/evt) {
-                    // same properties as onUpdate
-                },
-
-                // Attempt to drag a filtered element
-                onFilter: function onFilter( /**Event*/evt) {
-                    var itemEl = evt.item; // HTMLElement receiving the `mousedown|tapstart` event.
-                },
-
-                // Event when you move an item in the list or between lists
-                onMove: function onMove( /**Event*/evt, /**Event*/originalEvent) {
-                    // Example: http://jsbin.com/tuyafe/1/edit?js,output
-                    evt.dragged; // dragged HTMLElement
-                    evt.draggedRect; // TextRectangle {left, top, right и bottom}
-                    evt.related; // HTMLElement on which have guided
-                    evt.relatedRect; // TextRectangle
-                    originalEvent.clientY; // mouse position
-                    // return false; — for cancel
-                },
-
-                // Called when creating a clone of element
-                onClone: function onClone( /**Event*/evt) {
-                    var origEl = evt.item;
-                    var cloneEl = evt.clone;
-                }
-
-            });
-        } catch (e) {
-            window.console.log(e);
-        }
-
-        console.log('cardList ready');
-    }
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n\n    <div class=\"row card-list\">\n        <!--<draggable v-model='items'>-->\n        <ul id=\"card-list\" class=\"list-group\">\n            <li class=\"item-cards list-group-item  handle\" v-for=\"(item, index) in items\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-7\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n        <div class=\"col-md-5\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>-->\n</div>\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 5, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-150522d6", module.exports)
-  } else {
-    hotAPI.update("_v-150522d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69405,13 +69705,14 @@ exports.default = {
         },
 
         tabActive: function tabActive() {},
+        //
+        //            /**
+        //             * Returns true if the settings pane for this item should be displayed
+        //             */
+        //            visible: function () {
+        //                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
+        //            },
 
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        visible: function visible() {
-            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-        },
 
         routeToExamDetails: function routeToExamDetails() {
             return "/panel-exam-detail/" + this.index;
@@ -69479,7 +69780,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-show=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-tabs\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\" active=\"\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\" active=\"\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\">\n            <span v-show=\"demotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </span>\n\n        </div>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"nav-edit-tabs-component\">\n    <div class=\"row\">\n        <div class=\"col-md-1\" v-show=\"promotable\">\n            <depth-control type=\"promote\" :index=\"index\"></depth-control>\n        </div>\n\n        <div class=\"col-md-10\">\n            <!-- Nav tabs -->\n            <ul class=\"nav nav-tabs\" role=\"tablist\">\n\n                <li v-if=\"isExam\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToExamDetails\">Details</router-link>\n                </li>\n                <li v-else=\"\" role=\"presentation\">\n                    <router-link v-bind:to=\"routeToItemDetails\">Details</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link :to=\"{name: 'comments', params: {index : index} }\">Feedback</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToStats\">Stats</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToHistory\">History</router-link>\n                </li>\n\n                <li role=\"presentation\">\n                    <router-link v-bind:to=\"routeToNotes\">Notes</router-link>\n                </li>\n            </ul>\n        </div>\n        <div class=\"col-md-1\">\n            <span v-show=\"demotable\">\n            <depth-control type=\"demote\" :index=\"index\"></depth-control>\n        </span>\n\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69494,200 +69795,18 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = require('../../store/getter-types');
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _panelExamDetailComponent = require('./panel.exam-detail.component.vue');
-
-var _panelExamDetailComponent2 = _interopRequireDefault(_panelExamDetailComponent);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-// Vue.component('panel-exam-detail', panelExamDetail)
-
-exports.default = {
-
-    props: ['index', 'exam-id'],
-
-    data: function data() {
-        return {};
-    },
-
-    components: {
-        panelExamDetail: _panelExamDetailComponent2.default
-    },
-
-    computed: {
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        visible: function visible() {
-            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-        }
-
-    },
-
-    methods: {
-        getExam: function getExam() {
-            //  return this.$store.getters[gTypes.getActiveExamObj];
-        }
-    },
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        //            console.log('exam-edit-pane ready');
-    }
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"exam-detail-pane\">\n    <edit-tabs :index=\"index\" :is-exam=\"true\"></edit-tabs>\n    <div class=\"tab-panel-area\">\n        <router-view name=\"examPanels\"></router-view>\n    </div>\n</div>\n\n"
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-484eb3d4", module.exports)
-  } else {
-    hotAPI.update("_v-484eb3d4", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
-  }
-})()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"./panel.exam-detail.component.vue":374,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
-var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("\n\n")
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = require('../../store/getter-types');
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Item = require('../../models/Item');
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-/**
- * This holds all the tools for editing an item. It drops down
- * when called and has lots of tabs etc
- *
- * Created by adam on 2/18/17.
- */
-exports.default = {
-    props: ['index', 'is-exam'],
-
-    data: function data() {
-        return {
-            defaults: {
-                types: ['question', 'element']
-            },
-            // currentView: 'item-settings-question',
-            tabs: ['details', 'comments', 'stats', 'history', 'notes'],
-            hiding: true
-
-        };
-    },
-
-    computed: {
-
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        visible: function visible() {
-            return this.$store.getters[gTypes.isItemSettingsVisible](this.index);
-        }
-
-    },
-
-    methods: {
-        show: function show() {
-            //                console.log('itemSetting', 'CALLED', 'show');
-            this.$store.commit(mTypes.showItemSettings(_Payload2.default.factory({ index: this.index })));
-        },
-        hide: function hide() {
-            //                console.log('itemSetting', 'CALLED', 'hide');
-            this.$store.commit(mTypes.hideItemSettings(_Payload2.default.factory({ index: this.index })));
-        }
-
-    },
-
-    directives: {},
-
-    events: {
-        'collapse-all': function collapseAll() {
-            //            window.console.log('pane.edit-item.component', 'collapse-all', 85,);
-            this.hide();
-        },
-        'display-settings': function displaySettings() {
-            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
-            //this.toggle();
-        }
-    },
-
-    mounted: function mounted() {
-        //            window.console.log('pane.edit-item.component', 'mounted', 141, this.index);
-    }
-
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-edit-pane \">\n\n        <edit-tabs :index=\"index\"></edit-tabs>\n\n        <!-- Tab panels -->\n        <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n        </div>\n</div>\n\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.dispose(function () {
-    __vueify_insert__.cache["\n\n"] = false
-    document.head.removeChild(__vueify_style__)
-  })
   if (!module.hot.data) {
     hotAPI.createRecord("_v-31c02e0a", module.exports)
   } else {
     hotAPI.update("_v-31c02e0a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":384,"../../models/Payload":385,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"vue":347,"vue-hot-reload-api":344}],374:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69716,7 +69835,7 @@ var _getterTypes = require('../../store/getter-types');
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _buttonsValenceComponent = require('./buttons.valence.component.vue');
+var _buttonsValenceComponent = require('./input/buttons.valence.component.vue');
 
 var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
 
@@ -69861,7 +69980,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":381,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"./buttons.valence.component.vue":359,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],374:[function(require,module,exports){
+},{"../../models/Comment":382,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69997,7 +70116,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"panel-exam-detail  \">\n    <div class=\"row\">\n        <div class=\"col-md-11\">\n\n            <!-- name input -->\n            <div class=\"input-group\">\n                <span class=\"input-group-addon\" id=\"basic-addon1\">Public Assignment Name</span>\n                <input type=\"text\" class=\"form-control input-lg\" id=\"publicName\" name=\"publicName\" aria-describedby=\"basic-addon1\" v-model=\"publicName\" v-bind:placeholder=\"placeholders.publicName\">\n            </div>\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n\n            <div class=\"input-group\">\n                <div class=\"input-group-btn\">\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Term <span class=\"caret\"></span></button>\n                    <ul class=\"dropdown-menu\">\n                        <li v-for=\"term in terms\">\n                            <a href=\"#\">{{term}}</a>\n                        </li>\n                    </ul>\n                </div><!-- /btn-group -->\n                <input type=\"text\" class=\"form-control\" aria-label=\"term-text\" v-model=\"term\">\n            </div><!-- /input-group -->\n\n            <!--<b-dropdown v-bind:text=\"term\"-->\n            <!--variant=\"primary\"-->\n\n            <!--&gt;-->\n            <!--<b-dropdown-item href=\"#\">Winter</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Spring</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Summer</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Fall</b-dropdown-item>-->\n            <!--</b-dropdown>-->\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n        <!--<list-dropdown type=\"term\"></list-dropdown>-->\n\n    </div>\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n\n            <div class=\"input-group\">\n                <div class=\"input-group-btn\">\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Year <span class=\"caret\"></span></button>\n                    <ul class=\"dropdown-menu\">\n                        <li v-for=\"year in years\">\n                            <a href=\"#\">{{year}}</a>\n                        </li>\n                    </ul>\n                </div><!-- /btn-group -->\n                <input type=\"number\" class=\"form-control\" aria-label=\"year-text\" v-model=\"year\">\n            </div><!-- /input-group -->\n        </div>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!--This is the hideable area via which we edit the exam's properties-->\n<div class=\"panel-exam-detail-component  \">\n    <div class=\"row\">\n        <div class=\"col-md-11\">\n\n            <!-- name input -->\n            <div class=\"input-group\">\n                <span class=\"input-group-addon\" id=\"basic-addon1\">Public Assignment Name</span>\n                <input type=\"text\" class=\"form-control input-lg\" id=\"publicName\" name=\"publicName\" aria-describedby=\"basic-addon1\" v-model=\"publicName\" v-bind:placeholder=\"placeholders.publicName\">\n            </div>\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n\n            <div class=\"input-group\">\n                <div class=\"input-group-btn\">\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Term <span class=\"caret\"></span></button>\n                    <ul class=\"dropdown-menu\">\n                        <li v-for=\"term in terms\">\n                            <a href=\"#\">{{term}}</a>\n                        </li>\n                    </ul>\n                </div><!-- /btn-group -->\n                <input type=\"text\" class=\"form-control\" aria-label=\"term-text\" v-model=\"term\">\n            </div><!-- /input-group -->\n\n            <!--<b-dropdown v-bind:text=\"term\"-->\n            <!--variant=\"primary\"-->\n\n            <!--&gt;-->\n            <!--<b-dropdown-item href=\"#\">Winter</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Spring</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Summer</b-dropdown-item>-->\n            <!--<b-dropdown-item href=\"#\">Fall</b-dropdown-item>-->\n            <!--</b-dropdown>-->\n        </div>\n\n        <div class=\"col-md-1\">\n            <span class=\"glyphicon glyphicon-question-sign\"></span>\n        </div>\n        <!--<list-dropdown type=\"term\"></list-dropdown>-->\n\n    </div>\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n\n            <div class=\"input-group\">\n                <div class=\"input-group-btn\">\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Year <span class=\"caret\"></span></button>\n                    <ul class=\"dropdown-menu\">\n                        <li v-for=\"year in years\">\n                            <a href=\"#\">{{year}}</a>\n                        </li>\n                    </ul>\n                </div><!-- /btn-group -->\n                <input type=\"number\" class=\"form-control\" aria-label=\"year-text\" v-model=\"year\">\n            </div><!-- /input-group -->\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70012,7 +70131,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70067,7 +70186,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70097,6 +70216,7 @@ exports.default = {
 
     data: function data() {
         return {
+            active: this.$route.params.index,
             index: this.$route.params.index,
             placeholders: {
                 questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
@@ -70106,6 +70226,7 @@ exports.default = {
     },
 
     computed: {
+        isDetailTabActive: function isDetailTabActive() {},
 
         questionText: {
             get: function get() {
@@ -70155,7 +70276,7 @@ exports.default = {
  * Created by adam on 2/19/17.
  */
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Used by \"edit_question\" to hold fields and buttons for an individual question -->\n<div class=\"item-settings-detail-component\">\n\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <item-number :index=\"index\"></item-number>\n        </div>\n\n        <div class=\"col-md-6\">\n\n            <max-score :index=\"index\"></max-score>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"question-text-area col-md-12\">\n            <div class=\"form-group\">\n                        <textarea class=\"question-text form-control\" rows=\"3\" placeholder=\"Enter the full question text (optional)\" v-model=\"questionText\"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<!-- Used by \"edit_question\" to hold fields and buttons for an individual question -->\n<div class=\"item-settings-detail-component\">\n\n    <div class=\"row\">\n\n        <div class=\"col-md-11\">\n            <item-number :index=\"index\"></item-number>\n\n            <max-score :index=\"index\"></max-score>\n\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"question-text-area col-md-12\">\n            <div class=\"form-group\">\n                        <textarea class=\"question-text form-control\" rows=\"3\" placeholder=\"Enter the full question text (optional)\" v-model=\"questionText\"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70170,7 +70291,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70238,7 +70359,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70293,9 +70414,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":385,"../../store/action-types":388,"../../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  /*background-color: #00496C;*/\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768);\n  /*background-color: #2b417f*/ }\n\n/* line 14, stdin */\n#examEditorHead {\n  /*background-color: #00496C;*/ }\n  /* line 17, stdin */\n  #examEditorHead .panel {\n    background-color: #FFFDF4; }\n\n/* line 23, stdin */\n#examEditorBody {\n  /*background-color: #00496C*/\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 33, stdin */\n.itemCol {\n  /*background-color: #FFFDF4;*/\n  border-color: #990002;\n  border-width: thin;\n  border-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/\n  /*border-width : 10px;*/\n  /*border-right-color: #990002;*/\n  /*border-right-width: thin;*/\n  /*border-right-style: solid;*/\n  /*border-left-color: #990002;*/\n  /*border-left-width: thin;*/\n  /*border-left-style: solid;*/\n  /*padding-left: 1px;*/\n  /*padding-right: 1px;*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 58, stdin */\n#infoCol {\n  /*background-color: #00496C;*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70360,13 +70481,13 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\" class=\"setup-main\">\n    <div id=\"examEditorHead\">\n        <div class=\"row\">\n            <div class=\"col-md-1 col-lg-2\"></div>\n            <div class=\" itemCol col-md-10 col-lg-8\">\n                <exam-main></exam-main>\n            </div>\n            <div class=\"col-md-1 col-lg-2\"></div>\n        </div>\n\n        <div class=\"row\">\n            <div class=\"col-md-1 col-lg-2\"></div>\n            <div class=\" itemCol col-md-10 col-lg-8\">\n                <exam-edit-pane :index=\"0\" :is-exam=\"true\"></exam-edit-pane>\n            </div>\n        </div>\n\n    </div>\n\n    <div id=\"examEditorBody\" class=\"row\">\n        <div class=\"col-md-1 col-lg-3\"></div>\n\n\n        <div class=\"itemCol col-md-10 col-lg-6\">\n            <card-list></card-list>\n        </div>\n\n        <div class=\"col-md-1 col-lg-3\"></div>\n\n    </div>\n    <div class=\"row\">\n        <div class=\"col-md-1 col-lg-3\"></div>\n        <div class=\"col-md-10 col-lg-6\"><p></p></div>\n        <div class=\"col-md-1 col-lg-3\"></div>\n    </div>\n\n    <div id=\"infoCol\" class=\"row\">\n        <div class=\"col-md-1 col-lg-3\"></div>\n        <div class=\"col-md-10 col-lg-6\">\n            <progress-dashboard></progress-dashboard>\n        </div>\n\n        <div class=\"col-md-1 col-lg-3\"></div>\n\n    </div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"examEditor\" class=\"setup-main\">\n    <div class=\"row\">\n        <div class=\"col-md-1 col-lg-2\"></div>\n\n        <div class=\"col-md-10 col-lg-8 graph-paper-background-small border-image-lft\">\n\n            <div id=\"examCardArea\" class=\"row\">\n                <div class=\"col-md-12 col-lg-12 \">\n                    <exam-card :index=\"0\"></exam-card>\n                </div>\n            </div>\n\n\n            <div id=\"itemCardArea\" class=\"row \">\n                <div class=\"col-md-1 col-lg-1\"></div>\n\n                <div class=\"itemCol col-md-10 col-lg-10\">\n                    <card-list></card-list>\n                </div>\n\n                <div class=\"col-md-1 col-lg-1\"></div>\n            </div>\n        </div>\n\n        <div class=\"col-md-1 col-lg-2\"></div>\n\n    </div>\n\n    <!--<div id=\"examEditorHead\" class=\"row\">-->\n    <!--<div class=\"col-md-1 col-lg-2\"></div>-->\n    <!--<div class=\"itemCol col-md-10 col-lg-8\">-->\n    <!--<exam-card></exam-card>-->\n    <!--</div>-->\n    <!--<div class=\"col-md-1 col-lg-2\"></div>-->\n    <!--</div>-->\n\n\n    <!--<div id=\"examEditorBody\" class=\"row\">-->\n    <!--<div class=\"col-md-1 col-lg-3\"></div>-->\n    <!--<div class=\"itemCol col-md-10 col-lg-6\">-->\n    <!--<card-list></card-list>-->\n    <!--</div>-->\n    <!--<div class=\"col-md-1 col-lg-3\"></div>-->\n    <!--</div>-->\n\n    <div class=\"row\">\n        <div class=\"col-md-1 col-lg-1\"></div>\n\n        <div class=\"col-md-10 col-lg-10\">\n            <progress-dashboard></progress-dashboard>\n        </div>\n\n        <div class=\"col-md-1 col-lg-1\"></div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/*@import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';*/\n/*#itemCol.well {*/\n/*background-color: #2b417f*/\n/*}*/\n/* line 7, stdin */\n.setup-main {\n  /*background-color: #00496C;*/\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768);\n  /*background-color: #2b417f*/ }\n\n/* line 14, stdin */\n#examEditorHead {\n  /*background-color: #00496C;*/ }\n  /* line 17, stdin */\n  #examEditorHead .panel {\n    background-color: #FFFDF4; }\n\n/* line 23, stdin */\n#examEditorBody {\n  /*background-color: #00496C*/\n  /*background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/images/styling/cover.png\") repeat-y scroll 0 0;*/\n  /*padding: 0 30px;*/\n  /*padding-left: 5%;*/\n  /*padding-right: 5%;*/\n  /*background-color: #385a7f*/ }\n\n/* line 33, stdin */\n.itemCol {\n  /*background-color: #FFFDF4;*/\n  border-color: #990002;\n  border-width: thin;\n  border-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/\n  /*border-width : 10px;*/\n  /*border-right-color: #990002;*/\n  /*border-right-width: thin;*/\n  /*border-right-style: solid;*/\n  /*border-left-color: #990002;*/\n  /*border-left-width: thin;*/\n  /*border-left-style: solid;*/\n  /*padding-left: 1px;*/\n  /*padding-right: 1px;*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 58, stdin */\n#infoCol {\n  /*background-color: #00496C;*/ }\n"] = false
+    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -70375,7 +70496,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../store":392,"../store/action-types":388,"../store/getter-types":390,"../store/mutation-types":405,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store":393,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
 'use strict';
 
 var _vue = require('vue/dist/vue.js');
@@ -70401,10 +70522,6 @@ var _dashboardProgressComponent2 = _interopRequireDefault(_dashboardProgressComp
 var _dashboardToolsComponent = require('./components/dashboard.tools.component.vue');
 
 var _dashboardToolsComponent2 = _interopRequireDefault(_dashboardToolsComponent);
-
-var _paneEditExamComponent = require('./components/pane.edit-exam.component.vue');
-
-var _paneEditExamComponent2 = _interopRequireDefault(_paneEditExamComponent);
 
 var _paneEditItemComponent = require('./components/pane.edit-item.component.vue');
 
@@ -70446,19 +70563,19 @@ var _itemMainComponent = require('./components/item.main.component.vue');
 
 var _itemMainComponent2 = _interopRequireDefault(_itemMainComponent);
 
-var _itemCardsListComponent = require('./components/itemCards.list.component.vue');
+var _cardListComponent = require('./components/cards/cardList.component.vue');
 
-var _itemCardsListComponent2 = _interopRequireDefault(_itemCardsListComponent);
+var _cardListComponent2 = _interopRequireDefault(_cardListComponent);
 
-var _buttonsItemAddComponent = require('./components/buttons.item.add.component.vue');
+var _buttonsItemAddComponent = require('./components/input/buttons.item.add.component.vue');
 
 var _buttonsItemAddComponent2 = _interopRequireDefault(_buttonsItemAddComponent);
 
-var _itemCardsCardComponent = require('./components/itemCards.card.component.vue');
+var _itemCardComponent = require('./components/cards/itemCard.component.vue');
 
-var _itemCardsCardComponent2 = _interopRequireDefault(_itemCardsCardComponent);
+var _itemCardComponent2 = _interopRequireDefault(_itemCardComponent);
 
-var _buttonsDepthControlComponent = require('./components/buttons.depth-control.component.vue');
+var _buttonsDepthControlComponent = require('./components/input/buttons.depth-control.component.vue');
 
 var _buttonsDepthControlComponent2 = _interopRequireDefault(_buttonsDepthControlComponent);
 
@@ -70474,21 +70591,29 @@ var _fieldItemNameComponent = require('./components/field.item-name.component.vu
 
 var _fieldItemNameComponent2 = _interopRequireDefault(_fieldItemNameComponent);
 
-var _buttonsSettingsControlComponent = require('./components/buttons.settings-control.component.vue');
+var _buttonsSettingsControlComponent = require('./components/input/buttons.settings-control.component.vue');
 
 var _buttonsSettingsControlComponent2 = _interopRequireDefault(_buttonsSettingsControlComponent);
 
-var _buttonsValenceComponent = require('./components/buttons.valence.component.vue');
+var _buttonsValenceComponent = require('./components/input/buttons.valence.component.vue');
 
 var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
 
-var _buttonsItemDeleteComponent = require('./components/buttons.item.delete.component.vue');
+var _buttonsItemDeleteComponent = require('./components/input/buttons.item.delete.component.vue');
 
 var _buttonsItemDeleteComponent2 = _interopRequireDefault(_buttonsItemDeleteComponent);
 
-var _buttonsPublicControlComponent = require('./components/buttons.public-control.component.vue');
+var _buttonsPublicControlComponent = require('./components/input/buttons.public-control.component.vue');
 
 var _buttonsPublicControlComponent2 = _interopRequireDefault(_buttonsPublicControlComponent);
+
+var _subListComponent = require('./components/cards/subList.component.vue');
+
+var _subListComponent2 = _interopRequireDefault(_subListComponent);
+
+var _examCardComponent = require('./components/cards/examCard.component.vue');
+
+var _examCardComponent2 = _interopRequireDefault(_examCardComponent);
 
 var _controller = require('../api/controller');
 
@@ -70510,6 +70635,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 _vue2.default.use(_bootstrapVue2.default);
+// Vue.use( Sortable );
+
 
 // ES build is more efficient by reducing unneeded components with tree-shaking.
 // (Needs Webpack 2 or Rollup)
@@ -70550,7 +70677,7 @@ _vue2.default.component('api', _controller2.default);
 
 //Register components globally
 _vue2.default.component('exam-main', _examMainComponent2.default);
-_vue2.default.component('exam-edit-pane', _paneEditExamComponent2.default);
+// Vue.component('exam-edit-pane', examEditPane);
 
 _vue2.default.component('progress-dashboard', _dashboardProgressComponent2.default);
 _vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
@@ -70560,9 +70687,14 @@ _vue2.default.component('item-name', _fieldItemNameComponent2.default);
 _vue2.default.component('item-main', _itemMainComponent2.default);
 _vue2.default.component('public-indicator', _buttonsPublicControlComponent2.default);
 _vue2.default.component('settings-button', _buttonsSettingsControlComponent2.default);
-_vue2.default.component('item-edit-pane', _paneEditItemComponent2.default);
-_vue2.default.component('item-card', _itemCardsCardComponent2.default);
-_vue2.default.component('card-list', _itemCardsListComponent2.default);
+
+// Vue.component('item-edit-pane', itemEditPane);
+
+//cards
+_vue2.default.component('card-list', _cardListComponent2.default);
+_vue2.default.component('item-card', _itemCardComponent2.default);
+_vue2.default.component('exam-card', _examCardComponent2.default);
+_vue2.default.component('sub-list', _subListComponent2.default);
 
 //Panels
 _vue2.default.component('panel-detail', _panelItemDetailComponent2.default);
@@ -70600,6 +70732,7 @@ var routes = [{
     components: { itemPanels: _panelCommentSetupComponent2.default },
     props: true }, //props: (route) => {return route.index;}},
 {
+    name: 'exam-detail',
     path: '/panel-exam-detail/:index',
     components: { examPanels: _panelExamDetailComponent2.default },
     props: true
@@ -70608,6 +70741,7 @@ var routes = [{
     components: { itemPanels: _panelHistoryComponent2.default },
     props: true
 }, {
+    name: 'item-detail',
     path: '/panel-item-detail/:index',
     components: { itemPanels: _panelItemDetailComponent2.default },
     props: true
@@ -70649,7 +70783,7 @@ var app = new _vue2.default({
 
 // Now the app has started!
 
-},{"../api/controller":351,"./components/buttons.depth-control.component.vue":354,"./components/buttons.item.add.component.vue":355,"./components/buttons.item.delete.component.vue":356,"./components/buttons.public-control.component.vue":357,"./components/buttons.settings-control.component.vue":358,"./components/buttons.valence.component.vue":359,"./components/dashboard.progress.component.vue":360,"./components/dashboard.tools.component.vue":361,"./components/exam.main.component.vue":362,"./components/field.item-name.component.vue":363,"./components/field.item-number.component.vue":364,"./components/field.list-dropdown.component.vue":365,"./components/field.max-score.component.vue":366,"./components/item.main.component.vue":367,"./components/itemCards.card.component.vue":368,"./components/itemCards.list.component.vue":369,"./components/nav.edit-tabs.component.vue":370,"./components/pane.edit-exam.component.vue":371,"./components/pane.edit-item.component.vue":372,"./components/panel.comment-setup.component.vue":373,"./components/panel.exam-detail.component.vue":374,"./components/panel.history.component.vue":375,"./components/panel.item-detail.component.vue":376,"./components/panel.notes.component.vue":377,"./components/panel.stats.component.vue":378,"./new-setup.vue":379,"bootstrap-vue":29,"vue-axios":343,"vue-router":345,"vue/dist/vue.js":346}],381:[function(require,module,exports){
+},{"../api/controller":351,"./components/cards/cardList.component.vue":354,"./components/cards/examCard.component.vue":355,"./components/cards/itemCard.component.vue":356,"./components/cards/subList.component.vue":357,"./components/dashboard.progress.component.vue":358,"./components/dashboard.tools.component.vue":359,"./components/exam.main.component.vue":360,"./components/field.item-name.component.vue":361,"./components/field.item-number.component.vue":362,"./components/field.list-dropdown.component.vue":363,"./components/field.max-score.component.vue":364,"./components/input/buttons.depth-control.component.vue":365,"./components/input/buttons.item.add.component.vue":366,"./components/input/buttons.item.delete.component.vue":367,"./components/input/buttons.public-control.component.vue":368,"./components/input/buttons.settings-control.component.vue":369,"./components/input/buttons.valence.component.vue":370,"./components/item.main.component.vue":371,"./components/nav.edit-tabs.component.vue":372,"./components/pane.edit-item.component.vue":373,"./components/panel.comment-setup.component.vue":374,"./components/panel.exam-detail.component.vue":375,"./components/panel.history.component.vue":376,"./components/panel.item-detail.component.vue":377,"./components/panel.notes.component.vue":378,"./components/panel.stats.component.vue":379,"./new-setup.vue":380,"bootstrap-vue":29,"vue-axios":343,"vue-router":345,"vue/dist/vue.js":346}],382:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70775,7 +70909,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":383,"./Item":384}],382:[function(require,module,exports){
+},{"./IModel":384,"./Item":385}],383:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70947,7 +71081,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Comment":381,"./Item":384}],383:[function(require,module,exports){
+},{"./Comment":382,"./Item":385}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71154,7 +71288,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],384:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71185,6 +71319,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var separator = '-';
+
 var Item = function (_IModel) {
     _inherits(Item, _IModel);
 
@@ -71205,11 +71341,13 @@ var Item = function (_IModel) {
     function Item() {
         _classCallCheck(this, Item);
 
+        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+
+        _this.idxStore = '';
+
         /**
          * The db identifier of the model
          */
-        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
-
         _this.id = -1;
 
         _Comment2.default.initializeComments(_this);
@@ -71237,12 +71375,16 @@ var Item = function (_IModel) {
         //The id of the exam the item is associated with
         _this.examId = -1;
 
+        _this.children = [];
         // this.props = super.fillableProps;
         return _this;
     }
 
     _createClass(Item, [{
         key: 'isNew',
+        //[ this.index,  this.depth];}
+
+
         value: function isNew() {
             return this.id === -1;
         }
@@ -71287,6 +71429,16 @@ var Item = function (_IModel) {
             this.depth += 1;
         }
 
+        /**
+         * Returns the relationship (if any) of the item represented by
+         * idx1 and the item represented by idx2
+         * @param idx
+         */
+
+    }, {
+        key: 'isPublic',
+
+
         //
         //
         // /* *************************** Max score *************** */
@@ -71304,9 +71456,6 @@ var Item = function (_IModel) {
          * Getter for whether this can currently appear in student-viewable outputs
          * @returns {boolean|*}
          */
-
-    }, {
-        key: 'isPublic',
         value: function isPublic() {
             return this.publicity;
         }
@@ -71346,8 +71495,20 @@ var Item = function (_IModel) {
 
     }, {
         key: 'idx',
+        set: function set(index) {
+            this.idxStore = Item.buildKeyFromIdx(index);
+        }
+
+        /**
+         * Take either a string or array input and convert
+         * it into the key used to store ordering.
+         * Returns the key.
+         * @param index
+         */
+        ,
         get: function get() {
-            return [this.index, this.depth];
+
+            return this.idxStore.split(separator);
         }
     }, {
         key: 'type',
@@ -71361,6 +71522,60 @@ var Item = function (_IModel) {
          */
 
     }], [{
+        key: 'buildKeyFromIdx',
+        value: function buildKeyFromIdx(index) {
+            //if it is a string of the proper form
+            //use that.
+            if (_.isString(index) && index.length > 1 && index[1] === separator) {
+                return index;
+            }
+
+            //we need to do something different
+            //because it is an array
+            if (_.isArray(index)) {
+                return index.join(separator);
+            }
+        }
+    }, {
+        key: 'findRelationship',
+        value: function findRelationship(idx1, idx2) {
+            var relationships = ['none', 'parent', 'child', 'sibling'];
+            //to figure this out, we first make them into arrays
+            idx1 = _.isArray(idx1) ? idx1.split(separator) : [];
+            idx2 = _.isArray(idx2) ? idx2.split(separator) : [];
+
+            if (idx1.length > 0 && idx2.length > 0) {
+                //if either is empty, we're done
+                return 'none';
+            }
+
+            if (idx1[0] !== idx2[0]) {
+                //if the first value is not the same,
+                //they have no relationship
+                return 'none';
+            }
+
+            //two items are siblings if their idx's are the same
+            //except for the final value
+            //so they must have the same length
+            if (idx1.length === idx2.length) {
+                //and then all but the last item must be the same
+                if (idx1.slice(idx1.length - 1) === idx2.slice(idx2.length - 1)) {
+                    //and finally the last value must differ
+                    //(otherwise it is in a parent child relationship)
+                    if (_.takeRight(idx1) != _.takeRight(idx2)) {
+                        return 'sibling';
+                    }
+                }
+            }
+
+            //So at this point, we know that they have different lengths and
+            // that their first value is the same. That means they stand
+            //in a parent child relationship
+
+            if (idx1.length !== idx2.length) {}
+        }
+    }, {
         key: 'identifiers',
         value: function identifiers() {
             return ['id', 'index'];
@@ -71401,7 +71616,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":381,"./IModel":383}],385:[function(require,module,exports){
+},{"./Comment":382,"./IModel":384}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71629,7 +71844,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],386:[function(require,module,exports){
+},{}],387:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71786,7 +72001,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":384}],387:[function(require,module,exports){
+},{"./Item":385}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72077,7 +72292,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":383}],388:[function(require,module,exports){
+},{"./IModel":384}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72159,8 +72374,10 @@ var promoteItem = exports.promoteItem = 'promoteItem';
 var demoteItem = exports.demoteItem = 'demoteItem';
 var cleanupItems = exports.cleanupItems = 'cleanupItems';
 var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
+var addOlderSibling = exports.addOlderSibling = 'addOlderSibling';
+var addYoungerSibling = exports.addYoungerSibling = 'addYoungerSibling';
 
-},{}],389:[function(require,module,exports){
+},{}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72687,7 +72904,7 @@ var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
 // }
 // ;
 
-},{"../api/controller":351,"../models/Exam":382,"../models/Item":384,"../models/Payload":385,"../models/Student":387,"./action-types":388,"./mutation-types":405,"lodash":338}],390:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../models/Student":388,"./action-types":389,"./mutation-types":406,"lodash":338}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72772,7 +72989,7 @@ var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
 
-},{}],391:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72951,7 +73168,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{"./getter-types":390}],392:[function(require,module,exports){
+},{"./getter-types":391}],393:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -73128,7 +73345,7 @@ exports.default = new _vuex2.default.Store({
 });
 
 }).call(this,require('_process'))
-},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":389,"./getters":391,"./modules/activeexam.js":393,"./modules/activestudent.js":394,"./modules/comments.js":395,"./modules/escores.js":396,"./modules/grades.js":397,"./modules/items.js":398,"./modules/qscores.js":399,"./modules/questions.js":400,"./modules/settings":401,"./modules/students.js":402,"./modules/times.js":403,"./modules/visibility":404,"./mutations":406,"./state":407,"_process":339,"vue/dist/vue.js":346,"vuex":349}],393:[function(require,module,exports){
+},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":390,"./getters":392,"./modules/activeexam.js":394,"./modules/activestudent.js":395,"./modules/comments.js":396,"./modules/escores.js":397,"./modules/grades.js":398,"./modules/items.js":399,"./modules/qscores.js":400,"./modules/questions.js":401,"./modules/settings":402,"./modules/students.js":403,"./modules/times.js":404,"./modules/visibility":405,"./mutations":407,"./state":408,"_process":339,"vue/dist/vue.js":346,"vuex":349}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73263,7 +73480,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":382,"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],394:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73402,7 +73619,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../../models/Student":387,"../action-types":388,"../mutation-types":405}],395:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":406}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73596,7 +73813,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],396:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73701,7 +73918,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],397:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73880,7 +74097,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],398:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73964,7 +74181,21 @@ var state = {
     /**
      * Mapping from older ItemIndex to new Item id value
      */
-    indexMap: new Map()
+    indexMap: new Map(),
+
+    orderMap: {}
+
+};
+
+var buildKey = function buildKey(idx) {
+    var k = '';
+    for (var i = 0; i < idx.length; i++) {
+        k += idx[i];
+        if (i <= idx.length - 2) {
+            k += '-';
+        }
+    }
+    return k;
 };
 
 var isItemsEmpty = function isItemsEmpty(state) {
@@ -73993,6 +74224,14 @@ var helpers = {
 };
 
 var mutations = (_mutations = {
+    addMappedItem: function addMappedItem(state, payload) {
+        var idx = payload.idx,
+            item = payload.item;
+
+        var key = buildKey(idx);
+        window.console.log('items', 'addMappedItem', 102, key, item);
+        Vue.set(state.orderMap, key, item);
+    },
 
     //utility, not called from outside
     cleanupEmptyItems: function cleanupEmptyItems(state) {
@@ -74003,20 +74242,55 @@ var mutations = (_mutations = {
         }
     }
 
-}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
-    // console.log(mTypes.updateOrder, state, payload);
-    // this just requires us to match list indexes w the
-    //property of the item
-    for (var i = 0; i < state.items.length; i++) {
-        var item = state.items[i];
+}, _defineProperty(_mutations, mTypes.updateOrder, function (state, orderList) {
+    var _loop = function _loop(i) {
+        // this is the ith item id
+        var id = orderList[i];
+        var item = state.items.filter(function (i) {
+            if (i.id === id) {
+                return i;
+            }
+        });
+
+        //get the item, and update its index
+        //no moving it or anything
         // window.console.log('items', 'updateOrder', 87, i, item);
         if (typeof item !== 'undefined') {
             //set the property on the object
             Vue.set(item, 'index', i);
             //set it in the array with vue
-            Vue.set(state.items, i, item);
+            // Vue.set(state.items, i, item);
+            //resort array
         }
+    };
+
+    //new payload where it contains a key orderList
+    for (var i = 0; i < orderList.length; i++) {
+        _loop(i);
     }
+
+    //now that we've done all that, let's resort items
+    //by the object's index
+    var items = state.items.sort(function (a, b) {
+        return a.index > b.index;
+    });
+
+    //and finally push the sorted array back
+    Vue.set(state, 'items', items);
+
+    // // console.log(mTypes.updateOrder, state, payload);
+    // // this just requires us to match list indexes w the
+    // //property of the item
+    // for (let i = 0; i < state.items.length; i++) {
+    //     let item = state.items[ i ];
+    //     // window.console.log('items', 'updateOrder', 87, i, item);
+    //     if ( typeof item !== 'undefined' ) {
+    //         //set the property on the object
+    //         Vue.set(item, 'index', i);
+    //         //set it in the array with vue
+    //         Vue.set(state.items, i, item);
+    //     }
+    // }
 }), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
     // console.log(mTypes.addNewItem, state, payload);
     if (_Payload2.default.checkIfPayload(payload)) {
@@ -74111,7 +74385,7 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     if (!obj instanceof _Item2.default) {
         //create a new Item
         var name = payload.name,
-            id = payload.id,
+            _id = payload.id,
             index = payload.index;
 
         var ItemJson = { name: name, ItemIndex: ItemIndex };
@@ -74125,30 +74399,42 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.cleanupItems, function (_ref) {
-    var dispatch = _ref.dispatch,
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.addOlderSibling, function (_ref, payload) {
+    var state = _ref.state,
+        dispatch = _ref.dispatch,
         commit = _ref.commit,
         getters = _ref.getters;
 
+    //add item at same depth with same parent but with lower index
+    window.console.log('items', 'addOlderSibling', 283, payload);
+}), _defineProperty(_actions, aTypes.addYoungerSibling, function (_ref2, payload) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+
+    //add item at same depth with same parent but with higher index
+    window.console.log('items', 'addYoungerSibling', 288, payload);
+}), _defineProperty(_actions, aTypes.cleanupItems, function (_ref3) {
+    var dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
+
 
     var p = new Promise(function (resolve, reject) {
-        // setTimeout(() => {
         commit('cleanupEmptyItems');
         resolve();
-        // }, standardTimeout);
     });
 
     return p.then(function () {
         return new Promise(function (resolve, reject) {
-            // setTimeout(() => {
             commit(mTypes.updateOrder);
             resolve();
-            // }, standardTimeout);
         });
     });
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
+}), _defineProperty(_actions, aTypes.deleteItem, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
 
     console.log(aTypes.deleteItem, state, commit, payload);
     //check if payload has correct structure
@@ -74166,38 +74452,42 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.cleanupItems, fun
 
     //reorder index
     //todo write
-}), _defineProperty(_actions, aTypes.promoteItem, function (_ref3, payload) {
-    var state = _ref3.state,
-        dispatch = _ref3.dispatch,
-        commit = _ref3.commit,
-        getters = _ref3.getters;
+}), _defineProperty(_actions, aTypes.promoteItem, function (_ref5, payload) {
+    var state = _ref5.state,
+        dispatch = _ref5.dispatch,
+        commit = _ref5.commit,
+        getters = _ref5.getters;
     var index = payload.index;
 
     var item = getters.getItemByIndex(index);
     item.promote();
     commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_actions, aTypes.demoteItem, function (_ref4, payload) {
-    var state = _ref4.state,
-        dispatch = _ref4.dispatch,
-        commit = _ref4.commit,
-        getters = _ref4.getters;
+}), _defineProperty(_actions, aTypes.demoteItem, function (_ref6, payload) {
+    var state = _ref6.state,
+        dispatch = _ref6.dispatch,
+        commit = _ref6.commit,
+        getters = _ref6.getters;
     var index = payload.index;
 
     var item = getters.getItemByIndex(index);
     item.demote();
     commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref5, payload) {
-    var state = _ref5.state,
-        dispatch = _ref5.dispatch,
-        commit = _ref5.commit,
-        getters = _ref5.getters;
+}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref7, payload) {
+    var state = _ref7.state,
+        dispatch = _ref7.dispatch,
+        commit = _ref7.commit,
+        getters = _ref7.getters;
 
     window.console.log('items', 'toggleItemPublic', 365, payload);
 
     if (_Payload2.default.checkIfPayload(payload)) {
-        var item = getters.getItemByIndex(payload.index);
+        var _item = getters.getItemByIndex(payload.index);
 
-        commit(mTypes.updateItem, _Payload2.default.factory({ index: item.index, updateProp: 'publicity', updateVal: !item.publicity }));
+        commit(mTypes.updateItem, _Payload2.default.factory({
+            index: _item.index,
+            updateProp: 'publicity',
+            updateVal: !_item.publicity
+        }));
         // //get the item
         // let item = getters.getItemByIndex(payload.index);
         // //flip its value internally
@@ -74211,6 +74501,15 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.cleanupItems, fun
 }), _actions);
 
 var getters = {
+
+    getMappedItem: function getMappedItem(state, getters) {
+        return function (payload) {
+
+            var key = buildKey(idx);
+            return state.orderMap[key];
+        };
+    },
+
     /**
      * Returns the desired Item object
      * Payload can have any of the following identifiers,
@@ -74229,13 +74528,13 @@ var getters = {
             if (isItemsEmpty(state)) return false;
             if (_Payload2.default.checkIfPayload(payload)) {
                 var index = payload.index,
-                    id = payload.id;
+                    _id2 = payload.id;
 
                 if (typeof index !== 'undefined') {
                     return getters.getItemByIndex(state, getters, index);
                 }
-                if (typeof id !== 'undefined') {
-                    return getters.getItemById(state, getters, id);
+                if (typeof _id2 !== 'undefined') {
+                    return getters.getItemById(state, getters, _id2);
                 }
             }
         };
@@ -74254,16 +74553,39 @@ var getters = {
      */
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
+            //remove the payload wrapper if necessary
             if (_Payload2.default.checkIfPayload(index)) {
                 index = index.index;
             }
+
+            //if this is a single member array, we can treat
+            //it like a numeric input under the older system
+            if (_.isArray(index) && index.length === 1) {
+                index = index[0];
+            }
+
+            //Now we're ready to deal with the input
             return function (state, index) {
-                var r = state.items.filter(function (i) {
-                    if (i.index === index) {
-                        return i;
+                //There are two cases to consider
+                //We deal first with the easy case in which the index
+                //is a number or string representation of a number
+                //and not a composite
+                if (!_.isArray(index)) {
+                    //if was just a string or integer this is fine
+                    //also if the input was an array with only one item
+                    var r = state.items.filter(function (i) {
+                        if (i.index === index) {
+                            return i;
+                        }
+                    });
+                    return r[0];
+                } else {
+                    //we need to do something different
+                    //because it is an array
+                    if (_.isArray(index)) {
+                        var _idx = index.join('-');
                     }
-                });
-                return r[0];
+                }
             }(state, index);
 
             // // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
@@ -74411,7 +74733,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":382,"../../models/Item":384,"../../models/Payload":385,"../../store/action-types":388,"../../store/getter-types":390,"../../store/mutation-types":405,"lodash":338,"vue":347}],399:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"lodash":338,"vue":347}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74521,7 +74843,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],400:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74660,7 +74982,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../../models/Question":386,"../action-types":388,"../mutation-types":405}],401:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Question":387,"../action-types":389,"../mutation-types":406}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74729,7 +75051,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],402:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74849,7 +75171,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../../models/Student":387,"../action-types":388,"../mutation-types":405}],403:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":406}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74986,7 +75308,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../mutation-types":405}],404:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75082,7 +75404,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":385,"../action-types":388,"../getter-types":390,"../mutation-types":405}],405:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../getter-types":391,"../mutation-types":406}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75177,7 +75499,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],406:[function(require,module,exports){
+},{}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75211,7 +75533,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":405}],407:[function(require,module,exports){
+},{"./mutation-types":406}],408:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -75241,6 +75563,6 @@ exports.default = {
 
 };
 
-},{}]},{},[353,380]);
+},{}]},{},[353,381]);
 
 //# sourceMappingURL=new-setup-package.js.map

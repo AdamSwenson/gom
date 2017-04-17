@@ -1,6 +1,53 @@
-.item-nav-component .nav-arrow {
-  font-size: 20pt;
-  font-weight: 900;
+.graph-paper-background-small {
+  font-size: 93.8%;
+  background-color: #f1f2f3;
+  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);
+  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);
+  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);
+  background-size: .75em .75em;
+  background-position: 0 -0.5em;
+}
+
+.graph-paper-background-big {
+  background-color: #fff;
+  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);
+  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);
+  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px;
+}
+
+.border-image-made {
+  border-style: solid;
+  border-width: 30px 750px 27px 21px;
+  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;
+  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;
+}
+
+.border-image-long {
+  border-style: solid;
+  border-width: 0px 15px 15px;
+  -o-border-image: url("http://localhost:8000/images/styling/border-long.png") 0 21 stretch;
+  border-image: url("http://localhost:8000/images/styling/border-long.png") 0 21 fill stretch;
+}
+
+.border-image-side {
+  border-style: solid;
+  border-width: 0px 15px 15px;
+  -o-border-image: url("http://localhost:8000/images/styling/border-long.png") 0 21 stretch;
+  border-image: url("http://localhost:8000/images/styling/border-long.png") 0 21 fill stretch;
+}
+
+.border-image-bottom {
+  border-style: solid;
+  border-width: 0px 15px 15px;
+  -o-border-image: url("http://localhost:8000/images/styling/border-horiz-sm.png") 21 0 fill repeat;
+  border-image: url("http://localhost:8000/images/styling/border-horiz-sm.png") 21 0 fill repeat;
+}
+
+.border-image-lft {
+  border-style: solid;
+  border-width: 0px 15px 15px;
+  -o-border-image: url("http://localhost:8000/images/styling/border-tiled.png") 21 repeat;
+  border-image: url("http://localhost:8000/images/styling/border-tiled.png") 21 repeat;
 }
 
 .collapse-enter-active, .collapse-leave-active {

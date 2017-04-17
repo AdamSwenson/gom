@@ -1,6 +1,6 @@
 <template>
     <!--This is the hideable area via which we edit the exam's properties-->
-    <div class="panel-exam-detail  ">
+    <div class="panel-exam-detail-component  ">
         <div class="row">
             <div class="col-md-11">
 

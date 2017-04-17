@@ -1,45 +1,35 @@
 <template>
 
-    <div class="item-main-component row">
-        <div class="col-md-1"><h4># {{ index }}</h4></div>
-        <div class="col-md-6">
-            <item-name :index="index"></item-name>
-        </div>
-        <div class="col-md-1">
-            <settings-button :index="index"></settings-button>
+    <div class="item-main-component ">
+        <div class="row">
+            <div class="col-md-2 col-lg-2">
+                <h4># {{ index }}</h4>
+            </div>
+            <div class="col-md-10 col-lg-10">
+                <div class="input-group">
+                    <item-name :index="index"></item-name>
+
+                        <settings-button :index="index"></settings-button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!--<div class="input-group">-->
-    <!--<div class="input-group-addon"-->
-    <!--id="basic-addon2"-->
-    <!--&gt;# {{ index }}-->
-    <!--<div class="input-group-addon" id="itemnum">-->
-    <!--<item-number :index="index"></item-number>-->
-    <!--</div>-->
-
-
-    <!--<div class="input-group-btn">-->
-    <!--<settings-button :index="index"></settings-button>-->
-
-    <!--<public-indicator :index="index"></public-indicator>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
 </template>
 
 <style lang="scss">
-    h4 {
-        text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
-        0 2px 3px rgba(0, 0, 0, .8),
-        0 10px 30px rgba(0, 0, 0, .5);
+    .item-main-component {
+        h4 {
+            text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
+            0 2px 3px rgba(0, 0, 0, .8),
+            0 10px 30px rgba(0, 0, 0, .5);
+        }
+
+        /*.itemName {*/
+        /*margin-bottom: 0;*/
+        /*margin-top: 0;*/
+        /*}*/
     }
-
-    /*.itemName {*/
-    /*margin-bottom: 0;*/
-    /*margin-top: 0;*/
-    /*}*/
-
 </style>
 
 <script>

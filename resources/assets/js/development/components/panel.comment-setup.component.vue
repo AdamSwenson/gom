@@ -44,7 +44,7 @@
     import * as mTypes from '../../store/mutation-types';
     import * as aTypes from '../../store/action-types';
     import * as gTypes from '../../store/getter-types';
-    import valenceButtons from './buttons.valence.component.vue'
+    import valenceButtons from './input/buttons.valence.component.vue'
 
     /**
      * The comment details setup area

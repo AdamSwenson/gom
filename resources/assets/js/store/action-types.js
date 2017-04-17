@@ -78,3 +78,5 @@ export const promoteItem = 'promoteItem';
 export const demoteItem = 'demoteItem';
 export const cleanupItems = 'cleanupItems';
 export const toggleItemPublic = 'toggleItemPublic';
+export const addOlderSibling = 'addOlderSibling';
+export const addYoungerSibling = 'addYoungerSibling';

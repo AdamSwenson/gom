@@ -5,30 +5,56 @@
          class="item-card-component"
          v-bind:class="offsetClass"
          v-bind:data-id="index"
+         v-bind:data-index="index"
+         v-bind:data-parent-index="parentIndex"
     >
-
-        <item-main :index="index"></item-main>
-
-        <div class="row" v-show="visible">
-            <item-edit-pane :index="index"></item-edit-pane>
+        <div class="row">
+            <div class="col-md-12 text-left">
+                <item-main :index="index"></item-main>
+            </div>
         </div>
 
-        <div class="row" v-show="visible">
-            <div class="col-md-2 text-left">
-                <delete-item-button :index="index"></delete-item-button>
-            </div>
+        <div class="row" v-show="paneVisible">
+            <div class="col-md-12 text-left">
+                <edit-tabs :index="index" :is-exam="false"></edit-tabs>
 
-            <div class="col-md-9 text-right">
-                <public-indicator :index="index"></public-indicator>
+                <!-- Tab panels -->
+                <div class="tab-panel-area">
+                    <router-view name="itemPanels"></router-view>
+                </div>
+
             </div>
+        </div>
+
+        <div class="row" v-show="paneVisible">
+            <div class="button-row col-md-12 text-left">
+                <div class="btn-group"
+                     role="group"
+                     aria-label="Item tool buttons">
+
+                    <delete-item-button :index="index"></delete-item-button>
+
+                    <public-indicator :index="index"></public-indicator>
+                    <button class="btn btn-warning">Clone</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <sub-list></sub-list>
         </div>
     </div>
 
+
 </template>
 <style lang="scss">
-    .item-card-component {
-        /*width: 80%;*/
 
+    .item-card-component {
+
+        /*width: 80%;*/
+        .button-row {
+            padding: 1em;
+        }
         .panel-heading {
 
             /*background-color: #FFFDF4;*/
@@ -48,14 +74,14 @@
     //    import depthControl from './buttons.depth-control.component.vue'
     //    import itemMain from './item.main.component.vue'
 
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
-    import * as mTypes from '../../store/mutation-types'
-    import * as gTypes from '../../store/getter-types'
+    import Item from '../../../models/Item'
+    import Payload from '../../../models/Payload'
+    import * as mTypes from '../../../store/mutation-types'
+    import * as gTypes from '../../../store/getter-types'
 
     export default{
 
-        props: [ 'index' ],
+        props: [ 'index', 'parent-index' ],
 
         data: function () {
             return {
@@ -75,19 +101,12 @@
             };
         },
 
-//        components : {
-//            'item-settings': itemEditPane,
-//            'delete-item-button': deleteButton,
-//            'depth-control': depthControl,
-//            'item-name': itemMain,
-//
-//        },
 
         computed: {
             /**
              * Returns true if the settings pane for this item should be displayed
              */
-            visible: function () {
+            paneVisible: function () {
                 return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
             },
 
@@ -104,6 +123,25 @@
                     let col = "col-md-offset-" + amt;
                     return col
                 }
+            },
+
+            ddepth: function () {
+
+                //start with the current instance
+                //that way, if we are at the root,
+                //the while won't run
+                //todo or do I need the other kind?
+                let current = this.$parent;
+                let d = 0;
+                let limit = 5;
+                while (_.isEmpty(current) && d < limit) {
+                    //we aren't at the root, so
+                    //increment our depth counter
+                    d++;
+                    //and set the parent of the parent as current
+                    current = current.$parent;
+                }
+                return d;
             },
 
             depth: {
@@ -140,6 +178,16 @@
         },
 
         methods: {
+
+//            addSibling: function ( rel="younger" ) {
+//                switch (rel){
+//                    case 'older':
+//                        break;
+//                    case 'younger':
+//                        break;
+//                    default:
+//                }
+
             /**
              * Toggles whether comments are shown for this item.
              * Turning comments off does not delete any existing

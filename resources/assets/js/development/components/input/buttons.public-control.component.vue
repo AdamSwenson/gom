@@ -2,11 +2,11 @@
 
     <button
             type="button"
-            class="btn public-indicator"
+            class="public-indicator btn btn-primary btn-md"
             v-bind:class="{'btn-warning': publicity}"
             v-on:click="togglePublic"
     >
-        <span v-bind:class="icon"></span>
+        <span v-bind:class="icon"></span> Visible in student feedback
     </button>
 
 </template>
@@ -14,10 +14,10 @@
 
 </style>
 <script>
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
-    import * as aTypes from '../../store/action-types'
-    import * as mTypes from '../../store/mutation-types'
+    import Item from '../../../models/Item'
+    import Payload from '../../../models/Payload'
+    import * as aTypes from '../../../store/action-types'
+    import * as mTypes from '../../../store/mutation-types'
 
     /**
      * This is the indicator which tells the user whether the thing it

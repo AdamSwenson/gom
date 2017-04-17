@@ -10,10 +10,10 @@
                 <ul class="nav nav-tabs"
                     role="tablist">
 
-                    <li v-if="isExam" role="presentation" active>
+                    <li v-if="isExam" role="presentation" >
                         <router-link v-bind:to="routeToExamDetails">Details</router-link>
                     </li>
-                    <li v-else role="presentation" active>
+                    <li v-else role="presentation" >
                         <router-link v-bind:to="routeToItemDetails">Details</router-link>
                     </li>
 
@@ -86,13 +86,13 @@
             tabActive: function () {
 
             },
-
-            /**
-             * Returns true if the settings pane for this item should be displayed
-             */
-            visible: function () {
-                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
-            },
+//
+//            /**
+//             * Returns true if the settings pane for this item should be displayed
+//             */
+//            visible: function () {
+//                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
+//            },
 
 
             routeToExamDetails: function () {

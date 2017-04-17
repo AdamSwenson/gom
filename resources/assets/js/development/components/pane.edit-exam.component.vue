@@ -1,63 +1,65 @@
-<template>
-    <!--This is the hideable area via which we edit the exam's properties-->
-    <div class="exam-detail-pane">
-        <edit-tabs :index="index" :is-exam="true"></edit-tabs>
-        <div class="tab-panel-area">
-            <router-view name="examPanels"></router-view>
-        </div>
-    </div>
+<!--<template>-->
+    <!--&lt;!&ndash;This is the hideable area via which we edit the exam's properties&ndash;&gt;-->
+    <!--<div class="exam-edit-pane">-->
 
-</template>
+        <!--<edit-tabs :index="index" :is-exam="true"></edit-tabs>-->
 
-<style>
+        <!--<div class="tab-panel-area">-->
+            <!--<router-view name="examPanels"></router-view>-->
+        <!--</div>-->
+    <!--</div>-->
 
-</style>
+<!--</template>-->
 
-<script>
+<!--<style>-->
 
-    import * as aTypes from '../../store/action-types';
-    import * as mTypes from '../../store/mutation-types';
-    import * as gTypes from '../../store/getter-types';
+<!--</style>-->
 
-    import Payload from '../../models/Payload'
+<!--<script>-->
 
-    import panelExamDetail from './panel.exam-detail.component.vue'
-    // Vue.component('panel-exam-detail', panelExamDetail)
+    <!--import * as aTypes from '../../store/action-types';-->
+    <!--import * as mTypes from '../../store/mutation-types';-->
+    <!--import * as gTypes from '../../store/getter-types';-->
 
-    export default{
+    <!--import Payload from '../../models/Payload'-->
 
-        props: [ 'index', 'exam-id' ],
+    <!--import panelExamDetail from './panel.exam-detail.component.vue'-->
+    <!--// Vue.component('panel-exam-detail', panelExamDetail)-->
 
-        data: function () {
-            return {};
-        },
+    <!--export default{-->
 
-        components: {
-            panelExamDetail
-        },
+        <!--props: [ 'index', 'exam-id' ],-->
 
-        computed: {
-            /**
-             * Returns true if the settings pane for this item should be displayed
-             */
-            visible: function () {
-                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
-            },
+        <!--data: function () {-->
+            <!--return {};-->
+        <!--},-->
+
+        <!--components: {-->
+            <!--panelExamDetail-->
+        <!--},-->
+
+        <!--computed: {-->
+            <!--/**-->
+             <!--* Returns true if the settings pane for this item should be displayed-->
+             <!--*/-->
+            <!--visible: function () {-->
+                <!--return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)-->
+            <!--},-->
 
 
-        },
+        <!--},-->
 
-        methods: {
-            getExam: function () {
-                //  return this.$store.getters[gTypes.getActiveExamObj];
-            },
-        },
-        directives: {},
+        <!--methods: {-->
+            <!--getExam: function () {-->
+                <!--//  return this.$store.getters[gTypes.getActiveExamObj];-->
+            <!--},-->
+        <!--},-->
+        <!--directives: {},-->
 
-        events: {},
+        <!--events: {},-->
 
-        mounted: function () {
-//            console.log('exam-edit-pane ready');
-        },
-    };
-</script>
+        <!--mounted: function () {-->
+<!--//            console.log('exam-edit-pane ready');-->
+        <!--},-->
+    <!--};-->
+<!--</script>-->

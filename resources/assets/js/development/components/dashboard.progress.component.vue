@@ -1,66 +1,78 @@
 <template>
     <div id="progress-dashboard"
-         class="dashboard"
+         class="dashboard text-align-center"
     >
-        <div class="row">
-            <div class="panel col-md-3"
-                 v-bind:class="{'panel-success' : setupComplete }"
-            >
-                <div class="panel-heading">
-                    <h6><span v-show="setupComplete"><span class="glyphicon glyphicon-ok"></span></span> Setup </h6>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        # Items <span class="badge">{{ numberItems }}</span>
+        <ul id="progressIndicator" class="list-inline">
+
+            <li id="progressSetup" v-bind:class="{'bg-success' : setupComplete }">
+                <ul class="list-inline">
+                    <li class="group-cell">
+                        <h5><span v-show="setupComplete"><span class="glyphicon glyphicon-ok"></span></span> Setup </h5>
                     </li>
 
-                    <li class="list-group-item">
+                    <li>
+                        Items <span class="badge">{{ numberItems }}</span>
+                    </li>
+
+                    <li>
                         Max total score <span class="badge">{{ perfectScore }}</span>
                     </li>
-
-                    <li class="list-group-item">
-                        # Students <span class="badge">{{ numberStudents }}</span>
+                    <li>
+                        Students <span class="badge">{{ numberStudents }}</span>
                     </li>
-
                 </ul>
-            </div>
-            <div class="panel col-md-3"
-                 v-bind:class="{'panel-success' : gradingComplete }"
-            >
-                <div class="panel-heading">
-                    <h6><span v-show="gradingComplete"></span> <span class="glyphicon glyphicon-ok"></span> Grading
-                    </h6>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        # Graded <span class="badge">{{ numberGraded }}</span>
+            </li>
+
+
+            <li id="progressGrading">
+                <ul class="list-inline"
+                    v-bind:class="{'bg-success' : gradingComplete }"
+                >
+
+                    <li class="group-cell">
+                        <h5><span v-show="gradingComplete"></span> <span class="glyphicon glyphicon-ok"></span> Grading
+                        </h5>
                     </li>
-                    <li class="list-group-item">
+
+                    <li>
+                        Graded <span class="badge">{{ numberGraded }}</span>
+                    </li>
+
+                    <li>
                         Time grading <span class="badge">{{ timeGrading }}</span>
                     </li>
                 </ul>
+            </li>
 
-            </div>
-
-            <div class="panel col-md-3">
-                <div class="panel-heading">
-                    <h6><span v-show="reviewingComplete"> <span class="glyphicon glyphicon-ok"></span></span> Reviewing
-                    </h6>
-                </div>
-
-                <ul class="list-group">
-                    <li class="list-group-item">
+            <li id="progressReviewing">
+                <ul class="list-inline">
+                    <li class="group-cell">
+                        <h5>
+                            <span v-show="reviewingComplete">
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </span> Reviewing
+                        </h5>
                     </li>
-                </ul>
 
-            </div>
-        </div>
+                </ul>
+            </li>
+
+        </ul>
     </div>
 
-</template>
-<style>
-    ul {
 
+</template>
+<style lang="scss">
+    #progress-dashboard {
+        h5 {
+            text-align: right;
+            vertical-align: top;
+            /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/
+        }
+        li {
+            .group-cell {
+            }
+        }
     }
 
 </style>

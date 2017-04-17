@@ -15,9 +15,9 @@
     /**
      * Created by adam on 2/17/17.
      */
-    import * as aTypes from '../../store/action-types';
-    import * as mTypes from '../../store/mutation-types';
-    import Payload from '../../models/Payload'
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import Payload from '../../../models/Payload'
 
     /**
      * These make an item into a child of another or makes them into siblings.

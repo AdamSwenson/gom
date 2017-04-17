@@ -6,9 +6,10 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 
-const Vue = require('vue');
+const Vue = require( 'vue' );
 
-window._ = require('lodash');
+window._ = require( 'lodash' );
+
 
 const standardTimeout = 1000;
 
@@ -50,8 +51,25 @@ const state = {
     /**
      * Mapping from older ItemIndex to new Item id value
      */
-    indexMap: new Map()
+    indexMap: new Map(),
+
+    orderMap: {}
+
+
 };
+
+const buildKey = (idx) =>{
+    var k = '';
+    for(var i=0; i<idx.length; i++){
+        k += idx[i]
+        if(i <= idx.length - 2){
+            k += '-';
+        }
+    }
+    return k;
+};
+
+
 
 const isItemsEmpty = ( state ) => {
     if ( state.items.length > 0 ) {
@@ -79,12 +97,19 @@ const helpers = {
 };
 
 const mutations = {
+    addMappedItem: (state, payload ) =>{
+        let {idx, item} = payload;
+        let key = buildKey(idx);
+        window.console.log( 'items', 'addMappedItem', 102, key, item);
+        Vue.set(state.orderMap, key, item);
+    },
 
-        //utility, not called from outside
+
+    //utility, not called from outside
         cleanupEmptyItems: ( state ) => {
             for (let i = 0; i < state.items.length; i++) {
                 if ( typeof state.items[ i ] === 'undefined' ) {
-                    state.items.splice(i, 1);
+                    state.items.splice( i, 1 );
                 }
             }
         },
@@ -95,20 +120,51 @@ const mutations = {
          * @param state
          * @param payload
          */
-        [mTypes.updateOrder]: ( state, payload ) => {
-            // console.log(mTypes.updateOrder, state, payload);
-            // this just requires us to match list indexes w the
-            //property of the item
-            for (let i = 0; i < state.items.length; i++) {
-                let item = state.items[ i ];
+        [mTypes.updateOrder]: ( state, orderList ) => {
+            //new payload where it contains a key orderList
+            for (let i = 0; i < orderList.length; i++) {
+                // this is the ith item id
+                let id = orderList[ i ];
+                let item = state.items.filter( ( i ) => {
+                    if ( i.id === id ) {
+                        return i;
+                    }
+                } );
+
+                //get the item, and update its index
+                //no moving it or anything
                 // window.console.log('items', 'updateOrder', 87, i, item);
                 if ( typeof item !== 'undefined' ) {
                     //set the property on the object
-                    Vue.set(item, 'index', i);
-                     //set it in the array with vue
-                    Vue.set(state.items, i, item);
+                    Vue.set( item, 'index', i );
+                    //set it in the array with vue
+                    // Vue.set(state.items, i, item);
+                    //resort array
                 }
             }
+
+            //now that we've done all that, let's resort items
+            //by the object's index
+            let items = state.items.sort( ( a, b ) => {
+                return a.index > b.index;
+            } );
+
+            //and finally push the sorted array back
+            Vue.set( state, 'items', items );
+
+            // // console.log(mTypes.updateOrder, state, payload);
+            // // this just requires us to match list indexes w the
+            // //property of the item
+            // for (let i = 0; i < state.items.length; i++) {
+            //     let item = state.items[ i ];
+            //     // window.console.log('items', 'updateOrder', 87, i, item);
+            //     if ( typeof item !== 'undefined' ) {
+            //         //set the property on the object
+            //         Vue.set(item, 'index', i);
+            //         //set it in the array with vue
+            //         Vue.set(state.items, i, item);
+            //     }
+            // }
 
         },
 
@@ -122,11 +178,11 @@ const mutations = {
          */
         [ mTypes.addNewItem ]: ( state, payload ) => {
             // console.log(mTypes.addNewItem, state, payload);
-            if ( Payload.checkIfPayload(payload) ) {
+            if ( Payload.checkIfPayload( payload ) ) {
                 let {
                     obj
                 } = payload;
-                Vue.set(state.items, obj.index, obj);
+                Vue.set( state.items, obj.index, obj );
             }
 //case where something just hands an item
             else {
@@ -154,10 +210,10 @@ const mutations = {
 
             if ( typeof itm !== 'undefined' ) {
                 //Set the value so vue can see it
-                Vue.set(itm, payload.updateProp, payload.updateVal);
+                Vue.set( itm, payload.updateProp, payload.updateVal );
                 //Push the altered item back into the array
                 //set it in the array with vue
-                Vue.set(state.items, payload.index, itm);
+                Vue.set( state.items, payload.index, itm );
             }
         },
 
@@ -175,10 +231,10 @@ const mutations = {
             // window.console.log('items', 143, itm);
             if ( typeof itm !== 'undefined' ) {
                 //Set the value so vue can see it
-                Vue.set(itm, payload.updateProp, payload.updateVal);
+                Vue.set( itm, payload.updateProp, payload.updateVal );
                 //Push the altered item back into the array
                 //set it in the array with vue
-                Vue.set(state.items, payload.index, itm);
+                Vue.set( state.items, payload.index, itm );
                 // state.items.$set( payload.index, itm );
             }
         },
@@ -191,25 +247,25 @@ const mutations = {
          * @param payload
          */
         [ mTypes.updateComment ]: ( state, payload ) => {
-            console.log(mTypes.updateComment, payload, state);
+            console.log( mTypes.updateComment, payload, state );
             //get the item
-            let itm = helpers.getItemFromPayload(state, payload);
-            window.console.log('items', 'updateComment', 145, itm, state.items);
+            let itm = helpers.getItemFromPayload( state, payload );
+            window.console.log( 'items', 'updateComment', 145, itm, state.items );
 
             if ( typeof itm !== 'undefined' ) {
                 // let itm = state.items[ payload.index ];
-                let comment = itm.getComment(payload.updateValence);
+                let comment = itm.getComment( payload.updateValence );
 
                 if ( typeof comment !== 'undefined' ) {
                     //Set the value so vue can see it
-                    Vue.set(comment, 'text', payload.updateVal);
+                    Vue.set( comment, 'text', payload.updateVal );
                 }
 
                 //Push the altered item back into the array
                 //set it in the array with vue
-                Vue.set(state.items, payload.index, itm);
+                Vue.set( state.items, payload.index, itm );
                 // state.items.$set( payload.index, itm );
-                window.console.log('items', 'updateComment', 145, itm, state.items);
+                window.console.log( 'items', 'updateComment', 145, itm, state.items );
             }
         },
 
@@ -225,8 +281,8 @@ const mutations = {
          */
         [ mTypes.setItem ]: ( state, payload ) => {
             // console.log('items.mutations', mTypes.setItem, state, payload);
-            if ( Payload.checkIfPayload(payload) ) {
-                Vue.set(state.items, payload.obj.index, payload.obj);
+            if ( Payload.checkIfPayload( payload ) ) {
+                Vue.set( state.items, payload.obj.index, payload.obj );
             }
         },
 
@@ -239,8 +295,8 @@ const mutations = {
          * @param payload Array with keys: ItemIndex, ItemId
          */
         [ mTypes.addItemIndexMapping ]: ( state, payload ) => {
-            Payload.checkIfPayload(payload);
-            Vue.set(state.indexMap, payload.index, payload.id);
+            Payload.checkIfPayload( payload );
+            Vue.set( state.indexMap, payload.index, payload.id );
 
             // state.indexMap.set( payload.index, payload.id );
         },
@@ -257,26 +313,36 @@ const mutations = {
  */
 const buildPayloadFromInput = ( state, rootState, payload ) => {
     //either a json or an item object have been passed in
-    let {ItemId, ItemIndex, obj, ItemObject} = payload;
+    let { ItemId, ItemIndex, obj, ItemObject } = payload;
 
     obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
 
     //check and see if an Item object has already been passed in
     if ( !obj instanceof Item ) {
         //create a new Item
-        let {name, id, index} = payload;
-        let ItemJson = {name, ItemIndex};
-        obj = Item.factory(ItemJson);
+        let { name, id, index } = payload;
+        let ItemJson = { name, ItemIndex };
+        obj = Item.factory( ItemJson );
     }
 
     //assemble the expected payload
     // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
-    let out = Payload.factory({id: obj.id, index: obj.index, obj: obj});
+    let out = Payload.factory( { id: obj.id, index: obj.index, obj: obj } );
     //Add to the Items store
     return out;
 };
 
 const actions = {
+
+    [aTypes.addOlderSibling]: ( { state, dispatch, commit, getters }, payload ) => {
+        //add item at same depth with same parent but with lower index
+        window.console.log( 'items', 'addOlderSibling', 283, payload );
+    },
+
+    [aTypes.addYoungerSibling]: ( { state, dispatch, commit, getters }, payload ) => {
+        //add item at same depth with same parent but with higher index
+        window.console.log( 'items', 'addYoungerSibling', 288, payload );
+    },
 
     /**
      * Runs the various maintenance operations on the item store.
@@ -286,24 +352,20 @@ const actions = {
      * @param commit
      * @param getters
      */
-    [aTypes.cleanupItems]: ( {dispatch, commit, getters} ) => {
+    [aTypes.cleanupItems]: ( { dispatch, commit, getters } ) => {
 
-        let p = new Promise(( resolve, reject ) => {
-            // setTimeout(() => {
-                commit('cleanupEmptyItems');
+        let p = new Promise( ( resolve, reject ) => {
+            commit( 'cleanupEmptyItems' );
+            resolve()
+        } );
+
+        return p.then( () => {
+            return new Promise( ( resolve, reject ) => {
+                commit( mTypes.updateOrder );
                 resolve()
-            // }, standardTimeout);
-        });
+            } );
 
-        return p.then(() => {
-            return new Promise(( resolve, reject ) => {
-                // setTimeout(() => {
-                    commit(mTypes.updateOrder);
-                    resolve()
-                // }, standardTimeout);
-            });
-
-        });
+        } );
 
     },
 
@@ -313,10 +375,10 @@ const actions = {
      * @param state
      * @param commit
      */
-    [aTypes.deleteItem]: ( {state, commit}, payload ) => {
-        console.log(aTypes.deleteItem, state, commit, payload);
+    [aTypes.deleteItem]: ( { state, commit }, payload ) => {
+        console.log( aTypes.deleteItem, state, commit, payload );
         //check if payload has correct structure
-        let {index, id} = payload;
+        let { index, id } = payload;
         //remove from page
 
         //reorder index
@@ -338,11 +400,11 @@ const actions = {
      * @param state
      * @param payload
      */
-    [ aTypes.promoteItem ]: ( {state, dispatch, commit, getters}, payload ) => {
-        let {index} = payload;
-        let item = getters.getItemByIndex(index);
+    [ aTypes.promoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
+        let { index } = payload;
+        let item = getters.getItemByIndex( index );
         item.promote();
-        commit(mTypes.setItem, Payload.factory({obj: item}))
+        commit( mTypes.setItem, Payload.factory( { obj: item } ) )
     },
 
     /**
@@ -351,20 +413,24 @@ const actions = {
      * @param state
      * @param payload
      */
-    [ aTypes.demoteItem ]: ( {state, dispatch, commit, getters}, payload ) => {
-        let {index} = payload;
-        let item = getters.getItemByIndex(index);
+    [ aTypes.demoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
+        let { index } = payload;
+        let item = getters.getItemByIndex( index );
         item.demote();
-        commit(mTypes.setItem, Payload.factory({obj: item}))
+        commit( mTypes.setItem, Payload.factory( { obj: item } ) )
     },
 
-    [ aTypes.toggleItemPublic ]: ( {state, dispatch, commit, getters}, payload ) => {
-        window.console.log('items', 'toggleItemPublic', 365, payload);
+    [ aTypes.toggleItemPublic ]: ( { state, dispatch, commit, getters }, payload ) => {
+        window.console.log( 'items', 'toggleItemPublic', 365, payload );
 
-        if ( Payload.checkIfPayload(payload) ) {
-            let item = getters.getItemByIndex(payload.index);
+        if ( Payload.checkIfPayload( payload ) ) {
+            let item = getters.getItemByIndex( payload.index );
 
-            commit(mTypes.updateItem, Payload.factory({index: item.index, updateProp: 'publicity', updateVal: ! item.publicity }));
+            commit( mTypes.updateItem, Payload.factory( {
+                index: item.index,
+                updateProp: 'publicity',
+                updateVal: !item.publicity
+            } ) );
             // //get the item
             // let item = getters.getItemByIndex(payload.index);
             // //flip its value internally
@@ -404,6 +470,13 @@ const actions = {
 };
 
 const getters = {
+
+    getMappedItem : (state, getters) => (payload)=>{
+
+        let key = buildKey(idx);
+        return state.orderMap[key];
+    },
+
     /**
      * Returns the desired Item object
      * Payload can have any of the following identifiers,
@@ -418,14 +491,14 @@ const getters = {
     getItem: ( state, getters ) => ( payload ) => {
         // [gTypes.getItem ]: ( state, getters, payload ) => {
         // console.log('getItem', state, payload);
-        if ( isItemsEmpty(state) ) return false;
-        if ( Payload.checkIfPayload(payload) ) {
-            let {index, id} = payload;
+        if ( isItemsEmpty( state ) ) return false;
+        if ( Payload.checkIfPayload( payload ) ) {
+            let { index, id } = payload;
             if ( typeof index !== 'undefined' ) {
-                return getters.getItemByIndex(state, getters, index);
+                return getters.getItemByIndex( state, getters, index );
             }
             if ( typeof id !== 'undefined' ) {
-                return getters.getItemById(state, getters, id);
+                return getters.getItemById( state, getters, id );
             }
         }
     },
@@ -443,17 +516,46 @@ const getters = {
      * @param index
      */
     getItemByIndex: ( state, getters ) => ( index ) => {
-        if ( Payload.checkIfPayload(index) ) {
+        //remove the payload wrapper if necessary
+        if ( Payload.checkIfPayload( index ) ) {
             index = index.index;
         }
+
+        //if this is a single member array, we can treat
+        //it like a numeric input under the older system
+        if (_.isArray(index) && index.length === 1 )
+        {
+            index = index[0];
+        }
+
+        //Now we're ready to deal with the input
         return function ( state, index ) {
-            var r = state.items.filter(function ( i ) {
-                if ( i.index === index ) {
-                    return i;
+            //There are two cases to consider
+            //We deal first with the easy case in which the index
+            //is a number or string representation of a number
+            //and not a composite
+            if ( ! _.isArray( index ) ) {
+                //if was just a string or integer this is fine
+                //also if the input was an array with only one item
+                var r = state.items.filter( function ( i ) {
+                    if ( i.index === index ) {
+                        return i;
+                    }
+                } );
+                return r[ 0 ];
+            }
+
+            else{
+                //we need to do something different
+                //because it is an array
+                if(_.isArray(index)){
+                    let idx = index.join('-');
                 }
-            });
-            return r[ 0 ];
-        }(state, index);
+
+            }
+
+
+        }( state, index );
 
 
         // // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
@@ -481,13 +583,13 @@ const getters = {
         // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
         // console.log('getItemById', state, id);
         return function ( state, id ) {
-            var r = state.items.filter(function ( i ) {
+            var r = state.items.filter( function ( i ) {
                 if ( i.id === id ) {
                     return i;
                 }
-            });
+            } );
             return r[ 0 ];
-        }(state, id)
+        }( state, id )
 
     },
 
@@ -511,10 +613,10 @@ const getters = {
 
     getAllIndexesList: ( state, getters, rootState ) => {
 
-        if ( isItemsEmpty(state) ) return []
+        if ( isItemsEmpty( state ) ) return []
         // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
         let out = [];
-        return Object.keys(state.items)
+        return Object.keys( state.items )
         // for ( let [ key, val ] of state.items ) {
         //     // console.log( 'getAllIndexesList', key, val );
         //     out.push( key );
@@ -538,7 +640,7 @@ const getters = {
         for (let [ key, val ] of items) {
             // for ( let [ key, val ] of state.items.entries() ) {
             // console.log( 'getAllItemsList', key, val );
-            out.push(val);
+            out.push( val );
         }
         // }
         return out;
@@ -557,7 +659,7 @@ const getters = {
     },
 
     getNextIndex: ( state, getters ) => {
-        return _.sortedIndex(state.items);
+        return _.sortedIndex( state.items );
 
     },
 

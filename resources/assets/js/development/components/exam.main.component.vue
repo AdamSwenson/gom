@@ -1,10 +1,6 @@
 <template>
-    <div id="examNameArea" class="exam-main-component row">
-        <div class="col-lg-2">
-            <h4>{{headingName}}</h4>
-        </div>
-
-        <div class="col-lg-6">
+    <div id="examNameArea" class="exam-main-component">
+        <div class="input-group">
             <input type="text"
                    class="form-control input-lg"
                    id="privateName"
@@ -12,45 +8,13 @@
                    aria-describedby="basic-addon1"
                    v-bind:placeholder="placeHolders.privateName"
                    v-model="privateName"/>
+            <div class="input-group-btn">
+                <settings-button :index="0"></settings-button>
+            </div>
         </div>
-
-        <div class="col-lg-2 text-right">
-            <settings-button :index="0"></settings-button>
-        </div>
-
     </div>
 
 
-    <!--<div id="examNameArea" class="exam-main-component">-->
-    <!--<div class="input-group input-group-lg">-->
-
-    <!--<div class="input-group-addon"-->
-    <!--id="basic-addon1"-->
-    <!--&gt;-->
-    <!--{{headingName}}-->
-
-
-    <!--</div>-->
-
-    <!--<input type="text"-->
-    <!--class="form-control input-lg"-->
-    <!--id="privateName"-->
-    <!--name="privateName"-->
-    <!--aria-describedby="basic-addon1"-->
-    <!--v-bind:placeholder="placeHolders.privateName"-->
-    <!--v-model="privateName"-->
-    <!--/>-->
-
-    <!--<div class="input-group-btn">-->
-    <!--<settings-button :index="0"></settings-button>-->
-
-    <!--&lt;!&ndash;<button class="btn btn-primary"&ndash;&gt;-->
-    <!--&lt;!&ndash;v-on:click="toggleExamProperties"&ndash;&gt;-->
-    <!--&lt;!&ndash;&gt;<span class="glyphicon glyphicon-cog"></span></button>&ndash;&gt;-->
-    <!--</div>-->
-
-    <!--</div>-->
-    <!--</div>-->
 </template>
 
 <style>

@@ -24,10 +24,10 @@
 
 </style>
 <script>
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
-    import Comment from '../../models/Comment'
-    import * as mTypes from '../../store/mutation-types'
+    import Item from '../../../models/Item'
+    import Payload from '../../../models/Payload'
+    import Comment from '../../../models/Comment'
+    import * as mTypes from '../../../store/mutation-types'
 
     export default{
         props: ['index', 'valence'],

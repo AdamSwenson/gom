@@ -11,8 +11,8 @@
 
 </style>
 <script>
-    import * as aTypes from '../../store/action-types';
-    import * as mTypes from '../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
 
     export default {
         props: [],

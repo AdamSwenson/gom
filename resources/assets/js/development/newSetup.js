@@ -11,6 +11,9 @@ import Vue from  'vue/dist/vue.js'
 // Use commonjs version if es build is not working
 import BootstrapVue from 'bootstrap-vue';
 Vue.use(BootstrapVue);
+// Vue.use( Sortable );
+
+
 
 import App from './new-setup.vue'
 
@@ -20,7 +23,6 @@ import progressDashboard from './components/dashboard.progress.component.vue'
 import toolsDashboard from './components/dashboard.tools.component.vue'
 
 //Panes (main container for edit tools)
-import examEditPane from './components/pane.edit-exam.component.vue'
 import itemEditPane from './components/pane.edit-item.component.vue'
 import editTabs from './components/nav.edit-tabs.component.vue'
 
@@ -37,21 +39,24 @@ import examMain from './components/exam.main.component.vue'
 import itemMain from './components/item.main.component.vue'
 
 //Item card list
-import cardList from './components/itemCards.list.component.vue'
-import itemAddButton from './components/buttons.item.add.component.vue'
+import cardList from './components/cards/cardList.component.vue'
+import itemAddButton from './components/input/buttons.item.add.component.vue'
 
 //Item card and parts
-import itemCard from './components/itemCards.card.component.vue'
-import depthControl from './components/buttons.depth-control.component.vue'
+import itemCard from './components/cards/itemCard.component.vue'
+import depthControl from './components/input/buttons.depth-control.component.vue'
 import maxScore from './components/field.max-score.component.vue'
 import itemNumber from './components/field.item-number.component.vue'
 import itemName from './components/field.item-name.component.vue'
 
 //Other buttons
-import settingsButton from './components/buttons.settings-control.component.vue'
-import valenceButton from './components/buttons.valence.component.vue'
-import deleteButton from './components/buttons.item.delete.component.vue'
-import publicIndicator from './components/buttons.public-control.component.vue'
+import settingsButton from './components/input/buttons.settings-control.component.vue'
+import valenceButton from './components/input/buttons.valence.component.vue'
+import deleteButton from './components/input/buttons.item.delete.component.vue'
+import publicIndicator from './components/input/buttons.public-control.component.vue'
+
+import subList from './components/cards/subList.component.vue'
+import examCard from './components/cards/examCard.component.vue'
 
 //Server request handlers
 import api from '../api/controller'
@@ -70,7 +75,7 @@ Vue.component('api', api);
 
 //Register components globally
 Vue.component('exam-main', examMain);
-Vue.component('exam-edit-pane', examEditPane);
+// Vue.component('exam-edit-pane', examEditPane);
 
 Vue.component('progress-dashboard', progressDashboard);
 Vue.component('tools-dashboard', toolsDashboard);
@@ -80,9 +85,15 @@ Vue.component('item-name', itemName);
 Vue.component('item-main', itemMain);
 Vue.component('public-indicator', publicIndicator);
 Vue.component('settings-button', settingsButton);
-Vue.component('item-edit-pane', itemEditPane);
-Vue.component('item-card', itemCard);
+
+// Vue.component('item-edit-pane', itemEditPane);
+
+//cards
 Vue.component('card-list', cardList);
+Vue.component('item-card', itemCard);
+Vue.component('exam-card', examCard);
+Vue.component('sub-list', subList);
+
 
 //Panels
 Vue.component('panel-detail', panelItemDetail);
@@ -101,7 +112,6 @@ Vue.component('max-score', maxScore);
 Vue.component('item-number', itemNumber);
 
 Vue.component('list-dropdown', listDropdown);
-
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -125,6 +135,7 @@ const routes = [
     }
     , //props: (route) => {return route.index;}},
     {
+        name: 'exam-detail',
         path: '/panel-exam-detail/:index',
         components: {examPanels: panelExamDetail},
         props: true
@@ -135,6 +146,7 @@ const routes = [
         props: true
     },
     {
+        name: 'item-detail',
         path: '/panel-item-detail/:index',
         components: {itemPanels: panelItemDetail},
         props: true

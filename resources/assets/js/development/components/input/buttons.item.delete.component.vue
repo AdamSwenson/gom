@@ -1,21 +1,18 @@
 <template>
-    <div class="deleteButton ">
         <button
-                v-if="visible"
-                class="btn btn-danger btn-block js-remove "
+                class="deleteButton btn btn-danger btn-md js-remove "
                 v-on:click="remove"
         >
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete
         </button>
-    </div>
 </template>
 
 <style>
 </style>
 
 <script>
-    import * as aTypes from '../../store/action-types';
-    let bootbox = require( 'bootbox' )
+    import * as aTypes from '../../../store/action-types';
+    let bootbox = require( 'bootbox' );
 
     export default {
         props: [ 'index', 'id' ],

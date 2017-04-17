@@ -3,13 +3,11 @@
     <div class="item-settings-detail-component">
 
         <div class="row">
-            <div class="col-md-6">
+
+            <div class="col-md-11">
                 <item-number
                         :index="index"
                 ></item-number>
-            </div>
-
-            <div class="col-md-6">
 
                 <max-score
                         :index="index"
@@ -55,6 +53,7 @@
 
         data: function () {
             return {
+                active: this.$route.params.index,
             index : this.$route.params.index,
                 placeholders: {
                     questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
@@ -64,6 +63,9 @@
         },
 
         computed: {
+            isDetailTabActive :function (  ) {
+
+            },
 
             questionText: {
                 get: function () {
