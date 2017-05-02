@@ -59,7 +59,7 @@ const state = {
     //         }
     //     }
     // }
-
+orderMap : new Map(),
     order : {}
 
 };
@@ -107,7 +107,7 @@ const mutations = {
     removeItem: ( state, payload ) => {
     },
 
-
+    //
 };
 
 const actions = {
@@ -115,27 +115,6 @@ const actions = {
     //only these can call the mutations.
     //so there needs to be one for each mutation
 
-    /**
-     * Make sure the property index matches the lookup index
-     * @param state
-     * @param payload
-     */
-    [mTypes.updateOrder]: ( state, payload ) => {
-        // console.log(mTypes.updateOrder, state, payload);
-        // this just requires us to match list indexes w the
-        //property of the item
-        for (let i = 0; i < state.items.length; i++) {
-            let item = state.items[ i ];
-            // window.console.log('items', 'updateOrder', 87, i, item);
-            if ( typeof item !== 'undefined' ) {
-                //set the property on the object
-                Vue.set( item, 'index', i );
-                //set it in the array with vue
-                Vue.set( state.items, i, item );
-            }
-        }
-
-    },
 };
 
 const getters = {

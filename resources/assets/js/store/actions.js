@@ -136,9 +136,32 @@ export const parseItemData = ( {state, commit, dispatch} ) => {
                 return true;
             });
         }
+
         resolve();
     });
 };
+
+
+/**
+ * These are actions which different parts of the gom
+ * call to when they initialize.
+ *
+ */
+/** This is what gets run when the root instance is mounted for the setup page */
+export const setupOnMount = ( {state, commit, dispatch} ) => {
+    dispatch('parseExamData').then(() => {
+        dispatch('parseItemData');
+    }).then(()=>{
+        // emit('items-ready');
+    });
+
+};
+
+
+// export const onUpdate = (event) =>{
+//     let {newIndex, oldIndex} = event;
+//     this.list.splice(newIndex, 0, this.list.splice(oldIndex, 1)[0])
+// };
 
 
 //
@@ -180,18 +203,6 @@ export const parseItemData = ( {state, commit, dispatch} ) => {
 // };
 
 
-/**
- * These are actions which different parts of the gom
- * call to when they initialize.
- *
- */
-/** This is what gets run when the root instance is mounted for the setup page */
-export const setupOnMount = ( {state, commit, dispatch} ) => {
-    dispatch('parseExamData').then(() => {
-        dispatch('parseItemData');
-    });
-
-};
 //
 // else
 // {

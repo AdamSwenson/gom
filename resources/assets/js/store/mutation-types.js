@@ -31,41 +31,42 @@ export const loadStockComments = 'loadStockComments'
 
 //exams
 export const addExam = 'addExam';
-export const addIndexMapping = 'addIndexMapping'
-export const loadExams = 'loadExams'
-
-
-//escores
-export const loadElementScores = 'loadElementScores'
-export const setElementScore = 'setElementScore'
-
-
-//grades
-export const loadExamGrades = 'loadExamGrades'
-export const loadStandardGrades = 'loadStandardGrades'
-export const setGrade = 'setGrade'
-
-//qscores
-export const setQuestionScore = 'setQuestionScore'
-export const removeQuestionScore = 'removeQuestionScore'
-
-//questions
-export const setMaxQuestionScore = 'setMaxQuestionScore'
-export const removeMaxQuestionScore ='removeMaxQuestionScore'
-// export const loadMaxQuestionScores = 'loadMaxQuestionScores'
-export const setQuestion = 'setQuestion'
-export const removeQuestion = 'removeQuestion'
-export const setNumberQuestions = 'setNumberQuestions'
+;
+export const addIndexMapping = 'addIndexMapping';
+export const loadExams = 'loadExams';
+;
+;
+//escores                                                            ;
+export const loadElementScores = 'loadElementScores';
+export const setElementScore = 'setElementScore';
+;
+;
+//grades                                                             ;
+export const loadExamGrades = 'loadExamGrades';
+export const loadStandardGrades = 'loadStandardGrades';
+export const setGrade = 'setGrade';
+;
+//qscores                                                            ;
+export const setQuestionScore = 'setQuestionScore';
+export const removeQuestionScore = 'removeQuestionScore';
+;
+//questions                                                          ;
+export const setMaxQuestionScore = 'setMaxQuestionScore';
+export const removeMaxQuestionScore = 'removeMaxQuestionScore';
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores'      ;
+export const setQuestion = 'setQuestion';
+export const removeQuestion = 'removeQuestion';
+export const setNumberQuestions = 'setNumberQuestions';
 
 //students
-export const setStudent = 'setStudent'
-export const removeStudent = 'removeStudent'
+export const setStudent = 'setStudent';
+export const removeStudent = 'removeStudent';
 
 //times
-export const incrementGradingTime = 'incrementGradingTime'
-export const setGradingTime = 'setGradingTime'
-export const removeGradingTime = 'removeGradingTime'
-export const resetGradingTime = 'resetGradingTime'
+export const incrementGradingTime = 'incrementGradingTime';
+export const setGradingTime = 'setGradingTime';
+export const removeGradingTime = 'removeGradingTime';
+export const resetGradingTime = 'resetGradingTime';
 
 
 export const setExam = 'setExam';
@@ -74,25 +75,25 @@ export const setExam = 'setExam';
 //items
 export const addNewItem = 'addNewItem';
 export const setItem = 'setItem';
-export const addItemIndexMapping = 'addItemIndexMapping'
-export const loadItems = 'loadItems'
-export const updateOrder = 'updateOrder'
+export const addItemIndexMapping = 'addItemIndexMapping';
+export const loadItems = 'loadItems';
+export const updateOrder = 'updateOrder';
 
 
-export const updateItemName = 'updateItemName'
+export const updateItemName = 'updateItemName';
 export const updateItem = 'updateItem';
 export const updateItemSilently = 'updateItemSilently';
-export const setItemNameByIndex = 'setItemNameByIndex'
+export const setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
 
-export const updateComment = 'updateComment'
+export const updateComment = 'updateComment';
 
 //settings
-export const toggleDeleteButtonVisibility = 'toggleDeleteButtonVisibility'
-export const toggleReorderMode ='toggleReorderMode'
-export const toggleSampleFeedback = 'toggleSampleFeedback'
+export const toggleDeleteButtonVisibility = 'toggleDeleteButtonVisibility';
+export const toggleReorderMode = 'toggleReorderMode';
+export const toggleSampleFeedback = 'toggleSampleFeedback';
 
 //item settings
-export const showItemSettings = 'showItemSettings'
-export const hideItemSettings = 'hideItemSettings'
-export const toggleExamSettings = 'toggleExamSettings'
+export const showItemSettings = 'showItemSettings';
+export const hideItemSettings = 'hideItemSettings';
+export const toggleExamSettings = 'toggleExamSettings';

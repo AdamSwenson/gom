@@ -28,7 +28,7 @@
 
         <div class="row" v-show="paneVisible">
             <div class="button-row col-md-12 text-left">
-                <div class="btn-group"
+                <div class="btn-group "
                      role="group"
                      aria-label="Item tool buttons">
 
@@ -41,7 +41,7 @@
         </div>
 
         <div class="row">
-            <sub-list></sub-list>
+            <!--<sub-list></sub-list>-->
         </div>
     </div>
 
@@ -211,7 +211,13 @@
 
         },
 
-        directives: {},
+        directives: {
+            'sortable': {
+                inserted: function ( el, binding ) {
+                    var sortable = new Sortable( el, binding.value || {} );
+                }
+            }
+        },
 
         events: {
             'display-settings': function () {

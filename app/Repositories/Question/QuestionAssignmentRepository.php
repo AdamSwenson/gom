@@ -147,7 +147,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
 
         //Load array of questionIds currently used in question assignments for the exam
         $this->getExistingQuestionIds($exam->getId());
-
+$this->requestIds = $order;
         $this->helper = app()->make('App\Http\Controllers\helpers\assignments\IAssignmentHelper');
 
         switch ( $this->helper->determineCase($this->existingIds, $order) ) {
@@ -289,7 +289,6 @@ MYSQL;
     {
         //clear out the current list
         $this->existingIds = [];
-
 
         $query = <<<MYSQL
             SELECT question_id

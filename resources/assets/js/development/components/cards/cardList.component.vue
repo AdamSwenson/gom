@@ -1,9 +1,13 @@
 <template xmlns="http://www.w3.org/1999/html">
     <div class="card-list-component">
 
-        <div class="row card-list">
+        <div class="row outer-card-list">
 
-            <ul id='card-list' class="list-group col-md-9 col-lg-10">
+            <ul id='card-list'
+                class="card-list list-group col-md-9 col-lg-10"
+            >
+                <!--v-sortable="options"-->
+
                 <li class="item-cards list-group-item  handle"
                     v-for="item in items" :key="item.index"
                 >
@@ -23,7 +27,7 @@
                 </div>
             </div>
         </div>
-        <!--</draggable>   v-sortable="options"-->
+        <!--</draggable>   -->
     </div>
 
 </template>
@@ -63,10 +67,6 @@
     //    import itemCard from './itemCard.component.vue'
     //    import itemAddButton from './buttons.item.add.component.vue'
 
-    //For Vue.js 2.0
-    // var draggable = require('vuedraggable')
-
-    //    var Sortable = require('sortablejs');
 
     /**
      * Holds the item cards. Serves as their outer parent
@@ -80,50 +80,56 @@
         data: function () {
             return {
                 defaults: {},
-                options: {
-                    group: 'items', //name must be common to drag between lists
-                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                    animation: 150,
-                    handle: '.handle',  // Drag handle selector within list items
-                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
-                    dataIdAttr: 'data-id',
-
-//                    onEnd: this.reorder,
-                    store: {
-                        /**
-                         * Get the order of elements. Called once during initialization.
-                         * @param   {Sortable}  sortable
-                         * @returns {Array}
-                         */
-                        get: function ( sortable ) {
-                        },
-
-                        /**
-                         * Save the order of elements. Called onEnd (when the item is dropped).
-                         * @param {Sortable}  sortable
-                         */
-                        set: function ( sortable ) {
-                            let newOrder = me.determineOrdering();
-                            window.console.log( 'cardList.component', 'onSet', 297, 'newOrder', newOrder );
-
-                        }
-                    },
-
-
-                    onSort: function ( evt ) {
-                        let newOrder = me.determineOrdering();
-                        window.console.log( 'cardList.component', 'onSort', 297, 'newOrder', newOrder );
-                    }
-                }
+//                options: {
+//                    group: 'items', //name must be common to drag between lists
+//                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+//                    animation: 150,
+//                    handle: '.handle',  // Drag handle selector within list items
+//                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
+//                    dataIdAttr: 'data-id',
+//
+////                    onEnd: this.reorder,
+//                    store: {
+//                        /**
+//                         * Get the order of elements. Called once during initialization.
+//                         * @param   {Sortable}  sortable
+//                         * @returns {Array}
+//                         */
+//                        get: function ( sortable ) {
+//                        },
+//
+//                        /**
+//                         * Save the order of elements. Called onEnd (when the item is dropped).
+//                         * @param {Sortable}  sortable
+//                         */
+//                        set: function ( sortable ) {
+//                            let newOrder = me.determineOrdering();
+//                            window.console.log( 'cardList.component', 'onSet', 297, 'newOrder', newOrder );
+//
+//                        }
+//                    },
+//
+//
+//                    onSort: function ( evt ) {
+//                        let newOrder = me.determineOrdering();
+//                        window.console.log( 'cardList.component', 'onSort', 297, 'newOrder', newOrder );
+//                    }
+//                }
             }
         },
 
 
         computed: {
-            //Return everything in the items tree execpt the root
+            ids: function () {
+          return this.$store.getters.getSortedIds;
+            },
+
+            //Return everything in the items tree except the root
             //The root is the exam. It gets special treatment.
             items: function () {
                 let orig = this.$store.getters[ gTypes.getAllItems ];
+                if ( _.isEmpty( orig ) ) return [];
+
                 //filter out the exam and return everything else
                 return orig.filter( ( obj ) => {
                     return obj.index > 0;
@@ -167,6 +173,7 @@
             numberOfItems: function () {
                 return this.$store.getters.getItemCount
             },
+
 
         },
 
@@ -228,26 +235,32 @@
         },
 
         directives: {
-            'sortable': {
-                inserted: function ( el, binding ) {
-                    var sortable = new Sortable( el, binding.value || {} );
-                }
-            }
+//            'sortable': {
+//                componentUpdated: function ( el, binding ) {
+////                    window.console.log( 'cardList.component', 'inserted', 234, el);
+//                    var sortable = new Sortable( el, binding.value || {} );
+//                }
+//            }
         },
 
         events: {
             'add-item': function () {
                 console.log( 'cardList', 'CAUGHT', 'add-item' );
                 this.addItem();
+            },
+            'items-ready': function () {
+                window.console.log( 'cardList.component', 'items-ready', 248, 'caught' );
+//                var qList = document.getElementById( 'card-list' );
+//                var editableList = Sortable.create( qList, this.options );
+
             }
         },
 
         mounted: function () {
 //            this.$store.commit('addMappedItem', [0,1,1], {thing: 'taco'});
-                        this.$store.commit('addMappedItem', {idx: [0], item: 'taco'});
+            //   this.$store.commit( 'addMappedItem', { index: [ 0 ], item: 'taco' } );
 
             console.log( 'cardList ready' );
-
         },
     }
 </script>

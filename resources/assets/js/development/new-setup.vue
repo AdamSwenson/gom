@@ -110,6 +110,8 @@
     import * as mTypes from '../store/mutation-types'
     import * as gTypes from '../store/getter-types'
 
+    var Sortable = require( 'sortablejs' );
+
     import store from '../store'
 
     export default {
@@ -119,6 +121,36 @@
         data: function () {
             return {
                 defaults: {},
+                options: {
+                    group: 'items', //name must be common to drag between lists
+                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                    animation: 150,
+                    handle: '.handle',  // Drag handle selector within list items
+                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
+                    dataIdAttr: 'data-id',
+                    onUpdate: function(event){
+                        store.dispatch('onUpdate', event);
+                    },
+//                    store: {
+//                        /**
+//                         * Get the order of elements. Called once during initialization.
+//                         * @param   {Sortable}  sortable
+//                         * @returns {Array}
+//                         */
+//                        get: function ( sortable ) {
+//                        },
+//
+//                        /**
+//                         * Save the order of elements. Called onEnd (when the item is dropped).
+//                         * @param {Sortable}  sortable
+//                         */
+//                        set: function ( sortable ) {
+//                            let newOrder = me.determineOrdering();
+//                            window.console.log( 'cardList.component', 'onSet', 297, 'newOrder', newOrder );
+//
+//                        }
+//                    },
+                }
             };
         },
 
@@ -131,7 +163,12 @@
         events: {},
 
         mounted: function () {
-            store.dispatch('setupOnMount');
+            store.dispatch('setupOnMount').then(()=>{
+                this.$emit('items-ready');
+//                var qList = document.getElementsByClassName( 'card-list' );
+                var qList = document.getElementById( 'card-list' );
+                var editableList = Sortable.create( qList, this.options );
+            });
         },
 
         components: {},

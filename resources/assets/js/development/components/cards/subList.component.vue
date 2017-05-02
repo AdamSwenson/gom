@@ -2,15 +2,19 @@
     <div class="card-list-component "
          v-bind:class="offset">
 
-        <div class="row card-list">
-            <!--<ul :id="sublistId" class="list-group col-md-9 col-lg-9" v-sortable="options">-->
-                <!--<li class="item-cards list-group-item  handle"-->
-                    <!--v-bind:class="sublistClass"-->
-                    <!--v-for="item in items" :key="item.index"-->
-                <!--&gt;-->
-                    <!--<item-card :index="item.index" :parent-index="index"></item-card>-->
-                <!--</li>-->
-            <!--</ul>-->
+        <div class="row sublist">
+            <ul :id="sublistId"
+                class="card-list list-group col-md-9 col-lg-9"
+
+            >
+                <!--v-sortable="options"-->
+                <li class="item-cards list-group-item  handle"
+                    v-bind:class="sublistClass"
+                    v-for="item in items" :key="item.index"
+                >
+                    <item-card :index="item.index" :parent-index="index"></item-card>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -101,12 +105,12 @@
                 return "col-min-offset" + this.depth;
             },
             items: function () {
-//                return [];
+                return [];
                 //todo filter by parent index
                 //Return everything in the items tree execpt the root
                 //The root is the exam. It gets special treatment.
                 let orig = this.$store.getters[ gTypes.getAllItems ];
-                if(orig.length > 0) {
+                if(!_.isEmpty(orig) && orig.length > 0) {
                     //filter out the exam and return everything else
                     return orig.filter( ( obj ) => {
                         return obj.index > 0;
@@ -128,14 +132,14 @@
 
         methods: {},
 
-//
-//        directives: {
-//            'sortable': {
-//                inserted: function ( el, binding ) {
-//                    var sortable = new Sortable( el, binding.value || {} );
-//                }
-//            }
-//        },
+
+        directives: {
+            'sortable': {
+                inserted: function ( el, binding ) {
+                    var sortable = new Sortable( el, binding.value || {} );
+                }
+            }
+        },
 
 
         events: {},

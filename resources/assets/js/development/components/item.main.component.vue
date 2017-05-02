@@ -2,11 +2,14 @@
 
     <div class="item-main-component ">
         <div class="row">
-            <div class="col-md-2 col-lg-2">
-                <h4># {{ index }}</h4>
+            <!--<div class="col-md-2 col-lg-2">-->
+                <div class="col-md-1 col-lg-1">
+                <h5># {{ index }}</h5>
             </div>
-            <div class="col-md-10 col-lg-10">
+            <!--<div class="col-md-10 col-lg-10">-->
+            <div class="col-md-11 col-lg-11">
                 <div class="input-group">
+
                     <item-name :index="index"></item-name>
 
                         <settings-button :index="index"></settings-button>
@@ -19,12 +22,16 @@
 
 <style lang="scss">
     .item-main-component {
-        h4 {
+        h5 {
             text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
             0 2px 3px rgba(0, 0, 0, .8),
             0 10px 30px rgba(0, 0, 0, .5);
         }
-
+        .indexDisplay {
+            text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
+            0 2px 3px rgba(0, 0, 0, .8),
+            0 10px 30px rgba(0, 0, 0, .5);
+        }
         /*.itemName {*/
         /*margin-bottom: 0;*/
         /*margin-top: 0;*/

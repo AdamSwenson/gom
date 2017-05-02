@@ -47302,7 +47302,7 @@ return Tether;
 }));
 
 },{}],343:[function(require,module,exports){
-"use strict";var _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(o){return typeof o}:function(o){return o&&"function"==typeof Symbol&&o.constructor===Symbol&&o!==Symbol.prototype?"symbol":typeof o};!function(){function o(e,t){if(!o.installed){if(!t)return void console.error("You have to install axios");e.axios=t,Object.defineProperties(e.prototype,{axios:{get:function(){return t}},$http:{get:function(){return t}}})}}"object"==("undefined"==typeof exports?"undefined":_typeof(exports))?module.exports=o:"function"==typeof define&&define.amd?define([],function(){return o}):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
+"use strict";var _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(o){return typeof o}:function(o){return o&&"function"==typeof Symbol&&o.constructor===Symbol&&o!==Symbol.prototype?"symbol":typeof o};!function(){function o(e,t){if(!o.installed){if(o.installed=!0,!t)return void console.error("You have to install axios");e.axios=t,Object.defineProperties(e.prototype,{axios:{get:function(){return t}},$http:{get:function(){return t}}})}}"object"==("undefined"==typeof exports?"undefined":_typeof(exports))?module.exports=o:"function"==typeof define&&define.amd?define([],function(){return o}):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
 },{}],344:[function(require,module,exports){
 var Vue // late bind
 var map = Object.create(null)
@@ -47607,7 +47607,7 @@ function format (id) {
 },{}],345:[function(require,module,exports){
 (function (process){
 /**
-  * vue-router v2.3.1
+  * vue-router v2.4.0
   * (c) 2017 Evan You
   * @license MIT
   */
@@ -47622,7 +47622,7 @@ function assert (condition, message) {
 }
 
 function warn (condition, message) {
-  if (!condition) {
+  if (process.env.NODE_ENV !== 'production' && !condition) {
     typeof console !== 'undefined' && console.warn(("[vue-router] " + message));
   }
 }
@@ -47677,17 +47677,12 @@ var View = {
 
     var component = cache[name] = matched.components[name];
 
-    // inject instance registration hooks
-    var hooks = data.hook || (data.hook = {});
-    hooks.init = function (vnode) {
-      matched.instances[name] = vnode.child;
-    };
-    hooks.prepatch = function (oldVnode, vnode) {
-      matched.instances[name] = vnode.child;
-    };
-    hooks.destroy = function (vnode) {
-      if (matched.instances[name] === vnode.child) {
-        matched.instances[name] = undefined;
+    // attach instance registration hook
+    // this will be called in the instance's injected lifecycle hooks
+    data.registerRouteInstance = function (vm, val) {
+      // val could be undefined for unregistration
+      if (matched.instances[name] !== vm) {
+        matched.instances[name] = val;
       }
     };
 
@@ -47709,7 +47704,13 @@ function resolveProps (route, config) {
     case 'boolean':
       return config ? route.params : undefined
     default:
-      warn(false, ("props in \"" + (route.path) + "\" is a " + (typeof config) + ", expecting an object, function or boolean."));
+      if (process.env.NODE_ENV !== 'production') {
+        warn(
+          false,
+          "props in \"" + (route.path) + "\" is a " + (typeof config) + ", " +
+          "expecting an object, function or boolean."
+        );
+      }
   }
 }
 
@@ -47719,7 +47720,7 @@ var encodeReserveRE = /[!'()*]/g;
 var encodeReserveReplacer = function (c) { return '%' + c.charCodeAt(0).toString(16); };
 var commaRE = /%2C/g;
 
-// fixed encodeURIComponent which is more comformant to RFC3986:
+// fixed encodeURIComponent which is more conformant to RFC3986:
 // - escapes [!'()*]
 // - preserve commas
 var encode = function (str) { return encodeURIComponent(str)
@@ -47730,25 +47731,24 @@ var decode = decodeURIComponent;
 
 function resolveQuery (
   query,
-  extraQuery
+  extraQuery,
+  _parseQuery
 ) {
   if ( extraQuery === void 0 ) extraQuery = {};
 
-  if (query) {
-    var parsedQuery;
-    try {
-      parsedQuery = parseQuery(query);
-    } catch (e) {
-      process.env.NODE_ENV !== 'production' && warn(false, e.message);
-      parsedQuery = {};
-    }
-    for (var key in extraQuery) {
-      parsedQuery[key] = extraQuery[key];
-    }
-    return parsedQuery
-  } else {
-    return extraQuery
+  var parse = _parseQuery || parseQuery;
+  var parsedQuery;
+  try {
+    parsedQuery = parse(query || '');
+  } catch (e) {
+    process.env.NODE_ENV !== 'production' && warn(false, e.message);
+    parsedQuery = {};
   }
+  for (var key in extraQuery) {
+    var val = extraQuery[key];
+    parsedQuery[key] = Array.isArray(val) ? val.slice() : val;
+  }
+  return parsedQuery
 }
 
 function parseQuery (query) {
@@ -47813,13 +47813,16 @@ function stringifyQuery (obj) {
 
 /*  */
 
+
 var trailingSlashRE = /\/?$/;
 
 function createRoute (
   record,
   location,
-  redirectedFrom
+  redirectedFrom,
+  router
 ) {
+  var stringifyQuery$$1 = router && router.options.stringifyQuery;
   var route = {
     name: location.name || (record && record.name),
     meta: (record && record.meta) || {},
@@ -47827,11 +47830,11 @@ function createRoute (
     hash: location.hash || '',
     query: location.query || {},
     params: location.params || {},
-    fullPath: getFullPath(location),
+    fullPath: getFullPath(location, stringifyQuery$$1),
     matched: record ? formatMatch(record) : []
   };
   if (redirectedFrom) {
-    route.redirectedFrom = getFullPath(redirectedFrom);
+    route.redirectedFrom = getFullPath(redirectedFrom, stringifyQuery$$1);
   }
   return Object.freeze(route)
 }
@@ -47850,12 +47853,16 @@ function formatMatch (record) {
   return res
 }
 
-function getFullPath (ref) {
+function getFullPath (
+  ref,
+  _stringifyQuery
+) {
   var path = ref.path;
   var query = ref.query; if ( query === void 0 ) query = {};
   var hash = ref.hash; if ( hash === void 0 ) hash = '';
 
-  return (path || '/') + stringifyQuery(query) + hash
+  var stringify = _stringifyQuery || stringifyQuery;
+  return (path || '/') + stringify(query) + hash
 }
 
 function isSameRoute (a, b) {
@@ -47932,7 +47939,10 @@ var Link = {
     exact: Boolean,
     append: Boolean,
     replace: Boolean,
-    activeClass: String,
+    activeClass: {
+      type: String,
+      default: 'router-link-active'
+    },
     event: {
       type: eventTypes,
       default: 'click'
@@ -47947,9 +47957,16 @@ var Link = {
     var location = ref.location;
     var route = ref.route;
     var href = ref.href;
+
     var classes = {};
-    var activeClass = this.activeClass || router.options.linkActiveClass || 'router-link-active';
-    var compareTarget = location.path ? createRoute(null, location) : route;
+    var globalActiveClass = router.options.linkActiveClass;
+    var activeClass = globalActiveClass == null
+      ? this.activeClass
+      : globalActiveClass;
+    var compareTarget = location.path
+      ? createRoute(null, location, null, router)
+      : route;
+
     classes[activeClass] = this.exact
       ? isSameRoute(current, compareTarget)
       : isIncludedRoute(current, compareTarget);
@@ -48007,8 +48024,8 @@ function guardEvent (e) {
   // don't redirect on right click
   if (e.button !== undefined && e.button !== 0) { return }
   // don't redirect if `target="_blank"`
-  if (e.target && e.target.getAttribute) {
-    var target = e.target.getAttribute('target');
+  if (e.currentTarget && e.currentTarget.getAttribute) {
+    var target = e.currentTarget.getAttribute('target');
     if (/\b_blank\b/i.test(target)) { return }
   }
   // this may be a Weex event which doesn't have this method
@@ -48049,13 +48066,26 @@ function install (Vue) {
     get: function get () { return this.$root._route }
   });
 
+  var isDef = function (v) { return v !== undefined; };
+
+  var registerInstance = function (vm, callVal) {
+    var i = vm.$options._parentVnode;
+    if (isDef(i) && isDef(i = i.data) && isDef(i = i.registerRouteInstance)) {
+      i(vm, callVal);
+    }
+  };
+
   Vue.mixin({
     beforeCreate: function beforeCreate () {
-      if (this.$options.router) {
+      if (isDef(this.$options.router)) {
         this._router = this.$options.router;
         this._router.init(this);
         Vue.util.defineReactive(this, '_route', this._router.history.current);
       }
+      registerInstance(this, this);
+    },
+    destroyed: function destroyed () {
+      registerInstance(this);
     }
   });
 
@@ -48078,11 +48108,12 @@ function resolvePath (
   base,
   append
 ) {
-  if (relative.charAt(0) === '/') {
+  var firstChar = relative.charAt(0);
+  if (firstChar === '/') {
     return relative
   }
 
-  if (relative.charAt(0) === '?' || relative.charAt(0) === '#') {
+  if (firstChar === '?' || firstChar === '#') {
     return base + relative
   }
 
@@ -48099,11 +48130,9 @@ function resolvePath (
   var segments = relative.replace(/^\//, '').split('/');
   for (var i = 0; i < segments.length; i++) {
     var segment = segments[i];
-    if (segment === '.') {
-      continue
-    } else if (segment === '..') {
+    if (segment === '..') {
       stack.pop();
-    } else {
+    } else if (segment !== '.') {
       stack.push(segment);
     }
   }
@@ -48742,10 +48771,12 @@ function fillParams (
 
 /*  */
 
+
 function normalizeLocation (
   raw,
   current,
-  append
+  append,
+  router
 ) {
   var next = typeof raw === 'string' ? { path: raw } : raw;
   // named target
@@ -48775,7 +48806,13 @@ function normalizeLocation (
   var path = parsedPath.path
     ? resolvePath(parsedPath.path, basePath, append || next.append)
     : (current && current.path) || '/';
-  var query = resolveQuery(parsedPath.query, next.query);
+
+  var query = resolveQuery(
+    parsedPath.query,
+    next.query,
+    router && router.options.parseQuery
+  );
+
   var hash = next.hash || parsedPath.hash;
   if (hash && hash.charAt(0) !== '#') {
     hash = "#" + hash;
@@ -48798,7 +48835,11 @@ function assign (a, b) {
 
 /*  */
 
-function createMatcher (routes) {
+
+function createMatcher (
+  routes,
+  router
+) {
   var ref = createRouteMap(routes);
   var pathMap = ref.pathMap;
   var nameMap = ref.nameMap;
@@ -48812,7 +48853,7 @@ function createMatcher (routes) {
     currentRoute,
     redirectedFrom
   ) {
-    var location = normalizeLocation(raw, currentRoute);
+    var location = normalizeLocation(raw, currentRoute, false, router);
     var name = location.name;
 
     if (name) {
@@ -48858,7 +48899,7 @@ function createMatcher (routes) {
   ) {
     var originalRedirect = record.redirect;
     var redirect = typeof originalRedirect === 'function'
-        ? originalRedirect(createRoute(record, location))
+        ? originalRedirect(createRoute(record, location, null, router))
         : originalRedirect;
 
     if (typeof redirect === 'string') {
@@ -48866,9 +48907,11 @@ function createMatcher (routes) {
     }
 
     if (!redirect || typeof redirect !== 'object') {
-      process.env.NODE_ENV !== 'production' && warn(
-        false, ("invalid redirect option: " + (JSON.stringify(redirect)))
-      );
+      if (process.env.NODE_ENV !== 'production') {
+        warn(
+          false, ("invalid redirect option: " + (JSON.stringify(redirect)))
+        );
+      }
       return _createRoute(null, location)
     }
 
@@ -48908,7 +48951,9 @@ function createMatcher (routes) {
         hash: hash
       }, undefined, location)
     } else {
-      warn(false, ("invalid redirect option: " + (JSON.stringify(redirect))));
+      if (process.env.NODE_ENV !== 'production') {
+        warn(false, ("invalid redirect option: " + (JSON.stringify(redirect))));
+      }
       return _createRoute(null, location)
     }
   }
@@ -48943,7 +48988,7 @@ function createMatcher (routes) {
     if (record && record.matchAs) {
       return alias(record, location, record.matchAs)
     }
-    return createRoute(record, location, redirectedFrom)
+    return createRoute(record, location, redirectedFrom, router)
   }
 
   return {
@@ -49159,7 +49204,6 @@ function runQueue (queue, fn, cb) {
 
 /*  */
 
-
 var History = function History (router, base) {
   this.router = router;
   this.base = normalizeBase(base);
@@ -49168,18 +49212,27 @@ var History = function History (router, base) {
   this.pending = null;
   this.ready = false;
   this.readyCbs = [];
+  this.readyErrorCbs = [];
+  this.errorCbs = [];
 };
 
 History.prototype.listen = function listen (cb) {
   this.cb = cb;
 };
 
-History.prototype.onReady = function onReady (cb) {
+History.prototype.onReady = function onReady (cb, errorCb) {
   if (this.ready) {
     cb();
   } else {
     this.readyCbs.push(cb);
+    if (errorCb) {
+      this.readyErrorCbs.push(errorCb);
+    }
   }
+};
+
+History.prototype.onError = function onError (errorCb) {
+  this.errorCbs.push(errorCb);
 };
 
 History.prototype.transitionTo = function transitionTo (location, onComplete, onAbort) {
@@ -49194,18 +49247,29 @@ History.prototype.transitionTo = function transitionTo (location, onComplete, on
     // fire ready cbs once
     if (!this$1.ready) {
       this$1.ready = true;
-      this$1.readyCbs.forEach(function (cb) {
-        cb(route);
-      });
+      this$1.readyCbs.forEach(function (cb) { cb(route); });
     }
-  }, onAbort);
+  }, function (err) {
+    if (onAbort) {
+      onAbort(err);
+    }
+    if (err && !this$1.ready) {
+      this$1.ready = true;
+      this$1.readyErrorCbs.forEach(function (cb) { cb(err); });
+    }
+  });
 };
 
 History.prototype.confirmTransition = function confirmTransition (route, onComplete, onAbort) {
     var this$1 = this;
 
   var current = this.current;
-  var abort = function () { onAbort && onAbort(); };
+  var abort = function (err) {
+    if (err instanceof Error) {
+      this$1.errorCbs.forEach(function (cb) { cb(err); });
+    }
+    onAbort && onAbort(err);
+  };
   if (
     isSameRoute(route, current) &&
     // in the case the route map has been dynamically appended to
@@ -49238,20 +49302,28 @@ History.prototype.confirmTransition = function confirmTransition (route, onCompl
     if (this$1.pending !== route) {
       return abort()
     }
-    hook(route, current, function (to) {
-      if (to === false) {
-        // next(false) -> abort navigation, ensure current URL
-        this$1.ensureURL(true);
-        abort();
-      } else if (typeof to === 'string' || typeof to === 'object') {
-        // next('/') or next({ path: '/' }) -> redirect
-        (typeof to === 'object' && to.replace) ? this$1.replace(to) : this$1.push(to);
-        abort();
-      } else {
-        // confirm transition and pass on the value
-        next(to);
-      }
-    });
+    try {
+      hook(route, current, function (to) {
+        if (to === false || to instanceof Error) {
+          // next(false) -> abort navigation, ensure current URL
+          this$1.ensureURL(true);
+          abort(to);
+        } else if (typeof to === 'string' || typeof to === 'object') {
+          // next('/') or next({ path: '/' }) -> redirect
+          abort();
+          if (typeof to === 'object' && to.replace) {
+            this$1.replace(to);
+          } else {
+            this$1.push(to);
+          }
+        } else {
+          // confirm transition and pass on the value
+          next(to);
+        }
+      });
+    } catch (e) {
+      abort(e);
+    }
   };
 
   runQueue(queue, iterator, function () {
@@ -49268,7 +49340,7 @@ History.prototype.confirmTransition = function confirmTransition (route, onCompl
       onComplete(route);
       if (this$1.router.app) {
         this$1.router.app.$nextTick(function () {
-          postEnterCbs.forEach(function (cb) { return cb(); });
+          postEnterCbs.forEach(function (cb) { cb(); });
         });
       }
     });
@@ -49412,31 +49484,71 @@ function poll (
 }
 
 function resolveAsyncComponents (matched) {
-  return flatMapComponents(matched, function (def, _, match, key) {
-    // if it's a function and doesn't have Vue options attached,
+  var _next;
+  var pending = 0;
+  var error = null;
+
+  flatMapComponents(matched, function (def, _, match, key) {
+    // if it's a function and doesn't have cid attached,
     // assume it's an async component resolve function.
     // we are not using Vue's default async resolving mechanism because
     // we want to halt the navigation until the incoming component has been
     // resolved.
-    if (typeof def === 'function' && !def.options) {
-      return function (to, from, next) {
-        var resolve = once(function (resolvedDef) {
-          match.components[key] = resolvedDef;
-          next();
-        });
+    if (typeof def === 'function' && def.cid === undefined) {
+      pending++;
 
-        var reject = once(function (reason) {
-          warn(false, ("Failed to resolve async component " + key + ": " + reason));
-          next(false);
-        });
+      var resolve = once(function (resolvedDef) {
+        // save resolved on async factory in case it's used elsewhere
+        def.resolved = typeof resolvedDef === 'function'
+          ? resolvedDef
+          : _Vue.extend(resolvedDef);
+        match.components[key] = resolvedDef;
+        pending--;
+        if (pending <= 0 && _next) {
+          _next();
+        }
+      });
 
-        var res = def(resolve, reject);
-        if (res && typeof res.then === 'function') {
+      var reject = once(function (reason) {
+        var msg = "Failed to resolve async component " + key + ": " + reason;
+        process.env.NODE_ENV !== 'production' && warn(false, msg);
+        if (!error) {
+          error = reason instanceof Error
+            ? reason
+            : new Error(msg);
+          if (_next) { _next(error); }
+        }
+      });
+
+      var res;
+      try {
+        res = def(resolve, reject);
+      } catch (e) {
+        reject(e);
+      }
+      if (res) {
+        if (typeof res.then === 'function') {
           res.then(resolve, reject);
+        } else {
+          // new syntax in Vue 2.3
+          var comp = res.component;
+          if (comp && typeof comp.then === 'function') {
+            comp.then(resolve, reject);
+          }
         }
       }
     }
-  })
+  });
+
+  return function (to, from, next) {
+    if (error) {
+      next(error);
+    } else if (pending <= 0) {
+      next();
+    } else {
+      _next = next;
+    }
+  }
 }
 
 function flatMapComponents (
@@ -49718,7 +49830,7 @@ var VueRouter = function VueRouter (options) {
   this.options = options;
   this.beforeHooks = [];
   this.afterHooks = [];
-  this.matcher = createMatcher(options.routes || []);
+  this.matcher = createMatcher(options.routes || [], this);
 
   var mode = options.mode || 'hash';
   this.fallback = mode === 'history' && !supportsPushState;
@@ -49809,8 +49921,12 @@ VueRouter.prototype.afterEach = function afterEach (fn) {
   this.afterHooks.push(fn);
 };
 
-VueRouter.prototype.onReady = function onReady (cb) {
-  this.history.onReady(cb);
+VueRouter.prototype.onReady = function onReady (cb, errorCb) {
+  this.history.onReady(cb, errorCb);
+};
+
+VueRouter.prototype.onError = function onError (errorCb) {
+  this.history.onError(errorCb);
 };
 
 VueRouter.prototype.push = function push (location, onComplete, onAbort) {
@@ -49852,7 +49968,12 @@ VueRouter.prototype.resolve = function resolve (
   current,
   append
 ) {
-  var location = normalizeLocation(to, current || this.history.current, append);
+  var location = normalizeLocation(
+    to,
+    current || this.history.current,
+    append,
+    this
+  );
   var route = this.match(location, current);
   var fullPath = route.redirectedFrom || route.fullPath;
   var base = this.history.base;
@@ -49882,7 +50003,7 @@ function createHref (base, fullPath, mode) {
 }
 
 VueRouter.install = install;
-VueRouter.version = '2.3.1';
+VueRouter.version = '2.4.0';
 
 if (inBrowser && window.Vue) {
   window.Vue.use(VueRouter);
@@ -66068,7 +66189,7 @@ exports.insert = function (css) {
 
 },{}],349:[function(require,module,exports){
 /**
- * vuex v2.2.1
+ * vuex v2.3.0
  * (c) 2017 Evan You
  * @license MIT
  */
@@ -66175,13 +66296,11 @@ var Module = function Module (rawModule, runtime) {
   this.runtime = runtime;
   this._children = Object.create(null);
   this._rawModule = rawModule;
+  var rawState = rawModule.state;
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
 };
 
-var prototypeAccessors$1 = { state: {},namespaced: {} };
-
-prototypeAccessors$1.state.get = function () {
-  return this._rawModule.state || {}
-};
+var prototypeAccessors$1 = { namespaced: {} };
 
 prototypeAccessors$1.namespaced.get = function () {
   return !!this._rawModule.namespaced
@@ -66545,7 +66664,7 @@ function installModule (store, rootState, path, module, hot) {
   var namespace = store._modules.getNamespace(path);
 
   // register in namespace map
-  if (namespace) {
+  if (module.namespaced) {
     store._modulesNamespaceMap[namespace] = module;
   }
 
@@ -66868,7 +66987,7 @@ function getModuleByNamespace (store, helper, namespace) {
 var index = {
   Store: Store,
   install: install,
-  version: '2.2.1',
+  version: '2.3.0',
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
@@ -66913,6 +67032,7 @@ exports.default = function (store) {
 
                     if (_item) {
                         if (!_item instanceof _Exam2.default) {
+                            _Item2.default.setExamId(store.getters.currentExam.id);
 
                             _item.examId = store.getters.currentExam.id;
                         }
@@ -66947,6 +67067,11 @@ exports.default = function (store) {
                 }
                 payload.callback();
 
+                break;
+
+            case mTypes.updateOrder:
+                window.console.log('apiPlugin', 'updateOrder', 315, type, payload);
+                updateItemsOrder(store);
                 break;
 
             case mTypes.demoteItem:
@@ -67137,10 +67262,11 @@ var createItem = function createItem(store, item) {
  */
 var updateItemsOrder = function updateItemsOrder(store) {
     var items = store.getters.getAllItems;
-    var examId = store.getters.currentExam.id;
+    var exam = store.getters.currentExam;
+    //if(typeof exam === 'undefined') return false;
 
     var payload = {
-        examId: examId,
+        examId: exam.id,
         requestVersion: REQUEST_VERSION,
         order: []
     };
@@ -67223,7 +67349,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
  */
 ;
 
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":406,"lodash":338}],351:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":407,"lodash":338}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67444,10 +67570,6 @@ var Sortable = require('sortablejs');
 //    import itemCard from './itemCard.component.vue'
 //    import itemAddButton from './buttons.item.add.component.vue'
 
-//For Vue.js 2.0
-// var draggable = require('vuedraggable')
-
-//    var Sortable = require('sortablejs');
 
 /**
  * Holds the item cards. Serves as their outer parent
@@ -67460,47 +67582,21 @@ exports.default = {
 
     data: function data() {
         return {
-            defaults: {},
-            options: {
-                group: 'items', //name must be common to drag between lists
-                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                animation: 150,
-                handle: '.handle', // Drag handle selector within list items
-                ghostClass: "sortable-ghost", // Class name for the drop placeholder
-                dataIdAttr: 'data-id',
-
-                //                    onEnd: this.reorder,
-                store: {
-                    /**
-                     * Get the order of elements. Called once during initialization.
-                     * @param   {Sortable}  sortable
-                     * @returns {Array}
-                     */
-                    get: function get(sortable) {},
-
-                    /**
-                     * Save the order of elements. Called onEnd (when the item is dropped).
-                     * @param {Sortable}  sortable
-                     */
-                    set: function set(sortable) {
-                        var newOrder = me.determineOrdering();
-                        window.console.log('cardList.component', 'onSet', 297, 'newOrder', newOrder);
-                    }
-                },
-
-                onSort: function onSort(evt) {
-                    var newOrder = me.determineOrdering();
-                    window.console.log('cardList.component', 'onSort', 297, 'newOrder', newOrder);
-                }
-            }
+            defaults: {}
         };
     },
 
     computed: {
-        //Return everything in the items tree execpt the root
+        ids: function ids() {
+            return this.$store.getters.getSortedIds;
+        },
+
+        //Return everything in the items tree except the root
         //The root is the exam. It gets special treatment.
         items: function items() {
             var orig = this.$store.getters[gTypes.getAllItems];
+            if (_.isEmpty(orig)) return [];
+
             //filter out the exam and return everything else
             return orig.filter(function (obj) {
                 return obj.index > 0;
@@ -67605,29 +67701,35 @@ exports.default = {
     },
 
     directives: {
-        'sortable': {
-            inserted: function inserted(el, binding) {
-                var sortable = new Sortable(el, binding.value || {});
-            }
-        }
+        //            'sortable': {
+        //                componentUpdated: function ( el, binding ) {
+        ////                    window.console.log( 'cardList.component', 'inserted', 234, el);
+        //                    var sortable = new Sortable( el, binding.value || {} );
+        //                }
+        //            }
     },
 
     events: {
         'add-item': function addItem() {
             console.log('cardList', 'CAUGHT', 'add-item');
             this.addItem();
+        },
+        'items-ready': function itemsReady() {
+            window.console.log('cardList.component', 'items-ready', 248, 'caught');
+            //                var qList = document.getElementById( 'card-list' );
+            //                var editableList = Sortable.create( qList, this.options );
         }
     },
 
     mounted: function mounted() {
         //            this.$store.commit('addMappedItem', [0,1,1], {thing: 'taco'});
-        this.$store.commit('addMappedItem', { idx: [0], item: 'taco' });
+        //   this.$store.commit( 'addMappedItem', { index: [ 0 ], item: 'taco' } );
 
         console.log('cardList ready');
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n\n    <div class=\"row card-list\">\n\n        <ul id=\"card-list\" class=\"list-group col-md-9 col-lg-10\">\n            <li class=\"item-cards list-group-item  handle\" v-for=\"item in items\" :key=\"item.index\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-7\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n        <div class=\"col-md-5\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>   v-sortable=\"options\"-->\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component\">\n\n    <div class=\"row outer-card-list\">\n\n        <ul id=\"card-list\" class=\"card-list list-group col-md-9 col-lg-10\">\n            <!--v-sortable=\"options\"-->\n\n            <li class=\"item-cards list-group-item  handle\" v-for=\"item in items\" :key=\"item.index\">\n                <item-card :index=\"item.index\"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class=\"row\">\n        <div class=\"col-md-7\">\n            <tools-dashboard></tools-dashboard>\n        </div>\n\n        <div class=\"col-md-5\">\n            <div class=\"text-right\">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n    <!--</draggable>   -->\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67642,7 +67744,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-447dcb94", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":406,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
@@ -67757,7 +67859,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5ecd1dd5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":406,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
@@ -67918,7 +68020,13 @@ exports.default = {
 
     },
 
-    directives: {},
+    directives: {
+        'sortable': {
+            inserted: function inserted(el, binding) {
+                var sortable = new Sortable(el, binding.value || {});
+            }
+        }
+    },
 
     events: {
         'display-settings': function displaySettings() {
@@ -67929,7 +68037,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\" v-bind:data-id=\"index\" v-bind:data-index=\"index\" v-bind:data-parent-index=\"parentIndex\">\n    <div class=\"row\">\n        <div class=\"col-md-12 text-left\">\n            <item-main :index=\"index\"></item-main>\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"col-md-12 text-left\">\n            <edit-tabs :index=\"index\" :is-exam=\"false\"></edit-tabs>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"button-row col-md-12 text-left\">\n            <div class=\"btn-group\" role=\"group\" aria-label=\"Item tool buttons\">\n\n                <delete-item-button :index=\"index\"></delete-item-button>\n\n                <public-indicator :index=\"index\"></public-indicator>\n                <button class=\"btn btn-warning\">Clone</button>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <sub-list></sub-list>\n    </div>\n</div>\n\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<!--This represents a question or an element-->\n<div v-bind:id=\"divId\" class=\"item-card-component\" v-bind:class=\"offsetClass\" v-bind:data-id=\"index\" v-bind:data-index=\"index\" v-bind:data-parent-index=\"parentIndex\">\n    <div class=\"row\">\n        <div class=\"col-md-12 text-left\">\n            <item-main :index=\"index\"></item-main>\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"col-md-12 text-left\">\n            <edit-tabs :index=\"index\" :is-exam=\"false\"></edit-tabs>\n\n            <!-- Tab panels -->\n            <div class=\"tab-panel-area\">\n                <router-view name=\"itemPanels\"></router-view>\n            </div>\n\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"paneVisible\">\n        <div class=\"button-row col-md-12 text-left\">\n            <div class=\"btn-group \" role=\"group\" aria-label=\"Item tool buttons\">\n\n                <delete-item-button :index=\"index\"></delete-item-button>\n\n                <public-indicator :index=\"index\"></public-indicator>\n                <button class=\"btn btn-warning\">Clone</button>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"row\">\n        <!--<sub-list></sub-list>-->\n    </div>\n</div>\n\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -67944,7 +68052,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-35f0e86e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68041,12 +68149,12 @@ exports.default = {
             return "col-min-offset" + this.depth;
         },
         items: function items() {
-            //                return [];
+            return [];
             //todo filter by parent index
             //Return everything in the items tree execpt the root
             //The root is the exam. It gets special treatment.
             var orig = this.$store.getters[gTypes.getAllItems];
-            if (orig.length > 0) {
+            if (!_.isEmpty(orig) && orig.length > 0) {
                 //filter out the exam and return everything else
                 return orig.filter(function (obj) {
                     return obj.index > 0;
@@ -68068,15 +68176,13 @@ exports.default = {
 
     methods: {},
 
-    //
-    //        directives: {
-    //            'sortable': {
-    //                inserted: function ( el, binding ) {
-    //                    var sortable = new Sortable( el, binding.value || {} );
-    //                }
-    //            }
-    //        },
-
+    directives: {
+        'sortable': {
+            inserted: function inserted(el, binding) {
+                var sortable = new Sortable(el, binding.value || {});
+            }
+        }
+    },
 
     events: {},
 
@@ -68127,7 +68233,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component \" v-bind:class=\"offset\">\n\n    <div class=\"row card-list\">\n        <!--<ul :id=\"sublistId\" class=\"list-group col-md-9 col-lg-9\" v-sortable=\"options\">-->\n            <!--<li class=\"item-cards list-group-item  handle\"-->\n                <!--v-bind:class=\"sublistClass\"-->\n                <!--v-for=\"item in items\" :key=\"item.index\"-->\n            <!--&gt;-->\n                <!--<item-card :index=\"item.index\" :parent-index=\"index\"></item-card>-->\n            <!--</li>-->\n        <!--</ul>-->\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"card-list-component \" v-bind:class=\"offset\">\n\n    <div class=\"row sublist\">\n        <ul :id=\"sublistId\" class=\"card-list list-group col-md-9 col-lg-9\">\n            <!--v-sortable=\"options\"-->\n            <li class=\"item-cards list-group-item  handle\" v-bind:class=\"sublistClass\" v-for=\"item in items\" :key=\"item.index\">\n                <item-card :index=\"item.index\" :parent-index=\"index\"></item-card>\n            </li>\n        </ul>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -68138,7 +68244,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-49f731a6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":406,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n")
 'use strict';
@@ -68297,7 +68403,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4476cea1", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
+},{"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
 'use strict';
@@ -68386,7 +68492,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -68509,7 +68615,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n")
 'use strict';
@@ -68584,7 +68690,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -68664,7 +68770,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
@@ -68802,7 +68908,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -68902,7 +69008,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69040,7 +69146,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-989fbf16", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69110,7 +69216,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4850f9d2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../store/action-types":389,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../../store/action-types":389,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -69351,7 +69457,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-93f668f6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69433,7 +69539,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"input-group-btn\">\n    <button type=\"button\" class=\"btn settings-button btn-info\" v-on:click=\"toggleVis\">\n        <span class=\"glyphicon glyphicon-cog\"></span>\n    </button>\n\n    <button type=\"button\" class=\"addSibling btn btn-warning\" v-on:click=\"addOlderSibling\">\n        <span class=\"glyphicon glyphicon-chevron-up\"></span>\n    </button>\n\n    <button type=\"button\" class=\"addSibling btn btn-warning \" v-on:click=\"addYoungerSibling\">\n        <span class=\"glyphicon glyphicon-chevron-down\"></span>\n    </button>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"input-group-btn\">\n    <button type=\"button\" class=\"btn settings-button btn-info btn-lg\" v-on:click=\"toggleVis\">\n        <span class=\"glyphicon glyphicon-cog\"></span>\n    </button>\n\n    <button type=\"button\" class=\"addSibling btn btn-warning btn-lg\" v-on:click=\"addOlderSibling\">\n        <span class=\"glyphicon glyphicon-chevron-up\"></span>\n    </button>\n\n    <button type=\"button\" class=\"addSibling btn btn-warning btn-lg\" v-on:click=\"addYoungerSibling\">\n        <span class=\"glyphicon glyphicon-chevron-down\"></span>\n    </button>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69448,7 +69554,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-3651987f", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69542,9 +69648,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7487aa0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":386,"../../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":386,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h4 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n  /* line 8, stdin */\n  .item-main-component .indexDisplay {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69634,13 +69740,13 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component \">\n    <div class=\"row\">\n        <div class=\"col-md-2 col-lg-2\">\n            <h4># {{ index }}</h4>\n        </div>\n        <div class=\"col-md-10 col-lg-10\">\n            <div class=\"input-group\">\n                <item-name :index=\"index\"></item-name>\n\n                    <settings-button :index=\"index\"></settings-button>\n            </div>\n        </div>\n    </div>\n</div>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div class=\"item-main-component \">\n    <div class=\"row\">\n        <!--<div class=\"col-md-2 col-lg-2\">-->\n            <div class=\"col-md-1 col-lg-1\">\n            <h5># {{ index }}</h5>\n        </div>\n        <!--<div class=\"col-md-10 col-lg-10\">-->\n        <div class=\"col-md-11 col-lg-11\">\n            <div class=\"input-group\">\n\n                <item-name :index=\"index\"></item-name>\n\n                    <settings-button :index=\"index\"></settings-button>\n            </div>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h4 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n"] = false
+    __vueify_insert__.cache["/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n  /* line 8, stdin */\n  .item-main-component .indexDisplay {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -69649,7 +69755,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69795,7 +69901,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -69980,7 +70086,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":382,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Comment":382,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70131,7 +70237,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70186,7 +70292,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70291,7 +70397,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70359,7 +70465,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70414,7 +70520,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
 'use strict';
@@ -70455,13 +70561,26 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var Sortable = require('sortablejs');
+
 exports.default = {
 
     store: _store2.default,
 
     data: function data() {
         return {
-            defaults: {}
+            defaults: {},
+            options: {
+                group: 'items', //name must be common to drag between lists
+                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                animation: 150,
+                handle: '.handle', // Drag handle selector within list items
+                ghostClass: "sortable-ghost", // Class name for the drop placeholder
+                dataIdAttr: 'data-id',
+                onUpdate: function onUpdate(event) {
+                    _store2.default.dispatch('onUpdate', event);
+                }
+            }
         };
     },
 
@@ -70474,7 +70593,14 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {
-        _store2.default.dispatch('setupOnMount');
+        var _this = this;
+
+        _store2.default.dispatch('setupOnMount').then(function () {
+            _this.$emit('items-ready');
+            //                var qList = document.getElementsByClassName( 'card-list' );
+            var qList = document.getElementById('card-list');
+            var editableList = Sortable.create(qList, _this.options);
+        });
     },
 
     components: {}
@@ -70496,7 +70622,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store":393,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":406,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store":393,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
 'use strict';
 
 var _vue = require('vue/dist/vue.js');
@@ -71428,13 +71554,6 @@ var Item = function (_IModel) {
         value: function demote() {
             this.depth += 1;
         }
-
-        /**
-         * Returns the relationship (if any) of the item represented by
-         * idx1 and the item represented by idx2
-         * @param idx
-         */
-
     }, {
         key: 'isPublic',
 
@@ -71536,6 +71655,17 @@ var Item = function (_IModel) {
                 return index.join(separator);
             }
         }
+    }, {
+        key: 'setExamId',
+        value: function setExamId(id) {
+            Item.examId = id;
+        }
+        /**
+         * Returns the relationship (if any) of the item represented by
+         * idx1 and the item represented by idx2
+         * @param idx
+         */
+
     }, {
         key: 'findRelationship',
         value: function findRelationship(idx1, idx2) {
@@ -72562,9 +72692,34 @@ var parseItemData = exports.parseItemData = function parseItemData(_ref5) {
                 return true;
             });
         }
+
         resolve();
     });
 };
+
+/**
+ * These are actions which different parts of the gom
+ * call to when they initialize.
+ *
+ */
+/** This is what gets run when the root instance is mounted for the setup page */
+var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
+    var state = _ref6.state,
+        commit = _ref6.commit,
+        dispatch = _ref6.dispatch;
+
+    dispatch('parseExamData').then(function () {
+        dispatch('parseItemData');
+    }).then(function () {
+        // emit('items-ready');
+    });
+};
+
+// export const onUpdate = (event) =>{
+//     let {newIndex, oldIndex} = event;
+//     this.list.splice(newIndex, 0, this.list.splice(oldIndex, 1)[0])
+// };
+
 
 //
 //
@@ -72605,21 +72760,6 @@ var parseItemData = exports.parseItemData = function parseItemData(_ref5) {
 // };
 
 
-/**
- * These are actions which different parts of the gom
- * call to when they initialize.
- *
- */
-/** This is what gets run when the root instance is mounted for the setup page */
-var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
-    var state = _ref6.state,
-        commit = _ref6.commit,
-        dispatch = _ref6.dispatch;
-
-    dispatch('parseExamData').then(function () {
-        dispatch('parseItemData');
-    });
-};
 //
 // else
 // {
@@ -72904,7 +73044,7 @@ var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
 // }
 // ;
 
-},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../models/Student":388,"./action-types":389,"./mutation-types":406,"lodash":338}],391:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../models/Student":388,"./action-types":389,"./mutation-types":407,"lodash":338}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73248,6 +73388,10 @@ var _visibility = require('./modules/visibility');
 
 var _visibility2 = _interopRequireDefault(_visibility);
 
+var _orderings = require('./modules/orderings');
+
+var _orderings2 = _interopRequireDefault(_orderings);
+
 var _apiPlugin = require('../api/apiPlugin');
 
 var _apiPlugin2 = _interopRequireDefault(_apiPlugin);
@@ -73263,6 +73407,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
+// import Vue from 'vue'
+_vue2.default.use(_vuex2.default);
+
+/**
+ * This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
 /**
  * Created by adam on 1/10/17.
  *
@@ -73298,17 +73450,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  */
 
-_vue2.default.use(_vuex2.default);
-
-/**
- * This subscribes the api package which
- * handles data exchange with the server
- * to mutations in the store.
- */
-
-// import Vue from 'vue'
-
-
 var debug = process.env.NODE_ENV !== 'production';
 
 exports.default = new _vuex2.default.Store({
@@ -73334,6 +73475,7 @@ exports.default = new _vuex2.default.Store({
     escores: _escores2.default,
     items: _items2.default,
     grades: _grades2.default,
+    orderings: _orderings2.default,
     qscores: _qscores2.default,
     questions: _questions2.default,
     settings: _settings2.default,
@@ -73345,7 +73487,7 @@ exports.default = new _vuex2.default.Store({
 });
 
 }).call(this,require('_process'))
-},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":390,"./getters":392,"./modules/activeexam.js":394,"./modules/activestudent.js":395,"./modules/comments.js":396,"./modules/escores.js":397,"./modules/grades.js":398,"./modules/items.js":399,"./modules/qscores.js":400,"./modules/questions.js":401,"./modules/settings":402,"./modules/students.js":403,"./modules/times.js":404,"./modules/visibility":405,"./mutations":407,"./state":408,"_process":339,"vue/dist/vue.js":346,"vuex":349}],394:[function(require,module,exports){
+},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":390,"./getters":392,"./modules/activeexam.js":394,"./modules/activestudent.js":395,"./modules/comments.js":396,"./modules/escores.js":397,"./modules/grades.js":398,"./modules/items.js":399,"./modules/orderings":400,"./modules/qscores.js":401,"./modules/questions.js":402,"./modules/settings":403,"./modules/students.js":404,"./modules/times.js":405,"./modules/visibility":406,"./mutations":408,"./state":409,"_process":339,"vue/dist/vue.js":346,"vuex":349}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73480,7 +73622,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":383,"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],395:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73619,7 +73761,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":406}],396:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":407}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73813,7 +73955,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],397:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73918,7 +74060,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],398:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74097,7 +74239,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],399:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74224,10 +74366,25 @@ var helpers = {
 };
 
 var mutations = (_mutations = {
+
+    onUpdate: function onUpdate(state, event) {
+        // window.console.log( 'items', 'onUpdate', 102, event );
+        var newIndex = event.newIndex,
+            oldIndex = event.oldIndex;
+
+        var resorted = state.items.splice(newIndex, 0, state.items.splice(oldIndex, 1)[0]);
+        // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
+        // window.console.log( 'items', 'onUpdate', 105, resorted);
+        Vue.set(state, 'items', resorted);
+        // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
+        // window.console.log( 'items', 'onUpdate', 105, );
+    },
+
     addMappedItem: function addMappedItem(state, payload) {
         var idx = payload.idx,
             item = payload.item;
 
+        if (_.isEmpty(idx) || _.isEmpty(item)) return false;
         var key = buildKey(idx);
         window.console.log('items', 'addMappedItem', 102, key, item);
         Vue.set(state.orderMap, key, item);
@@ -74242,55 +74399,21 @@ var mutations = (_mutations = {
         }
     }
 
-}, _defineProperty(_mutations, mTypes.updateOrder, function (state, orderList) {
-    var _loop = function _loop(i) {
-        // this is the ith item id
-        var id = orderList[i];
-        var item = state.items.filter(function (i) {
-            if (i.id === id) {
-                return i;
-            }
-        });
-
-        //get the item, and update its index
-        //no moving it or anything
+}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
+    if (state.items.length === 0) return false;
+    // console.log(mTypes.updateOrder, state, payload);
+    // this just requires us to match list indexes w the
+    //property of the item
+    for (var i = 0; i < state.items.length; i++) {
+        var item = state.items[i];
         // window.console.log('items', 'updateOrder', 87, i, item);
         if (typeof item !== 'undefined') {
             //set the property on the object
             Vue.set(item, 'index', i);
             //set it in the array with vue
-            // Vue.set(state.items, i, item);
-            //resort array
+            Vue.set(state.items, i, item);
         }
-    };
-
-    //new payload where it contains a key orderList
-    for (var i = 0; i < orderList.length; i++) {
-        _loop(i);
     }
-
-    //now that we've done all that, let's resort items
-    //by the object's index
-    var items = state.items.sort(function (a, b) {
-        return a.index > b.index;
-    });
-
-    //and finally push the sorted array back
-    Vue.set(state, 'items', items);
-
-    // // console.log(mTypes.updateOrder, state, payload);
-    // // this just requires us to match list indexes w the
-    // //property of the item
-    // for (let i = 0; i < state.items.length; i++) {
-    //     let item = state.items[ i ];
-    //     // window.console.log('items', 'updateOrder', 87, i, item);
-    //     if ( typeof item !== 'undefined' ) {
-    //         //set the property on the object
-    //         Vue.set(item, 'index', i);
-    //         //set it in the array with vue
-    //         Vue.set(state.items, i, item);
-    //     }
-    // }
 }), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
     // console.log(mTypes.addNewItem, state, payload);
     if (_Payload2.default.checkIfPayload(payload)) {
@@ -74385,7 +74508,7 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     if (!obj instanceof _Item2.default) {
         //create a new Item
         var name = payload.name,
-            _id = payload.id,
+            id = payload.id,
             index = payload.index;
 
         var ItemJson = { name: name, ItemIndex: ItemIndex };
@@ -74399,26 +74522,47 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.addOlderSibling, function (_ref, payload) {
-    var state = _ref.state,
-        dispatch = _ref.dispatch,
-        commit = _ref.commit,
-        getters = _ref.getters;
+var actions = (_actions = {
 
-    //add item at same depth with same parent but with lower index
-    window.console.log('items', 'addOlderSibling', 283, payload);
-}), _defineProperty(_actions, aTypes.addYoungerSibling, function (_ref2, payload) {
+    onUpdate: function onUpdate(_ref, event) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        var p = new Promise(function (resolve, reject) {
+            commit('onUpdate', event);
+            resolve();
+        });
+
+        return p.then(function () {
+            return new Promise(function (resolve, reject) {
+                commit(mTypes.updateOrder);
+                resolve();
+            });
+        });
+    }
+
+}, _defineProperty(_actions, aTypes.addOlderSibling, function (_ref2, payload) {
     var state = _ref2.state,
         dispatch = _ref2.dispatch,
         commit = _ref2.commit,
         getters = _ref2.getters;
 
-    //add item at same depth with same parent but with higher index
-    window.console.log('items', 'addYoungerSibling', 288, payload);
-}), _defineProperty(_actions, aTypes.cleanupItems, function (_ref3) {
-    var dispatch = _ref3.dispatch,
+    //add item at same depth with same parent but with lower index
+    window.console.log('items', 'addOlderSibling', 283, payload);
+}), _defineProperty(_actions, aTypes.addYoungerSibling, function (_ref3, payload) {
+    var state = _ref3.state,
+        dispatch = _ref3.dispatch,
         commit = _ref3.commit,
         getters = _ref3.getters;
+
+    //add item at same depth with same parent but with higher index
+    window.console.log('items', 'addYoungerSibling', 288, payload);
+}), _defineProperty(_actions, aTypes.cleanupItems, function (_ref4) {
+    var dispatch = _ref4.dispatch,
+        commit = _ref4.commit,
+        getters = _ref4.getters;
 
 
     var p = new Promise(function (resolve, reject) {
@@ -74432,9 +74576,9 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.addOlderSibling, 
             resolve();
         });
     });
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
+}), _defineProperty(_actions, aTypes.deleteItem, function (_ref5, payload) {
+    var state = _ref5.state,
+        commit = _ref5.commit;
 
     console.log(aTypes.deleteItem, state, commit, payload);
     //check if payload has correct structure
@@ -74452,17 +74596,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.addOlderSibling, 
 
     //reorder index
     //todo write
-}), _defineProperty(_actions, aTypes.promoteItem, function (_ref5, payload) {
-    var state = _ref5.state,
-        dispatch = _ref5.dispatch,
-        commit = _ref5.commit,
-        getters = _ref5.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.promote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_actions, aTypes.demoteItem, function (_ref6, payload) {
+}), _defineProperty(_actions, aTypes.promoteItem, function (_ref6, payload) {
     var state = _ref6.state,
         dispatch = _ref6.dispatch,
         commit = _ref6.commit,
@@ -74470,23 +74604,33 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.addOlderSibling, 
     var index = payload.index;
 
     var item = getters.getItemByIndex(index);
-    item.demote();
+    item.promote();
     commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref7, payload) {
+}), _defineProperty(_actions, aTypes.demoteItem, function (_ref7, payload) {
     var state = _ref7.state,
         dispatch = _ref7.dispatch,
         commit = _ref7.commit,
         getters = _ref7.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.demote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref8, payload) {
+    var state = _ref8.state,
+        dispatch = _ref8.dispatch,
+        commit = _ref8.commit,
+        getters = _ref8.getters;
 
     window.console.log('items', 'toggleItemPublic', 365, payload);
 
     if (_Payload2.default.checkIfPayload(payload)) {
-        var _item = getters.getItemByIndex(payload.index);
+        var item = getters.getItemByIndex(payload.index);
 
         commit(mTypes.updateItem, _Payload2.default.factory({
-            index: _item.index,
+            index: item.index,
             updateProp: 'publicity',
-            updateVal: !_item.publicity
+            updateVal: !item.publicity
         }));
         // //get the item
         // let item = getters.getItemByIndex(payload.index);
@@ -74501,14 +74645,20 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.addOlderSibling, 
 }), _actions);
 
 var getters = {
-
-    getMappedItem: function getMappedItem(state, getters) {
-        return function (payload) {
-
-            var key = buildKey(idx);
-            return state.orderMap[key];
-        };
+    getSortedIds: function getSortedIds(state, getters) {
+        var ids = [];
+        if (state.items.length > 0) {
+            state.items.forEach(function (i) {
+                ids.push(i.id);
+            });
+        }
+        return ids;
     },
+    // getMappedItem : (state, getters) => (payload)=>{
+    //
+    //     let key = buildKey(idx);
+    //     return state.orderMap[key];
+    // },
 
     /**
      * Returns the desired Item object
@@ -74528,13 +74678,13 @@ var getters = {
             if (isItemsEmpty(state)) return false;
             if (_Payload2.default.checkIfPayload(payload)) {
                 var index = payload.index,
-                    _id2 = payload.id;
+                    id = payload.id;
 
                 if (typeof index !== 'undefined') {
                     return getters.getItemByIndex(state, getters, index);
                 }
-                if (typeof _id2 !== 'undefined') {
-                    return getters.getItemById(state, getters, _id2);
+                if (typeof id !== 'undefined') {
+                    return getters.getItemById(state, getters, id);
                 }
             }
         };
@@ -74583,7 +74733,7 @@ var getters = {
                     //we need to do something different
                     //because it is an array
                     if (_.isArray(index)) {
-                        var _idx = index.join('-');
+                        var idx = index.join('-');
                     }
                 }
             }(state, index);
@@ -74733,7 +74883,190 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":406,"lodash":338,"vue":347}],400:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"lodash":338,"vue":347}],400:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 4/11/17.
+ */
+window._ = require('lodash');
+
+
+var getItemFromOrder = function getItemFromOrder(order, idx) {
+    var itm = order[0];
+    //idx is a tuple stored as an array
+    for (var i = 0; i < idx.length; i++) {
+        itm = itm.children[i];
+    }
+    return itm;
+};
+
+var getItemFromList = function getItemFromList(orderList, idx) {
+    var itm = orderList[0];
+    //idx is a tuple stored as an array
+    for (var i = 0; i < idx.length; i++) {
+        itm = itm[1][i];
+    }
+    return itm;
+};
+
+var state = {
+
+    /*
+     * What we want to have is the ability to store nested
+     * tuples which map the item to a position on an exam
+     * (which is itself formally an item).
+     * order : {
+     *      0 : {
+     *          id: null,
+     *          children: {
+     *              0 : {
+     *                      id: null.
+     *                      children: {}
+     *                 }
+     *          }
+     *      }
+     }
+     *
+     * */
+    //the first value in the array is the item's id
+    //the second value is an array of children
+    // orderMap: new Map(),
+    // orderList: [],
+    //
+    // order: {
+    //     0: {
+    //         id: null,
+    //         children: {
+    //             0: {
+    //                 id: null,
+    //                 children: {}
+    //             }
+    //         }
+    //     }
+    // }
+    orderMap: new Map(),
+    order: {}
+
+};
+
+var mutations = {
+    addMappedItem: function addMappedItem(state, idx, toAdd) {
+        state.orderMap.set(idx, toAdd);
+    },
+
+    addChild: function addChild(state, idx, idToAdd) {
+        var child = [idToAdd, []];
+        var itm = orderList[0];
+        //idx is a tuple stored as an array
+        for (var i = 0; i < idx.length; i++) {
+            itm = itm[1][i];
+        }
+        var children = itm[1];
+        children.push(child);
+        Vue.set(itm, 1, children);
+        //
+        //
+        // let item = getItemFromList(state.orderList,  idx);
+        // if (! _.isEmpty(item)){
+        //     let maxIndex = _.last( Object.keys(item.children));
+        //     item.children
+        // }
+
+        // let item = getItemFromOrder(state.order,  idx);
+        // if (! _.isEmpty(item)){
+        //     let maxIndex = _.last( Object.keys(item.children));
+        //     item.children
+        // }
+    },
+
+    addParent: function addParent(state, existing, toAdd) {},
+    addOlderSibling: function addOlderSibling(state, existing, toAdd) {},
+    addYoungerSibling: function addYoungerSibling(state, existing, toAdd) {},
+
+    removeItem: function removeItem(state, payload) {}
+
+};
+
+var actions = {
+
+    //only these can call the mutations.
+    //so there needs to be one for each mutation
+
+};
+
+var getters = {
+    getMappedItem: function getMappedItem(state, getters) {
+        return function (idx) {
+            return state.orderMap.get(idx);
+        };
+    },
+
+    getItemFromOrder: function getItemFromOrder(state, getters) {
+        return function (idx) {
+            var itm = state.order[0];
+            //idx is a tuple stored as an array
+            for (var i = 0; i < idx.length; i++) {
+                itm = itm.children[i];
+            }
+            return itm;
+        };
+    },
+
+    getItemByIdx: function getItemByIdx(state, getters) {
+        return function (idx) {
+            var stringKey = Item.buildKeyFromIdx(idx);
+
+            return function (state, idx) {
+                var r = state.items.filter(function (i) {
+                    if (i.idxStore === stringKey) {
+                        return i;
+                    }
+                    return r[0];
+                });
+            };
+        };
+    },
+
+    getSiblingsAndChildrenByIdx: function getSiblingsAndChildrenByIdx(state, getters) {
+        return function (idx) {
+            var stringKey = Item.buildKeyFromIdx(idx);
+
+            return function (state, idx) {
+                var r = state.items.filter(function (i) {
+                    if (_.startsWith(stringKey, idx)) {
+                        return i;
+                    }
+                    return r[0];
+                });
+            };
+        };
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../action-types":389,"../mutation-types":407,"lodash":338}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74843,7 +75176,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],401:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74982,7 +75315,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Question":387,"../action-types":389,"../mutation-types":406}],402:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Question":387,"../action-types":389,"../mutation-types":407}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75051,7 +75384,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],403:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75171,7 +75504,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":406}],404:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":407}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75308,7 +75641,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":406}],405:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75348,7 +75681,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [1, 2], //The root item (the exam) is always visible, but it's settings aren't
+    itemsWithSettingsVisible: [], //The root item (the exam) is always visible, but it's settings aren't
 
     examSettingsVisible: false
 };
@@ -75404,7 +75737,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../getter-types":391,"../mutation-types":406}],406:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../getter-types":391,"../mutation-types":407}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75438,26 +75771,29 @@ var loadStockComments = exports.loadStockComments = 'loadStockComments';
 
 //exams
 var addExam = exports.addExam = 'addExam';
+;
 var addIndexMapping = exports.addIndexMapping = 'addIndexMapping';
 var loadExams = exports.loadExams = 'loadExams';
-
-//escores
+;
+;
+//escores                                                            ;
 var loadElementScores = exports.loadElementScores = 'loadElementScores';
 var setElementScore = exports.setElementScore = 'setElementScore';
-
-//grades
+;
+;
+//grades                                                             ;
 var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
 var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
 var setGrade = exports.setGrade = 'setGrade';
-
-//qscores
+;
+//qscores                                                            ;
 var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
 var removeQuestionScore = exports.removeQuestionScore = 'removeQuestionScore';
-
-//questions
+;
+//questions                                                          ;
 var setMaxQuestionScore = exports.setMaxQuestionScore = 'setMaxQuestionScore';
 var removeMaxQuestionScore = exports.removeMaxQuestionScore = 'removeMaxQuestionScore';
-// export const loadMaxQuestionScores = 'loadMaxQuestionScores'
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores'      ;
 var setQuestion = exports.setQuestion = 'setQuestion';
 var removeQuestion = exports.removeQuestion = 'removeQuestion';
 var setNumberQuestions = exports.setNumberQuestions = 'setNumberQuestions';
@@ -75499,7 +75835,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],407:[function(require,module,exports){
+},{}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75533,7 +75869,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":406}],408:[function(require,module,exports){
+},{"./mutation-types":407}],409:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

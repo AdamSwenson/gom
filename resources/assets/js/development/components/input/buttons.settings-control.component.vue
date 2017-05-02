@@ -1,21 +1,21 @@
 <template>
     <div class="input-group-btn">
         <button type="button"
-                class="btn settings-button btn-info"
+                class="btn settings-button btn-info btn-lg"
                 v-on:click="toggleVis"
         >
             <span class="glyphicon glyphicon-cog"></span>
         </button>
 
         <button type="button"
-                class="addSibling btn btn-warning"
+                class="addSibling btn btn-warning btn-lg"
                 v-on:click="addOlderSibling"
         >
             <span class="glyphicon glyphicon-chevron-up"></span>
         </button>
 
         <button type="button"
-                class="addSibling btn btn-warning "
+                class="addSibling btn btn-warning btn-lg"
                 v-on:click="addYoungerSibling"
         >
             <span class="glyphicon glyphicon-chevron-down"></span>

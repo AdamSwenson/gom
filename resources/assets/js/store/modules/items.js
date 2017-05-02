@@ -58,17 +58,16 @@ const state = {
 
 };
 
-const buildKey = (idx) =>{
+const buildKey = ( idx ) => {
     var k = '';
-    for(var i=0; i<idx.length; i++){
-        k += idx[i]
-        if(i <= idx.length - 2){
+    for (var i = 0; i < idx.length; i++) {
+        k += idx[ i ];
+        if ( i <= idx.length - 2 ) {
             k += '-';
         }
     }
     return k;
 };
-
 
 
 const isItemsEmpty = ( state ) => {
@@ -97,15 +96,28 @@ const helpers = {
 };
 
 const mutations = {
-    addMappedItem: (state, payload ) =>{
-        let {idx, item} = payload;
-        let key = buildKey(idx);
-        window.console.log( 'items', 'addMappedItem', 102, key, item);
-        Vue.set(state.orderMap, key, item);
-    },
+
+        onUpdate: ( state, event ) => {
+            // window.console.log( 'items', 'onUpdate', 102, event );
+            let { newIndex, oldIndex } = event;
+            let resorted = state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
+            // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
+            // window.console.log( 'items', 'onUpdate', 105, resorted);
+            Vue.set(state, 'items', resorted );
+            // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
+            // window.console.log( 'items', 'onUpdate', 105, );
+        },
+
+        addMappedItem: ( state, payload ) => {
+            let { idx, item } = payload;
+            if ( _.isEmpty( idx ) || _.isEmpty( item ) ) return false;
+            let key = buildKey( idx );
+            window.console.log( 'items', 'addMappedItem', 102, key, item );
+            Vue.set( state.orderMap, key, item );
+        },
 
 
-    //utility, not called from outside
+        //utility, not called from outside
         cleanupEmptyItems: ( state ) => {
             for (let i = 0; i < state.items.length; i++) {
                 if ( typeof state.items[ i ] === 'undefined' ) {
@@ -120,53 +132,76 @@ const mutations = {
          * @param state
          * @param payload
          */
-        [mTypes.updateOrder]: ( state, orderList ) => {
-            //new payload where it contains a key orderList
-            for (let i = 0; i < orderList.length; i++) {
-                // this is the ith item id
-                let id = orderList[ i ];
-                let item = state.items.filter( ( i ) => {
-                    if ( i.id === id ) {
-                        return i;
-                    }
-                } );
-
-                //get the item, and update its index
-                //no moving it or anything
+        [mTypes.updateOrder]: ( state, payload ) => {
+            if(state.items.length === 0) return false;
+            // console.log(mTypes.updateOrder, state, payload);
+            // this just requires us to match list indexes w the
+            //property of the item
+            for (let i = 0; i < state.items.length; i++) {
+                let item = state.items[ i ];
                 // window.console.log('items', 'updateOrder', 87, i, item);
                 if ( typeof item !== 'undefined' ) {
                     //set the property on the object
                     Vue.set( item, 'index', i );
                     //set it in the array with vue
-                    // Vue.set(state.items, i, item);
-                    //resort array
+                    Vue.set( state.items, i, item );
                 }
             }
 
-            //now that we've done all that, let's resort items
-            //by the object's index
-            let items = state.items.sort( ( a, b ) => {
-                return a.index > b.index;
-            } );
-
-            //and finally push the sorted array back
-            Vue.set( state, 'items', items );
-
-            // // console.log(mTypes.updateOrder, state, payload);
-            // // this just requires us to match list indexes w the
-            // //property of the item
-            // for (let i = 0; i < state.items.length; i++) {
-            //     let item = state.items[ i ];
-            //     // window.console.log('items', 'updateOrder', 87, i, item);
-            //     if ( typeof item !== 'undefined' ) {
-            //         //set the property on the object
-            //         Vue.set(item, 'index', i);
-            //         //set it in the array with vue
-            //         Vue.set(state.items, i, item);
-            //     }
-            // }
-
         },
+
+        // /**
+        //  * Make sure the property index matches the lookup index
+        //  * @param state
+        //  * @param payload
+        //  */
+        // [mTypes.updateOrder]: ( state, orderList ) => {
+        //     //new payload where it contains a key orderList
+        //     for (let i = 0; i < orderList.length; i++) {
+        //         // this is the ith item id
+        //         let id = orderList[ i ];
+        //         let item = state.items.filter( ( i ) => {
+        //             if ( i.id === id ) {
+        //                 return i;
+        //             }
+        //         } );
+        //
+        //         //get the item, and update its index
+        //         //no moving it or anything
+        //         // window.console.log('items', 'updateOrder', 87, i, item);
+        //         if ( typeof item !== 'undefined' ) {
+        //             //set the property on the object
+        //             Vue.set( item, 'index', i );
+        //             //set it in the array with vue
+        //             // Vue.set(state.items, i, item);
+        //             //resort array
+        //         }
+        //     }
+        //
+        //     //now that we've done all that, let's resort items
+        //     //by the object's index
+        //     let items = state.items.sort( ( a, b ) => {
+        //         return a.index > b.index;
+        //     } );
+        //
+        //     //and finally push the sorted array back
+        //     Vue.set( state, 'items', items );
+        //
+        //     // // console.log(mTypes.updateOrder, state, payload);
+        //     // // this just requires us to match list indexes w the
+        //     // //property of the item
+        //     // for (let i = 0; i < state.items.length; i++) {
+        //     //     let item = state.items[ i ];
+        //     //     // window.console.log('items', 'updateOrder', 87, i, item);
+        //     //     if ( typeof item !== 'undefined' ) {
+        //     //         //set the property on the object
+        //     //         Vue.set(item, 'index', i);
+        //     //         //set it in the array with vue
+        //     //         Vue.set(state.items, i, item);
+        //     //     }
+        //     // }
+        //
+        // },
 
         /**
          * Pushes item into storage
@@ -334,6 +369,23 @@ const buildPayloadFromInput = ( state, rootState, payload ) => {
 
 const actions = {
 
+    onUpdate: ( { state, dispatch, commit, getters }, event ) => {
+        let p = new Promise( ( resolve, reject ) => {
+            commit( 'onUpdate', event );
+            resolve()
+        } );
+
+        return p.then( () => {
+            return new Promise( ( resolve, reject ) => {
+                commit( mTypes.updateOrder );
+                resolve()
+            } );
+
+        } );
+
+    },
+
+
     [aTypes.addOlderSibling]: ( { state, dispatch, commit, getters }, payload ) => {
         //add item at same depth with same parent but with lower index
         window.console.log( 'items', 'addOlderSibling', 283, payload );
@@ -470,12 +522,18 @@ const actions = {
 };
 
 const getters = {
-
-    getMappedItem : (state, getters) => (payload)=>{
-
-        let key = buildKey(idx);
-        return state.orderMap[key];
+    getSortedIds: ( state, getters ) => {
+        let ids = [];
+        if ( state.items.length > 0 ) {
+            state.items.forEach( (i)=>{ids.push( i.id );} );
+        }
+        return ids;
     },
+    // getMappedItem : (state, getters) => (payload)=>{
+    //
+    //     let key = buildKey(idx);
+    //     return state.orderMap[key];
+    // },
 
     /**
      * Returns the desired Item object
@@ -523,9 +581,8 @@ const getters = {
 
         //if this is a single member array, we can treat
         //it like a numeric input under the older system
-        if (_.isArray(index) && index.length === 1 )
-        {
-            index = index[0];
+        if ( _.isArray( index ) && index.length === 1 ) {
+            index = index[ 0 ];
         }
 
         //Now we're ready to deal with the input
@@ -534,7 +591,7 @@ const getters = {
             //We deal first with the easy case in which the index
             //is a number or string representation of a number
             //and not a composite
-            if ( ! _.isArray( index ) ) {
+            if ( !_.isArray( index ) ) {
                 //if was just a string or integer this is fine
                 //also if the input was an array with only one item
                 var r = state.items.filter( function ( i ) {
@@ -545,11 +602,11 @@ const getters = {
                 return r[ 0 ];
             }
 
-            else{
+            else {
                 //we need to do something different
                 //because it is an array
-                if(_.isArray(index)){
-                    let idx = index.join('-');
+                if ( _.isArray( index ) ) {
+                    let idx = index.join( '-' );
                 }
 
             }

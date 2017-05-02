@@ -1,5 +1,4 @@
-
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,16 +20,15 @@
 
 
     {{ method_field('DELETE') }}
-    <input type="hidden" id="routeRoot" data="{{ url('') }}" />
-
+    <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
 
 
 </div>
-<input type="hidden" id="loadedExam" data='{!! isset($exam) ? json_encode($exam, JSON_FORCE_OBJECT) : '' !!}' />
-<input type="hidden" id="loadedItems" data='{!! isset($items) ? json_encode($items, JSON_FORCE_OBJECT) : '' !!}' />
+<input type="hidden" id="loadedExam" data='{!! isset($exam) ? json_encode($exam, JSON_FORCE_OBJECT) : '' !!}'/>
+<input type="hidden" id="loadedItems" data='{!! isset($items) ? json_encode($items, JSON_FORCE_OBJECT) : '' !!}'/>
 {{--<div id="loadedExam" data="{!!  json_encode($exam, JSON_FORCE_OBJECT) !!}" />--}}
 <script type="text/javascript">
-    var routeRoot = document.getElementById('routeRoot').getAttribute('data');
+    var routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
 </script>
 <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
 </body>

@@ -14,7 +14,7 @@ import Payload from '../../models/Payload'
 
 const state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [  1,2 ], //The root item (the exam) is always visible, but it's settings aren't
+    itemsWithSettingsVisible: [  ], //The root item (the exam) is always visible, but it's settings aren't
 
     examSettingsVisible: false
 };

@@ -229,7 +229,7 @@ class ItemController extends Controller
 
 
 
-    public function updateOrder(  $exam, ItemRequest $request )
+    public function updateOrder( Exam $exam, ItemRequest $request )
     {
         //this should probably be a job
         //it can run async. The client doesn't really need to know what's

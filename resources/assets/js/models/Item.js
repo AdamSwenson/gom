@@ -131,7 +131,9 @@ export default class Item extends IModel {
         this.depth += 1;
     }
 
-
+static setExamId(id){
+        Item.examId = id;
+}
     /**
      * Returns the relationship (if any) of the item represented by
      * idx1 and the item represented by idx2

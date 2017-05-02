@@ -159,10 +159,11 @@ const createItem = ( store, item ) => {
  */
 const updateItemsOrder = ( store ) => {
     let items = store.getters.getAllItems;
-    let examId = store.getters.currentExam.id;
+    let exam = store.getters.currentExam;
+    //if(typeof exam === 'undefined') return false;
 
     let payload = {
-        examId: examId,
+        examId: exam.id,
         requestVersion: REQUEST_VERSION,
         order: []
     };
@@ -272,6 +273,7 @@ export default function ( store ) {
 
                     if ( item ) {
                         if ( !item instanceof Exam ) {
+                            Item.setExamId(store.getters.currentExam.id);
 
                             item.examId = store.getters.currentExam.id;
                         }
@@ -308,6 +310,11 @@ export default function ( store ) {
                 }
                 payload.callback();
 
+                break;
+                
+            case mTypes.updateOrder:
+                window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload);
+                updateItemsOrder(store);
                 break;
 
             case mTypes.demoteItem:
