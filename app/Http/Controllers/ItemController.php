@@ -11,6 +11,7 @@ use App\Question;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Item\IItemRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\IQuestionRepository;
 use App\Repositories\Student\IStudentRepository;
@@ -45,6 +46,10 @@ class ItemController extends Controller
      * @var IElementAssignmentRepository
      */
     private $elementAssignmentDao;
+    /**
+     * @var IItemRepository
+     */
+    protected $itemRepository;
 
 
     public function __construct(
@@ -53,7 +58,8 @@ class ItemController extends Controller
         IElementAssignmentRepository $elementAssignmentDao,
         IQuestionAssignmentRepository $questionAssignmentDao,
         IStudentRepository $studentDao,
-        IQuestionRepository $questionDao
+        IQuestionRepository $questionDao,
+        IItemRepository $itemRepository
     )
     {
         //dev
@@ -66,48 +72,12 @@ class ItemController extends Controller
         $this->questionDao = $questionDao;
         $this->elementDao = $elementDao;
         $this->elementAssignmentDao = $elementAssignmentDao;
+        $this->itemRepository = $itemRepository;
     }
 
-// ---------------------------------- Helpers
-
-// ------------------------ particular methods
-    public function handleExam( $request )
-    {
-        $term = $request->input('term') ? $request->input('term') : Carbon::now()->year;
-        $year = $request->input('year') ? $request->input('year') : Carbon::now()->year;
-        $name = $request->input('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
-        $exam = $this->examDao->save_new_exam($year, $term, $name);
-
-        if ( $exam ) {
-            $this->dispatch(new UpdateAllStoredExamStats());
-        }
-        $exam->index = 0;
-        return $exam;
-    }
-
-    public function handleQuestion( $request )
-    {
-
-        //Check that user owns the exam
-//        $exam = Exam::findOrFail($request->input('examId'));
-        //$this->authorize('access-object', $exam);
-
-        //store and return the question
-        $question = $this->questionDao->createQuestion($request->input('name'),
-            $request->input('text'),
-            $request->input('maxScore'));
-
-        //associate it with the exam
-//        $questionAssignment = $this->questionAssignmentDao->record($request->input('examId'), $question->getId(),
-        //          $request->input('questionNumber'));
-
-        return $question;
-    }
 
 
 // -------------------------------- Controller methods
-
-
     /**
      * Display a listing of the resource.
      *
@@ -118,15 +88,6 @@ class ItemController extends Controller
         return view('development.newsetup');
     }
 
-    /**
-     * the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-//    public function create()
-//    {
-//        //
-//    }
 
     /**
      * Store a newly created resource in storage.
@@ -140,8 +101,7 @@ class ItemController extends Controller
      */
     public function store( ItemRequest $request )
     {
-
-        return $this->handleStoreAndUpdate($request);
+        return $this->itemRepository->handleStoreAndUpdate($request);
     }
 
 
@@ -153,7 +113,7 @@ class ItemController extends Controller
      * Called on the route:
      *      GET    /items/{exam}    show    items.show
      *
-     * @param ItemRequest $request
+     * @param Exam $exam
      * @return \Illuminate\Http\Response
      */
     public function show( Exam $exam ) //Item $item, ItemRequest $request )
@@ -166,8 +126,6 @@ class ItemController extends Controller
             $question = $qAssignment->getQuestion();
             $items[$index] = $question;
             //$allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $index);
-
-
             //['maxScore' => $question->maxScore, 'name' => $question->name, 'id' => $question->id];
         }
         //get items
@@ -189,23 +147,18 @@ class ItemController extends Controller
     public function edit( Item $item, ItemRequest $request )
     {
         return $item;
-//        $exam = Exam::find($item->id);
-//        return view('development.newsetup', ['exam' => $exam]);
-//But it should've been overridden in routes/web so is actually:
-//        *      GET    /items/{exam}/edit    edit    items.edit
-//    *
     }
 
     /**
      * Receives PUT
      * Updates the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response
      */
     public function update( ItemRequest $request )
     {
-        return $this->handleStoreAndUpdate($request);
+        return $this->itemRepository->handleStoreAndUpdate($request);
     }
 
 
@@ -214,7 +167,8 @@ class ItemController extends Controller
      * the list of items.
      * Receives PATCH
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param Exam $exam
+     * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response
      */
     public function updateAll( Exam $exam, ItemRequest $request )
@@ -228,23 +182,27 @@ class ItemController extends Controller
     }
 
 
-
+    /**
+     * @param Exam $exam
+     * @param ItemRequest $request
+     * @return mixed
+     */
     public function updateOrder( Exam $exam, ItemRequest $request )
     {
+//        Separating the item data from the positional/assignment info
+//    * lets this be separated off into a job if we want...
+//     *
         //this should probably be a job
         //it can run async. The client doesn't really need to know what's
         //going on as long as the server catches up.
-        //Separating the item data from the positional/assignment info
-        //lets this be separated off into a job if we want...
+
         if ( $request->has('order') ) {
-        $existingIds = $this->questionAssignmentDao->updateItemOrder($exam, $request->input('order'));
+            $existingIds = $this->questionAssignmentDao->updateItemOrder($exam, $request->input('order'));
 
             return $existingIds;
         }
 //        return $this->handleStoreAndUpdate($request);
     }
-
-
 
 
     /**
@@ -271,62 +229,6 @@ class ItemController extends Controller
         }
     }
 
-    /**
-     * @param ItemRequest $request
-     * @return Item|array
-     */
-    protected function handleStoreAndUpdate( ItemRequest $request )
-    {
-
-        //This will create the item if it didn't exist and
-        //update it otherwise.
-        $item = Item::loadItemFromRequest($request);
-
-//        if ( $item ) {
-
-        //Now we need to do anything specific based on
-        //the kind of OG model the item represents.
-        switch ( $item ) {
-
-            case $item instanceof Question:
-                if ( !$request->has('examId') ) {
-                    //stop here if no exam id was sent
-                    return $item;
-                }
-
-                //translate the idx into the OG question number
-                $questionNumber = $request->has('idx') ? $request->input('idx')[0] : $request->input('index');
-
-                //now we need to make sure the associations are taken care of
-                //that is, we need to map the idx from the $request to the
-                //question and element assignments
-                //associate it with the exam
-                $assignment = $this->questionAssignmentDao->record($request->input('examId'), $item->id, $questionNumber);
-
-                //store the question assignment id in the item
-                $item->questionAssignment = $assignment;
-                return $item;
-
-                break;
-
-            case $item instanceof Element:
-
-                break;
-
-            case $item instanceof Exam:
-//                    $this->dispatch(new UpdateStoredExamStats($exam));
-//
-                $this->dispatch(new UpdateAllStoredExamStats());
-
-                return $item;
-                break;
-            default:
-                //if there was nothing special to do
-                //or no item was created, fall through
-        }
-//        }
-        return $item;
-    }
 
 
 }

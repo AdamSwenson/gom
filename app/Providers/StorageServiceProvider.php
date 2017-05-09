@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Jobs\Grade\RecordScoresAndComments;
+use App\Repositories\Item\IItemRepository;
+use App\Repositories\Item\ItemRepository;
 use App\Repositories\Utilities\IJsDataPreparation;
 use App\Repositories\Utilities\JsDataPreparation;
 use Illuminate\Support\ServiceProvider;
@@ -52,6 +54,9 @@ class StorageServiceProvider extends ServiceProvider
         //Grade and grade assignments
         $this->app->bind('App\Repositories\Grade\IGradeAssignmentRepository', 'App\Repositories\Grade\GradeAssignmentRepository');
         $this->app->bind('App\Repositories\Grade\IStudentGradeRepository', 'App\Repositories\Grade\StudentGradeRepository');
+
+        //Item
+        $this->app->bind(IItemRepository::class, ItemRepository::class);
 
         //Kumi (classes)
         $this->app->bind('App\Repositories\Student\IKumiRepository', 'App\Repositories\Student\KumiRepository');
@@ -110,5 +115,7 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Utilities\IMailSender', 'App\Repositories\Utilities\MailSender');
 
         $this->app->bind(IJsDataPreparation::class, JsDataPreparation::class);
+
+
     }
 }

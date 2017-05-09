@@ -60,96 +60,98 @@ class Item extends Model
     {
     }
 
-
-    /**
-     * Updates an existing item or creates a new one
-     * if none exists from a request object.
-     *
-     * @param Request $request
-     * @return Item
-     */
-    static function loadItemFromRequest( Request $request )
-    {
-
-        //these are the properties of the new exam
-        //which have matches in the old models
-        //TODO create storage for all these properties
-        $examEditable = ['id', 'name'];
-        //not editable: text, number, comments
-
-        $id = $request->has('id') ? $request->input('id') : null;
-
-        switch ( self::determineItemType($request) ) {
-
-            case Exam::class:
-                $item = Exam::firstOrCreate(['id' => $id]);
-                $item->term = $request->has('term') ? $request->input('term') : Carbon::now()->year;
-                $item->year = $request->has('year') ? $request->input('year') : Carbon::now()->year;
-                $item->name = $request->has('name') ? $request->input('name') : self::makeDefaultExamName();
-                break;
-
-            case Element::class:
-                $item = Element::firstOrCreate(['id' => $id]);
-                $item->elementName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
-                $item->displayText = $request->has('text') ? $request->input('text') : '';
-
-                $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
-//                $name = $request->has('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
-//                $d = ['id'=> $id, 'elementName' => $name];
-//                $item = Element::updateOrCreate($d);
-                break;
-
-            case Question::class:
-                $item = Question::firstOrCreate(['id' => $id]);
-                $item->questionName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
-                $item->questionText = $request->has('text') ? $request->input('text') : '';
-                $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
-                break;
-
-            default:
-        }
-        if(isset($item)){
-            $item->save();
-
-            return $item;
-        }
-
-
-    }
-
-
-    /**
-     * Sets the $type value from the request
-     * @param ItemRequest $request
-     */
-    static function determineItemType( Request $request )
-    {
-        if ( $request->has('idx') ) {
-            //newest version
-            //check the new style index (idx) first
-            $idx = $request->has('idx') ? $request->input('idx') : false;
-
-            if ( count($idx) > 1 ) return Element::class;
-
-            if ( $idx[0] === 0 ) return Exam::class;
-
-            if ( $idx[0] >= 1 ) return Question::class;
-
-
-        } elseif ( $request->has('depth') ) {
-            //The request will be coming in with potentially a few
-            //of the item fields filled in. However, we are only concerned with
-            //figuring out what kind of item is being requested and its relationships,
-            //and then creating those and returning the relevant ids so that
-            //they can be set on the client
-            if ( $request->input('index') === 0 ) return Exam::class;
-            if ( $request->input('depth' > 0) ) return Element::class;
-            if ( $request->input('index') >= 1 ) return Question::class;
-
-        }
-
-    }
-
+//
+//    /**
+//     * @deprecated So hard. Stop now.
+//     * Updates an existing item or creates a new one
+//     * if none exists from a request object.
+//     *
+//     * @param Request $request
+//     * @return Item
+//     */
+//    static function loadItemFromRequest( Request $request )
+//    {
+//
+//        //these are the properties of the new exam
+//        //which have matches in the old models
+//        //TODO create storage for all these properties
+//        $examEditable = ['id', 'name'];
+//        //not editable: text, number, comments
+//
+//        $id = $request->has('id') ? $request->input('id') : null;
+//
+//        switch ( self::determineItemType($request) ) {
+//
+//            case Exam::class:
+//                $item = Exam::firstOrCreate(['id' => $id]);
+//                $item->term = $request->has('term') ? $request->input('term') : Carbon::now()->year;
+//                $item->year = $request->has('year') ? $request->input('year') : Carbon::now()->year;
+//                $item->name = $request->has('name') ? $request->input('name') : self::makeDefaultExamName();
+//                break;
+//
+//            case Element::class:
+//                $item = Element::firstOrCreate(['id' => $id]);
+//                $item->elementName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
+//                $item->displayText = $request->has('text') ? $request->input('text') : '';
+//
+//                $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
+////                $name = $request->has('name') ? $request->input('name') : 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
+////                $d = ['id'=> $id, 'elementName' => $name];
+////                $item = Element::updateOrCreate($d);
+//                break;
+//
+//            case Question::class:
+//                $item = Question::firstOrCreate(['id' => $id]);
+//                $item->questionName = $request->has('name') ? $request->input('name') : self::makeDefaultQuestionName();
+//                $item->questionText = $request->has('text') ? $request->input('text') : '';
+//                $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
+//                break;
+//
+//            default:
+//        }
+//        if(isset($item)){
+//            $item->save();
+//
+//            return $item;
+//        }
+//
+//
+//    }
+//
+//
+//    /**
+//     * @deprecated
+//     * Sets the $type value from the request
+//     * @param ItemRequest $request
+//     */
+//    static function determineItemType( Request $request )
+//    {
+//        if ( $request->has('idx') ) {
+//            //newest version
+//            //check the new style index (idx) first
+//            $idx = $request->has('idx') ? $request->input('idx') : false;
+//
+//            if ( count($idx) > 1 ) return Element::class;
+//
+//            if ( $idx[0] === 0 ) return Exam::class;
+//
+//            if ( $idx[0] >= 1 ) return Question::class;
+//
+//
+//        } elseif ( $request->has('depth') ) {
+//            //The request will be coming in with potentially a few
+//            //of the item fields filled in. However, we are only concerned with
+//            //figuring out what kind of item is being requested and its relationships,
+//            //and then creating those and returning the relevant ids so that
+//            //they can be set on the client
+//            if ( $request->input('index') === 0 ) return Exam::class;
+//            if ( $request->input('depth' > 0) ) return Element::class;
+//            if ( $request->input('index') >= 1 ) return Question::class;
+//
+//        }
+//
+//    }
+//
 
     #------------ foreign keys
     /**
