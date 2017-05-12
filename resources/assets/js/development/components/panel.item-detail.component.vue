@@ -19,7 +19,8 @@
         <div class="row">
             <div class="question-text-area col-md-12">
                 <div class="form-group">
-                            <textarea class="question-text form-control"
+                            <textarea v-bind:id="itemTextId"
+                                    class="question-text form-control"
                                       rows="3"
                                       placeholder="Enter the full question text (optional)"
                                       v-model="questionText"></textarea>
@@ -63,6 +64,9 @@
         },
 
         computed: {
+            itemTextId : function(){
+                return 'item-text-' + this.index;
+            },
             isDetailTabActive :function (  ) {
 
             },

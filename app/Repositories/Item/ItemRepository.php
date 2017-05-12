@@ -15,11 +15,13 @@ use App\GradingTime;
 use App\Http\Controllers\ItemController;
 use App\Http\Requests\ItemRequest;
 use App\Item;
+use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
 use App\Question;
 use App\QuestionAssignment;
 use App\QuestionScore;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Student;
+use Carbon\Carbon;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Request;
@@ -41,7 +43,7 @@ class ItemRepository implements IItemRepository
     {
         //This will create the item if it didn't exist and
         //update it otherwise.
-        $item = $this->itemRepository->loadItemFromRequest($request);
+        $item = $this->loadItemFromRequest($request);
 
         //Now we do anything specific based on
         //the kind of OG model the item represents.
@@ -55,7 +57,7 @@ class ItemRepository implements IItemRepository
                 break;
 
             case $item instanceof Exam:
-                $this->dispatch(new UpdateAllStoredExamStats());
+                event(new UpdateAllStoredExamStats());
                 return $item;
                 break;
             default:
@@ -95,7 +97,6 @@ class ItemRepository implements IItemRepository
             if ( $request->input('index') >= 1 ) return Question::class;
         }
     }
-
 
     /**
      * Updates an existing item or creates a new one
@@ -161,7 +162,6 @@ class ItemRepository implements IItemRepository
         $item = Element::firstOrCreate(['id' => $id]);
         $item->elementName = $request->has('name') ? $request->input('name') : Item::makeDefaultQuestionName();
         $item->displayText = $request->has('text') ? $request->input('text') : '';
-
         $item->max_score = $request->has('maxScore') ? $request->input('maxScore') : '';
         return $item;
     }
@@ -205,6 +205,8 @@ class ItemRepository implements IItemRepository
 
         //store the question assignment id in the item
         $item->questionAssignment = $assignment;
+
+        $item->save();
 
         //give it back
         return $item;

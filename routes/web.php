@@ -149,7 +149,7 @@ Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
 Route::get('dev/test', 'TestController@test');
 //Route::get('dev/home', 'TestController@home');
-Route::get('dev/newsetup', 'TestController@newSetup');
+//Route::get('dev/newsetup', 'TestController@newSetup');
 
 
 //We never ask for a question or element with the show method/route
@@ -157,6 +157,7 @@ Route::get('dev/newsetup', 'TestController@newSetup');
 //before the resource show route below. However, if somehow this route
 //didn't get hit, we may have a problem.
 //When we want those directly, we use the edit route
+Route::get('dev/newsetup', 'ItemController@index');
 Route::get('items/{exam}', 'ItemController@show');
 Route::put('items/{exam}/order', 'ItemController@updateOrder');
 Route::put('items/{exam}', 'ItemController@update');

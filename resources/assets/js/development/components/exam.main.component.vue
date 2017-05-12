@@ -1,5 +1,6 @@
 <template>
-    <div id="examNameArea" class="exam-main-component">
+    <div
+            v-bind:id="examCardId" class="exam-main-component exam-card">
         <div class="input-group">
             <input type="text"
                    class="form-control input-lg"
@@ -54,6 +55,9 @@
         },
 
         computed: {
+            examCardId: function(){
+              return 'exam-card';
+            },
             /**
              * The name which only the user can see
              */

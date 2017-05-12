@@ -174,11 +174,9 @@ class ItemController extends Controller
     public function updateAll( Exam $exam, ItemRequest $request )
     {
         if ( $request->has('itemsList') ) {
-
             $this->questionAssignmentDao->updateAll($exam, $request);
-            return $this->questions;
+            return $this->questionAssignmentDao->questions;
         }
-//        return $this->handleStoreAndUpdate($request);
     }
 
 

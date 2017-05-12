@@ -6,6 +6,7 @@
               id="max-score-addon"
         >{{ title }}</span>
         <input
+                v-bind:id="maxScoreId"
                 type="number"
                 title="maximum score for this question"
                 class="form-control input max-score-input"
@@ -32,7 +33,7 @@
 
 </style>
 <script>
-window._ = require('lodash');
+    window._ = require( 'lodash' );
     import * as aTypes from '../../store/action-types';
     import * as mTypes from '../../store/mutation-types';
 
@@ -51,18 +52,20 @@ window._ = require('lodash');
                 placeholders: {
                     'score': 100
                 },
-                defaults:{
-                    score:100
+                defaults: {
+                    score: 100
                 }
             };
         },
 
         computed: {
-
+            maxScoreId: function () {
+                return 'max-score-' + this.index;
+            },
             maxScore: {
                 get: function () {
-                    let item = this.$store.getters.getItemByIndex(this.index);
-                    if (item instanceof Item){
+                    let item = this.$store.getters.getItemByIndex( this.index );
+                    if ( item instanceof Item ) {
                         return item.maxScore
                     }
 //
@@ -78,14 +81,14 @@ window._ = require('lodash');
                 },
 
                 set: function ( value ) {
-                    let item = this.$store.getters.getItemByIndex(this.index);
+                    let item = this.$store.getters.getItemByIndex( this.index );
                     if ( item instanceof Item ) {
-                        let pl = Payload.factory({
+                        let pl = Payload.factory( {
                             index: this.index,
                             updateProp: 'maxScore',
-                            updateVal: _.toInteger(value)
-                        });
-                        this.$store.commit(mTypes.updateItem, pl);
+                            updateVal: _.toInteger( value )
+                        } );
+                        this.$store.commit( mTypes.updateItem, pl );
                     }
                 }
             },

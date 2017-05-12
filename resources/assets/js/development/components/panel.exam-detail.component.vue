@@ -1,5 +1,4 @@
 <template>
-    <!--This is the hideable area via which we edit the exam's properties-->
     <div class="panel-exam-detail-component  ">
         <div class="row">
             <div class="col-md-11">
@@ -42,7 +41,8 @@
                             </li>
                         </ul>
                     </div><!-- /btn-group -->
-                    <input type="text"
+                    <input id="term"
+                            type="text"
                            class="form-control" aria-label="term-text"
                            v-model="term">
                 </div><!-- /input-group -->
@@ -81,7 +81,8 @@
                             </li>
                         </ul>
                     </div><!-- /btn-group -->
-                    <input type="number"
+                    <input id="year"
+                           type="number"
                            class="form-control" aria-label="year-text"
                            v-model="year">
                 </div><!-- /input-group -->

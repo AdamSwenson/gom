@@ -3,6 +3,7 @@
         <button type="button"
                 class="btn settings-button btn-info btn-lg"
                 v-on:click="toggleVis"
+                v-bind:id="settingsButtonId"
         >
             <span class="glyphicon glyphicon-cog"></span>
         </button>
@@ -10,6 +11,7 @@
         <button type="button"
                 class="addSibling btn btn-warning btn-lg"
                 v-on:click="addOlderSibling"
+                v-bind:id="addOlderSiblingButtonId"
         >
             <span class="glyphicon glyphicon-chevron-up"></span>
         </button>
@@ -17,6 +19,7 @@
         <button type="button"
                 class="addSibling btn btn-warning btn-lg"
                 v-on:click="addYoungerSibling"
+                v-bind:id="addYoungerSiblingButtonId"
         >
             <span class="glyphicon glyphicon-chevron-down"></span>
         </button>
@@ -49,7 +52,19 @@
             return {};
         },
 
-        computed: {},
+        computed: {
+
+            addYoungerSiblingButtonId:function(){
+                return 'younger-sibling-add-button-' + this.index;
+            },
+
+            addOlderSiblingButtonId:function(){
+               return 'older-sibling-add-button-' + this.index;
+           },
+            settingsButtonId: function(){
+                return 'item-settings-button-' + this.index;
+            }
+        },
 
         methods: {
             addOlderSibling: function () {

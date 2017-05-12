@@ -1,11 +1,13 @@
 <template>
 
 
-    <input type="text"
+    <input
+            type="text"
            class="item-name-component form-control input-lg"
            aria-describedby="basic-addon2"
            v-bind:placeholder="placeHolders.privateName"
-           v-model="name"
+           v-bind:id="id"
+            v-model="name"
     >
 
 </template>
@@ -46,6 +48,9 @@
         },
 
         computed: {
+            id: { get: function(){
+               return 'item-name-' + this.index;
+            }},
 
             name: {
                 get: function () {

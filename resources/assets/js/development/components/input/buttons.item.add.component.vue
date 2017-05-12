@@ -1,5 +1,5 @@
 <template>
-    <button
+    <button id="add-item-button"
             class="btn btn-info"
             v-on:click="addItem"
     >

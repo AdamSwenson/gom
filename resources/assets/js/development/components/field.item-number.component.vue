@@ -1,10 +1,10 @@
 <template>
 
     <div class="question-num-area">
-        <label for="question-number-label"
+        <label v-bind:for="questionNumberId"
         >{{ displayType }}</label>
         <input
-                id="question-number-label"
+                v-bind:id="questionNumberId"
                 type="number"
                 min="0"
                 title="order of the item on the assignment"
@@ -40,6 +40,9 @@
 
         computed: {
 
+            questionNumberId: function(){
+              return 'question-number-' + this.index;
+            },
             displayType: {
                 get: function () {
                     //if question, return q number
