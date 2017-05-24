@@ -13381,25 +13381,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -13420,6 +13435,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -13520,6 +13540,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -24402,7 +24426,7 @@ module.exports = '\n<input\n        id="{{ toggleId }}"\n        class="exam-rel
 },{}],26:[function(require,module,exports){
 module.exports = '<div>\n\n\n\n    <a class="btn btn-info"\n       title="Exam Analytics"\n       href="{{ analyticsTarget }}"\n    ><span\n            class="glyphicon glyphicon-stats"\n            aria-hidden="true"\n    ></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ qualityControlsTarget }}"\n       title="Quality Control"\n    >\n        <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ backupTarget }}"\n       title="Export Scores to Csv"\n    >\n        <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>\n    </a>\n    <a class="btn btn-info"\n       title="Student Controls"\n       href="{{ studentControlsTarget }}"\n    >\n        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>\n\n</div>';
 },{}],27:[function(require,module,exports){
-'use strict';
+"use strict";
 
 /**
  * Created by adam on 3/23/16.
@@ -24414,14 +24438,13 @@ var $ = require('jquery');
  * Load the Jira issue collector
  */
 module.exports = function () {
-
-  // $.ajax( {
-  //     url: "https://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
-  //     type: "get",
-  //     cache: true,
-  //     dataType: "script"
-  // } );
-
+    // Requires jQuery!
+    jQuery.ajax({
+        url: "https://merpco.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/wd7m1w/b/c/3d70dff4c40bd20e976d5936642e2171/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=27c8650e",
+        type: "get",
+        cache: true,
+        dataType: "script"
+    });
 };
 
 },{"jquery":16}],28:[function(require,module,exports){
