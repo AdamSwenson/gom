@@ -14438,7 +14438,7 @@ window.onload = function () {
 },{"../common.js":16,"../libraries/bootstrap-slider-modified.js":25,"../libraries/bootstrap3-typeahead.min.js":26,"./components/AjaxHandler.js":17,"./components/Dashboard.js":18,"./components/Roster.js":19,"./components/SearchBox.js":20,"./components/SliderTools.js":21,"./components/Timer.js":22,"./components/letterGradeButton.js":23,"bootbox":1,"bootstrap":2,"jquery":15}],25:[function(require,module,exports){
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*! =========================================================
  * bootstrap-slider.js
@@ -15939,7 +15939,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 },{"jquery":15}],26:[function(require,module,exports){
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 !function (a, b) {
   "use strict";
@@ -16049,7 +16049,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 },{"jquery":15}],27:[function(require,module,exports){
-'use strict';
+"use strict";
 
 /**
  * Created by adam on 3/23/16.
@@ -16061,14 +16061,13 @@ var $ = require('jquery');
  * Load the Jira issue collector
  */
 module.exports = function () {
-
-  // $.ajax( {
-  //     url: "https://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
-  //     type: "get",
-  //     cache: true,
-  //     dataType: "script"
-  // } );
-
+    // Requires jQuery!
+    jQuery.ajax({
+        url: "https://merpco.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/wd7m1w/b/c/3d70dff4c40bd20e976d5936642e2171/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=27c8650e",
+        type: "get",
+        cache: true,
+        dataType: "script"
+    });
 };
 
 },{"jquery":15}],28:[function(require,module,exports){
