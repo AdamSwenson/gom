@@ -43267,6 +43267,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -43279,7 +43283,7 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],340:[function(require,module,exports){
-(function (process,global){
+(function (global){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -43298,6 +43302,7 @@ process.umask = function() { return 0; };
   var undefined; // More compressible than void 0.
   var $Symbol = typeof Symbol === "function" ? Symbol : {};
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 
   var inModule = typeof module === "object";
@@ -43471,8 +43476,8 @@ process.umask = function() { return 0; };
       }
     }
 
-    if (typeof process === "object" && process.domain) {
-      invoke = process.domain.bind(invoke);
+    if (typeof global.process === "object" && global.process.domain) {
+      invoke = global.process.domain.bind(invoke);
     }
 
     var previousPromise;
@@ -43511,6 +43516,9 @@ process.umask = function() { return 0; };
   }
 
   defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
   runtime.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
@@ -43693,6 +43701,15 @@ process.umask = function() { return 0; };
   defineIteratorMethods(Gp);
 
   Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
 
   Gp.toString = function() {
     return "[object Generator]";
@@ -44004,8 +44021,8 @@ process.umask = function() { return 0; };
   typeof self === "object" ? self : this
 );
 
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":339}],341:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],341:[function(require,module,exports){
 /**!
  * Sortable
  * @author	RubaXa   <trash@rubaxa.org>
@@ -47305,121 +47322,53 @@ return Tether;
 "use strict";var _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(o){return typeof o}:function(o){return o&&"function"==typeof Symbol&&o.constructor===Symbol&&o!==Symbol.prototype?"symbol":typeof o};!function(){function o(e,t){if(!o.installed){if(o.installed=!0,!t)return void console.error("You have to install axios");e.axios=t,Object.defineProperties(e.prototype,{axios:{get:function(){return t}},$http:{get:function(){return t}}})}}"object"==("undefined"==typeof exports?"undefined":_typeof(exports))?module.exports=o:"function"==typeof define&&define.amd?define([],function(){return o}):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
 },{}],344:[function(require,module,exports){
 var Vue // late bind
-var map = Object.create(null)
-var shimmed = false
+var version
+var map = window.__VUE_HOT_MAP__ = Object.create(null)
+var installed = false
 var isBrowserify = false
-
-/**
- * Determine compatibility and apply patch.
- *
- * @param {Function} vue
- * @param {Boolean} browserify
- */
+var initHookName = 'beforeCreate'
 
 exports.install = function (vue, browserify) {
-  if (shimmed) return
-  shimmed = true
+  if (installed) return
+  installed = true
 
-  Vue = vue
+  Vue = vue.__esModule ? vue.default : vue
+  version = Vue.version.split('.').map(Number)
   isBrowserify = browserify
 
-  exports.compatible = !!Vue.internalDirectives
+  // compat with < 2.0.0-alpha.7
+  if (Vue.config._lifecycleHooks.indexOf('init') > -1) {
+    initHookName = 'init'
+  }
+
+  exports.compatible = version[0] >= 2
   if (!exports.compatible) {
     console.warn(
-      '[HMR] vue-loader hot reload is only compatible with ' +
-      'Vue.js 1.0.0+.'
+      '[HMR] You are using a version of vue-hot-reload-api that is ' +
+      'only compatible with Vue.js core ^2.0.0.'
     )
     return
   }
-
-  // patch view directive
-  patchView(Vue.internalDirectives.component)
-  console.log('[HMR] Vue component hot reload shim applied.')
-  // shim router-view if present
-  var routerView = Vue.elementDirective('router-view')
-  if (routerView) {
-    patchView(routerView)
-    console.log('[HMR] vue-router <router-view> hot reload shim applied.')
-  }
 }
 
 /**
- * Shim the view directive (component or router-view).
- *
- * @param {Object} View
- */
-
-function patchView (View) {
-  var unbuild = View.unbuild
-  View.unbuild = function (defer) {
-    if (!this.hotUpdating) {
-      var prevComponent = this.childVM && this.childVM.constructor
-      removeView(prevComponent, this)
-      // defer = true means we are transitioning to a new
-      // Component. Register this new component to the list.
-      if (defer) {
-        addView(this.Component, this)
-      }
-    }
-    // call original
-    return unbuild.call(this, defer)
-  }
-}
-
-/**
- * Add a component view to a Component's hot list
- *
- * @param {Function} Component
- * @param {Directive} view - view directive instance
- */
-
-function addView (Component, view) {
-  var id = Component && Component.options.hotID
-  if (id) {
-    if (!map[id]) {
-      map[id] = {
-        Component: Component,
-        views: [],
-        instances: []
-      }
-    }
-    map[id].views.push(view)
-  }
-}
-
-/**
- * Remove a component view from a Component's hot list
- *
- * @param {Function} Component
- * @param {Directive} view - view directive instance
- */
-
-function removeView (Component, view) {
-  var id = Component && Component.options.hotID
-  if (id) {
-    map[id].views.$remove(view)
-  }
-}
-
-/**
- * Create a record for a hot module, which keeps track of its construcotr,
- * instnaces and views (component directives or router-views).
+ * Create a record for a hot module, which keeps track of its constructor
+ * and instances
  *
  * @param {String} id
  * @param {Object} options
  */
 
 exports.createRecord = function (id, options) {
+  var Ctor = null
   if (typeof options === 'function') {
-    options = options.options
+    Ctor = options
+    options = Ctor.options
   }
-  if (typeof options.el !== 'string' && typeof options.data !== 'object') {
-    makeOptionsHot(id, options)
-    map[id] = {
-      Component: null,
-      views: [],
-      instances: []
-    }
+  makeOptionsHot(id, options)
+  map[id] = {
+    Ctor: Vue.extend(options),
+    instances: []
   }
 }
 
@@ -47431,16 +47380,12 @@ exports.createRecord = function (id, options) {
  */
 
 function makeOptionsHot (id, options) {
-  options.hotID = id
-  injectHook(options, 'created', function () {
-    var record = map[id]
-    if (!record.Component) {
-      record.Component = this.constructor
-    }
-    record.instances.push(this)
+  injectHook(options, initHookName, function () {
+    map[id].instances.push(this)
   })
   injectHook(options, 'beforeDestroy', function () {
-    map[id].instances.$remove(this)
+    var instances = map[id].instances
+    instances.splice(instances.indexOf(this), 1)
   })
 }
 
@@ -47462,147 +47407,64 @@ function injectHook (options, name, hook) {
     : [hook]
 }
 
-/**
- * Update a hot component.
- *
- * @param {String} id
- * @param {Object|null} newOptions
- * @param {String|null} newTemplate
- */
-
-exports.update = function (id, newOptions, newTemplate) {
-  var record = map[id]
-  // force full-reload if an instance of the component is active but is not
-  // managed by a view
-  if (!record || (record.instances.length && !record.views.length)) {
-    console.log('[HMR] Root or manually-mounted instance modified. Full reload may be required.')
-    if (!isBrowserify) {
-      window.location.reload()
-    } else {
-      // browserify-hmr somehow sends incomplete bundle if we reload here
-      return
+function tryWrap (fn) {
+  return function (id, arg) {
+    try { fn(id, arg) } catch (e) {
+      console.error(e)
+      console.warn('Something went wrong during Vue component hot-reload. Full reload required.')
     }
   }
-  if (!isBrowserify) {
-    // browserify-hmr already logs this
-    console.log('[HMR] Updating component: ' + format(id))
-  }
-  var Component = record.Component
-  // update constructor
-  if (newOptions) {
-    // in case the user exports a constructor
-    Component = record.Component = typeof newOptions === 'function'
-      ? newOptions
-      : Vue.extend(newOptions)
-    makeOptionsHot(id, Component.options)
-  }
-  if (newTemplate) {
-    Component.options.template = newTemplate
-  }
-  // handle recursive lookup
-  if (Component.options.name) {
-    Component.options.components[Component.options.name] = Component
-  }
-  // reset constructor cached linker
-  Component.linker = null
-  // reload all views
-  record.views.forEach(function (view) {
-    updateView(view, Component)
-  })
-  // flush devtools
-  if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
-    window.__VUE_DEVTOOLS_GLOBAL_HOOK__.emit('flush')
-  }
 }
 
-/**
- * Update a component view instance
- *
- * @param {Directive} view
- * @param {Function} Component
- */
-
-function updateView (view, Component) {
-  if (!view._bound) {
+exports.rerender = tryWrap(function (id, options) {
+  var record = map[id]
+  if (!options) {
+    record.instances.slice().forEach(function (instance) {
+      instance.$forceUpdate()
+    })
     return
   }
-  view.Component = Component
-  view.hotUpdating = true
-  // disable transitions
-  view.vm._isCompiled = false
-  // save state
-  var state = extractState(view.childVM)
-  // remount, make sure to disable keep-alive
-  var keepAlive = view.keepAlive
-  view.keepAlive = false
-  view.mountComponent()
-  view.keepAlive = keepAlive
-  // restore state
-  restoreState(view.childVM, state, true)
-  // re-eanble transitions
-  view.vm._isCompiled = true
-  view.hotUpdating = false
-}
-
-/**
- * Extract state from a Vue instance.
- *
- * @param {Vue} vm
- * @return {Object}
- */
-
-function extractState (vm) {
-  return {
-    cid: vm.constructor.cid,
-    data: vm.$data,
-    children: vm.$children.map(extractState)
+  if (typeof options === 'function') {
+    options = options.options
   }
-}
-
-/**
- * Restore state to a reloaded Vue instance.
- *
- * @param {Vue} vm
- * @param {Object} state
- */
-
-function restoreState (vm, state, isRoot) {
-  var oldAsyncConfig
-  if (isRoot) {
-    // set Vue into sync mode during state rehydration
-    oldAsyncConfig = Vue.config.async
-    Vue.config.async = false
-  }
-  // actual restore
-  if (isRoot || !vm._props) {
-    vm.$data = state.data
-  } else {
-    Object.keys(state.data).forEach(function (key) {
-      if (!vm._props[key]) {
-        // for non-root, only restore non-props fields
-        vm.$data[key] = state.data[key]
-      }
-    })
-  }
-  // verify child consistency
-  var hasSameChildren = vm.$children.every(function (c, i) {
-    return state.children[i] && state.children[i].cid === c.constructor.cid
+  record.Ctor.options.render = options.render
+  record.Ctor.options.staticRenderFns = options.staticRenderFns
+  record.instances.slice().forEach(function (instance) {
+    instance.$options.render = options.render
+    instance.$options.staticRenderFns = options.staticRenderFns
+    instance._staticTrees = [] // reset static trees
+    instance.$forceUpdate()
   })
-  if (hasSameChildren) {
-    // rehydrate children
-    vm.$children.forEach(function (c, i) {
-      restoreState(c, state.children[i])
-    })
-  }
-  if (isRoot) {
-    Vue.config.async = oldAsyncConfig
-  }
-}
+})
 
-function format (id) {
-  var match = id.match(/[^\/]+\.vue$/)
-  return match ? match[0] : id
-}
+exports.reload = tryWrap(function (id, options) {
+  var record = map[id]
+  if (options) {
+    if (typeof options === 'function') {
+      options = options.options
+    }
+    makeOptionsHot(id, options)
+    if (version[1] < 2) {
+      // preserve pre 2.2 behavior for global mixin handling
+      record.Ctor.extendOptions = options
+    }
+    var newCtor = record.Ctor.super.extend(options)
+    record.Ctor.options = newCtor.options
+    record.Ctor.cid = newCtor.cid
+    record.Ctor.prototype = newCtor.prototype
+    if (newCtor.release) {
+      // temporary global mixin strategy used in < 2.0.0-alpha.6
+      newCtor.release()
+    }
+  }
+  record.instances.slice().forEach(function (instance) {
+    if (instance.$vnode && instance.$vnode.context) {
+      instance.$vnode.context.$forceUpdate()
+    } else {
+      console.warn('Root or manually mounted instance modified. Full reload required.')
+    }
+  })
+})
 
 },{}],345:[function(require,module,exports){
 (function (process){
@@ -68270,7 +68132,7 @@ window.axios.defaults.baseURL = routeRoot;
 
 },{"axios":1,"babel-polyfill":26,"bootstrap":30,"bootstrap-sass":28,"jquery":337,"lodash":338}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68471,7 +68333,7 @@ if (module.hot) {(function () {  module.hot.accept()
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n"] = false
+    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -68482,7 +68344,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68586,7 +68448,7 @@ if (module.hot) {(function () {  module.hot.accept()
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n"] = false
+    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -71287,7 +71149,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71378,7 +71240,7 @@ if (module.hot) {(function () {  module.hot.accept()
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -webkit-linear-gradient(bottom, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: -webkit-linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(#19465b 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.5) 1px, transparent 1px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 1px, transparent 1px), -webkit-linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), -webkit-linear-gradient(left, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: -webkit-linear-gradient(bottom left, #00496C, #004768);\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n"] = false
+    __vueify_insert__.cache["/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
