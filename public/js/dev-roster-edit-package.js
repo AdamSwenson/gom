@@ -3626,7 +3626,7 @@ return DataTable.Buttons;
 }));
 
 },{"datatables.net-bs":15,"datatables.net-buttons":17}],17:[function(require,module,exports){
-/*! Buttons for DataTables 1.2.4
+/*! Buttons for DataTables 1.3.1
  * ©2016 SpryMedia Ltd - datatables.net/license
  */
 
@@ -3676,6 +3676,11 @@ var _dtButtons = DataTable.ext.buttons;
  */
 var Buttons = function( dt, config )
 {
+	// If there is no config set it to an empty object
+	if ( typeof( config ) === 'undefined' ) {
+		config = {};	
+	}
+	
 	// Allow a boolean true for defaults
 	if ( config === true ) {
 		config = {};
@@ -3879,6 +3884,24 @@ $.extend( Buttons.prototype, {
 	{
 		var button = this._nodeToButton( node );
 		return $(button.node);
+	},
+
+	/**
+	 * Set / get a processing class on the selected button
+	 * @param  {boolean} flag true to add, false to remove, undefined to get
+	 * @return {boolean|Buttons} Getter value or this if a setter.
+	 */
+	processing: function ( node, flag )
+	{
+		var button = this._nodeToButton( node );
+
+		if ( flag === undefined ) {
+			return $(button.node).hasClass( 'processing' );
+		}
+
+		$(button.node).toggleClass( 'processing', flag );
+
+		return this;
 	},
 
 	/**
@@ -4090,7 +4113,8 @@ $.extend( Buttons.prototype, {
 			if ( built.conf.buttons ) {
 				var collectionDom = this.c.dom.collection;
 				built.collection = $('<'+collectionDom.tag+'/>')
-					.addClass( collectionDom.className );
+					.addClass( collectionDom.className )
+					.attr( 'role', 'menu') ;
 				built.conf._collection = built.collection;
 
 				this._expandButton( built.buttons, built.conf.buttons, true, attachPoint );
@@ -4197,7 +4221,7 @@ $.extend( Buttons.prototype, {
 		}
 
 		if ( config.titleAttr ) {
-			button.attr( 'title', config.titleAttr );
+			button.attr( 'title', text( config.titleAttr ) );
 		}
 
 		if ( ! config.namespace ) {
@@ -4746,7 +4770,7 @@ Buttons.defaults = {
  * @type {string}
  * @static
  */
-Buttons.version = '1.2.4';
+Buttons.version = '1.3.1';
 
 
 $.extend( _dtButtons, {
@@ -5027,6 +5051,19 @@ DataTable.Api.registerPlural( 'buttons().nodes()', 'button().node()', function (
 	return jq;
 } );
 
+// Get / set button processing state
+DataTable.Api.registerPlural( 'buttons().processing()', 'button().processing()', function ( flag ) {
+	if ( flag === undefined ) {
+		return this.map( function ( set ) {
+			return set.inst.processing( set.node );
+		} );
+	}
+
+	return this.each( function ( set ) {
+		set.inst.processing( set.node, flag );
+	} );
+} );
+
 // Get / set button text (i.e. the button labels)
 DataTable.Api.registerPlural( 'buttons().text()', 'button().text()', function ( label ) {
 	if ( label === undefined ) {
@@ -5184,6 +5221,9 @@ var _exportData = function ( dt, inOpts )
 			return str;
 		}
 
+		// Always remove script tags
+		str = str.replace( /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '' );
+
 		if ( config.stripHtml ) {
 			str = str.replace( /<[^>]*>/g, '' );
 		}
@@ -5293,14 +5333,14 @@ return Buttons;
 }));
 
 },{"datatables.net":19}],18:[function(require,module,exports){
-/*! ColReorder 1.3.2
+/*! ColReorder 1.3.3
  * ©2010-2015 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     ColReorder
  * @description Provide the ability to reorder columns in a DataTable
- * @version     1.3.2
+ * @version     1.3.3
  * @file        dataTables.colReorder.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -6182,10 +6222,14 @@ $.extend( ColReorder.prototype, {
 	"_fnMouseListener": function ( i, nTh )
 	{
 		var that = this;
-		$(nTh).on( 'mousedown.ColReorder', function (e) {
-			e.preventDefault();
-			that._fnMouseDown.call( that, e, nTh );
-		} );
+		$(nTh)
+			.on( 'mousedown.ColReorder', function (e) {
+				e.preventDefault();
+				that._fnMouseDown.call( that, e, nTh );
+			} )
+			.on( 'touchstart.ColReorder', function (e) {
+				that._fnMouseDown.call( that, e, nTh );
+			} );
 	},
 
 
@@ -6210,10 +6254,10 @@ $.extend( ColReorder.prototype, {
 			return;
 		}
 
-		this.s.mouse.startX = e.pageX;
-		this.s.mouse.startY = e.pageY;
-		this.s.mouse.offsetX = e.pageX - offset.left;
-		this.s.mouse.offsetY = e.pageY - offset.top;
+		this.s.mouse.startX = this._fnCursorPosition( e, 'pageX' );
+		this.s.mouse.startY = this._fnCursorPosition( e, 'pageY' );
+		this.s.mouse.offsetX = this._fnCursorPosition( e, 'pageX' ) - offset.left;
+		this.s.mouse.offsetY = this._fnCursorPosition( e, 'pageY' ) - offset.top;
 		this.s.mouse.target = this.s.dt.aoColumns[ idx ].nTh;//target[0];
 		this.s.mouse.targetIndex = idx;
 		this.s.mouse.fromIndex = idx;
@@ -6222,10 +6266,10 @@ $.extend( ColReorder.prototype, {
 
 		/* Add event handlers to the document */
 		$(document)
-			.on( 'mousemove.ColReorder', function (e) {
+			.on( 'mousemove.ColReorder touchmove.ColReorder', function (e) {
 				that._fnMouseMove.call( that, e );
 			} )
-			.on( 'mouseup.ColReorder', function (e) {
+			.on( 'mouseup.ColReorder touchend.ColReorder', function (e) {
 				that._fnMouseUp.call( that, e );
 			} );
 	},
@@ -6249,8 +6293,8 @@ $.extend( ColReorder.prototype, {
 			 * possibly confusing drag element showing up
 			 */
 			if ( Math.pow(
-				Math.pow(e.pageX - this.s.mouse.startX, 2) +
-				Math.pow(e.pageY - this.s.mouse.startY, 2), 0.5 ) < 5 )
+				Math.pow(this._fnCursorPosition( e, 'pageX') - this.s.mouse.startX, 2) +
+				Math.pow(this._fnCursorPosition( e, 'pageY') - this.s.mouse.startY, 2), 0.5 ) < 5 )
 			{
 				return;
 			}
@@ -6259,8 +6303,8 @@ $.extend( ColReorder.prototype, {
 
 		/* Position the element - we respect where in the element the click occured */
 		this.dom.drag.css( {
-			left: e.pageX - this.s.mouse.offsetX,
-			top: e.pageY - this.s.mouse.offsetY
+			left: this._fnCursorPosition( e, 'pageX' ) - this.s.mouse.offsetX,
+			top: this._fnCursorPosition( e, 'pageY' ) - this.s.mouse.offsetY
 		} );
 
 		/* Based on the current mouse position, calculate where the insert should go */
@@ -6269,7 +6313,7 @@ $.extend( ColReorder.prototype, {
 
 		for ( var i=1, iLen=this.s.aoTargets.length ; i<iLen ; i++ )
 		{
-			if ( e.pageX < this.s.aoTargets[i-1].x + ((this.s.aoTargets[i].x-this.s.aoTargets[i-1].x)/2) )
+			if ( this._fnCursorPosition(e, 'pageX') < this.s.aoTargets[i-1].x + ((this.s.aoTargets[i].x-this.s.aoTargets[i-1].x)/2) )
 			{
 				this.dom.pointer.css( 'left', this.s.aoTargets[i-1].x );
 				this.s.mouse.toIndex = this.s.aoTargets[i-1].to;
@@ -6306,7 +6350,7 @@ $.extend( ColReorder.prototype, {
 	{
 		var that = this;
 
-		$(document).off( 'mousemove.ColReorder mouseup.ColReorder' );
+		$(document).off( '.ColReorder' );
 
 		if ( this.dom.drag !== null )
 		{
@@ -6458,7 +6502,21 @@ $.extend( ColReorder.prototype, {
 		$.each( this.s.dt.aoColumns, function (i, column) {
 			$(column.nTh).attr('data-column-index', i);
 		} );
-	}
+	},
+
+
+	/**
+	 * Get cursor position regardless of mouse or touch input
+	 * @param  {Event}  e    jQuery Event
+	 * @param  {string} prop Property to get
+	 * @return {number}      Value
+	 */
+	_fnCursorPosition: function ( e, prop ) {
+		if ( e.type.indexOf('touch') !== -1 ) {
+			return e.originalEvent.touches[0][ prop ];
+		}
+		return e[ prop ];
+	},
 } );
 
 
@@ -6537,7 +6595,7 @@ ColReorder.defaults = {
  *  @type      String
  *  @default   As code
  */
-ColReorder.version = "1.3.2";
+ColReorder.version = "1.3.3";
 
 
 
@@ -6630,18 +6688,18 @@ return ColReorder;
 }));
 
 },{"datatables.net":19}],19:[function(require,module,exports){
-/*! DataTables 1.10.13
- * ©2008-2016 SpryMedia Ltd - datatables.net/license
+/*! DataTables 1.10.15
+ * ©2008-2017 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     1.10.13
+ * @version     1.10.15
  * @file        jquery.dataTables.js
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
- * @copyright   Copyright 2008-2016 SpryMedia Ltd.
+ * @copyright   Copyright 2008-2017 SpryMedia Ltd.
  *
  * This source file is free software, available under the following license:
  *   MIT license - http://datatables.net/license
@@ -8173,6 +8231,35 @@ return ColReorder;
 	
 	
 	/**
+	 * Determine if all values in the array are unique. This means we can short
+	 * cut the _unique method at the cost of a single loop. A sorted array is used
+	 * to easily check the values.
+	 *
+	 * @param  {array} src Source array
+	 * @return {boolean} true if all unique, false otherwise
+	 * @ignore
+	 */
+	var _areAllUnique = function ( src ) {
+		if ( src.length < 2 ) {
+			return true;
+		}
+	
+		var sorted = src.slice().sort();
+		var last = sorted[0];
+	
+		for ( var i=1, ien=sorted.length ; i<ien ; i++ ) {
+			if ( sorted[i] === last ) {
+				return false;
+			}
+	
+			last = sorted[i];
+		}
+	
+		return true;
+	};
+	
+	
+	/**
 	 * Find the unique elements in a source array.
 	 *
 	 * @param  {array} src Source array
@@ -8181,6 +8268,10 @@ return ColReorder;
 	 */
 	var _unique = function ( src )
 	{
+		if ( _areAllUnique( src ) ) {
+			return src.slice();
+		}
+	
 		// A faster unique method is to use object keys to identify used values,
 		// but this doesn't work with arrays or objects, which we must also
 		// consider. See jsperf.com/compare-array-unique-versions/4 for more
@@ -8454,7 +8545,7 @@ return ColReorder;
 	
 		// orderData can be given as an integer
 		var dataSort = init.aDataSort;
-		if ( dataSort && ! $.isArray( dataSort ) ) {
+		if ( typeof dataSort === 'number' && ! $.isArray( dataSort ) ) {
 			init.aDataSort = [ dataSort ];
 		}
 	}
@@ -12943,7 +13034,7 @@ return ColReorder;
 	
 			// Allow custom and plug-in manipulation functions to alter the saved data set and
 			// cancelling of loading by returning false
-			var abStateLoad = _fnCallbackFire( settings, 'aoStateLoadParams', 'stateLoadParams', [settings, state] );
+			var abStateLoad = _fnCallbackFire( settings, 'aoStateLoadParams', 'stateLoadParams', [settings, s] );
 			if ( $.inArray( false, abStateLoad ) !== -1 ) {
 				callback();
 				return;
@@ -12963,7 +13054,7 @@ return ColReorder;
 			}
 	
 			// Store the saved state so it might be accessed at any time
-			settings.oLoadedState = $.extend( true, {}, state );
+			settings.oLoadedState = $.extend( true, {}, s );
 	
 			// Restore key features - todo - for 1.11 this needs to be done by
 			// subscribed events
@@ -12992,7 +13083,7 @@ return ColReorder;
 			}
 	
 			// Columns
-			// 
+			//
 			if ( s.columns ) {
 				for ( i=0, ien=s.columns.length ; i<ien ; i++ ) {
 					var col = s.columns[i];
@@ -13009,7 +13100,7 @@ return ColReorder;
 				}
 			}
 	
-			_fnCallbackFire( settings, 'aoStateLoaded', 'stateLoaded', [settings, state] );
+			_fnCallbackFire( settings, 'aoStateLoaded', 'stateLoaded', [settings, s] );
 			callback();
 		}
 	
@@ -13739,6 +13830,11 @@ return ColReorder;
 	
 	
 		shift:   __arrayProto.shift,
+	
+	
+		slice: function () {
+			return new _Api( this.context, this );
+		},
 	
 	
 		sort:    __arrayProto.sort, // ? name - order?
@@ -16027,7 +16123,7 @@ return ColReorder;
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "1.10.13";
+	DataTable.version = "1.10.15";
 
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -31924,6 +32020,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');

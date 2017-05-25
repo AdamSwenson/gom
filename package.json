@@ -58,10 +58,14 @@
     "node-sass": "^4.5.1",
     "requirejs": "^2.2.0",
     "rollup-plugin-babel": "^2.6.1",
+<<<<<<< HEAD
     "sass-loader": "^6.0.3",
     "scss-loader": "0.0.1",
     "send": "^0.15.1",
     "sharp": "^0.17.2",
+=======
+    "sharp": "^0.17.3",
+>>>>>>> master
     "sinon": "^1.17.4",
     "sinon-stub-promise": "^3.0.1",
     "stringify": "^5.1.0",

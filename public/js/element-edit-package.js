@@ -13371,6 +13371,7 @@ return jQuery;
 				if (value === void 0 || value === true) {
 					value = group.name;
 				}
+<<<<<<< HEAD
 
 				if (typeof value === 'function') {
 					return value;
@@ -13395,6 +13396,32 @@ return jQuery;
 				originalGroup = {name: originalGroup};
 			}
 
+=======
+
+				if (typeof value === 'function') {
+					return value;
+				} else {
+					return function (to, from) {
+						var fromGroup = from.options.group.name;
+
+						return pull
+							? value
+							: value && (value.join
+								? value.indexOf(fromGroup) > -1
+								: (fromGroup == value)
+							);
+					};
+				}
+			}
+
+			var group = {};
+			var originalGroup = options.group;
+
+			if (!originalGroup || typeof originalGroup != 'object') {
+				originalGroup = {name: originalGroup};
+			}
+
+>>>>>>> master
 			group.name = originalGroup.name;
 			group.checkPull = toFn(originalGroup.pull, true);
 			group.checkPut = toFn(originalGroup.put);
@@ -13505,7 +13532,15 @@ return jQuery;
 				startIndex;
 
 			_saveInputCheckedState(el);
+<<<<<<< HEAD
+=======
 
+>>>>>>> master
+
+			// Don't trigger start event when an element is been dragged, otherwise the evt.oldindex always wrong when set option.group.
+			if (dragEl) {
+				return;
+			}
 
 			// Don't trigger start event when an element is been dragged, otherwise the evt.oldindex always wrong when set option.group.
 			if (dragEl) {
@@ -14138,6 +14173,7 @@ return jQuery;
 				}
 
 			}
+<<<<<<< HEAD
 
 			this._nulling();
 		},
@@ -14167,6 +14203,37 @@ return jQuery;
 			activeGroup =
 			Sortable.active = null;
 
+=======
+
+			this._nulling();
+		},
+
+		_nulling: function() {
+			rootEl =
+			dragEl =
+			parentEl =
+			ghostEl =
+			nextEl =
+			cloneEl =
+			lastDownEl =
+
+			scrollEl =
+			scrollParentEl =
+
+			tapEvt =
+			touchEvt =
+
+			moved =
+			newIndex =
+
+			lastEl =
+			lastCSS =
+
+			putSortable =
+			activeGroup =
+			Sortable.active = null;
+
+>>>>>>> master
 			savedInputChecked.forEach(function (el) {
 				el.checked = true;
 			});
@@ -14875,12 +14942,18 @@ var $ = require('jquery');
  */
 module.exports = function () {
     // Requires jQuery!
+<<<<<<< HEAD
     $.ajax({
         url: "https://merpco.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/m2bzpb/b/c/0fe61a73be0a039e2366ef5aaa54d24c/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=27c8650e",
+=======
+    jQuery.ajax({
+        url: "https://merpco.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/wd7m1w/b/c/3d70dff4c40bd20e976d5936642e2171/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=27c8650e",
+>>>>>>> master
         type: "get",
         cache: true,
         dataType: "script"
     });
+<<<<<<< HEAD
 
     // $.ajax( {
     //     url: "https://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
@@ -14888,6 +14961,8 @@ module.exports = function () {
     //     cache: true,
     //     dataType: "script"
     // } );
+=======
+>>>>>>> master
 };
 
 },{"jquery":15}],20:[function(require,module,exports){

@@ -169,6 +169,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -7017,7 +7021,11 @@ module.exports = Vue$2;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"_process":1}],3:[function(require,module,exports){
 /**
+<<<<<<< HEAD
  * vuex v2.2.1
+=======
+ * vuex v2.3.0
+>>>>>>> master
  * (c) 2017 Evan You
  * @license MIT
  */
@@ -7099,8 +7107,13 @@ function devtoolPlugin (store) {
  * @param {Array<Object>} cache
  * @return {*}
  */
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> master
 /**
  * forEach for object
  */
@@ -7124,6 +7137,7 @@ var Module = function Module (rawModule, runtime) {
   this.runtime = runtime;
   this._children = Object.create(null);
   this._rawModule = rawModule;
+<<<<<<< HEAD
 };
 
 var prototypeAccessors$1 = { state: {},namespaced: {} };
@@ -7131,6 +7145,13 @@ var prototypeAccessors$1 = { state: {},namespaced: {} };
 prototypeAccessors$1.state.get = function () {
   return this._rawModule.state || {}
 };
+=======
+  var rawState = rawModule.state;
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
+};
+
+var prototypeAccessors$1 = { namespaced: {} };
+>>>>>>> master
 
 prototypeAccessors$1.namespaced.get = function () {
   return !!this._rawModule.namespaced
@@ -7494,7 +7515,11 @@ function installModule (store, rootState, path, module, hot) {
   var namespace = store._modules.getNamespace(path);
 
   // register in namespace map
+<<<<<<< HEAD
   if (namespace) {
+=======
+  if (module.namespaced) {
+>>>>>>> master
     store._modulesNamespaceMap[namespace] = module;
   }
 
@@ -7535,6 +7560,7 @@ function installModule (store, rootState, path, module, hot) {
  */
 function makeLocalContext (store, namespace, path) {
   var noNamespace = namespace === '';
+<<<<<<< HEAD
 
   var local = {
     dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
@@ -7543,6 +7569,16 @@ function makeLocalContext (store, namespace, path) {
       var options = args.options;
       var type = args.type;
 
+=======
+
+  var local = {
+    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+>>>>>>> master
       if (!options || !options.root) {
         type = namespace + type;
         if (!store._actions[type]) {
@@ -7817,7 +7853,11 @@ function getModuleByNamespace (store, helper, namespace) {
 var index = {
   Store: Store,
   install: install,
+<<<<<<< HEAD
   version: '2.2.1',
+=======
+  version: '2.3.0',
+>>>>>>> master
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
