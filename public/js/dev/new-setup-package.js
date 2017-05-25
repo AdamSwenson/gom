@@ -69846,7 +69846,7 @@ exports.default = {
     props: ['index', 'id'],
 
     computed: {
-        id: function id() {
+        buttonid: function buttonid() {
             return 'delete-item-button-' + this.index;
         },
         visible: function visible() {
@@ -69898,7 +69898,7 @@ exports.default = {
     mounted: function mounted() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"deleteButton btn btn-danger btn-md js-remove \" v-on:click=\"remove\" v-bind:id=\"id\">\n    <span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span> Delete\n</button>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button class=\"deleteButton btn btn-danger btn-md js-remove \" v-on:click=\"remove\" v-bind:id=\"buttonid\">\n    <span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span> Delete\n</button>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

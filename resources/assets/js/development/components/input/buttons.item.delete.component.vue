@@ -2,7 +2,7 @@
         <button
                 class="deleteButton btn btn-danger btn-md js-remove "
                 v-on:click="remove"
-                v-bind:id="id"
+                v-bind:id="buttonid"
         >
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete
         </button>
@@ -19,7 +19,7 @@
         props: [ 'index', 'id' ],
 
         computed: {
-            id: function(){
+            buttonid: function(){
               return 'delete-item-button-' + this.index;
             },
             visible: function () {
