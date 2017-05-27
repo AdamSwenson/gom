@@ -198,7 +198,7 @@ class Item extends Model
      */
     protected static function makeDefaultExamName(): string
     {
-        return ' ';
+        return '';
 //        return 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
     }
 
@@ -207,7 +207,7 @@ class Item extends Model
      */
     protected static function makeDefaultQuestionName(): string
     {
-        return ' ';
+        return '';
 //        return 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
     }
 

@@ -67873,7 +67873,9 @@ var updateItemsOrder = function updateItemsOrder(store) {
     //note that we start at 1 so the exam id
     //is not included
     for (var i = 1; i < items.length; i++) {
-        payload.order.push(items[i].id);
+        if (!_.isUndefined(items[i].id)) {
+            payload.order.push(items[i].id);
+        }
     }
 
     window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
