@@ -21,7 +21,8 @@ use Faker\Factory;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Request;
 
-class ItemControllerTest extends  \TestCase
+
+class ItemControllerTest extends \TestCase
 {
     use WithoutMiddleware;
 

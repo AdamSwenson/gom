@@ -158,7 +158,7 @@ Route::get('dev/test', 'TestController@test');
 //didn't get hit, we may have a problem.
 //When we want those directly, we use the edit route
 Route::get('dev/newsetup', 'ItemController@index');
-Route::get('items/{exam}', 'ItemController@show');
+Route::get('items/{exam}', 'ItemController@show')->name('show-exam');
 Route::put('items/{exam}/order', 'ItemController@updateOrder');
 Route::put('items/{exam}', 'ItemController@update');
 Route::patch('items/{exam}', 'ItemController@updateAll');

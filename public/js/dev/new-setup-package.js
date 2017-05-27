@@ -67860,11 +67860,11 @@ var createItem = function createItem(store, item) {
  */
 var updateItemsOrder = function updateItemsOrder(store) {
     var items = store.getters.getAllItems;
-    var exam = store.getters.currentExam;
+    var examId = store.getters.currentExam.id;
     //if(typeof exam === 'undefined') return false;
 
     var payload = {
-        examId: exam.id,
+        examId: examId,
         requestVersion: REQUEST_VERSION,
         order: []
     };
@@ -67876,7 +67876,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
         payload.order.push(items[i].id);
     }
 
-    window.console.log('apiPlugin', 'updateItemsOrder', 158, payload);
+    window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
 
     if (items && examId) {
         var route = 'items/' + examId + '/order';

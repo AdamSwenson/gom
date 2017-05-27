@@ -85,7 +85,13 @@ class ItemController extends Controller
      */
     public function index()
     {
-        return view('development.newsetup');
+        $exam = Exam::create();
+        return redirect()->route('show-exam', $exam);
+//        $v = new Wine();
+//        $v->save();
+//        return $v;
+//        return $this->show($exam);
+//        return view('development.newsetup');
     }
 
 

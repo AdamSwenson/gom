@@ -159,11 +159,11 @@ const createItem = ( store, item ) => {
  */
 const updateItemsOrder = ( store ) => {
     let items = store.getters.getAllItems;
-    let exam = store.getters.currentExam;
+    let examId = store.getters.currentExam.id;
     //if(typeof exam === 'undefined') return false;
 
     let payload = {
-        examId: exam.id,
+        examId: examId,
         requestVersion: REQUEST_VERSION,
         order: []
     };
@@ -175,7 +175,7 @@ const updateItemsOrder = ( store ) => {
         payload.order.push(items[ i ].id);
     }
 
-    window.console.log('apiPlugin', 'updateItemsOrder', 158, payload);
+    window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
 
     if ( items && examId ) {
         let route = 'items/' + examId + '/order';

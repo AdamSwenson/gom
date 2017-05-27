@@ -114,7 +114,7 @@ class ItemRepository implements IItemRepository
         $examEditable = ['id', 'name'];
         //not editable: text, number, comments
 
-        $id = $request->has('id') ? $request->input('id') : null;
+        $id = $request->has('id') && $request->input('id') >= 1 ? $request->input('id') : null;
 
         switch ( self::determineItemType($request) ) {
 
@@ -204,7 +204,7 @@ class ItemRepository implements IItemRepository
         $assignment = $questionAssignmentDao->record($request->input('examId'), $item->id, $questionNumber);
 
         //store the question assignment id in the item
-        $item->questionAssignment = $assignment;
+        //$item->questionAssignment = $assignment;
 
         $item->save();
 
