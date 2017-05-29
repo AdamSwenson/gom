@@ -1,0 +1,67 @@
+/**
+ * Created by adam on 5/28/17.
+ */
+
+import { testAction, description, factories } from './vuex.spec.helpers';
+import Payload from '../../../resources/assets/js/models/Payload';
+
+export const makeState = ( n = 5 ) => {
+
+    let s = makeRootState();
+
+    for (let i = 0; i < n; i++) {
+        let e = factories.itemFactory( { index: i, id: i } );
+        s.items[ i ] = e;
+        s.indexMap.set( e.id, i );
+    }
+    return s;
+};
+
+export const makeRootState = function () {
+    return {
+        /**
+         * Object indexed by Item id holding Item objects
+         On load the root exam object and first item are created but given no
+         ids. thus we will eventually need to create an exam object if one isn't set
+
+         However don't ask the server to create an id just yet
+         lookup the exam object that resides at index 0
+         this will have either been newly created on page load
+         or it will be an existing exam object loaded from the db
+         let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+         //Call the set active exam method
+         //We do this rather than call the mutation directly
+         //because there may need to be various other events and
+         //things which need to happen depending on the context.
+         //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+         this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+         }
+         */
+        items: [],
+
+        // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
+        /**
+         * Mapping from older ItemIndex to new Item id value
+         */
+        indexMap: new Map(),
+
+        orderMap: {}
+        // items: new Map(),
+        // indexMap: new Map(),
+    };
+};
+
+export const makeTestPayload = function () {
+    let e = factories.itemFactory();
+    return {
+        ItemIndex: e.index,
+        ItemId: e.id,
+        obj: e
+    };
+};
+export const makeMutationPayload = function ( index ) {
+    let e = factories.itemFactory( index );
+    return Payload.factory( {
+        obj: e
+    } );
+};

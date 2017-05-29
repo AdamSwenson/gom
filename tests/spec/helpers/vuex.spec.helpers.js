@@ -105,16 +105,16 @@ export const description = ( text ) => {
  */
 export const testAction = ( action, payload, state, expectedMutations, ...kwargs ) => {
     let count = 0
-    let verbose = false;
-
-    if ( typeof kwargs[ 0 ] != 'undefined' && typeof kwargs[ 0 ][ 'verbose' ] != 'undefined' ) {
-        verbose = kwargs[ 0 ].verbose;
-    }
-    ;
+    let {verbose = false, getters={} } = kwargs[0];
+    // if ( typeof kwargs[ 0 ] != 'undefined' && typeof kwargs[ 0 ][ 'verbose' ] != 'undefined' ) {
+    //     verbose = kwargs[ 0 ].verbose;
+    // }
 
     if ( verbose ) {
         console.log( 'verbose', verbose, kwargs );
     }
+
+    // window.console.log( 'vuex.spec.helpers', 'getters', 115, getters);
 
     // mock commit
     const commit = ( type, payload ) => {
@@ -137,9 +137,9 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
                 expect( Object.keys( mutation.payload ).length === Object.keys( payload ).length );
 
                 //check have same values for properties
-                for ( let prop in mutation.payload ) {
+                for (let prop in mutation.payload) {
                     if ( verbose ) {
-                        console.log( 'checking prop', prop, 'expected payload', payload, 'expected payload value', payload[ prop ], 'actual payload', mutation.payload[ prop ]   );
+                        console.log( 'checking prop', prop, 'expected payload', payload, 'expected payload value', payload[ prop ], 'actual payload', mutation.payload[ prop ] );
 
                     }
                     expect( mutation.payload[ prop ] ).toBe( payload[ prop ] );
@@ -163,7 +163,7 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
     }
 
     // call the action with mocked store and arguments
-    action( {commit, state}, payload )
+    action( { commit, state, getters }, payload )
 
     // check if no mutations should have been dispatched
     if ( expectedMutations.length === 0 ) {

@@ -124,7 +124,6 @@ export default class Item extends IModel {
         if ( this.depth > 0 ) {
             this.depth -= 1;
         }
-
     }
 
     demote() {

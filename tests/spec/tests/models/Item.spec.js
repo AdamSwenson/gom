@@ -10,7 +10,7 @@ const faker = require('faker');
 import Item from  "../../../../resources/assets/js/models/Item.js" ;
 import Comment from  "../../../../resources/assets/js/models/Comment.js" ;
 
-fdescribe(" models.Item | ", function () {
+describe(" models.Item | ", function () {
 
     beforeEach(function () {
         this.ItemId = faker.random.number();

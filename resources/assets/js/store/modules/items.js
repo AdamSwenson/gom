@@ -8,55 +8,10 @@ import Exam from '../../models/Exam'
 
 const Vue = require( 'vue' );
 
-window._ = require( 'lodash' );
+const _ = window._ = require( 'lodash' );
 
 
 const standardTimeout = 1000;
-
-/**
- * The older version used an index value to do lots of stuff.
- * Given the prospect of using a websocket connection or connecting
- * to canvas or other 3rd party system, it now makes more sense
- * to use the db's id as the primary locator in the store. Thus
- * state.Items has the Item's database id as key and an Item object
- * as value. That is:
- *      state.Items[Item.id] = Item
- *
- * To maintain compatibility, indexMap holds a mapping from the old
- * ItemIndex to the database id
- */
-const state = {
-
-    /**
-     * Object indexed by Item id holding Item objects
-     On load the root exam object and first item are created but given no
-     ids. thus we will eventually need to create an exam object if one isn't set
-
-     However don't ask the server to create an id just yet
-     lookup the exam object that resides at index 0
-     this will have either been newly created on page load
-     or it will be an existing exam object loaded from the db
-     let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-     //Call the set active exam method
-     //We do this rather than call the mutation directly
-     //because there may need to be various other events and
-     //things which need to happen depending on the context.
-     //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-     this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
-     }
-     */
-    items: [],
-
-    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
-    /**
-     * Mapping from older ItemIndex to new Item id value
-     */
-    indexMap: new Map(),
-
-    orderMap: {}
-
-
-};
 
 const buildKey = ( idx ) => {
     var k = '';
@@ -68,7 +23,6 @@ const buildKey = ( idx ) => {
     }
     return k;
 };
-
 
 const isItemsEmpty = ( state ) => {
     if ( state.items.length > 0 ) {
@@ -94,252 +48,6 @@ const helpers = {
         // }
     }
 };
-
-const mutations = {
-
-        onUpdate: ( state, event ) => {
-            // window.console.log( 'items', 'onUpdate', 102, event );
-            let { newIndex, oldIndex } = event;
-            let resorted = state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
-            // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
-            // window.console.log( 'items', 'onUpdate', 105, resorted);
-            Vue.set(state, 'items', resorted );
-            // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
-            // window.console.log( 'items', 'onUpdate', 105, );
-        },
-
-        addMappedItem: ( state, payload ) => {
-            let { idx, item } = payload;
-            if ( _.isEmpty( idx ) || _.isEmpty( item ) ) return false;
-            let key = buildKey( idx );
-            window.console.log( 'items', 'addMappedItem', 102, key, item );
-            Vue.set( state.orderMap, key, item );
-        },
-
-
-        //utility, not called from outside
-        cleanupEmptyItems: ( state ) => {
-            for (let i = 0; i < state.items.length; i++) {
-                if ( typeof state.items[ i ] === 'undefined' ) {
-                    state.items.splice( i, 1 );
-                }
-            }
-        },
-
-
-        /**
-         * Make sure the property index matches the lookup index
-         * @param state
-         * @param payload
-         */
-        [mTypes.updateOrder]: ( state, payload ) => {
-            if(state.items.length === 0) return false;
-            // console.log(mTypes.updateOrder, state, payload);
-            // this just requires us to match list indexes w the
-            //property of the item
-            for (let i = 0; i < state.items.length; i++) {
-                let item = state.items[ i ];
-                // window.console.log('items', 'updateOrder', 87, i, item);
-                if ( typeof item !== 'undefined' ) {
-                    //set the property on the object
-                    Vue.set( item, 'index', i );
-                    //set it in the array with vue
-                    Vue.set( state.items, i, item );
-                }
-            }
-
-        },
-
-        // /**
-        //  * Make sure the property index matches the lookup index
-        //  * @param state
-        //  * @param payload
-        //  */
-        // [mTypes.updateOrder]: ( state, orderList ) => {
-        //     //new payload where it contains a key orderList
-        //     for (let i = 0; i < orderList.length; i++) {
-        //         // this is the ith item id
-        //         let id = orderList[ i ];
-        //         let item = state.items.filter( ( i ) => {
-        //             if ( i.id === id ) {
-        //                 return i;
-        //             }
-        //         } );
-        //
-        //         //get the item, and update its index
-        //         //no moving it or anything
-        //         // window.console.log('items', 'updateOrder', 87, i, item);
-        //         if ( typeof item !== 'undefined' ) {
-        //             //set the property on the object
-        //             Vue.set( item, 'index', i );
-        //             //set it in the array with vue
-        //             // Vue.set(state.items, i, item);
-        //             //resort array
-        //         }
-        //     }
-        //
-        //     //now that we've done all that, let's resort items
-        //     //by the object's index
-        //     let items = state.items.sort( ( a, b ) => {
-        //         return a.index > b.index;
-        //     } );
-        //
-        //     //and finally push the sorted array back
-        //     Vue.set( state, 'items', items );
-        //
-        //     // // console.log(mTypes.updateOrder, state, payload);
-        //     // // this just requires us to match list indexes w the
-        //     // //property of the item
-        //     // for (let i = 0; i < state.items.length; i++) {
-        //     //     let item = state.items[ i ];
-        //     //     // window.console.log('items', 'updateOrder', 87, i, item);
-        //     //     if ( typeof item !== 'undefined' ) {
-        //     //         //set the property on the object
-        //     //         Vue.set(item, 'index', i);
-        //     //         //set it in the array with vue
-        //     //         Vue.set(state.items, i, item);
-        //     //     }
-        //     // }
-        //
-        // },
-
-        /**
-         * Pushes item into storage
-         * essentially the same as setItem. But has own name so that api
-         * will call for creation rather than update
-         *
-         * @param state
-         * @param payload Expecting Item object to be in payload.obj
-         */
-        [ mTypes.addNewItem ]: ( state, payload ) => {
-            // console.log(mTypes.addNewItem, state, payload);
-            if ( Payload.checkIfPayload( payload ) ) {
-                let {
-                    obj
-                } = payload;
-                Vue.set( state.items, obj.index, obj );
-            }
-//case where something just hands an item
-            else {
-                if ( payload instanceof Item ) {
-                    //call the action addNewItem on it
-                    //set its new index on the item
-                    //add it to the list
-                }
-            }
-
-// mTypes.updateOrder(state, payload);
-
-        },
-
-
-        /**
-         * Alters the the property named in updateProp to have the
-         * the value set in updateVal
-         * @param state
-         * @param payload
-         */
-        [ mTypes.updateItem ]: ( state, payload ) => {
-            // console.log(mTypes.updateItem, payload, state);
-            let itm = state.items[ payload.index ];
-
-            if ( typeof itm !== 'undefined' ) {
-                //Set the value so vue can see it
-                Vue.set( itm, payload.updateProp, payload.updateVal );
-                //Push the altered item back into the array
-                //set it in the array with vue
-                Vue.set( state.items, payload.index, itm );
-            }
-        },
-
-        /**
-         * Alters the the property named in updateProp to have the
-         * the value set in updateVal
-         * @param state
-         * @param payload
-         */
-        [ mTypes.updateItemSilently ]: ( state, payload ) => {
-            // console.log(mTypes.updateItemSilently, payload, state);
-            let itm = state.items[ payload.index ];
-
-            // let itm = helpers.getItemFromPayload(state, payload);
-            // window.console.log('items', 143, itm);
-            if ( typeof itm !== 'undefined' ) {
-                //Set the value so vue can see it
-                Vue.set( itm, payload.updateProp, payload.updateVal );
-                //Push the altered item back into the array
-                //set it in the array with vue
-                Vue.set( state.items, payload.index, itm );
-                // state.items.$set( payload.index, itm );
-            }
-        },
-
-
-        /**
-         * Alters the the property named in updateProp to have the
-         * the value set in updateVal
-         * @param state
-         * @param payload
-         */
-        [ mTypes.updateComment ]: ( state, payload ) => {
-            console.log( mTypes.updateComment, payload, state );
-            //get the item
-            let itm = helpers.getItemFromPayload( state, payload );
-            window.console.log( 'items', 'updateComment', 145, itm, state.items );
-
-            if ( typeof itm !== 'undefined' ) {
-                // let itm = state.items[ payload.index ];
-                let comment = itm.getComment( payload.updateValence );
-
-                if ( typeof comment !== 'undefined' ) {
-                    //Set the value so vue can see it
-                    Vue.set( comment, 'text', payload.updateVal );
-                }
-
-                //Push the altered item back into the array
-                //set it in the array with vue
-                Vue.set( state.items, payload.index, itm );
-                // state.items.$set( payload.index, itm );
-                window.console.log( 'items', 'updateComment', 145, itm, state.items );
-            }
-        },
-
-
-        /**
-         * Push an Item into storage at a particular index
-         * Payload should have keys: obj, index
-         This is not watched by the api, so it can be called without
-         triggering an update to the server
-         *
-         * @param state
-         * @param payload Expecting Item object to be in payload.obj
-         */
-        [ mTypes.setItem ]: ( state, payload ) => {
-            // console.log('items.mutations', mTypes.setItem, state, payload);
-            if ( Payload.checkIfPayload( payload ) ) {
-                Vue.set( state.items, payload.obj.index, payload.obj );
-            }
-        },
-
-        /**
-         * Pushes a mapping of index to id into indexMap
-         * Payload should have keys: ItemIndex, ItemId
-         *
-         * @param state
-         * @param rootState
-         * @param payload Array with keys: ItemIndex, ItemId
-         */
-        [ mTypes.addItemIndexMapping ]: ( state, payload ) => {
-            Payload.checkIfPayload( payload );
-            Vue.set( state.indexMap, payload.index, payload.id );
-
-            // state.indexMap.set( payload.index, payload.id );
-        },
-
-
-    }
-;
-
 
 /**
  * Build an input object out of an input object
@@ -367,165 +75,49 @@ const buildPayloadFromInput = ( state, rootState, payload ) => {
     return out;
 };
 
-const actions = {
 
-    onUpdate: ( { state, dispatch, commit, getters }, event ) => {
-        let p = new Promise( ( resolve, reject ) => {
-            commit( 'onUpdate', event );
-            resolve()
-        } );
-
-        return p.then( () => {
-            return new Promise( ( resolve, reject ) => {
-                commit( mTypes.updateOrder );
-                resolve()
-            } );
-
-        } );
-
-    },
-
-
-    [aTypes.addOlderSibling]: ( { state, dispatch, commit, getters }, payload ) => {
-        //add item at same depth with same parent but with lower index
-        window.console.log( 'items', 'addOlderSibling', 283, payload );
-    },
-
-    [aTypes.addYoungerSibling]: ( { state, dispatch, commit, getters }, payload ) => {
-        //add item at same depth with same parent but with higher index
-        window.console.log( 'items', 'addYoungerSibling', 288, payload );
-    },
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.Items has the Item's database id as key and an Item object
+ * as value. That is:
+ *      state.Items[Item.id] = Item
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * ItemIndex to the database id
+ */
+const state = {
 
     /**
-     * Runs the various maintenance operations on the item store.
-     * It will delete any empty slots and then make sure
-     * the indexes are properly set
-     * @param dispatch
-     * @param commit
-     * @param getters
+     * This holds the current item objects.
+     * Because we now want maximal flexibility in how we store and
+     * retrieve item objects, we store them in a simple list.
+     * The access to the items in the last is handled by getters
+     * which filter the list on whatever internal property of the item
+     * a particular use case needs.
      */
-    [aTypes.cleanupItems]: ( { dispatch, commit, getters } ) => {
+    items: [],
 
-        let p = new Promise( ( resolve, reject ) => {
-            commit( 'cleanupEmptyItems' );
-            resolve()
-        } );
-
-        return p.then( () => {
-            return new Promise( ( resolve, reject ) => {
-                commit( mTypes.updateOrder );
-                resolve()
-            } );
-
-        } );
-
-    },
-
+    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
     /**
-     * Handles the removal of an item
-     * { dispatch, commit, getters, rootGetters }
-     * @param state
-     * @param commit
+     * Mapping from older ItemIndex to new Item id value
      */
-    [aTypes.deleteItem]: ( { state, commit }, payload ) => {
-        console.log( aTypes.deleteItem, state, commit, payload );
-        //check if payload has correct structure
-        let { index, id } = payload;
-        //remove from page
+    indexMap: new Map(),
 
-        //reorder index
-
-        //call to server to delete
-
-        //confirm
-
-        //if fail, put back on page with message
-
-        //reorder index
-        //todo write
-    },
-
-
-    /**
-     * Makes an item into sibling of others by decreasing
-     * its depth
-     * @param state
-     * @param payload
-     */
-    [ aTypes.promoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index } = payload;
-        let item = getters.getItemByIndex( index );
-        item.promote();
-        commit( mTypes.setItem, Payload.factory( { obj: item } ) )
-    },
-
-    /**
-     * Makes an item into a child of others by
-     * increasing its depth
-     * @param state
-     * @param payload
-     */
-    [ aTypes.demoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index } = payload;
-        let item = getters.getItemByIndex( index );
-        item.demote();
-        commit( mTypes.setItem, Payload.factory( { obj: item } ) )
-    },
-
-    [ aTypes.toggleItemPublic ]: ( { state, dispatch, commit, getters }, payload ) => {
-        window.console.log( 'items', 'toggleItemPublic', 365, payload );
-
-        if ( Payload.checkIfPayload( payload ) ) {
-            let item = getters.getItemByIndex( payload.index );
-
-            commit( mTypes.updateItem, Payload.factory( {
-                index: item.index,
-                updateProp: 'publicity',
-                updateVal: !item.publicity
-            } ) );
-            // //get the item
-            // let item = getters.getItemByIndex(payload.index);
-            // //flip its value internally
-            // item.togglePublic();
-            // if ( item.index === payload.index ) {
-            //     //update the item through vuex
-            //     commit(mTypes.setItem, Payload.factory({obj: item}));
-            // }
-//            Vue.set(state.items, payload.index, item);
-        }
-    }
-
-
-    /**
-     * Consume a json object and populate the Items store
-     * by pushing Items into it.
-     * { dispatch, commit, getters, rootGetters }
-     * @param state
-     * @param rootState
-     * @param payload
-     */
-    // [aTypes.loadItems]: ( state, rootState, payload ) => {
-    //     //check if payload has correct structure
-    //     //todo
-    //
-    //     //push each record from the payload into the store
-    //     for (let i = 0; i < payload.length; i++) {
-    //         let record = payload[ i ];
-    //         //check if record has correct structure
-    //         //todo
-    //
-    //         //add to Items and add index mapping
-    //         [ aTypes.addNewItem ](state, rootState, record);
-    //     }
-    // },
-//
+    orderMap: {}
 };
+
+
 
 const getters = {
     getSortedIds: ( state, getters ) => {
         let ids = [];
         if ( state.items.length > 0 ) {
-            state.items.forEach( (i)=>{ids.push( i.id );} );
+            state.items.forEach( ( i ) => {
+                ids.push( i.id );
+            } );
         }
         return ids;
     },
@@ -611,15 +203,8 @@ const getters = {
 
             }
 
-
         }( state, index );
 
-
-        // // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-        // // window.console.log('items', 'getItemByIndex', 361, state,  index);
-        // return function ( state, index ) {
-        //     return state.items[ index ];
-        // }(state, index)
     },
 
     /**
@@ -652,14 +237,16 @@ const getters = {
 
 
     /**
-     * Returns list of items objects
+     * Returns all stored item objects in whatever
+     * data structure is housing them.
+     * Note: because of adam's flakiness on committing to
+     * a data structure, this may not be stable in its output
      * @param state
      * @param getters
      * @param rootState
      * @returns []
      */
     getAllItems: ( state, getters, rootState ) => {
-
         // [gTypes.getAllItems] : ( state, getters, rootState ) => {
         return state.items;
     },
@@ -668,17 +255,43 @@ const getters = {
 
     },
 
-    getAllIndexesList: ( state, getters, rootState ) => {
+    /**
+     * This returns the indexes stored in each item in a list.
+     * NB, these may not correspond with the index of each item's location in state.items
+     * To retrieve the indexes of state.items list holding items, use getAllIndexesList
+     * @param state
+     * @param getters
+     * @param rootState
+     */
+    getAllItemIndexes: ( state, getters, rootState ) => {
+        let out = [];
+        for (let item in state.items) {
+            out.push( item.index );
+        }
+        return out;
+    },
 
+    /**
+     * Returns the list indexes of the items in state.items
+     * NB, This does not return the indexes which are stored in each
+     * item. That is retrieved via getAllItemIndexes
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {Array}
+     */
+    getAllIndexesList: ( state, getters, rootState ) => {
         if ( isItemsEmpty( state ) ) return []
         // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
+
         let out = [];
-        return Object.keys( state.items )
-        // for ( let [ key, val ] of state.items ) {
-        //     // console.log( 'getAllIndexesList', key, val );
-        //     out.push( key );
-        // }
-        // return out;
+        for (let [ key, val ] of state.items) {
+            out.push( key );
+        }
+        return out;
+
+        //Leaving this here, in case someday we go back to items being an object
+        // return Object.keys( state.items )
     },
 
 
@@ -715,6 +328,16 @@ const getters = {
         return state.items.length;
     },
 
+    /**
+     * Returns the current maximum index value from
+     * the stored items
+     * @param state
+     * @param getters
+     */
+    getMaxIndexValue: ( state, getters ) => {
+
+    },
+
     getNextIndex: ( state, getters ) => {
         return _.sortedIndex( state.items );
 
@@ -731,9 +354,30 @@ const getters = {
 
 };
 
+const actions = require( './items.actions' );
+
+const mutations = require( './items.mutations' );
+
 export default {
     actions,
     getters,
     mutations,
     state,
 }
+
+// Object indexed by Item id holding Item objects
+// On load the root exam object and first item are created but given no
+// ids. thus we will eventually need to create an exam object if one isn't set
+//
+// However don't ask the server to create an id just yet
+// lookup the exam object that resides at index 0
+// this will have either been newly created on page load
+// or it will be an existing exam object loaded from the db
+// let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+// //Call the set active exam method
+// //We do this rather than call the mutation directly
+// //because there may need to be various other events and
+// //things which need to happen depending on the context.
+// //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+// this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+// }

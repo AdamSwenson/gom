@@ -67949,7 +67949,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
  */
 ;
 
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":407,"lodash":338}],351:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":409,"lodash":338}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68344,7 +68344,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-447dcb94", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":409,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
@@ -68459,7 +68459,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5ecd1dd5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":409,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
@@ -68652,7 +68652,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-35f0e86e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68844,7 +68844,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-49f731a6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":409,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n")
 'use strict';
@@ -69003,7 +69003,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4476cea1", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
+},{"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
 'use strict';
@@ -69092,7 +69092,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69218,7 +69218,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n")
 'use strict';
@@ -69296,7 +69296,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -69379,7 +69379,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
@@ -69517,7 +69517,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -69619,7 +69619,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69757,7 +69757,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-989fbf16", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69827,7 +69827,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4850f9d2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../store/action-types":389,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../../store/action-types":389,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -70071,7 +70071,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-93f668f6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70180,7 +70180,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-3651987f", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70274,7 +70274,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7487aa0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":386,"../../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":386,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n  /* line 8, stdin */\n  .item-main-component .indexDisplay {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
 'use strict';
@@ -70381,7 +70381,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70527,7 +70527,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":386,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70712,7 +70712,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":382,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Comment":382,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70863,7 +70863,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70918,7 +70918,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -71026,7 +71026,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -71094,7 +71094,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -71149,7 +71149,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":407,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
+},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
 'use strict';
@@ -71251,7 +71251,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store":393,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":407,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store":393,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":409,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
 'use strict';
 
 var _vue = require('vue/dist/vue.js');
@@ -73135,6 +73135,7 @@ var cleanupItems = exports.cleanupItems = 'cleanupItems';
 var toggleItemPublic = exports.toggleItemPublic = 'toggleItemPublic';
 var addOlderSibling = exports.addOlderSibling = 'addOlderSibling';
 var addYoungerSibling = exports.addYoungerSibling = 'addYoungerSibling';
+var onUpdate = exports.onUpdate = 'onUpdate';
 
 },{}],390:[function(require,module,exports){
 'use strict';
@@ -73673,7 +73674,7 @@ var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
 // }
 // ;
 
-},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../models/Student":388,"./action-types":389,"./mutation-types":407,"lodash":338}],391:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../models/Student":388,"./action-types":389,"./mutation-types":409,"lodash":338}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74116,7 +74117,7 @@ exports.default = new _vuex2.default.Store({
 });
 
 }).call(this,require('_process'))
-},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":390,"./getters":392,"./modules/activeexam.js":394,"./modules/activestudent.js":395,"./modules/comments.js":396,"./modules/escores.js":397,"./modules/grades.js":398,"./modules/items.js":399,"./modules/orderings":400,"./modules/qscores.js":401,"./modules/questions.js":402,"./modules/settings":403,"./modules/students.js":404,"./modules/times.js":405,"./modules/visibility":406,"./mutations":408,"./state":409,"_process":339,"vue/dist/vue.js":346,"vuex":349}],394:[function(require,module,exports){
+},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":390,"./getters":392,"./modules/activeexam.js":394,"./modules/activestudent.js":395,"./modules/comments.js":396,"./modules/escores.js":397,"./modules/grades.js":398,"./modules/items.js":400,"./modules/orderings":402,"./modules/qscores.js":403,"./modules/questions.js":404,"./modules/settings":405,"./modules/students.js":406,"./modules/times.js":407,"./modules/visibility":408,"./mutations":410,"./state":411,"_process":339,"vue/dist/vue.js":346,"vuex":349}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74251,7 +74252,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":383,"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],395:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74390,7 +74391,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":407}],396:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":409}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74584,7 +74585,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],397:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74689,7 +74690,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],398:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74868,16 +74869,10 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],399:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],399:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _mutations, _actions;
+var _module$exports;
 
 var _mutationTypes = require('../../store/mutation-types');
 
@@ -74907,56 +74902,167 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 5/27/17.
+                                                                                                                                                                                                                   */
+
+
+// const actions = {
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addOlderSibling, function (_ref, payload) {
+    var state = _ref.state,
+        dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    //add item at same depth with same parent but with lower index
+    window.console.log('items', 'addOlderSibling', 283, payload);
+}), _defineProperty(_module$exports, aTypes.addYoungerSibling, function (_ref2, payload) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+
+    //add item at same depth with same parent but with higher index
+    window.console.log('items', 'addYoungerSibling', 288, payload);
+}), _defineProperty(_module$exports, aTypes.cleanupItems, function (_ref3) {
+    var dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
+
+
+    var p = new Promise(function (resolve, reject) {
+        commit('cleanupEmptyItems');
+        resolve();
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            commit(mTypes.updateOrder);
+            resolve();
+        });
+    });
+}), _defineProperty(_module$exports, aTypes.deleteItem, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    console.log(aTypes.deleteItem, state, commit, payload);
+    //check if payload has correct structure
+    var index = payload.index,
+        id = payload.id;
+    //remove from page
+
+    //reorder index
+
+    //call to server to delete
+
+    //confirm
+
+    //if fail, put back on page with message
+
+    //reorder index
+    //todo write
+}), _defineProperty(_module$exports, aTypes.demoteItem, function (_ref5, payload) {
+    var state = _ref5.state,
+        dispatch = _ref5.dispatch,
+        commit = _ref5.commit,
+        getters = _ref5.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.demote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_module$exports, aTypes.onUpdate, function (_ref6, event) {
+    var state = _ref6.state,
+        dispatch = _ref6.dispatch,
+        commit = _ref6.commit,
+        getters = _ref6.getters;
+
+    var p = new Promise(function (resolve, reject) {
+        commit(aTypes.onUpdate, event);
+        resolve();
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            commit(mTypes.updateOrder);
+            resolve();
+        });
+    });
+}), _defineProperty(_module$exports, aTypes.promoteItem, function (_ref7, payload) {
+    var state = _ref7.state,
+        dispatch = _ref7.dispatch,
+        commit = _ref7.commit,
+        getters = _ref7.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.promote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_module$exports, aTypes.toggleItemPublic, function (_ref8, payload) {
+    var state = _ref8.state,
+        dispatch = _ref8.dispatch,
+        commit = _ref8.commit,
+        getters = _ref8.getters;
+
+    window.console.log('items', 'toggleItemPublic', 365, payload);
+
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var item = getters.getItemByIndex(payload.index);
+
+        commit(mTypes.updateItem, _Payload2.default.factory({
+            index: item.index,
+            updateProp: 'publicity',
+            updateVal: !item.publicity
+        }));
+    }
+}), _module$exports);
+
+//
+// export default {
+//     actions}
+
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409}],400:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = require('../../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var Vue = require('vue');
 
-window._ = require('lodash');
+var _ = window._ = require('lodash');
 
 var standardTimeout = 1000;
-
-/**
- * The older version used an index value to do lots of stuff.
- * Given the prospect of using a websocket connection or connecting
- * to canvas or other 3rd party system, it now makes more sense
- * to use the db's id as the primary locator in the store. Thus
- * state.Items has the Item's database id as key and an Item object
- * as value. That is:
- *      state.Items[Item.id] = Item
- *
- * To maintain compatibility, indexMap holds a mapping from the old
- * ItemIndex to the database id
- */
-var state = {
-
-    /**
-     * Object indexed by Item id holding Item objects
-     On load the root exam object and first item are created but given no
-     ids. thus we will eventually need to create an exam object if one isn't set
-      However don't ask the server to create an id just yet
-     lookup the exam object that resides at index 0
-     this will have either been newly created on page load
-     or it will be an existing exam object loaded from the db
-     let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-     //Call the set active exam method
-     //We do this rather than call the mutation directly
-     //because there may need to be various other events and
-     //things which need to happen depending on the context.
-     //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-     this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
-     }
-     */
-    items: [],
-
-    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
-    /**
-     * Mapping from older ItemIndex to new Item id value
-     */
-    indexMap: new Map(),
-
-    orderMap: {}
-
-};
 
 var buildKey = function buildKey(idx) {
     var k = '';
@@ -74994,130 +75100,6 @@ var helpers = {
     }
 };
 
-var mutations = (_mutations = {
-
-    onUpdate: function onUpdate(state, event) {
-        // window.console.log( 'items', 'onUpdate', 102, event );
-        var newIndex = event.newIndex,
-            oldIndex = event.oldIndex;
-
-        var resorted = state.items.splice(newIndex, 0, state.items.splice(oldIndex, 1)[0]);
-        // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
-        // window.console.log( 'items', 'onUpdate', 105, resorted);
-        Vue.set(state, 'items', resorted);
-        // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
-        // window.console.log( 'items', 'onUpdate', 105, );
-    },
-
-    addMappedItem: function addMappedItem(state, payload) {
-        var idx = payload.idx,
-            item = payload.item;
-
-        if (_.isEmpty(idx) || _.isEmpty(item)) return false;
-        var key = buildKey(idx);
-        window.console.log('items', 'addMappedItem', 102, key, item);
-        Vue.set(state.orderMap, key, item);
-    },
-
-    //utility, not called from outside
-    cleanupEmptyItems: function cleanupEmptyItems(state) {
-        for (var i = 0; i < state.items.length; i++) {
-            if (typeof state.items[i] === 'undefined') {
-                state.items.splice(i, 1);
-            }
-        }
-    }
-
-}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
-    if (state.items.length === 0) return false;
-    // console.log(mTypes.updateOrder, state, payload);
-    // this just requires us to match list indexes w the
-    //property of the item
-    for (var i = 0; i < state.items.length; i++) {
-        var item = state.items[i];
-        // window.console.log('items', 'updateOrder', 87, i, item);
-        if (typeof item !== 'undefined') {
-            //set the property on the object
-            Vue.set(item, 'index', i);
-            //set it in the array with vue
-            Vue.set(state.items, i, item);
-        }
-    }
-}), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
-    // console.log(mTypes.addNewItem, state, payload);
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var obj = payload.obj;
-
-        Vue.set(state.items, obj.index, obj);
-    }
-    //case where something just hands an item
-    else {
-            if (payload instanceof _Item2.default) {
-                //call the action addNewItem on it
-                //set its new index on the item
-                //add it to the list
-            }
-        }
-
-    // mTypes.updateOrder(state, payload);
-}), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
-    // console.log(mTypes.updateItem, payload, state);
-    var itm = state.items[payload.index];
-
-    if (typeof itm !== 'undefined') {
-        //Set the value so vue can see it
-        Vue.set(itm, payload.updateProp, payload.updateVal);
-        //Push the altered item back into the array
-        //set it in the array with vue
-        Vue.set(state.items, payload.index, itm);
-    }
-}), _defineProperty(_mutations, mTypes.updateItemSilently, function (state, payload) {
-    // console.log(mTypes.updateItemSilently, payload, state);
-    var itm = state.items[payload.index];
-
-    // let itm = helpers.getItemFromPayload(state, payload);
-    // window.console.log('items', 143, itm);
-    if (typeof itm !== 'undefined') {
-        //Set the value so vue can see it
-        Vue.set(itm, payload.updateProp, payload.updateVal);
-        //Push the altered item back into the array
-        //set it in the array with vue
-        Vue.set(state.items, payload.index, itm);
-        // state.items.$set( payload.index, itm );
-    }
-}), _defineProperty(_mutations, mTypes.updateComment, function (state, payload) {
-    console.log(mTypes.updateComment, payload, state);
-    //get the item
-    var itm = helpers.getItemFromPayload(state, payload);
-    window.console.log('items', 'updateComment', 145, itm, state.items);
-
-    if (typeof itm !== 'undefined') {
-        // let itm = state.items[ payload.index ];
-        var comment = itm.getComment(payload.updateValence);
-
-        if (typeof comment !== 'undefined') {
-            //Set the value so vue can see it
-            Vue.set(comment, 'text', payload.updateVal);
-        }
-
-        //Push the altered item back into the array
-        //set it in the array with vue
-        Vue.set(state.items, payload.index, itm);
-        // state.items.$set( payload.index, itm );
-        window.console.log('items', 'updateComment', 145, itm, state.items);
-    }
-}), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
-    // console.log('items.mutations', mTypes.setItem, state, payload);
-    if (_Payload2.default.checkIfPayload(payload)) {
-        Vue.set(state.items, payload.obj.index, payload.obj);
-    }
-}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    Vue.set(state.indexMap, payload.index, payload.id);
-
-    // state.indexMap.set( payload.index, payload.id );
-}), _mutations);
-
 /**
  * Build an input object out of an input object
  * and return a payload object containing it
@@ -75151,127 +75133,38 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-var actions = (_actions = {
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.Items has the Item's database id as key and an Item object
+ * as value. That is:
+ *      state.Items[Item.id] = Item
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * ItemIndex to the database id
+ */
+var state = {
 
-    onUpdate: function onUpdate(_ref, event) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
+    /**
+     * This holds the current item objects.
+     * Because we now want maximal flexibility in how we store and
+     * retrieve item objects, we store them in a simple list.
+     * The access to the items in the last is handled by getters
+     * which filter the list on whatever internal property of the item
+     * a particular use case needs.
+     */
+    items: [],
 
-        var p = new Promise(function (resolve, reject) {
-            commit('onUpdate', event);
-            resolve();
-        });
+    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
+    /**
+     * Mapping from older ItemIndex to new Item id value
+     */
+    indexMap: new Map(),
 
-        return p.then(function () {
-            return new Promise(function (resolve, reject) {
-                commit(mTypes.updateOrder);
-                resolve();
-            });
-        });
-    }
-
-}, _defineProperty(_actions, aTypes.addOlderSibling, function (_ref2, payload) {
-    var state = _ref2.state,
-        dispatch = _ref2.dispatch,
-        commit = _ref2.commit,
-        getters = _ref2.getters;
-
-    //add item at same depth with same parent but with lower index
-    window.console.log('items', 'addOlderSibling', 283, payload);
-}), _defineProperty(_actions, aTypes.addYoungerSibling, function (_ref3, payload) {
-    var state = _ref3.state,
-        dispatch = _ref3.dispatch,
-        commit = _ref3.commit,
-        getters = _ref3.getters;
-
-    //add item at same depth with same parent but with higher index
-    window.console.log('items', 'addYoungerSibling', 288, payload);
-}), _defineProperty(_actions, aTypes.cleanupItems, function (_ref4) {
-    var dispatch = _ref4.dispatch,
-        commit = _ref4.commit,
-        getters = _ref4.getters;
-
-
-    var p = new Promise(function (resolve, reject) {
-        commit('cleanupEmptyItems');
-        resolve();
-    });
-
-    return p.then(function () {
-        return new Promise(function (resolve, reject) {
-            commit(mTypes.updateOrder);
-            resolve();
-        });
-    });
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
-
-    console.log(aTypes.deleteItem, state, commit, payload);
-    //check if payload has correct structure
-    var index = payload.index,
-        id = payload.id;
-    //remove from page
-
-    //reorder index
-
-    //call to server to delete
-
-    //confirm
-
-    //if fail, put back on page with message
-
-    //reorder index
-    //todo write
-}), _defineProperty(_actions, aTypes.promoteItem, function (_ref6, payload) {
-    var state = _ref6.state,
-        dispatch = _ref6.dispatch,
-        commit = _ref6.commit,
-        getters = _ref6.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.promote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_actions, aTypes.demoteItem, function (_ref7, payload) {
-    var state = _ref7.state,
-        dispatch = _ref7.dispatch,
-        commit = _ref7.commit,
-        getters = _ref7.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.demote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_actions, aTypes.toggleItemPublic, function (_ref8, payload) {
-    var state = _ref8.state,
-        dispatch = _ref8.dispatch,
-        commit = _ref8.commit,
-        getters = _ref8.getters;
-
-    window.console.log('items', 'toggleItemPublic', 365, payload);
-
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var item = getters.getItemByIndex(payload.index);
-
-        commit(mTypes.updateItem, _Payload2.default.factory({
-            index: item.index,
-            updateProp: 'publicity',
-            updateVal: !item.publicity
-        }));
-        // //get the item
-        // let item = getters.getItemByIndex(payload.index);
-        // //flip its value internally
-        // item.togglePublic();
-        // if ( item.index === payload.index ) {
-        //     //update the item through vuex
-        //     commit(mTypes.setItem, Payload.factory({obj: item}));
-        // }
-        //            Vue.set(state.items, payload.index, item);
-    }
-}), _actions);
+    orderMap: {}
+};
 
 var getters = {
     getSortedIds: function getSortedIds(state, getters) {
@@ -75366,12 +75259,6 @@ var getters = {
                     }
                 }
             }(state, index);
-
-            // // [gTypes.getItemByIndex ]: ( state, getters ) => ( index ) => {
-            // // window.console.log('items', 'getItemByIndex', 361, state,  index);
-            // return function ( state, index ) {
-            //     return state.items[ index ];
-            // }(state, index)
         };
     },
 
@@ -75405,31 +75292,83 @@ var getters = {
     },
 
     /**
-     * Returns list of items objects
+     * Returns all stored item objects in whatever
+     * data structure is housing them.
+     * Note: because of adam's flakiness on committing to
+     * a data structure, this may not be stable in its output
      * @param state
      * @param getters
      * @param rootState
      * @returns []
      */
     getAllItems: function getAllItems(state, getters, rootState) {
-
         // [gTypes.getAllItems] : ( state, getters, rootState ) => {
         return state.items;
     },
 
     getSortedItems: function getSortedItems(state) {},
 
-    getAllIndexesList: function getAllIndexesList(state, getters, rootState) {
+    /**
+     * This returns the indexes stored in each item in a list.
+     * NB, these may not correspond with the index of each item's location in state.items
+     * To retrieve the indexes of state.items list holding items, use getAllIndexesList
+     * @param state
+     * @param getters
+     * @param rootState
+     */
+    getAllItemIndexes: function getAllItemIndexes(state, getters, rootState) {
+        var out = [];
+        for (var item in state.items) {
+            out.push(item.index);
+        }
+        return out;
+    },
 
+    /**
+     * Returns the list indexes of the items in state.items
+     * NB, This does not return the indexes which are stored in each
+     * item. That is retrieved via getAllItemIndexes
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {Array}
+     */
+    getAllIndexesList: function getAllIndexesList(state, getters, rootState) {
         if (isItemsEmpty(state)) return [];
         // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
+
         var out = [];
-        return Object.keys(state.items);
-        // for ( let [ key, val ] of state.items ) {
-        //     // console.log( 'getAllIndexesList', key, val );
-        //     out.push( key );
-        // }
-        // return out;
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var _step$value = _slicedToArray(_step.value, 2),
+                    key = _step$value[0],
+                    val = _step$value[1];
+
+                out.push(key);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        return out;
+
+        //Leaving this here, in case someday we go back to items being an object
+        // return Object.keys( state.items )
     },
 
     /**
@@ -75445,15 +75384,15 @@ var getters = {
             // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
             var out = [];
             // if ( state.items.size > 0 ) {
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var _step$value = _slicedToArray(_step.value, 2),
-                        key = _step$value[0],
-                        val = _step$value[1];
+                for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _step2$value = _slicedToArray(_step2.value, 2),
+                        key = _step2$value[0],
+                        val = _step2$value[1];
 
                     // for ( let [ key, val ] of state.items.entries() ) {
                     // console.log( 'getAllItemsList', key, val );
@@ -75461,16 +75400,16 @@ var getters = {
                 }
                 // }
             } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
                     }
                 } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
                     }
                 }
             }
@@ -75491,6 +75430,14 @@ var getters = {
         return state.items.length;
     },
 
+    /**
+     * Returns the current maximum index value from
+     * the stored items
+     * @param state
+     * @param getters
+     */
+    getMaxIndexValue: function getMaxIndexValue(state, getters) {},
+
     getNextIndex: function getNextIndex(state, getters) {
         return _.sortedIndex(state.items);
     },
@@ -75505,6 +75452,10 @@ var getters = {
 
 };
 
+var actions = require('./items.actions');
+
+var mutations = require('./items.mutations');
+
 exports.default = {
     actions: actions,
     getters: getters,
@@ -75512,7 +75463,228 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":407,"lodash":338,"vue":347}],400:[function(require,module,exports){
+// Object indexed by Item id holding Item objects
+// On load the root exam object and first item are created but given no
+// ids. thus we will eventually need to create an exam object if one isn't set
+//
+// However don't ask the server to create an id just yet
+// lookup the exam object that resides at index 0
+// this will have either been newly created on page load
+// or it will be an existing exam object loaded from the db
+// let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+// //Call the set active exam method
+// //We do this rather than call the mutation directly
+// //because there may need to be various other events and
+// //things which need to happen depending on the context.
+// //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+// this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+// }
+
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"./items.actions":399,"./items.mutations":401,"lodash":338,"vue":347}],401:[function(require,module,exports){
+'use strict';
+
+var _module$exports;
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = require('../../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 5/27/17.
+                                                                                                                                                                                                                   */
+
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addItemIndexMapping, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    Vue.set(state.indexMap, payload.index, payload.id);
+
+    // state.indexMap.set( payload.index, payload.id );
+}), _defineProperty(_module$exports, 'addMappedItem', function addMappedItem(state, payload) {
+    var idx = payload.idx,
+        item = payload.item;
+
+    if (_.isEmpty(idx) || _.isEmpty(item)) return false;
+    var key = buildKey(idx);
+    window.console.log('items', 'addMappedItem', 102, key, item);
+    Vue.set(state.orderMap, key, item);
+}), _defineProperty(_module$exports, mTypes.addNewItem, function (state, payload) {
+    // console.log(mTypes.addNewItem, state, payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var obj = payload.obj;
+        //and here we meet the problem of deciding what data
+        //structure to use to store the items and the many
+        //times I've changed my mind
+
+        // state.items[obj.index] = obj;
+
+        state.items.push(obj);
+        // Vue.set( state.items, obj.index, obj );
+    }
+
+    // mTypes.updateOrder(state, payload);
+}), _defineProperty(_module$exports, 'cleanupEmptyItems', function cleanupEmptyItems(state) {
+    for (var i = 0; i < state.items.length; i++) {
+        if (typeof state.items[i] === 'undefined') {
+            state.items.splice(i, 1);
+        }
+    }
+}), _defineProperty(_module$exports, 'onUpdate', function onUpdate(state, event) {
+    window.console.log('items', 'onUpdate', 102, event);
+    var newIndex = event.newIndex,
+        oldIndex = event.oldIndex;
+
+    var resorted = state.items.splice(newIndex, 0, state.items.splice(oldIndex, 1)[0]);
+    // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
+    // window.console.log( 'items', 'onUpdate', 105, resorted);
+    Vue.set(state, 'items', resorted);
+    // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
+    // window.console.log( 'items', 'onUpdate', 105, );
+}), _defineProperty(_module$exports, mTypes.setItem, function (state, payload) {
+    // console.log('items.mutations', mTypes.setItem, state, payload);
+    if (_Payload2.default.checkIfPayload(payload)) {
+        Vue.set(state.items, payload.obj.index, payload.obj);
+    }
+}), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
+    console.log(mTypes.updateComment, payload, state);
+    //get the item
+    var itm = helpers.getItemFromPayload(state, payload);
+    window.console.log('items', 'updateComment', 145, itm, state.items);
+
+    if (typeof itm !== 'undefined') {
+        // let itm = state.items[ payload.index ];
+        var comment = itm.getComment(payload.updateValence);
+
+        if (typeof comment !== 'undefined') {
+            //Set the value so vue can see it
+            Vue.set(comment, 'text', payload.updateVal);
+        }
+
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
+        window.console.log('items', 'updateComment', 145, itm, state.items);
+    }
+}), _defineProperty(_module$exports, mTypes.updateItem, function (state, payload) {
+    // console.log(mTypes.updateItem, payload, state);
+    var itm = state.items[payload.index];
+
+    if (typeof itm !== 'undefined') {
+        //Set the value so vue can see it
+        Vue.set(itm, payload.updateProp, payload.updateVal);
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+    }
+}), _defineProperty(_module$exports, mTypes.updateItemSilently, function (state, payload) {
+    // console.log(mTypes.updateItemSilently, payload, state);
+    var itm = state.items[payload.index];
+
+    // let itm = helpers.getItemFromPayload(state, payload);
+    // window.console.log('items', 143, itm);
+    if (typeof itm !== 'undefined') {
+        //Set the value so vue can see it
+        Vue.set(itm, payload.updateProp, payload.updateVal);
+        //Push the altered item back into the array
+        //set it in the array with vue
+        Vue.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
+    }
+}), _defineProperty(_module$exports, mTypes.updateOrder, function (state, payload) {
+    if (state.items.length === 0) return false;
+    // console.log(mTypes.updateOrder, state, payload);
+    // this just requires us to match list indexes w the
+    //property of the item
+    for (var i = 0; i < state.items.length; i++) {
+        var item = state.items[i];
+        // window.console.log('items', 'updateOrder', 87, i, item);
+        if (typeof item !== 'undefined') {
+            //set the property on the object
+            Vue.set(item, 'index', i);
+            //set it in the array with vue
+            Vue.set(state.items, i, item);
+        }
+    }
+}), _module$exports);
+
+// /**
+//  * Make sure the property index matches the lookup index
+//  * @param state
+//  * @param payload
+//  */
+// [mTypes.updateOrder]: ( state, orderList ) => {
+//     //new payload where it contains a key orderList
+//     for (let i = 0; i < orderList.length; i++) {
+//         // this is the ith item id
+//         let id = orderList[ i ];
+//         let item = state.items.filter( ( i ) => {
+//             if ( i.id === id ) {
+//                 return i;
+//             }
+//         } );
+//
+//         //get the item, and update its index
+//         //no moving it or anything
+//         // window.console.log('items', 'updateOrder', 87, i, item);
+//         if ( typeof item !== 'undefined' ) {
+//             //set the property on the object
+//             Vue.set( item, 'index', i );
+//             //set it in the array with vue
+//             // Vue.set(state.items, i, item);
+//             //resort array
+//         }
+//     }
+//
+//     //now that we've done all that, let's resort items
+//     //by the object's index
+//     let items = state.items.sort( ( a, b ) => {
+//         return a.index > b.index;
+//     } );
+//
+//     //and finally push the sorted array back
+//     Vue.set( state, 'items', items );
+//
+//     // // console.log(mTypes.updateOrder, state, payload);
+//     // // this just requires us to match list indexes w the
+//     // //property of the item
+//     // for (let i = 0; i < state.items.length; i++) {
+//     //     let item = state.items[ i ];
+//     //     // window.console.log('items', 'updateOrder', 87, i, item);
+//     //     if ( typeof item !== 'undefined' ) {
+//     //         //set the property on the object
+//     //         Vue.set(item, 'index', i);
+//     //         //set it in the array with vue
+//     //         Vue.set(state.items, i, item);
+//     //     }
+//     // }
+//
+// },
+
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75695,7 +75867,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":389,"../mutation-types":407,"lodash":338}],401:[function(require,module,exports){
+},{"../action-types":389,"../mutation-types":409,"lodash":338}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75805,7 +75977,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],402:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75944,7 +76116,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Question":387,"../action-types":389,"../mutation-types":407}],403:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Question":387,"../action-types":389,"../mutation-types":409}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76013,7 +76185,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],404:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76133,7 +76305,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":407}],405:[function(require,module,exports){
+},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":409}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76270,7 +76442,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":407}],406:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76366,7 +76538,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../getter-types":391,"../mutation-types":407}],407:[function(require,module,exports){
+},{"../../models/Payload":386,"../action-types":389,"../getter-types":391,"../mutation-types":409}],409:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76464,7 +76636,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],408:[function(require,module,exports){
+},{}],410:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76498,7 +76670,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":407}],409:[function(require,module,exports){
+},{"./mutation-types":409}],411:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
