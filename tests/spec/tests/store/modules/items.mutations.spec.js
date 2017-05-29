@@ -23,7 +23,7 @@ let obj = items.default;
 let { getters, actions, mutations } = obj;
 
 
-describe( "store.modules.items.mutations | mutations | ", function () {
+fdescribe( "store.modules.items.mutations | mutations | ", function () {
     beforeEach( function () {
         this.state = makeState();
         this.rootState = makeRootState();
@@ -60,22 +60,21 @@ describe( "store.modules.items.mutations | mutations | ", function () {
         //todo
     } );
 
-    fdescribe( description( mTypes.addNewItem ), function () {
+    describe( description( mTypes.addNewItem ), function () {
 
         describe( description( "Happy paths " ), function () {
-            //Two main cases.
-            //(1) Pure insertion -- where there is no pre-existing object
-            // at the index
-            //(2) Overwrite -- object at the index which is overwritten
 
             //This is the main use case
             it( "no preexisting value to overwrite ", function () {
-                let index = 100; //this.state.items.keys().max + 1 ;
-                // window.console.log( 'items.mutations.spec', 'index', 72, index );
-                let item = factories.itemFactory( { index: index } );
-                let payload = Payload.factory( { obj: item } );
+                //let index = 100;
                 //capture starting length, since should change
                 let prevLen = this.state.items.length;
+                //Make an object which has a higher index than the length
+                //since the index starts at 0, this will give the next whole number as index
+                let index = prevLen;
+                window.console.log( 'items.mutations.spec', 'index', 72, index );
+                let item = factories.itemFactory( { index: index } );
+                let payload = Payload.factory( { obj: item } );
 
                 //call
                 mutations[ mTypes.addNewItem ]( this.state, payload );
@@ -87,25 +86,6 @@ describe( "store.modules.items.mutations | mutations | ", function () {
                 expect( newLen ).toBe( prevLen + 1 );
                 //make sure the new item is who we expect it to be
                 expect( this.state.items[ index ] ).toBe( item );
-            } );
-
-            it( "overwrite preexisting value ", function () {
-                let index = 1;
-                let item = factories.itemFactory( { index: index } );
-                let payload = Payload.factory( { obj: item } );
-                //capture starting length, since should change
-                let prevLen = this.state.items.length;
-                // window.console.log( 'items.mutations.spec', 'prev', 67, this.state, prevLen );
-
-                //call
-                mutations[ mTypes.addNewItem ]( this.state, payload );
-                window.console.log( 'items.mutations.spec', 'state', 101, this.state );
-                //check
-                //make sure expected number is there
-                let newLen = this.state.items.length;
-                expect( newLen ).toBe( prevLen );
-                //make sure the new item is who we expect it to be
-                expect( this.state.items[ index ] ).toBe( this.item );
             } );
 
         } );
@@ -156,56 +136,118 @@ describe( "store.modules.items.mutations | mutations | ", function () {
 
 
     describe( description( mTypes.setItem ), function () {
+        //Two main cases.
+        //(1) Pure insertion -- where there is no pre-existing object
+        // at the index
+        //(2) Overwrite -- object at the index which is overwritten
 
-        describe( "no preexisting | ", function () {
-            describe( "payload is Payload | ", function () {
+        describe( description( "Happy paths" ), function () {
 
-                //This is the main use case
-                it( "happy path", function () {
-                    let payload = Payload.factory( { obj: this.item } );
+            it( "no preexisting value to overwrite ", function () {
+                //let index = 100;
+                //capture starting length, since should change
+                let prevLen = this.state.items.length;
+                //Make an object which has a higher index than the length
+                //since the index starts at 0, this will give the next whole number as index
+                let index = prevLen;
+                window.console.log( 'items.mutations.spec', 'index', 72, index );
+                let item = factories.itemFactory(index );
+                let payload = Payload.factory( { obj: item } );
+                window.console.log( 'items.mutations.spec', 'payload', 156, payload );
 
-                    //call
-                    mutations[ mTypes.setItem ]( this.state, payload );
+                //call
+                mutations[ mTypes.setItem ]( this.state, payload );
+                window.console.log( 'items.mutations.spec', 'state', 159, this.state );
 
-                    //check
-                    expect( this.state.items[ this.item.index ] ).toBe( this.item );
-                } );
+                //check
+                //make sure expected number is there
+                let newLen = this.state.items.length;
+                expect( newLen ).toBe( prevLen + 1 );
+                //make sure the new item is who we expect it to be
+                expect( this.state.items[ index ] ).toBe( item );
 
-                describe( 'unhappy paths | ', function () {
-                    it( "payload.obj not Item | ", function () {
-
-                        // mutations[ mTypes.setItem ]( this.state, this.mutationPayload );
-                        // console.log( 'addItems', this.state.items , this.mutationPayload.index);
-                        // expect( this.state.items[ this.mutationPayload.index] ).toBe( this.mutationPayload.obj );
-                        // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
-                        // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
-                    } );
-
-
-                } );
-
+                //
+                // let payload = Payload.factory( { obj: this.item } );
+                //
+                // //call
+                // mutations[ mTypes.setItem ]( this.state, payload );
+                //
+                // //check
+                // expect( this.state.items[ this.item.index ] ).toBe( this.item );
             } );
 
-            describe( " payload is Item", function () {
-                // it( "happy path", function () {
-                //     //call
-                //     mutations[ mTypes.setItem ]( this.state, this.item );
-                //
-                //     //check
-                //     expect( this.state.items[ this.item.index ] ).toBe( this.item );
-                //     // expect( this.state.items[ item.index ] ).toBe( item );
-                // } );
-                //
-                // describe( "unhappy paths | ", function () {
-                // } );
+            it( "overwrite preexisting value ", function () {
+                let index = 1;
+                let item = factories.itemFactory( index  );
+                let payload = Payload.factory( { obj: item } );
+                //capture starting length, since should change
+                let prevLen = this.state.items.length;
+
+                //call
+                mutations[ mTypes.setItem ]( this.state, payload );
+                window.console.log( 'items.mutations.spec', 'state', 101, this.state );
+
+                //check
+                //make sure expected number is there
+                let newLen = this.state.items.length;
+                expect( newLen ).toBe( prevLen );
+                //make sure the new item is who we expect it to be
+                expect( this.state.items[ index ] ).toBe( item );
+            } );
+        } );
+
+        describe( description( 'Unhappy paths' ), function () {
+            describe( description( 'payload is NOT Payload' ), function () {
+                it( " payload is Item", function () {
+                    //todo
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( this.state, this.item );
+                    //
+                    //     //check
+                    //     expect( this.state.items[ this.item.index ] ).toBe( this.item );
+                    //     // expect( this.state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
+                } );
+
+                it( " payload is empty", function () {
+                    //todo
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( this.state, this.item );
+                    //
+                    //     //check
+                    //     expect( this.state.items[ this.item.index ] ).toBe( this.item );
+                    //     // expect( this.state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
+                } );
+            } );
+
+            it( "payload.obj not Item | ", function () {
+
+                // mutations[ mTypes.setItem ]( this.state, this.mutationPayload );
+                // console.log( 'addItems', this.state.items , this.mutationPayload.index);
+                // expect( this.state.items[ this.mutationPayload.index] ).toBe( this.mutationPayload.obj );
+                // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
+                // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
             } );
 
         } );
+
     } );
+
+
 
     describe( description( mTypes.updateComment ), function () {
         //todo
     } );
+
     describe( description( mTypes.updateItem ), function () {
 
         describe( "Happy paths  | ", function () {
@@ -280,11 +322,24 @@ describe( "store.modules.items.mutations | mutations | ", function () {
     } );
 
 
-    // describe( description( mTypes.loadItems ), function () {
-    //     xit( "happy path | ", function () {
-    //         //todo
-    //     } );
-    // } );
-
-
 } );
+
+
+// it( "overwrite preexisting value ", function () {
+//     let index = 1;
+//     let item = factories.itemFactory( { index: index } );
+//     let payload = Payload.factory( { obj: item } );
+//     //capture starting length, since should change
+//     let prevLen = this.state.items.length;
+//     // window.console.log( 'items.mutations.spec', 'prev', 67, this.state, prevLen );
+//
+//     //call
+//     mutations[ mTypes.addNewItem ]( this.state, payload );
+//     window.console.log( 'items.mutations.spec', 'state', 101, this.state );
+//     //check
+//     //make sure expected number is there
+//     let newLen = this.state.items.length;
+//     expect( newLen ).toBe( prevLen );
+//     //make sure the new item is who we expect it to be
+//     expect( this.state.items[ index ] ).toBe( this.item );
+// } );

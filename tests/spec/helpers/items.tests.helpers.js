@@ -10,7 +10,7 @@ export const makeState = ( n = 5 ) => {
     let s = makeRootState();
 
     for (let i = 0; i < n; i++) {
-        let e = factories.itemFactory( { index: i, id: i } );
+        let e = factories.itemFactory( i );
         s.items[ i ] = e;
         s.indexMap.set( e.id, i );
     }

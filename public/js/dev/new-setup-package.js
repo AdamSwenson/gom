@@ -75539,7 +75539,11 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         //structure to use to store the items and the many
         //times I've changed my mind
 
-        // state.items[obj.index] = obj;
+        //The problem is what to do if the incoming
+        //item has an internally different index.
+        //The answer isn't very good. Right now, it is just
+        //to not use this method to update.
+        //Of course, everyone is on their honor to not do so....
 
         state.items.push(obj);
         // Vue.set( state.items, obj.index, obj );
@@ -75566,7 +75570,10 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 }), _defineProperty(_module$exports, mTypes.setItem, function (state, payload) {
     // console.log('items.mutations', mTypes.setItem, state, payload);
     if (_Payload2.default.checkIfPayload(payload)) {
-        Vue.set(state.items, payload.obj.index, payload.obj);
+        var index = payload.obj.index;
+
+        window.console.log('items.mutations', 'index', 100, index);
+        Vue.set(state.items, index, payload.obj);
     }
 }), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
     console.log(mTypes.updateComment, payload, state);

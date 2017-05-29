@@ -35,7 +35,7 @@ module.exports = {
     },
 
     /**
-     * Pushes item into storage
+     * Pushes item into storage at the end of the list.
      * essentially the same as setItem. But has own name so that api
      * will call for creation rather than update
      *
@@ -50,7 +50,12 @@ module.exports = {
             //structure to use to store the items and the many
             //times I've changed my mind
 
-             // state.items[obj.index] = obj;
+            //The problem is what to do if the incoming
+            //item has an internally different index.
+            //The answer isn't very good. Right now, it is just
+            //to not use this method to update.
+            //Of course, everyone is on their honor to not do so....
+
              state.items.push(obj);
            // Vue.set( state.items, obj.index, obj );
         }
@@ -91,7 +96,9 @@ module.exports = {
     [ mTypes.setItem ]: ( state, payload ) => {
         // console.log('items.mutations', mTypes.setItem, state, payload);
         if ( Payload.checkIfPayload( payload ) ) {
-            Vue.set( state.items, payload.obj.index, payload.obj );
+            let {index} = payload.obj;
+            window.console.log( 'items.mutations', 'index', 100, index);
+            Vue.set( state.items, index, payload.obj );
         }
     },
 
