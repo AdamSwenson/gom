@@ -6,7 +6,7 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
-import {traverseDF} from '../../models/NodeTools'
+import { traverseDF } from '../../models/NodeTools'
 
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
@@ -95,7 +95,7 @@ const state_obj = {
     orderMap: {}
 };
 
-const state = Object.assign({}, state_obj, Orderings.state);
+const state = Object.assign( {}, state_obj, Orderings.state );
 
 
 /**
@@ -104,7 +104,7 @@ const state = Object.assign({}, state_obj, Orderings.state);
  *
  * @type {{getSortedIds: ((p1:*, p2?:*))}}
  */
-const getters_orig = {
+const getters_both = {
     /**
      * This takes the map of serial numbers in which
      * the ordering is represented and returns a map
@@ -115,7 +115,6 @@ const getters_orig = {
      * @param getters
      */
     getSortedIds: ( state, getters ) => {
-        window.console.log( 'items', 'getSortedIds', 102, getters );
         //get the serial number map
         //we explicitly use the getter rather than
         //just looking in the state because this
@@ -123,27 +122,27 @@ const getters_orig = {
         //behind the scenes
         //We begin by making a copy because we will
         //be altering the data stored
-        let map = getters[ gTypes.getItemMapCopy ](state, getters);
-        window.console.log( 'items', 'getSortedIds', 124, 'map', map);
-        let updater = function(currentNode){
+        let map = getters[ gTypes.getItemMapCopy ]( state, getters );
+        // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
+
+        let updater = function ( currentNode ) {
             //Look up the id
             let isn = currentNode.data;
 
             //ignore the exam
-            if (isn === 0) return true;
+            if ( isn === 0 ) return true;
 
-            let item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
-            window.console.log( 'items', 'updater isn item', 144, isn, item);
-            if(! _.isUndefined(item)){
+            let item = getters[ gTypes.getItemBySerialNumber ]( state, getters, isn );
+            // window.console.log( 'items', 'updater isn item', 144, isn, item);
+            if ( !_.isUndefined( item ) ) {
                 //we don't check if id is defined.
                 //should we????
                 currentNode.data = item.id;
                 currentNode.dataType = 'id';
-                window.console.log( 'items', 'recurse', 150, currentNode);
+                // window.console.log( 'items', 'recurse', 150, currentNode);
             }
         };
 
-        // map = traverseDF(map, updater);
         // window.console.log( 'items', 'getSortedIds', 123, map);
         // //transform to ids
         //map is the exam represented as a Node object
@@ -151,33 +150,20 @@ const getters_orig = {
         // this is a recurse and immediately-invoking function
         (function recurse( currentNode ) {
             // window.console.log( 'items', 'recurse', 129, currentNode);
-             // step 2
-            for (var i = 0; i<currentNode.children.length; i++) {
+            // step 2
+            for (var i = 0; i < currentNode.children.length; i++) {
                 // step 3
                 recurse( currentNode.children[ i ] );
             }
-            window.console.log( 'items', 'recurse', 153, currentNode);
+            window.console.log( 'items', 'recurse', 153, currentNode );
             // step 4
-            updater(currentNode);
-            // //Look up the id
-            // let isn = currentNode.data;
-            //
-            // let item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
-            // window.console.log( 'items', 'isn item', 144, isn, item);
-            // if(! _.isUndefined(item)){
-            //     //we don't check if id is defined.
-            //     //should we????
-            //     currentNode.data = item.id;
-            //     currentNode.dataType = 'id';
-            //     window.console.log( 'items', 'recurse', 150, currentNode);
-            // }
-            //pass in the map object to the self-executing function
+            updater( currentNode );
         })( map );
-return map;
+        return map;
     }
 };
 
-const getters = Object.assign( {}, getters_orig, objGetters, Orderings.getters ); //, ...g};
+const getters = Object.assign( {}, getters_both, objGetters, Orderings.getters ); //, ...g};
 
 window.console.log( 'items', 'getters', 112, getters );
 // };

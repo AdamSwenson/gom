@@ -73918,6 +73918,16 @@ var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
 var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 
 /**
+ * Translates the current map of items into
+ * a map with the database ids set as data on the
+ * nodes.
+ * This is the object which will be sent to sync
+ * with the server.
+ * @type {string}
+ */
+var getSortedIds = exports.getSortedIds = 'getSortedIds';
+
+/**
  * Returns a copy of the itemMap.
  * The copy shouldn't be reactive.
  * This will be a Node instance representing
@@ -75536,7 +75546,7 @@ var state = Object.assign({}, state_obj, _orderings2.default.state);
  *
  * @type {{getSortedIds: ((p1:*, p2?:*))}}
  */
-var getters_orig = {
+var getters_both = {
     /**
      * This takes the map of serial numbers in which
      * the ordering is represented and returns a map
@@ -75547,7 +75557,6 @@ var getters_orig = {
      * @param getters
      */
     getSortedIds: function getSortedIds(state, getters) {
-        window.console.log('items', 'getSortedIds', 102, getters);
         //get the serial number map
         //we explicitly use the getter rather than
         //just looking in the state because this
@@ -75556,7 +75565,8 @@ var getters_orig = {
         //We begin by making a copy because we will
         //be altering the data stored
         var map = getters[gTypes.getItemMapCopy](state, getters);
-        window.console.log('items', 'getSortedIds', 124, 'map', map);
+        // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
+
         var updater = function updater(currentNode) {
             //Look up the id
             var isn = currentNode.data;
@@ -75565,17 +75575,16 @@ var getters_orig = {
             if (isn === 0) return true;
 
             var item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
-            window.console.log('items', 'updater isn item', 144, isn, item);
+            // window.console.log( 'items', 'updater isn item', 144, isn, item);
             if (!_.isUndefined(item)) {
                 //we don't check if id is defined.
                 //should we????
                 currentNode.data = item.id;
                 currentNode.dataType = 'id';
-                window.console.log('items', 'recurse', 150, currentNode);
+                // window.console.log( 'items', 'recurse', 150, currentNode);
             }
         };
 
-        // map = traverseDF(map, updater);
         // window.console.log( 'items', 'getSortedIds', 123, map);
         // //transform to ids
         //map is the exam represented as a Node object
@@ -75591,25 +75600,12 @@ var getters_orig = {
             window.console.log('items', 'recurse', 153, currentNode);
             // step 4
             updater(currentNode);
-            // //Look up the id
-            // let isn = currentNode.data;
-            //
-            // let item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
-            // window.console.log( 'items', 'isn item', 144, isn, item);
-            // if(! _.isUndefined(item)){
-            //     //we don't check if id is defined.
-            //     //should we????
-            //     currentNode.data = item.id;
-            //     currentNode.dataType = 'id';
-            //     window.console.log( 'items', 'recurse', 150, currentNode);
-            // }
-            //pass in the map object to the self-executing function
         })(map);
         return map;
     }
 };
 
-var getters = Object.assign({}, getters_orig, _items2.default, _orderings2.default.getters); //, ...g};
+var getters = Object.assign({}, getters_both, _items2.default, _orderings2.default.getters); //, ...g};
 
 window.console.log('items', 'getters', 112, getters);
 // };

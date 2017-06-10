@@ -79,6 +79,16 @@ export const getAllIndexesList = 'getAllIndexesList'
 export const getAllItemsList = 'getAllItemsList'
 
 /**
+ * Translates the current map of items into
+ * a map with the database ids set as data on the
+ * nodes.
+ * This is the object which will be sent to sync
+ * with the server.
+ * @type {string}
+ */
+export const getSortedIds = 'getSortedIds'
+
+/**
  * Returns a copy of the itemMap.
  * The copy shouldn't be reactive.
  * This will be a Node instance representing

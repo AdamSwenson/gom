@@ -177,7 +177,6 @@ fdescribe( "store.modules.items | ", function () {
             it( "happy path ", function () {
                 window.console.log( 'items.spec', 'state', 275, this.state );
                 let result = getters['getSortedIds'](this.state, getters);
-                window.console.log( 'items.spec', 'rrrr', 179, result);
 
                 let tester = (currentNode) => {
                     //ignore the exam
@@ -185,7 +184,7 @@ fdescribe( "store.modules.items | ", function () {
 
                     expect(currentNode.dataType).toBe('id');
                     expect(this.expectedIds.includes(currentNode.data)).toBe(true);
-                    window.console.log( 'items.spec', 'tester', 188, 'tested', currentNode);
+                    // window.console.log( 'items.spec', 'tester', 188, 'tested', currentNode);
                 };
 
                 traverseDF(result, tester);
