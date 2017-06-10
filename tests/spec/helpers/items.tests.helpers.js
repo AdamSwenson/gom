@@ -5,6 +5,22 @@
 import { testAction, description, factories } from './vuex.spec.helpers';
 import Payload from '../../../resources/assets/js/models/Payload';
 
+import Item from '../../../resources/assets/js/models/Item';
+
+import Node from '../../../resources/assets/js/models/Node';
+
+export const addNodes = ( parentNode, number ) => {
+    if ( ! addNodes.isns) addNodes.isns = [];
+    let id = parentNode.data;
+    for (let i = 0; i < number; i++) {
+        let it = new Item();
+        let o = new Node( it.serialNumber, id );
+        addNodes.isns.push(it.serialNumber);
+        parentNode.children.push( o )
+    }
+
+};
+
 export const makeState = ( n = 5 ) => {
 
     let s = makeRootState();

@@ -22,22 +22,7 @@ export const getAllExams = 'getAllExams'
 export const getActiveExamObj = 'getActiveExamObj'
 
 //items
-export const getItemCount = 'getItemCount'
-
 export const getItem = 'getItem'
-/**
- * Returns the item object residing at the
- * given index in the list.
- * This does not guarantee
- * that the item.index property will equal the
- * list index. That could happen if updateOrder has not
- * yet run.
- * @param state
- * @param getters
- * @param rootState
- * @param index
- */
-export const getItemByIndex = 'getItemByIndex'
 
 /**
  * Returns the item object with the given id.
@@ -54,6 +39,24 @@ export const getItemByIndex = 'getItemByIndex'
  * @param index
  */
 export const getItemById = 'getItemById'
+
+/**
+ * Returns the item object residing at the
+ * given index in the list.
+ * This does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+export const getItemByIndex = 'getItemByIndex'
+
+export const getItemBySerialNumber = 'getItemBySerialNumber'
+
+export const getItemCount = 'getItemCount'
 
 /**
  * Returns list of items objects
@@ -74,6 +77,16 @@ export const getAllIndexesList = 'getAllIndexesList'
  * @returns []
  */
 export const getAllItemsList = 'getAllItemsList'
+
+/**
+ * Returns a copy of the itemMap.
+ * The copy shouldn't be reactive.
+ * This will be a Node instance representing
+ * the exam with all the questions and elements in
+ * children properties
+ * @type {string}
+ */
+export const getItemMapCopy = 'getItemMapCopy'
 
 //Visibility settings
 export const isItemSettingsVisible = 'isItemSettingsVisible'

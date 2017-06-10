@@ -67949,7 +67949,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
  */
 ;
 
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":409,"lodash":338}],351:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../store/action-types":391,"../store/getter-types":393,"../store/mutation-types":412,"lodash":338}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68344,7 +68344,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-447dcb94", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":409,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":412,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
@@ -68459,7 +68459,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5ecd1dd5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":409,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":412,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
@@ -68652,7 +68652,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-35f0e86e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/getter-types":393,"../../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68844,7 +68844,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-49f731a6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/getter-types":391,"../../../store/mutation-types":409,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/getter-types":393,"../../../store/mutation-types":412,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n")
 'use strict';
@@ -69003,7 +69003,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4476cea1", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
+},{"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
 'use strict';
@@ -69092,7 +69092,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69218,7 +69218,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n")
 'use strict';
@@ -69296,7 +69296,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
@@ -69379,7 +69379,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
@@ -69517,7 +69517,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
@@ -69619,7 +69619,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69757,7 +69757,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-989fbf16", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -69827,7 +69827,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4850f9d2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../store/action-types":389,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../../store/action-types":391,"../../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
@@ -69915,7 +69915,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-acab4af0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../store/action-types":389,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
+},{"../../../store/action-types":391,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70071,7 +70071,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-93f668f6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70180,7 +70180,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-3651987f", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":386,"../../../store/action-types":389,"../../../store/getter-types":391,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70274,7 +70274,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7487aa0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":386,"../../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":388,"../../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n  /* line 8, stdin */\n  .item-main-component .indexDisplay {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
 'use strict';
@@ -70381,7 +70381,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70527,7 +70527,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":386,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":388,"../../store/getter-types":393,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70712,7 +70712,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":382,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Comment":382,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70863,7 +70863,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -70918,7 +70918,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -71026,7 +71026,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -71094,7 +71094,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
@@ -71149,7 +71149,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":386,"../../store/action-types":389,"../../store/mutation-types":409,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":412,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
 'use strict';
@@ -71251,7 +71251,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../store":393,"../store/action-types":389,"../store/getter-types":391,"../store/mutation-types":409,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../store":395,"../store/action-types":391,"../store/getter-types":393,"../store/mutation-types":412,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
 'use strict';
 
 var _vue = require('vue/dist/vue.js');
@@ -71393,6 +71393,7 @@ _vue2.default.use(_bootstrapVue2.default);
 // Vue.use( Sortable );
 
 
+// import Vue from 'vue'
 // ES build is more efficient by reducing unneeded components with tree-shaking.
 // (Needs Webpack 2 or Rollup)
 // import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
@@ -72080,6 +72081,21 @@ var Item = function (_IModel) {
     _inherits(Item, _IModel);
 
     _createClass(Item, null, [{
+        key: 'makeSerialNumber',
+
+
+        /**
+         * Returns the next serial number.
+         * The first time this is called, it will return 1
+         * The actual value doesn't matter, only its uniqueness.
+         * @returns {number}
+         */
+        value: function makeSerialNumber() {
+            if (!Item.makeSerialNumber.count) Item.makeSerialNumber.count = 0;
+            Item.makeSerialNumber.count += 1;
+            return Item.makeSerialNumber.count;
+        }
+    }, {
         key: 'fillableProps',
 
 
@@ -72096,7 +72112,18 @@ var Item = function (_IModel) {
     function Item() {
         _classCallCheck(this, Item);
 
+        /**
+         * Uniquely identifies the token object.
+         * Objects are immediately put into the map when
+         * created. Thus we need a way of identifying them
+         * before the server returns the new object's id.
+         * This property provides that value.
+         *
+         * @type {number}
+         */
         var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+
+        _this.serialNumber = Item.makeSerialNumber();
 
         _this.idxStore = '';
 
@@ -72376,6 +72403,138 @@ var Item = function (_IModel) {
 exports.default = Item;
 
 },{"./Comment":382,"./IModel":384}],386:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Created by adam on 5/31/17.
+ */
+
+var Node = function () {
+  function Node(data) {
+    var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var children = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+    _classCallCheck(this, Node);
+
+    /** The parent node */
+    this.parent = parent;
+
+    /**
+     * The database identifier of the item.
+     * Not super sure on whether to use it
+     */
+    this.id;
+
+    /**
+     * The data stored in the node,
+     * Can be any of:
+     *      serial number of item
+     *      id of item
+     *      an item object
+     */
+    this.data = data;
+
+    /**
+     * The type of data stored in the node.
+     * This is not guaranteed to be set or to
+     * be accurate if the node has been altered.
+     * @type {null}
+     */
+    this.dataType = null;
+
+    /**
+     * Holds the child nodes of this node
+     * @type {Array}
+     */
+    this.children = children;
+  }
+
+  _createClass(Node, [{
+    key: "isRoot",
+    value: function isRoot() {
+      //if set as own parent, it  is the tree's root
+      if (this.parent === this.data) {
+        return true;
+      }
+
+      //do we want this too?
+      //if a node accidentally doesn't
+      //get its parent set, it becomes the root...
+      if (this.parent === null) {
+        return true;
+      }
+      return false;
+    }
+  }]);
+
+  return Node;
+}();
+
+exports.default = Node;
+
+},{}],387:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Created by adam on 6/9/17.
+ */
+
+var traverseDF = exports.traverseDF = function traverseDF(root, callback) {
+    var stillLooking = true;
+
+    // this is a recurse and immediately-invoking function
+    (function recurse(currentNode) {
+        // while(stillLooking) {
+        // step 2
+        for (var i = 0, length = currentNode.children.length; i < length; i++) {
+            if (callback(currentNode)) {
+                return currentNode;
+            } else {
+
+                // step 3
+                recurse(currentNode.children[i]);
+            }
+        }
+        // }
+        // window.console.log( 'orderings', 'recurse', 47, callback(currentNode));
+        // step 4
+        if (callback(currentNode)) {
+            // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
+            stillLooking = false;
+            return currentNode;
+        }
+
+        // step 1
+    })(root);
+};
+
+var traverseBF = exports.traverseBF = function traverseBF(root, callback) {
+    var queue = [];
+    queue.push(root);
+    var currentTree = queue.pop();
+
+    while (currentTree) {
+        for (var i = 0, length = currentTree.children.length; i < length; i++) {
+            queue.push(currentTree.children[i]);
+        }
+
+        callback(currentTree);
+        currentTree = queue.pop();
+    }
+};
+
+},{}],388:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72603,7 +72762,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],387:[function(require,module,exports){
+},{}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72760,7 +72919,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":385}],388:[function(require,module,exports){
+},{"./Item":385}],390:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73051,7 +73210,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":384}],389:[function(require,module,exports){
+},{"./IModel":384}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73137,7 +73296,7 @@ var addOlderSibling = exports.addOlderSibling = 'addOlderSibling';
 var addYoungerSibling = exports.addYoungerSibling = 'addYoungerSibling';
 var onUpdate = exports.onUpdate = 'onUpdate';
 
-},{}],390:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73674,7 +73833,7 @@ var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
 // }
 // ;
 
-},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":386,"../models/Student":388,"./action-types":389,"./mutation-types":409,"lodash":338}],391:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../models/Student":390,"./action-types":391,"./mutation-types":412,"lodash":338}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73702,22 +73861,7 @@ var getAllExams = exports.getAllExams = 'getAllExams';
 var getActiveExamObj = exports.getActiveExamObj = 'getActiveExamObj';
 
 //items
-var getItemCount = exports.getItemCount = 'getItemCount';
-
 var getItem = exports.getItem = 'getItem';
-/**
- * Returns the item object residing at the
- * given index in the list.
- * This does not guarantee
- * that the item.index property will equal the
- * list index. That could happen if updateOrder has not
- * yet run.
- * @param state
- * @param getters
- * @param rootState
- * @param index
- */
-var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
 
 /**
  * Returns the item object with the given id.
@@ -73734,6 +73878,24 @@ var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
  * @param index
  */
 var getItemById = exports.getItemById = 'getItemById';
+
+/**
+ * Returns the item object residing at the
+ * given index in the list.
+ * This does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
+
+var getItemBySerialNumber = exports.getItemBySerialNumber = 'getItemBySerialNumber';
+
+var getItemCount = exports.getItemCount = 'getItemCount';
 
 /**
  * Returns list of items objects
@@ -73755,11 +73917,21 @@ var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
  */
 var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 
+/**
+ * Returns a copy of the itemMap.
+ * The copy shouldn't be reactive.
+ * This will be a Node instance representing
+ * the exam with all the questions and elements in
+ * children properties
+ * @type {string}
+ */
+var getItemMapCopy = exports.getItemMapCopy = 'getItemMapCopy';
+
 //Visibility settings
 var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
 var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
 
-},{}],392:[function(require,module,exports){
+},{}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73938,7 +74110,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{"./getter-types":391}],393:[function(require,module,exports){
+},{"./getter-types":393}],395:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -74117,7 +74289,7 @@ exports.default = new _vuex2.default.Store({
 });
 
 }).call(this,require('_process'))
-},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":390,"./getters":392,"./modules/activeexam.js":394,"./modules/activestudent.js":395,"./modules/comments.js":396,"./modules/escores.js":397,"./modules/grades.js":398,"./modules/items.js":400,"./modules/orderings":402,"./modules/qscores.js":403,"./modules/questions.js":404,"./modules/settings":405,"./modules/students.js":406,"./modules/times.js":407,"./modules/visibility":408,"./mutations":410,"./state":411,"_process":339,"vue/dist/vue.js":346,"vuex":349}],394:[function(require,module,exports){
+},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":392,"./getters":394,"./modules/activeexam.js":396,"./modules/activestudent.js":397,"./modules/comments.js":398,"./modules/escores.js":399,"./modules/grades.js":400,"./modules/items.js":403,"./modules/orderings":405,"./modules/qscores.js":406,"./modules/questions.js":407,"./modules/settings":408,"./modules/students.js":409,"./modules/times.js":410,"./modules/visibility":411,"./mutations":413,"./state":414,"_process":339,"vue/dist/vue.js":346,"vuex":349}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74252,7 +74424,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":383,"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],395:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74391,7 +74563,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":409}],396:[function(require,module,exports){
+},{"../../models/Payload":388,"../../models/Student":390,"../action-types":391,"../mutation-types":412}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74585,7 +74757,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],397:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74690,7 +74862,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],398:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74869,7 +75041,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],399:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],401:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -75021,14 +75193,15 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 // export default {
 //     actions}
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409}],400:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412}],402:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
+var _module$exports;
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          * Created by adam on 6/8/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          */
+
 
 var _mutationTypes = require('../../store/mutation-types');
 
@@ -75058,11 +75231,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var Vue = require('vue');
 
 var _ = window._ = require('lodash');
-
-var standardTimeout = 1000;
 
 var buildKey = function buildKey(idx) {
     var k = '';
@@ -75081,6 +75254,195 @@ var isItemsEmpty = function isItemsEmpty(state) {
     }
     return true;
 };
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getAllItems, function (state, getters, rootState) {
+    return state.items;
+}), _defineProperty(_module$exports, gTypes.getItem, function (state, getters, payload) {
+    // console.log('getItem', state, payload);
+    if (isItemsEmpty(state)) return false;
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var index = payload.index,
+            id = payload.id;
+
+        if (typeof index !== 'undefined') {
+            return getters[gTypes.getItemByIndex](state, getters, index);
+        }
+        if (typeof id !== 'undefined') {
+            return getters[gTypes.getItemById](state, getters, id);
+        }
+    }
+}), _defineProperty(_module$exports, gTypes.getItemById, function (state, getters, id) {
+    // window.console.log( 'items', 'getItemById', 148, state, id );
+    return function (state, id) {
+        var r = state.items.filter(function (i) {
+            if (i.id === id) {
+                return i;
+            }
+        });
+        return r[0];
+    }(state, id);
+}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, index) {
+    // getItemByIndex: ( state, getters ) => ( index ) => {
+    //remove the payload wrapper if necessary
+    if (_Payload2.default.checkIfPayload(index)) {
+        index = index.index;
+    }
+
+    //if this is a single member array, we can treat
+    //it like a numeric input under the older system
+    if (_.isArray(index) && index.length === 1) {
+        index = index[0];
+    }
+
+    //Now we're ready to deal with the input
+    return function (state, index) {
+        //There are two cases to consider
+        //We deal first with the easy case in which the index
+        //is a number or string representation of a number
+        //and not a composite
+        if (!_.isArray(index)) {
+            //if was just a string or integer this is fine
+            //also if the input was an array with only one item
+            var r = state.items.filter(function (i) {
+                if (i.index === index) {
+                    return i;
+                }
+            });
+            return r[0];
+        } else {
+            //we need to do something different
+            //because it is an array
+            if (_.isArray(index)) {
+                var idx = index.join('-');
+            }
+        }
+    }(state, index);
+}), _defineProperty(_module$exports, gTypes.getItemBySerialNumber, function (state, getters, serialNumber) {
+    // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
+    return function (state, serialNumber) {
+        var r = state.items.filter(function (i) {
+            if (i.serialNumber === serialNumber) {
+                return i;
+            }
+        });
+        return r[0];
+    }(state, serialNumber);
+}), _defineProperty(_module$exports, 'getSortedItems', function getSortedItems(state) {}), _defineProperty(_module$exports, 'getAllItemIndexes', function getAllItemIndexes(state, getters, rootState) {
+    var out = [];
+    for (var item in state.items) {
+        out.push(item.index);
+    }
+    return out;
+}), _defineProperty(_module$exports, 'getAllIndexesList', function getAllIndexesList(state, getters, rootState) {
+    if (isItemsEmpty(state)) return [];
+    // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
+
+    var out = [];
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+        for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var _step$value = _slicedToArray(_step.value, 2),
+                key = _step$value[0],
+                val = _step$value[1];
+
+            out.push(key);
+        }
+    } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+    } finally {
+        try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+            }
+        } finally {
+            if (_didIteratorError) {
+                throw _iteratorError;
+            }
+        }
+    }
+
+    return out;
+
+    //Leaving this here, in case someday we go back to items being an object
+    // return Object.keys( state.items )
+}), _defineProperty(_module$exports, 'getAllItemsList', function getAllItemsList(state, getters) {
+    //alias.
+    // used to be used when items was different data structure
+    return getters[gTypes.getAllItems](state, getters);
+    // // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
+    // let out = [];
+    // // if ( state.items.size > 0 ) {
+    // for (let [ key, val ] of items) {
+    //     // for ( let [ key, val ] of state.items.entries() ) {
+    //     // console.log( 'getAllItemsList', key, val );
+    //     out.push( val );
+    // }
+    // // }
+    // return out;
+}), _defineProperty(_module$exports, gTypes.getItemCount, function (state, getters) {
+    return state.items.length;
+}), _defineProperty(_module$exports, 'getNextIndex', function getNextIndex(state, getters) {
+    return _.sortedIndex(state.items);
+}), _defineProperty(_module$exports, 'currentExam', function currentExam(state, getters) {
+    return state.items[0];
+}), _module$exports);
+
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"lodash":338,"vue":347}],403:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = require('../../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = require('../../models/Node');
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = require('../../models/NodeTools');
+
+var _items = require('./items.getters');
+
+var _items2 = _interopRequireDefault(_items);
+
+var _orderings = require('./orderings');
+
+var _orderings2 = _interopRequireDefault(_orderings);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var Vue = require('vue');
+var _ = window._ = require('lodash');
+
+var standardTimeout = 1000;
 
 var helpers = {
     getItemFromPayload: function getItemFromPayload(state, payload) {
@@ -75145,7 +75507,7 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
  * To maintain compatibility, indexMap holds a mapping from the old
  * ItemIndex to the database id
  */
-var state = {
+var state_obj = {
 
     /**
      * This holds the current item objects.
@@ -75166,291 +75528,91 @@ var state = {
     orderMap: {}
 };
 
-var getters = {
+var state = Object.assign({}, state_obj, _orderings2.default.state);
+
+/**
+ * The make use of both the item object store
+ * and the order mapping
+ *
+ * @type {{getSortedIds: ((p1:*, p2?:*))}}
+ */
+var getters_orig = {
+    /**
+     * This takes the map of serial numbers in which
+     * the ordering is represented and returns a map
+     * with ids.
+     * The resulting map is used to, inter alia, sync with
+     * the server
+     * @param state
+     * @param getters
+     */
     getSortedIds: function getSortedIds(state, getters) {
-        var ids = [];
-        if (state.items.length > 0) {
-            state.items.forEach(function (i) {
-                ids.push(i.id);
-            });
-        }
-        return ids;
-    },
-    // getMappedItem : (state, getters) => (payload)=>{
-    //
-    //     let key = buildKey(idx);
-    //     return state.orderMap[key];
-    // },
+        window.console.log('items', 'getSortedIds', 102, getters);
+        //get the serial number map
+        //we explicitly use the getter rather than
+        //just looking in the state because this
+        //may well evolve to a different storage
+        //behind the scenes
+        //We begin by making a copy because we will
+        //be altering the data stored
+        var map = getters[gTypes.getItemMapCopy](state, getters);
+        window.console.log('items', 'getSortedIds', 124, 'map', map);
+        var updater = function updater(currentNode) {
+            //Look up the id
+            var isn = currentNode.data;
 
-    /**
-     * Returns the desired Item object
-     * Payload can have any of the following identifiers,
-     * used in descending order:
-     *      ItemId,
-     *      ItemIndex
-     *      todo Add others
-     * @param state
-     * @param getters
-     * @param payload Object containing Item identifier
-     */
-    getItem: function getItem(state, getters) {
-        return function (payload) {
-            // [gTypes.getItem ]: ( state, getters, payload ) => {
-            // console.log('getItem', state, payload);
-            if (isItemsEmpty(state)) return false;
-            if (_Payload2.default.checkIfPayload(payload)) {
-                var index = payload.index,
-                    id = payload.id;
+            //ignore the exam
+            if (isn === 0) return true;
 
-                if (typeof index !== 'undefined') {
-                    return getters.getItemByIndex(state, getters, index);
-                }
-                if (typeof id !== 'undefined') {
-                    return getters.getItemById(state, getters, id);
-                }
+            var item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
+            window.console.log('items', 'updater isn item', 144, isn, item);
+            if (!_.isUndefined(item)) {
+                //we don't check if id is defined.
+                //should we????
+                currentNode.data = item.id;
+                currentNode.dataType = 'id';
+                window.console.log('items', 'recurse', 150, currentNode);
             }
         };
-    },
 
-    /**
-     * Returns the item object residing at the
-     * given index in the list.
-     * This does not guarantee
-     * that the item.index property will equal the
-     * list index. That could happen if updateOrder has not
-     * yet run.
-     * @param state
-     * @param getters
-     * @param index
-     */
-    getItemByIndex: function getItemByIndex(state, getters) {
-        return function (index) {
-            //remove the payload wrapper if necessary
-            if (_Payload2.default.checkIfPayload(index)) {
-                index = index.index;
+        // map = traverseDF(map, updater);
+        // window.console.log( 'items', 'getSortedIds', 123, map);
+        // //transform to ids
+        //map is the exam represented as a Node object
+        // Doing this depth first
+        // this is a recurse and immediately-invoking function
+        (function recurse(currentNode) {
+            // window.console.log( 'items', 'recurse', 129, currentNode);
+            // step 2
+            for (var i = 0; i < currentNode.children.length; i++) {
+                // step 3
+                recurse(currentNode.children[i]);
             }
-
-            //if this is a single member array, we can treat
-            //it like a numeric input under the older system
-            if (_.isArray(index) && index.length === 1) {
-                index = index[0];
-            }
-
-            //Now we're ready to deal with the input
-            return function (state, index) {
-                //There are two cases to consider
-                //We deal first with the easy case in which the index
-                //is a number or string representation of a number
-                //and not a composite
-                if (!_.isArray(index)) {
-                    //if was just a string or integer this is fine
-                    //also if the input was an array with only one item
-                    var r = state.items.filter(function (i) {
-                        if (i.index === index) {
-                            return i;
-                        }
-                    });
-                    return r[0];
-                } else {
-                    //we need to do something different
-                    //because it is an array
-                    if (_.isArray(index)) {
-                        var idx = index.join('-');
-                    }
-                }
-            }(state, index);
-        };
-    },
-
-    /**
-     * Returns the item object with the given id.
-     * This is the preferred way of looking up objects.
-     * It is immutable across re-sorting and corresponds with
-     * the stored db value.
-     * Getting an object by this does not guarantee
-     * that the item.index property will equal the
-     * list index. That could happen if updateOrder has not
-     * yet run.
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param index
-     */
-    getItemById: function getItemById(state, getters) {
-        return function (id) {
-            // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
-            // console.log('getItemById', state, id);
-            return function (state, id) {
-                var r = state.items.filter(function (i) {
-                    if (i.id === id) {
-                        return i;
-                    }
-                });
-                return r[0];
-            }(state, id);
-        };
-    },
-
-    /**
-     * Returns all stored item objects in whatever
-     * data structure is housing them.
-     * Note: because of adam's flakiness on committing to
-     * a data structure, this may not be stable in its output
-     * @param state
-     * @param getters
-     * @param rootState
-     * @returns []
-     */
-    getAllItems: function getAllItems(state, getters, rootState) {
-        // [gTypes.getAllItems] : ( state, getters, rootState ) => {
-        return state.items;
-    },
-
-    getSortedItems: function getSortedItems(state) {},
-
-    /**
-     * This returns the indexes stored in each item in a list.
-     * NB, these may not correspond with the index of each item's location in state.items
-     * To retrieve the indexes of state.items list holding items, use getAllIndexesList
-     * @param state
-     * @param getters
-     * @param rootState
-     */
-    getAllItemIndexes: function getAllItemIndexes(state, getters, rootState) {
-        var out = [];
-        for (var item in state.items) {
-            out.push(item.index);
-        }
-        return out;
-    },
-
-    /**
-     * Returns the list indexes of the items in state.items
-     * NB, This does not return the indexes which are stored in each
-     * item. That is retrieved via getAllItemIndexes
-     * @param state
-     * @param getters
-     * @param rootState
-     * @returns {Array}
-     */
-    getAllIndexesList: function getAllIndexesList(state, getters, rootState) {
-        if (isItemsEmpty(state)) return [];
-        // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
-
-        var out = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var _step$value = _slicedToArray(_step.value, 2),
-                    key = _step$value[0],
-                    val = _step$value[1];
-
-                out.push(key);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-
-        return out;
-
-        //Leaving this here, in case someday we go back to items being an object
-        // return Object.keys( state.items )
-    },
-
-    /**
-     * Return list of Item objects
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns []
-     */
-    getAllItemsList: function getAllItemsList(state, getters) {
-        return function (items) {
-
-            // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
-            var out = [];
-            // if ( state.items.size > 0 ) {
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var _step2$value = _slicedToArray(_step2.value, 2),
-                        key = _step2$value[0],
-                        val = _step2$value[1];
-
-                    // for ( let [ key, val ] of state.items.entries() ) {
-                    // console.log( 'getAllItemsList', key, val );
-                    out.push(val);
-                }
-                // }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
-            }
-
-            return out;
-        };
-    },
-
-    /**
-     * Returns the current count of items
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns {Number}
-     */
-    getItemCount: function getItemCount(state, getters) {
-        // [gTypes.getItemCount]: ( state, getters ) => {
-        return state.items.length;
-    },
-
-    /**
-     * Returns the current maximum index value from
-     * the stored items
-     * @param state
-     * @param getters
-     */
-    getMaxIndexValue: function getMaxIndexValue(state, getters) {},
-
-    getNextIndex: function getNextIndex(state, getters) {
-        return _.sortedIndex(state.items);
-    },
-
-    /**
-     * Poorly named shortcut for getting the currently active exam.
-     * @param state
-     */
-    currentExam: function currentExam(state) {
-        return state.items[0];
+            window.console.log('items', 'recurse', 153, currentNode);
+            // step 4
+            updater(currentNode);
+            // //Look up the id
+            // let isn = currentNode.data;
+            //
+            // let item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
+            // window.console.log( 'items', 'isn item', 144, isn, item);
+            // if(! _.isUndefined(item)){
+            //     //we don't check if id is defined.
+            //     //should we????
+            //     currentNode.data = item.id;
+            //     currentNode.dataType = 'id';
+            //     window.console.log( 'items', 'recurse', 150, currentNode);
+            // }
+            //pass in the map object to the self-executing function
+        })(map);
+        return map;
     }
-
 };
+
+var getters = Object.assign({}, getters_orig, _items2.default, _orderings2.default.getters); //, ...g};
+
+window.console.log('items', 'getters', 112, getters);
+// };
 
 var actions = require('./items.actions');
 
@@ -75480,7 +75642,7 @@ exports.default = {
 // this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
 // }
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409,"./items.actions":399,"./items.mutations":401,"lodash":338,"vue":347}],401:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"./items.actions":401,"./items.getters":402,"./items.mutations":404,"./orderings":405,"lodash":338,"vue":347}],404:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -75691,28 +75853,57 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 //
 // },
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":386,"../../store/action-types":389,"../../store/getter-types":391,"../../store/mutation-types":409}],402:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutationTypes = require('../mutation-types');
+var _getters;
+
+var _mutationTypes = require('../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _actionTypes = require('../action-types');
+var _actionTypes = require('../../store/action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = require('../../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = require('../../models/Node');
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = require('../../../../../resources/assets/js/models/NodeTools');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * Created by adam on 4/11/17.
  */
-window._ = require('lodash');
 
+var _ = window._ = require('lodash');
+var Vue = require('vue');
 
 var getItemFromOrder = function getItemFromOrder(order, idx) {
     var itm = order[0];
@@ -75732,47 +75923,103 @@ var getItemFromList = function getItemFromList(orderList, idx) {
     return itm;
 };
 
-var state = {
+// const traverseDF = ( root, callback ) => {
+//     let stillLooking = true;
+//
+//     // this is a recurse and immediately-invoking function
+//     (function recurse( currentNode ) {
+//         // while(stillLooking) {
+//         // step 2
+//         for (var i = 0, length = currentNode.children.length; i < length; i++) {
+//             if ( callback( currentNode ) ) {
+//                 return currentNode;
+//             } else {
+//
+//                 // step 3
+//                 recurse( currentNode.children[ i ] );
+//             }
+//
+//         }
+//         // }
+//         // window.console.log( 'orderings', 'recurse', 47, callback(currentNode));
+//         // step 4
+//         if ( callback( currentNode ) ) {
+//             // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
+//             stillLooking = false;
+//             return currentNode;
+//         }
+//
+//         // step 1
+//     })( root );
+//
+// };
 
-    /*
-     * What we want to have is the ability to store nested
-     * tuples which map the item to a position on an exam
-     * (which is itself formally an item).
-     * order : {
-     *      0 : {
-     *          id: null,
-     *          children: {
-     *              0 : {
-     *                      id: null.
-     *                      children: {}
-     *                 }
-     *          }
-     *      }
-     }
-     *
-     * */
-    //the first value in the array is the item's id
-    //the second value is an array of children
-    // orderMap: new Map(),
-    // orderList: [],
-    //
-    // order: {
-    //     0: {
-    //         id: null,
-    //         children: {
-    //             0: {
-    //                 id: null,
-    //                 children: {}
-    //             }
-    //         }
-    //     }
-    // }
-    orderMap: new Map(),
-    order: {}
+// const traverseBF = ( root, callback ) => {
+//     var queue = [];
+//     queue.push( root );
+//     let currentTree = queue.pop();
+//
+//     while (currentTree) {
+//         for (var i = 0, length = currentTree.children.length; i < length; i++) {
+//             queue.push( currentTree.children[ i ] );
+//         }
+//
+//         callback( currentTree );
+//         currentTree = queue.pop();
+//     }
+// };
+
+
+var state = {
+    itemMap: new _Node2.default(0, 0)
 
 };
 
 var mutations = {
+    add: function add(state, payload) {
+        //we will have to find the parent
+        //then add the new node to its children
+
+        var parent = payload.parent,
+            obj = payload.obj;
+        var serialNumber = obj.serialNumber;
+
+
+        var n = new _Node2.default(serialNumber, parent.serialNumber);
+
+        if (state.itemMap.data === parent.serialNumber) {
+            state.itemMap.children.push(n);
+        } else {
+
+            state.itemMap.children.filter(function (node) {
+                if (node.serialNumber === parent.SerialNumber) {
+                    node.children.push(n);
+                    return true;
+                }
+            });
+        }
+        //
+        //
+        // if ( !_.isUndefined( index ) ) {
+        //     //we are supposed to put the item
+        //     //in a particular location
+        //     state.itemMap.children[ index ] = n;
+        // } else {
+        //     //we are supposed to append it on the
+        //     //last item or somehow devine location
+        // }
+    },
+
+    remove: function remove(state, payload) {
+        var toRemove = payload.toRemove,
+            parent = payload.parent;
+        //Merge its children into its parent's children
+
+        parent.children.concat(toRemove.children);
+        //delete the node
+        toRemove.destroy();
+    },
+
     addMappedItem: function addMappedItem(state, idx, toAdd) {
         state.orderMap.set(idx, toAdd);
     },
@@ -75804,9 +76051,7 @@ var mutations = {
 
     addParent: function addParent(state, existing, toAdd) {},
     addOlderSibling: function addOlderSibling(state, existing, toAdd) {},
-    addYoungerSibling: function addYoungerSibling(state, existing, toAdd) {},
-
-    removeItem: function removeItem(state, payload) {}
+    addYoungerSibling: function addYoungerSibling(state, existing, toAdd) {}
 
 };
 
@@ -75815,66 +76060,263 @@ var actions = {
     //only these can call the mutations.
     //so there needs to be one for each mutation
 
-};
 
-var getters = {
-    getMappedItem: function getMappedItem(state, getters) {
-        return function (idx) {
-            return state.orderMap.get(idx);
-        };
+    addItem: function addItem(_ref, payload) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+        var index = payload.index,
+            obj = payload.obj;
+        var serialNumber = obj.serialNumber;
+
+        var n = new _Node2.default(serialNumber);
+        if (!_.isUndefined(index)) {
+            //we are supposed to put the item
+            //in a particular location
+            state.itemMap.children[index] = n;
+        } else {
+            //we are supposed to append it on the
+            //last item or somehow devine location
+        }
     },
-
-    getItemFromOrder: function getItemFromOrder(state, getters) {
-        return function (idx) {
-            var itm = state.order[0];
-            //idx is a tuple stored as an array
-            for (var i = 0; i < idx.length; i++) {
-                itm = itm.children[i];
-            }
-            return itm;
-        };
-    },
-
-    getItemByIdx: function getItemByIdx(state, getters) {
-        return function (idx) {
-            var stringKey = Item.buildKeyFromIdx(idx);
-
-            return function (state, idx) {
-                var r = state.items.filter(function (i) {
-                    if (i.idxStore === stringKey) {
-                        return i;
-                    }
-                    return r[0];
-                });
-            };
-        };
-    },
-
-    getSiblingsAndChildrenByIdx: function getSiblingsAndChildrenByIdx(state, getters) {
-        return function (idx) {
-            var stringKey = Item.buildKeyFromIdx(idx);
-
-            return function (state, idx) {
-                var r = state.items.filter(function (i) {
-                    if (_.startsWith(stringKey, idx)) {
-                        return i;
-                    }
-                    return r[0];
-                });
-            };
-        };
+    removeItem: function removeItem(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
     }
 
 };
+
+var getters = (_getters = {}, _defineProperty(_getters, gTypes.getItemMapCopy, function (state, getters) {
+    return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
+}), _defineProperty(_getters, 'getItemNodeFromOrder', function getItemNodeFromOrder(state, getters, serialNumber) {
+    return function (state, serialNumber) {
+        var callback = function callback(node) {
+            if (!callback.found) callback.found = [];
+            // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+            if (node.data === serialNumber) {
+                callback.found.push(node);
+                // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                return true;
+            }
+            return false;
+        };
+        (0, _NodeTools.traverseBF)(state.itemMap, callback);
+        var result = callback.found[0];
+        return result;
+    }(state, serialNumber);
+}), _getters);
+
+//     return function ( state, serialNumber ) {
+//         var r = state.itemMap.children.filter( function ( i ) {
+//             if ( i.data === serialNumber ) {
+//                 return i;
+//             }
+//         } );
+//         return r[ 0 ];
+//     }( state, serialNumber )
+// },
+//
+// return (( serialNumber ) => {
+//     window.console.log( 'qqqqqq', 'jjjj', 249, serialNumber );
+//     return state.itemMap.filter( ( serialNumber ) => {
+//         state.itemMap.forEach( ( itemNode ) => {
+//             if ( itemNode.data === serialNumber ) {
+//                 return itemNode;
+//             }
+//         } );
+//     } );
+// })( serialNumber );
+
+
+//
+// let callback = function( node ) {
+//     if ( ! callback.found ) callback.found = [];
+//
+//     if ( node.data === serialNumber ){
+//         callback.found.push(node);
+//     }
+// };
+//
+// traverseDF( state.itemMap, callback );
+// // if(callback.found.length > 0){
+// //
+// //     let item = getters.getItemBySerialNumber()
+// // }
+// //
+// let result = callback.found.length >0 ? callback.found[0] : null;
+// window.console.log( 'orderings', 'callback.found', 258, result);
+//
+// return result;
+
+
+// /**
+//  * Given a serial number, returns true if that serial number is
+//  * in the tree and false otherwise.
+//  * @param state
+//  * @param getters
+//  */
+// containsSerialNumber: ( state, getters ) => ( serialNumber ) => {
+//     //todo
+// },
+//
+// /**
+//  * Looks up the serial number of the item which is
+//  * occupying the position identified by the index.
+//  * @param index
+//  */
+// getItemSerialNumberFromIndex: ( state, getters ) => ( index ) => {
+//     //remove the payload wrapper if necessary
+//     if ( Payload.checkIfPayload( index ) ) {
+//         index = index.index;
+//     }
+//
+//     //if this is a single member array, we can treat
+//     //it like a numeric input under the older system
+//     if ( _.isArray( index ) && index.length === 1 ) {
+//         index = index[ 0 ];
+//     }
+//
+//     //Now we're ready to deal with the input
+//     return function ( state, index ) {
+//         //There are two cases to consider
+//         //We deal first with the easy case in which the index
+//         //is a number or string representation of a number
+//         //and not a composite
+//         if ( !_.isArray( index ) ) {
+//             //if was just a string or integer this is fine
+//             //also if the input was an array with only one item
+//             var r = state.orderings.filter( function ( i ) {
+//                 if ( i.index === index ) {
+//                     return i;
+//                 }
+//             } );
+//             return r[ 0 ];
+//         }
+//
+//         else {
+//             //we need to do something different
+//             //because it is an array
+//             if ( _.isArray( index ) ) {
+//                 let idx = index.join( '-' );
+//             }
+//
+//         }
+//
+//     }( state, index );
+//
+// },
+//
+// /**
+//  * Given an item's permanent unique identifier, it returns
+//  * up the item's location
+//  * @param serialNumber
+//  */
+// getIndexFromItemSerialNumber: ( state, getters ) => ( serialNumber ) => {
+//     let callback = ( node ) => {
+//         if ( node.serialNumber === serialNumber ) {
+//             return node;
+//         }
+//     }
+//     // this is a recurse and immediately-invoking function
+//     (function recurse( currentNode ) {
+//         // step 2
+//         for (var i = 0, length = currentNode.children.length; i < length; i++) {
+//             // step 3
+//             recurse( currentNode.children[ i ] );
+//         }
+//
+//         // step 4
+//         callback( currentNode );
+//
+//         // step 1
+//     })( this._root );
+//
+// },
+//
+// getAllNodesAtLevel: ( state, getters ) => ( level ) => {
+//     if ( level === 0 ) {
+//         //special case because 0,0 is the exam
+//         //so we need to subtract 1
+//     } else {
+//         //All other cases we can just return the count
+//     }
+//
+// },
+//
+// /**
+//  * Returns the total number of items at the specified
+//  * level.
+//  * Level 0 : Questions
+//  * Level 1 : Elements
+//  * ...
+//  * @param state
+//  * @param getters
+//  */
+// getCountOfLevel: ( state, getters ) => ( level ) => {
+//     if ( level === 0 ) {
+//         //special case because 0,0 is the exam
+//         //so we need to subtract 1
+//     } else {
+//         //All other cases we can just return the count
+//     }
+//
+// },
+//
+//
+// getMappedItem: ( state, getters ) => ( idx ) => {
+//     return state.orderMap.get( idx );
+// },
+//
+// // getItemFromOrder: ( state, getters ) => ( idx ) => {
+// //     let itm = state.order[ 0 ];
+// //     //idx is a tuple stored as an array
+// //     for (let i = 0; i < idx.length; i++) {
+// //         itm = itm.children[ i ]
+// //     }
+// //     return itm;
+// // },
+//
+// getItemByIdx: ( state, getters ) => ( idx ) => {
+//     let stringKey = Item.buildKeyFromIdx( idx );
+//
+//     return function ( state, idx ) {
+//         var r = state.items.filter( function ( i ) {
+//             if ( i.idxStore === stringKey ) {
+//                 return i;
+//             }
+//             return r[ 0 ];
+//         } )
+//     };
+// },
+//
+//
+// getSiblingsAndChildrenByIdx: ( state, getters ) => ( idx ) => {
+//     let stringKey = Item.buildKeyFromIdx( idx );
+//
+//     return function ( state, idx ) {
+//         var r = state.items.filter( function ( i ) {
+//             if ( _.startsWith( stringKey, idx ) ) {
+//                 return i;
+//             }
+//             return r[ 0 ];
+//         } )
+//     }
+// }
+
 
 exports.default = {
     actions: actions,
     getters: getters,
     mutations: mutations,
-    state: state
+    state: state,
+    traverseBF: _NodeTools.traverseBF,
+    traverseDF: _NodeTools.traverseDF
 };
 
-},{"../action-types":389,"../mutation-types":409,"lodash":338}],403:[function(require,module,exports){
+},{"../../../../../resources/assets/js/models/NodeTools":387,"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":412,"lodash":338,"vue":347}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75984,7 +76426,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],404:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76123,7 +76565,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Question":387,"../action-types":389,"../mutation-types":409}],405:[function(require,module,exports){
+},{"../../models/Payload":388,"../../models/Question":389,"../action-types":391,"../mutation-types":412}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76192,7 +76634,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],406:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],409:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76312,7 +76754,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../../models/Student":388,"../action-types":389,"../mutation-types":409}],407:[function(require,module,exports){
+},{"../../models/Payload":388,"../../models/Student":390,"../action-types":391,"../mutation-types":412}],410:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76449,7 +76891,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../mutation-types":409}],408:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":412}],411:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76545,7 +76987,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":386,"../action-types":389,"../getter-types":391,"../mutation-types":409}],409:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../getter-types":393,"../mutation-types":412}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76643,7 +77085,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],410:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76677,7 +77119,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":409}],411:[function(require,module,exports){
+},{"./mutation-types":412}],414:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

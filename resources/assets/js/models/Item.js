@@ -21,9 +21,34 @@ export default class Item extends IModel {
         return [].concat( super.fillableProps );
     };
 
+
+    /**
+     * Returns the next serial number.
+     * The first time this is called, it will return 1
+     * The actual value doesn't matter, only its uniqueness.
+     * @returns {number}
+     */
+    static makeSerialNumber(){
+        if(!Item.makeSerialNumber.count) Item.makeSerialNumber.count = 0;
+        Item.makeSerialNumber.count += 1;
+        return Item.makeSerialNumber.count;
+    }
+
+
     constructor() {
 
         super();
+
+        /**
+         * Uniquely identifies the token object.
+         * Objects are immediately put into the map when
+         * created. Thus we need a way of identifying them
+         * before the server returns the new object's id.
+         * This property provides that value.
+         *
+         * @type {number}
+         */
+        this.serialNumber = Item.makeSerialNumber();
 
         this.idxStore = '';
 

@@ -12,6 +12,39 @@ import Comment from  "../../../../resources/assets/js/models/Comment.js" ;
 
 describe(" models.Item | ", function () {
 
+    describe('tests of serial counter', function(){
+        //otherwise the starting count of the serial
+        //will be non-deterministic, since the first
+        //time it is called on this page, it will count 1
+        describe('Serial numbering', function(){
+            it("Items have consecutive serial numbers, starting at 1", function(){
+                let results = [];
+                let number = 10;
+                for(var i=0; i<number; i++){
+                    results.push(new Item());
+                }
+
+                expect(results.length).toBe(number);
+                window.console.log( 'Item.spec', 'results', 39, results);
+                let c = 1;
+                for(let i=0; i<results.length; i++)
+                {
+                    let item = results[i];
+
+                    expect(item instanceof Item).toBe(true);
+                    expect(item.serialNumber).toBe(c);
+                    c +=1;
+                }
+            });
+        });
+
+
+
+    });
+
+    describe('all other tests', function(){
+
+
     beforeEach(function () {
         this.ItemId = faker.random.number();
         this.ItemIndex = faker.random.number();
@@ -131,5 +164,5 @@ describe(" models.Item | ", function () {
     //         //todo
     //     });
     // });
-
+    });
 });

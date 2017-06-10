@@ -23,7 +23,7 @@ let obj = items.default;
 let { getters, actions, mutations } = obj;
 
 
-fdescribe( "store.modules.items.mutations | mutations | ", function () {
+describe( "store.modules.items.mutations | mutations | ", function () {
     beforeEach( function () {
         this.state = makeState();
         this.rootState = makeRootState();

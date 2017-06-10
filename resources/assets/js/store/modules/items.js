@@ -5,31 +5,17 @@ import * as gTypes from '../../store/getter-types'
 import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
+import Node from '../../models/Node'
+import {traverseDF} from '../../models/NodeTools'
 
 const Vue = require( 'vue' );
-
 const _ = window._ = require( 'lodash' );
 
 
+import objGetters from './items.getters'
+import Orderings from './orderings'
+
 const standardTimeout = 1000;
-
-const buildKey = ( idx ) => {
-    var k = '';
-    for (var i = 0; i < idx.length; i++) {
-        k += idx[ i ];
-        if ( i <= idx.length - 2 ) {
-            k += '-';
-        }
-    }
-    return k;
-};
-
-const isItemsEmpty = ( state ) => {
-    if ( state.items.length > 0 ) {
-        return false;
-    }
-    return true;
-};
 
 const helpers = {
     getItemFromPayload( state, payload ){
@@ -88,7 +74,7 @@ const buildPayloadFromInput = ( state, rootState, payload ) => {
  * To maintain compatibility, indexMap holds a mapping from the old
  * ItemIndex to the database id
  */
-const state = {
+const state_obj = {
 
     /**
      * This holds the current item objects.
@@ -109,250 +95,92 @@ const state = {
     orderMap: {}
 };
 
+const state = Object.assign({}, state_obj, Orderings.state);
 
 
-const getters = {
+/**
+ * The make use of both the item object store
+ * and the order mapping
+ *
+ * @type {{getSortedIds: ((p1:*, p2?:*))}}
+ */
+const getters_orig = {
+    /**
+     * This takes the map of serial numbers in which
+     * the ordering is represented and returns a map
+     * with ids.
+     * The resulting map is used to, inter alia, sync with
+     * the server
+     * @param state
+     * @param getters
+     */
     getSortedIds: ( state, getters ) => {
-        let ids = [];
-        if ( state.items.length > 0 ) {
-            state.items.forEach( ( i ) => {
-                ids.push( i.id );
-            } );
-        }
-        return ids;
-    },
-    // getMappedItem : (state, getters) => (payload)=>{
-    //
-    //     let key = buildKey(idx);
-    //     return state.orderMap[key];
-    // },
+        window.console.log( 'items', 'getSortedIds', 102, getters );
+        //get the serial number map
+        //we explicitly use the getter rather than
+        //just looking in the state because this
+        //may well evolve to a different storage
+        //behind the scenes
+        //We begin by making a copy because we will
+        //be altering the data stored
+        let map = getters[ gTypes.getItemMapCopy ](state, getters);
+        window.console.log( 'items', 'getSortedIds', 124, 'map', map);
+        let updater = function(currentNode){
+            //Look up the id
+            let isn = currentNode.data;
 
-    /**
-     * Returns the desired Item object
-     * Payload can have any of the following identifiers,
-     * used in descending order:
-     *      ItemId,
-     *      ItemIndex
-     *      todo Add others
-     * @param state
-     * @param getters
-     * @param payload Object containing Item identifier
-     */
-    getItem: ( state, getters ) => ( payload ) => {
-        // [gTypes.getItem ]: ( state, getters, payload ) => {
-        // console.log('getItem', state, payload);
-        if ( isItemsEmpty( state ) ) return false;
-        if ( Payload.checkIfPayload( payload ) ) {
-            let { index, id } = payload;
-            if ( typeof index !== 'undefined' ) {
-                return getters.getItemByIndex( state, getters, index );
+            //ignore the exam
+            if (isn === 0) return true;
+
+            let item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
+            window.console.log( 'items', 'updater isn item', 144, isn, item);
+            if(! _.isUndefined(item)){
+                //we don't check if id is defined.
+                //should we????
+                currentNode.data = item.id;
+                currentNode.dataType = 'id';
+                window.console.log( 'items', 'recurse', 150, currentNode);
             }
-            if ( typeof id !== 'undefined' ) {
-                return getters.getItemById( state, getters, id );
+        };
+
+        // map = traverseDF(map, updater);
+        // window.console.log( 'items', 'getSortedIds', 123, map);
+        // //transform to ids
+        //map is the exam represented as a Node object
+        // Doing this depth first
+        // this is a recurse and immediately-invoking function
+        (function recurse( currentNode ) {
+            // window.console.log( 'items', 'recurse', 129, currentNode);
+             // step 2
+            for (var i = 0; i<currentNode.children.length; i++) {
+                // step 3
+                recurse( currentNode.children[ i ] );
             }
-        }
-    },
-
-
-    /**
-     * Returns the item object residing at the
-     * given index in the list.
-     * This does not guarantee
-     * that the item.index property will equal the
-     * list index. That could happen if updateOrder has not
-     * yet run.
-     * @param state
-     * @param getters
-     * @param index
-     */
-    getItemByIndex: ( state, getters ) => ( index ) => {
-        //remove the payload wrapper if necessary
-        if ( Payload.checkIfPayload( index ) ) {
-            index = index.index;
-        }
-
-        //if this is a single member array, we can treat
-        //it like a numeric input under the older system
-        if ( _.isArray( index ) && index.length === 1 ) {
-            index = index[ 0 ];
-        }
-
-        //Now we're ready to deal with the input
-        return function ( state, index ) {
-            //There are two cases to consider
-            //We deal first with the easy case in which the index
-            //is a number or string representation of a number
-            //and not a composite
-            if ( !_.isArray( index ) ) {
-                //if was just a string or integer this is fine
-                //also if the input was an array with only one item
-                var r = state.items.filter( function ( i ) {
-                    if ( i.index === index ) {
-                        return i;
-                    }
-                } );
-                return r[ 0 ];
-            }
-
-            else {
-                //we need to do something different
-                //because it is an array
-                if ( _.isArray( index ) ) {
-                    let idx = index.join( '-' );
-                }
-
-            }
-
-        }( state, index );
-
-    },
-
-    /**
-     * Returns the item object with the given id.
-     * This is the preferred way of looking up objects.
-     * It is immutable across re-sorting and corresponds with
-     * the stored db value.
-     * Getting an object by this does not guarantee
-     * that the item.index property will equal the
-     * list index. That could happen if updateOrder has not
-     * yet run.
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param index
-     */
-    getItemById: ( state, getters ) => ( id ) => {
-        // [gTypes.getItemById]: ( state, getters ) => ( id ) => {
-        // console.log('getItemById', state, id);
-        return function ( state, id ) {
-            var r = state.items.filter( function ( i ) {
-                if ( i.id === id ) {
-                    return i;
-                }
-            } );
-            return r[ 0 ];
-        }( state, id )
-
-    },
-
-
-    /**
-     * Returns all stored item objects in whatever
-     * data structure is housing them.
-     * Note: because of adam's flakiness on committing to
-     * a data structure, this may not be stable in its output
-     * @param state
-     * @param getters
-     * @param rootState
-     * @returns []
-     */
-    getAllItems: ( state, getters, rootState ) => {
-        // [gTypes.getAllItems] : ( state, getters, rootState ) => {
-        return state.items;
-    },
-
-    getSortedItems: ( state ) => {
-
-    },
-
-    /**
-     * This returns the indexes stored in each item in a list.
-     * NB, these may not correspond with the index of each item's location in state.items
-     * To retrieve the indexes of state.items list holding items, use getAllIndexesList
-     * @param state
-     * @param getters
-     * @param rootState
-     */
-    getAllItemIndexes: ( state, getters, rootState ) => {
-        let out = [];
-        for (let item in state.items) {
-            out.push( item.index );
-        }
-        return out;
-    },
-
-    /**
-     * Returns the list indexes of the items in state.items
-     * NB, This does not return the indexes which are stored in each
-     * item. That is retrieved via getAllItemIndexes
-     * @param state
-     * @param getters
-     * @param rootState
-     * @returns {Array}
-     */
-    getAllIndexesList: ( state, getters, rootState ) => {
-        if ( isItemsEmpty( state ) ) return []
-        // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
-
-        let out = [];
-        for (let [ key, val ] of state.items) {
-            out.push( key );
-        }
-        return out;
-
-        //Leaving this here, in case someday we go back to items being an object
-        // return Object.keys( state.items )
-    },
-
-
-    /**
-     * Return list of Item objects
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns []
-     */
-    getAllItemsList: ( state, getters ) => ( items ) => {
-
-        // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
-        let out = [];
-        // if ( state.items.size > 0 ) {
-        for (let [ key, val ] of items) {
-            // for ( let [ key, val ] of state.items.entries() ) {
-            // console.log( 'getAllItemsList', key, val );
-            out.push( val );
-        }
-        // }
-        return out;
-    },
-
-    /**
-     * Returns the current count of items
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns {Number}
-     */
-    getItemCount: ( state, getters ) => {
-        // [gTypes.getItemCount]: ( state, getters ) => {
-        return state.items.length;
-    },
-
-    /**
-     * Returns the current maximum index value from
-     * the stored items
-     * @param state
-     * @param getters
-     */
-    getMaxIndexValue: ( state, getters ) => {
-
-    },
-
-    getNextIndex: ( state, getters ) => {
-        return _.sortedIndex( state.items );
-
-    },
-
-    /**
-     * Poorly named shortcut for getting the currently active exam.
-     * @param state
-     */
-    currentExam: ( state ) => {
-        return state.items[ 0 ];
+            window.console.log( 'items', 'recurse', 153, currentNode);
+            // step 4
+            updater(currentNode);
+            // //Look up the id
+            // let isn = currentNode.data;
+            //
+            // let item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
+            // window.console.log( 'items', 'isn item', 144, isn, item);
+            // if(! _.isUndefined(item)){
+            //     //we don't check if id is defined.
+            //     //should we????
+            //     currentNode.data = item.id;
+            //     currentNode.dataType = 'id';
+            //     window.console.log( 'items', 'recurse', 150, currentNode);
+            // }
+            //pass in the map object to the self-executing function
+        })( map );
+return map;
     }
-
-
 };
+
+const getters = Object.assign( {}, getters_orig, objGetters, Orderings.getters ); //, ...g};
+
+window.console.log( 'items', 'getters', 112, getters );
+// };
 
 const actions = require( './items.actions' );
 
