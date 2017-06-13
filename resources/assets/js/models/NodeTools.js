@@ -2,6 +2,11 @@
  * Created by adam on 6/9/17.
  */
 
+// import IModel from './IModel';
+import Item from './Item';
+import Node from './Node';
+import Payload from './Payload';
+
 export const traverseDF = ( root, callback ) => {
     let stillLooking = true;
 
@@ -47,3 +52,28 @@ export const traverseBF = ( root, callback ) => {
         currentTree = queue.pop();
     }
 };
+
+/**
+ * Returns the serial number stored in a Node, Item, Payload,
+ * or just straight number
+ * @param serialNumberStoringThing
+ * @returns {*}
+ */
+export const getSerialNumber = ( serialNumberStoringThing ) => {
+    switch ( serialNumberStoringThing ) {
+        case  serialNumberStoringThing instanceof Node:
+            return serialNumberStoringThing.data;
+            break;
+        case serialNumberStoringThing instanceof Item:
+            return serialNumberStoringThing.serialNumber;
+            break;
+        case serialNumberStoringThing instanceof Payload:
+            return serialNumberStoringThing.serialNumber;
+            break
+        case serialNumberStoringThing instanceof Number:
+            return serialNumberStoringThing;
+        default:
+            return null;
+    }
+};
+

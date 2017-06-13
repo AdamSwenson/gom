@@ -89,6 +89,16 @@ export const getAllItemsList = 'getAllItemsList'
 export const getSortedIds = 'getSortedIds'
 
 /**
+ * Returns a node from the itemMap by serial number
+ * @type {string}
+ */
+export const getItemNodeFromOrder = 'getItemNodeFromOrder'
+
+
+export const getHeightOfNode = 'getHeightOfNode';
+export const getDepthOfNode = 'getDepthOfNode';
+
+/**
  * Returns a copy of the itemMap.
  * The copy shouldn't be reactive.
  * This will be a Node instance representing

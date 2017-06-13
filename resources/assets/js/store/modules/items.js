@@ -12,8 +12,8 @@ const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
 
 
-import objGetters from './items.getters'
-import Orderings from './orderings'
+import objGetters from './items.obj.getters'
+import Orderings from './items.order'
 
 const standardTimeout = 1000;
 
@@ -114,7 +114,7 @@ const getters_both = {
      * @param state
      * @param getters
      */
-    getSortedIds: ( state, getters ) => {
+    [gTypes.getSortedIds]: ( state, getters ) => {
         //get the serial number map
         //we explicitly use the getter rather than
         //just looking in the state because this
@@ -155,7 +155,7 @@ const getters_both = {
                 // step 3
                 recurse( currentNode.children[ i ] );
             }
-            window.console.log( 'items', 'recurse', 153, currentNode );
+            // window.console.log( 'items', 'recurse', 153, currentNode );
             // step 4
             updater( currentNode );
         })( map );
@@ -168,9 +168,9 @@ const getters = Object.assign( {}, getters_both, objGetters, Orderings.getters )
 window.console.log( 'items', 'getters', 112, getters );
 // };
 
-const actions = require( './items.actions' );
+const actions = require( './items.obj.actions' );
 
-const mutations = require( './items.mutations' );
+const mutations = require( './items.obj.mutations' );
 
 export default {
     actions,

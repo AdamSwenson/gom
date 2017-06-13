@@ -34,55 +34,7 @@ let getItemFromList = ( orderList, idx ) => {
 };
 
 
-import {traverseDF, traverseBF} from '../../../../../resources/assets/js/models/NodeTools'
-
-
-
-// const traverseDF = ( root, callback ) => {
-//     let stillLooking = true;
-//
-//     // this is a recurse and immediately-invoking function
-//     (function recurse( currentNode ) {
-//         // while(stillLooking) {
-//         // step 2
-//         for (var i = 0, length = currentNode.children.length; i < length; i++) {
-//             if ( callback( currentNode ) ) {
-//                 return currentNode;
-//             } else {
-//
-//                 // step 3
-//                 recurse( currentNode.children[ i ] );
-//             }
-//
-//         }
-//         // }
-//         // window.console.log( 'orderings', 'recurse', 47, callback(currentNode));
-//         // step 4
-//         if ( callback( currentNode ) ) {
-//             // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
-//             stillLooking = false;
-//             return currentNode;
-//         }
-//
-//         // step 1
-//     })( root );
-//
-// };
-
-// const traverseBF = ( root, callback ) => {
-//     var queue = [];
-//     queue.push( root );
-//     let currentTree = queue.pop();
-//
-//     while (currentTree) {
-//         for (var i = 0, length = currentTree.children.length; i < length; i++) {
-//             queue.push( currentTree.children[ i ] );
-//         }
-//
-//         callback( currentTree );
-//         currentTree = queue.pop();
-//     }
-// };
+import {traverseDF, traverseBF, getSerialNumber } from '../../../../../resources/assets/js/models/NodeTools'
 
 
 const state = {
@@ -127,114 +79,124 @@ const state = {
 };
 
 const mutations = {
-    add: ( state, payload ) => {
-        //we will have to find the parent
-        //then add the new node to its children
+        insert: ( state, payload ) => {
+            let { index, obj, parent } = payload;
 
-        let { parent, obj } = payload;
-        let { serialNumber } = obj;
+            //type check
+            if ( !parent instanceof Node ) return false;
+            if ( !obj instanceof Node ) return false;
 
-        let n = new Node( serialNumber, parent.serialNumber );
+            //if an index was specified, splice it in at the index
+            if ( !_.isUndefined( index ) ) {
+                return parent.children.splice( index, 0, obj );
+            }
+            //otherwise just push it on the end
+            return parent.children.push( obj );
 
-        if ( state.itemMap.data === parent.serialNumber ) {
-            state.itemMap.children.push( n );
-        } else {
-
-
-            state.itemMap.children.filter( function ( node ) {
-                if ( node.serialNumber === parent.SerialNumber ) {
-                    node.children.push( n );
-                    return true;
-                }
-            } );
-        }
-        //
-        //
-        // if ( !_.isUndefined( index ) ) {
-        //     //we are supposed to put the item
-        //     //in a particular location
-        //     state.itemMap.children[ index ] = n;
-        // } else {
-        //     //we are supposed to append it on the
-        //     //last item or somehow devine location
-        // }
-
-    },
+        },
 
 
-    remove: ( state, payload ) => {
-        let { toRemove, parent } = payload;
-        //Merge its children into its parent's children
-        parent.children.concat( toRemove.children );
-        //delete the node
-        toRemove.destroy();
+        remove: ( state, payload ) => {
+            let { obj, parent } = payload;
+            //Merge its children into its parent's children
+            parent.children.concat( obj.children );
+            //delete the node
+            let idx = parent.children.indexOf( obj );
+            parent.children.splice( idx, 1 );
+        },
 
-    },
+        /*
+         // addMappedItem: ( state, idx, toAdd ) => {
+         //     state.orderMap.set( idx, toAdd );
+         // },
 
+         //these should probably be methods on node
+         //or maybe not since that would make it harder
+         //to remove a child without also removing its
+         //children (if we want that to be an option)
+         //         addChild: ( state, idx, idToAdd ) => {
+         //             let child = [ idToAdd, [] ];
+         //             let itm = orderList[ 0 ];
+         //             //idx is a tuple stored as an array
+         //             for (let i = 0; i < idx.length; i++) {
+         //                 itm = itm[ 1 ][ i ]
+         //             }
+         //             let children = itm[ 1 ];
+         //             children.push( child );
+         //             Vue.set( itm, 1, children );
+         //             //
+         //             //
+         //             // let item = getItemFromList(state.orderList,  idx);
+         //             // if (! _.isEmpty(item)){
+         //             //     let maxIndex = _.last( Object.keys(item.children));
+         //             //     item.children
+         //             // }
+         //
+         //             // let item = getItemFromOrder(state.order,  idx);
+         // // if (! _.isEmpty(item)){
+         // //     let maxIndex = _.last( Object.keys(item.children));
+         // //     item.children
+         // // }
+         //
+         //         },
+         //
+         //         addParent: ( state, existing, toAdd ) => {
+         //
+         //         //
+         //         },
+         // addOlderSibling: ( state, existing, toAdd ) => {
+         // },
+         // addYoungerSibling: ( state, existing, toAdd ) => {
+         // },
+         */
+//
+    }
+;
 
-    addMappedItem: ( state, idx, toAdd ) => {
-        state.orderMap.set( idx, toAdd );
-    },
-
-    addChild: ( state, idx, idToAdd ) => {
-        let child = [ idToAdd, [] ];
-        let itm = orderList[ 0 ];
-        //idx is a tuple stored as an array
-        for (let i = 0; i < idx.length; i++) {
-            itm = itm[ 1 ][ i ]
-        }
-        let children = itm[ 1 ];
-        children.push( child );
-        Vue.set( itm, 1, children );
-        //
-        //
-        // let item = getItemFromList(state.orderList,  idx);
-        // if (! _.isEmpty(item)){
-        //     let maxIndex = _.last( Object.keys(item.children));
-        //     item.children
-        // }
-
-        // let item = getItemFromOrder(state.order,  idx);
-// if (! _.isEmpty(item)){
-//     let maxIndex = _.last( Object.keys(item.children));
-//     item.children
-// }
-
-    },
-
-    addParent: ( state, existing, toAdd ) => {
-
-
-    },
-    addOlderSibling: ( state, existing, toAdd ) => {
-    },
-    addYoungerSibling: ( state, existing, toAdd ) => {
-    },
-
-    //
-};
-
+/**
+ * Only these can call the mutations.
+ * That is, no external method should call a mutation.
+ * Thus there needs to be at least one action  for each mutation.
+ *
+ * Since most of this will require at least
+ * two steps (find the item in the tree, update it, etc),
+ * The mutations will receive the parent node and
+ * new child node (or node to be removed, etc).
+ *
+ * @type {{}}
+ */
 const actions = {
 
-    //only these can call the mutations.
-    //so there needs to be one for each mutation
 
+    [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
+        let { index, obj, id, parent } = payload;
 
-    addItem: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index, obj } = payload;
-        let { serialNumber } = obj;
-        let n = new Node( serialNumber );
-        if ( !_.isUndefined( index ) ) {
-            //we are supposed to put the item
-            //in a particular location
-            state.itemMap.children[ index ] = n;
-        } else {
-            //we are supposed to append it on the
-            //last item or somehow devine location
+        //Sort out whether obj and parent are nodes or items
+        let toAddSerialNumber = getSerialNumber(obj);
+        let parentSerialNumber = getSerialNumber(parent)
+            let n = new Node(toAddSerialNumber, parentSerialNumber );
+
+        let f = function ( currentNode ) {
+            if ( currentNode.data === parentSerialNumber ) {
+                let pl = Payload.factory( { index: index, obj: n, parent: currentNode } );
+
+                commit( 'insert', pl );
+                return false;
+            }
+            return true;
         }
 
+        traverseDF( state.itemMap, f );
+
     },
-    removeItem: ( { state, dispatch, commit, getters }, payload ) => {
+
+    [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
+        let {serialNumber} = payload;
+        // let  serialNumber = getSerialNumber(payload);
+        let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
+        let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
+        let pl = Payload.factory( { obj: toRemove, parent: parent } );
+        commit( 'remove', pl );
     },
 
 };
@@ -248,11 +210,11 @@ const getters = {
      * @param getters
      * @returns {Node}
      */
-    [gTypes.getItemMapCopy]: (state, getters)=>{
-        return Object.assign(new Node(), state.itemMap);// ['parent','data', 'dataType', 'children']);
+    [gTypes.getItemMapCopy]: ( state, getters ) => {
+        return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
     },
 
-    getItemNodeFromOrder: ( state, getters, serialNumber ) => {
+    [gTypes.getItemNodeFromOrder]: ( state, getters, serialNumber ) => {
         return (function ( state, serialNumber ) {
             let callback = function ( node ) {
                 if ( !callback.found ) callback.found = [];
@@ -268,7 +230,53 @@ const getters = {
             let result = callback.found[ 0 ];
             return result;
         })( state, serialNumber )
+    },
+
+    /**
+     * Find the number of parents the node has
+     * @param state
+     * @param getters
+     * @param serialNumber
+     */
+    [gTypes.getHeightOfNode]: ( state, getters, serialNumber ) => {
+        let level = 0;
+
+        return (function recurse( serialNumber ) {
+            // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
+            //look up the node whose serial number we've just  been handed.
+            let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
+            //break condition is that we've hit the exam
+            //which is of course the only item which is its
+            //own parent
+            if (node.parent === node.data) return level;
+            //Otherwise, increment the level counter
+            // and re-run on the parent
+            level += 1;
+            return recurse(node.parent);
+        })( serialNumber );
+    },
+
+
+
+    /**
+     * Find the index position of the node in its parent's children array
+     * @param state
+     * @param getters
+     * @param serialNumber
+     */
+    [gTypes.getDepthOfNode]: ( state, getters, serialNumber ) => {
+        //look up the node whose serial number we've just  been handed.
+        let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
+        let parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
+        if(parent){
+            for(let index=0; index<parent.children.length; index++){
+                if(parent.children[index] === node){
+                    return index;
+                }
+            }
+        }
     }
+
 
 
 };

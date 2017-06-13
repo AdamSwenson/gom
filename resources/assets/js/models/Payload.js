@@ -35,6 +35,8 @@ export default class Payload {
         this.str;
         this.index;
 
+        this.serialNumber;
+
         /** The name of the property to update */
         this.updateProp;
         /** The new value to set the property in updateProp */
@@ -45,6 +47,22 @@ export default class Payload {
 
         this._successCallback;
 
+    }
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'callback',
+            'id', 'index',
+            'num', 'obj', 'parent',
+            'serialNumber', 'str', 'stamp',
+            'updateProp', 'updateVal',
+            'updateValence',
+        ];
     }
 
     get callback(){
@@ -142,16 +160,7 @@ export default class Payload {
     //     this._str = v;
     // }
 
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        return [
-            'id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence', 'callback'
-        ];
-    }
+
 
     static get aliasMap() {
         return {

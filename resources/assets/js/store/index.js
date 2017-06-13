@@ -55,7 +55,7 @@ import settings from './modules/settings'
 import times from './modules/times.js'
 
 import visibility from './modules/visibility'
-import orderings from './modules/orderings';
+import orderings from './modules/items.order';
 
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'

@@ -51,6 +51,22 @@ export default class Node {
         }
         return false;
     }
+
+
+    addChild(node, loc=null){
+        //set self as child's parent
+        node.parent = this.data;
+        //if loc is set, we are to splice it in
+        //at a particular location.
+        if(loc){
+
+        }else{
+            //just push child into children array at end
+            this.children.push(node);
+        }
+    }
+
+
 }
 
 

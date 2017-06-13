@@ -153,12 +153,12 @@ fdescribe( "store.modules.items | ", function () {
 
         describe( 'getSortedIds | ', function () {
             beforeEach( function () {
-                let numItems = 5;
+                this.numItems = 5;
                 this.expectedIds = [];
                 this.state.itemMap = new Node( 0, 0 ) ;
-                addNodes( this.state.itemMap, numItems );
+                addNodes( this.state.itemMap, this.numItems );
                 for (let n of this.state.itemMap.children) {
-                    addNodes( n, numItems );
+                    addNodes( n, this.numItems );
                 }
 
                 let serialNumbers = addNodes.isns;
@@ -176,19 +176,34 @@ fdescribe( "store.modules.items | ", function () {
 
             it( "happy path ", function () {
                 window.console.log( 'items.spec', 'state', 275, this.state );
-                let result = getters['getSortedIds'](this.state, getters);
-
-                let tester = (currentNode) => {
+                let result = getters[gTypes.getSortedIds](this.state, getters);
+var expectedIds = this.expectedIds;
+                let tester = function(currentNode) {
+                    // window.console.log( 'items.spec', 'tester', 182, currentNode);
                     //ignore the exam
                     if (currentNode.data === 0) return true;
 
+                    //Check the type and that the id is one of the expected
                     expect(currentNode.dataType).toBe('id');
-                    expect(this.expectedIds.includes(currentNode.data)).toBe(true);
+                    expect(expectedIds.includes(currentNode.data)).toBe(true);
                     // window.console.log( 'items.spec', 'tester', 188, 'tested', currentNode);
+                    //Check that the order is as expected
+                    let nodeId = currentNode.data;
+                    return true;
                 };
 
-                traverseDF(result, tester);
-
+                //Check that received the exam
+                expect(result instanceof Node).toBe(true);
+                expect(result.data).toBe(0);
+                expect(result.children.length).toBe(this.numItems);
+                // window.console.log( 'items.spec', 'result ----', 197, result );
+                //check the children
+                (function recurse( currentNode ) {
+                    for (var i = 0, length = currentNode.children.length; i < length; i++) {
+                            recurse( currentNode.children[ i ] );
+                    }
+                    tester(currentNode);
+                 })( result );
             } );
         } );
 
