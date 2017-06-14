@@ -79,6 +79,9 @@ export const addItemIndexMapping = 'addItemIndexMapping';
 export const loadItems = 'loadItems';
 export const updateOrder = 'updateOrder';
 
+//item.order
+export const insertNodeIntoOrder = 'insertNodeIntoOrder';
+export const removeNodeFromOrder = 'removeNodeFromOrder';
 
 export const updateItemName = 'updateItemName';
 export const updateItem = 'updateItem';

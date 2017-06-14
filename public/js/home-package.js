@@ -18278,7 +18278,7 @@ var vFor = {
    * @param {Boolean} inDocument
    */
 
-  insert: function insert(frag, index, prevEl, inDocument) {
+  insertNodeIntoOrder: function insert( frag, index, prevEl, inDocument) {
     if (frag.staggerCb) {
       frag.staggerCb.cancel();
       frag.staggerCb = null;
@@ -18647,7 +18647,7 @@ var vIf = {
     }
   },
 
-  insert: function insert() {
+  insertNodeIntoOrder: function insert() {
     if (this.elseFrag) {
       this.elseFrag.remove();
       this.elseFrag = null;
@@ -23615,11 +23615,11 @@ var partial = {
     this.insert(this.params.name);
   },
 
-  insert: function insert(id) {
+  insertNodeIntoOrder: function insert( id) {
     var partial = resolveAsset(this.vm.$options, 'partials', id, true);
     if (partial) {
       this.factory = new FragmentFactory(this.vm, partial);
-      vIf.insert.call(this);
+      vIf.insertNodeIntoOrder.call(this);
     }
   },
 

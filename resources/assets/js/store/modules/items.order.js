@@ -14,6 +14,11 @@ import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
 
+import * as orderMutations from './items.order.mutations'
+import * as orderActions from './items.order.actions'
+import * as orderGetters from './items.order.getters'
+import * as orderState from './items.order.state'
+
 
 let getItemFromOrder = ( order, idx ) => {
     let itm = order[ 0 ];
@@ -37,121 +42,124 @@ let getItemFromList = ( orderList, idx ) => {
 import {traverseDF, traverseBF, getSerialNumber } from '../../../../../resources/assets/js/models/NodeTools'
 
 
-const state = {
-    itemMap: new Node( 0, 0 ),
-
-    /*
-     * What we want to have is the ability to store nested
-     * tuples which map the item to a position on an exam
-     * (which is itself formally an item).
-     * order : {
-     *      0 : {
-     *          id: null,
-     *          children: {
-     *              0 : {
-     *                      id: null.
-     *                      children: {}
-     *                 }
-     *          }
-     *      }
-     }
-     *
-     * */
-    //the first value in the array is the item's id
-    //the second value is an array of children
-    // orderMap: new Map(),
-    // orderList: [],
-    //
-    // order: {
-    //     0: {
-    //         id: null,
-    //         children: {
-    //             0: {
-    //                 id: null,
-    //                 children: {}
-    //             }
-    //         }
-    //     }
-    // }
-    // orderMap: new Map(),
-    // order: {}
-
-};
-
-const mutations = {
-        insert: ( state, payload ) => {
-            let { index, obj, parent } = payload;
-
-            //type check
-            if ( !parent instanceof Node ) return false;
-            if ( !obj instanceof Node ) return false;
-
-            //if an index was specified, splice it in at the index
-            if ( !_.isUndefined( index ) ) {
-                return parent.children.splice( index, 0, obj );
-            }
-            //otherwise just push it on the end
-            return parent.children.push( obj );
-
-        },
-
-
-        remove: ( state, payload ) => {
-            let { obj, parent } = payload;
-            //Merge its children into its parent's children
-            parent.children.concat( obj.children );
-            //delete the node
-            let idx = parent.children.indexOf( obj );
-            parent.children.splice( idx, 1 );
-        },
-
-        /*
-         // addMappedItem: ( state, idx, toAdd ) => {
-         //     state.orderMap.set( idx, toAdd );
-         // },
-
-         //these should probably be methods on node
-         //or maybe not since that would make it harder
-         //to remove a child without also removing its
-         //children (if we want that to be an option)
-         //         addChild: ( state, idx, idToAdd ) => {
-         //             let child = [ idToAdd, [] ];
-         //             let itm = orderList[ 0 ];
-         //             //idx is a tuple stored as an array
-         //             for (let i = 0; i < idx.length; i++) {
-         //                 itm = itm[ 1 ][ i ]
-         //             }
-         //             let children = itm[ 1 ];
-         //             children.push( child );
-         //             Vue.set( itm, 1, children );
-         //             //
-         //             //
-         //             // let item = getItemFromList(state.orderList,  idx);
-         //             // if (! _.isEmpty(item)){
-         //             //     let maxIndex = _.last( Object.keys(item.children));
-         //             //     item.children
-         //             // }
-         //
-         //             // let item = getItemFromOrder(state.order,  idx);
-         // // if (! _.isEmpty(item)){
-         // //     let maxIndex = _.last( Object.keys(item.children));
-         // //     item.children
-         // // }
-         //
-         //         },
-         //
-         //         addParent: ( state, existing, toAdd ) => {
-         //
-         //         //
-         //         },
-         // addOlderSibling: ( state, existing, toAdd ) => {
-         // },
-         // addYoungerSibling: ( state, existing, toAdd ) => {
-         // },
-         */
+const state = orderState;
+// {
+//     itemMap: new Node( 0, 0 ),
 //
-    }
-;
+//     /*
+//      * What we want to have is the ability to store nested
+//      * tuples which map the item to a position on an exam
+//      * (which is itself formally an item).
+//      * order : {
+//      *      0 : {
+//      *          id: null,
+//      *          children: {
+//      *              0 : {
+//      *                      id: null.
+//      *                      children: {}
+//      *                 }
+//      *          }
+//      *      }
+//      }
+//      *
+//      * */
+//     //the first value in the array is the item's id
+//     //the second value is an array of children
+//     // orderMap: new Map(),
+//     // orderList: [],
+//     //
+//     // order: {
+//     //     0: {
+//     //         id: null,
+//     //         children: {
+//     //             0: {
+//     //                 id: null,
+//     //                 children: {}
+//     //             }
+//     //         }
+//     //     }
+//     // }
+//     // orderMap: new Map(),
+//     // order: {}
+//
+// };
+
+const mutations = orderMutations;
+
+// {
+//         insert: ( state, payload ) => {
+//             let { index, obj, parent } = payload;
+//
+//             //type check
+//             if ( !parent instanceof Node ) return false;
+//             if ( !obj instanceof Node ) return false;
+//
+//             //if an index was specified, splice it in at the index
+//             if ( !_.isUndefined( index ) ) {
+//                 return parent.children.splice( index, 0, obj );
+//             }
+//             //otherwise just push it on the end
+//             return parent.children.push( obj );
+//
+//         },
+//
+//
+//         remove: ( state, payload ) => {
+//             let { obj, parent } = payload;
+//             //Merge its children into its parent's children
+//             parent.children.concat( obj.children );
+//             //delete the node
+//             let idx = parent.children.indexOf( obj );
+//             parent.children.splice( idx, 1 );
+//         },
+//
+//         /*
+//          // addMappedItem: ( state, idx, toAdd ) => {
+//          //     state.orderMap.set( idx, toAdd );
+//          // },
+//
+//          //these should probably be methods on node
+//          //or maybe not since that would make it harder
+//          //to remove a child without also removing its
+//          //children (if we want that to be an option)
+//          //         addChild: ( state, idx, idToAdd ) => {
+//          //             let child = [ idToAdd, [] ];
+//          //             let itm = orderList[ 0 ];
+//          //             //idx is a tuple stored as an array
+//          //             for (let i = 0; i < idx.length; i++) {
+//          //                 itm = itm[ 1 ][ i ]
+//          //             }
+//          //             let children = itm[ 1 ];
+//          //             children.push( child );
+//          //             Vue.set( itm, 1, children );
+//          //             //
+//          //             //
+//          //             // let item = getItemFromList(state.orderList,  idx);
+//          //             // if (! _.isEmpty(item)){
+//          //             //     let maxIndex = _.last( Object.keys(item.children));
+//          //             //     item.children
+//          //             // }
+//          //
+//          //             // let item = getItemFromOrder(state.order,  idx);
+//          // // if (! _.isEmpty(item)){
+//          // //     let maxIndex = _.last( Object.keys(item.children));
+//          // //     item.children
+//          // // }
+//          //
+//          //         },
+//          //
+//          //         addParent: ( state, existing, toAdd ) => {
+//          //
+//          //         //
+//          //         },
+//          // addOlderSibling: ( state, existing, toAdd ) => {
+//          // },
+//          // addYoungerSibling: ( state, existing, toAdd ) => {
+//          // },
+//          */
+// //
+//     }
+// ;
 
 /**
  * Only these can call the mutations.
@@ -165,164 +173,119 @@ const mutations = {
  *
  * @type {{}}
  */
-const actions = {
-
-
-    [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index, obj, id, parent } = payload;
-
-        //Sort out whether obj and parent are nodes or items
-        let toAddSerialNumber = getSerialNumber(obj);
-        let parentSerialNumber = getSerialNumber(parent)
-            let n = new Node(toAddSerialNumber, parentSerialNumber );
-
-        let f = function ( currentNode ) {
-            if ( currentNode.data === parentSerialNumber ) {
-                let pl = Payload.factory( { index: index, obj: n, parent: currentNode } );
-
-                commit( 'insert', pl );
-                return false;
-            }
-            return true;
-        }
-
-        traverseDF( state.itemMap, f );
-
-    },
-
-    [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-        let {serialNumber} = payload;
-        // let  serialNumber = getSerialNumber(payload);
-        let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-        let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
-        let pl = Payload.factory( { obj: toRemove, parent: parent } );
-        commit( 'remove', pl );
-    },
-
-};
-
-const getters = {
-
-    /**
-     * Returns the children array of
-     * the exam stored as itemMap. It includes the exam
-     * @param state
-     * @param getters
-     * @returns {Node}
-     */
-    [gTypes.getItemMapCopy]: ( state, getters ) => {
-        return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
-    },
-
-    [gTypes.getItemNodeFromOrder]: ( state, getters, serialNumber ) => {
-        return (function ( state, serialNumber ) {
-            let callback = function ( node ) {
-                if ( !callback.found ) callback.found = [];
-                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-                if ( node.data === serialNumber ) {
-                    callback.found.push( node );
-                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-                    return true;
-                }
-                return false;
-            };
-            traverseBF( state.itemMap, callback );
-            let result = callback.found[ 0 ];
-            return result;
-        })( state, serialNumber )
-    },
-
-    /**
-     * Find the number of parents the node has
-     * @param state
-     * @param getters
-     * @param serialNumber
-     */
-    [gTypes.getHeightOfNode]: ( state, getters, serialNumber ) => {
-        let level = 0;
-
-        return (function recurse( serialNumber ) {
-            // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-            //look up the node whose serial number we've just  been handed.
-            let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-            //break condition is that we've hit the exam
-            //which is of course the only item which is its
-            //own parent
-            if (node.parent === node.data) return level;
-            //Otherwise, increment the level counter
-            // and re-run on the parent
-            level += 1;
-            return recurse(node.parent);
-        })( serialNumber );
-    },
-
-
-
-    /**
-     * Find the index position of the node in its parent's children array
-     * @param state
-     * @param getters
-     * @param serialNumber
-     */
-    [gTypes.getDepthOfNode]: ( state, getters, serialNumber ) => {
-        //look up the node whose serial number we've just  been handed.
-        let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-        let parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
-        if(parent){
-            for(let index=0; index<parent.children.length; index++){
-                if(parent.children[index] === node){
-                    return index;
-                }
-            }
-        }
-    }
-
-
-
-};
-
-
-//     return function ( state, serialNumber ) {
-//         var r = state.itemMap.children.filter( function ( i ) {
-//             if ( i.data === serialNumber ) {
-//                 return i;
+const actions = orderActions;
+// {
+//
+//     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
+//         let { index, obj, id, parent } = payload;
+//
+//         //Sort out whether obj and parent are nodes or items
+//         let toAddSerialNumber = getSerialNumber(obj);
+//         let parentSerialNumber = getSerialNumber(parent)
+//             let n = new Node(toAddSerialNumber, parentSerialNumber );
+//
+//         let f = function ( currentNode ) {
+//             if ( currentNode.data === parentSerialNumber ) {
+//                 let pl = Payload.factory( { index: index, obj: n, parent: currentNode } );
+//
+//                 commit( 'insert', pl );
+//                 return false;
 //             }
-//         } );
-//         return r[ 0 ];
-//     }( state, serialNumber )
-// },
+//             return true;
+//         }
 //
-// return (( serialNumber ) => {
-//     window.console.log( 'qqqqqq', 'jjjj', 249, serialNumber );
-//     return state.itemMap.filter( ( serialNumber ) => {
-//         state.itemMap.forEach( ( itemNode ) => {
-//             if ( itemNode.data === serialNumber ) {
-//                 return itemNode;
-//             }
-//         } );
-//     } );
-// })( serialNumber );
-
-
+//         traverseDF( state.itemMap, f );
 //
-// let callback = function( node ) {
-//     if ( ! callback.found ) callback.found = [];
+//     },
 //
-//     if ( node.data === serialNumber ){
-//         callback.found.push(node);
-//     }
+//     [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
+//         let {serialNumber} = payload;
+//         // let  serialNumber = getSerialNumber(payload);
+//         let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
+//         let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
+//         let pl = Payload.factory( { obj: toRemove, parent: parent } );
+//         commit( 'remove', pl );
+//     },
+//
 // };
+
+const getters = orderGetters; //r{
 //
-// traverseDF( state.itemMap, callback );
-// // if(callback.found.length > 0){
-// //
-// //     let item = getters.getItemBySerialNumber()
-// // }
-// //
-// let result = callback.found.length >0 ? callback.found[0] : null;
-// window.console.log( 'orderings', 'callback.found', 258, result);
+//     /**
+//      * Returns the children array of
+//      * the exam stored as itemMap. It includes the exam
+//      * @param state
+//      * @param getters
+//      * @returns {Node}
+//      */
+//     [gTypes.getItemMapCopy]: ( state, getters ) => {
+//         return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
+//     },
 //
-// return result;
+//     [gTypes.getItemNodeFromOrder]: ( state, getters, serialNumber ) => {
+//         return (function ( state, serialNumber ) {
+//             let callback = function ( node ) {
+//                 if ( !callback.found ) callback.found = [];
+//                 // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+//                 if ( node.data === serialNumber ) {
+//                     callback.found.push( node );
+//                     // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+//                     return true;
+//                 }
+//                 return false;
+//             };
+//             traverseBF( state.itemMap, callback );
+//             let result = callback.found[ 0 ];
+//             return result;
+//         })( state, serialNumber )
+//     },
+//
+//     /**
+//      * Find the number of parents the node has
+//      * @param state
+//      * @param getters
+//      * @param serialNumber
+//      */
+//     [gTypes.getHeightOfNode]: ( state, getters, serialNumber ) => {
+//         let level = 0;
+//
+//         return (function recurse( serialNumber ) {
+//             // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
+//             //look up the node whose serial number we've just  been handed.
+//             let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
+//             //break condition is that we've hit the exam
+//             //which is of course the only item which is its
+//             //own parent
+//             if (node.parent === node.data) return level;
+//             //Otherwise, increment the level counter
+//             // and re-run on the parent
+//             level += 1;
+//             return recurse(node.parent);
+//         })( serialNumber );
+//     },
+//
+//
+//
+//     /**
+//      * Find the index position of the node in its parent's children array
+//      * @param state
+//      * @param getters
+//      * @param serialNumber
+//      */
+//     [gTypes.getDepthOfNode]: ( state, getters, serialNumber ) => {
+//         //look up the node whose serial number we've just  been handed.
+//         let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
+//         let parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
+//         if(parent){
+//             for(let index=0; index<parent.children.length; index++){
+//                 if(parent.children[index] === node){
+//                     return index;
+//                 }
+//             }
+//         }
+//     }
+//
+// };
 
 
 // /**
@@ -484,7 +447,5 @@ export default {
     actions,
     getters,
     mutations,
-    state,
-    traverseBF,
-    traverseDF
+    state
 }

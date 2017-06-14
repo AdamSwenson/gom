@@ -17864,7 +17864,7 @@ var componentVNodeHooks = {
     );
   },
 
-  insert: function insert (vnode) {
+  insertNodeIntoOrder: function insert ( vnode) {
     if (!vnode.componentInstance._isMounted) {
       vnode.componentInstance._isMounted = true;
       callHook(vnode.componentInstance, 'mounted');
@@ -19658,7 +19658,7 @@ function createPatchFunction (backend) {
     i = vnode.data.hook; // Reuse variable
     if (isDef(i)) {
       if (isDef(i.create)) { i.create(emptyNode, vnode); }
-      if (isDef(i.insert)) { insertedVnodeQueue.push(vnode); }
+      if (isDef(i.insertNodeIntoOrder)) { insertedVnodeQueue.push(vnode); }
     }
   }
 
@@ -19873,7 +19873,7 @@ function createPatchFunction (backend) {
       vnode.parent.data.pendingInsert = queue;
     } else {
       for (var i = 0; i < queue.length; ++i) {
-        queue[i].data.hook.insert(queue[i]);
+        queue[i].data.hook.insertNodeIntoOrder(queue[i]);
       }
     }
   }

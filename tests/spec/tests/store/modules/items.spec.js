@@ -23,7 +23,7 @@ import * as gTypes from '../../../../../resources/assets/js/store/getter-types'
 import Item from '../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../resources/assets/js/models/Node'
-import {traverseDF} from '../../../../../resources/assets/js/models/NodeTools'
+import { traverseDF } from '../../../../../resources/assets/js/models/NodeTools'
 
 //tested object
 let obj = items.default;
@@ -155,7 +155,7 @@ fdescribe( "store.modules.items | ", function () {
             beforeEach( function () {
                 this.numItems = 5;
                 this.expectedIds = [];
-                this.state.itemMap = new Node( 0, 0 ) ;
+                this.state.itemMap = new Node( 0, 0 );
                 addNodes( this.state.itemMap, this.numItems );
                 for (let n of this.state.itemMap.children) {
                     addNodes( n, this.numItems );
@@ -169,23 +169,23 @@ fdescribe( "store.modules.items | ", function () {
                     let a = new Item();
                     a.serialNumber = serialNumbers[ i ];
                     a.id = 2 * a.serialNumber;
-                    this.expectedIds.push(a.id);
+                    this.expectedIds.push( a.id );
                     this.state.items.push( a );
                 }
             } );
 
             it( "happy path ", function () {
                 window.console.log( 'items.spec', 'state', 275, this.state );
-                let result = getters[gTypes.getSortedIds](this.state, getters);
-var expectedIds = this.expectedIds;
-                let tester = function(currentNode) {
+                let result = getters[ gTypes.getSortedIds ]( this.state, getters );
+                var expectedIds = this.expectedIds;
+                let tester = function ( currentNode ) {
                     // window.console.log( 'items.spec', 'tester', 182, currentNode);
                     //ignore the exam
-                    if (currentNode.data === 0) return true;
+                    if ( currentNode.data === 0 ) return true;
 
                     //Check the type and that the id is one of the expected
-                    expect(currentNode.dataType).toBe('id');
-                    expect(expectedIds.includes(currentNode.data)).toBe(true);
+                    expect( currentNode.dataType ).toBe( 'id' );
+                    expect( expectedIds.includes( currentNode.data ) ).toBe( true );
                     // window.console.log( 'items.spec', 'tester', 188, 'tested', currentNode);
                     //Check that the order is as expected
                     let nodeId = currentNode.data;
@@ -193,17 +193,17 @@ var expectedIds = this.expectedIds;
                 };
 
                 //Check that received the exam
-                expect(result instanceof Node).toBe(true);
-                expect(result.data).toBe(0);
-                expect(result.children.length).toBe(this.numItems);
+                expect( result instanceof Node ).toBe( true );
+                expect( result.data ).toBe( 0 );
+                expect( result.children.length ).toBe( this.numItems );
                 // window.console.log( 'items.spec', 'result ----', 197, result );
                 //check the children
                 (function recurse( currentNode ) {
                     for (var i = 0, length = currentNode.children.length; i < length; i++) {
-                            recurse( currentNode.children[ i ] );
+                        recurse( currentNode.children[ i ] );
                     }
-                    tester(currentNode);
-                 })( result );
+                    tester( currentNode );
+                })( result );
             } );
         } );
 

@@ -6,7 +6,7 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
-import { traverseDF } from '../../models/NodeTools'
+import { traverseDF, traverseBF } from '../../models/NodeTools'
 
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );

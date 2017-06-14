@@ -25,10 +25,12 @@ import Item from '../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../resources/assets/js/models/Node'
 
+import { traverseDF, traverseBF, getSerialNumber } from '../../../../../resources/assets/js/models/NodeTools'
+
 //tested object
 let obj = orderings.default;
 //tested methods
-let { getters, actions, mutations, state, traverseBF, traverseDF } = obj;
+let { getters, actions, mutations, state } = obj;
 
 const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
     addNodes( state.itemMap, numItems );
@@ -257,7 +259,7 @@ fdescribe( "store.modules.item.order  ", function () {
             } );
         } );
 
-        describe( description( 'remove' ), function () {
+        describe( description( mTypes.removeNodeFromOrder ), function () {
 
             it( "happy path", function () {
 
@@ -268,7 +270,7 @@ fdescribe( "store.modules.item.order  ", function () {
                 let payload = { obj: toRemove, parent: parent };
 
                 //call
-                mutations.remove( this.filledState, payload );
+                mutations[mTypes.removeNodeFromOrder]( this.filledState, payload );
                 // window.console.log( 'orderings.spec', 'add', 76, this.filledState );
 
                 //check
@@ -286,7 +288,7 @@ fdescribe( "store.modules.item.order  ", function () {
             } );
         } );
 
-        describe( description( 'insert' ), function () {
+        describe( description( mTypes.insertNodeIntoOrder ), function () {
 
             describe( description( 'happy paths' ), function () {
 
@@ -302,7 +304,7 @@ fdescribe( "store.modules.item.order  ", function () {
                     let payload = { obj: toAdd, parent: parent };
 
                     //call
-                    mutations.insert( this.filledState, payload );
+                    mutations[mTypes.insertNodeIntoOrder]( this.filledState, payload );
                     // window.console.log( 'orderings.spec', 'add', 76, this.filledState );
 
                     //check
@@ -330,7 +332,7 @@ fdescribe( "store.modules.item.order  ", function () {
 
                     //call
                     let payload = { index: index, obj: toAdd, parent: parent };
-                    mutations.insert( this.filledState, payload );
+                    mutations[mTypes.insertNodeIntoOrder]( this.filledState, payload );
                     // window.console.log( 'orderings.spec', 'add', 76, this.filledState );
 
                     //check
@@ -369,7 +371,7 @@ fdescribe( "store.modules.item.order  ", function () {
                     let expectedPayload = Payload.factory( { parent: parent, obj: toAdd } );
 
                     let expectedMutations = [
-                        { type: 'insert', payload: expectedPayload }
+                        { type: mTypes.insertNodeIntoOrder, payload: expectedPayload }
                     ];
                     // let payload = toRemove.serialNumber;
                     let payload = Payload.factory( { obj: toAdd, parent: parent } );
@@ -394,7 +396,7 @@ fdescribe( "store.modules.item.order  ", function () {
                     let expectedPayload = Payload.factory( { parent: parent, obj: toAdd, index: index } );
 
                     let expectedMutations = [
-                        { type: 'insert', payload: expectedPayload }
+                        { type: mTypes.insertNodeIntoOrder, payload: expectedPayload }
                     ];
 
                     // let payload = toRemove.serialNumber;
@@ -432,7 +434,7 @@ fdescribe( "store.modules.item.order  ", function () {
                     let expectedPayload = Payload.factory( { parent: parent, obj: toRemove } );
 
                     let expectedMutations = [
-                        { type: 'remove', payload: expectedPayload }
+                        { type: mTypes.removeNodeFromOrder, payload: expectedPayload }
                     ];
                     // let payload = toRemove.serialNumber;
                     let payload = Payload.factory( { serialNumber: toRemove.data } );
