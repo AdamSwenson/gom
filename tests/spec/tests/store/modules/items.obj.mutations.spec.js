@@ -23,7 +23,7 @@ let obj = items.default;
 let { getters, actions, mutations } = obj;
 
 
-describe( "store.modules.items.mutations | mutations | ", function () {
+fdescribe( "store.modules.items.obj mutations ", function () {
     beforeEach( function () {
         this.state = makeState();
         this.rootState = makeRootState();
@@ -254,7 +254,7 @@ describe( "store.modules.items.mutations | mutations | ", function () {
             it( "overwrite preexisting value ", function () {
                 let index = 1;
                 let item = factories.itemFactory( { index: index } );
-                let payload = Payload.factory( { obj: item } );
+                let payload = Payload.factory( { index: index, updateProp: 'name', updateVal: item.name } );
                 //capture starting length, since should change
                 let prevLen = this.state.items.length;
                 // window.console.log( 'items.mutations.spec', 'prev', 67, this.state, prevLen );
@@ -267,7 +267,7 @@ describe( "store.modules.items.mutations | mutations | ", function () {
                 let newLen = this.state.items.length;
                 expect( newLen ).toBe( prevLen );
                 //make sure the new item is who we expect it to be
-                expect( this.state.items[ index ] ).toBe( this.item );
+                expect( this.state.items[ index ].name ).toBe( this.item.name );
             } );
 
         } );

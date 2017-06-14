@@ -124,7 +124,7 @@
 
             },
             'please-show-all' :function (  ) {
-                this.$dispatch(mTypes.showItemSettingsItemSettings, Payload.factory({index: 0}));
+                this.$dispatch(mTypes.showItemSettings, Payload.factory({index: 0}));
             },
 
 

@@ -1,6 +1,18 @@
 /**
+ * This pulls together the various parts of
+ * handling item order.
+ * If there was something which required multiple
+ * portions of the tools to be used, it would
+ * be defined in this file
+ *
+ * Otherwise, it just makes the locations of
+ * methods more intelligible and helps clean
+ * up the items.js file where everything comes
+ * together
+ *
  * Created by adam on 4/11/17.
  */
+
 
 const _ = window._ = require( 'lodash' );
 const Vue = require( 'vue' );
@@ -18,6 +30,13 @@ import * as orderMutations from './items.order.mutations'
 import * as orderActions from './items.order.actions'
 import * as orderGetters from './items.order.getters'
 import * as orderState from './items.order.state'
+
+
+
+
+
+
+
 
 
 let getItemFromOrder = ( order, idx ) => {
@@ -41,8 +60,29 @@ let getItemFromList = ( orderList, idx ) => {
 
 import {traverseDF, traverseBF, getSerialNumber } from '../../../../../resources/assets/js/models/NodeTools'
 
-
+/**
+ * Only these can call the mutations.
+ * That is, no external method should call a mutation.
+ * Thus there needs to be at least one action  for each mutation.
+ *
+ * Since most of this will require at least
+ * two steps (find the item in the tree, update it, etc),
+ * The mutations will receive the parent node and
+ * new child node (or node to be removed, etc).
+ *
+ * @type {{}}
+ */
+const actions = orderActions;
+const getters = orderGetters;
+const mutations = orderMutations;
 const state = orderState;
+
+export default {
+    actions,
+    getters,
+    mutations,
+    state
+}
 // {
 //     itemMap: new Node( 0, 0 ),
 //
@@ -83,8 +123,6 @@ const state = orderState;
 //     // order: {}
 //
 // };
-
-const mutations = orderMutations;
 
 // {
 //         insert: ( state, payload ) => {
@@ -161,19 +199,7 @@ const mutations = orderMutations;
 //     }
 // ;
 
-/**
- * Only these can call the mutations.
- * That is, no external method should call a mutation.
- * Thus there needs to be at least one action  for each mutation.
- *
- * Since most of this will require at least
- * two steps (find the item in the tree, update it, etc),
- * The mutations will receive the parent node and
- * new child node (or node to be removed, etc).
- *
- * @type {{}}
- */
-const actions = orderActions;
+
 // {
 //
 //     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
@@ -208,8 +234,7 @@ const actions = orderActions;
 //     },
 //
 // };
-
-const getters = orderGetters; //r{
+//r{
 //
 //     /**
 //      * Returns the children array of
@@ -442,10 +467,3 @@ const getters = orderGetters; //r{
 //     }
 // }
 
-
-export default {
-    actions,
-    getters,
-    mutations,
-    state
-}

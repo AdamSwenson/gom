@@ -43,7 +43,7 @@ module.exports = {
      * @returns []
      */
     // getAllItems: ( state, getters, rootState ) => {
-    [gTypes.getAllItems]: ( state, getters, rootState ) => {
+    [gTypes.getAllItems]:function ( state, getters, rootState ) {
         return state.items;
     },
 
@@ -59,7 +59,7 @@ module.exports = {
      * @param payload Object containing Item identifier
      */
     // getItem: ( state, getters ) => ( payload ) => {
-    [gTypes.getItem ]: ( state, getters, payload ) => {
+    [gTypes.getItem ]: function( state, getters, payload ){
         // console.log('getItem', state, payload);
         if ( isItemsEmpty( state ) ) return false;
         if ( Payload.checkIfPayload( payload ) ) {
@@ -89,7 +89,7 @@ module.exports = {
      * @param index
      */
     // getItemById: ( state, getters ) => ( id ) => {
-    [gTypes.getItemById]: ( state, getters, id ) => {
+    [gTypes.getItemById]: function( state, getters, id ) {
         // window.console.log( 'items', 'getItemById', 148, state, id );
         return function ( state, id ) {
             var r = state.items.filter( function ( i ) {
@@ -113,8 +113,8 @@ module.exports = {
      * @param getters
      * @param index
      */
-    [gTypes.getItemByIndex]: ( state, getters, index ) => {
-        // getItemByIndex: ( state, getters ) => ( index ) => {
+    // [gTypes.getItemByIndex]: ( state, getters, index ) => {
+    [gTypes.getItemByIndex]: function ( state, getters , index ) {
         //remove the payload wrapper if necessary
         if ( Payload.checkIfPayload( index ) ) {
             index = index.index;
@@ -163,7 +163,7 @@ module.exports = {
      * @param state
      * @param getters
      */
-    [gTypes.getItemBySerialNumber]: ( state, getters, serialNumber ) => {
+    [gTypes.getItemBySerialNumber]: function( state, getters, serialNumber ) {
         // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
         return function ( state, serialNumber ) {
             var r = state.items.filter( function ( i ) {
@@ -175,10 +175,6 @@ module.exports = {
         }( state, serialNumber )
     },
 
-
-    getSortedItems: ( state ) => {
-
-    },
 
     /**
      * This returns the indexes stored in each item in a list.
@@ -227,7 +223,7 @@ module.exports = {
      * @param payload
      * @returns []
      */
-    getAllItemsList: ( state, getters ) =>{
+    [gTypes.getAllItemsList]: ( state, getters ) =>{
 //alias.
 // used to be used when items was different data structure
         return getters[ gTypes.getAllItems ](state, getters);

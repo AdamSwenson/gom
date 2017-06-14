@@ -18,6 +18,7 @@
     import Payload from '../../../models/Payload'
     import * as aTypes from '../../../store/action-types'
     import * as mTypes from '../../../store/mutation-types'
+    import * as gTypes from '../../../store/getter-types'
 
     /**
      * This is the indicator which tells the user whether the thing it
@@ -60,7 +61,7 @@
 
         computed: {
             publicity: function () {
-                let item = this.$store.getters.getItemByIndex(this.index);
+                let item = this.$store.getters[gTypes.getItemByIndex](this.index);
                 if ( typeof item !== 'undefined' ) {
                     return item.isPublic();
                 }

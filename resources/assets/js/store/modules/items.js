@@ -1,3 +1,8 @@
+/**
+ * This ties together the two types of storage for
+ * items
+ */
+
 import * as mTypes from '../../store/mutation-types'
 import * as aTypes from '../../store/action-types'
 import * as gTypes from '../../store/getter-types'
@@ -11,9 +16,14 @@ import { traverseDF, traverseBF } from '../../models/NodeTools'
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
 
+import Objects from './items.obj'
+// import Orderings from './items.order'
 
-import objGetters from './items.obj.getters'
-import Orderings from './items.order'
+import * as orderMutations from './items.order.mutations'
+import * as orderActions from './items.order.actions'
+import * as orderGetters from './items.order.getters'
+import * as orderState from './items.order.state'
+
 
 const standardTimeout = 1000;
 
@@ -61,41 +71,7 @@ const buildPayloadFromInput = ( state, rootState, payload ) => {
     return out;
 };
 
-
-/**
- * The older version used an index value to do lots of stuff.
- * Given the prospect of using a websocket connection or connecting
- * to canvas or other 3rd party system, it now makes more sense
- * to use the db's id as the primary locator in the store. Thus
- * state.Items has the Item's database id as key and an Item object
- * as value. That is:
- *      state.Items[Item.id] = Item
- *
- * To maintain compatibility, indexMap holds a mapping from the old
- * ItemIndex to the database id
- */
-const state_obj = {
-
-    /**
-     * This holds the current item objects.
-     * Because we now want maximal flexibility in how we store and
-     * retrieve item objects, we store them in a simple list.
-     * The access to the items in the last is handled by getters
-     * which filter the list on whatever internal property of the item
-     * a particular use case needs.
-     */
-    items: [],
-
-    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
-    /**
-     * Mapping from older ItemIndex to new Item id value
-     */
-    indexMap: new Map(),
-
-    orderMap: {}
-};
-
-const state = Object.assign( {}, state_obj, Orderings.state );
+const state = Object.assign( {}, Objects.state, orderState); //Orderings.state );
 
 
 /**
@@ -122,7 +98,7 @@ const getters_both = {
         //behind the scenes
         //We begin by making a copy because we will
         //be altering the data stored
-        let map = getters[ gTypes.getItemMapCopy ]( state, getters );
+        let map = getters[ gTypes.getItemMapCopy ]; //( state, getters );
         // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
 
         let updater = function ( currentNode ) {
@@ -163,14 +139,15 @@ const getters_both = {
     }
 };
 
-const getters = Object.assign( {}, getters_both, objGetters, Orderings.getters ); //, ...g};
+const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
 
 window.console.log( 'items', 'getters', 112, getters );
 // };
 
-const actions = require( './items.obj.actions' );
+const actions =  Object.assign( {}, Objects.actions, orderActions); //Orderings.actions );
+//require( './items.obj.actions' );
 
-const mutations = require( './items.obj.mutations' );
+const mutations =  Object.assign( {},  Objects.mutations, orderMutations); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 export default {
     actions,

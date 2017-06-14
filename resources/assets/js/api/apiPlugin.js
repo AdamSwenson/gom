@@ -1,9 +1,9 @@
 /**
  * Created by adam on 4/1/17.
  */
-// import Vue from 'vue'
-// import axios from 'axios'
-// import VueAxios from 'vue-axios'
+import Vue from 'vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 //
 // axios.defaults.headers.common = {
 //     'X-CSRF-TOKEN': window.Laravel.csrfToken,

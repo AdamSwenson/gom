@@ -53313,7 +53313,7 @@ var componentVNodeHooks = {
     );
   },
 
-  insertNodeIntoOrder: function insert ( vnode) {
+  insert: function insert (vnode) {
     var context = vnode.context;
     var componentInstance = vnode.componentInstance;
     if (!componentInstance._isMounted) {
@@ -54923,7 +54923,7 @@ function createPatchFunction (backend) {
     i = vnode.data.hook; // Reuse variable
     if (isDef(i)) {
       if (isDef(i.create)) { i.create(emptyNode, vnode); }
-      if (isDef(i.insertNodeIntoOrder)) { insertedVnodeQueue.push(vnode); }
+      if (isDef(i.insert)) { insertedVnodeQueue.push(vnode); }
     }
   }
 
@@ -55141,7 +55141,7 @@ function createPatchFunction (backend) {
       vnode.parent.data.pendingInsert = queue;
     } else {
       for (var i = 0; i < queue.length; ++i) {
-        queue[i].data.hook.insertNodeIntoOrder(queue[i]);
+        queue[i].data.hook.insert(queue[i]);
       }
     }
   }
@@ -63001,7 +63001,7 @@ var componentVNodeHooks = {
     );
   },
 
-  insertNodeIntoOrder: function insert ( vnode) {
+  insert: function insert (vnode) {
     var context = vnode.context;
     var componentInstance = vnode.componentInstance;
     if (!componentInstance._isMounted) {
@@ -64615,7 +64615,7 @@ function createPatchFunction (backend) {
     i = vnode.data.hook; // Reuse variable
     if (isDef(i)) {
       if (isDef(i.create)) { i.create(emptyNode, vnode); }
-      if (isDef(i.insertNodeIntoOrder)) { insertedVnodeQueue.push(vnode); }
+      if (isDef(i.insert)) { insertedVnodeQueue.push(vnode); }
     }
   }
 
@@ -64833,7 +64833,7 @@ function createPatchFunction (backend) {
       vnode.parent.data.pendingInsert = queue;
     } else {
       for (var i = 0; i < queue.length; ++i) {
-        queue[i].data.hook.insertNodeIntoOrder(queue[i]);
+        queue[i].data.hook.insert(queue[i]);
       }
     }
   }
@@ -66768,7 +66768,7 @@ module.exports = Vue$3;
 },{"_process":339}],348:[function(require,module,exports){
 var inserted = exports.cache = {}
 
-exports.insertNodeIntoOrder = function ( css) {
+exports.insert = function (css) {
   if (inserted[css]) return
   inserted[css] = true
 
@@ -67685,6 +67685,18 @@ exports.default = function (store) {
     });
 };
 
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _axios = require('axios');
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _vueAxios = require('vue-axios');
+
+var _vueAxios2 = _interopRequireDefault(_vueAxios);
+
 var _actionTypes = require('../store/action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
@@ -67709,16 +67721,10 @@ var _Item = require('../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * Created by adam on 4/1/17.
- */
-// import Vue from 'vue'
-// import axios from 'axios'
-// import VueAxios from 'vue-axios'
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 //
 // axios.defaults.headers.common = {
 //     'X-CSRF-TOKEN': window.Laravel.csrfToken,
@@ -67732,7 +67738,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // // This wrapper bind axios to Vue or this if you're using single file component.
 // Vue.use(VueAxios, axios);
 
-window._ = require('lodash');
+window._ = require('lodash'); /**
+                               * Created by adam on 4/1/17.
+                               */
 
 
 var REQUEST_VERSION = 1;
@@ -67949,7 +67957,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
  */
 ;
 
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../store/action-types":391,"../store/getter-types":393,"../store/mutation-types":416,"lodash":338}],351:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../store/action-types":391,"../store/getter-types":393,"../store/mutation-types":417,"axios":1,"lodash":338,"vue":347,"vue-axios":343}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68134,7 +68142,7 @@ window.axios.defaults.baseURL = routeRoot;
 
 },{"axios":1,"babel-polyfill":26,"bootstrap":30,"bootstrap-sass":28,"jquery":337,"lodash":338}],354:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 6, stdin */\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/ }\n\n/* line 16, stdin */\n.card-list-component .list-group-item {\n  background-color: #FFFDF4; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68344,9 +68352,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-447dcb94", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":416,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":417,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],355:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 4, stdin */\n.exam-card-component {\n  /*width: 80%;*/ }\n  /* line 7, stdin */\n  .exam-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 12, stdin */\n  .exam-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68433,7 +68441,7 @@ exports.default = {
             this.$dispatch(mTypes.hideItemSettings, _Payload2.default.factory({ index: 0 }));
         },
         'please-show-all': function pleaseShowAll() {
-            this.$dispatch(mTypes.showItemSettingsItemSettings, _Payload2.default.factory({ index: 0 }));
+            this.$dispatch(mTypes.showItemSettings, _Payload2.default.factory({ index: 0 }));
         },
 
         'display-settings': function displaySettings() {
@@ -68459,9 +68467,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5ecd1dd5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":416,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":417,"../input/buttons.item.delete.component.vue":367,"../panel.exam-detail.component.vue":375,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],356:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.item-card-component {\n  /*width: 80%;*/ }\n  /* line 6, stdin */\n  .item-card-component .button-row {\n    padding: 1em; }\n  /* line 9, stdin */\n  .item-card-component .panel-heading {\n    /*background-color: #FFFDF4;*/ }\n  /* line 14, stdin */\n  .item-card-component .bottom-stripe {\n    /*line-height: 3em;*/\n    /*background-color: #385a7f;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68652,7 +68660,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-35f0e86e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/getter-types":393,"../../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/getter-types":393,"../../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -68844,9 +68852,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-49f731a6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/getter-types":393,"../../../store/mutation-types":416,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/getter-types":393,"../../../store/mutation-types":417,"sortablejs":341,"vue":347,"vue-hot-reload-api":344}],358:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69003,9 +69011,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4476cea1", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
+},{"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],359:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#setupToolDashboard {\n  padding-bottom: 1em; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69092,9 +69100,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0fe909d5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
+},{"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],360:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69180,7 +69188,7 @@ exports.default = {
     methods: {
 
         getExam: function getExam() {
-            return this.$store.getters.getItemByIndex(0);
+            return this.$store.getters[gTypes.getItemByIndex](0);
             //                return this.$store.getters[ gTypes.getActiveExamObj ];
         },
 
@@ -69218,9 +69226,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bb8cf7c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],361:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n.item-name-component .item-type {\n  font-weight: bold; }\n\n/* line 8, stdin */\n.item-name-component input {\n  /*width: 4em;*/\n  outline: none; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69296,9 +69304,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-057ca4e5", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],362:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n.item-type {\n    font-weight: bold;\n}\n\ninput {\n    width: 4em;\n    outline: none;\n}\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69379,9 +69387,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c5859f3a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],363:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
+var __vueify_style__ = __vueify_insert__.insert("/*input {*/\n/*width: 3em;*/\n/*}*/\n/*.dropdown-menu{*/\n/*cursor: pointer;*/\n/*}*/\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69517,9 +69525,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-43d7d880", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],364:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.max-score-area {\n  text-align: left; }\n\n/* line 7, stdin */\ninput {\n  width: 4em;\n  outline: none; }\n\n/* line 12, stdin */\n.max-score-input {\n  width: 3em; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69619,9 +69627,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-569f646e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"lodash":338,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],365:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69757,9 +69765,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-989fbf16", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
+},{"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],366:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69827,9 +69835,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4850f9d2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../store/action-types":391,"../../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
+},{"../../../store/action-types":391,"../../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],367:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n")
+var __vueify_style__ = __vueify_insert__.insert("\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69917,7 +69925,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../../../store/action-types":391,"bootbox":27,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],368:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -69939,6 +69947,10 @@ var aTypes = _interopRequireWildcard(_actionTypes);
 var _mutationTypes = require('../../../store/mutation-types');
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = require('../../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -69985,7 +69997,7 @@ exports.default = {
 
     computed: {
         publicity: function publicity() {
-            var item = this.$store.getters.getItemByIndex(this.index);
+            var item = this.$store.getters[gTypes.getItemByIndex](this.index);
             if (typeof item !== 'undefined') {
                 return item.isPublic();
             }
@@ -70071,9 +70083,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-93f668f6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],369:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70180,9 +70192,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-3651987f", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
+},{"../../../models/Item":385,"../../../models/Payload":388,"../../../store/action-types":391,"../../../store/getter-types":393,"../../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],370:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70274,9 +70286,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7487aa0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":388,"../../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
+},{"../../../models/Comment":382,"../../../models/Item":385,"../../../models/Payload":388,"../../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],371:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n  /* line 8, stdin */\n  .item-main-component .indexDisplay {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/ }\n  /* line 3, stdin */\n  .item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n  /* line 8, stdin */\n  .item-main-component .indexDisplay {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5); }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70381,9 +70393,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4ccc2008", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],372:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70527,7 +70539,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-56e8d0aa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Item":385,"../../models/Payload":388,"../../store/getter-types":393,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
+},{"../../models/Item":385,"../../models/Payload":388,"../../store/getter-types":393,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],373:[function(require,module,exports){
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -70540,7 +70552,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"vue":347,"vue-hot-reload-api":344}],374:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70712,9 +70724,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-f0697d0e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Comment":382,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
+},{"../../models/Comment":382,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"./input/buttons.valence.component.vue":370,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],375:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70863,9 +70875,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-5b8c7269", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],376:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70918,9 +70930,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4d1a1dfe", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],377:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71026,9 +71038,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-b5e46016", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],378:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71094,9 +71106,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-51a3ebaa", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],379:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("\n\n")
+var __vueify_style__ = __vueify_insert__.insert("\n\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71149,9 +71161,9 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-256838ee", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":416,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
+},{"../../models/Payload":388,"../../store/action-types":391,"../../store/mutation-types":417,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],380:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insertNodeIntoOrder("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 44, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: -webkit-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -webkit-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -moz-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -moz-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -ms-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -ms-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: -o-linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), -o-linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em; }\n\n/* line 62, resources/assets/sass/development/newSetup.scss */\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px; }\n\n/* line 87, resources/assets/sass/development/newSetup.scss */\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -moz-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -webkit-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat; }\n\n/* line 91, resources/assets/sass/development/newSetup.scss */\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 101, resources/assets/sass/development/newSetup.scss */\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch; }\n\n/* line 111, resources/assets/sass/development/newSetup.scss */\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -moz-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -webkit-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat; }\n\n/* line 121, resources/assets/sass/development/newSetup.scss */\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat; }\n\n/* line 5, stdin */\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768); }\n\n/* line 9, stdin */\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 17, stdin */\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2); }\n\n/* line 21, stdin */\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/ }\n\n/* line 36, stdin */\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/ }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71251,7 +71263,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0cf65b42", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../store":395,"../store/action-types":391,"../store/getter-types":393,"../store/mutation-types":416,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
+},{"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../store":395,"../store/action-types":391,"../store/getter-types":393,"../store/mutation-types":417,"sortablejs":341,"vue":347,"vue-hot-reload-api":344,"vueify/lib/insert-css":348}],381:[function(require,module,exports){
 'use strict';
 
 var _vue = require('vue/dist/vue.js');
@@ -73892,7 +73904,7 @@ var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
 // }
 // ;
 
-},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../models/Student":390,"./action-types":391,"./mutation-types":416,"lodash":338}],393:[function(require,module,exports){
+},{"../api/controller":351,"../models/Exam":383,"../models/Item":385,"../models/Payload":388,"../models/Student":390,"./action-types":391,"./mutation-types":417,"lodash":338}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74268,10 +74280,6 @@ var _visibility = require('./modules/visibility');
 
 var _visibility2 = _interopRequireDefault(_visibility);
 
-var _items3 = require('./modules/items.order');
-
-var _items4 = _interopRequireDefault(_items3);
-
 var _apiPlugin = require('../api/apiPlugin');
 
 var _apiPlugin2 = _interopRequireDefault(_apiPlugin);
@@ -74284,17 +74292,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import orderings from './modules/items.order';
+
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
-// import Vue from 'vue'
-_vue2.default.use(_vuex2.default);
-
-/**
- * This subscribes the api package which
- * handles data exchange with the server
- * to mutations in the store.
- */
 /**
  * Created by adam on 1/10/17.
  *
@@ -74330,6 +74332,17 @@ _vue2.default.use(_vuex2.default);
  *
  */
 
+_vue2.default.use(_vuex2.default);
+
+/**
+ * This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+
+// import Vue from 'vue'
+
+
 var debug = process.env.NODE_ENV !== 'production';
 
 exports.default = new _vuex2.default.Store({
@@ -74355,7 +74368,7 @@ exports.default = new _vuex2.default.Store({
     escores: _escores2.default,
     items: _items2.default,
     grades: _grades2.default,
-    orderings: _items4.default,
+    // orderings,
     qscores: _qscores2.default,
     questions: _questions2.default,
     settings: _settings2.default,
@@ -74367,7 +74380,7 @@ exports.default = new _vuex2.default.Store({
 });
 
 }).call(this,require('_process'))
-},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":392,"./getters":394,"./modules/activeexam.js":396,"./modules/activestudent.js":397,"./modules/comments.js":398,"./modules/escores.js":399,"./modules/grades.js":400,"./modules/items.js":401,"./modules/items.order":407,"./modules/qscores.js":410,"./modules/questions.js":411,"./modules/settings":412,"./modules/students.js":413,"./modules/times.js":414,"./modules/visibility":415,"./mutations":417,"./state":418,"_process":339,"vue/dist/vue.js":346,"vuex":349}],396:[function(require,module,exports){
+},{"../api/apiPlugin":350,"../api/websocketPlugin":352,"./actions":392,"./getters":394,"./modules/activeexam.js":396,"./modules/activestudent.js":397,"./modules/comments.js":398,"./modules/escores.js":399,"./modules/grades.js":400,"./modules/items.js":401,"./modules/qscores.js":411,"./modules/questions.js":412,"./modules/settings":413,"./modules/students.js":414,"./modules/times.js":415,"./modules/visibility":416,"./mutations":418,"./state":419,"_process":339,"vue/dist/vue.js":346,"vuex":349}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74502,7 +74515,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":383,"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],397:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74641,7 +74654,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../../models/Student":390,"../action-types":391,"../mutation-types":416}],398:[function(require,module,exports){
+},{"../../models/Payload":388,"../../models/Student":390,"../action-types":391,"../mutation-types":417}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74835,7 +74848,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],399:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74940,7 +74953,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],400:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75119,7 +75132,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],401:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75156,22 +75169,38 @@ var _Node2 = _interopRequireDefault(_Node);
 
 var _NodeTools = require('../../models/NodeTools');
 
-var _itemsObj = require('./items.obj.getters');
-
-var _itemsObj2 = _interopRequireDefault(_itemsObj);
-
-var _items = require('./items.order');
+var _items = require('./items.obj');
 
 var _items2 = _interopRequireDefault(_items);
+
+var _itemsOrder = require('./items.order.mutations');
+
+var orderMutations = _interopRequireWildcard(_itemsOrder);
+
+var _itemsOrder2 = require('./items.order.actions');
+
+var orderActions = _interopRequireWildcard(_itemsOrder2);
+
+var _itemsOrder3 = require('./items.order.getters');
+
+var orderGetters = _interopRequireWildcard(_itemsOrder3);
+
+var _itemsOrder4 = require('./items.order.state');
+
+var orderState = _interopRequireWildcard(_itemsOrder4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This ties together the two types of storage for
+                                                                                                                                                                                                                   * items
+                                                                                                                                                                                                                   */
 
 var Vue = require('vue');
 var _ = window._ = require('lodash');
+// import Orderings from './items.order'
 
 var standardTimeout = 1000;
 
@@ -75226,40 +75255,8 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     return out;
 };
 
-/**
- * The older version used an index value to do lots of stuff.
- * Given the prospect of using a websocket connection or connecting
- * to canvas or other 3rd party system, it now makes more sense
- * to use the db's id as the primary locator in the store. Thus
- * state.Items has the Item's database id as key and an Item object
- * as value. That is:
- *      state.Items[Item.id] = Item
- *
- * To maintain compatibility, indexMap holds a mapping from the old
- * ItemIndex to the database id
- */
-var state_obj = {
+var state = Object.assign({}, _items2.default.state, orderState); //Orderings.state );
 
-    /**
-     * This holds the current item objects.
-     * Because we now want maximal flexibility in how we store and
-     * retrieve item objects, we store them in a simple list.
-     * The access to the items in the last is handled by getters
-     * which filter the list on whatever internal property of the item
-     * a particular use case needs.
-     */
-    items: [],
-
-    // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
-    /**
-     * Mapping from older ItemIndex to new Item id value
-     */
-    indexMap: new Map(),
-
-    orderMap: {}
-};
-
-var state = Object.assign({}, state_obj, _items2.default.state);
 
 /**
  * The make use of both the item object store
@@ -75275,7 +75272,7 @@ var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, get
     //behind the scenes
     //We begin by making a copy because we will
     //be altering the data stored
-    var map = getters[gTypes.getItemMapCopy](state, getters);
+    var map = getters[gTypes.getItemMapCopy]; //( state, getters );
     // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
 
     var updater = function updater(currentNode) {
@@ -75315,14 +75312,15 @@ var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, get
     return map;
 });
 
-var getters = Object.assign({}, getters_both, _itemsObj2.default, _items2.default.getters); //, ...g};
+var getters = Object.assign({}, getters_both, _items2.default.getters, orderGetters); //Orderings.getters ); //, ...g};
 
 window.console.log('items', 'getters', 112, getters);
 // };
 
-var actions = require('./items.obj.actions');
+var actions = Object.assign({}, _items2.default.actions, orderActions); //Orderings.actions );
+//require( './items.obj.actions' );
 
-var mutations = require('./items.obj.mutations');
+var mutations = Object.assign({}, _items2.default.mutations, orderMutations); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 exports.default = {
     actions: actions,
@@ -75348,7 +75346,7 @@ exports.default = {
 // this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
 // }
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"./items.obj.actions":402,"./items.obj.getters":403,"./items.obj.mutations":404,"./items.order":407,"lodash":338,"vue":347}],402:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"./items.obj":404,"./items.order.actions":407,"./items.order.getters":408,"./items.order.mutations":409,"./items.order.state":410,"lodash":338,"vue":347}],402:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -75500,7 +75498,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 // export default {
 //     actions}
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416}],403:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417}],403:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -75587,42 +75585,43 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         });
         return r[0];
     }(state, id);
-}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, index) {
-    // getItemByIndex: ( state, getters ) => ( index ) => {
-    //remove the payload wrapper if necessary
-    if (_Payload2.default.checkIfPayload(index)) {
-        index = index.index;
-    }
-
-    //if this is a single member array, we can treat
-    //it like a numeric input under the older system
-    if (_.isArray(index) && index.length === 1) {
-        index = index[0];
-    }
-
-    //Now we're ready to deal with the input
-    return function (state, index) {
-        //There are two cases to consider
-        //We deal first with the easy case in which the index
-        //is a number or string representation of a number
-        //and not a composite
-        if (!_.isArray(index)) {
-            //if was just a string or integer this is fine
-            //also if the input was an array with only one item
-            var r = state.items.filter(function (i) {
-                if (i.index === index) {
-                    return i;
-                }
-            });
-            return r[0];
-        } else {
-            //we need to do something different
-            //because it is an array
-            if (_.isArray(index)) {
-                var idx = index.join('-');
-            }
+}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters) {
+    return function (index) {
+        //remove the payload wrapper if necessary
+        if (_Payload2.default.checkIfPayload(index)) {
+            index = index.index;
         }
-    }(state, index);
+
+        //if this is a single member array, we can treat
+        //it like a numeric input under the older system
+        if (_.isArray(index) && index.length === 1) {
+            index = index[0];
+        }
+
+        //Now we're ready to deal with the input
+        return function (state, index) {
+            //There are two cases to consider
+            //We deal first with the easy case in which the index
+            //is a number or string representation of a number
+            //and not a composite
+            if (!_.isArray(index)) {
+                //if was just a string or integer this is fine
+                //also if the input was an array with only one item
+                var r = state.items.filter(function (i) {
+                    if (i.index === index) {
+                        return i;
+                    }
+                });
+                return r[0];
+            } else {
+                //we need to do something different
+                //because it is an array
+                if (_.isArray(index)) {
+                    var idx = index.join('-');
+                }
+            }
+        }(state, index);
+    };
 }), _defineProperty(_module$exports, gTypes.getItemBySerialNumber, function (state, getters, serialNumber) {
     // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
     return function (state, serialNumber) {
@@ -75633,7 +75632,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         });
         return r[0];
     }(state, serialNumber);
-}), _defineProperty(_module$exports, 'getSortedItems', function getSortedItems(state) {}), _defineProperty(_module$exports, 'getAllItemIndexes', function getAllItemIndexes(state, getters, rootState) {
+}), _defineProperty(_module$exports, 'getAllItemIndexes', function getAllItemIndexes(state, getters, rootState) {
     var out = [];
     for (var item in state.items) {
         out.push(item.index);
@@ -75675,10 +75674,10 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
 
     //Leaving this here, in case someday we go back to items being an object
     // return Object.keys( state.items )
-}), _defineProperty(_module$exports, 'getAllItemsList', function getAllItemsList(state, getters) {
+}), _defineProperty(_module$exports, gTypes.getAllItemsList, function (state, getters) {
     //alias.
     // used to be used when items was different data structure
-    return getters[gTypes.getAllItems](state, getters);
+    return getters[gTypes.getAllItems]; //(state, getters);
     // // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
     // let out = [];
     // // if ( state.items.size > 0 ) {
@@ -75697,7 +75696,141 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
     return state.items[0];
 }), _module$exports);
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"lodash":338,"vue":347}],404:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"lodash":338,"vue":347}],404:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = require('../../store/getter-types');
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = require('../../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = require('../../models/Node');
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = require('../../models/NodeTools');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * This integrates the various methods for operating on
+ * the stored item objects.
+ */
+
+var Vue = require('vue');
+var _ = window._ = require('lodash');
+
+var standardTimeout = 1000;
+
+var helpers = {
+    getItemFromPayload: function getItemFromPayload(state, payload) {
+        return state.items[payload.index];
+        // if (typeof payload.id !== 'undefined') {
+        //     //get the item
+        //     var item = state.items.filter(function (i) {
+        //         if (typeof i.id != 'undefined' && i.id === id) {
+        //             return i;
+        //         }
+        //     });
+        //     return item;
+        // } else {
+        //     //get the item
+        //     return state.items[payload.index];
+        // }
+    }
+};
+
+/**
+ * Build an input object out of an input object
+ * and return a payload object containing it
+ * @param input
+ */
+var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, payload) {
+    //either a json or an item object have been passed in
+    var ItemId = payload.ItemId,
+        ItemIndex = payload.ItemIndex,
+        obj = payload.obj,
+        ItemObject = payload.ItemObject;
+
+
+    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
+
+    //check and see if an Item object has already been passed in
+    if (!obj instanceof _Item2.default) {
+        //create a new Item
+        var name = payload.name,
+            id = payload.id,
+            index = payload.index;
+
+        var ItemJson = { name: name, ItemIndex: ItemIndex };
+        obj = _Item2.default.factory(ItemJson);
+    }
+
+    //assemble the expected payload
+    // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
+    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
+    //Add to the Items store
+    return out;
+};
+
+var state = require('./items.obj.state');
+var getters = require('./items.obj.getters');
+//Object.assign( {}, getters_both, objGetters, Orderings.getters );
+
+var actions = require('./items.obj.actions');
+
+var mutations = require('./items.obj.mutations');
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+// Object indexed by Item id holding Item objects
+// On load the root exam object and first item are created but given no
+// ids. thus we will eventually need to create an exam object if one isn't set
+//
+// However don't ask the server to create an id just yet
+// lookup the exam object that resides at index 0
+// this will have either been newly created on page load
+// or it will be an existing exam object loaded from the db
+// let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+// //Call the set active exam method
+// //We do this rather than call the mutation directly
+// //because there may need to be various other events and
+// //things which need to happen depending on the context.
+// //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+// this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+// }
+
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"./items.obj.actions":402,"./items.obj.getters":403,"./items.obj.mutations":405,"./items.obj.state":406,"lodash":338,"vue":347}],405:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -75908,7 +76041,62 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 //
 // },
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416}],405:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417}],406:[function(require,module,exports){
+'use strict';
+
+var Vue = require('vue');
+
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.Items has the Item's database id as key and an Item object
+ * as value. That is:
+ *      state.Items[Item.id] = Item
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * ItemIndex to the database id
+ */
+module.exports = {
+
+  /**
+   * This holds the current item objects.
+   * Because we now want maximal flexibility in how we store and
+   * retrieve item objects, we store them in a simple list.
+   * The access to the items in the last is handled by getters
+   * which filter the list on whatever internal property of the item
+   * a particular use case needs.
+   */
+  items: [],
+
+  // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
+  /**
+   * Mapping from older ItemIndex to new Item id value
+   */
+  indexMap: new Map(),
+
+  orderMap: {}
+};
+
+// Object indexed by Item id holding Item objects
+// On load the root exam object and first item are created but given no
+// ids. thus we will eventually need to create an exam object if one isn't set
+//
+// However don't ask the server to create an id just yet
+// lookup the exam object that resides at index 0
+// this will have either been newly created on page load
+// or it will be an existing exam object loaded from the db
+// let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+// //Call the set active exam method
+// //We do this rather than call the mutation directly
+// //because there may need to be various other events and
+// //things which need to happen depending on the context.
+// //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+// this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+// }
+
+},{"vue":347}],407:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -75984,7 +76172,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         if (currentNode.data === parentSerialNumber) {
             var pl = _Payload2.default.factory({ index: index, obj: n, parent: currentNode });
 
-            commit('insert', pl);
+            commit(mTypes.insertNodeIntoOrder, pl);
             return false;
         }
         return true;
@@ -76002,10 +76190,10 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
     var toRemove = getters[gTypes.getItemNodeFromOrder](serialNumber);
     var parent = getters[gTypes.getItemNodeFromOrder](toRemove.parent);
     var pl = _Payload2.default.factory({ obj: toRemove, parent: parent });
-    commit('remove', pl);
+    commit(mTypes.removeNodeFromOrder, pl);
 }), _module$exports);
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"./items.order.actions":405,"./items.order.getters":406,"lodash":338,"vue":347}],406:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"./items.order.actions":407,"./items.order.getters":408,"lodash":338,"vue":347}],408:[function(require,module,exports){
 'use strict';
 
 var _module$exports;
@@ -76055,548 +76243,62 @@ var Vue = require('vue');
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
     return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
-}), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, serialNumber) {
-    return function (state, serialNumber) {
-        var callback = function callback(node) {
-            if (!callback.found) callback.found = [];
-            // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-            if (node.data === serialNumber) {
-                callback.found.push(node);
-                // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-                return true;
-            }
-            return false;
-        };
-        (0, _NodeTools.traverseBF)(state.itemMap, callback);
-        var result = callback.found[0];
-        return result;
-    }(state, serialNumber);
-}), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters, serialNumber) {
-    var level = 0;
+}), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters) {
+    return function (serialNumber) {
+        return function (state, serialNumber) {
+            var callback = function callback(node) {
+                if (!callback.found) callback.found = [];
+                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+                if (node.data === serialNumber) {
+                    callback.found.push(node);
+                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                    return true;
+                }
+                return false;
+            };
+            (0, _NodeTools.traverseBF)(state.itemMap, callback);
+            var result = callback.found[0];
+            return result;
+        }(state, serialNumber);
+    };
+}), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters) {
+    return function (serialNumber) {
+        var level = 0;
 
-    return function recurse(serialNumber) {
-        // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-        //look up the node whose serial number we've just  been handed.
-        var node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-        //break condition is that we've hit the exam
-        //which is of course the only item which is its
-        //own parent
-        if (node.parent === node.data) return level;
-        //Otherwise, increment the level counter
-        // and re-run on the parent
-        level += 1;
-        return recurse(node.parent);
-    }(serialNumber);
+        return function recurse(serialNumber) {
+            // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
+            //look up the node whose serial number we've just  been handed.
+            var node = getters[gTypes.getItemNodeFromOrder](serialNumber); //(state, getters, serialNumber);
+            //break condition is that we've hit the exam
+            //which is of course the only item which is its
+            //own parent
+            if (node.parent === node.data) return level;
+            //Otherwise, increment the level counter
+            // and re-run on the parent
+            level += 1;
+            return recurse(node.parent);
+        }(serialNumber);
+    };
 }), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, serialNumber) {
     //look up the node whose serial number we've just  been handed.
-    var node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-    var parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
-    if (parent) {
-        for (var index = 0; index < parent.children.length; index++) {
-            if (parent.children[index] === node) {
-                return index;
+    var node = getters[gTypes.getItemNodeFromOrder](serialNumber); //(state, getters, serialNumber);
+    if (node) {
+        var parent = getters[gTypes.getItemNodeFromOrder](node.parent); //(state, getters, node.parent);
+        if (parent) {
+            for (var index = 0; index < parent.children.length; index++) {
+                if (parent.children[index] === node) {
+                    return index;
+                }
             }
         }
     }
+    return 0;
 }), _module$exports);
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"lodash":338,"vue":347}],407:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/NodeTools":387,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"lodash":338,"vue":347}],409:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutationTypes = require('../../store/mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = require('../../store/action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = require('../../store/getter-types');
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = require('../../models/Item');
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = require('../../models/Exam');
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = require('../../models/Node');
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _itemsOrder = require('./items.order.mutations');
-
-var orderMutations = _interopRequireWildcard(_itemsOrder);
-
-var _itemsOrder2 = require('./items.order.actions');
-
-var orderActions = _interopRequireWildcard(_itemsOrder2);
-
-var _itemsOrder3 = require('./items.order.getters');
-
-var orderGetters = _interopRequireWildcard(_itemsOrder3);
-
-var _itemsOrder4 = require('./items.order.state');
-
-var orderState = _interopRequireWildcard(_itemsOrder4);
-
-var _NodeTools = require('../../../../../resources/assets/js/models/NodeTools');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-/**
- * Created by adam on 4/11/17.
- */
-
-var _ = window._ = require('lodash');
-var Vue = require('vue');
-
-var getItemFromOrder = function getItemFromOrder(order, idx) {
-    var itm = order[0];
-    //idx is a tuple stored as an array
-    for (var i = 0; i < idx.length; i++) {
-        itm = itm.children[i];
-    }
-    return itm;
-};
-
-var getItemFromList = function getItemFromList(orderList, idx) {
-    var itm = orderList[0];
-    //idx is a tuple stored as an array
-    for (var i = 0; i < idx.length; i++) {
-        itm = itm[1][i];
-    }
-    return itm;
-};
-
-var state = orderState;
-// {
-//     itemMap: new Node( 0, 0 ),
-//
-//     /*
-//      * What we want to have is the ability to store nested
-//      * tuples which map the item to a position on an exam
-//      * (which is itself formally an item).
-//      * order : {
-//      *      0 : {
-//      *          id: null,
-//      *          children: {
-//      *              0 : {
-//      *                      id: null.
-//      *                      children: {}
-//      *                 }
-//      *          }
-//      *      }
-//      }
-//      *
-//      * */
-//     //the first value in the array is the item's id
-//     //the second value is an array of children
-//     // orderMap: new Map(),
-//     // orderList: [],
-//     //
-//     // order: {
-//     //     0: {
-//     //         id: null,
-//     //         children: {
-//     //             0: {
-//     //                 id: null,
-//     //                 children: {}
-//     //             }
-//     //         }
-//     //     }
-//     // }
-//     // orderMap: new Map(),
-//     // order: {}
-//
-// };
-
-var mutations = orderMutations;
-
-// {
-//         insert: ( state, payload ) => {
-//             let { index, obj, parent } = payload;
-//
-//             //type check
-//             if ( !parent instanceof Node ) return false;
-//             if ( !obj instanceof Node ) return false;
-//
-//             //if an index was specified, splice it in at the index
-//             if ( !_.isUndefined( index ) ) {
-//                 return parent.children.splice( index, 0, obj );
-//             }
-//             //otherwise just push it on the end
-//             return parent.children.push( obj );
-//
-//         },
-//
-//
-//         remove: ( state, payload ) => {
-//             let { obj, parent } = payload;
-//             //Merge its children into its parent's children
-//             parent.children.concat( obj.children );
-//             //delete the node
-//             let idx = parent.children.indexOf( obj );
-//             parent.children.splice( idx, 1 );
-//         },
-//
-//         /*
-//          // addMappedItem: ( state, idx, toAdd ) => {
-//          //     state.orderMap.set( idx, toAdd );
-//          // },
-//
-//          //these should probably be methods on node
-//          //or maybe not since that would make it harder
-//          //to remove a child without also removing its
-//          //children (if we want that to be an option)
-//          //         addChild: ( state, idx, idToAdd ) => {
-//          //             let child = [ idToAdd, [] ];
-//          //             let itm = orderList[ 0 ];
-//          //             //idx is a tuple stored as an array
-//          //             for (let i = 0; i < idx.length; i++) {
-//          //                 itm = itm[ 1 ][ i ]
-//          //             }
-//          //             let children = itm[ 1 ];
-//          //             children.push( child );
-//          //             Vue.set( itm, 1, children );
-//          //             //
-//          //             //
-//          //             // let item = getItemFromList(state.orderList,  idx);
-//          //             // if (! _.isEmpty(item)){
-//          //             //     let maxIndex = _.last( Object.keys(item.children));
-//          //             //     item.children
-//          //             // }
-//          //
-//          //             // let item = getItemFromOrder(state.order,  idx);
-//          // // if (! _.isEmpty(item)){
-//          // //     let maxIndex = _.last( Object.keys(item.children));
-//          // //     item.children
-//          // // }
-//          //
-//          //         },
-//          //
-//          //         addParent: ( state, existing, toAdd ) => {
-//          //
-//          //         //
-//          //         },
-//          // addOlderSibling: ( state, existing, toAdd ) => {
-//          // },
-//          // addYoungerSibling: ( state, existing, toAdd ) => {
-//          // },
-//          */
-// //
-//     }
-// ;
-
-/**
- * Only these can call the mutations.
- * That is, no external method should call a mutation.
- * Thus there needs to be at least one action  for each mutation.
- *
- * Since most of this will require at least
- * two steps (find the item in the tree, update it, etc),
- * The mutations will receive the parent node and
- * new child node (or node to be removed, etc).
- *
- * @type {{}}
- */
-var actions = orderActions;
-// {
-//
-//     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-//         let { index, obj, id, parent } = payload;
-//
-//         //Sort out whether obj and parent are nodes or items
-//         let toAddSerialNumber = getSerialNumber(obj);
-//         let parentSerialNumber = getSerialNumber(parent)
-//             let n = new Node(toAddSerialNumber, parentSerialNumber );
-//
-//         let f = function ( currentNode ) {
-//             if ( currentNode.data === parentSerialNumber ) {
-//                 let pl = Payload.factory( { index: index, obj: n, parent: currentNode } );
-//
-//                 commit( 'insert', pl );
-//                 return false;
-//             }
-//             return true;
-//         }
-//
-//         traverseDF( state.itemMap, f );
-//
-//     },
-//
-//     [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-//         let {serialNumber} = payload;
-//         // let  serialNumber = getSerialNumber(payload);
-//         let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-//         let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
-//         let pl = Payload.factory( { obj: toRemove, parent: parent } );
-//         commit( 'remove', pl );
-//     },
-//
-// };
-
-var getters = orderGetters; //r{
-//
-//     /**
-//      * Returns the children array of
-//      * the exam stored as itemMap. It includes the exam
-//      * @param state
-//      * @param getters
-//      * @returns {Node}
-//      */
-//     [gTypes.getItemMapCopy]: ( state, getters ) => {
-//         return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
-//     },
-//
-//     [gTypes.getItemNodeFromOrder]: ( state, getters, serialNumber ) => {
-//         return (function ( state, serialNumber ) {
-//             let callback = function ( node ) {
-//                 if ( !callback.found ) callback.found = [];
-//                 // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-//                 if ( node.data === serialNumber ) {
-//                     callback.found.push( node );
-//                     // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-//                     return true;
-//                 }
-//                 return false;
-//             };
-//             traverseBF( state.itemMap, callback );
-//             let result = callback.found[ 0 ];
-//             return result;
-//         })( state, serialNumber )
-//     },
-//
-//     /**
-//      * Find the number of parents the node has
-//      * @param state
-//      * @param getters
-//      * @param serialNumber
-//      */
-//     [gTypes.getHeightOfNode]: ( state, getters, serialNumber ) => {
-//         let level = 0;
-//
-//         return (function recurse( serialNumber ) {
-//             // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-//             //look up the node whose serial number we've just  been handed.
-//             let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-//             //break condition is that we've hit the exam
-//             //which is of course the only item which is its
-//             //own parent
-//             if (node.parent === node.data) return level;
-//             //Otherwise, increment the level counter
-//             // and re-run on the parent
-//             level += 1;
-//             return recurse(node.parent);
-//         })( serialNumber );
-//     },
-//
-//
-//
-//     /**
-//      * Find the index position of the node in its parent's children array
-//      * @param state
-//      * @param getters
-//      * @param serialNumber
-//      */
-//     [gTypes.getDepthOfNode]: ( state, getters, serialNumber ) => {
-//         //look up the node whose serial number we've just  been handed.
-//         let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-//         let parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
-//         if(parent){
-//             for(let index=0; index<parent.children.length; index++){
-//                 if(parent.children[index] === node){
-//                     return index;
-//                 }
-//             }
-//         }
-//     }
-//
-// };
-
-
-// /**
-//  * Given a serial number, returns true if that serial number is
-//  * in the tree and false otherwise.
-//  * @param state
-//  * @param getters
-//  */
-// containsSerialNumber: ( state, getters ) => ( serialNumber ) => {
-//     //todo
-// },
-//
-// /**
-//  * Looks up the serial number of the item which is
-//  * occupying the position identified by the index.
-//  * @param index
-//  */
-// getItemSerialNumberFromIndex: ( state, getters ) => ( index ) => {
-//     //remove the payload wrapper if necessary
-//     if ( Payload.checkIfPayload( index ) ) {
-//         index = index.index;
-//     }
-//
-//     //if this is a single member array, we can treat
-//     //it like a numeric input under the older system
-//     if ( _.isArray( index ) && index.length === 1 ) {
-//         index = index[ 0 ];
-//     }
-//
-//     //Now we're ready to deal with the input
-//     return function ( state, index ) {
-//         //There are two cases to consider
-//         //We deal first with the easy case in which the index
-//         //is a number or string representation of a number
-//         //and not a composite
-//         if ( !_.isArray( index ) ) {
-//             //if was just a string or integer this is fine
-//             //also if the input was an array with only one item
-//             var r = state.orderings.filter( function ( i ) {
-//                 if ( i.index === index ) {
-//                     return i;
-//                 }
-//             } );
-//             return r[ 0 ];
-//         }
-//
-//         else {
-//             //we need to do something different
-//             //because it is an array
-//             if ( _.isArray( index ) ) {
-//                 let idx = index.join( '-' );
-//             }
-//
-//         }
-//
-//     }( state, index );
-//
-// },
-//
-// /**
-//  * Given an item's permanent unique identifier, it returns
-//  * up the item's location
-//  * @param serialNumber
-//  */
-// getIndexFromItemSerialNumber: ( state, getters ) => ( serialNumber ) => {
-//     let callback = ( node ) => {
-//         if ( node.serialNumber === serialNumber ) {
-//             return node;
-//         }
-//     }
-//     // this is a recurse and immediately-invoking function
-//     (function recurse( currentNode ) {
-//         // step 2
-//         for (var i = 0, length = currentNode.children.length; i < length; i++) {
-//             // step 3
-//             recurse( currentNode.children[ i ] );
-//         }
-//
-//         // step 4
-//         callback( currentNode );
-//
-//         // step 1
-//     })( this._root );
-//
-// },
-//
-// getAllNodesAtLevel: ( state, getters ) => ( level ) => {
-//     if ( level === 0 ) {
-//         //special case because 0,0 is the exam
-//         //so we need to subtract 1
-//     } else {
-//         //All other cases we can just return the count
-//     }
-//
-// },
-//
-// /**
-//  * Returns the total number of items at the specified
-//  * level.
-//  * Level 0 : Questions
-//  * Level 1 : Elements
-//  * ...
-//  * @param state
-//  * @param getters
-//  */
-// getCountOfLevel: ( state, getters ) => ( level ) => {
-//     if ( level === 0 ) {
-//         //special case because 0,0 is the exam
-//         //so we need to subtract 1
-//     } else {
-//         //All other cases we can just return the count
-//     }
-//
-// },
-//
-//
-// getMappedItem: ( state, getters ) => ( idx ) => {
-//     return state.orderMap.get( idx );
-// },
-//
-// // getItemFromOrder: ( state, getters ) => ( idx ) => {
-// //     let itm = state.order[ 0 ];
-// //     //idx is a tuple stored as an array
-// //     for (let i = 0; i < idx.length; i++) {
-// //         itm = itm.children[ i ]
-// //     }
-// //     return itm;
-// // },
-//
-// getItemByIdx: ( state, getters ) => ( idx ) => {
-//     let stringKey = Item.buildKeyFromIdx( idx );
-//
-//     return function ( state, idx ) {
-//         var r = state.items.filter( function ( i ) {
-//             if ( i.idxStore === stringKey ) {
-//                 return i;
-//             }
-//             return r[ 0 ];
-//         } )
-//     };
-// },
-//
-//
-// getSiblingsAndChildrenByIdx: ( state, getters ) => ( idx ) => {
-//     let stringKey = Item.buildKeyFromIdx( idx );
-//
-//     return function ( state, idx ) {
-//         var r = state.items.filter( function ( i ) {
-//             if ( _.startsWith( stringKey, idx ) ) {
-//                 return i;
-//             }
-//             return r[ 0 ];
-//         } )
-//     }
-// }
-
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-},{"../../../../../resources/assets/js/models/NodeTools":387,"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"./items.order.actions":405,"./items.order.getters":406,"./items.order.mutations":408,"./items.order.state":409,"lodash":338,"vue":347}],408:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.mutations = undefined;
+var _module$exports;
 
 var _mutationTypes = require('../../store/mutation-types');
 
@@ -76629,6 +76331,8 @@ var _Node2 = _interopRequireDefault(_Node);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * Created by adam on 6/12/17.
@@ -76637,39 +76341,34 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var _ = window._ = require('lodash');
 var Vue = require('vue');
 
-var mutations = exports.mutations = {
-    insertNodeIntoOrder: function insert( state, payload) {
-        var index = payload.index,
-            obj = payload.obj,
-            parent = payload.parent;
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
+    var index = payload.index,
+        obj = payload.obj,
+        parent = payload.parent;
 
-        //type check
+    //type check
 
-        if (!parent instanceof _Node2.default) return false;
-        if (!obj instanceof _Node2.default) return false;
+    if (!parent instanceof _Node2.default) return false;
+    if (!obj instanceof _Node2.default) return false;
 
-        //if an index was specified, splice it in at the index
-        if (!_.isUndefined(index)) {
-            return parent.children.splice(index, 0, obj);
-        }
-        //otherwise just push it on the end
-        return parent.children.push(obj);
-    },
-
-    remove: function remove(state, payload) {
-        var obj = payload.obj,
-            parent = payload.parent;
-        //Merge its children into its parent's children
-
-        parent.children.concat(obj.children);
-        //delete the node
-        var idx = parent.children.indexOf(obj);
-        parent.children.splice(idx, 1);
+    //if an index was specified, splice it in at the index
+    if (!_.isUndefined(index)) {
+        return parent.children.splice(index, 0, obj);
     }
+    //otherwise just push it on the end
+    return parent.children.push(obj);
+}), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
+    var obj = payload.obj,
+        parent = payload.parent;
+    //Merge its children into its parent's children
 
-};
+    parent.children.concat(obj.children);
+    //delete the node
+    var idx = parent.children.indexOf(obj);
+    parent.children.splice(idx, 1);
+}), _module$exports);
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"lodash":338,"vue":347}],409:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"lodash":338,"vue":347}],410:[function(require,module,exports){
 'use strict';
 
 var _mutationTypes = require('../../store/mutation-types');
@@ -76716,7 +76415,7 @@ module.exports = {
 
 };
 
-},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":416,"lodash":338,"vue":347}],410:[function(require,module,exports){
+},{"../../models/Exam":383,"../../models/Item":385,"../../models/Node":386,"../../models/Payload":388,"../../store/action-types":391,"../../store/getter-types":393,"../../store/mutation-types":417,"lodash":338,"vue":347}],411:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76826,7 +76525,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],411:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76965,7 +76664,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../../models/Question":389,"../action-types":391,"../mutation-types":416}],412:[function(require,module,exports){
+},{"../../models/Payload":388,"../../models/Question":389,"../action-types":391,"../mutation-types":417}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77034,7 +76733,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],413:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],414:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77154,7 +76853,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../../models/Student":390,"../action-types":391,"../mutation-types":416}],414:[function(require,module,exports){
+},{"../../models/Payload":388,"../../models/Student":390,"../action-types":391,"../mutation-types":417}],415:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77291,7 +76990,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../mutation-types":416}],415:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../mutation-types":417}],416:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77387,7 +77086,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":388,"../action-types":391,"../getter-types":393,"../mutation-types":416}],416:[function(require,module,exports){
+},{"../../models/Payload":388,"../action-types":391,"../getter-types":393,"../mutation-types":417}],417:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77467,6 +77166,10 @@ var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
 var updateOrder = exports.updateOrder = 'updateOrder';
 
+//item.order
+var insertNodeIntoOrder = exports.insertNodeIntoOrder = 'insertNodeIntoOrder';
+var removeNodeFromOrder = exports.removeNodeFromOrder = 'removeNodeFromOrder';
+
 var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
 var updateItemSilently = exports.updateItemSilently = 'updateItemSilently';
@@ -77485,7 +77188,7 @@ var showItemSettings = exports.showItemSettings = 'showItemSettings';
 var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
 var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
 
-},{}],417:[function(require,module,exports){
+},{}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77519,7 +77222,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":416}],418:[function(require,module,exports){
+},{"./mutation-types":417}],419:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

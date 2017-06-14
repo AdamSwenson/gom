@@ -83,7 +83,7 @@
         methods: {
 
             getExam: function () {
-                return this.$store.getters.getItemByIndex(0);
+                return this.$store.getters[gTypes.getItemByIndex](0);
 //                return this.$store.getters[ gTypes.getActiveExamObj ];
             },
 

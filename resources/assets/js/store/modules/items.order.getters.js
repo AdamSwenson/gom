@@ -30,19 +30,19 @@ module.exports = {
         return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
     },
 
-    [gTypes.getItemNodeFromOrder]: ( state, getters, serialNumber ) => {
+    [gTypes.getItemNodeFromOrder]: function( state, getters, serialNumber )  {
         return (function ( state, serialNumber ) {
             let callback = function ( node ) {
                 if ( !callback.found ) callback.found = [];
-                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+                window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
                 if ( node.data === serialNumber ) {
                     callback.found.push( node );
-                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                    window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
                     return true;
                 }
                 return false;
             };
-            traverseBF( state.itemMap, callback );
+            traverseDF( state.itemMap, callback );
             let result = callback.found[ 0 ];
             return result;
         })( state, serialNumber )
@@ -54,21 +54,21 @@ module.exports = {
      * @param getters
      * @param serialNumber
      */
-    [gTypes.getHeightOfNode]: ( state, getters, serialNumber ) => {
+    [gTypes.getHeightOfNode]: function ( state, getters,  serialNumber ) {
         let level = 0;
 
         return (function recurse( serialNumber ) {
             // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
             //look up the node whose serial number we've just  been handed.
-            let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
+            let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
             //break condition is that we've hit the exam
             //which is of course the only item which is its
             //own parent
-            if (node.parent === node.data) return level;
+            if ( node.parent === node.data ) return level;
             //Otherwise, increment the level counter
             // and re-run on the parent
             level += 1;
-            return recurse(node.parent);
+            return recurse( node.parent );
         })( serialNumber );
     },
 
@@ -78,17 +78,20 @@ module.exports = {
      * @param getters
      * @param serialNumber
      */
-    [gTypes.getDepthOfNode]: ( state, getters, serialNumber ) => {
+    [gTypes.getDepthOfNode]: function( state, getters,  serialNumber )  {
         //look up the node whose serial number we've just  been handed.
-        let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-        let parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
-        if(parent){
-            for(let index=0; index<parent.children.length; index++){
-                if(parent.children[index] === node){
-                    return index;
+        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
+        if ( node ) {
+            let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
+            if ( parent ) {
+                for (let index = 0; index < parent.children.length; index++) {
+                    if ( parent.children[ index ].data === node.data ) {
+                        return index;
+                    }
                 }
             }
         }
+        return 0;
     }
 
 

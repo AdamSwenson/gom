@@ -16,8 +16,8 @@ module.exports = function ( config ) {
         files: [
             // 'resources/assets/js/data/Store.js',
             // 'data/Data.js',
-            'store/index.js',
-            'tests/spec/tests/**/*.spec.js',
+            {pattern : 'store/index.js', watched: false},
+            {pattern: 'tests/spec/tests/**/*.spec.js', watched: false},
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
             { pattern: 'tests/spec/fixtures/*.fixture.html', included: false },
             { pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css' },
@@ -28,8 +28,8 @@ module.exports = function ( config ) {
         // list of files to exclude
         exclude: [],
 
-        // preprocess matching files before serving them to the browser
-        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+       // preprocess matching files before serving them to the browser
+       //  available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
             // 'resources/assets/js/data/*.js': ['rollup', 'browserify'],
             'node_modules/jasmine-core': [ 'browserify' ],
@@ -41,12 +41,63 @@ module.exports = function ( config ) {
         browserify: {
             debug: true,
             transform: [
-                [ 'babelify', { "presets": [ "es2015" ] } ],
+                [ 'babelify', { "presets": [ "env","latest" ] } ],
                 'stringify',
                 'vueify'
             ],
         },
+       //  files: [
+       //      // all files ending in "_test"
+       //      {pattern: 'test/*_test.js', watched: false},
+       //      {pattern: 'test/**/*_test.js', watched: false}
+       //      // each file acts as entry point for the webpack configuration
+       //  ],
+       //
+       //  preprocessors: {
+       //      // add webpack as preprocessor
+       //      'tests/spec/tests/**/*.spec.js': ['webpack', 'vue-loader']
+       //       },
+       //
+       //  webpack: {
+       //      // karma watches the test entry points
+       //      // (you don't need to specify the entry option)
+       //      // webpack watches dependencies
+       //
+       //      // webpack configuration
+       //  },
+       //
+       //  webpackMiddleware: {
+       //      // webpack-dev-middleware configuration
+       //      // i. e.
+       //      stats: 'errors-only'
+       //  },
+       //
 
+        // preprocessors: {
+        //     // add webpack as preprocessor
+        //     'node_modules/jasmine-core': [ 'webpack' ],
+        //     'tests/spec/**/*.js': [  'webpack' , 'sourcemap'],
+        //     // 'resources/assets/js/**/*.js': [ 'webpack' , 'sourcemap'],
+        //     // 'tests/spec/test_index.js': ['webpack', 'sourcemap']
+        //     // 'tests/spec/*_test.js': ['webpack'],
+        //     // 'test/**/*_test.js': ['webpack']
+        // },
+        //
+        // webpack: {
+        //     // karma watches the test entry points
+        //     // (you don't need to specify the entry option)
+        //     // webpack watches dependencies
+        //
+        //     // webpack configuration
+        //     devtool: 'inline-source-map'
+        // },
+        //
+        // webpackMiddleware: {
+        //     // webpack-dev-middleware configuration
+        //     // i. e.
+        //     stats: 'errors-only'
+        // },
+        //
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
