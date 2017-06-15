@@ -63,7 +63,6 @@ const mutations = {
             }
         }
         else {
-            window.console.log('activeexam', 'jjj', 65,);
             //check if the 0th item is the exam. If so,
             //that's what we are supposed to be altering
             //Hold up. You're probably pretty confused. Let me explain:

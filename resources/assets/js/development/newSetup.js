@@ -3,8 +3,8 @@
  * Created by adam on 2/15/17.
  */
 
-import Vue from  'vue/dist/vue.js'
-// import Vue from 'vue'
+// import Vue from  'vue/dist/vue.js'
+import Vue from 'vue'
 // ES build is more efficient by reducing unneeded components with tree-shaking.
 // (Needs Webpack 2 or Rollup)
 // import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';

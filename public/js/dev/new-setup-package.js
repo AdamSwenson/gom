@@ -44504,11 +44504,11 @@ process.umask = function() { return 0; };
 			}
 
 			try {
-				if (document.selection) {					
-					// Timeout neccessary for IE9					
+				if (document.selection) {
+					// Timeout neccessary for IE9
 					setTimeout(function () {
 						document.selection.empty();
-					});					
+					});
 				} else {
 					window.getSelection().removeAllRanges();
 				}
@@ -44761,8 +44761,13 @@ process.umask = function() { return 0; };
 
 
 				if ((el.children.length === 0) || (el.children[0] === ghostEl) ||
-					(el === evt.target) && (target = _ghostIsLast(el, evt))
+					(el === evt.target) && (_ghostIsLast(el, evt))
 				) {
+					//assign target only if condition is true
+					if (el.children.length !== 0 && el.children[0] !== ghostEl && el === evt.target) {
+						target = el.lastElementChild;
+					}
+
 					if (target) {
 						if (target.animated) {
 							return;
@@ -44800,34 +44805,36 @@ process.umask = function() { return 0; };
 						isLong = (target.offsetHeight > dragEl.offsetHeight),
 						halfway = (floating ? (evt.clientX - targetRect.left) / width : (evt.clientY - targetRect.top) / height) > 0.5,
 						nextSibling = target.nextElementSibling,
-						moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt),
 						after = false
 					;
 
+					if (floating) {
+						var elTop = dragEl.offsetTop,
+							tgTop = target.offsetTop;
+
+						if (elTop === tgTop) {
+							after = (target.previousElementSibling === dragEl) && !isWide || halfway && isWide;
+						}
+						else if (target.previousElementSibling === dragEl || dragEl.previousElementSibling === target) {
+							after = (evt.clientY - targetRect.top) / height > 0.5;
+						} else {
+							after = tgTop > elTop;
+						}
+						} else if (!isMovingBetweenSortable) {
+						after = (nextSibling !== dragEl) && !isLong || halfway && isLong;
+					}
+
+					var moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, after);
+
 					if (moveVector !== false) {
+						if (moveVector === 1 || moveVector === -1) {
+							after = (moveVector === 1);
+						}
+
 						_silent = true;
 						setTimeout(_unsilent, 30);
 
 						_cloneHide(activeSortable, isOwner);
-
-						if (moveVector === 1 || moveVector === -1) {
-							after = (moveVector === 1);
-						}
-						else if (floating) {
-							var elTop = dragEl.offsetTop,
-								tgTop = target.offsetTop;
-
-							if (elTop === tgTop) {
-								after = (target.previousElementSibling === dragEl) && !isWide || halfway && isWide;
-							}
-							else if (target.previousElementSibling === dragEl || dragEl.previousElementSibling === target) {
-								after = (evt.clientY - targetRect.top) / height > 0.5;
-							} else {
-								after = tgTop > elTop;
-							}
-						} else if (!isMovingBetweenSortable) {
-							after = (nextSibling !== dragEl) && !isLong || halfway && isLong;
-						}
 
 						if (!dragEl.contains(el)) {
 							if (after && !nextSibling) {
@@ -44885,6 +44892,7 @@ process.umask = function() { return 0; };
 			_off(ownerDocument, 'touchend', this._onDrop);
 			_off(ownerDocument, 'pointerup', this._onDrop);
 			_off(ownerDocument, 'touchcancel', this._onDrop);
+			_off(ownerDocument, 'pointercancel', this._onDrop);
 			_off(ownerDocument, 'selectstart', this);
 		},
 
@@ -44912,11 +44920,11 @@ process.umask = function() { return 0; };
 					!options.dropBubble && evt.stopPropagation();
 				}
 
-				ghostEl && ghostEl.parentNode.removeChild(ghostEl);
+				ghostEl && ghostEl.parentNode && ghostEl.parentNode.removeChild(ghostEl);
 
 				if (rootEl === parentEl || Sortable.active.lastPullMode !== 'clone') {
 					// Remove clone
-					cloneEl && cloneEl.parentNode.removeChild(cloneEl);
+					cloneEl && cloneEl.parentNode && cloneEl.parentNode.removeChild(cloneEl);
 				}
 
 				if (dragEl) {
@@ -44930,6 +44938,9 @@ process.umask = function() { return 0; };
 					// Remove class's
 					_toggleClass(dragEl, this.options.ghostClass, false);
 					_toggleClass(dragEl, this.options.chosenClass, false);
+
+					// Drag stop event
+					_dispatchEvent(this, rootEl, 'unchoose', dragEl, rootEl, oldIndex);
 
 					if (rootEl !== parentEl) {
 						newIndex = _index(dragEl, options.draggable);
@@ -45295,7 +45306,7 @@ process.umask = function() { return 0; };
 	}
 
 
-	function _onMove(fromEl, toEl, dragEl, dragRect, targetEl, targetRect, originalEvt) {
+	function _onMove(fromEl, toEl, dragEl, dragRect, targetEl, targetRect, originalEvt, willInsertAfter) {
 		var evt,
 			sortable = fromEl[expando],
 			onMoveFn = sortable.options.onMove,
@@ -45310,6 +45321,7 @@ process.umask = function() { return 0; };
 		evt.draggedRect = dragRect;
 		evt.related = targetEl || toEl;
 		evt.relatedRect = targetRect || toEl.getBoundingClientRect();
+		evt.willInsertAfter = willInsertAfter;
 
 		fromEl.dispatchEvent(evt);
 
@@ -45338,10 +45350,8 @@ process.umask = function() { return 0; };
 
 		// 5 — min delta
 		// abs — нельзя добавлять, а то глюки при наведении сверху
-		return (
-			(evt.clientY - (rect.top + rect.height) > 5) ||
-			(evt.clientX - (rect.right + rect.width) > 5)
-		) && lastEl;
+		return (evt.clientY - (rect.top + rect.height) > 5) ||
+			(evt.clientX - (rect.left + rect.width) > 5);
 	}
 
 
@@ -45501,7 +45511,7 @@ process.umask = function() { return 0; };
 
 
 	// Export
-	Sortable.version = '1.5.1';
+	Sortable.version = '1.6.0';
 	return Sortable;
 });
 
@@ -49939,7 +49949,7 @@ module.exports = VueRouter;
 },{"_process":339}],346:[function(require,module,exports){
 (function (global){
 /*!
- * Vue.js v2.3.3
+ * Vue.js v2.3.4
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -54360,7 +54370,7 @@ Object.defineProperty(Vue$3.prototype, '$ssrContext', {
   }
 });
 
-Vue$3.version = '2.3.3';
+Vue$3.version = '2.3.4';
 
 /*  */
 
@@ -54851,6 +54861,7 @@ function createPatchFunction (backend) {
   function initComponent (vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);
+      vnode.data.pendingInsert = null;
     }
     vnode.elm = vnode.componentInstance.$el;
     if (isPatchable(vnode)) {
@@ -59627,7 +59638,7 @@ return Vue$3;
 },{}],347:[function(require,module,exports){
 (function (process,global){
 /*!
- * Vue.js v2.3.3
+ * Vue.js v2.3.4
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -64052,7 +64063,7 @@ Object.defineProperty(Vue$3.prototype, '$ssrContext', {
   }
 });
 
-Vue$3.version = '2.3.3';
+Vue$3.version = '2.3.4';
 
 /*  */
 
@@ -64543,6 +64554,7 @@ function createPatchFunction (backend) {
   function initComponent (vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);
+      vnode.data.pendingInsert = null;
     }
     vnode.elm = vnode.componentInstance.$el;
     if (isPatchable(vnode)) {
@@ -75585,43 +75597,41 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         });
         return r[0];
     }(state, id);
-}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters) {
-    return function (index) {
-        //remove the payload wrapper if necessary
-        if (_Payload2.default.checkIfPayload(index)) {
-            index = index.index;
-        }
+}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, index) {
+    //remove the payload wrapper if necessary
+    if (_Payload2.default.checkIfPayload(index)) {
+        index = index.index;
+    }
 
-        //if this is a single member array, we can treat
-        //it like a numeric input under the older system
-        if (_.isArray(index) && index.length === 1) {
-            index = index[0];
-        }
+    //if this is a single member array, we can treat
+    //it like a numeric input under the older system
+    if (_.isArray(index) && index.length === 1) {
+        index = index[0];
+    }
 
-        //Now we're ready to deal with the input
-        return function (state, index) {
-            //There are two cases to consider
-            //We deal first with the easy case in which the index
-            //is a number or string representation of a number
-            //and not a composite
-            if (!_.isArray(index)) {
-                //if was just a string or integer this is fine
-                //also if the input was an array with only one item
-                var r = state.items.filter(function (i) {
-                    if (i.index === index) {
-                        return i;
-                    }
-                });
-                return r[0];
-            } else {
-                //we need to do something different
-                //because it is an array
-                if (_.isArray(index)) {
-                    var idx = index.join('-');
+    //Now we're ready to deal with the input
+    return function (state, index) {
+        //There are two cases to consider
+        //We deal first with the easy case in which the index
+        //is a number or string representation of a number
+        //and not a composite
+        if (!_.isArray(index)) {
+            //if was just a string or integer this is fine
+            //also if the input was an array with only one item
+            var r = state.items.filter(function (i) {
+                if (i.index === index) {
+                    return i;
                 }
+            });
+            return r[0];
+        } else {
+            //we need to do something different
+            //because it is an array
+            if (_.isArray(index)) {
+                var idx = index.join('-');
             }
-        }(state, index);
-    };
+        }
+    }(state, index);
 }), _defineProperty(_module$exports, gTypes.getItemBySerialNumber, function (state, getters, serialNumber) {
     // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
     return function (state, serialNumber) {
@@ -75677,7 +75687,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
 }), _defineProperty(_module$exports, gTypes.getAllItemsList, function (state, getters) {
     //alias.
     // used to be used when items was different data structure
-    return getters[gTypes.getAllItems]; //(state, getters);
+    return getters[gTypes.getAllItems](state, getters);
     // // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
     // let out = [];
     // // if ( state.items.size > 0 ) {
@@ -76243,50 +76253,46 @@ var Vue = require('vue');
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
     return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
-}), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters) {
-    return function (serialNumber) {
-        return function (state, serialNumber) {
-            var callback = function callback(node) {
-                if (!callback.found) callback.found = [];
-                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-                if (node.data === serialNumber) {
-                    callback.found.push(node);
-                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-                    return true;
-                }
-                return false;
-            };
-            (0, _NodeTools.traverseBF)(state.itemMap, callback);
-            var result = callback.found[0];
-            return result;
-        }(state, serialNumber);
-    };
-}), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters) {
-    return function (serialNumber) {
-        var level = 0;
+}), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, serialNumber) {
+    return function (state, serialNumber) {
+        var callback = function callback(node) {
+            if (!callback.found) callback.found = [];
+            window.console.log('orderings', 'callback', 253, node.data, serialNumber);
+            if (node.data === serialNumber) {
+                callback.found.push(node);
+                window.console.log('orderings.spec', 'callback.found', 78, node, callback.found);
+                return true;
+            }
+            return false;
+        };
+        (0, _NodeTools.traverseDF)(state.itemMap, callback);
+        var result = callback.found[0];
+        return result;
+    }(state, serialNumber);
+}), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters, serialNumber) {
+    var level = 0;
 
-        return function recurse(serialNumber) {
-            // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-            //look up the node whose serial number we've just  been handed.
-            var node = getters[gTypes.getItemNodeFromOrder](serialNumber); //(state, getters, serialNumber);
-            //break condition is that we've hit the exam
-            //which is of course the only item which is its
-            //own parent
-            if (node.parent === node.data) return level;
-            //Otherwise, increment the level counter
-            // and re-run on the parent
-            level += 1;
-            return recurse(node.parent);
-        }(serialNumber);
-    };
+    return function recurse(serialNumber) {
+        // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
+        //look up the node whose serial number we've just  been handed.
+        var node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
+        //break condition is that we've hit the exam
+        //which is of course the only item which is its
+        //own parent
+        if (node.parent === node.data) return level;
+        //Otherwise, increment the level counter
+        // and re-run on the parent
+        level += 1;
+        return recurse(node.parent);
+    }(serialNumber);
 }), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, serialNumber) {
     //look up the node whose serial number we've just  been handed.
-    var node = getters[gTypes.getItemNodeFromOrder](serialNumber); //(state, getters, serialNumber);
+    var node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
     if (node) {
-        var parent = getters[gTypes.getItemNodeFromOrder](node.parent); //(state, getters, node.parent);
+        var parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
         if (parent) {
             for (var index = 0; index < parent.children.length; index++) {
-                if (parent.children[index] === node) {
+                if (parent.children[index].data === node.data) {
                     return index;
                 }
             }

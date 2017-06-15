@@ -9,7 +9,6 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 
-const Vue = require( 'vue' );
 
 const _ = window._ = require( 'lodash' );
 
@@ -206,7 +205,7 @@ module.exports = {
         // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
 
         let out = [];
-        for (let [ key, val ] of state.items) {
+        for (let [ key, val ] in state.items) {
             out.push( key );
         }
         return out;
@@ -227,16 +226,7 @@ module.exports = {
 //alias.
 // used to be used when items was different data structure
         return getters[ gTypes.getAllItems ](state, getters);
-        // // [gTypes.getAllItemsList ]: ( state, getters ) => ( items ) => {
-        // let out = [];
-        // // if ( state.items.size > 0 ) {
-        // for (let [ key, val ] of items) {
-        //     // for ( let [ key, val ] of state.items.entries() ) {
-        //     // console.log( 'getAllItemsList', key, val );
-        //     out.push( val );
-        // }
-        // // }
-        // return out;
+
     },
 
     /**
@@ -264,4 +254,4 @@ module.exports = {
     }
 
 
-}
+};

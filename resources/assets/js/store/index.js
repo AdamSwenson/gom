@@ -33,8 +33,8 @@
  *
  */
 
-import Vue from  'vue/dist/vue.js'
-// import Vue from 'vue'
+// import Vue from  'vue/dist/vue.js'
+import Vue from 'vue'
 import Vuex from 'vuex'
 
 import * as actions from './actions'

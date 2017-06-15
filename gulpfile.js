@@ -20,18 +20,23 @@ require('laravel-elixir-webpack-official')
 elixir( function ( mix ) {
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ styles ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    mix.sass( [
-        'common/common.sass'
-    ], 'public/css/common-package.css' );
+    // mix.sass( [
+    //     'common/common.sass'
+    // ], 'public/css/common-package.css' );
 
     //Normally this stuff will be integrated with another package. This is just for pages
     //which have no other js.
-    mix.browserify( 'common.js', 'public/js/common-package.js' );
+    // mix.webpack( 'common.js', 'public/js/common-package.js' );
 
 
     // mix.browserify('development/new-setup.vue', 'public/js/dev/new-setup-package.js');
-    mix.browserify(['development/bootstrap.js','development/newSetup.js'], 'public/js/dev/new-setup-package.js');
-mix.sass(['development/newSetup.scss', '../../../node_modules/bootstrap-vue/dist/bootstrap-vue.css' ], 'public/css/new-setup-package.css');
+
+    mix.webpack(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js');
+
+    //mix.sass(['development/newSetup.scss', '../../../node_modules/bootstrap-vue/dist/bootstrap-vue.css' ], 'public/css/new-setup-package.css');
+
+    // mix.js(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js')
+    //     .sass('resources/assets/sass/development/newSetup.sass', 'public/css/new-setup-package.css');
 
     //
     // elixir(function(mix) {
