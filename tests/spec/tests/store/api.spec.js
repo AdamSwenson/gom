@@ -1,8 +1,6 @@
 
 //test libraries
 require('jasmine-jquery');
-require('sinon');
-
 
 //Dependencies
 import * as api from '../../../../resources/assets/js/store/api.js';

@@ -15,7 +15,7 @@ var DataHelper = require( '../helpers/dataObject.helper' );
 //for fixture
 require( 'bootstrap' );
 var Vue = require( 'vue' );
-Vue.config.debug = true;
+
 
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/studentTable.component" );

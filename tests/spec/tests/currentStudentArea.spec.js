@@ -16,8 +16,8 @@ var Helper = require('../helpers/vueTesting.helper.js');
 
 //for fixture
 require( 'bootstrap' );
-var Vue = require( 'vue' );
-Vue.config.debug = true;
+// var Vue = require( 'vue' );
+//
 
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/currentStudentArea.component.js" );

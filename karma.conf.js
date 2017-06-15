@@ -16,8 +16,8 @@ module.exports = function ( config ) {
         files: [
             // 'resources/assets/js/data/Store.js',
             // 'data/Data.js',
-            {pattern : 'store/index.js', watched: false},
-            {pattern: 'tests/spec/tests/**/*.spec.js', watched: false},
+            { pattern: 'store/index.js', watched: false },
+            { pattern: 'tests/spec/tests/**/*.spec.js', watched: false },
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
             { pattern: 'tests/spec/fixtures/*.fixture.html', included: false },
             { pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css' },
@@ -28,50 +28,70 @@ module.exports = function ( config ) {
         // list of files to exclude
         exclude: [],
 
-       // preprocess matching files before serving them to the browser
-       //  available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        // preprocess matching files before serving them to the browser
+        //  available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        //  preprocessors: {
+        //      // 'resources/assets/js/data/*.js': ['rollup', 'browserify'],
+        //      'node_modules/jasmine-core': [ 'browserify' ],
+        //      'tests/spec/**/*.js': [  'browserify' ],
+        //      'resources/assets/js/**/*.js': [ 'browserify' ],
+        //  },
+
+
+        // browserify: {
+        //     debug: true,
+        //     transform: [
+        //         [ 'babelify', { "presets": [ "env","latest" ] } ],
+        //         'stringify',
+        //         'vueify'
+        //     ],
+        // },
+        //
+        //  files: [
+        //      // all files ending in "_test"
+        //      {pattern: 'test/*_test.js', watched: false},
+        //      {pattern: 'test/**/*_test.js', watched: false}
+        //      // each file acts as entry point for the webpack configuration
+        //  ],
+        //
         preprocessors: {
-            // 'resources/assets/js/data/*.js': ['rollup', 'browserify'],
-            'node_modules/jasmine-core': [ 'browserify' ],
-            'tests/spec/**/*.js': [  'browserify' ],
-            'resources/assets/js/**/*.js': [ 'browserify' ],
+            // add webpack as preprocessor
+            'tests/spec/tests/**/*.spec.js': [ 'webpack' ]
+        },
+        webpack: {
+            // karma watches the test entry points
+            // (you don't need to specify the entry option)
+            module: {
+                loaders: [
+                    {
+                        test: /\.js$/,
+                        loader: 'babel-loader',
+                        exclude: /node_modules/
+                    },
+                    {
+                        test: /\.vue$/,
+                        loader: 'vue-loader'
+                    },
+
+                    {
+                        test: /\.html$/,
+                        loader: 'html-loader'
+                    }
+                ]
+            }
         },
 
-
-        browserify: {
-            debug: true,
-            transform: [
-                [ 'babelify', { "presets": [ "env","latest" ] } ],
-                'stringify',
-                'vueify'
-            ],
+        webpackMiddleware: {
+            noInfo: true,
+            // webpack-dev-middleware configuration
+            // i. e.
+            stats: 'errors-only'
         },
-       //  files: [
-       //      // all files ending in "_test"
-       //      {pattern: 'test/*_test.js', watched: false},
-       //      {pattern: 'test/**/*_test.js', watched: false}
-       //      // each file acts as entry point for the webpack configuration
-       //  ],
-       //
-       //  preprocessors: {
-       //      // add webpack as preprocessor
-       //      'tests/spec/tests/**/*.spec.js': ['webpack', 'vue-loader']
-       //       },
-       //
-       //  webpack: {
-       //      // karma watches the test entry points
-       //      // (you don't need to specify the entry option)
-       //      // webpack watches dependencies
-       //
-       //      // webpack configuration
-       //  },
-       //
-       //  webpackMiddleware: {
-       //      // webpack-dev-middleware configuration
-       //      // i. e.
-       //      stats: 'errors-only'
-       //  },
-       //
+
+        module: {
+            noParse: [ /sinon\.js/ ]
+        },
+        //
 
         // preprocessors: {
         //     // add webpack as preprocessor

@@ -2,8 +2,8 @@
  * Created by adam on 3/21/17.
  */
 const { mix } = require('laravel-mix');
-require('laravel-elixir-webpack-official')
-require('laravel-elixir-vue-2');
+// require('laravel-elixir-webpack-official')
+// require('laravel-elixir-vue-2');
 
 /*
  |--------------------------------------------------------------------------
@@ -16,7 +16,8 @@ require('laravel-elixir-vue-2');
  |
  */
 mix.js('resources/assets/js/development/newSetup.js', 'public/js/dev/new-setup-package.js');
-  //  .sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
+
+mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
 
 
 // mix.js(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js');

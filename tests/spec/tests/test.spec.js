@@ -10,7 +10,7 @@ window.jQuery = jQuery;
 require( 'bootstrap' );
 var Vue = require( 'vue' );
 //dev
-Vue.config.debug = true;
+
 
 var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.component.js" );
 

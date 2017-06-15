@@ -14,7 +14,7 @@ var Helper = require( '../../helpers/vueTesting.helper.js' );
 //for fixture
 require( 'bootstrap' );
 var Vue = require( 'vue' );
-Vue.config.debug = true;
+
 
 //tested stuff
 var testedComponent = require( "../../../../resources/assets/js/development/components/old/itemSettings.component.js" );

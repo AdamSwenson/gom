@@ -6,11 +6,13 @@ window.jQuery = jQuery;
 //test libraries
 require( 'jasmine-jquery' );
 jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
-require( 'sinon' );
+// require( 'sinon' );
+// var sinon = require("sinon");
 var faker = require( 'faker' );
+// import sinon from 'sinon';
 
 var DataHelper = require( '../helpers/dataObject.helper' );
-
+// window.console.log( 'Data.spec', 'sinon', 14, sinon);
 //Dependencies
 // let Data = require( '../../../resources/assets/js/grade/components/Data.js' );
 import Data from '../../../resources/assets/js/data/Data.js';

@@ -3,9 +3,7 @@
  */
 //cf https://github.com/jasmine/jasmine-npm/issues/25
 var Vue = require( 'vue' );
-Vue.config.debug = true;
-
-require('sinon');
+import sinon from 'sinon'
 
 // file name must contain the word helper
 /**

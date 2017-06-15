@@ -1,6 +1,6 @@
 //test libraries
 require( 'jasmine-jquery' );
-require( 'sinon' );
+import sinon from 'sinon';
 let faker = require( 'faker' );
 
 import { testAction, description, factories } from '../../../helpers/vuex.spec.helpers';
