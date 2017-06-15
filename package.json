@@ -1,7 +1,13 @@
 {
   "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+  },
   "devDependencies": {
-    "babel": "^6.5.2",
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-preset-env": "^1.5.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.5.2",
@@ -15,8 +21,11 @@
     "browserify": "^13.0.1",
     "browserify-fs": "^1.0.0",
     "buble-loader": "^0.4.1",
-    "cross-env": "^5.0.1",
+    "cross-env": "^3.0.0",
+    "css-loader": "^0.25.0",
     "faker": "^3.1.0",
+    "file-loader": "^0.9.0",
+
     "fs": "0.0.2",
     "graceful-fs": "^4.1.4",
     "grunt": "^0.4.5",
@@ -54,18 +63,23 @@
     "laravel-mix": "^0.12.1",
     "lodash": "^4.17.4",
     "md5-hash-webpack-plugin": "^0.1.0",
-    "node-sass": "^4.5.3",
     "requirejs": "^2.2.0",
     "rollup-plugin-babel": "^2.6.1",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^5.0.1",
+    "scss-loader": "0.0.1",
     "send": "^0.15.1",
     "sharp": "^0.17.3",
     "sinon": "^1.17.4",
     "sinon-stub-promise": "^3.0.1",
     "stringify": "^5.1.0",
     "underscore-deep-extend": "^1.1.5",
+    "vue-loader": "^12.1.0",
     "watchify": "^3.7.0",
     "webpack-md5-hash": "0.0.5",
-    "window-size": "^0.3.0"
+    "window-size": "^0.3.0",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
     "axios": "^0.15.3",
@@ -105,8 +119,6 @@
     "npm": "^3.10.5",
     "pusher-js": "^4.0.0",
     "require-dir": "^0.3.2",
-    "sass-loader": "^6.0.6",
-    "scss-loader": "0.0.1",
     "send": "^0.15.3",
     "sortablejs": "^1.6.0",
     "typeahead": "^0.2.2",
@@ -118,7 +130,6 @@
     "vue-template-compiler": "^2.3.4",
     "vuedraggable": "^2.13.1",
     "vueify": "^9.4.1",
-    "vuex": "^2.3.0",
-    "webpack": "^2.6.1"
+    "vuex": "^2.3.0"
   }
 }

@@ -30,27 +30,20 @@ class ItemController extends Controller
 
     /**@var IExamRepository */
     protected $examDao;
-
     /**@var IQuestionRepository */
     protected $questionDao;
     /** @var IQuestionAssignmentRepository */
     protected $questionAssignmentDao;
-
     protected $questions;
     protected $requestIds;
     /** @var IStudentRepository */
     protected $studentDao;
     /** @var IElementRepository */
-    private $elementDao;
-    /**
-     * @var IElementAssignmentRepository
-     */
-    private $elementAssignmentDao;
-    /**
-     * @var IItemRepository
-     */
+    protected $elementDao;
+    /** @var IElementAssignmentRepository  */
+    protected $elementAssignmentDao;
+    /** @var IItemRepository */
     protected $itemRepository;
-
 
     public function __construct(
         IExamRepository $examDao,
