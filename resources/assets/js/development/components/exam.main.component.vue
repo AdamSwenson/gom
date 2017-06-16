@@ -83,7 +83,9 @@
         methods: {
 
             getExam: function () {
-                return this.$store.getters[gTypes.getItemByIndex](0);
+                window.console.log( 'exam.main.component', 'getExam', 86, this.$store.getters);
+                return this.$store.getters.getItemByIndex(0);
+//                return this.$store.getters[gTypes.getItemByIndex](0);
 //                return this.$store.getters[ gTypes.getActiveExamObj ];
             },
 

@@ -4,7 +4,7 @@
 
 
 const _ = window._ = require( 'lodash' );
-const Vue = require( 'vue' );
+// const Vue = require( 'vue' );
 
 import * as mTypes from '../../store/mutation-types'
 import * as aTypes from '../../store/action-types'
@@ -17,10 +17,14 @@ import Node from '../../models/Node'
 import { traverseDF, traverseBF, getSerialNumber } from '../../models/NodeTools'
 
 
-import getters from './items.order.getters'
-import actions from './items.order.actions'
+// let orderMutations  = require( './items.order.mutations');
+// import actions from './items.order.actions';
+//
+// import getters from  './items.order.getters';
+// let orderState  = require( './items.order.state');
 
-
+// import getters from './items.order.getters'
+// import actions from './items.order.actions'
 
 module.exports = {
     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {

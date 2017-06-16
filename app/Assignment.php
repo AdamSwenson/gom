@@ -1,0 +1,23 @@
+<?php
+namespace App;
+
+use Franzose\ClosureTable\Models\Entity;
+
+class Assignment extends Entity implements assignmentInterface
+{
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'assignments';
+
+    /**
+     * ClosureTable model instance.
+     *
+     * @var assignmentClosure
+     */
+    protected $closure = 'App\assignmentClosure';
+
+    protected $fillable = ['item_id', 'parent_id', 'depth'];
+}

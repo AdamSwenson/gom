@@ -17,7 +17,8 @@
         "spatie/laravel-tail": "^1.1",
         "laracasts/utilities": "^2.1",
         "pusher/pusher-php-server": "^2.6",
-        "spatie/flysystem-dropbox": "^1.0"
+        "spatie/flysystem-dropbox": "^1.0",
+        "franzose/closure-table": "4.*"
     },
     "require-dev": {
         "symfony/dom-crawler": "~3.0",

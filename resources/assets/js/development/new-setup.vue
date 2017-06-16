@@ -112,11 +112,11 @@
 
     var Sortable = require( 'sortablejs' );
 
-    import store from '../store'
-
+//    import store from '../store'
+//    window.console.log( 'new-setup', 'store', 116, store );
     export default {
 
-        store,
+//        store,
 
         data: function () {
             return {
@@ -129,7 +129,7 @@
                     ghostClass: "sortable-ghost", // Class name for the drop placeholder
                     dataIdAttr: 'data-id',
                     onUpdate: function(event){
-                        store.dispatch('onUpdate', event);
+                        this.$store.dispatch('onUpdate', event);
                     },
 //                    store: {
 //                        /**
@@ -163,7 +163,8 @@
         events: {},
 
         mounted: function () {
-            store.dispatch('setupOnMount').then(()=>{
+//            window.console.log( 'new-setup', 'mounted', 166, store);
+            this.$store.dispatch('setupOnMount').then(()=>{
                 this.$emit('items-ready');
 //                var qList = document.getElementsByClassName( 'card-list' );
                 var qList = document.getElementById( 'card-list' );

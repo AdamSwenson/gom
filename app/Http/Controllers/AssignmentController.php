@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Assignment;
 use App\Exam;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
@@ -14,14 +15,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class ItemOrderController
+ * Class AssignmentController
  *
  * This handles all alterations to the assignment of
  * questions and elements to exams and each other.
  *
  * @package App\Http\Controllers
  */
-class ItemOrderController extends Controller
+class AssignmentController extends Controller
 {
 
     /**@var IExamRepository */
@@ -156,12 +157,20 @@ class ItemOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param Exam $exam
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
-    public function show( $id )
+    public function show( Exam $exam )
     {
-        //
+        $out = ['data' => $exam->id, 'children' => [], 'parent' => $exam->id];
+        $assignmentTree = Assignment::where(['item_id', $exam->id])->get();
+        if($assignmentTree->hasChildren()) {
+            $children = $assignmentTree->getChildren();
+            foreach ( $children as $child ) {
+
+            }
+        }
     }
 
     /**

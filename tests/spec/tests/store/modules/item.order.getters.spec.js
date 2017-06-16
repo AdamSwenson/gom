@@ -15,7 +15,8 @@ import {
 
 
 //Dependencies
-import * as orderings from '../../../../../resources/assets/js/store/modules/items.order';
+const getters = require('../../../../../resources/assets/js/store/modules/items.order.getters');
+//import * as orderings from '../../../../../resources/assets/js/store/modules/items.order';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
@@ -26,7 +27,6 @@ import Payload from '../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../resources/assets/js/models/Node'
 
 import { traverseDF, traverseBF, getSerialNumber } from '../../../../../resources/assets/js/models/NodeTools'
-import * as getters from "../../../../../resources/assets/js/store/modules/items.order.getters"
 //tested object
 // let obj = orderings.default;
 //tested methods
@@ -49,7 +49,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
         for (let n of this.filledState.itemMap.children) {
             addNodes( n, this.numItems );
         }
-        window.console.log( 'orderings.spec', 'filledState', 34, this.filledState );
+        // window.console.log( 'orderings.spec', 'filledState', 34, this.filledState );
 
     } );
     describe( description( gTypes.getItemNodeFromOrder ), function () {
@@ -58,7 +58,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
             let targetNode = this.filledState.itemMap.children[ this.testItemIndex ];
             // window.console.log( 'orderings.spec', 'target', 133,targetNode );
             //call
-            let result = getters[gTypes.getItemNodeFromOrder]( this.filledState, getters, targetNode.data );
+            let result = getters[gTypes.getItemNodeFromOrder]( this.filledState, getters, {}, targetNode.data );
 
             // window.console.log( 'orderings.spec', 'result', 136, result);
             //check
@@ -71,7 +71,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
         it( "happy path ", function () {
             let test = this.filledState.itemMap;
             let result = getters[ gTypes.getItemMapCopy ]( this.filledState, {} );
-            window.console.log( 'orderings.spec', 'result', 139, this.filledState, result, test );
+            // window.console.log( 'orderings.spec', 'result', 139, this.filledState, result, test );
 
             //todo rewrite recursively to check  all children
             for (let i = 0; i < test.children.length; i++) {
@@ -100,7 +100,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
                 //prep
                 let targetSerialNumber = this.filledState.itemMap.data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters, targetSerialNumber );
+                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
                 //At the exam level, so the result should be 0
                 expect( result ).toBe( 0 );
@@ -111,7 +111,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
                 //prep
                 let targetSerialNumber = this.filledState.itemMap.children[ this.testItemIndex ].data;
                 //call
-                let result = getters[ gTypes.getDepthOfNode ]( this.filledState, getters, targetSerialNumber );
+                let result = getters[ gTypes.getDepthOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
                 //At the question level,
                 expect( result ).toBe( this.testItemIndex );
@@ -126,7 +126,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
                     .children[ this.testItemIndex ]
                     .data;
                 //call
-                let result = getters[ gTypes.getDepthOfNode ]( this.filledState, getters, targetSerialNumber );
+                let result = getters[ gTypes.getDepthOfNode ]( this.filledState, getters, {},  targetSerialNumber );
                 //check
                 expect( result ).toBe( this.testItemIndex );
             } );
@@ -141,7 +141,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
                 //prep
                 let targetSerialNumber = this.filledState.itemMap.data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters, targetSerialNumber );
+                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
                 //At the exam level, so the result should be 0
                 expect( result ).toBe( 0 );
@@ -151,7 +151,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
                 //prep
                 let targetSerialNumber = this.filledState.itemMap.children[ this.testItemIndex ].data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters, targetSerialNumber );
+                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
                 //At the exam level, so the result should be 0
                 expect( result ).toBe( 1 );
@@ -166,7 +166,7 @@ fdescribe( "store.modules.item.order getters  ", function () {
                     .children[ this.testItemIndex ]
                     .data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters, targetSerialNumber );
+                let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters, {},  targetSerialNumber );
                 //check
                 //At the element level, so the result should be 0
                 expect( result ).toBe( 2 );

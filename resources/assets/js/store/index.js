@@ -38,7 +38,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import * as actions from './actions'
-import * as getters from './getters'
+import getters from './getters';
 import * as mutations from './mutations'
 import * as state from './state'
 
@@ -73,7 +73,8 @@ import websocketPlugin from '../api/websocketPlugin';
 
 const debug = process.env.NODE_ENV !== 'production';
 
-export default new Vuex.Store({
+// export default {
+ export default new Vuex.Store({
 
     strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
 
@@ -103,8 +104,8 @@ export default new Vuex.Store({
         students,
         times,
         visibility
-    },
+    }
 
-
+// }
     // plugins: debug ? [createLogger()] : []
-})
+});

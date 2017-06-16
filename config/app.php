@@ -166,7 +166,7 @@ return [
         BackupManager\Laravel\Laravel5ServiceProvider::class,
         Spatie\Tail\TailServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
-
+        Franzose\ClosureTable\ClosureTableServiceProvider::class,
         /*
          * Custom service providers
          */

@@ -15,12 +15,12 @@ const { mix } = require('laravel-mix');
  | file for your application, as well as bundling up your JS files.
  |
  */
-mix.js('resources/assets/js/development/newSetup.js', 'public/js/dev/new-setup-package.js');
+//mix.react('resources/assets/js/development/newSetup.js', 'public/js/dev/new-setup-package.js');
+mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js');
 
 mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
 
 
-// mix.js(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js');
 
 // mix.js('resources/assets/js/', 'dist/')
 //    .sass('src/app.scss', 'dist/');

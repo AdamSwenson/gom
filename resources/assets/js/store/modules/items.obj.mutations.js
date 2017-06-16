@@ -1,6 +1,8 @@
 /**
  * Created by adam on 5/27/17.
  */
+import Vue from 'vue'
+
 import * as mTypes from '../../store/mutation-types'
 import * as aTypes from '../../store/action-types'
 import * as gTypes from '../../store/getter-types'

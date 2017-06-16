@@ -2,7 +2,7 @@
     <div class="list-dropdown-component">
 
         <b-dropdown v-bind:text="title" variant="success" class="m-md-2">
-            <b-dropdown-item v-for="i in toList" href="#">{{ i }}</b-dropdown-item>
+            <b-dropdown-item v-for="i in toList" href="#" :key="i">{{ i }}</b-dropdown-item>
         </b-dropdown>
 
 

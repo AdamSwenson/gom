@@ -2,7 +2,7 @@
  * This runs the new setup app
  * Created by adam on 2/15/17.
  */
-require('./bootstrap');
+require( './bootstrap' );
 
 // import Vue from  'vue/dist/vue.js'
 import Vue from 'vue'
@@ -12,7 +12,7 @@ import Vue from 'vue'
 // import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
 // Use commonjs version if es build is not working
 import BootstrapVue from 'bootstrap-vue';
-Vue.use(BootstrapVue);
+Vue.use( BootstrapVue );
 // Vue.use( Sortable );
 
 import App from './new-setup.vue'
@@ -64,60 +64,60 @@ import api from '../api/controller'
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 import VueAxios from 'vue-axios'
-axios.defaults.baseURL = routeRoot;
+window.axios.defaults.baseURL = routeRoot;
 
 // This wrapper bind axios to Vue or this if you're using single file component.
-Vue.use(VueAxios, window.axios);
+Vue.use( VueAxios, window.axios );
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
-Vue.component('api', api);
+Vue.component( 'api', api );
 
 //Register components globally
-Vue.component('exam-main', examMain);
+Vue.component( 'exam-main', examMain );
 // Vue.component('exam-edit-pane', examEditPane);
 
-Vue.component('progress-dashboard', progressDashboard);
-Vue.component('tools-dashboard', toolsDashboard);
+Vue.component( 'progress-dashboard', progressDashboard );
+Vue.component( 'tools-dashboard', toolsDashboard );
 // Vue.component( 'item-nav', itemNav )
-Vue.component('item-add-button', itemAddButton);
-Vue.component('item-name', itemName);
-Vue.component('item-main', itemMain);
-Vue.component('public-indicator', publicIndicator);
-Vue.component('settings-button', settingsButton);
+Vue.component( 'item-add-button', itemAddButton );
+Vue.component( 'item-name', itemName );
+Vue.component( 'item-main', itemMain );
+Vue.component( 'public-indicator', publicIndicator );
+Vue.component( 'settings-button', settingsButton );
 
 // Vue.component('item-edit-pane', itemEditPane);
 
 //cards
-Vue.component('card-list', cardList);
-Vue.component('item-card', itemCard);
-Vue.component('exam-card', examCard);
-Vue.component('sub-list', subList);
+Vue.component( 'card-list', cardList );
+Vue.component( 'item-card', itemCard );
+Vue.component( 'exam-card', examCard );
+Vue.component( 'sub-list', subList );
 
 
 //Panels
-Vue.component('panel-detail', panelItemDetail);
-Vue.component('panel-comments', panelComments);
-Vue.component('panel-history', panelHistory);
-Vue.component('panel-stats', panelStats);
-Vue.component('panel-notes', panelNotes);
-Vue.component('edit-tabs', editTabs);
+Vue.component( 'panel-detail', panelItemDetail );
+Vue.component( 'panel-comments', panelComments );
+Vue.component( 'panel-history', panelHistory );
+Vue.component( 'panel-stats', panelStats );
+Vue.component( 'panel-notes', panelNotes );
+Vue.component( 'edit-tabs', editTabs );
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
-Vue.component('valence-button', valenceButton);
-Vue.component('delete-item-button', deleteButton);
-Vue.component('depth-control', depthControl);
+Vue.component( 'valence-button', valenceButton );
+Vue.component( 'delete-item-button', deleteButton );
+Vue.component( 'depth-control', depthControl );
 
-Vue.component('max-score', maxScore);
-Vue.component('item-number', itemNumber);
+Vue.component( 'max-score', maxScore );
+Vue.component( 'item-number', itemNumber );
 
-Vue.component('list-dropdown', listDropdown);
+Vue.component( 'list-dropdown', listDropdown );
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
 import VueRouter from 'vue-router'
-Vue.use(VueRouter);
+Vue.use( VueRouter );
 // 1. Define route components.
 // These can be imported from other files
 
@@ -130,35 +130,35 @@ const routes = [
     {
         name: 'comments',
         path: '/panel-comments/:index',
-        components: {itemPanels: panelComments},
+        components: { itemPanels: panelComments },
         props: true, //{default: true}
     }
     , //props: (route) => {return route.index;}},
     {
         name: 'exam-detail',
         path: '/panel-exam-detail/:index',
-        components: {examPanels: panelExamDetail},
+        components: { examPanels: panelExamDetail },
         props: true
     },
     {
         path: '/panel-history/:index',
-        components: {itemPanels: panelHistory},
+        components: { itemPanels: panelHistory },
         props: true
     },
     {
         name: 'item-detail',
         path: '/panel-item-detail/:index',
-        components: {itemPanels: panelItemDetail},
+        components: { itemPanels: panelItemDetail },
         props: true
     },
     {
         path: '/panel-notes/:index',
-        components: {itemPanels: panelNotes},
+        components: { itemPanels: panelNotes },
         props: true
     },
     {
         path: '/panel-stats/:index',
-        components: {itemPanels: panelStats},
+        components: { itemPanels: panelStats },
         props: true
     }
 ];
@@ -166,26 +166,38 @@ const routes = [
 // 3. Create the router instance and pass the `routes` option
 // You can pass in additional options here, but let's
 // keep it simple for now.
-const router = new VueRouter({
+const router = new VueRouter( {
     routes // short for routes: routes
-});
+} );
 
+
+// import { routes } from './router-config';
+//
+
+import Vuex from 'vuex'
+Vue.use(Vuex);
+
+import store from '../store';
+// import vuexStore from '../store/index'
+window.console.log( 'new-setup ***', 'store', 116, store );
+
+// const store = new Vuex.Store(vuexStore);
 
 // 4. Create and mount the root instance.
 // Make sure to inject the router with the router option to make the
 // whole app router-aware.
-const app = new Vue({
-    // store,
+const app = new Vue( {
+    store,
 
     router,
 
-    render: h => h(App),
+    render: h => h( App ),
 
     mounted: function () {
 
-        // console.log('newSetup ready', this);
+        console.log('newSetup ready', this);
     }
 
-}).$mount("#app");
+} ).$mount( "#app" );
 
 // Now the app has started!

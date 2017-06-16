@@ -53,7 +53,6 @@ export const getItemById = 'getItemById'
  * @param index
  */
 export const getItemByIndex = 'getItemByIndex'
-
 export const getItemBySerialNumber = 'getItemBySerialNumber'
 
 export const getItemCount = 'getItemCount'

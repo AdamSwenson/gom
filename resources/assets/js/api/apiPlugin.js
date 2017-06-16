@@ -1,9 +1,11 @@
 /**
  * Created by adam on 4/1/17.
  */
-require('../development/bootstrap');
+// require('../development/init-bootstrap-vue');
+// window.console.log( 'apiPlugin', 'vue', 5, Vue );
 
-// import Vue from 'vue'
+// import Vue from 'vue';
+
 // import axios from 'axios'
 // import VueAxios from 'vue-axios'
 //
@@ -195,57 +197,6 @@ const updateItemsOrder = ( store ) => {
 
     }
 };
-
-// const conn = {
-//
-//     /**
-//      * Asks the server to create the given model.
-//      * The server returns an id for the model.
-//      * This returns the id
-//      *
-//      */
-//     createModel: ( item ) => {
-//         let api = 'items'; //hits the resource's store method (create would've returned the form to create)
-//
-//         window.axios
-//             .post(api, item)
-//             .then(( response ) => {
-//                 // handleResponse(item, response);
-//                 return response;
-//             })
-//             .catch(function ( error ) {
-//                 errorHandling(error);
-//             });
-//     },
-//
-//     /**
-//      * Asks the server to update the given item
-//      * @param Item
-//      */
-//     updateModel: ( Model ) => {
-//         if ( Model.id && Model.id > 0 ) {
-//
-//             let api = 'items/' + Model.id;
-//
-//             window.axios
-//                 .put(api, Model)
-//                 .then(( response ) => {
-//                     return response;
-//                     // if (response.status == 200 ){
-//                     //    return callback(response);
-//                     // }
-//                     //
-//                     // console.log( response.data )
-//                     // //return Item with the new id loaded
-//                     // return Model;
-//                 })
-//                 .catch(function ( error ) {
-//                     errorHandling(error);
-//                     console.log(error);
-//                 });
-//         }
-//     }
-// };
 /**
  *This subscribes the api package which
  * handles data exchange with the server
@@ -315,7 +266,7 @@ export default function ( store ) {
                 payload.callback();
 
                 break;
-                
+
             case mTypes.updateOrder:
                 window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload);
                 updateItemsOrder(store);
@@ -330,8 +281,59 @@ export default function ( store ) {
         }
 
         //todo temp disabled so can better see traffic
-       // updateItemsOrder(store);
+        // updateItemsOrder(store);
 
     });
 
 };
+
+// const conn = {
+//
+//     /**
+//      * Asks the server to create the given model.
+//      * The server returns an id for the model.
+//      * This returns the id
+//      *
+//      */
+//     createModel: ( item ) => {
+//         let api = 'items'; //hits the resource's store method (create would've returned the form to create)
+//
+//         window.axios
+//             .post(api, item)
+//             .then(( response ) => {
+//                 // handleResponse(item, response);
+//                 return response;
+//             })
+//             .catch(function ( error ) {
+//                 errorHandling(error);
+//             });
+//     },
+//
+//     /**
+//      * Asks the server to update the given item
+//      * @param Item
+//      */
+//     updateModel: ( Model ) => {
+//         if ( Model.id && Model.id > 0 ) {
+//
+//             let api = 'items/' + Model.id;
+//
+//             window.axios
+//                 .put(api, Model)
+//                 .then(( response ) => {
+//                     return response;
+//                     // if (response.status == 200 ){
+//                     //    return callback(response);
+//                     // }
+//                     //
+//                     // console.log( response.data )
+//                     // //return Item with the new id loaded
+//                     // return Model;
+//                 })
+//                 .catch(function ( error ) {
+//                     errorHandling(error);
+//                     console.log(error);
+//                 });
+//         }
+//     }
+// };

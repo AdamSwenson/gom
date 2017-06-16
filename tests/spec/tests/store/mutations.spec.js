@@ -5,11 +5,11 @@ require('sinon');
 
 //tested stuff
 
-import * as mutations from "../../../../resources/assets/js/store/mutations";
+import mutations from "../../../../resources/assets/js/store/mutations";
 
 
 // // destructure assign mutations
-const { setExam } = mutations.mutations;
+const { setExam } = mutations;
 
 
 console.log(mutations);

@@ -6,7 +6,7 @@
             <b-button
             variant="primary"
             v-on:click="setValence(valence)"
-            v-for="valence in valences">{{valence}}</b-button>
+            v-for="valence in valences" :key="valence">{{valence}}</b-button>
         </b-button-group>
 
     </div>

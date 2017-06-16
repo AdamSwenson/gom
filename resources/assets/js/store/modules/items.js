@@ -17,13 +17,12 @@ const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
 
 import Objects from './items.obj'
-// import Orderings from './items.order'
+import Orderings from './items.order'
 
-import * as orderMutations from './items.order.mutations'
-import * as orderActions from './items.order.actions'
-import * as orderGetters from './items.order.getters'
-import * as orderState from './items.order.state'
-
+// let orderMutations  = require( './items.order.mutations');
+// let orderActions  = require('./items.order.actions');
+// let orderGetters = require( './items.order.getters');
+// let orderState  = require( './items.order.state');
 
 const standardTimeout = 1000;
 
@@ -71,7 +70,7 @@ const buildPayloadFromInput = ( state, rootState, payload ) => {
     return out;
 };
 
-const state = Object.assign( {}, Objects.state, orderState); //Orderings.state );
+const state = Object.assign( {}, Objects.state, Orderings.state);///orderState); //Orderings.state );
 
 
 /**
@@ -138,16 +137,19 @@ const getters_both = {
         return map;
     }
 };
+window.console.log( 'items', 'tac               oooooo', 146 );
 
-const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
+// const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
+// Object.assign(getters, orderGetters);//
+const getters = {...getters_both, ...Orderings.getters, ...Objects.getters};
 
-window.console.log( 'items', 'getters', 112, getters );
+window.console.log( 'ww items', 'f ************ getters', 112, getters, Objects, Orderings );
 // };
 
-const actions =  Object.assign( {}, Objects.actions, orderActions); //Orderings.actions );
+const actions =  Object.assign( {}, Objects.actions, Orderings.actions); //Orderings.actions );
 //require( './items.obj.actions' );
 
-const mutations =  Object.assign( {},  Objects.mutations, orderMutations); //Orderings.mutations ); //require( './items.obj.mutations' );
+const mutations =  Object.assign( {},  Objects.mutations, Orderings.mutations); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 export default {
     actions,

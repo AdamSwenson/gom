@@ -25,19 +25,17 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
+//
+import mutations from './items.order.mutations'
+import actions from './items.order.actions'
+import getters from './items.order.getters'
+import state from './items.order.state'
 
-import * as orderMutations from './items.order.mutations'
-import * as orderActions from './items.order.actions'
-import * as orderGetters from './items.order.getters'
-import * as orderState from './items.order.state'
-
-
-
-
-
-
-
-
+//
+// let mutations  = require( './items.order.mutations');
+// let actions  = require('./items.order.actions');
+// let getters = require( './items.order.getters');
+// let state  = require( './items.order.state');
 
 let getItemFromOrder = ( order, idx ) => {
     let itm = order[ 0 ];
@@ -72,10 +70,10 @@ import {traverseDF, traverseBF, getSerialNumber } from '../../../../../resources
  *
  * @type {{}}
  */
-const actions = orderActions;
-const getters = orderGetters;
-const mutations = orderMutations;
-const state = orderState;
+// const actions = orderActions;
+// const getters = orderGetters;
+// const mutations = orderMutations;
+// const state = orderState;
 
 export default {
     actions,

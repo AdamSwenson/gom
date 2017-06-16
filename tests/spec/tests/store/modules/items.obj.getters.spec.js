@@ -15,7 +15,7 @@ import {
 
 
 //Dependencies
-import * as items from '../../../../../resources/assets/js/store/modules/items';
+//import * as items from '../../../../../resources/assets/js/store/modules/items';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
@@ -25,11 +25,14 @@ import Payload from '../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../resources/assets/js/models/Node'
 import { traverseDF } from '../../../../../resources/assets/js/models/NodeTools'
 
-//tested object
-let obj = items.default;
-//tested methods
-let { getters, actions, mutations } = obj;
+// //tested object
+// let obj = items.default;
+//
+// window.console.log( 'items.obj.getters.spec', '!!!!!!!!!!!!!!! obj', 31, obj );
+// //tested methods
+// let { getters, actions, mutations } = obj;
 
+const getters = require('../../../../../resources/assets/js/store/modules/items.obj.getters');
 
 fdescribe( "store.modules.items.obj getters  ", function () {
     beforeEach( function () {
@@ -53,7 +56,7 @@ fdescribe( "store.modules.items.obj getters  ", function () {
                     //call and check
                     for (let i = 0; i < numItems; i++) {
                         //call
-                        let result = getters[ gTypes.getItem ]( this.state, getters, Payload.factory( { id: i } ) );
+                        let result = getters[ gTypes.getItem ]( this.state, getters, {}, Payload.factory( { id: i } ) );
                         // let result = getters.getItemByIndex( this.state, {}, {}, i );
                         //check
                         expect( result ).toBe( this.state.items[ i ] );
@@ -75,7 +78,7 @@ fdescribe( "store.modules.items.obj getters  ", function () {
                     //call and check
                     for (let i = 0; i < numItems; i++) {
                         //call
-                        let result = getters[ gTypes.getItem ]( this.state, getters, Payload.factory( { index: i } ) );
+                        let result = getters[ gTypes.getItem ]( this.state, getters, {}, Payload.factory( { index: i } ) );
                         // let result = getters.getItemByIndex( this.state, {}, {}, i );
                         //check
                         expect( result ).toBe( this.state.items[ i ] );
@@ -98,7 +101,7 @@ fdescribe( "store.modules.items.obj getters  ", function () {
                 //call and check
                 for (let i = 0; i < numItems; i++) {
                     //call
-                    let result = getters.getItemById( this.state, {}, i );
+                    let result = getters.getItemById( this.state, {}, {}, i );
                     // let result = getters.getItemByIndex( this.state, {}, {}, i );
                     //check
                     expect( result ).toBe( this.state.items[ i ] );
@@ -119,7 +122,7 @@ fdescribe( "store.modules.items.obj getters  ", function () {
                 //call and check
                 for (let i = 0; i < numItems; i++) {
                     //call
-                    let result = getters.getItemByIndex( this.state, {}, i );
+                    let result = getters.getItemByIndex( this.state, getters, {}, i );
                     // let result = getters.getItemByIndex( this.state, {}, {}, i );
                     //check
                     expect( result ).toBe( this.state.items[ i ] );
@@ -141,7 +144,7 @@ fdescribe( "store.modules.items.obj getters  ", function () {
                 //pick a random object to use for the text
                 let testObj = faker.random.arrayElement( this.state.items );
                 //call
-                let result = getters[ gTypes.getItemBySerialNumber ]( this.state, {}, testObj.serialNumber );
+                let result = getters[ gTypes.getItemBySerialNumber ]( this.state, {}, {}, testObj.serialNumber );
                 //check
                 expect( result ).toBe( testObj );
                 expect( result.serialNumber ).toBe( testObj.serialNumber );
