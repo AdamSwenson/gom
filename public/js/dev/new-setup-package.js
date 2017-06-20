@@ -71,10 +71,10 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 var global    = __webpack_require__(5)
-  , core      = __webpack_require__(37)
+  , core      = __webpack_require__(38)
   , hide      = __webpack_require__(21)
   , redefine  = __webpack_require__(22)
-  , ctx       = __webpack_require__(38)
+  , ctx       = __webpack_require__(39)
   , PROTOTYPE = 'prototype';
 
 var $export = function(type, name, source){
@@ -252,6 +252,11 @@ var Payload = function () {
         //the index value of the object
         this._index;
 
+        /** Type checked storage of the node to do stuff to */
+        this._objNode;
+        /** Type checked storage of the parent of the node operating upon */
+        this._parentNode;
+
         /** Whether to fail to notify subscribers of the mutation */
         this.mutateSilently = false;
 
@@ -275,6 +280,7 @@ var Payload = function () {
 
         this.str;
         this.index;
+        this.parent;
 
         this.serialNumber;
 
@@ -320,15 +326,16 @@ var Payload = function () {
         }
 
         /**
-        * Retrieve the index where it is possible
-        * different fields could have different values.
-        * This enforces the order of precedence between the fields
-        */
+         * Retrieve the index where it is possible
+         * different fields could have different values.
+         * This enforces the order of precedence between the fields
+         */
         ,
         set: function set(val) {
             //todo numeric check
             this._id = val;
         }
+
         //
         // get index() {
         //     return this._index;
@@ -378,6 +385,7 @@ var Payload = function () {
             }
             //todo error handling
         }
+
         //
         //
         // get str() {
@@ -389,7 +397,24 @@ var Payload = function () {
         //     this._str = v;
         // }
 
-
+    }, {
+        key: 'objNode',
+        get: function get() {
+            return this._objNode;
+        },
+        set: function set(val) {
+            if (!val instanceof Node) throw new Error("non-node attempting to be set as objNode in Payload");
+            this._objNode = val;
+        }
+    }, {
+        key: 'parentNode',
+        get: function get() {
+            return this._parentNode;
+        },
+        set: function set(val) {
+            if (!val instanceof Node) throw new Error("non-node attempting to be set as parentNode in Payload");
+            this._parentNode = val;
+        }
     }], [{
         key: 'getIndex',
         value: function getIndex(payload) {
@@ -439,7 +464,7 @@ var Payload = function () {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['callback', 'id', 'index', 'num', 'obj', 'parent', 'serialNumber', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence'];
+            return ['callback', 'id', 'index', 'num', 'obj', 'parent', 'objNode', 'parentNode', 'serialNumber', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence'];
         }
     }, {
         key: 'aliasMap',
@@ -1729,7 +1754,7 @@ var global    = __webpack_require__(5)
   , $toString = Function[TO_STRING]
   , TPL       = ('' + $toString).split(TO_STRING);
 
-__webpack_require__(37).inspectSource = function(it){
+__webpack_require__(38).inspectSource = function(it){
   return $toString.call(it);
 };
 
@@ -19490,7 +19515,7 @@ function applyToTag (styleElement, obj) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx      = __webpack_require__(38)
+var ctx      = __webpack_require__(39)
   , IObject  = __webpack_require__(61)
   , toObject = __webpack_require__(16)
   , toLength = __webpack_require__(15)
@@ -19534,7 +19559,7 @@ module.exports = function(TYPE, $create){
 
 // most Object methods by ES6 should accept primitives
 var $export = __webpack_require__(0)
-  , core    = __webpack_require__(37)
+  , core    = __webpack_require__(38)
   , fails   = __webpack_require__(6);
 module.exports = function(KEY, exec){
   var fn  = (core.Object || {})[KEY] || Object[KEY]
@@ -29261,13 +29286,109 @@ module.exports = Vue$3;
 
 /***/ }),
 /* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Created by adam on 5/31/17.
+ */
+
+var Node = function () {
+    function Node(data) {
+        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var children = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+        _classCallCheck(this, Node);
+
+        /** The parent node */
+        this.parent = parent;
+
+        /**
+         * The database identifier of the item.
+         * Not super sure on whether to use it
+         */
+        this.id;
+
+        /**
+         * The data stored in the node,
+         * Can be any of:
+         *      serial number of item
+         *      id of item
+         *      an item object
+         */
+        this.data = data;
+
+        /**
+         * The type of data stored in the node.
+         * This is not guaranteed to be set or to
+         * be accurate if the node has been altered.
+         * @type {null}
+         */
+        this.dataType = null;
+
+        /**
+         * Holds the child nodes of this node
+         * @type {Array}
+         */
+        this.children = children;
+    }
+
+    _createClass(Node, [{
+        key: "isRoot",
+        value: function isRoot() {
+            //if set as own parent, it  is the tree's root
+            if (this.parent === this.data) {
+                return true;
+            }
+
+            //do we want this too?
+            //if a node accidentally doesn't
+            //get its parent set, it becomes the root...
+            if (this.parent === null) {
+                return true;
+            }
+            return false;
+        }
+    }, {
+        key: "addChild",
+        value: function addChild(node) {
+            var loc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            //set self as child's parent
+            node.parent = this.data;
+            //if loc is set, we are to splice it in
+            //at a particular location.
+            if (loc) {} else {
+                //just push child into children array at end
+                this.children.push(node);
+            }
+        }
+    }]);
+
+    return Node;
+}();
+
+exports.default = Node;
+
+/***/ }),
+/* 38 */
 /***/ (function(module, exports) {
 
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // optional / simple context binding
@@ -29292,7 +29413,7 @@ module.exports = function(fn, that, length){
 };
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Map     = __webpack_require__(137)
@@ -29348,7 +29469,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29360,7 +29481,7 @@ if(__webpack_require__(13)){
     , $export             = __webpack_require__(0)
     , $typed              = __webpack_require__(74)
     , $buffer             = __webpack_require__(101)
-    , ctx                 = __webpack_require__(38)
+    , ctx                 = __webpack_require__(39)
     , anInstance          = __webpack_require__(45)
     , propertyDesc        = __webpack_require__(43)
     , hide                = __webpack_require__(21)
@@ -29833,102 +29954,6 @@ if(__webpack_require__(13)){
 } else module.exports = function(){ /* empty */ };
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Created by adam on 5/31/17.
- */
-
-var Node = function () {
-    function Node(data) {
-        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-        var children = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-
-        _classCallCheck(this, Node);
-
-        /** The parent node */
-        this.parent = parent;
-
-        /**
-         * The database identifier of the item.
-         * Not super sure on whether to use it
-         */
-        this.id;
-
-        /**
-         * The data stored in the node,
-         * Can be any of:
-         *      serial number of item
-         *      id of item
-         *      an item object
-         */
-        this.data = data;
-
-        /**
-         * The type of data stored in the node.
-         * This is not guaranteed to be set or to
-         * be accurate if the node has been altered.
-         * @type {null}
-         */
-        this.dataType = null;
-
-        /**
-         * Holds the child nodes of this node
-         * @type {Array}
-         */
-        this.children = children;
-    }
-
-    _createClass(Node, [{
-        key: "isRoot",
-        value: function isRoot() {
-            //if set as own parent, it  is the tree's root
-            if (this.parent === this.data) {
-                return true;
-            }
-
-            //do we want this too?
-            //if a node accidentally doesn't
-            //get its parent set, it becomes the root...
-            if (this.parent === null) {
-                return true;
-            }
-            return false;
-        }
-    }, {
-        key: "addChild",
-        value: function addChild(node) {
-            var loc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-            //set self as child's parent
-            node.parent = this.data;
-            //if loc is set, we are to splice it in
-            //at a particular location.
-            if (loc) {} else {
-                //just push child into children array at end
-                this.children.push(node);
-            }
-        }
-    }]);
-
-    return Node;
-}();
-
-exports.default = Node;
-
-/***/ }),
 /* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -30164,7 +30189,7 @@ module.exports = function(key){
 /* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx         = __webpack_require__(38)
+var ctx         = __webpack_require__(39)
   , call        = __webpack_require__(123)
   , isArrayIter = __webpack_require__(86)
   , anObject    = __webpack_require__(4)
@@ -30259,7 +30284,7 @@ var _Item = __webpack_require__(7);
 
 var _Item2 = _interopRequireDefault(_Item);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -30270,27 +30295,28 @@ var _Payload2 = _interopRequireDefault(_Payload);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var traverseDF = exports.traverseDF = function traverseDF(root, callback) {
-    var stillLooking = true;
-
-    // this is a recurse and immediately-invoking function
+    // this is a recursive and immediately-invoking function
     (function recurse(currentNode) {
-        // while(stillLooking) {
         // step 2
         for (var i = 0, length = currentNode.children.length; i < length; i++) {
-            if (callback(currentNode)) {
-                return currentNode;
-            } else {
-
-                // step 3
-                recurse(currentNode.children[i]);
-            }
+            //if we are at the exam or at the last child, call
+            //the callback and return the node
+            //todo Not sure why this is here....
+            // if ( callback( currentNode ) ) {
+            //     return currentNode;
+            // }
+            // else {
+            // step 3
+            // iterate through the node's children
+            // calling the recursive function on each
+            recurse(currentNode.children[i]);
+            // }
         }
-        // }
-        // window.console.log( 'orderings', 'recurse', 47, callback(currentNode));
         // step 4
+        //We are out of children to cycle through. We can call the callback
+        //node. If the callback returns true, we return the node
         if (callback(currentNode)) {
-            // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
-            stillLooking = false;
+            window.console.log('orderings', 'recurse', 50, 'FOUND IT!', currentNode);
             return currentNode;
         }
 
@@ -31761,7 +31787,7 @@ module.exports = {
   set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
     function(test, buggy, set){
       try {
-        set = __webpack_require__(38)(Function.call, __webpack_require__(26).f(Object.prototype, '__proto__').set, 2);
+        set = __webpack_require__(39)(Function.call, __webpack_require__(26).f(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
       } catch(e){ buggy = true; }
@@ -31862,7 +31888,7 @@ module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u20
 /* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx                = __webpack_require__(38)
+var ctx                = __webpack_require__(39)
   , invoke             = __webpack_require__(68)
   , html               = __webpack_require__(84)
   , cel                = __webpack_require__(81)
@@ -32222,7 +32248,7 @@ exports[DATA_VIEW] = $DataView;
 /***/ (function(module, exports, __webpack_require__) {
 
 var global         = __webpack_require__(5)
-  , core           = __webpack_require__(37)
+  , core           = __webpack_require__(38)
   , LIBRARY        = __webpack_require__(46)
   , wksExt         = __webpack_require__(136)
   , defineProperty = __webpack_require__(14).f;
@@ -32238,7 +32264,7 @@ module.exports = function(name){
 var classof   = __webpack_require__(60)
   , ITERATOR  = __webpack_require__(12)('iterator')
   , Iterators = __webpack_require__(56);
-module.exports = __webpack_require__(37).getIteratorMethod = function(it){
+module.exports = __webpack_require__(38).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
@@ -34406,7 +34432,7 @@ module.exports = Function.bind || function bind(that /*, args... */){
 var dP          = __webpack_require__(14).f
   , create      = __webpack_require__(47)
   , redefineAll = __webpack_require__(50)
-  , ctx         = __webpack_require__(38)
+  , ctx         = __webpack_require__(39)
   , anInstance  = __webpack_require__(45)
   , defined     = __webpack_require__(30)
   , forOf       = __webpack_require__(55)
@@ -47101,6 +47127,7 @@ exports.default = {
         //Return everything in the items tree except the root
         //The root is the exam. It gets special treatment.
         items: function items() {
+
             var orig = this.$store.getters[gTypes.getAllItems];
             if (_.isEmpty(orig)) return [];
 
@@ -47502,6 +47529,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
 
 //    import deleteButton from './buttons.item.delete.component.vue'
 //    import itemEditPane from './item.edit-pane.component.vue'
@@ -47510,7 +47540,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = {
 
-    props: ['index', 'parent-index'],
+    props: ['index', 'parent-index', 'serialNumber'],
 
     data: function data() {
         return {
@@ -47572,17 +47602,23 @@ exports.default = {
             return d;
         },
 
+        item: function item() {
+            return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
+        },
+
         depth: {
             get: function get() {
+                return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
                 //                    let item = this.$store.getters.getItemById(this.id);
-                var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item !== 'undefined') {
-                    return item.depth;
-                }
+                //                    let item = this.$store.getters.getItemByIndex(this.index);
+                //                    if ( typeof item !== 'undefined' ) {
+                //                        return item.depth
+                //                    }
+                //
             },
             set: function set(v) {
                 //                    let item = this.$store.getters.getItemById(this.id);
-                var item = this.$store.getters.getItemByIndex(this.index);
+                var item = this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
                 if (typeof item !== 'undefined') {
                     this.$store.commit(_Payload2.default.factory({
                         //                            id: this.id,
@@ -49037,7 +49073,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 
 exports.default = {
-    props: [],
+    props: ['item', 'index'],
 
     data: function data() {
         return {};
@@ -49059,7 +49095,7 @@ exports.default = {
          * This sends the actual request(s)
          */
         sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.createItem);
+            this.$store.dispatch(aTypes.createItem, this.item);
         }
     },
 
@@ -49588,6 +49624,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //    import settingsButton from './buttons.settings-control.component.vue'
 //    import publicIndicator from './buttons.public-control.component.vue'
 //    //
+//
 //
 //
 //
@@ -51444,7 +51481,7 @@ exports.default = Question;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.setupOnMount = exports.parseItemData = exports.parseExamData = exports.updateExam = exports.createItem = exports.createExam = undefined;
+exports.setupOnMount = exports.parseItemData = exports.parseExamData = exports.updateExam = exports.createExam = undefined;
 
 var _mutationTypes = __webpack_require__(1);
 
@@ -51465,6 +51502,10 @@ var _Exam2 = _interopRequireDefault(_Exam);
 var _Item = __webpack_require__(7);
 
 var _Item2 = _interopRequireDefault(_Item);
+
+var _Node = __webpack_require__(37);
+
+var _Node2 = _interopRequireDefault(_Node);
 
 var _Payload = __webpack_require__(2);
 
@@ -51510,43 +51551,51 @@ var createExam = exports.createExam = function createExam(_ref, payload) {
     });
 };
 
-/**
- * Called when a brand new item needs to be created and inserted into
- * the store.
- * This handles the creation of the item and then the subsequent actions
- * like notifying the server
- *
- * @param state
- * @param commit
- */
-var createItem = exports.createItem = function createItem(_ref2) {
-    var state = _ref2.state,
-        commit = _ref2.commit,
-        dispatch = _ref2.dispatch,
-        getters = _ref2.getters;
-
-    //figure out what the index should be based on
-    //what is already in the list of items
-    var index = getters.getNextIndex;
-    var item = _Item2.default.factory({ index: index });
-
-    if (index > 0) {
-        var _exam = getters.currentExam;
-        item.examId = _exam ? _exam.id : null;
-    }
-    window.console.log('actions', 'createItem', 62, item);
-
-    var p = new Promise(function (resolve, reject) {
-        commit(mTypes.setItem, _Payload2.default.factory({ index: index, obj: item, callback: resolve }));
-    });
-
-    return p.then(function () {
-        return new Promise(function (resolve, reject) {
-            dispatch(aTypes.cleanupItems);
-            resolve();
-        });
-    });
-};
+// /**
+//  * Called when a brand new item needs to be created and inserted into
+//  * the store.
+//  * This handles the creation of the item and then the subsequent actions
+//  * like notifying the server and placing the item in the appropriate
+//  * place in the order
+//  *
+//  * @param state
+//  * @param commit
+//  */
+// export const createItem = ( { state, commit, dispatch, getters }, parent ) => {
+// if(!_.isUndefined(parent)) {
+//     //If we were passed an item to serve as the parent
+//     //we will use it
+//     let item = Item.factory( { index: index, parent: parent } );
+//     let pl = Payload.factory( { parent: parent, obj: item } )
+// }
+// else {
+//
+//     //figure out what the index / parent should be based on
+//     //what is already in the list of items
+//     //this is basically only used for the add item button at
+//     //the exam level
+//     let index = getters.getNextIndex;
+//     let item = Item.factory( { index: index } );
+//
+//     if ( index > 0 ) {
+//         let exam = getters.currentExam;
+//         item.examId = exam ? exam.id : null;
+//     }
+// }
+//     window.console.log( 'actions', 'createItem', 62, item );
+//
+//     let p = new Promise( ( resolve, reject ) => {
+//         commit( mTypes.setItem, Payload.factory( { index: index, obj: item, callback: resolve } ) );
+//     } );
+//
+//     return p.then( () => {
+//         return new Promise( ( resolve, reject ) => {
+//             dispatch( aTypes.cleanupItems );
+//             resolve()
+//         } );
+//     } )
+// };
+//
 
 /**
  * The payload should contain the exam that is presently set
@@ -51556,19 +51605,20 @@ var createItem = exports.createItem = function createItem(_ref2) {
  * @param commit
  * @param payload
  */
-var updateExam = exports.updateExam = function updateExam(_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
+var updateExam = exports.updateExam = function updateExam(_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
 
 
     //set it as active
     commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
 };
 
-var parseExamData = exports.parseExamData = function parseExamData(_ref4) {
-    var state = _ref4.state,
-        commit = _ref4.commit,
-        dispatch = _ref4.dispatch;
+var parseExamData = exports.parseExamData = function parseExamData(_ref3) {
+    var state = _ref3.state,
+        commit = _ref3.commit,
+        dispatch = _ref3.dispatch,
+        getters = _ref3.getters;
 
     return new Promise(function (resolve, reject) {
         //Check and see if the server gave us data to start off with.
@@ -51577,21 +51627,87 @@ var parseExamData = exports.parseExamData = function parseExamData(_ref4) {
         // window.console.log('actions', 'parseExamData', 103, examData);
         //there was exam data, load an exam from it
         if (typeof examData != 'undefined') {
-            //first make sure the index is what we expect
+
+            //We need to do work on the exam in two places.
+            //First, we will update the stored object properties.
+            //Make sure the index is what we expect
             examData.index = 0;
-            var _exam2 = _Exam2.default.factory(examData); //.factory( {id: id, index: index} );
-            //set it in the items list without calling the api listener
-            commit(mTypes.setItem, _Payload2.default.factory({
-                index: 0,
-                obj: _exam2,
-                mutateSilently: true
-            }));
-        } else {
-            dispatch(aTypes.createExam).then(function () {
-                return true;
-            });
+
+            for (var _ref4 in examData) {
+                var val = _ref4.val,
+                    prop = _ref4.prop;
+
+                if (_Exam2.default.fillableProps.includes(prop)) {
+                    commit(mTypes.updateItem, _Payload2.default.factory({
+                        index: 0,
+                        updateProp: prop,
+                        updateVal: examData[prop]
+                    }));
+                }
+            }
+
+            //Second, we need to make sure that everything is still
+            //cool with the ordering.
+            //In particular we need to be sure that the serial numbers
+            //still correspond
+            var ex = state.items.items[0];
+            var esn = ex.serialNumber;
+            var im = getters.getRootNode;
+            if (im.parent === esn && im.data === esn) return true;
+            //if they've diverged, update them
+            commit('setRootNode', _Payload2.default.factory({ obj: ex }));
+
+            resolve();
         }
-        resolve();
+
+        //if there already is a root, update its serial number
+        //Now update the root with the exam's serial number
+
+        // commit( 'setRootNode', Payload.factory( { obj: exam } ) );
+        //
+        // //
+        // let exam = getters.getItemByIndex( examData.index );
+        // if ( _.isUndefined( exam ) ) {
+        //     exam = Exam.factory( examData );
+        // }
+        // //set it in the items list without calling the api listener\
+        // commit( mTypes.setItem, Payload.factory( {
+        //     index: 0,
+        //     obj: exam,
+        //     parent: exam,
+        //     mutateSilently: true
+        // } ) );
+
+        //Second, we need to update the root order node with the
+        //serial number of the exam object
+        // let examNode = getters.getRootNode;
+        // if ( !_.isUndefined( examNode ) ) {
+        //     //if the exam hasn't been set in the order yet,
+        //     // we will just push in the new exam object
+        //     examNode = new Node( exam.serialNumber, exam.serialNumber );
+        //     commit( 'setRootNode', Payload.factory( { objNode: examNode } ) );
+        //
+        // } else {
+        //     //if there already is a root, update its serial number
+        //     //Now update the root with the exam's serial number
+        //     commit( 'setRootNode', Payload.factory( { obj: exam } ) );
+        // }
+        //
+        // //     .then( (dispatch) => {
+        //     //Add to the ordering
+        //     dispatch( aTypes.addItemToOrder, pl );
+        // } );
+        // dispatch( aTypes.addItemToOrder, pl );
+        // }
+        // else {
+        //
+        //     dispatch( aTypes.createExam );
+        //     // .then( () => {
+        //     //         //todo get exam that was created
+        //     //         // return dispatch( aTypes.addItemToOrder, pl ).then( () => {
+        //     //             return true;
+        //     //     } );
+        // }
     });
 };
 
@@ -51616,6 +51732,16 @@ var parseItemData = exports.parseItemData = function parseItemData(_ref5) {
                     obj: item,
                     mutateSilently: true
                 }));
+
+                //todo how to find the parent?
+                var pl = _Payload2.default.factory({
+                    index: i,
+                    obj: item,
+                    parent: exam,
+                    mutateSilently: true
+                });
+
+                dispatch(aTypes.addItemToOrder, pl);
             });
         } else {
 
@@ -51639,6 +51765,8 @@ var setupOnMount = exports.setupOnMount = function setupOnMount(_ref6) {
         commit = _ref6.commit,
         dispatch = _ref6.dispatch;
 
+    //wrap in promise? probably not since this doesn't yet hit the server
+    commit('initializeItemStore');
     dispatch('parseExamData').then(function () {
         dispatch('parseItemData');
     }).then(function () {
@@ -53317,7 +53445,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -53457,7 +53585,36 @@ var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, get
     })(map);
     return map;
 });
-window.console.log('items', 'tac               oooooo', 146);
+
+var actions = _extends({}, _items2.default.actions, _items4.default.actions, _defineProperty({}, aTypes.createItem, function (_ref, parent) {
+    var state = _ref.state,
+        commit = _ref.commit,
+        dispatch = _ref.dispatch,
+        getters = _ref.getters;
+
+
+    if (_.isUndefined(parent)) {
+        parent = getters.currentExam;
+    }
+
+    //If we were passed an item to serve as the parent
+    //we will use it
+    var item = _Item2.default.factory({ parent: parent });
+    var pl = _Payload2.default.factory({ parent: parent, obj: item });
+    var p = new Promise(function (resolve, reject) {
+        commit(mTypes.addNewItem, pl);
+        resolve();
+        //                commit( mTypes.setItem, Payload.factory( { index: index, obj: item, } ) );
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            window.console.log('items', 'addItemToOrder', 172, pl);
+            dispatch(aTypes.addItemToOrder, pl);
+            resolve();
+        });
+    });
+}));
 
 // const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
 // Object.assign(getters, orderGetters);//
@@ -53466,10 +53623,19 @@ var getters = _extends({}, getters_both, _items4.default.getters, _items2.defaul
 window.console.log('ww items', 'f ************ getters', 112, getters, _items2.default, _items4.default);
 // };
 
-var actions = Object.assign({}, _items2.default.actions, _items4.default.actions); //Orderings.actions );
+// const actions = { ...actions_both, ...Objects.actions, ...Orderings.actions }; //Orderings.actions );
 //require( './items.obj.actions' );
 
-var mutations = Object.assign({}, _items2.default.mutations, _items4.default.mutations); //Orderings.mutations ); //require( './items.obj.mutations' );
+var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, {
+
+    initializeItemStore: function initializeItemStore(state) {
+        var exam = new _Exam2.default();
+        state.items[0] = exam;
+        state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
+    }
+
+});
+//Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 exports.default = {
     actions: actions,
@@ -53742,7 +53908,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         });
         return r[0];
     }(state, id);
-}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, rootState) {
+}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, rootState, index) {
     return function (index) {
 
         // [gTypes.getItemByIndex]: ( state, getters, rootState, index) => {
@@ -53783,15 +53949,18 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         }(state, index);
     };
 }), _defineProperty(_module$exports, gTypes.getItemBySerialNumber, function (state, getters, rootState, serialNumber) {
-    // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
-    return function (state, serialNumber) {
-        var r = state.items.filter(function (i) {
-            if (i.serialNumber === serialNumber) {
-                return i;
-            }
-        });
-        return r[0];
-    }(state, serialNumber);
+    return function (serialNumber) {
+        // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
+        // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
+        return function (state, serialNumber) {
+            var r = state.items.filter(function (i) {
+                if (i.serialNumber === serialNumber) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, serialNumber);
+    };
 }), _defineProperty(_module$exports, 'getAllItemIndexes', function getAllItemIndexes(state, getters, rootState) {
     var out = [];
     for (var item in state.items) {
@@ -53865,7 +54034,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -54085,13 +54254,17 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
     // window.console.log( 'items', 'onUpdate', 105, );
 }), _defineProperty(_module$exports, mTypes.setItem, function (state, payload) {
-    // console.log('items.mutations', mTypes.setItem, state, payload);
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var index = payload.obj.index;
+    return new Promise(function (resolve, reject) {
 
-        window.console.log('items.mutations', 'index', 100, index);
-        _vue2.default.set(state.items, index, payload.obj);
-    }
+        // console.log('items.mutations', mTypes.setItem, state, payload);
+        if (_Payload2.default.checkIfPayload(payload)) {
+            var index = payload.obj.index;
+
+            window.console.log('items.mutations', 'index', 100, index);
+            _vue2.default.set(state.items, index, payload.obj);
+        }
+        resolve();
+    });
 }), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
     console.log(mTypes.updateComment, payload, state);
     //get the item
@@ -54300,7 +54473,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -54319,42 +54492,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var _ = window._ = __webpack_require__(28);
 // const Vue = require( 'vue' );
 
-// let orderMutations  = require( './items.order.mutations');
-// import actions from './items.order.actions';
-//
-// import getters from  './items.order.getters';
-// let orderState  = require( './items.order.state');
-
-// import getters from './items.order.getters'
-// import actions from './items.order.actions'
-
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addItemToOrder, function (_ref, payload) {
     var state = _ref.state,
         dispatch = _ref.dispatch,
         commit = _ref.commit,
         getters = _ref.getters;
-    var index = payload.index,
-        obj = payload.obj,
-        id = payload.id,
-        parent = payload.parent;
 
-    //Sort out whether obj and parent are nodes or items
+    window.console.log('items.order.actions', 'pppp', 31, payload);
+    return new Promise(function (resolve, reject) {
+        var obj = payload.obj,
+            parent = payload.parent;
 
-    var toAddSerialNumber = (0, _NodeTools.getSerialNumber)(obj);
-    var parentSerialNumber = (0, _NodeTools.getSerialNumber)(parent);
-    var n = new _Node2.default(toAddSerialNumber, parentSerialNumber);
+        //Sort out whether obj and parent are nodes or items
 
-    var f = function f(currentNode) {
-        if (currentNode.data === parentSerialNumber) {
-            var pl = _Payload2.default.factory({ index: index, obj: n, parent: currentNode });
+        var toAddSerialNumber = obj.serialNumber; // getSerialNumber( obj );
+        var parentSerialNumber = (0, _NodeTools.getSerialNumber)(parent);
+        window.console.log('items.order.actions', 'psn', 39, parent, parent.serialNumber);
 
-            commit(mTypes.insertNodeIntoOrder, pl);
-            return false;
-        }
-        return true;
-    };
+        var newNode = new _Node2.default(toAddSerialNumber, parent.serialNumber);
+        var parentNode = getters.getItemNodeFromOrder(parent.serialNumber);
+        window.console.log('items.order.actions', 'n', 39, newNode, parentNode);
 
-    (0, _NodeTools.traverseDF)(state.itemMap, f);
+        var pl = _Payload2.default.factory({ objNode: newNode, parentNode: parentNode });
+        window.console.log('items.order.actions', 'pl', 47, pl);
+
+        commit(mTypes.insertNodeIntoOrder, pl);
+
+        resolve();
+    });
 }), _defineProperty(_module$exports, aTypes.removeItemFromOrder, function (_ref2, payload) {
     var state = _ref2.state,
         dispatch = _ref2.dispatch,
@@ -54402,7 +54567,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -54442,22 +54607,26 @@ var getNode = function getNode(state, serialNumber) {
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
     return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
 }), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, rootState, serialNumber) {
-    return getNode(state, serialNumber);
-    // return (function ( state, serialNumber ) {
-    //     let callback = function ( node ) {
-    //         if ( !callback.found ) callback.found = [];
-    //         // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-    //         if ( node.data === serialNumber ) {
-    //             callback.found.push( node );
-    //             // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-    //             return true;
-    //         }
-    //         return false;
-    //     };
-    //     traverseDF( state.itemMap, callback );
-    //     let result = callback.found[ 0 ];
-    //     return result;
-    // })( state, serialNumber )
+    return function (serialNumber) {
+
+        // [gTypes.getItemNodeFromOrder]: function( state, getters,   rootState,  serialNumber )  {
+        return getNode(state, serialNumber);
+        // return (function ( state, serialNumber ) {
+        //     let callback = function ( node ) {
+        //         if ( !callback.found ) callback.found = [];
+        //         // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+        //         if ( node.data === serialNumber ) {
+        //             callback.found.push( node );
+        //             // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+        //             return true;
+        //         }
+        //         return false;
+        //     };
+        //     traverseDF( state.itemMap, callback );
+        //     let result = callback.found[ 0 ];
+        //     return result;
+        // })( state, serialNumber )
+    };
 }), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters, rootState, serialNumber) {
     return 1;
     // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
@@ -54506,6 +54675,8 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         }
     }
     return 0;
+}), _defineProperty(_module$exports, 'getRootNode', function getRootNode(state, getters, rootState) {
+    return state.itemMap;
 }), _module$exports);
 
 /***/ }),
@@ -54543,7 +54714,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -55054,7 +55225,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -55071,22 +55242,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var _ = window._ = __webpack_require__(28);
 var Vue = __webpack_require__(36);
 
+var checkExpectedType = function checkExpectedType(toBeSet) {
+    if (toBeSet instanceof _Node2.default) return true;
+
+    window.console.log('items.order.mutations', 'ERROR', 25, "is not a Node", toBeSet);
+    throw new Error("non node passed to order mutation", toBeSet);
+    return false;
+};
+
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
+    window.console.log('items.order.mutations', 'insertNodeIntoOrder', 21, payload);
+
     var index = payload.index,
-        obj = payload.obj,
-        parent = payload.parent;
+        objNode = payload.objNode,
+        parentNode = payload.parentNode;
 
     //type check
 
-    if (!parent instanceof _Node2.default) return false;
-    if (!obj instanceof _Node2.default) return false;
+    if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
+        //Try out the un type checked properties to see if they have
+        //nodes
+        var obj = payload.obj,
+            parent = payload.parent;
+        //if not, oh well
+
+        return false;
+    }
 
     //if an index was specified, splice it in at the index
     if (!_.isUndefined(index)) {
-        return parent.children.splice(index, 0, obj);
+        return parentNode.children.splice(index, 0, objNode);
     }
+
     //otherwise just push it on the end
-    return parent.children.push(obj);
+    return parentNode.children.push(objNode);
 }), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
     var obj = payload.obj,
         parent = payload.parent;
@@ -55096,6 +55285,29 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     //delete the node
     var idx = parent.children.indexOf(obj);
     parent.children.splice(idx, 1);
+}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
+    var objNode = payload.objNode,
+        obj = payload.obj;
+    // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
+    //     objNode = new Node(obj.serialNumber, obj.serialNumber);
+    // }
+    //
+    // if(_.isUndefined(state.itemMap)){
+    //     //we can just put it in
+    //     state.itemMap = objNode;
+    //  }
+    // else{
+    //we can just directly update the existing node's serial numbers
+
+    state.itemMap.parent = obj.serialNumber;
+    state.itemMap.data = obj.serialNumber;
+    // }
+    //if it already exists, we need to merge the children
+    //of the existing exam node into the new node
+    //
+    //         else if((! _.isUndefined(state.itemMap.children)) && state.itemMap.children.length > 0){
+    //             state.itemMap.parent = children
+    // ;        }
 }), _module$exports);
 
 /***/ }),
@@ -55129,7 +55341,7 @@ var _Exam = __webpack_require__(17);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Node = __webpack_require__(41);
+var _Node = __webpack_require__(37);
 
 var _Node2 = _interopRequireDefault(_Node);
 
@@ -55144,8 +55356,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var _ = window._ = __webpack_require__(28);
 var Vue = __webpack_require__(36);
 
+var initialExam = new _Exam2.default();
+window.console.log('items.order.state', 'initialExam', 19, initialExam);
+
 module.exports = {
-  itemMap: new _Node2.default(0, 0)
+  itemMap: new _Node2.default(initialExam.serialNumber, initialExam.serialNumber)
 
   /*
    * What we want to have is the ability to store nested
@@ -64761,7 +64976,7 @@ __webpack_require__(227)
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(248);
-module.exports = __webpack_require__(37).RegExp.escape;
+module.exports = __webpack_require__(38).RegExp.escape;
 
 /***/ }),
 /* 240 */
@@ -65021,7 +65236,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 
 "use strict";
 
-var ctx            = __webpack_require__(38)
+var ctx            = __webpack_require__(39)
   , $export        = __webpack_require__(0)
   , toObject       = __webpack_require__(16)
   , call           = __webpack_require__(123)
@@ -66257,7 +66472,7 @@ $export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
 
 var LIBRARY            = __webpack_require__(46)
   , global             = __webpack_require__(5)
-  , ctx                = __webpack_require__(38)
+  , ctx                = __webpack_require__(39)
   , classof            = __webpack_require__(60)
   , $export            = __webpack_require__(0)
   , isObject           = __webpack_require__(10)
@@ -66486,7 +66701,7 @@ if(!USE_NATIVE){
 $export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
 __webpack_require__(57)($Promise, PROMISE);
 __webpack_require__(51)(PROMISE);
-Wrapper = __webpack_require__(37)[PROMISE];
+Wrapper = __webpack_require__(38)[PROMISE];
 
 // statics
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
@@ -67730,7 +67945,7 @@ $export($export.G + $export.W + $export.F * !__webpack_require__(74).ABV, {
 /* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Float32', 4, function(init){
+__webpack_require__(41)('Float32', 4, function(init){
   return function Float32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67740,7 +67955,7 @@ __webpack_require__(40)('Float32', 4, function(init){
 /* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Float64', 8, function(init){
+__webpack_require__(41)('Float64', 8, function(init){
   return function Float64Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67750,7 +67965,7 @@ __webpack_require__(40)('Float64', 8, function(init){
 /* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Int16', 2, function(init){
+__webpack_require__(41)('Int16', 2, function(init){
   return function Int16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67760,7 +67975,7 @@ __webpack_require__(40)('Int16', 2, function(init){
 /* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Int32', 4, function(init){
+__webpack_require__(41)('Int32', 4, function(init){
   return function Int32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67770,7 +67985,7 @@ __webpack_require__(40)('Int32', 4, function(init){
 /* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Int8', 1, function(init){
+__webpack_require__(41)('Int8', 1, function(init){
   return function Int8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67780,7 +67995,7 @@ __webpack_require__(40)('Int8', 1, function(init){
 /* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Uint16', 2, function(init){
+__webpack_require__(41)('Uint16', 2, function(init){
   return function Uint16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67790,7 +68005,7 @@ __webpack_require__(40)('Uint16', 2, function(init){
 /* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Uint32', 4, function(init){
+__webpack_require__(41)('Uint32', 4, function(init){
   return function Uint32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67800,7 +68015,7 @@ __webpack_require__(40)('Uint32', 4, function(init){
 /* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Uint8', 1, function(init){
+__webpack_require__(41)('Uint8', 1, function(init){
   return function Uint8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -67810,7 +68025,7 @@ __webpack_require__(40)('Uint8', 1, function(init){
 /* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(40)('Uint8', 1, function(init){
+__webpack_require__(41)('Uint8', 1, function(init){
   return function Uint8ClampedArray(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
@@ -68111,7 +68326,7 @@ $export($export.S, 'Object', {
 // https://github.com/zenparsing/es-observable
 var $export     = __webpack_require__(0)
   , global      = __webpack_require__(5)
-  , core        = __webpack_require__(37)
+  , core        = __webpack_require__(38)
   , microtask   = __webpack_require__(92)()
   , OBSERVABLE  = __webpack_require__(12)('observable')
   , aFunction   = __webpack_require__(20)
@@ -68311,7 +68526,7 @@ __webpack_require__(51)('Observable');
 /* 397 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata                  = __webpack_require__(39)
+var metadata                  = __webpack_require__(40)
   , anObject                  = __webpack_require__(4)
   , toMetaKey                 = metadata.key
   , ordinaryDefineOwnMetadata = metadata.set;
@@ -68324,7 +68539,7 @@ metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue
 /* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(39)
+var metadata               = __webpack_require__(40)
   , anObject               = __webpack_require__(4)
   , toMetaKey              = metadata.key
   , getOrCreateMetadataMap = metadata.map
@@ -68346,7 +68561,7 @@ metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, ta
 
 var Set                     = __webpack_require__(139)
   , from                    = __webpack_require__(115)
-  , metadata                = __webpack_require__(39)
+  , metadata                = __webpack_require__(40)
   , anObject                = __webpack_require__(4)
   , getPrototypeOf          = __webpack_require__(27)
   , ordinaryOwnMetadataKeys = metadata.keys
@@ -68368,7 +68583,7 @@ metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */)
 /* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(39)
+var metadata               = __webpack_require__(40)
   , anObject               = __webpack_require__(4)
   , getPrototypeOf         = __webpack_require__(27)
   , ordinaryHasOwnMetadata = metadata.has
@@ -68390,7 +68605,7 @@ metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKe
 /* 401 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata                = __webpack_require__(39)
+var metadata                = __webpack_require__(40)
   , anObject                = __webpack_require__(4)
   , ordinaryOwnMetadataKeys = metadata.keys
   , toMetaKey               = metadata.key;
@@ -68403,7 +68618,7 @@ metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetK
 /* 402 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(39)
+var metadata               = __webpack_require__(40)
   , anObject               = __webpack_require__(4)
   , ordinaryGetOwnMetadata = metadata.get
   , toMetaKey              = metadata.key;
@@ -68417,7 +68632,7 @@ metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, ta
 /* 403 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(39)
+var metadata               = __webpack_require__(40)
   , anObject               = __webpack_require__(4)
   , getPrototypeOf         = __webpack_require__(27)
   , ordinaryHasOwnMetadata = metadata.has
@@ -68438,7 +68653,7 @@ metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKe
 /* 404 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(39)
+var metadata               = __webpack_require__(40)
   , anObject               = __webpack_require__(4)
   , ordinaryHasOwnMetadata = metadata.has
   , toMetaKey              = metadata.key;
@@ -68452,7 +68667,7 @@ metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, ta
 /* 405 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata                  = __webpack_require__(39)
+var metadata                  = __webpack_require__(40)
   , anObject                  = __webpack_require__(4)
   , aFunction                 = __webpack_require__(20)
   , toMetaKey                 = metadata.key
@@ -68850,7 +69065,7 @@ __webpack_require__(396);
 __webpack_require__(418);
 __webpack_require__(417);
 __webpack_require__(416);
-module.exports = __webpack_require__(37);
+module.exports = __webpack_require__(38);
 
 /***/ }),
 /* 420 */
@@ -74037,7 +74252,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "btn btn-warning"
   }, [_vm._v("Clone")])], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "row"
-  })])
+  }, [_c('item-add-button', {
+    attrs: {
+      "index": _vm.index,
+      "item": _vm.item
+    }
+  })], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

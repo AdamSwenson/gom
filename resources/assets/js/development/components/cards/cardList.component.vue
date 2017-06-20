@@ -127,6 +127,7 @@
             //Return everything in the items tree except the root
             //The root is the exam. It gets special treatment.
             items: function () {
+
                 let orig = this.$store.getters[ gTypes.getAllItems ];
                 if ( _.isEmpty( orig ) ) return [];
 

@@ -47,7 +47,17 @@ module.exports = {
         return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
     },
 
-    [gTypes.getItemNodeFromOrder]: function( state, getters,   rootState,  serialNumber )  {
+    /**
+     * Returns a node representation of an item
+     * Does not return an item object
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param serialNumber
+     */
+    [gTypes.getItemNodeFromOrder]: ( state, getters,   rootState, serialNumber) => ( serialNumber ) => {
+
+        // [gTypes.getItemNodeFromOrder]: function( state, getters,   rootState,  serialNumber )  {
         return getNode(state, serialNumber);
         // return (function ( state, serialNumber ) {
         //     let callback = function ( node ) {
@@ -128,6 +138,10 @@ module.exports = {
             }
         }
         return 0;
+    },
+
+    getRootNode: (state, getters, rootState) => {
+        return state.itemMap;
     }
 
 

@@ -15,7 +15,7 @@
     import * as mTypes from '../../../store/mutation-types';
 
     export default {
-        props: [],
+        props: ['item', 'index'],
 
         data: function () {
             return {};
@@ -37,7 +37,7 @@
              * This sends the actual request(s)
              */
             sendRequest: function () {
-                this.$store.dispatch( aTypes.createItem );
+                this.$store.dispatch( aTypes.createItem, this.item );
             }
         },
 

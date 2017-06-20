@@ -15,9 +15,11 @@ import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
 
+let initialExam = new Exam();
+window.console.log( 'items.order.state', 'initialExam', 19, initialExam );
 
 module.exports = {
-    itemMap: new Node( 0, 0 ),
+    itemMap: new Node( initialExam.serialNumber, initialExam.serialNumber ),
 
     /*
      * What we want to have is the ability to store nested

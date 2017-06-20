@@ -32,13 +32,6 @@ let obj = orderings.default;
 //tested methods
 let { getters, actions, mutations, state } = obj;
 
-const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
-    addNodes( state.itemMap, numItems );
-    for (let n of state.itemMap.children) {
-        addNodes( n, numItems );
-    }
-};
-
 fdescribe( "store.modules.item.order actions ", function () {
 
     beforeEach( function () {

@@ -17,40 +17,48 @@ import Node from '../../models/Node'
 import { traverseDF, traverseBF, getSerialNumber } from '../../models/NodeTools'
 
 
-// let orderMutations  = require( './items.order.mutations');
-// import actions from './items.order.actions';
-//
-// import getters from  './items.order.getters';
-// let orderState  = require( './items.order.state');
-
-// import getters from './items.order.getters'
-// import actions from './items.order.actions'
-
 module.exports = {
     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index, obj, id, parent } = payload;
+        window.console.log( 'items.order.actions', 'pppp', 31, payload );
+        return new Promise( ( resolve, reject ) => {
+            let { obj, parent } = payload;
 
-        //Sort out whether obj and parent are nodes or items
-        let toAddSerialNumber = getSerialNumber(obj);
-        let parentSerialNumber = getSerialNumber(parent)
-        let n = new Node(toAddSerialNumber, parentSerialNumber );
+            //Sort out whether obj and parent are nodes or items
+            let toAddSerialNumber = obj.serialNumber; // getSerialNumber( obj );
+            let parentSerialNumber = getSerialNumber( parent );
+            window.console.log( 'items.order.actions', 'psn', 39, parent, parent.serialNumber );
 
-        let f = function ( currentNode ) {
-            if ( currentNode.data === parentSerialNumber ) {
-                let pl = Payload.factory( { index: index, obj: n, parent: currentNode } );
+            let newNode = new Node( toAddSerialNumber, parent.serialNumber );
+            let parentNode = getters.getItemNodeFromOrder( parent.serialNumber );
+            window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
 
-                commit( mTypes.insertNodeIntoOrder, pl );
-                return false;
-            }
-            return true;
-        }
+            let pl = Payload.factory( { objNode: newNode, parentNode: parentNode } );
+            window.console.log( 'items.order.actions', 'pl', 47, pl );
 
-        traverseDF( state.itemMap, f );
+            commit( mTypes.insertNodeIntoOrder, pl );
 
+            resolve();
+
+        } );
     },
+    //
+    // let f = function ( currentNode ) {
+    //     window.console.log( 'items.order.actions', 'f', 44, currentNode.data, parentSerialNumber);
+    //     if ( currentNode.data === parentSerialNumber ) {
+    //         // let pl = Payload.factory( { obj: n, parent: currentNode } );
+    //         //
+    //         // window.console.log( 'items.order.actions', 'found it', 44, currentNode.data, parentSerialNumber);
+    //         // commit( mTypes.insertNodeIntoOrder, pl );
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    // let parentNode = traverseDF( state.itemMap, f );
+
 
     [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-        let {serialNumber} = payload;
+        let { serialNumber } = payload;
         // let  serialNumber = getSerialNumber(payload);
         let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
         let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );

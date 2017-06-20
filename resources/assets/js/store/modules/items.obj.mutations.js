@@ -96,13 +96,17 @@ module.exports = {
      * @param payload Expecting Item object to be in payload.obj
      */
     [ mTypes.setItem ]: ( state, payload ) => {
-        // console.log('items.mutations', mTypes.setItem, state, payload);
-        if ( Payload.checkIfPayload( payload ) ) {
-            let {index} = payload.obj;
-            window.console.log( 'items.mutations', 'index', 100, index);
-            Vue.set( state.items, index, payload.obj );
-        }
-    },
+        return new Promise((resolve, reject) => {
+
+            // console.log('items.mutations', mTypes.setItem, state, payload);
+            if ( Payload.checkIfPayload( payload ) ) {
+                let { index } = payload.obj;
+                window.console.log( 'items.mutations', 'index', 100, index );
+                Vue.set( state.items, index, payload.obj );
+            }
+            resolve();
+        });
+        },
 
     /**
      * Alters the the property named in updateProp to have the

@@ -8,28 +8,29 @@ import Node from './Node';
 import Payload from './Payload';
 
 export const traverseDF = ( root, callback ) => {
-    let stillLooking = true;
-
-    // this is a recurse and immediately-invoking function
+    // this is a recursive and immediately-invoking function
     (function recurse( currentNode ) {
-        // while(stillLooking) {
         // step 2
         for (var i = 0, length = currentNode.children.length; i < length; i++) {
-            if ( callback( currentNode ) ) {
-                return currentNode;
-            } else {
-
+            //if we are at the exam or at the last child, call
+            //the callback and return the node
+            //todo Not sure why this is here....
+            // if ( callback( currentNode ) ) {
+            //     return currentNode;
+            // }
+            // else {
                 // step 3
+                // iterate through the node's children
+                // calling the recursive function on each
                 recurse( currentNode.children[ i ] );
-            }
+            // }
 
         }
-        // }
-        // window.console.log( 'orderings', 'recurse', 47, callback(currentNode));
         // step 4
+        //We are out of children to cycle through. We can call the callback
+        //node. If the callback returns true, we return the node
         if ( callback( currentNode ) ) {
-            // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
-            stillLooking = false;
+            window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
             return currentNode;
         }
 

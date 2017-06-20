@@ -115,7 +115,7 @@ module.exports = {
      * @param index
      */
     // [gTypes.getItemByIndex]: function ( state, getters, rootState, index ) {
-    [gTypes.getItemByIndex]: ( state, getters, rootState)=> (index) => {
+    [gTypes.getItemByIndex]: ( state, getters, rootState, index)=> (index) => {
 
         // [gTypes.getItemByIndex]: ( state, getters, rootState, index) => {
         // [gTypes.getItemByIndex]: function ( state, getters, index ) {
@@ -167,7 +167,8 @@ module.exports = {
      * @param state
      * @param getters
      */
-    [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
+    [gTypes.getItemBySerialNumber]: ( state, getters, rootState, serialNumber ) => (serialNumber) => {
+    // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
         // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
         return function ( state, serialNumber ) {
             var r = state.items.filter( function ( i ) {

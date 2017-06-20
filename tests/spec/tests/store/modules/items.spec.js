@@ -8,6 +8,7 @@ import { testAction, description, factories } from '../../../helpers/vuex.spec.h
 import {
     addNodes,
     makeState,
+    makeFilledState,
     makeRootState,
     makeTestPayload,
     makeMutationPayload
@@ -20,6 +21,7 @@ import * as items from '../../../../../resources/assets/js/store/modules/items';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 import * as gTypes from '../../../../../resources/assets/js/store/getter-types'
+
 import Item from '../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../resources/assets/js/models/Node'
@@ -37,119 +39,41 @@ fdescribe( "store.modules.items | ", function () {
         this.rootState = makeRootState();
         this.payload = makeTestPayload();
         this.mutationPayload = makeMutationPayload();
+        this.numItems = 5;
+        this.testItemIndex = faker.random.number( { min: 0, max: this.numItems - 1 } );
         this.item = factories.itemFactory();
     } );
 
-    describe( "getters | ", function () {
-        // describe( description( gTypes.getItem ), function () {
-        //     describe( description( 'payload contains id ' ), function () {
-        //         it( "happy path", function () {
-        //             //prep
-        //             this.state.items = [];
-        //             let numItems = 3;
-        //             for (let i = 0; i < numItems; i++) {
-        //                 this.state.items[ i ] = Item.factory( { id: i } );
-        //             }
-        //
-        //             //call and check
-        //             for (let i = 0; i < numItems; i++) {
-        //                 //call
-        //                 let result = getters[ gTypes.getItem ]( this.state, getters, Payload.factory( { id: i } ) );
-        //                 // let result = getters.getItemByIndex( this.state, {}, {}, i );
-        //                 //check
-        //                 expect( result ).toBe( this.state.items[ i ] );
-        //                 expect( result.id ).toBe( i );
-        //             }
-        //         } );
-        //     } );
-        //
-        //     describe( description( 'payload contains index ' ), function () {
-        //         it( "happy path", function () {
-        //
-        //             //prep
-        //             this.state.items = [];
-        //             let numItems = 3;
-        //             for (let i = 0; i < numItems; i++) {
-        //                 this.state.items[ i ] = Item.factory( { index: i } );
-        //             }
-        //
-        //             //call and check
-        //             for (let i = 0; i < numItems; i++) {
-        //                 //call
-        //                 let result = getters[ gTypes.getItem ]( this.state, getters, Payload.factory( { index: i } ) );
-        //                 // let result = getters.getItemByIndex( this.state, {}, {}, i );
-        //                 //check
-        //                 expect( result ).toBe( this.state.items[ i ] );
-        //                 expect( result.index ).toBe( i );
-        //             }
-        //
-        //         } );
-        //     } );
-        // } );
-        //
-        // describe( description( gTypes.getItemById ), function () {
-        //     it( "happy path", function () {
-        //         //prep
-        //         this.state.items = [];
-        //         let numItems = 3;
-        //         for (let i = 0; i < numItems; i++) {
-        //             this.state.items[ i ] = Item.factory( { id: i } );
-        //         }
-        //
-        //         //call and check
-        //         for (let i = 0; i < numItems; i++) {
-        //             //call
-        //             let result = getters.getItemById( this.state, {}, i );
-        //             // let result = getters.getItemByIndex( this.state, {}, {}, i );
-        //             //check
-        //             expect( result ).toBe( this.state.items[ i ] );
-        //             expect( result.id ).toBe( i );
-        //         }
-        //     } );
-        // } );
-        //
-        // describe( description( gTypes.getItemByIndex ), function () {
-        //     it( "happy path", function () {
-        //         //prep
-        //         this.state.items = [];
-        //         let numItems = 3;
-        //         for (let i = 0; i < numItems; i++) {
-        //             this.state.items[ i ] = Item.factory( { index: i } );
-        //         }
-        //
-        //         //call and check
-        //         for (let i = 0; i < numItems; i++) {
-        //             //call
-        //             let result = getters.getItemByIndex( this.state, {}, i );
-        //             // let result = getters.getItemByIndex( this.state, {}, {}, i );
-        //             //check
-        //             expect( result ).toBe( this.state.items[ i ] );
-        //             expect( result.index ).toBe( i );
-        //         }
-        //
-        //     } );
-        //
-        // } );
-        //
-        // describe( description( gTypes.getItemBySerialNumber ), function () {
-        //     it( "happy path", function () {
-        //         //prep
-        //         this.state.items = [];
-        //         let numItems = 3;
-        //         for (let i = 0; i < numItems; i++) {
-        //             this.state.items[ i ] = Item.factory( { index: i } );
-        //         }
-        //         //pick a random object to use for the text
-        //         let testObj = faker.random.arrayElement( this.state.items );
-        //         //call
-        //         let result = getters[ gTypes.getItemBySerialNumber ]( this.state, {}, testObj.serialNumber );
-        //         //check
-        //         expect( result ).toBe( testObj );
-        //         expect( result.serialNumber ).toBe( testObj.serialNumber );
-        //     } );
-        //
-        // } );
+    describe( description( "actions" ), function () {
+        describe( description( aTypes.createItem ), function () {
+            beforeEach( function () {
+                let s = { itemMap: new Node( 0, 0 ) };
+                this.filledState = makeFilledState( s, this.numItems );
+            } );
+            describe( description( "Happy path" ), function () {
+                it( "parent defined", function () {
 
+                    //prep
+                    let payload = {}; //has to be a parent
+                    let expectedMutations = [
+                        {
+                            type: mTypes.addNewItem,
+                            payload: {parent: this.filledState}
+                        },
+                    ]
+
+                    testAction( aTypes.createItem, payload, this.state, expectedMutations, { getters: getters } );
+                } );
+
+                xit( "parent not defined", function () {
+
+                } );
+            } );
+
+        } );
+    } );
+
+    describe( "getters | ", function () {
 
         describe( 'getSortedIds | ', function () {
             beforeEach( function () {
@@ -263,6 +187,118 @@ fdescribe( "store.modules.items | ", function () {
 
 
 } );
+
+
+// describe( description( gTypes.getItem ), function () {
+//     describe( description( 'payload contains id ' ), function () {
+//         it( "happy path", function () {
+//             //prep
+//             this.state.items = [];
+//             let numItems = 3;
+//             for (let i = 0; i < numItems; i++) {
+//                 this.state.items[ i ] = Item.factory( { id: i } );
+//             }
+//
+//             //call and check
+//             for (let i = 0; i < numItems; i++) {
+//                 //call
+//                 let result = getters[ gTypes.getItem ]( this.state, getters, Payload.factory( { id: i } ) );
+//                 // let result = getters.getItemByIndex( this.state, {}, {}, i );
+//                 //check
+//                 expect( result ).toBe( this.state.items[ i ] );
+//                 expect( result.id ).toBe( i );
+//             }
+//         } );
+//     } );
+//
+//     describe( description( 'payload contains index ' ), function () {
+//         it( "happy path", function () {
+//
+//             //prep
+//             this.state.items = [];
+//             let numItems = 3;
+//             for (let i = 0; i < numItems; i++) {
+//                 this.state.items[ i ] = Item.factory( { index: i } );
+//             }
+//
+//             //call and check
+//             for (let i = 0; i < numItems; i++) {
+//                 //call
+//                 let result = getters[ gTypes.getItem ]( this.state, getters, Payload.factory( { index: i } ) );
+//                 // let result = getters.getItemByIndex( this.state, {}, {}, i );
+//                 //check
+//                 expect( result ).toBe( this.state.items[ i ] );
+//                 expect( result.index ).toBe( i );
+//             }
+//
+//         } );
+//     } );
+// } );
+//
+// describe( description( gTypes.getItemById ), function () {
+//     it( "happy path", function () {
+//         //prep
+//         this.state.items = [];
+//         let numItems = 3;
+//         for (let i = 0; i < numItems; i++) {
+//             this.state.items[ i ] = Item.factory( { id: i } );
+//         }
+//
+//         //call and check
+//         for (let i = 0; i < numItems; i++) {
+//             //call
+//             let result = getters.getItemById( this.state, {}, i );
+//             // let result = getters.getItemByIndex( this.state, {}, {}, i );
+//             //check
+//             expect( result ).toBe( this.state.items[ i ] );
+//             expect( result.id ).toBe( i );
+//         }
+//     } );
+// } );
+//
+// describe( description( gTypes.getItemByIndex ), function () {
+//     it( "happy path", function () {
+//         //prep
+//         this.state.items = [];
+//         let numItems = 3;
+//         for (let i = 0; i < numItems; i++) {
+//             this.state.items[ i ] = Item.factory( { index: i } );
+//         }
+//
+//         //call and check
+//         for (let i = 0; i < numItems; i++) {
+//             //call
+//             let result = getters.getItemByIndex( this.state, {}, i );
+//             // let result = getters.getItemByIndex( this.state, {}, {}, i );
+//             //check
+//             expect( result ).toBe( this.state.items[ i ] );
+//             expect( result.index ).toBe( i );
+//         }
+//
+//     } );
+//
+// } );
+//
+// describe( description( gTypes.getItemBySerialNumber ), function () {
+//     it( "happy path", function () {
+//         //prep
+//         this.state.items = [];
+//         let numItems = 3;
+//         for (let i = 0; i < numItems; i++) {
+//             this.state.items[ i ] = Item.factory( { index: i } );
+//         }
+//         //pick a random object to use for the text
+//         let testObj = faker.random.arrayElement( this.state.items );
+//         //call
+//         let result = getters[ gTypes.getItemBySerialNumber ]( this.state, {}, testObj.serialNumber );
+//         //check
+//         expect( result ).toBe( testObj );
+//         expect( result.serialNumber ).toBe( testObj.serialNumber );
+//     } );
+//
+// } );
+
+
 //
 //     describe( "mutations | ", function () {
 //         describe( description( mTypes.setItem ), function () {

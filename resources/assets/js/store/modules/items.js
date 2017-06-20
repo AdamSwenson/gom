@@ -70,7 +70,7 @@ const buildPayloadFromInput = ( state, rootState, payload ) => {
     return out;
 };
 
-const state = Object.assign( {}, Objects.state, Orderings.state);///orderState); //Orderings.state );
+const state = Object.assign( {}, Objects.state, Orderings.state );///orderState); //Orderings.state );
 
 
 /**
@@ -137,19 +137,74 @@ const getters_both = {
         return map;
     }
 };
-window.console.log( 'items', 'tac               oooooo', 146 );
+
+
+const actions= {
+    ...Objects.actions,
+    ...Orderings.actions,
+    /**
+     * Called when a brand new item needs to be created and inserted into
+     * the store.
+     * This handles the creation of the item and then the subsequent actions
+     * like notifying the server and placing the item in the appropriate
+     * place in the order
+     *
+     * @param state
+     * @param commit
+     */
+    [aTypes.createItem] : ( { state, commit, dispatch, getters }, parent ) => {
+
+        if ( _.isUndefined( parent ) ) {
+            parent = getters.currentExam;
+        }
+
+        //If we were passed an item to serve as the parent
+        //we will use it
+        let item = Item.factory( { parent: parent } );
+        let pl = Payload.factory( { parent: parent, obj: item } );
+        let p = new Promise( ( resolve, reject ) => {
+            commit( mTypes.addNewItem, pl );
+            resolve();
+//                commit( mTypes.setItem, Payload.factory( { index: index, obj: item, } ) );
+        } );
+
+        return p.then( () => {
+            return new Promise( ( resolve, reject ) => {
+                window.console.log( 'items', 'addItemToOrder', 172, pl );
+                dispatch( aTypes.addItemToOrder, pl );
+                resolve()
+            } );
+        } );
+    },
+
+
+};
+
+
 
 // const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
 // Object.assign(getters, orderGetters);//
-const getters = {...getters_both, ...Orderings.getters, ...Objects.getters};
+const getters = { ...getters_both, ...Orderings.getters, ...Objects.getters };
 
 window.console.log( 'ww items', 'f ************ getters', 112, getters, Objects, Orderings );
 // };
 
-const actions =  Object.assign( {}, Objects.actions, Orderings.actions); //Orderings.actions );
+// const actions = { ...actions_both, ...Objects.actions, ...Orderings.actions }; //Orderings.actions );
 //require( './items.obj.actions' );
 
-const mutations =  Object.assign( {},  Objects.mutations, Orderings.mutations); //Orderings.mutations ); //require( './items.obj.mutations' );
+const mutations = {
+    ...Objects.mutations,
+    ...Orderings.mutations,
+
+    initializeItemStore : (state )=>
+    {
+        let exam = new Exam();
+        state.items[0] = exam;
+        state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+    }
+
+};
+//Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 export default {
     actions,

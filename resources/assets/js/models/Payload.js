@@ -11,6 +11,11 @@ export default class Payload {
         //the index value of the object
         this._index;
 
+        /** Type checked storage of the node to do stuff to */
+        this._objNode;
+        /** Type checked storage of the parent of the node operating upon */
+        this._parentNode;
+
         /** Whether to fail to notify subscribers of the mutation */
         this.mutateSilently = false;
 
@@ -34,6 +39,7 @@ export default class Payload {
 
         this.str;
         this.index;
+        this.parent;
 
         this.serialNumber;
 
@@ -57,23 +63,26 @@ export default class Payload {
     static get fillableProps() {
         return [
             'callback',
-            'id', 'index',
-            'num', 'obj', 'parent',
+            'id', 'index', 'num',
+            'obj', 'parent',
+            'objNode', 'parentNode',
             'serialNumber', 'str', 'stamp',
             'updateProp', 'updateVal',
             'updateValence',
         ];
     }
 
-    get callback(){
-        if (typeof this._successCallback === 'undefined'){
+    get callback() {
+        if ( typeof this._successCallback === 'undefined' ) {
             //dummy callable
-            return ()=>{return true;}
+            return () => {
+                return true;
+            }
         }
         return this._successCallback();
     }
 
-    set callback(v){
+    set callback( v ) {
         this._successCallback = v;
     }
 
@@ -83,12 +92,12 @@ export default class Payload {
     }
 
     /**
-    * Retrieve the index where it is possible
-    * different fields could have different values.
-    * This enforces the order of precedence between the fields
-    */
-    static getIndex(payload) {
-        if ( this.checkIfPayload(payload) ) {
+     * Retrieve the index where it is possible
+     * different fields could have different values.
+     * This enforces the order of precedence between the fields
+     */
+    static getIndex( payload ) {
+        if ( this.checkIfPayload( payload ) ) {
             //If an object is set, that object's index
             //is always correct.
             if ( typeof payload.obj !== 'undefined' && typeof payload.obj.index !== 'undefined' ) {
@@ -103,6 +112,7 @@ export default class Payload {
         //todo numeric check
         this._id = val;
     }
+
     //
     // get index() {
     //     return this._index;
@@ -149,6 +159,7 @@ export default class Payload {
         }
 //todo error handling
     }
+
     //
     //
     // get str() {
@@ -160,7 +171,24 @@ export default class Payload {
     //     this._str = v;
     // }
 
+    get objNode() {
+        return this._objNode
+    }
 
+    set objNode( val ) {
+        if ( !val instanceof Node ) throw new Error( "non-node attempting to be set as objNode in Payload" );
+        this._objNode = val;
+    }
+
+
+    get parentNode() {
+        return this._parentNode
+    }
+
+    set parentNode( val ) {
+        if ( !val instanceof Node ) throw new Error( "non-node attempting to be set as parentNode in Payload" );
+        this._parentNode = val;
+    }
 
     static get aliasMap() {
         return {
@@ -183,7 +211,7 @@ export default class Payload {
             } );
 
             //fill any aliased values
-            for ( let v in this.aliasMap ) {
+            for (let v in this.aliasMap) {
                 if ( typeof params[ v ] !== 'undefined' ) {
                     // console.log( 'alias', v, map[v] );
                     p[ this.aliasMap[ v ] ] = params[ v ];

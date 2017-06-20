@@ -41,8 +41,11 @@
         </div>
 
         <div class="row">
+            <item-add-button :index="index" :item="item"></item-add-button>
+
             <!--<sub-list></sub-list>-->
         </div>
+
     </div>
 
 
@@ -81,7 +84,7 @@
 
     export default{
 
-        props: [ 'index', 'parent-index' ],
+        props: [ 'index', 'parent-index', 'serialNumber' ],
 
         data: function () {
             return {
@@ -144,18 +147,23 @@
                 return d;
             },
 
+            item: function(){
+              return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
+            },
+
             depth: {
                 get: function () {
+                    return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
 //                    let item = this.$store.getters.getItemById(this.id);
-                    let item = this.$store.getters.getItemByIndex(this.index);
-                    if ( typeof item !== 'undefined' ) {
-                        return item.depth
-                    }
-
+//                    let item = this.$store.getters.getItemByIndex(this.index);
+//                    if ( typeof item !== 'undefined' ) {
+//                        return item.depth
+//                    }
+//
                 },
                 set: function ( v ) {
 //                    let item = this.$store.getters.getItemById(this.id);
-                    let item = this.$store.getters.getItemByIndex(this.index);
+                    let item = this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
                     if ( typeof item !== 'undefined' ) {
                         this.$store.commit(Payload.factory({
 //                            id: this.id,

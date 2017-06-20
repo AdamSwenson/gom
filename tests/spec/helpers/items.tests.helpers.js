@@ -33,6 +33,13 @@ export const makeState = ( n = 5 ) => {
     return s;
 };
 
+export const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
+    addNodes( state.itemMap, numItems );
+    for (let n of state.itemMap.children) {
+        addNodes( n, numItems );
+    }
+};
+
 export const makeRootState = function () {
     return {
         /**
