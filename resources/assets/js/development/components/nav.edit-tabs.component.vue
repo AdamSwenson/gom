@@ -1,54 +1,130 @@
 <template>
-    <div class="nav-edit-tabs-component">
+    <!--<nav class="nav-edit-tabs-component tabs">-->
 
-        <!--<div class="level">-->
+    <!--<div class="level">-->
 
-        <!--<div class="level-left" v-show="promotable">-->
-        <!--&lt;!&ndash;<depth-control type="promote" :index="index"></depth-control>&ndash;&gt;-->
-        <!--</div>-->
+    <!--<div class="level-left" v-show="promotable">-->
+    <!--&lt;!&ndash;<depth-control type="promote" :index="index"></depth-control>&ndash;&gt;-->
+    <!--</div>-->
+    <!--<p class="panel-tabs">-->
+    <!--<a class="is-active">All</a>-->
 
-        <!--<div class="level-item">-->
-        <!-- Nav tabs -->
-        <div class="tabs is-centered is-fullwidth">
-            <ul>
-                <!--<ul class="nav nav-tabs"-->
-                <!--role="tablist">-->
+    <!--&lt;!&ndash;<div class="level-item">&ndash;&gt;-->
+    <!--&lt;!&ndash; Nav tabs &ndash;&gt;-->
+    <!--<div class="tabs is-centered is-fullwidth">-->
+    <!--<ul>-->
+    <!--<ul class="nav nav-tabs"-->
+    <!--role="tablist">-->
 
-                <li v-if="isExam" role="presentation">
-                    <router-link v-bind:to="routeToExamDetails">Details</router-link>
-                </li>
-                <li v-else role="presentation">
-                    <router-link v-bind:to="routeToItemDetails">Details</router-link>
-                </li>
+    <!--<span v-if="isExam">-->
+    <!--<router-link v-bind:to="routeToExamDetails">Details</router-link>-->
+    <!--</span>-->
+    <!--<span v-else>-->
+    <!--<router-link v-bind:to="routeToItemDetails">Details</router-link>-->
+    <!--</span>-->
+    <!--<router-link :to="{name: 'comments', params: {index : index} }">Feedback</router-link>-->
 
-                <li role="presentation">
-                    <router-link :to="{name: 'comments', params: {index : index} }">Feedback</router-link>
-                </li>
+    <!--<a>-->
 
-                <li role="presentation">
+    <!--<router-link v-bind:to="routeToStats">-->
+    <!--<span class="icon is-small">-->
+    <!--<i class="fa fa-line-chart"-->
+    <!--aria-hidden="true"></i>-->
+    <!--</span>-->
+    <!--<span>Stats</span>-->
 
-                    <router-link v-bind:to="routeToStats">
-                        <a>
-                                    <span class="icon is-small">
-                                        <i class="fa fa-line-chart"
-                                           aria-hidden="true"></i>
-                                    </span>
-                            <span>Stats</span>
-                        </a>
-                    </router-link>
-                </li>
+    <!--</router-link>-->
+    <!--</a>-->
 
-                <li role="presentation">
-                    <router-link v-bind:to="routeToHistory">History</router-link>
-                </li>
+    <!--<a>-->
+    <!--<router-link v-bind:to="routeToHistory">History</router-link>-->
+    <!--</a>-->
 
-                <li role="presentation">
-                    <router-link v-bind:to="routeToNotes">Notes</router-link>
-                </li>
-            </ul>
-        </div>
+    <!--<a>-->
+    <!--<router-link v-bind:to="routeToNotes">Notes</router-link>-->
+    <!--</a>-->
+    <!--</p>-->
+    <!--</nav>-->
 
-    </div>
+    <!--<a class="panel-block">-->
+    <!--<router-view name="itemPanels"></router-view>-->
+    <!--</a>-->
+
+    <nav class="nav-edit-tabs-component tabs is-centered">
+        <ul>
+            <li v-if="isExam" role="presentation">
+                <router-link v-bind:to="routeToExamDetails">Details</router-link>
+            </li>
+
+            <li v-else role="presentation">
+                <router-link v-bind:to="routeToItemDetails">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </span>
+                        <span>Details</span>
+                    </a>
+                </router-link>
+            </li>
+
+            <li role="presentation">
+                <router-link :to="{name: 'comments', params: {index : index} }">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-comments-o" aria-hidden="true"></i>
+                        </span>
+                        <span>Feedback</span>
+                    </a>
+                </router-link>
+            </li>
+
+            <li role="presentation">
+                <router-link v-bind:to="routeToStats">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-line-chart" aria-hidden="true"></i>
+                        </span>
+                        <span>Stats</span>
+                    </a>
+                </router-link>
+            </li>
+
+            <li role="presentation">
+                <router-link v-bind:to="routeToHistory">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-book" aria-hidden="true"></i>
+                        </span>
+                    <span>History</span>
+                </a>
+                </router-link>
+            </li>
+
+            <li role="presentation">
+                <router-link v-bind:to="routeToNotes">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
+                        </span>
+                    <span>Notes</span>
+                </a>
+                </router-link>
+            </li>
+
+
+            <li role="presentation">
+                <router-link v-bind:to="routeToTags">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-tags" aria-hidden="true"></i>
+                        </span>
+                    <span>Tags</span>
+                </a>
+                </router-link>
+            </li>
+        </ul>
+    </nav>
+
 
 </template>
 <style>
@@ -78,7 +154,7 @@
                 },
                 // currentView: 'item-settings-question',
                 tabs: [
-                    'details', 'comments', 'stats', 'history', 'notes'
+                    'details', 'comments', 'stats', 'history', 'notes', 'tags'
                 ],
                 hiding: true,
 
@@ -127,6 +203,11 @@
 
             routeToNotes: function () {
                 return "/panel-notes/" + this.index;
+            },
+
+
+            routeToTags: function () {
+                return "/panel-tags/" + this.index;
             },
 
             /**

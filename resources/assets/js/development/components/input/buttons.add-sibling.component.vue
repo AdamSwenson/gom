@@ -1,6 +1,6 @@
 <template>
     <button
-            class="add-sibling-button is-primary is-outlined"
+            class="button add-sibling-button is-primary is-outlined"
             v-on:click="add"
     >
        <span class="icon is-small">

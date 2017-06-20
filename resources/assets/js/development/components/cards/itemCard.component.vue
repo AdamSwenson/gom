@@ -1,123 +1,104 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
     <div v-bind:id="divId"
-         class="item-card-component"
+         class="item-card-component card"
          v-bind:class="offsetClass"
          v-bind:data-id="index"
          v-bind:data-index="index"
          v-bind:data-parent-index="parentIndex"
     >
+        <!--This represents a question or an element-->
 
+        <div class="card-content">
+            <item-main :index="index"></item-main>
+        </div>
 
-        <div class="card">
-            <!--This represents a question or an element-->
+        <div class="card-content" v-show="paneVisible">
+                <edit-tabs :index="index"
+                           :serial-number="serialNumber"
+                           :is-exam="false">
 
-            <div class="card-header">
-                <div class="card-header-title">
-                    <item-main :index="index"></item-main>
-                </div>
-            </div>
+                </edit-tabs>
+                    <router-view name="itemPanels"></router-view>
+        </div>
 
-            <div class="card-content" v-show="paneVisible">
-                <div class="text-left">
-                    <edit-tabs :index="index" :is-exam="false"></edit-tabs>
+        <div class="card-footer">
 
-                    <!-- Tab panels -->
-                    <div class="tab-panel-area">
-                        <router-view name="itemPanels"></router-view>
-                    </div>
+            <div class="card-footer-item">
+                <div class="field is-grouped">
+                    <p class="control">
+                        <add-sibling-button :index="serialNumber"
+                                            :serial-number="serialNumber">
+                        </add-sibling-button>
+                    </p>
 
-                </div>
-            </div>
+                    <p class="control">
+                        <add-child-button :index="serialNumber"
+                                          :serial-number="serialNumber">
+                        </add-child-button>
+                    </p>
 
-            <div class="card-content" v-show="paneVisible">
-                <div class="button-row col-md-12 text-left">
-                    <div class="btn-group "
-                         role="group"
-                         aria-label="Item tool buttons">
-
-                        <delete-item-button :index="index"></delete-item-button>
-
-                        <public-indicator :index="index"></public-indicator>
-                        <button class="btn btn-warning">Clone</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-footer">
-                <!--<div class="level">-->
-                <!--<div class="level-left"></div>-->
-                <!--<div class="level-item">-->
-                <div class="card-footer-item">
-
-                    <div class="field is-grouped">
-                        <p class="control">
-                            <add-sibling-button :index="serialNumber"
-                                                :serial-number="serialNumber">
-                            </add-sibling-button>
-                        </p>
-
-                        <p class="control">
-                            <add-child-button :index="serialNumber"
-                                              :serial-number="serialNumber">
-                            </add-child-button>
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="card-footer-item">
-                    <div class="field is-grouped">
-                        <p class="control">
-
-                            <public-indicator :index="index"
-                                              :serial-number="serialNumber">
-                            </public-indicator>
-                        </p>
-                        <p class="control">
-                            <delete-item-button :index="index"
-                                                :serial-number="serialNumber">
-                            </delete-item-button>
-                        </p>
-
-                        <p class="control">
-                            <button class="button is-primary is-outlined">
+                    <p class="control">
+                        <button class="button is-primary is-outlined">
                                 <span class="icon is-small">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                 </span>
-                                <span>Clone</span>
-                            </button>
-                        </p>
+                            <span>Clone</span>
+                        </button>
+                    </p>
+                    <p class="control">
 
-                    </div>
+                        <public-indicator :index="index"
+                                          :serial-number="serialNumber">
+                        </public-indicator>
+                    </p>
+                    <p class="control">
+                        <delete-item-button :index="index"
+                                            :serial-number="serialNumber">
+                        </delete-item-button>
+                    </p>
                 </div>
+
             </div>
 
-            <div class="card-footer">
-                <div class="card-footer-item">
-                    <div class="tabs is-fullwidth">
-                        <ul>
-                            <li>
-                                <a>
-                                    <span class="icon"><i class="fa fa-angle-left"></i></span>
-                                    <span>Left</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <span class="icon"><i class="fa fa-angle-up"></i></span>
-                                    <span>Up</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <span>Right</span>
-                                    <span class="icon"><i class="fa fa-angle-right"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+        </div>
+
+        <div class="card-footer is-centered">
+            <!--<div class="card-footer-item">-->
+            <div class="tabs is-centered">
+                <ul>
+                    <li>
+                        <a>
+                            <span class="icon"><i class="fa fa-angle-left"></i></span>
+                            <span>Left</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a>
+                            <span class="icon"><i class="fa fa-angle-up"></i></span>
+                            <span>Up</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <h5>Move</h5>
+                    </li>
+
+                    <li>
+                        <a>
+                            <span class="icon"><i class="fa fa-angle-down"></i></span>
+                            <span>Down</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a>
+                            <span>Right</span>
+                            <span class="icon"><i class="fa fa-angle-right"></i></span>
+                        </a>
+                    </li>
+
+                </ul>
             </div>
         </div>
 
@@ -132,26 +113,22 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <style lang="scss">
 
     .item-card-component {
+        margin-top: 2em;
 
-        /*width: 80%;*/
-        .button-row {
-            padding: 1em;
-        }
-        .panel-heading {
+        border-bottom: solid;
 
-            /*background-color: #FFFDF4;*/
-        }
+        /*!*width: 80%;*!*/
+        /*.button-row {*/
+        /*padding: 1em;*/
+        /*}*/
+        /*.panel-heading {*/
 
-        .bottom-stripe {
-            /*line-height: 3em;*/
-            /*background-color: #385a7f;*/
-        }
+        /*background-color: #FFFDF4;*/
 
     }
 

@@ -33,6 +33,8 @@ import panelHistory from './components/panel.history.component.vue'
 import panelNotes from './components/panel.notes.component.vue'
 import panelItemDetail from './components/panel.item-detail.component.vue'
 import panelStats from './components/panel.stats.component.vue'
+import panelTags from './components/panel.tags.component.vue'
+
 
 //Main editable objects
 import examMain from './components/exam.main.component.vue'
@@ -105,6 +107,7 @@ Vue.component( 'panel-comments', panelComments );
 Vue.component( 'panel-history', panelHistory );
 Vue.component( 'panel-stats', panelStats );
 Vue.component( 'panel-notes', panelNotes );
+Vue.component('panel-tags', panelTags);
 Vue.component( 'edit-tabs', editTabs );
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
@@ -166,6 +169,11 @@ const routes = [
     {
         path: '/panel-stats/:index',
         components: { itemPanels: panelStats },
+        props: true
+    },
+    {
+        path: '/panel-tags/:index',
+        components: { itemPanels: panelTags},
         props: true
     }
 ];

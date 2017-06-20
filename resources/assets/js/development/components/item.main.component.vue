@@ -1,24 +1,21 @@
 <template>
 
-    <div class="item-main-component ">
-        <div class="row">
-            <!--<div class="col-md-2 col-lg-2">-->
-                <div class="col-md-1 col-lg-1">
-                <h5># {{ index }}</h5>
+    <div class="item-main-component field has-addons">
 
-            </div>
-            <!--<div class="col-md-10 col-lg-10">-->
-            <div class="col-md-11 col-lg-11">
-                <div class="input-group">
+        <p class="control">
+            <input type="text"
+                   class="input indexDisplay is-large"
+                   v-model="displayIndex" readonly>
+        </p>
 
-                    <item-name :index="index"></item-name>
+        <p class="control is-expanded">
+            <item-name :index="index" :serial-number="serialNumber"></item-name>
+        </p>
 
-                        <settings-button :index="index"></settings-button>
-                </div>
-            </div>
-        </div>
+        <p class="control">
+            <settings-button :index="index" :serial-number="serialNumber"></settings-button>
+        </p>
     </div>
-
 </template>
 
 <style lang="scss">
@@ -29,6 +26,7 @@
             0 10px 30px rgba(0, 0, 0, .5);
         }
         .indexDisplay {
+            width: 2em;
             text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
             0 2px 3px rgba(0, 0, 0, .8),
             0 10px 30px rgba(0, 0, 0, .5);
@@ -58,14 +56,14 @@
 //            'public-indicator': publicIndicator,
 //        },
 
-        props: [ 'index' ],
+        props: [ 'index', 'serialNumber' ],
 
 
         data: function () {
             return {
 
                 placeHolders: {
-                    privateName: "Enter a descriptive name for this item (e.g., Cat petting amount )"
+                    privateName: "Enter a descriptive name for this item"
                 },
 
                 types: [ 'Question', 'Element' ],
@@ -84,6 +82,12 @@
         },
 
         computed: {
+            displayIndex: function () {
+                //take the depth and make a string like
+                // 2.4.5
+                return this.index;
+            },
+
             /**
              * For questions, this will be the question number
              * For elements it will be the subtask number.

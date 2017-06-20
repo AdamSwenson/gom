@@ -1,93 +1,128 @@
 <template>
     <div class="panel-exam-detail-component  ">
-        <div class="row">
-            <div class="col-md-11">
 
-                <!-- name input -->
-                <div class="input-group">
-                    <span class="input-group-addon"
-                          id="basic-addon1">Public Assignment Name</span>
-                    <input type="text"
-                           class="form-control input-lg"
-                           id="publicName"
-                           name="publicName"
-                           aria-describedby="basic-addon1"
-                           v-model="publicName"
-                           v-bind:placeholder="placeholders.publicName"
-                    >
-                </div>
-            </div>
-
-            <div class="col-md-1">
-                <span class="glyphicon glyphicon-question-sign"></span>
-            </div>
-
+        <div class="field">
+            <label class="label">Public Assignment Name</label>
+            <p class="control">
+                <input type="text"
+                       class="input"
+                       id="publicName"
+                       name="publicName"
+                       v-model="publicName"
+                       v-bind:placeholder="placeholders.publicName"
+                >
+            </p>
         </div>
 
-        <div class="row">
-            <div class="col-md-3">
-
-                <div class="input-group">
-                    <div class="input-group-btn">
-                        <button type="button"
-                                class="btn btn-default dropdown-toggle"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">Term <span
-                                class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li v-for="term in terms">
-                                <a href="#">{{term}}</a>
-                            </li>
-                        </ul>
-                    </div><!-- /btn-group -->
-                    <input id="term"
-                            type="text"
-                           class="form-control" aria-label="term-text"
-                           v-model="term">
-                </div><!-- /input-group -->
-
-                <!--<b-dropdown v-bind:text="term"-->
-                <!--variant="primary"-->
-
-                <!--&gt;-->
-                <!--<b-dropdown-item href="#">Winter</b-dropdown-item>-->
-                <!--<b-dropdown-item href="#">Spring</b-dropdown-item>-->
-                <!--<b-dropdown-item href="#">Summer</b-dropdown-item>-->
-                <!--<b-dropdown-item href="#">Fall</b-dropdown-item>-->
-                <!--</b-dropdown>-->
-            </div>
-
-            <div class="col-md-1">
-                <span class="glyphicon glyphicon-question-sign"></span>
-            </div>
-            <!--<list-dropdown type="term"></list-dropdown>-->
-
+        <div class="field">
+            <label class="label">Subject</label>
+            <p class="control">
+                <span class="select">
+                    <select>
+                        <option v-for="term in terms" :key="term">term</option>
+                    </select>
+                </span>
+            </p>
         </div>
-        <div class="row">
-            <div class="col-md-3">
 
-                <div class="input-group">
-                    <div class="input-group-btn">
-                        <button type="button"
-                                class="btn btn-default dropdown-toggle"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">Year <span
-                                class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li v-for="year in years">
-                                <a href="#">{{year}}</a>
-                            </li>
-                        </ul>
-                    </div><!-- /btn-group -->
-                    <input id="year"
-                           type="number"
-                           class="form-control" aria-label="year-text"
-                           v-model="year">
-                </div><!-- /input-group -->
-            </div>
+        <div class="field">
+            <label class="label">Term</label>
+            <input id="term"
+                   type="text"
+                   class="input" aria-label="term-text"
+                   v-model="term">
         </div>
+
+        <div class="field has-addons">
+            <label class="label">Year</label>
+            <p class="control">
+                <button type="button"
+                        class="button is-outlined "
+                        v-mode="year">
+                </button>
+            </p>
+
+            <p class="control">
+                <span class="select">
+                    <select>
+                        <option v-for="year in years" :key="year">year</option>
+                    </select>
+                </span>
+            </p>
+
+            <p class="control">
+                <input
+                        type="number"
+                        class="form-control" aria-label="year-text"
+                        v-model="year">
+            </p>
+
+        </div><!-- /btn-group -->
+    </div><!-- /input-group -->
+
+
+    <!--<div class="field">-->
+    <!--<label class="label">Public Assignment Name</label>-->
+    <!--<p class="control">-->
+    <!--<button type="button"-->
+    <!--class="button "-->
+    <!--data-toggle="dropdown"-->
+    <!--aria-haspopup="true"-->
+    <!--aria-expanded="false">Term <span-->
+    <!--class="caret"></span></button>-->
+    <!--<ul class="dropdown-menu">-->
+    <!--<li v-for="term in terms">-->
+    <!--<a href="#">{{term}}</a>-->
+    <!--</li>-->
+    <!--</ul>-->
+    <!--</div>&lt;!&ndash; /btn-group &ndash;&gt;-->
+    <!--<input id="term"-->
+    <!--type="text"-->
+    <!--class="form-control" aria-label="term-text"-->
+    <!--v-model="term">-->
+    <!--</div>&lt;!&ndash; /input-group &ndash;&gt;-->
+
+    <!--<b-dropdown v-bind:text="term"-->
+    <!--variant="primary"-->
+
+    <!--&gt;-->
+    <!--<b-dropdown-item href="#">Winter</b-dropdown-item>-->
+    <!--<b-dropdown-item href="#">Spring</b-dropdown-item>-->
+    <!--<b-dropdown-item href="#">Summer</b-dropdown-item>-->
+    <!--<b-dropdown-item href="#">Fall</b-dropdown-item>-->
+    <!--</b-dropdown>-->
+    <!--</div>-->
+
+    <!--<div class="col-md-1">-->
+    <!--<span class="glyphicon glyphicon-question-sign"></span>-->
+    <!--</div>-->
+    <!--<list-dropdown type="term"></list-dropdown>-->
+
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button"
+                            class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">Year <span
+                            class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li v-for="year in years">
+                            <a href="#">{{year}}</a>
+                        </li>
+                    </ul>
+                </div><!-- /btn-group -->
+                <input id="year"
+                       type="number"
+                       class="form-control" aria-label="year-text"
+                       v-model="year">
+            </div><!-- /input-group -->
+        </div>
+    </div>
     </div>
 
 </template>
@@ -140,11 +175,11 @@
                     }
                 },
                 set: function ( v ) {
-                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                    this.$store.commit( mTypes.updateItem, Payload.factory( {
                         index: 0,
                         updateProp: 'publicName',
                         updateVal: v
-                    }));
+                    } ) );
                 }
             },
 
@@ -162,11 +197,11 @@
                 //this is by design.
                 //We are not being too prescriptive, remember?
                 set: function ( v ) {
-                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                    this.$store.commit( mTypes.updateItem, Payload.factory( {
                         index: 0,
                         updateProp: 'term',
                         updateVal: v
-                    }));
+                    } ) );
                 }
             },
             year: {
@@ -177,11 +212,11 @@
                     }
                 },
                 set: function ( v ) {
-                    this.$store.commit(mTypes.updateItem, Payload.factory({
+                    this.$store.commit( mTypes.updateItem, Payload.factory( {
                         index: 0,
                         updateProp: 'year',
                         updateVal: v
-                    }));
+                    } ) );
 
                 }
             },
@@ -197,7 +232,7 @@
 //                window.console.log('panel.exam-detail.component', 'selectTerm', 167, this);
             },
             getExam: function () {
-                return this.$store.getters.getItemByIndex(0);
+                return this.$store.getters.getItemByIndex( 0 );
 //                return this.$store.getters[ gTypes.getActiveExamObj ];
             },
 
@@ -212,7 +247,7 @@
         events: {},
 
         mounted: function () {
-            console.log('exam-edit-pane ready');
+            console.log( 'exam-edit-pane ready' );
         },
     };
 </script>
