@@ -1,131 +1,64 @@
 <template>
-    <div v-bind:id="divId"
-         class="item-card-component"
-         v-bind:class="offsetClass"
-         v-bind:data-id="index"
-         v-bind:data-index="index"
-         v-bind:data-parent-index="parentIndex"
-    >
-
-
+    <div class="box">
         <div class="card">
-            <!--This represents a question or an element-->
-
-            <div class="card-header">
-                <div class="card-header-title">
-                    <item-main :index="index"></item-main>
-                </div>
-            </div>
-
-            <div class="card-content" v-show="paneVisible">
-                <div class="text-left">
-                    <edit-tabs :index="index" :is-exam="false"></edit-tabs>
-
-                    <!-- Tab panels -->
-                    <div class="tab-panel-area">
-                        <router-view name="itemPanels"></router-view>
+            <div class="card-content">
+                <!--This represents a question or an element-->
+                <div v-bind:id="divId"
+                     class="item-card-component"
+                     v-bind:class="offsetClass"
+                     v-bind:data-id="index"
+                     v-bind:data-index="index"
+                     v-bind:data-parent-index="parentIndex"
+                >
+                    <div class="row">
+                        <div class="col-md-12 text-left">
+                            <item-main :index="index"></item-main>
+                        </div>
                     </div>
 
-                </div>
-            </div>
+                    <div class="row" v-show="paneVisible">
+                        <div class="col-md-12 text-left">
+                            <edit-tabs :index="index" :is-exam="false"></edit-tabs>
 
-            <div class="card-content" v-show="paneVisible">
-                <div class="button-row col-md-12 text-left">
-                    <div class="btn-group "
-                         role="group"
-                         aria-label="Item tool buttons">
+                            <!-- Tab panels -->
+                            <div class="tab-panel-area">
+                                <router-view name="itemPanels"></router-view>
+                            </div>
 
-                        <delete-item-button :index="index"></delete-item-button>
+                        </div>
+                    </div>
 
-                        <public-indicator :index="index"></public-indicator>
-                        <button class="btn btn-warning">Clone</button>
+                    <div class="row" v-show="paneVisible">
+                        <div class="button-row col-md-12 text-left">
+                            <div class="btn-group "
+                                 role="group"
+                                 aria-label="Item tool buttons">
+
+                                <delete-item-button :index="index"></delete-item-button>
+
+                                <public-indicator :index="index"></public-indicator>
+                                <button class="btn btn-warning">Clone</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="card-footer">
-                <!--<div class="level">-->
-                <!--<div class="level-left"></div>-->
-                <!--<div class="level-item">-->
-                <div class="card-footer-item">
-
-                    <div class="field is-grouped">
-                        <p class="control">
-                            <add-sibling-button :index="serialNumber"
-                                                :serial-number="serialNumber">
-                            </add-sibling-button>
-                        </p>
-
-                        <p class="control">
-                            <add-child-button :index="serialNumber"
-                                              :serial-number="serialNumber">
-                            </add-child-button>
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="card-footer-item">
-                    <div class="field is-grouped">
-                        <p class="control">
-
-                            <public-indicator :index="index"
-                                              :serial-number="serialNumber">
-                            </public-indicator>
-                        </p>
-                        <p class="control">
-                            <delete-item-button :index="index"
-                                                :serial-number="serialNumber">
-                            </delete-item-button>
-                        </p>
-
-                        <p class="control">
-                            <button class="button is-primary is-outlined">
-                                <span class="icon is-small">
-                                    <i class="fa fa-clone" aria-hidden="true"></i>
-                                </span>
-                                <span>Clone</span>
-                            </button>
-                        </p>
-
-                    </div>
+                <div class="row">
+                    <add-sibling-button :index="serialNumber"
+                                        :serialNumber="serialNumber"></add-sibling-button>
+                    <add-child-button :index="serialNumber"
+                                      :serialNumber="serialNumber"></add-child-button>
+                    <!--<sub-list></sub-list>-->
                 </div>
             </div>
 
-            <div class="card-footer">
-                <div class="card-footer-item">
-                    <div class="tabs is-fullwidth">
-                        <ul>
-                            <li>
-                                <a>
-                                    <span class="icon"><i class="fa fa-angle-left"></i></span>
-                                    <span>Left</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <span class="icon"><i class="fa fa-angle-up"></i></span>
-                                    <span>Up</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <span>Right</span>
-                                    <span class="icon"><i class="fa fa-angle-right"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
 
 
         <!--Check whether the item has children, if it does-->
         <!--we will make a box that will surround the children-->
         <div class="box" v-if="numberChildren > 0">
-
             <div v-for="isn in children">
                 <!--Now we make cards recursively-->
                 <item-card :serial-number="isn" :index="isn" :key="isn"></item-card>
@@ -134,7 +67,6 @@
     </div>
 
 </template>
-
 <style lang="scss">
 
     .item-card-component {

@@ -1,5 +1,6 @@
 <template xmlns="http://www.w3.org/1999/html">
     <div class="card-list-component">
+
         <div class="row outer-card-list">
 
             <ul id='card-list'

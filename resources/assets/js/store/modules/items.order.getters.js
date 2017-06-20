@@ -142,7 +142,12 @@ module.exports = {
 
     getRootNode: (state, getters, rootState) => {
         return state.itemMap;
+    },
+
+    getRootNodeSerialNumber: (state, getters,rootState) =>{
+        return state.itemMap.data;
     }
+
 
 
 };

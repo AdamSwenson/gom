@@ -159,7 +159,7 @@ const actions= {
         }
 
         //If we were passed an item to serve as the parent
-        //we will use it
+        //we will use s serial number
         let item = Item.factory( { parent: parent } );
         let pl = Payload.factory( { parent: parent, obj: item } );
         let p = new Promise( ( resolve, reject ) => {

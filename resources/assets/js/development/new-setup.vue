@@ -2,66 +2,38 @@
     <div id="examEditor"
          class="setup-main"
     >
-        <div class="row">
-            <div class="col-md-1 col-lg-2"></div>
+        <div class="container is-fluid">
 
-            <div class="col-md-10 col-lg-8 graph-paper-background-small border-image-lft">
+            <div class="columns">
+                <div class="column"></div>
+                <div class="column is-two-thirds graph-paper-background-small border-image-lft">
 
-                <div id="examCardArea" class="row">
-                    <div class="col-md-12 col-lg-12 ">
+                    <div id="examCardArea" class="card">
                         <exam-card :index="0"></exam-card>
                     </div>
-                </div>
 
-
-                <div id="itemCardArea" class="row ">
-                    <div class="col-md-1 col-lg-1"></div>
-
-                    <div class="itemCol col-md-10 col-lg-10">
-                        <card-list></card-list>
+                    <div id="itemCardArea" class="card ">
+                        <div class="itemCol">
+                            <item-card
+                                    :serial-number="examSerialNumber"
+                                    :index="examSerialNumber"
+                            ></item-card>
+                        </div>
                     </div>
 
-                    <div class="col-md-1 col-lg-1"></div>
                 </div>
+                <div class="column"></div>
             </div>
 
-            <div class="col-md-1 col-lg-2"></div>
+            <!--<progress-dashboard></progress-dashboard>-->
+
 
         </div>
-
-        <!--<div id="examEditorHead" class="row">-->
-        <!--<div class="col-md-1 col-lg-2"></div>-->
-        <!--<div class="itemCol col-md-10 col-lg-8">-->
-        <!--<exam-card></exam-card>-->
-        <!--</div>-->
-        <!--<div class="col-md-1 col-lg-2"></div>-->
-        <!--</div>-->
-
-
-        <!--<div id="examEditorBody" class="row">-->
-        <!--<div class="col-md-1 col-lg-3"></div>-->
-        <!--<div class="itemCol col-md-10 col-lg-6">-->
-        <!--<card-list></card-list>-->
-        <!--</div>-->
-        <!--<div class="col-md-1 col-lg-3"></div>-->
-        <!--</div>-->
-
-        <div class="row">
-            <div class="col-md-1 col-lg-1"></div>
-
-            <div class="col-md-10 col-lg-10">
-                <progress-dashboard></progress-dashboard>
-            </div>
-
-            <div class="col-md-1 col-lg-1"></div>
-        </div>
-
     </div>
 </template>
 
 <style lang="scss">
     @import '../../sass/development/newSetup';
-
 
     .setup-main {
         background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
@@ -112,8 +84,8 @@
 
     var Sortable = require( 'sortablejs' );
 
-//    import store from '../store'
-//    window.console.log( 'new-setup', 'store', 116, store );
+    //    import store from '../store'
+    //    window.console.log( 'new-setup', 'store', 116, store );
     export default {
 
 //        store,
@@ -128,8 +100,8 @@
                     handle: '.handle',  // Drag handle selector within list items
                     ghostClass: "sortable-ghost", // Class name for the drop placeholder
                     dataIdAttr: 'data-id',
-                    onUpdate: function(event){
-                        this.$store.dispatch('onUpdate', event);
+                    onUpdate: function ( event ) {
+                        this.$store.dispatch( 'onUpdate', event );
                     },
 //                    store: {
 //                        /**
@@ -154,7 +126,11 @@
             };
         },
 
-        computed: {},
+        computed: {
+            examSerialNumber: function () {
+                return this.$store.getters.getRootNodeSerialNumber;
+            }
+        },
 
         methods: {},
 
@@ -164,12 +140,12 @@
 
         mounted: function () {
 //            window.console.log( 'new-setup', 'mounted', 166, store);
-            this.$store.dispatch('setupOnMount').then(()=>{
-                this.$emit('items-ready');
+            this.$store.dispatch( 'setupOnMount' ).then( () => {
+                this.$emit( 'items-ready' );
 //                var qList = document.getElementsByClassName( 'card-list' );
                 var qList = document.getElementById( 'card-list' );
                 var editableList = Sortable.create( qList, this.options );
-            });
+            } );
         },
 
         components: {},

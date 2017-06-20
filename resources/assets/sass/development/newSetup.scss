@@ -1,6 +1,8 @@
 // Central definition of variables
 // for new setup process
 
+@import "~bulma";
+
 //@import ../node_modules/bootstrap-vue/dist/bootstrap-vue.css
 $image-dir: 'http://localhost:8000/';
 $border-image-lft-path: $image-dir + 'images/styling/border-tiled.png';

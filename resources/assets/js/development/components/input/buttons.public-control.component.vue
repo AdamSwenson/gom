@@ -1,12 +1,13 @@
 <template>
-
     <button
-            type="button"
-            class="public-indicator btn btn-primary btn-md"
-            v-bind:class="{'btn-warning': publicity}"
+            class="public-indicator button is-outlined "
+            v-bind:class="{'is-warning': publicity}"
             v-on:click="togglePublic"
     >
-        <span v-bind:class="icon"></span> Visible in student feedback
+       <span class="icon is-small">
+           <i class="fa fa-eye" aria-hidden="true"></i>
+       </span>
+        <span>Visibility</span>
     </button>
 
 </template>
@@ -61,7 +62,7 @@
 
         computed: {
             publicity: function () {
-                let item = this.$store.getters[gTypes.getItemByIndex](this.index);
+                let item = this.$store.getters[ gTypes.getItemByIndex ]( this.index );
                 if ( typeof item !== 'undefined' ) {
                     return item.isPublic();
                 }
@@ -94,7 +95,7 @@
              * @returns {*}
              */
             isPublic: function () {
-                let item = this.$store.getters.getItemByIndex(this.index);
+                let item = this.$store.getters.getItemByIndex( this.index );
 
                 // let item = this.$store.getters.getItemByIndex( this.index );
                 if ( typeof item !== 'undefined' ) {
@@ -120,7 +121,7 @@
              */
             togglePublic: function () {
 //                console.log( 'CALLED', 'togglePublic' );
-                this.$store.dispatch(aTypes.toggleItemPublic, Payload.factory({index: this.index}));
+                this.$store.dispatch( aTypes.toggleItemPublic, Payload.factory( { index: this.index } ) );
             },
 
 

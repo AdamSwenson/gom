@@ -1,46 +1,53 @@
 <template>
     <div class="nav-edit-tabs-component">
-        <div class="row">
-            <div class="col-md-1" v-show="promotable">
-                <depth-control type="promote" :index="index"></depth-control>
-            </div>
 
-            <div class="col-md-10">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs"
-                    role="tablist">
+        <!--<div class="level">-->
 
-                    <li v-if="isExam" role="presentation" >
-                        <router-link v-bind:to="routeToExamDetails">Details</router-link>
-                    </li>
-                    <li v-else role="presentation" >
-                        <router-link v-bind:to="routeToItemDetails">Details</router-link>
-                    </li>
+        <!--<div class="level-left" v-show="promotable">-->
+        <!--&lt;!&ndash;<depth-control type="promote" :index="index"></depth-control>&ndash;&gt;-->
+        <!--</div>-->
 
-                    <li role="presentation">
-                        <router-link :to="{name: 'comments', params: {index : index} }">Feedback</router-link>
-                    </li>
+        <!--<div class="level-item">-->
+        <!-- Nav tabs -->
+        <div class="tabs is-centered is-fullwidth">
+            <ul>
+                <!--<ul class="nav nav-tabs"-->
+                <!--role="tablist">-->
 
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToStats">Stats</router-link>
-                    </li>
+                <li v-if="isExam" role="presentation">
+                    <router-link v-bind:to="routeToExamDetails">Details</router-link>
+                </li>
+                <li v-else role="presentation">
+                    <router-link v-bind:to="routeToItemDetails">Details</router-link>
+                </li>
 
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToHistory">History</router-link>
-                    </li>
+                <li role="presentation">
+                    <router-link :to="{name: 'comments', params: {index : index} }">Feedback</router-link>
+                </li>
 
-                    <li role="presentation">
-                        <router-link v-bind:to="routeToNotes">Notes</router-link>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-1">
-                <span v-show="demotable">
-                <depth-control type="demote" :index="index"></depth-control>
-            </span>
+                <li role="presentation">
 
-            </div>
+                    <router-link v-bind:to="routeToStats">
+                        <a>
+                                    <span class="icon is-small">
+                                        <i class="fa fa-line-chart"
+                                           aria-hidden="true"></i>
+                                    </span>
+                            <span>Stats</span>
+                        </a>
+                    </router-link>
+                </li>
+
+                <li role="presentation">
+                    <router-link v-bind:to="routeToHistory">History</router-link>
+                </li>
+
+                <li role="presentation">
+                    <router-link v-bind:to="routeToNotes">Notes</router-link>
+                </li>
+            </ul>
         </div>
+
     </div>
 
 </template>
@@ -140,11 +147,11 @@
         methods: {
             show: function () {
 //                console.log('itemSetting', 'CALLED', 'show');
-                this.$store.commit(mTypes.showItemSettings(Payload.factory({index: this.index})));
+                this.$store.commit( mTypes.showItemSettings( Payload.factory( { index: this.index } ) ) );
             },
             hide: function () {
 //                console.log('itemSetting', 'CALLED', 'hide');
-                this.$store.commit(mTypes.hideItemSettings(Payload.factory({index: this.index})));
+                this.$store.commit( mTypes.hideItemSettings( Payload.factory( { index: this.index } ) ) );
             },
 
         },

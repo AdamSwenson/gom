@@ -1,11 +1,12 @@
 <template>
-        <button
-                class="deleteButton btn btn-danger btn-md js-remove "
-                v-on:click="remove"
-                v-bind:id="buttonid"
-        >
-            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete
-        </button>
+    <button class="deleteButton button is-danger is-outlined js-remove "
+            v-on:click="remove"
+            v-bind:id="buttonid">
+       <span class="icon is-small">
+           <i class="fa fa-times" aria-hidden="true"></i>
+       </span>
+        <span>Delete</span>
+    </button>
 </template>
 
 <style>
@@ -16,11 +17,11 @@
     let bootbox = require( 'bootbox' );
 
     export default {
-        props: [ 'index', 'id' ],
+        props: [ 'index', 'id', 'serialNumber' ],
 
         computed: {
-            buttonid: function(){
-              return 'delete-item-button-' + this.index;
+            buttonid: function () {
+                return 'delete-item-button-' + this.index;
             },
             visible: function () {
                 return this.$store.getters.isDeleteVisible;
@@ -67,7 +68,7 @@
              * This sends the actual request(s) for deletion
              */
             sendRequest: function () {
-                this.$store.dispatch( aTypes.deleteItem, {index: this.index, id: this.id} );
+                this.$store.dispatch( aTypes.deleteItem, { index: this.index, id: this.id } );
             },
         },
 

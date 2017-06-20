@@ -74,7 +74,7 @@ export const getSerialNumber = ( serialNumberStoringThing ) => {
         case serialNumberStoringThing instanceof Number:
             return serialNumberStoringThing;
         default:
-            return null;
+            return serialNumberStoringThing;
     }
 };
 

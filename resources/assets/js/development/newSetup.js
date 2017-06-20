@@ -48,6 +48,10 @@ import depthControl from './components/input/buttons.depth-control.component.vue
 import maxScore from './components/field.max-score.component.vue'
 import itemNumber from './components/field.item-number.component.vue'
 import itemName from './components/field.item-name.component.vue'
+import siblingAddButton from './components/input/buttons.add-sibling.component.vue'
+import childAddButton from './components/input/buttons.add-child.component.vue'
+
+
 
 //Other buttons
 import settingsButton from './components/input/buttons.settings-control.component.vue'
@@ -113,6 +117,9 @@ Vue.component( 'item-number', itemNumber );
 
 Vue.component( 'list-dropdown', listDropdown );
 
+//Items
+Vue.component('add-sibling-button', siblingAddButton);
+Vue.component('add-child-button', childAddButton);
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
