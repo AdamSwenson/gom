@@ -11,6 +11,38 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 
+/**
+ * We want the actual mutations to be as agnostic as possible
+ * on how the item is identified. This takes the payload
+ * and returns the item.
+ * The order of preference is:
+ *     - if the item object has been given to us, use it.
+ *     - if the serial number of the item object has been given, use it
+ *     - if the id of the item has been given, use it
+ *     - if the index of the item has been given, use it
+ * @param state
+ * @param payload
+ */
+const getItemFromPayload = ( state, payload ) => {
+
+    switch ( payload.identifierType ) {
+        case 'obj':
+            return payload.obj;
+            break;
+
+        case 'serialNumber':
+            return state.items.filter( ( o ) => {
+                if ( o.serialNumber === payload.serialNumber ) {
+                    return o;
+                }
+            } );
+            break;
+
+        case 'index':
+            return state.items[ payload.index ];
+            break;
+    }
+};
 
 module.exports = {
     /**
@@ -45,25 +77,24 @@ module.exports = {
      * @param payload Expecting Item object to be in payload.obj
      */
     [ mTypes.addNewItem ]: ( state, payload ) => {
-        // console.log(mTypes.addNewItem, state, payload);
-        if ( Payload.checkIfPayload( payload ) ) {
-            let { obj } = payload;
-            //and here we meet the problem of deciding what data
-            //structure to use to store the items and the many
-            //times I've changed my mind
+        console.log(mTypes.addNewItem, state, payload);
 
-            //The problem is what to do if the incoming
-            //item has an internally different index.
-            //The answer isn't very good. Right now, it is just
-            //to not use this method to update.
-            //Of course, everyone is on their honor to not do so....
+        return new Promise( ( resolve, reject ) => {
 
-             state.items.push(obj);
-           // Vue.set( state.items, obj.index, obj );
-        }
-
-// mTypes.updateOrder(state, payload);
-
+            if ( Payload.checkIfPayload( payload ) ) {
+                let { obj } = payload;
+                //and here we meet the problem of deciding what data
+                //structure to use to store the items and the many
+                //times I've changed my mind
+                //The problem is what to do if the incoming
+                //item has an internally different index.
+                //The answer isn't very good. Right now, it is just
+                //to not use this method to update.
+                //Of course, everyone is on their honor to not do so....
+                state.items.push( obj );
+                return resolve();
+            }
+        } );
     },
 
     //utility, not called from outside
@@ -96,7 +127,7 @@ module.exports = {
      * @param payload Expecting Item object to be in payload.obj
      */
     [ mTypes.setItem ]: ( state, payload ) => {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
 
             // console.log('items.mutations', mTypes.setItem, state, payload);
             if ( Payload.checkIfPayload( payload ) ) {
@@ -105,8 +136,8 @@ module.exports = {
                 Vue.set( state.items, index, payload.obj );
             }
             resolve();
-        });
-        },
+        } );
+    },
 
     /**
      * Alters the the property named in updateProp to have the
@@ -140,19 +171,17 @@ module.exports = {
     /**
      * Alters the the property named in updateProp to have the
      * the value set in updateVal
+     * @todo update so that can have payload identifying the item by its id, index, or seriaLNumber
      * @param state
      * @param payload
      */
     [ mTypes.updateItem ]: ( state, payload ) => {
-        // console.log(mTypes.updateItem, payload, state);
-        let itm = state.items[ payload.index ];
+        // console.log( mTypes.updateItem, payload, state );
+        let itm = getItemFromPayload( state, payload );
 
         if ( typeof itm !== 'undefined' ) {
             //Set the value so vue can see it
             Vue.set( itm, payload.updateProp, payload.updateVal );
-            //Push the altered item back into the array
-            //set it in the array with vue
-            Vue.set( state.items, payload.index, itm );
         }
     },
 
@@ -163,18 +192,10 @@ module.exports = {
      * @param payload
      */
     [ mTypes.updateItemSilently ]: ( state, payload ) => {
-        // console.log(mTypes.updateItemSilently, payload, state);
-        let itm = state.items[ payload.index ];
-
-        // let itm = helpers.getItemFromPayload(state, payload);
-        // window.console.log('items', 143, itm);
+        let itm = getItemFromPayload( state, payload );
         if ( typeof itm !== 'undefined' ) {
             //Set the value so vue can see it
             Vue.set( itm, payload.updateProp, payload.updateVal );
-            //Push the altered item back into the array
-            //set it in the array with vue
-            Vue.set( state.items, payload.index, itm );
-            // state.items.$set( payload.index, itm );
         }
     },
 

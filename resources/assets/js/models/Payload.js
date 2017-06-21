@@ -4,6 +4,12 @@
  * Created by adam on 1/17/17.
  */
 
+import Item from './Item'
+
+/**
+ * Originally just a transporation class. Now evolving to
+ * handle the myriad different ways objects can be identified
+ */
 export default class Payload {
     constructor() {
         //the object's db id
@@ -29,7 +35,7 @@ export default class Payload {
         this._num;
 
         /** The object in the payload */
-        this._obj;
+        this.obj;
 
         /** The string in the payload */
         this._str;
@@ -41,7 +47,7 @@ export default class Payload {
         this.index;
         this.parent;
 
-        this.serialNumber;
+        this.serialNumber = null;
 
         /** The name of the property to update */
         this.updateProp;
@@ -55,6 +61,41 @@ export default class Payload {
 
     }
 
+    get identifier() {
+
+        if ( this.obj instanceof Item ) return this.obj;
+
+        if ( this.serialNumber !== null ) return this.serialNumber;
+
+        if ( this.index !== null ) return this.index;
+    }
+
+    get identifierType() {
+
+        if ( this.obj instanceof Item ) return 'obj';
+
+        if ( this.serialNumber !== null ) return 'serialNumber';
+
+        if ( this.index !== null ) return 'index';
+    }
+
+
+    getStoredObject ( store ) {
+        switch ( this.identifierType ) {
+            case 'obj':
+                return this.obj;
+                break;
+            case 'serialNumber':
+                return store.getters.getItemBySerialNumber( this.serialNumber);
+                break;
+            case 'index':
+                return store.getters.getItemByIndex( this.index);
+                break;
+        }
+
+    }
+
+
     /**
      * Returns a list of strings which are property
      * names. These fields can be filled from the input
@@ -64,6 +105,7 @@ export default class Payload {
         return [
             'callback',
             'id', 'index', 'num',
+            'mutateSilently',
             'obj', 'parent',
             'objNode', 'parentNode',
             'serialNumber', 'str', 'stamp',
@@ -149,16 +191,17 @@ export default class Payload {
         this._num = v;
     }
 
-    get obj() {
-        return this._obj;
-    }
-
-    set obj( val ) {
-        if ( typeof val == 'object' ) {
-            this._obj = val;
-        }
-//todo error handling
-    }
+//
+//     get obj() {
+//         return this._obj;
+//     }
+//
+//     set obj( val ) {
+//         if ( typeof val == 'object' ) {
+//             this._obj = val;
+//         }
+// //todo error handling
+//     }
 
     //
     //

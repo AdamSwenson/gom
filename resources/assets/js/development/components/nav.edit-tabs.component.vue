@@ -145,7 +145,7 @@
      * Created by adam on 2/18/17.
      */
     export default {
-        props: [ 'index', 'is-exam' ],
+        props: [ 'index', 'is-exam', 'serialNumber' ],
 
         data: function () {
             return {
@@ -184,7 +184,8 @@
 
 
             routeToItemDetails: function () {
-                return "/panel-item-detail/" + this.index;
+                return "/panel-item-detail/" + this.serialNumber;
+//                return "/panel-item-detail/" + this.index + '/' + this.serialNumber;
             },
 
             routeToComments: function () {

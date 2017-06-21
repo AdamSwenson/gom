@@ -5,13 +5,22 @@ namespace App;
 use App\Http\Requests\Request;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Item
  * @package App
  */
-class Item extends Model
+class Item extends BaseModel
 {
+
+use SoftDeletes;
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
     /**
      * @var
      */
@@ -29,14 +38,20 @@ class Item extends Model
     protected $guarded = ['user_id', 'id'];
 
     protected $fillable = [
+        'name',
+        'displayText',
+        'commentText',
+        'settings',
+        'text',
+        'max_score',
+//vestigial
         'idx',
         'index',
         'assignmentId',
         'examId',
         'name',
         'publicName',
-        'text',
-        'max_score',
+
         'maxScore'
     ];
 

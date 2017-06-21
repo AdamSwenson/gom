@@ -160,7 +160,7 @@ Route::get('dev/test', 'TestController@test');
 Route::get('dev/newsetup', 'ItemController@index');
 Route::get('items/{exam}', 'ItemController@show')->name('show-exam');
 Route::put('items/{exam}/order', 'ItemController@updateOrder');
-Route::put('items/{exam}', 'ItemController@update');
+Route::put('items/{item}', 'ItemController@update');
 Route::patch('items/{exam}', 'ItemController@updateAll');
 Route::resource('items', 'ItemController'); //, ['parameters' => [
 //    'item' => 'exam'

@@ -31,7 +31,7 @@ import panelComments from './components/panel.comment-setup.component.vue'
 import panelExamDetail from './components/panel.exam-detail.component.vue'
 import panelHistory from './components/panel.history.component.vue'
 import panelNotes from './components/panel.notes.component.vue'
-import panelItemDetail from './components/panel.item-detail.component.vue'
+import panelItemDetail from './components/panels/panel.item-detail.component.vue'
 import panelStats from './components/panel.stats.component.vue'
 import panelTags from './components/panel.tags.component.vue'
 
@@ -157,7 +157,7 @@ const routes = [
     },
     {
         name: 'item-detail',
-        path: '/panel-item-detail/:index',
+        path: '/panel-item-detail/:serialNumber',
         components: { itemPanels: panelItemDetail },
         props: true
     },

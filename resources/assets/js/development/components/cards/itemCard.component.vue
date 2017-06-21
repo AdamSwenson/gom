@@ -6,19 +6,18 @@
          v-bind:data-index="index"
          v-bind:data-parent-index="parentIndex"
     >
-        <!--This represents a question or an element-->
 
         <div class="card-content">
-            <item-main :index="index"></item-main>
+            <item-main :index="index" :serial-number="serialNumber"></item-main>
         </div>
 
         <div class="card-content" v-show="paneVisible">
-                <edit-tabs :index="index"
-                           :serial-number="serialNumber"
-                           :is-exam="false">
+            <edit-tabs :index="index"
+                       :serial-number="serialNumber"
+                       :is-exam="false">
 
-                </edit-tabs>
-                    <router-view name="itemPanels"></router-view>
+            </edit-tabs>
+            <router-view name="itemPanels"></router-view>
         </div>
 
         <div class="card-footer">
@@ -63,7 +62,6 @@
         </div>
 
         <div class="card-footer is-centered">
-            <!--<div class="card-footer-item">-->
             <div class="tabs is-centered">
                 <ul>
                     <li>
@@ -309,7 +307,7 @@
         directives: {
             'sortable': {
                 inserted: function ( el, binding ) {
-                    var sortable = new Sortable( el, binding.value || {} );
+//                    var sortable = new Sortable( el, binding.value || {} );
                 }
             }
         },

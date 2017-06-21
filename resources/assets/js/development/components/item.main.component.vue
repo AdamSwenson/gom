@@ -82,6 +82,10 @@
         },
 
         computed: {
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
             displayIndex: function () {
                 //take the depth and make a string like
                 // 2.4.5
@@ -103,20 +107,6 @@
                 }
             },
 //
-//            name: {
-//                get: function () {
-////                    let item = this.$store.getters.getItemById( this.id );
-//                    let item = this.$store.getters.getItemByIndex(this.index);
-//                    if ( typeof item !== 'undefined' ) {
-//                        return item.name;
-//                    }
-//                },
-//
-//                set: function ( v ) {
-//                    let pl = Payload.factory({ index: this.index, updateProp: 'name', updateVal: v});
-//                    this.$store.commit(mTypes.updateItem, pl);
-//                }
-//            },
 
         },
 

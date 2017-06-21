@@ -1,34 +1,49 @@
 <template>
     <!-- max grade -->
-    <div class="max-score-area input-group">
 
-        <span class="input-group-addon"
-              id="max-score-addon"
-        >{{ title }}</span>
-        <input
-                v-bind:id="maxScoreId"
-                type="number"
-                title="maximum score for this question"
-                class="form-control input max-score-input"
-                aria-describedby="max-score-addon"
-                v-model="maxScore"
-        />
+    <div class="max-score-area">
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label max-score-label">{{labels.scoreInput}}</label>
+                    <p class="control">
+                        <input
+                                type="number"
+                                class="input max-score-input"
+                                v-bind:id="maxScoreId"
+                                v-bind:title="title"
+                                v-model="maxScore"
+                        />
+                    </p>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="field">
+                    <p class="control">
+                        <label class="checkbox">
+                            <input type="checkbox" v-model="countsInTotal">
+                            {{labels.countsInTotal}}
+                        </label>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
 </template>
 <style lang="scss">
-    .max-score-area {
+    .max-score-label {
         text-align: left;
-
     }
 
-    input {
-        width: 4em;
-        outline: none;
-    }
+    /*input {*/
+    /*width: 4em;*/
+    /*outline: none;*/
+    /*}*/
 
     .max-score-input {
-        width: 3em;
+        width: 5em;
     }
 
 </style>
@@ -41,50 +56,50 @@
     import Item from '../../models/Item'
 
     export default {
-//        props: [ 'index'],
+        props: [ 'index' ],
 
         data: function () {
             return {
-                index: this.$route.params.index,
+//                index: this.$route.params.index,
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
 
-                title: 'Max Score',
+                labels: {
+                    scoreInput: 'Max Score',
+                    countsInTotal: 'Counts toward total score'
+                },
+
+                title: 'Maximum possible score for this item',
 
                 placeholders: {
                     'score': 100
                 },
                 defaults: {
-                    score: 100
+                    score: 100,
+                    countsInTotal: true
                 }
             };
         },
 
         computed: {
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
             maxScoreId: function () {
                 return 'max-score-' + this.index;
             },
+
             maxScore: {
                 get: function () {
-                    let item = this.$store.getters.getItemByIndex( this.index );
-                    if ( item instanceof Item ) {
-                        return item.maxScore
+                     if ( this.item instanceof Item ) {
+                        return this.item.maxScore
                     }
-//
-//                    if ( typeof this.index !== 'undefined' ) {
-//                        let item = this.$store.getters.getItemByIndex(this.index);
-//                        if ( typeof item !== 'undefined' ) {
-//                            if (typeof item.maxScore === 'undefined'){
-//                                return this.defaults.score;
-//                            }
-//                            return item.maxScore
-//                        }
-//                    }
                 },
 
                 set: function ( value ) {
-                    let item = this.$store.getters.getItemByIndex( this.index );
-                    if ( item instanceof Item ) {
+                    if ( this.item instanceof Item ) {
                         let pl = Payload.factory( {
-                            index: this.index,
+                            obj: this.item,
                             updateProp: 'maxScore',
                             updateVal: _.toInteger( value )
                         } );
@@ -92,9 +107,20 @@
                     }
                 }
             },
+
+            countsInTotal: {
+                get: function () {
+                    return this.defaults.countsInTotal;
+                },
+                set: function ( v ) {
+
+                }
+            }
         },
 
-        methods: {}
+        methods: {
+
+        }
     }
 
 

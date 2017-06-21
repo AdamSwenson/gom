@@ -40,7 +40,7 @@ class ItemController extends Controller
     protected $studentDao;
     /** @var IElementRepository */
     protected $elementDao;
-    /** @var IElementAssignmentRepository  */
+    /** @var IElementAssignmentRepository */
     protected $elementAssignmentDao;
     /** @var IItemRepository */
     protected $itemRepository;
@@ -71,6 +71,7 @@ class ItemController extends Controller
 
 
 // -------------------------------- Controller methods
+
     /**
      * Display a listing of the resource.
      *
@@ -100,7 +101,22 @@ class ItemController extends Controller
      */
     public function store( ItemRequest $request )
     {
-        return $this->itemRepository->handleStoreAndUpdate($request);
+
+        //find the item or create a new one
+        $item = Item::where(['id' => $request->input('id')])->first();
+        if ( !$item ) {
+            $item = Item::create();
+            //     $item->user()->save(Auth::user());
+        }
+        //update its properties
+        $item->update(
+            ['text' => $request->input('text'),
+            'name' => $request->input('name'),
+            'max_score' => $request->input('maxScore')
+        ]);
+        return $item;
+
+//        return $this->itemRepository->handleStoreAndUpdate($request);
     }
 
 
@@ -152,12 +168,21 @@ class ItemController extends Controller
      * Receives PUT
      * Updates the specified resource in storage.
      *
+     * @param Item $item
      * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function update( ItemRequest $request )
+    public function update( Item $item, ItemRequest $request )
     {
-        return $this->itemRepository->handleStoreAndUpdate($request);
+        //update its properties
+        $item->update(
+            ['text' => $request->input('text'),
+                'name' => $request->input('name'),
+                'max_score' => $request->input('maxScore')
+            ]);
+        return $item;
+
+        //return $this->itemRepository->handleStoreAndUpdate($request);
     }
 
 
@@ -225,7 +250,6 @@ class ItemController extends Controller
                 break;
         }
     }
-
 
 
 }

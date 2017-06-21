@@ -21,7 +21,7 @@
 // // This wrapper bind axios to Vue or this if you're using single file component.
 // Vue.use(VueAxios, axios);
 
-window._ = require('lodash');
+window._ = require( 'lodash' );
 import * as aTypes from '../store/action-types';
 import * as mTypes from '../store/mutation-types';
 import * as gTypes from '../store/getter-types';
@@ -36,14 +36,14 @@ const errorHandling = ( error ) => {
     if ( error.response ) {
         // The request was made, but the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        console.log( error.response.data );
+        console.log( error.response.status );
+        console.log( error.response.headers );
     } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
+        console.log( 'Error', error.message );
     }
-    console.log(error.config);
+    console.log( error.config );
 };
 
 const handleResponse = ( store, item, response ) => {
@@ -56,53 +56,70 @@ const handleResponse = ( store, item, response ) => {
         switch ( item.kind ) {
             case 'exam':
                 if ( typeof item.index !== 'undefined' && item.index === 0 ) {
-                    Exam.fillableProps.forEach(function ( p ) {
+                    Exam.fillableProps.forEach( function ( p ) {
                         if ( p !== 'index' ) {
                             // window.console.log('apiPlugin', 50, p);
-                            if ( Object.keys(response.data).includes(p) ) {
+                            if ( Object.keys( response.data ).includes( p ) ) {
                                 let jsProp = (p === 'max_score') ? 'maxScore' : p;
-                                store.commit(mTypes.updateItemSilently, Payload.factory({
+                                store.commit( mTypes.updateItemSilently, Payload.factory( {
                                     index: item.index,
                                     updateProp: jsProp,
                                     updateVal: response.data[ p ],
                                     mutateSilently: true
-                                }));
+                                } ) );
                             }
                         }
-                    });
+                    } );
                 }
                 break;
 
             case 'item':
-                Item.fillableProps.forEach(function ( p ) {
+                Item.fillableProps.forEach( function ( p ) {
                     if ( p !== 'index' ) {
-                        if ( Object.keys(response.data).includes(p) ) {
-                            store.commit(mTypes.updateItemSilently, Payload.factory({
-                                index: item.index,
+                        if ( Object.keys( response.data ).includes( p ) ) {
+                            store.commit( mTypes.updateItemSilently, Payload.factory( {
+                                obj: item,
                                 updateProp: p,
                                 updateVal: response.data[ p ],
                                 mutateSilently: true
-                            }));
+                            } ) );
                         }
                     }
-                });
+                } );
 
                 _.forEach( Item.aliasMap, function ( v, k ) {
-                    if ( Object.keys(response.data).includes(k) ) {
-                        store.commit(mTypes.updateItemSilently, Payload.factory({
+                    if ( Object.keys( response.data ).includes( k ) ) {
+                        store.commit( mTypes.updateItemSilently, Payload.factory( {
                             index: item.index,
                             updateProp: v,
                             updateVal: response.data[ k ],
                             mutateSilently: true
-                        }));
+                        } ) );
                     }
-                });
+                } );
                 break;
             default:
         }
     }
 };
 
+/**
+ * Returns true if the mutation needs to
+ * be synced with the server.
+ * Returns false if we are to ignore it
+ * @param mutation
+ */
+const shouldTellServerAboutThis = ( mutation ) => {
+    let { type, payload } = mutation;
+
+    //Check if mutateSilently has been set
+    //If it has, respect its privacy
+    if ( typeof payload !== 'undefined' && payload.mutateSilently ) {
+        return false;
+    }
+    return true;
+
+};
 
 /**
  * Handles the call to the server to update
@@ -118,13 +135,13 @@ const updateItem = ( store, item ) => {
     // }
     //put/patch
     window.axios
-        .put('items/' + item.examId, item)
-        .then(( response ) => {
-            handleResponse(store, item, response);
-        })
-        .catch(function ( error ) {
-            errorHandling(error);
-        });
+        .put( 'items/' + item.id, item )
+        .then( ( response ) => {
+            handleResponse( store, item, response );
+        } )
+        .catch( function ( error ) {
+            errorHandling( error );
+        } );
 };
 
 /**
@@ -146,13 +163,13 @@ const createItem = ( store, item ) => {
         //Thus, this request is to create the item.
         //When the server has done this, it will send back an id
         window.axios
-            .post('items', item)
-            .then(( response ) => {
-                handleResponse(store, item, response);
-            })
-            .catch(function ( error ) {
-                errorHandling(error);
-            });
+            .post( 'items', item )
+            .then( ( response ) => {
+                handleResponse( store, item, response );
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
     }
 
 };
@@ -176,27 +193,28 @@ const updateItemsOrder = ( store ) => {
     //note that we start at 1 so the exam id
     //is not included
     for (let i = 1; i < items.length; i++) {
-        if (! _.isUndefined(items[i].id)){
-            payload.order.push(items[ i ].id);
+        if ( !_.isUndefined( items[ i ].id ) ) {
+            payload.order.push( items[ i ].id );
         }
     }
 
-    window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
+    window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
 
     if ( items && examId ) {
         let route = 'items/' + examId + '/order';
         window.axios
-            .put(route, payload)
-            .then(( response ) => {
-                window.console.log('apiPlugin', '####', 169, response);
+            .put( route, payload )
+            .then( ( response ) => {
+                window.console.log( 'apiPlugin', '####', 169, response );
                 //  handleResponse(store, items, response);
-            })
-            .catch(function ( error ) {
-                errorHandling(error);
-            });
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
 
     }
 };
+
 /**
  *This subscribes the api package which
  * handles data exchange with the server
@@ -208,39 +226,43 @@ export default function ( store ) {
     // The mutation comes in the format of { type, payload }.
     // Thus this will catch the new item on the first mutation committing
     // it.
-    store.subscribe(( mutation ) => {
-        let {type, payload} = mutation;
+    store.subscribe( ( mutation ) => {
+        let { type, payload } = mutation;
 
         //Check if mutateSilently has been set
         //If it has, respect its privacy
-        if ( typeof payload !== 'undefined' && payload.mutateSilently ) {
-            return false;
-        }
+        window.console.log( 'apiPlugin', '', 234, mutation);
+        if ( !shouldTellServerAboutThis( mutation ) ) return false;
+        window.console.log( 'apiPlugin', '', 236, mutation );
+        let item = payload.getStoredObject( store );
 
         switch ( type ) {
+            /**
+             * This mutation type indicates that we are supposed to ask
+             * the server to create something for us
+             */
+            case mTypes.addNewItem:
+                if ( item ) {
+                    createItem( store, item );
+                    payload.callback();
+                }
+                break;
+
             //this is the operation of pushing an item into the array
             case mTypes.setItem:
-                if ( typeof payload !== 'undefined' && !payload.mutateSilently ) {
+                if ( item ) {
+                    if ( !item instanceof Exam ) {
+                        Item.setExamId( store.getters.currentExam.id );
 
-                    let item = typeof payload.obj !== 'undefined' ? payload.obj : store.getters.getItemByIndex(payload.index);
-
-                    // window.console.log('apiPlugin', 'setItem', '~~~~~~~~~~~~~~~~~~~~~~~~', item, payload);
-
-                    if ( item ) {
-                        if ( !item instanceof Exam ) {
-                            Item.setExamId(store.getters.currentExam.id);
-
-                            item.examId = store.getters.currentExam.id;
-                        }
-                        if ( item.isNew() ) {
-                            createItem(store, item);
-                            payload.callback();
-                        }
-                        else {
-                            updateItem(store, item);
-                            payload.callback();
-                        }
-
+                        item.examId = store.getters.currentExam.id;
+                    }
+                    if ( item.isNew() ) {
+                        createItem( store, item );
+                        payload.callback();
+                    }
+                    else {
+                        updateItem( store, item );
+                        payload.callback();
                     }
                 }
                 break;
@@ -259,17 +281,18 @@ export default function ( store ) {
             case mTypes.updateItem:
                 //on update calls, the object might not have been assembled.
                 //so we need to try to get the item from the index too
-                let item = _.isObject(payload.obj) ? payload.obj : store.getters.getItemByIndex(payload.index);
+                // let item = _.isObject( payload.obj ) ? payload.obj : store.getters.getItemByIndex( payload.index );
+                window.console.log( 'apiPlugin', 'updateItem', 263, item, payload );
                 if ( item instanceof Item ) {
-                    updateItem(store, item);
+                    updateItem( store, item );
                 }
                 payload.callback();
 
                 break;
 
             case mTypes.updateOrder:
-                window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload);
-                updateItemsOrder(store);
+                window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );
+                updateItemsOrder( store );
                 break;
 
             case mTypes.demoteItem:
@@ -283,7 +306,7 @@ export default function ( store ) {
         //todo temp disabled so can better see traffic
         // updateItemsOrder(store);
 
-    });
+    } );
 
 };
 

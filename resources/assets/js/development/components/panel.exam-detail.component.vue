@@ -14,34 +14,31 @@
             </p>
         </div>
 
-        <div class="field">
-            <label class="label">Subject</label>
+
+        <div id="term-entry"
+             class="field has-addons">
+
+            <label class="label">Term</label>
+
             <p class="control">
                 <span class="select">
                     <select>
-                        <option v-for="term in terms" :key="term">term</option>
+                        <option v-for="term in terms" :key="term">{{term}}</option>
                     </select>
                 </span>
             </p>
-        </div>
 
-        <div class="field">
-            <label class="label">Term</label>
-            <input id="term"
-                   type="text"
-                   class="input" aria-label="term-text"
-                   v-model="term">
-        </div>
-
-        <div class="field has-addons">
-            <label class="label">Year</label>
             <p class="control">
-                <button type="button"
-                        class="button is-outlined "
-                        v-mode="year">
-                </button>
+                <input id="term"
+                       type="text"
+                       class="input" aria-label="term-text"
+                       v-model="term">
             </p>
+        </div>
 
+        <div id="year-entry"
+             class="field has-addons">
+            <label class="label">Year</label>
             <p class="control">
                 <span class="select">
                     <select>
@@ -49,81 +46,15 @@
                     </select>
                 </span>
             </p>
-
             <p class="control">
                 <input
                         type="number"
-                        class="form-control" aria-label="year-text"
+                        class="input" aria-label="year-text"
                         v-model="year">
             </p>
-
-        </div><!-- /btn-group -->
-    </div><!-- /input-group -->
-
-
-    <!--<div class="field">-->
-    <!--<label class="label">Public Assignment Name</label>-->
-    <!--<p class="control">-->
-    <!--<button type="button"-->
-    <!--class="button "-->
-    <!--data-toggle="dropdown"-->
-    <!--aria-haspopup="true"-->
-    <!--aria-expanded="false">Term <span-->
-    <!--class="caret"></span></button>-->
-    <!--<ul class="dropdown-menu">-->
-    <!--<li v-for="term in terms">-->
-    <!--<a href="#">{{term}}</a>-->
-    <!--</li>-->
-    <!--</ul>-->
-    <!--</div>&lt;!&ndash; /btn-group &ndash;&gt;-->
-    <!--<input id="term"-->
-    <!--type="text"-->
-    <!--class="form-control" aria-label="term-text"-->
-    <!--v-model="term">-->
-    <!--</div>&lt;!&ndash; /input-group &ndash;&gt;-->
-
-    <!--<b-dropdown v-bind:text="term"-->
-    <!--variant="primary"-->
-
-    <!--&gt;-->
-    <!--<b-dropdown-item href="#">Winter</b-dropdown-item>-->
-    <!--<b-dropdown-item href="#">Spring</b-dropdown-item>-->
-    <!--<b-dropdown-item href="#">Summer</b-dropdown-item>-->
-    <!--<b-dropdown-item href="#">Fall</b-dropdown-item>-->
-    <!--</b-dropdown>-->
-    <!--</div>-->
-
-    <!--<div class="col-md-1">-->
-    <!--<span class="glyphicon glyphicon-question-sign"></span>-->
-    <!--</div>-->
-    <!--<list-dropdown type="term"></list-dropdown>-->
-
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-
-            <div class="input-group">
-                <div class="input-group-btn">
-                    <button type="button"
-                            class="btn btn-default dropdown-toggle"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false">Year <span
-                            class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li v-for="year in years">
-                            <a href="#">{{year}}</a>
-                        </li>
-                    </ul>
-                </div><!-- /btn-group -->
-                <input id="year"
-                       type="number"
-                       class="form-control" aria-label="year-text"
-                       v-model="year">
-            </div><!-- /input-group -->
         </div>
-    </div>
-    </div>
+
+    </div><!-- /input-group -->
 
 </template>
 

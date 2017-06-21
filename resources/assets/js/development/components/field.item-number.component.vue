@@ -1,15 +1,18 @@
 <template>
 
-    <div class="question-num-area">
-        <label v-bind:for="questionNumberId"
-        >{{ displayType }}</label>
-        <input
-                v-bind:id="questionNumberId"
-                type="number"
-                min="0"
-                title="order of the item on the assignment"
-                v-model="questionNumber"/>
-    </div>
+    <!--<div class="question-num-area field">-->
+        <!--<label class="label"-->
+               <!--v-bind:for="questionNumberId">{{ displayType }}</label>-->
+        <!--<p class="control">-->
+            <input
+                    type="number"
+                    class="input"
+                    min="0"
+                    title="order of the item on the assignment"
+                    v-model="questionNumber"
+                    v-bind:id="questionNumberId"/>
+        <!--</p>-->
+    <!--</div>-->
 
 </template>
 <style>
@@ -31,7 +34,7 @@
     import Payload from '../../models/Payload'
 
     export default {
-        props: [ 'index' ],
+        props: [ 'index' , 'serialNumber'],
         data: function () {
             return {
                 placeholders: {},
@@ -40,8 +43,8 @@
 
         computed: {
 
-            questionNumberId: function(){
-              return 'question-number-' + this.index;
+            questionNumberId: function () {
+                return 'question-number-' + this.index;
             },
             displayType: {
                 get: function () {
@@ -61,8 +64,8 @@
 
                 set: function ( v ) {
 //                    this.setter( 'number', v );
-                    let pl = Payload.factory({index: this.index, updateProp: name, updateVal: value});
-                    this.$store.commit(mTypes.updateItem, pl);
+                    let pl = Payload.factory( { index: this.index, updateProp: name, updateVal: value } );
+                    this.$store.commit( mTypes.updateItem, pl );
                     // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
                     // this.$store.commit( mTypes.updateItem, pl );
                 }

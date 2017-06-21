@@ -29,17 +29,16 @@
     import * as mTypes from '../../store/mutation-types';
 
     import Payload from '../../models/Payload'
+    import Item from '../../models/Item'
 
     export default {
-        props: [ 'index', 'described-id' , 'serial-number'],
+        props: [ 'index', 'described-id' , 'serialNumber'],
 
 
         data: function () {
             return {
-
                 placeHolders: {
                     privateName: "Enter a descriptive name for this item "
-
                 },
             };
         },
@@ -47,27 +46,32 @@
         computed: {
             id: {
                 get: function () {
-                    return 'item-name-' + this.index;
+                    return 'item-name-' + this.serialNumber;
                 }
+            },
+
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
             name: {
                 get: function () {
-//                    let item = this.$store.getters.getItemById( this.id );
-                    let item = this.$store.getters.getItemBySerialNumber( this.serialNumber);
-
-//                    let item = this.$store.getters.getItemByIndex( this.index );
-                    if ( typeof item != 'undefined' ) {
-                        return item.name;
+                    if ( this.item instanceof Item ) {
+                        return this.item.name;
                     }
                 },
 
-                set: function ( v ) {
-                    let pl = Payload.factory( { index: this.index, updateProp: 'name', updateVal: v } );
-                    this.$store.commit( mTypes.updateItem, pl );
+                set: function ( value ) {
+                    if ( this.item instanceof Item ) {
+                        let pl = Payload.factory( {
+                            obj: this.item,
+                            updateProp: 'name',
+                            updateVal:  value
+                        } );
+                        this.$store.commit( mTypes.updateItem, pl );
+                    }
                 }
             },
-
 
         },
 

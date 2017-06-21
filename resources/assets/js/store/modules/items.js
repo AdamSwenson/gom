@@ -153,7 +153,6 @@ const actions= {
      * @param commit
      */
     [aTypes.createItem] : ( { state, commit, dispatch, getters }, parent ) => {
-
         if ( _.isUndefined( parent ) ) {
             parent = getters.currentExam;
         }
@@ -161,7 +160,8 @@ const actions= {
         //If we were passed an item to serve as the parent
         //we will use s serial number
         let item = Item.factory( { parent: parent } );
-        let pl = Payload.factory( { parent: parent, obj: item } );
+        let pl = Payload.factory( { parent: parent, obj: item} );
+
         let p = new Promise( ( resolve, reject ) => {
             commit( mTypes.addNewItem, pl );
             resolve();

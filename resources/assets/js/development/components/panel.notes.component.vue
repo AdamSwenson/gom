@@ -1,35 +1,44 @@
+<!--For adding arbitrary notes visible only to the user with access to the setup page-->
+
 <template>
     <div class="panel-notes-component">
-        <!--tab-pane"-->
-        <!--role="tabpanel"-->
-
-        <div class="row">
-            <div class="col-md-12">
-
-                <h3>Saved notes to self display here</h3>
-
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <h5>Add note to your future self</h5>
-                <div class="form-group">
-                        <textarea class="form-control"
+        <div class="field">
+            <label class="label">Add a new note to your future self</label>
+            <p class="control">
+                        <textarea class="textarea"
                                   rows="3"
                                   v-bind:placeholder="placeholders.noteText"
-                                  v-model="noteText"></textarea>
-                </div>
-                <button class="btn btn-success"
-                        v-on:click="saveNote"><span
-                        class="glyphicon glyphicon-plus"></span></button>
-            </div>
+                                  v-model="noteText">
+                        </textarea>
+            </p>
+        </div>
+
+        <div class="field">
+            <p class="control">
+                <button class="button is-success is-outlined"
+                        v-on:click="saveNote">
+                    <span class="icon">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </span>
+                    <span>Add Note</span>
+                </button>
+            </p>
+        </div>
+
+        <div class="container">
+            <h3 class="title is-3">Things your past self wanted you to remember</h3>
         </div>
 
     </div>
 </template>
-<style>
 
+<style lang="scss">
+
+    .panel-notes-component {
+        label{
+            text-align: left;
+        }
+    }
 </style>
 <script>
     import * as aTypes from '../../store/action-types';
@@ -62,7 +71,7 @@
 
         methods: {
             saveNote: function () {
-                window.console.log('panel.notes.component', 'saveNote', 65,);
+                window.console.log( 'panel.notes.component', 'saveNote', 65, );
             }
         }
     }
