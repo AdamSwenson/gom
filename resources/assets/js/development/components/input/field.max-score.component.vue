@@ -49,11 +49,11 @@
 </style>
 <script>
     window._ = require( 'lodash' );
-    import * as aTypes from '../../store/action-types';
-    import * as mTypes from '../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
 
-    import Payload from '../../models/Payload'
-    import Item from '../../models/Item'
+    import Payload from '../../../models/Payload'
+    import Item from '../../../models/Item'
 
     export default {
         props: [ 'index' ],

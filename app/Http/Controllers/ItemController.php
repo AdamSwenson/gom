@@ -228,6 +228,28 @@ class ItemController extends Controller
 
 
     /**
+     * Receives PUT
+     * Updates the specified resource in storage.
+     *
+     * @param Item $item
+     * @param ItemRequest|Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function examUpdate( Exam $exam, ItemRequest $request )
+    {
+        //update its properties
+        $exam->update(
+            [
+//                'text' => $request->input('text'),
+                'name' => $request->input('name'),
+//                'max_score' => $request->input('maxScore')
+            ]);
+        return $exam;
+
+        //return $this->itemRepository->handleStoreAndUpdate($request);
+    }
+
+    /**
      * This handles updating the order etc when passed
      * the list of items.
      * Receives PATCH

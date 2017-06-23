@@ -13,7 +13,7 @@
         </p>
 
         <p class="control">
-            <settings-button :index="index" :serial-number="serialNumber"></settings-button>
+            <settings-button :index="index" :serial-number="serialNumber" :is-exam="isExam"></settings-button>
         </p>
     </div>
 </template>
@@ -44,20 +44,10 @@
     import Payload from '../../models/Payload'
     import * as aTypes from '../../store/action-types'
     import * as mTypes from '../../store/mutation-types'
-    //    import settingsButton from './buttons.settings-control.component.vue'
-    //    import publicIndicator from './buttons.public-control.component.vue'
-    //    //
+
     export default{
-//
-//        components : {
-//            'settings-button': settingsButton,
-////            'valence-button': valenceButton,
-////            'delete-item-button': deleteButton,
-//            'public-indicator': publicIndicator,
-//        },
 
-        props: [ 'index', 'serialNumber' ],
-
+        props: [ 'index', 'serialNumber' , 'isExam'],
 
         data: function () {
             return {

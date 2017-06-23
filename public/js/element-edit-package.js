@@ -4747,7 +4747,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return siblingCheck( a, b );
 		}
 
-		// Otherwise we need full lists of their ancestors for comparison
+		// Otherwise we need full menus of their ancestors for comparison
 		cur = a;
 		while ( (cur = cur.parentNode) ) {
 			ap.unshift( cur );

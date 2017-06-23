@@ -9,23 +9,13 @@
                 <div class="column is-two-thirds graph-paper-background-small border-image-lft">
 
                     <div id="examCardArea" class="card">
-                        <exam-card :index="0"></exam-card>
-                    </div>
-
-                    <div id="itemCardArea" class="card ">
-                        <div class="itemCol">
-                            <item-card
-                                    :serial-number="examSerialNumber"
-                                    :index="examSerialNumber"
-                            ></item-card>
-                        </div>
+                        <exam-card ></exam-card>
                     </div>
 
                 </div>
                 <div class="column"></div>
             </div>
 
-            <!--<progress-dashboard></progress-dashboard>-->
 
 
         </div>
@@ -94,7 +84,7 @@
             return {
                 defaults: {},
                 options: {
-                    group: 'items', //name must be common to drag between lists
+                    group: 'items', //name must be common to drag between menus
                     filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
                     animation: 150,
                     handle: '.handle',  // Drag handle selector within list items

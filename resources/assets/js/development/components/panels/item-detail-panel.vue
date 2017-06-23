@@ -57,7 +57,7 @@
         data: function () {
             return {
                 serialNumber: _.toInteger(this.$route.params.serialNumber),
-                active: this.serialNumber,
+//                active: this.serialNumber,
 
                 placeholders: {
                     questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",

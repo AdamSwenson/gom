@@ -40,7 +40,7 @@
             return {
                 defaults: {},
                 options: {
-                    group: 'items', //name must be common to drag between lists
+                    group: 'items', //name must be common to drag between menus
                     filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
                     animation: 150,
                     handle: '.handle',  // Drag handle selector within list items
@@ -151,7 +151,7 @@
             try {
 //                var qList = document.getElementById( me.sublistId );
 //                var editableList = Sortable.create( qList, {
-//                    group: 'items', //name must be common to drag between lists
+//                    group: 'items', //name must be common to drag between menus
 //                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
 //                    animation: 150,
 //                    handle: '.handle',  // Drag handle selector within list items

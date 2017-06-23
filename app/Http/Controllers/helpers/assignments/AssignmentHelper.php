@@ -150,7 +150,7 @@ class AssignmentHelper implements IAssignmentHelper
 //
 //    public function handle($exam, $request)
 //    {
-//        //make lists
+//        //make menus
 //        $existingIds = [];
 //        $requestIds = [];
 //

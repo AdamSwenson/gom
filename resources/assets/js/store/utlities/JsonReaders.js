@@ -129,20 +129,24 @@ module.exports = {
             //Grab any pre loaded data from the div on the page where the server would've put it
             let data = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
             window.console.log( 'actions', 'parseItemObjectData', 128, data );
+            let pl = Payload.factory({obj: data, mutateSilently: true});
+            commit('directLoadObjectsFromJson', pl);
 
-            //if there was item data, load items from it
-            if ( typeof data !== 'undefined' ) {
-                _.forEach( data, function ( d, i ) {
-                    //d.index = i;
-                    let item = Item.factory( d ); //.factory( {id: id, index: index} );
-                    //set it in the items list without calling the api listener
-                    commit( mTypes.setItem, Payload.factory( {
-                        obj: item,
-                        mutateSilently: true
-                    } ) );
-                } );
-                resolve();
-            }
+            resolve();
+            // //if there was item data, load items fro
+            // //if there was item data, load items from it
+            // if ( typeof data !== 'undefined' ) {
+            //     _.forEach( data, function ( d, i ) {
+            //         //d.index = i;
+            //         let item = Item.factory( d ); //.factory( {id: id, index: index} );
+            //         //set it in the items list without calling the api listener
+            //         commit( mTypes.setItem, Payload.factory( {
+            //             obj: item,
+            //             mutateSilently: true
+            //         } ) );
+            //     } );
+            //     resolve();
+            // }
 
         } );
     }

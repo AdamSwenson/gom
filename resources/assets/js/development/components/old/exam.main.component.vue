@@ -23,13 +23,13 @@
 </style>
 
 <script>
-    import Exam from '../../models/Exam'
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
+    import Exam from '../../../models/Exam'
+    import Item from '../../../models/Item'
+    import Payload from '../../../models/Payload'
 
-    import * as aTypes from '../../store/action-types'
-    import * as mTypes from '../../store/mutation-types'
-    import * as gTypes from '../../store/getter-types'
+    import * as aTypes from '../../../store/action-types'
+    import * as mTypes from '../../../store/mutation-types'
+    import * as gTypes from '../../../store/getter-types'
 
     export default{
         props: [

@@ -119,7 +119,7 @@ let me = this;
                     var itemEl = evt.item;  // HTMLElement receiving the `mousedown|tapstart` event.
                 },
 
-                // Event when you move an item in the list or between lists
+                // Event when you move an item in the list or between menus
                 onMove: function (/**Event*/evt, /**Event*/originalEvent) {
                     // Example: http://jsbin.com/tuyafe/1/edit?js,output
                     evt.dragged; // dragged HTMLElement

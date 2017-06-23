@@ -6714,7 +6714,7 @@ var Transition = {
     if (process.env.NODE_ENV !== 'production' && children.length > 1) {
       warn(
         '<transition> can only be used on a single element. Use ' +
-        '<transition-group> for lists.',
+        '<transition-group> for menus.',
         this.$parent
       );
     }

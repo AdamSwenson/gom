@@ -1624,7 +1624,7 @@
                         return siblingCheck(a, b);
                     }
 
-                    // Otherwise we need full lists of their ancestors for comparison
+                    // Otherwise we need full menus of their ancestors for comparison
                     cur = a;
                     while ((cur = cur.parentNode)) {
                         ap.unshift(cur);
@@ -2893,7 +2893,7 @@
             ( optionsCache[options] || createOptions(options) ) :
             jQuery.extend({}, options);
 
-        var // Last fire value (for non-forgettable lists)
+        var // Last fire value (for non-forgettable menus)
             memory,
         // Flag to know if list was already fired
             fired,
@@ -2907,7 +2907,7 @@
             firingIndex,
         // Actual callback list
             list = [],
-        // Stack of fire calls for repeatable lists
+        // Stack of fire calls for repeatable menus
             stack = !options.once && [],
         // Fire callbacks
             fire = function (data) {

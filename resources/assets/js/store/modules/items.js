@@ -42,7 +42,7 @@ const helpers = {
         //     return state.items[payload.index];
         // }
     },
-    getItem : ( state, id ) => {
+    getItem: ( state, id ) => {
         return (function ( state, id ) {
             var r = state.items.filter( function ( i ) {
                 if ( i.id === id ) {
@@ -51,11 +51,10 @@ const helpers = {
                 ;
             } );
             return r[ 0 ];
-        })(state, id);
+        })( state, id );
     }
 
 };
-
 
 
 /**
@@ -159,32 +158,32 @@ const getters = {
     getOrderForSync: ( state, getters ) => {
         let out = [];
         let map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
-        window.console.log( 'items', 'getOrderForSync', 162, map);
+        window.console.log( 'items', 'getOrderForSync', 162, map );
         // if ( map.length > 0 ) {
 
-            //map is the exam represented as a Node object
-            // Doing this depth first
-            // this is a recurse and immediately-invoking function
-            (function recurse( currentNode, cnt = 0 ) {
-                // window.console.log( 'items', 'recurse', 129, currentNode);
-                // step 2
-                for (var i = 0; i < currentNode.children.length; i++) {
-                    // step 3
-                    recurse( currentNode.children[ i ], i );
-                }
-                // window.console.log( 'items', 'recurse', 153, currentNode );
-                // step 4
-                let exam = getters.currentExam;
-                let item = getters.getItemBySerialNumber( currentNode.data );
-                let parent = getters.getItemBySerialNumber( currentNode.parent );
+        //map is the exam represented as a Node object
+        // Doing this depth first
+        // this is a recurse and immediately-invoking function
+        (function recurse( currentNode, cnt = 0 ) {
+            // window.console.log( 'items', 'recurse', 129, currentNode);
+            // step 2
+            for (var i = 0; i < currentNode.children.length; i++) {
+                // step 3
+                recurse( currentNode.children[ i ], i );
+            }
+            // window.console.log( 'items', 'recurse', 153, currentNode );
+            // step 4
+            let exam = getters.currentExam;
+            let item = getters.getItemBySerialNumber( currentNode.data );
+            let parent = getters.getItemBySerialNumber( currentNode.parent );
 
-                out.push( {
-                    examId: exam.id,
-                    itemId: item.id,
-                    parentId: parent.id,
-                    itemOrder: cnt
-                } );
-             })( map );
+            out.push( {
+                examId: exam.id,
+                itemId: item.id,
+                parentId: parent.id,
+                itemOrder: cnt
+            } );
+        })( map );
         // }
         return out;
     }
@@ -253,6 +252,21 @@ const mutations = {
         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
     },
 
+    directLoadObjectsFromJson: ( state, payload ) => {
+        if ( typeof payload.obj !== 'undefined' ) {
+            _.forEach( payload.obj, function ( d, i ) {
+                let item = Item.factory( d ); //.factory( {id: id, index: index} );
+                state.items.push(item);
+            //     //set it in the items list without calling the api listener
+            //     commit( mTypes.setItem, Payload.factory( {
+            //         obj: item,
+            //         mutateSilently: true
+            //     } ) );
+            } );
+            // resolve();
+        }
+    },
+
     directLoadOrderFromJson: ( state, payload ) => {
 
         if ( typeof payload.obj !== 'undefined' ) {
@@ -268,7 +282,7 @@ const mutations = {
                 //and should be added as children of the exam.
                 //if the parent is null, we add the exam instead
                 let parentNode = ( d.parentId === null ) ? state.itemMap : (( state, d ) => {
-                    let parentItem = helpers.getItem(state, d.parentId );
+                    let parentItem = helpers.getItem( state, d.parentId );
                     return getNode( state, parentItem.serialNumber );
                 })( state, d );
 

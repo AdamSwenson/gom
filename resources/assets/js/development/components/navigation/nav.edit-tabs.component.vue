@@ -53,8 +53,16 @@
     <nav class="nav-edit-tabs-component tabs is-centered">
         <ul>
             <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToExamDetails">Details</router-link>
+                <router-link v-bind:to="routeToExamDetails">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </span>
+                        <span>Details</span>
+                    </a>
+                </router-link>
             </li>
+
 
             <li v-else role="presentation">
                 <router-link v-bind:to="routeToItemDetails">
@@ -67,8 +75,20 @@
                 </router-link>
             </li>
 
+            <li v-if="isExam" role="presentation">
+                <router-link v-bind:to="routeToStudents">
+                    <a>
+                        <span class="icon is-small">
+                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+                        </span>
+                        <span>Students</span>
+                    </a>
+                </router-link>
+            </li>
+
             <li role="presentation">
-                <router-link :to="{name: 'comments', params: {index : index} }">
+                <router-link v-bind:to="routeToComments">
+                 <!--:to="{name: 'comments', params: {index : index} }">&ndash;&gt;-->
                     <a>
                         <span class="icon is-small">
                             <i class="fa fa-comments-o" aria-hidden="true"></i>
@@ -95,8 +115,8 @@
                         <span class="icon is-small">
                             <i class="fa fa-book" aria-hidden="true"></i>
                         </span>
-                    <span>History</span>
-                </a>
+                        <span>History</span>
+                    </a>
                 </router-link>
             </li>
 
@@ -106,8 +126,8 @@
                         <span class="icon is-small">
                             <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
                         </span>
-                    <span>Notes</span>
-                </a>
+                        <span>Notes</span>
+                    </a>
                 </router-link>
             </li>
 
@@ -118,8 +138,8 @@
                         <span class="icon is-small">
                             <i class="fa fa-tags" aria-hidden="true"></i>
                         </span>
-                    <span>Tags</span>
-                </a>
+                        <span>Tags</span>
+                    </a>
                 </router-link>
             </li>
         </ul>
@@ -132,10 +152,10 @@
 </style>
 <script>
 
-    import * as mTypes from '../../store/mutation-types'
-    import * as gTypes from '../../store/getter-types'
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
+    import * as mTypes from '../../../store/mutation-types'
+    import * as gTypes from '../../../store/getter-types'
+    import Item from '../../../models/Item'
+    import Payload from '../../../models/Payload'
 
 
     /**
@@ -179,7 +199,7 @@
 
 
             routeToExamDetails: function () {
-                return "/panel-exam-detail/" + this.index;
+                return "/panel-exam-detail/" + this.serialNumber;
             },
 
 
@@ -189,26 +209,30 @@
             },
 
             routeToComments: function () {
-                return "/panel-comments/" + this.index;
+                return "/panel-comments/" + this.serialNumber;
             },
 
             routeToStats: function () {
-                return "/panel-stats/" + this.index;
+                return "/panel-stats/" + this.serialNumber;
+            },
+
+            routeToStudents: function () {
+                return "/panel-students/" + this.serialNumber;
             },
 
 
             routeToHistory: function () {
-                return "/panel-history/" + this.index;
+                return "/panel-history/" + this.serialNumber;
             },
 
 
             routeToNotes: function () {
-                return "/panel-notes/" + this.index;
+                return "/panel-notes/" + this.serialNumber;
             },
 
 
             routeToTags: function () {
-                return "/panel-tags/" + this.index;
+                return "/panel-tags/" + this.serialNumber;
             },
 
             /**

@@ -4747,7 +4747,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return siblingCheck( a, b );
 		}
 
-		// Otherwise we need full lists of their ancestors for comparison
+		// Otherwise we need full menus of their ancestors for comparison
 		cur = a;
 		while ( (cur = cur.parentNode) ) {
 			ap.unshift( cur );
@@ -6526,7 +6526,7 @@ jQuery.Callbacks = function( options ) {
 	var // Flag to know if list is currently firing
 		firing,
 
-		// Last fire value for non-forgettable lists
+		// Last fire value for non-forgettable menus
 		memory,
 
 		// Flag to know if list was already fired
@@ -6538,7 +6538,7 @@ jQuery.Callbacks = function( options ) {
 		// Actual callback list
 		list = [],
 
-		// Queue of execution data for repeatable lists
+		// Queue of execution data for repeatable menus
 		queue = [],
 
 		// Index of currently firing callback (modified by add/remove as needed)

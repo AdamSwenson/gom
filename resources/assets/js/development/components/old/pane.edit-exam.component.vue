@@ -23,7 +23,7 @@
 
     <!--import Payload from '../../models/Payload'-->
 
-    <!--import panelExamDetail from './panel.exam-detail.component.vue'-->
+    <!--import panelExamDetail fromexam-detail-panel.vue.vue'-->
     <!--// Vue.component('panel-exam-detail', panelExamDetail)-->
 
     <!--export default{-->

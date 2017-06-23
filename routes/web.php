@@ -164,6 +164,8 @@ Route::patch('items/{exam}', 'ItemController@updateAll');
 Route::resource('items', 'ItemController'); //, ['parameters' => [
 Route::post('items/{exam}/order', 'AssignmentController@store');
 
+Route::put('editexam/{exam}', 'ItemController@examUpdate');
+
 //    'item' => 'exam'
 //]]);
 

@@ -49,31 +49,31 @@ const errorHandling = ( error ) => {
 
 const handleItemResponse = ( store, item, response ) => {
     // return new Promise( ( resolve, reject ) => {
-        Item.fillableProps.forEach( function ( p ) {
-            if ( p !== 'index' ) {
-                if ( Object.keys( response.data ).includes( p ) ) {
-                    store.commit( mTypes.updateItemSilently, Payload.factory( {
-                        obj: item,
-                        updateProp: p,
-                        updateVal: response.data[ p ],
-                        mutateSilently: true
-                    } ) );
-
-                }
-            }
-        } );
-
-        _.forEach( Item.aliasMap, function ( v, k ) {
-            if ( Object.keys( response.data ).includes( k ) ) {
+    Item.fillableProps.forEach( function ( p ) {
+        if ( p !== 'index' ) {
+            if ( Object.keys( response.data ).includes( p ) ) {
                 store.commit( mTypes.updateItemSilently, Payload.factory( {
-                   obj:item,
-                    updateProp: v,
-                    updateVal: response.data[ k ],
+                    obj: item,
+                    updateProp: p,
+                    updateVal: response.data[ p ],
                     mutateSilently: true
                 } ) );
+
             }
-        } );
-        // resolve();
+        }
+    } );
+
+    _.forEach( Item.aliasMap, function ( v, k ) {
+        // if ( Object.keys( response.data ).includes( k ) ) {
+        //     store.commit( mTypes.updateItemSilently, Payload.factory( {
+        //        obj:item,
+        //         updateProp: v,
+        //         updateVal: response.data[ k ],
+        //         mutateSilently: true
+        //     } ) );
+        // }
+    } );
+    // resolve();
     // } );
 };
 
@@ -101,33 +101,33 @@ const handleExamResponse = ( store, item, response ) => {
 
 const handleResponse = ( store, item, response ) => {
     // return new Promise( ( resolve, reject ) => {
-        // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
-        if ( typeof response.data === 'undefined' ) return false;
+    // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+    if ( typeof response.data === 'undefined' ) return false;
 
-        //return Item with the new id or other data loaded
-        if ( typeof response.data !== 'undefined' ) {
+    //return Item with the new id or other data loaded
+    if ( typeof response.data !== 'undefined' ) {
 
-            switch ( item.kind ) {
-                case 'exam':
-                    handleExamResponse( store, item, response );
-                    // .then( ( resolve ) => {
-                    //     resolve();
-                    // } );
-                    break;
+        switch ( item.kind ) {
+            case 'exam':
+                handleExamResponse( store, item, response );
+                // .then( ( resolve ) => {
+                //     resolve();
+                // } );
+                break;
 
-                case 'item':
-                    handleItemResponse( store, item, response );
-                    // resolve();
-                    // .then( ( resolve ) => {
-                    //     resolve();
-                    // } );
+            case 'item':
+                handleItemResponse( store, item, response );
+                // resolve();
+                // .then( ( resolve ) => {
+                //     resolve();
+                // } );
 
-                    break;
-                default:
-                    reject()
-            }
-
+                break;
+            default:
+                reject()
         }
+
+    }
     // } );
 };
 
@@ -166,6 +166,30 @@ const updateItem = ( store, item ) => {
         .put( 'items/' + item.id, item )
         .then( ( response ) => {
             handleResponse( store, item, response );
+        } )
+        .catch( function ( error ) {
+            errorHandling( error );
+        } );
+};
+/**
+ * Handles the call to the server to update
+ * properties of an item which already has an id
+ * @param store
+ * @param item
+ */
+const updateExam = ( store, exam) => {
+    window.console.log( 'apiPlugin', 'updateExam', 181, exam);
+    let out = {
+        ...exam,
+        examId : store.getters.currentExam.id,
+        requestVersion : REQUEST_VERSION
+    };
+    // }
+    //put/patch
+    window.axios
+        .put( 'editexam/' + exam.id, exam )
+        .then( ( response ) => {
+            handleResponse( store, exam, response );
         } )
         .catch( function ( error ) {
             errorHandling( error );
@@ -350,12 +374,14 @@ export default function ( store ) {
                 //so we need to try to get the item from the index too
                 // let item = _.isObject( payload.obj ) ? payload.obj : store.getters.getItemByIndex( payload.index );
                 window.console.log( 'apiPlugin', 'updateItem', 263, item, payload );
-                if ( item instanceof Item ) {
+                if ( item instanceof Exam ) {
+                    updateExam( store, item );
+                } else if (  item instanceof Item ) {
                     updateItem( store, item );
                 }
                 payload.callback();
-
                 break;
+
 
             case mTypes.updateOrder:
                 window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );

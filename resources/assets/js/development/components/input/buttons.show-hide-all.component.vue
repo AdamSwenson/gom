@@ -12,7 +12,7 @@
 
 
     import deleteButton from '../input/buttons.item.delete.component.vue'
-    import panelExamDetail from '../panel.exam-detail.component.vue'
+    import panelExamDetail from '../panels/exam-detail-panel.vue'
 
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'

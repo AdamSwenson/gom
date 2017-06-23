@@ -8,7 +8,7 @@
     >
 
         <div class="card-content">
-            <item-main :index="index" :serial-number="serialNumber"></item-main>
+            <item-main :index="index" :serial-number="serialNumber" :is-exam="false"></item-main>
         </div>
 
         <div class="card-content" v-show="paneVisible">
@@ -45,7 +45,15 @@
                         </button>
                     </p>
                     <p class="control">
+                        <button class="button is-primary is-outlined">
+                                <span class="icon is-small">
+                                    <i class="fa fa-clone" aria-hidden="true"></i>
+                                </span>
+                            <span>Import item</span>
+                        </button>
+                    </p>
 
+                <p class="control">
                         <public-indicator :index="index"
                                           :serial-number="serialNumber">
                         </public-indicator>
@@ -61,8 +69,8 @@
 
         </div>
 
-        <div class="card-footer is-centered">
-            <div class="tabs is-centered">
+        <div class="card-footer navTabs is-centered">
+            <div class="tabs ">
                 <ul>
                     <li>
                         <a>
@@ -119,6 +127,10 @@
         margin-top: 2em;
 
         border-bottom: solid;
+
+        .nav-tabs{
+            text-align: center;
+        }
 
         /*!*width: 80%;*!*/
         /*.button-row {*/
@@ -195,7 +207,7 @@
              * Returns true if the settings pane for this item should be displayed
              */
             paneVisible: function () {
-                return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index )
+                return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.serialNumber )
             },
 
             divId: function () {

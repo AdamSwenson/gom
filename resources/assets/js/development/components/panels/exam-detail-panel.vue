@@ -64,11 +64,11 @@
 
 <script>
 
-    import * as aTypes from '../../store/action-types';
-    import * as mTypes from '../../store/mutation-types';
-    import * as gTypes from '../../store/getter-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import * as gTypes from '../../../store/getter-types';
 
-    import Payload from '../../models/Payload'
+    import Payload from '../../../models/Payload'
 
 
     export default{
@@ -77,6 +77,9 @@
 
         data: function () {
             return {
+                serialNumber: _.toInteger(this.$route.params.serialNumber),
+                active: this.serialNumber,
+
                 defaults: {
                     term: 'Term'
                 },

@@ -32,54 +32,36 @@
      */
     export default {
 
-        props: [ 'index' ],
+        props: [ 'index' , 'isExam', 'serialNumber'],
 
         data: function () {
             return {};
         },
 
         computed: {
-
-            addYoungerSiblingButtonId: function () {
-                return 'younger-sibling-add-button-' + this.index;
-            },
-
-            addOlderSiblingButtonId: function () {
-                return 'older-sibling-add-button-' + this.index;
-            },
             settingsButtonId: function () {
-                return 'item-settings-button-' + this.index;
+                return 'item-settings-button-' + this.serialNumber;
             }
         },
 
         methods: {
-            addOlderSibling: function () {
-                this.$store.dispatch( aTypes.addOlderSibling, Payload.factory( { index: this.index } ) );
-            },
-
-
-            addYoungerSibling: function () {
-                this.$store.dispatch( aTypes.addYoungerSibling, Payload.factory( { index: this.index } ) );
-            },
-
-
             toggleVis: function () {
-                if ( this.index === 0 ) {
+                if ( this.isExam ) {
                     //exam case
-                    this.$store.commit( mTypes.toggleExamSettings );
+                    this.$store.commit( mTypes.toggleExamSettings , Payload.factory({mutateSilently: true}));
                 }
-                else if ( this.index > 0 ) {
+                else  {
                     //item cases
-                    let isVis = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index );
+                    let isVis = this.$store.getters[ gTypes.isItemSettingsVisible ]( this.serialNumber );
+
                     if ( isVis ) {
                         //if comes back true, we know that currently visible
                         //call the mutation with our index
-                        this.$store.commit( mTypes.hideItemSettings, Payload.factory( { index: this.index } ) );
+                        this.$store.commit( mTypes.hideItemSettings, Payload.factory( { serialNumber: this.serialNumber, mutateSilently: true } ) );
                     } else {
-
                         //call the mutation to show with our index
-                        this.$store.commit( mTypes.showItemSettings, Payload.factory( { index: this.index } ) );
-                        this.$router.push( { name: 'item-detail', params: { index: this.index, active: 'details' } } );
+                        this.$store.commit( mTypes.showItemSettings, Payload.factory( { serialNumber: this.serialNumber, mutateSilently: true } ) );
+                        this.$router.push( { name: 'item-detail', params: { serialNumber: this.serialNumber, active: 'details' } } );
                     }
                 }
             }

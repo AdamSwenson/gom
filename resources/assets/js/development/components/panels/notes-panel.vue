@@ -41,17 +41,19 @@
     }
 </style>
 <script>
-    import * as aTypes from '../../store/action-types';
-    import * as mTypes from '../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
 
-    import Payload from '../../models/Payload'
+    import Payload from '../../../models/Payload'
 
     export default {
 //        props: ['index'],
 
         data: function () {
             return {
-                index: this.$route.params.index,
+                serialNumber: _.toInteger(this.$route.params.serialNumber),
+//                active: this.serialNumber,
+
                 placeholders: {
 
                     noteText: "Write something you want to remember about this item here"

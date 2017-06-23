@@ -23,21 +23,21 @@ import progressDashboard from './components/dashboard.progress.component.vue'
 import toolsDashboard from './components/dashboard.tools.component.vue'
 
 //Panes (main container for edit tools)
-import itemEditPane from './components/pane.edit-item.component.vue'
-import editTabs from './components/nav.edit-tabs.component.vue'
+import itemEditPane from './components/old/pane.edit-item.component.vue'
+import editTabs from './components/navigation/nav.edit-tabs.component.vue'
 
 //Panels (objects within pane)
-import panelComments from './components/panel.comment-setup.component.vue'
-import panelExamDetail from './components/panel.exam-detail.component.vue'
-import panelHistory from './components/panel.history.component.vue'
-import panelNotes from './components/panel.notes.component.vue'
-import panelItemDetail from './components/panels/panel.item-detail.component.vue'
-import panelStats from './components/panel.stats.component.vue'
-import panelTags from './components/panel.tags.component.vue'
-
+import panelComments from './components/panels/comment-setup-panel.vue'
+import panelExamDetail from './components/panels/exam-detail-panel.vue'
+import panelHistory from './components/panels/history-panel.vue'
+import panelNotes from './components/panels/notes-panel.vue'
+import panelItemDetail from './components/panels/item-detail-panel.vue'
+import panelStats from './components/panels/stats-panel.vue'
+import panelTags from './components/panels/tags-panel.vue'
+import panelStudents from './components/panels/add-students-panel.vue'
 
 //Main editable objects
-import examMain from './components/exam.main.component.vue'
+import examMain from './components/old/exam.main.component.vue'
 import itemMain from './components/item.main.component.vue'
 
 //Item card list
@@ -47,7 +47,7 @@ import itemAddButton from './components/input/buttons.item.add.component.vue'
 //Item card and parts
 import itemCard from './components/cards/itemCard.component.vue'
 import depthControl from './components/input/buttons.depth-control.component.vue'
-import maxScore from './components/field.max-score.component.vue'
+import maxScore from './components/input/field.max-score.component.vue'
 import itemNumber from './components/field.item-number.component.vue'
 import itemName from './components/field.item-name.component.vue'
 import siblingAddButton from './components/input/buttons.add-sibling.component.vue'
@@ -109,6 +109,7 @@ Vue.component( 'panel-stats', panelStats );
 Vue.component( 'panel-notes', panelNotes );
 Vue.component('panel-tags', panelTags);
 Vue.component( 'edit-tabs', editTabs );
+Vue.component('panel-students', panelStudents);
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
 Vue.component( 'valence-button', valenceButton );
@@ -139,19 +140,19 @@ Vue.use( VueRouter );
 const routes = [
     {
         name: 'comments',
-        path: '/panel-comments/:index',
+        path: '/panel-comments/:serialNumber',
         components: { itemPanels: panelComments },
         props: true, //{default: true}
     }
     , //props: (route) => {return route.index;}},
     {
         name: 'exam-detail',
-        path: '/panel-exam-detail/:index',
-        components: { examPanels: panelExamDetail },
+        path: '/panel-exam-detail/:serialNumber',
+        components: { itemPanels: panelExamDetail },
         props: true
     },
     {
-        path: '/panel-history/:index',
+        path: '/panel-history/:serialNumber',
         components: { itemPanels: panelHistory },
         props: true
     },
@@ -162,17 +163,22 @@ const routes = [
         props: true
     },
     {
-        path: '/panel-notes/:index',
+        path: '/panel-notes/:serialNumber',
         components: { itemPanels: panelNotes },
         props: true
     },
     {
-        path: '/panel-stats/:index',
+        path: '/panel-stats/:serialNumber',
         components: { itemPanels: panelStats },
         props: true
     },
     {
-        path: '/panel-tags/:index',
+        path: '/panel-students/:serialNumber',
+        components: { itemPanels: panelStudents },
+        props: true
+    },
+    {
+        path: '/panel-tags/:serialNumber',
         components: { itemPanels: panelTags},
         props: true
     }

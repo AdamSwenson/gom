@@ -39,12 +39,12 @@
 </style>
 <script>
 
-    import Comment from '../../models/Comment'
-    import Payload from '../../models/Payload'
-    import * as mTypes from '../../store/mutation-types';
-    import * as aTypes from '../../store/action-types';
-    import * as gTypes from '../../store/getter-types';
-    import valenceButtons from './input/buttons.valence.component.vue'
+    import Comment from '../../../models/Comment'
+    import Payload from '../../../models/Payload'
+    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as gTypes from '../../../store/getter-types';
+    import valenceButtons from '../input/buttons.valence.component.vue'
 
     /**
      * The comment details setup area
@@ -59,6 +59,9 @@
 
         data: function () {
             return {
+                serialNumber: _.toInteger(this.$route.params.serialNumber),
+//                active: this.serialNumber,
+
 
                 displayed: 'stock',
 

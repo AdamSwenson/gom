@@ -14,8 +14,8 @@ import Payload from '../../models/Payload'
 
 const state = {
     /** List of indexes of items for which the settings panel is visible */
-    itemsWithSettingsVisible: [  ], //The root item (the exam) is always visible, but it's settings aren't
-
+    itemsWithSettingsVisible: [],
+    //The root item (the exam) is always visible, but it's settings aren't
     examSettingsVisible: false
 };
 
@@ -24,12 +24,8 @@ const mutations = {
     [mTypes.showItemSettings]: ( state, payload ) => {
         console.log( 'show called', payload );
         if ( Payload.checkIfPayload( payload ) ) {
-
-            if ( typeof payload.index != 'undefined' ) {
-                if ( !state.itemsWithSettingsVisible.includes( payload.index ) ) {
-
-                    state.itemsWithSettingsVisible.push( payload.index );
-                }
+            if ( !state.itemsWithSettingsVisible.includes( payload.serialNumber ) ) {
+                state.itemsWithSettingsVisible.push( payload.serialNumber );
             }
         }
     },
@@ -37,11 +33,9 @@ const mutations = {
     [mTypes.hideItemSettings]: ( state, payload ) => {
         console.log( 'hide called', payload );
         if ( Payload.checkIfPayload( payload ) ) {
-            if ( typeof payload.index != 'undefined' ) {
+            if ( typeof payload.serialNumber != 'undefined' ) {
                 //get index of where the item index is stored
-                let index = state.itemsWithSettingsVisible.indexOf( payload.index );
-                console.log( 'in dex', index );
-                //todo renenable
+                let index = state.itemsWithSettingsVisible.indexOf( payload.serialNumber );
                 //this covers index > -1  (not found) and index = 0 (the exam)
                 //so neither can be altered
                 // if ( index > 0 ) {
@@ -61,6 +55,7 @@ const mutations = {
         state.examSettingsVisible = !state.examSettingsVisible;
     }
 };
+
 // [mTypes.toggleItemSettings] : ( state, rootState, payload ) => {
 //     if(Payload.checkIfPayload(payload)) {
 //         if ( typeof payload.index != 'undefined' ) {
@@ -78,8 +73,8 @@ const getters = {
      * @param getters
      * @param rootState
      */
-    [gTypes.isItemSettingsVisible]: ( state, getters, rootState ) => ( index ) => {
-        return state.itemsWithSettingsVisible.includes( index )
+    [gTypes.isItemSettingsVisible]: ( state, getters, rootState ) => ( serialNumber ) => {
+        return state.itemsWithSettingsVisible.includes( serialNumber )
     },
 
     /**
@@ -88,7 +83,7 @@ const getters = {
      * @param getters
      * @param rootState
      */
-    [gTypes.isExamSettingsVisible]: ( state) => {
+    [gTypes.isExamSettingsVisible]: ( state ) => {
         return state.examSettingsVisible;
     }
 

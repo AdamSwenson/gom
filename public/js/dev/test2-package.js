@@ -3553,7 +3553,7 @@ function applyNS (vnode, ns) {
 /*  */
 
 /**
- * Runtime helper for rendering v-for lists.
+ * Runtime helper for rendering v-for menus.
  */
 function renderList (
   val,
@@ -7152,7 +7152,7 @@ var Transition = {
     if ("development" !== 'production' && children.length > 1) {
       warn(
         '<transition> can only be used on a single element. Use ' +
-        '<transition-group> for lists.',
+        '<transition-group> for menus.',
         this.$parent
       );
     }
@@ -8784,7 +8784,7 @@ function genFor (el) {
     maybeComponent(el) && el.tag !== 'slot' && el.tag !== 'template' && !el.key
   ) {
     warn$3(
-      "<" + (el.tag) + " v-for=\"" + alias + " in " + exp + "\">: component lists rendered with " +
+      "<" + (el.tag) + " v-for=\"" + alias + " in " + exp + "\">: component menus rendered with " +
       "v-for should have explicit keys. " +
       "See https://vuejs.org/guide/list.html#key for more info.",
       true /* tip */
@@ -12869,7 +12869,7 @@ function applyNS (vnode, ns) {
 /*  */
 
 /**
- * Runtime helper for rendering v-for lists.
+ * Runtime helper for rendering v-for menus.
  */
 function renderList (
   val,
@@ -16030,7 +16030,7 @@ var Transition = {
     if (process.env.NODE_ENV !== 'production' && children.length > 1) {
       warn(
         '<transition> can only be used on a single element. Use ' +
-        '<transition-group> for lists.',
+        '<transition-group> for menus.',
         this.$parent
       );
     }
