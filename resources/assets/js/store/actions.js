@@ -11,150 +11,114 @@ import Node from '../models/Node'
 import Payload from '../models/Payload'
 import * as api from '../api/controller'
 
+import JsonReaders from './utlities/JsonReaders';
+
 const standardTimeout = 1000;
 
+const EXAM_JSON_NAME = 'loadedExam';
+const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
+const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+
 // export const actions = {
+module.exports = {
+    ...JsonReaders,
+    /**
+     * Creates a new exam on the client, sets
+     * it as the active exam, and requests an
+     * exam id from the server
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    createExam: ( { state, commit }, payload ) => {
+        return new Promise( ( resolve, reject ) => {
+            //instantiate the new exam
+            let exam = Exam.factory( { index: 0 } ); //.factory( {id: id, index: index} );
+            //set it in the items list
+            //this will call the api lister.
+            commit( mTypes.setItem, Payload.factory( { index: 0, obj: exam } ) );
+            //set it as active (in case anything is depending on the older structure)
+            // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+            resolve()
+        } );
 
-/**
- * Creates a new exam on the client, sets
- * it as the active exam, and requests an
- * exam id from the server
- * @param state
- * @param commit
- * @param payload
- */
-export const createExam = ( { state, commit }, payload ) => {
-    return new Promise( ( resolve, reject ) => {
-        //instantiate the new exam
-        let exam = Exam.factory( { index: 0 } ); //.factory( {id: id, index: index} );
-        //set it in the items list
-        //this will call the api lister.
-        commit( mTypes.setItem, Payload.factory( { index: 0, obj: exam } ) );
-        //set it as active (in case anything is depending on the older structure)
-        // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
-        resolve()
-    } );
+    },
 
-};
+    /**
+     * The payload should contain the exam that is presently set
+     * as the active exam, but with updated properties. This
+     * will replace the exam stored, so that vue can see the change
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    updateExam: ( { state, commit }, payload ) => {
+        //set it as active
+        commit( mTypes.setActiveExam, Payload.factory( { obj: exam } ) );
+    }
+    ,
 
-/**
- * The payload should contain the exam that is presently set
- * as the active exam, but with updated properties. This
- * will replace the exam stored, so that vue can see the change
- * @param state
- * @param commit
- * @param payload
- */
-export const updateExam = ( { state, commit }, payload ) => {
-    //set it as active
-    commit( mTypes.setActiveExam, Payload.factory( { obj: exam } ) );
-};
+    /**
+     * These are actions which different parts of the gom
+     * call to when they initialize.
+     *
+     */
+    /** This is what gets run when the root instance is mounted for the setup page */
+    setupOnMount: ( { state, commit, dispatch } ) => {
+        //wrap in promise? probably not since this doesn't yet hit the server
+        commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
+        dispatch( 'parseExamData' );
+        dispatch( 'parseItemObjectData' );
+        dispatch( 'parseItemOrderData' );
+        // .then( () => {
+        //
+        // } ).then( () => {
+        //
+        // } );
 
+    }
+}
+;
 
-export const parseExamData = ( { state, commit, dispatch, getters } ) => {
-    return new Promise( ( resolve, reject ) => {
-        //Check and see if the server gave us data to start off with.
-        //Grab any preloaded data from the div on the page where the server would've put it
-        let examData = JSON.parse( document.getElementById( 'loadedExam' ).getAttribute( 'data' ) );
-        window.console.log( 'actions', 'parseExamData', 103, examData );
-        //there was exam data, load an exam from it
-        if ( typeof examData != 'undefined' ) {
+// export const parseItemData = ( { state, commit, dispatch } ) => {
+//     return new Promise( ( resolve, reject ) => {
+//         //Check and see if the server gave us data to start off with.
+//         //Grab any pre loaded data from the div on the page where the server would've put it
+//         let data = JSON.parse( document.getElementById( 'loadedItems' ).getAttribute( 'data' ) );
+//         // window.console.log('actions', 'parseItemData', 128, data);
+//
+//         //if there was item data, load items from it
+//         if ( typeof data !== 'undefined' ) {
+//             _.forEach( data, function ( d, i ) {
+//                 d.index = i;
+//                 let item = Item.factory( d ); //.factory( {id: id, index: index} );
+//                 //set it in the items list without calling the api listener
+//                 commit( mTypes.setItem, Payload.factory( {
+//                     obj: item,
+//                     mutateSilently: true
+//                 } ) );
+//
+//                 //todo how to find the parent?
+//                 let pl = Payload.factory( {
+//                     index: i,
+//                     obj: item,
+//                     parent: exam,
+//                     mutateSilently: true
+//                 } );
+//
+//                 dispatch( aTypes.addItemToOrder, pl );
+//             } );
+//         } else {
+//
+//             dispatch( aTypes.createItem ).then( () => {
+//                 return true;
+//             } );
+//         }
+//
+//         resolve();
+//     } );
+// };
 
-            //We need to do work on the exam in two places.
-            //First, we will update the stored object properties.
-            //Make sure the index is what we expect
-            examData.index = 0;
-
-            let examSerialNumber = state.items.items[ 0 ].serialNumber;
-            //window.console.log( 'actions', 'esn', 117, examSerialNumber );
-
-            Exam.fillableProps.forEach(
-                ( prop ) => {
-                    window.console.log( 'actions', 'prop', 119, prop, examData[ prop ] );
-                    if ( examData[ prop ] ) {
-                        commit( mTypes.updateItem, Payload.factory( {
-                            mutateSilently: true,
-                            index: 0,
-                            updateProp: prop,
-                            updateVal: examData[ prop ]
-                        } ) );
-                    }
-                } );
-        }
-
-        //Second, we need to make sure that everything is still
-        //cool with the ordering.
-        //In particular we need to be sure that the serial numbers
-        //still correspond
-        let ex = state.items.items[ 0 ];
-        let esn = ex.serialNumber;
-        let im = getters.getRootNode;
-        if ( im.parent === esn && im.data === esn ) return true;
-        //if they've diverged, update them
-        commit( 'setRootNode', Payload.factory( { obj: ex } ) );
-
-        resolve();
-
-    } );
-};
-
-
-export const parseItemData = ( { state, commit, dispatch } ) => {
-    return new Promise( ( resolve, reject ) => {
-        //Check and see if the server gave us data to start off with.
-        //Grab any pre loaded data from the div on the page where the server would've put it
-        let data = JSON.parse( document.getElementById( 'loadedItems' ).getAttribute( 'data' ) );
-        // window.console.log('actions', 'parseItemData', 128, data);
-
-        //if there was item data, load items from it
-        if ( typeof data !== 'undefined' ) {
-            _.forEach( data, function ( d, i ) {
-                d.index = i;
-                let item = Item.factory( d ); //.factory( {id: id, index: index} );
-                //set it in the items list without calling the api listener
-                commit( mTypes.setItem, Payload.factory( {
-                    obj: item,
-                    mutateSilently: true
-                } ) );
-
-                //todo how to find the parent?
-                let pl = Payload.factory( {
-                    index: i,
-                    obj: item,
-                    parent: exam,
-                    mutateSilently: true
-                } );
-
-                dispatch( aTypes.addItemToOrder, pl );
-            } );
-        } else {
-
-            dispatch( aTypes.createItem ).then( () => {
-                return true;
-            } );
-        }
-
-        resolve();
-    } );
-};
-
-
-/**
- * These are actions which different parts of the gom
- * call to when they initialize.
- *
- */
-/** This is what gets run when the root instance is mounted for the setup page */
-export const setupOnMount = ( { state, commit, dispatch } ) => {
-    //wrap in promise? probably not since this doesn't yet hit the server
-    commit( 'initializeItemStore', Payload.factory({mutateSilently: true}) );
-    dispatch( 'parseExamData' ).then( () => {
-        dispatch( 'parseItemData' );
-    } ).then( () => {
-        // emit('items-ready');
-    } );
-
-};
 
 //if there already is a root, update its serial number
 //Now update the root with the exam's serial number

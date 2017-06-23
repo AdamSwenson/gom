@@ -333,14 +333,16 @@ $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
 });
 
 $factory->define(App\Item::class, function ( Faker\Generator $faker ) {
+    $userId = 1;
+    Auth::logInUsingId($userId);
+
     return [
-        'idx' => $faker->randomNumber(),
-        'index' => $faker->randomNumber(),
-        'examId' => \factory(App\Exam::class)->create()->id,
         'name' => $faker->word,
-        'publicName' => $faker->word,
-        'text' => $faker->paragraph,
-        'maxScore' => $faker->randomNumber()
+        'displayText' => $faker->word,
+        'comment_text' => $faker->word,
+        'text' => $faker->word,
+        'settings' => [],
+        'max_score' => $faker->randomNumber()
     ];
 });
 

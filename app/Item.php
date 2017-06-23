@@ -14,66 +14,109 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Item extends BaseModel
 {
 
-use SoftDeletes;
+    use SoftDeletes;
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
     protected $dates = ['deleted_at'];
-    /**
-     * @var
-     */
-    public $idx = [];
-    public $index;
-    public $id;
-    public $assignmentId;
-    public $examId;
-    public $name;
-    public $publicName;
-    public $text;
-    public $max_score;
-
 
     protected $guarded = ['user_id', 'id'];
-
+protected $casts = ['settings' => 'array',
+    'name' =>'string',
+    'displayText' =>'string',
+    'commentText' =>'string',
+    'text' =>'string',
+    'max_score' =>'float'];
     protected $fillable = [
         'name',
         'displayText',
         'commentText',
         'settings',
         'text',
-        'max_score',
-//vestigial
-        'idx',
-        'index',
-        'assignmentId',
-        'examId',
-        'name',
-        'publicName',
-
-        'maxScore'
+        'max_score'
     ];
+//
+//    public function __get( $key )
+//    {
+//        if ( $key === 'maxScore' ) {
+//            return $this->max_score;
+//        }
+//
+//    }
+//
+//    public function __set( $key, $value )
+//    {
+//        if ( $key === 'maxScore' ) {
+//            $this->max_score = $value;
+//        }
+//
+//    }
 
-    public function __get( $key )
+
+
+
+    #------------ foreign keys
+
+    /**
+     * Returns associated exams. Returns exam object collection
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function exam()
     {
-        if($key === 'maxScore'){
-            return $this->max_score;
-        }
-
+        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
     }
 
-    public function __set( $key, $value )
+    /**
+     * Returns associated user
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
     {
-        if($key === 'maxScore'){
-            $this->max_score = $value;
-        }
-
+        return $this->belongsTo('App\User');
     }
 
-    public function __construct()
+    /**
+     * Returns associated exams. Returns exam object collection
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function questionAssignments()
     {
+        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
     }
+
+    /**
+     * Returns associated scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function scores()
+    {
+        return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment', 'question_id',
+            'question_assignment_id');
+    }
+
+
+    /* ----------------------------------- Defaults ----------------- */
+    /**
+     * @return string
+     */
+    protected static function makeDefaultExamName(): string
+    {
+        return '';
+//        return 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
+    }
+
+    /**
+     * @return string
+     */
+    protected static function makeDefaultQuestionName(): string
+    {
+        return '';
+//        return 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
+    }
+
+}
 
 //
 //    /**
@@ -168,67 +211,8 @@ use SoftDeletes;
 //    }
 //
 
-    #------------ foreign keys
-    /**
-     * Returns associated exams. Returns exam object collection
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function exam()
-    {
-        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
-    }
 
-    /**
-     * Returns associated user
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
-
-    /**
-     * Returns associated exams. Returns exam object collection
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function questionAssignments()
-    {
-        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
-    }
-
-    /**
-     * Returns associated scores
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function scores()
-    {
-        return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment', 'question_id',
-            'question_assignment_id');
-    }
-
-
-    /* ----------------------------------- Defaults ----------------- */
-    /**
-     * @return string
-     */
-    protected static function makeDefaultExamName(): string
-    {
-        return '';
-//        return 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
-    }
-
-    /**
-     * @return string
-     */
-    protected static function makeDefaultQuestionName(): string
-    {
-        return '';
-//        return 'Unnamed -- created: ' . Carbon::now()->toDayDateTimeString();
-    }
-
-
-
-}
+//}
 
 
 //        //determine whether new or existing from whether an id is given

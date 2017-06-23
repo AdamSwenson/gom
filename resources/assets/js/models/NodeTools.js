@@ -7,30 +7,39 @@ import Item from './Item';
 import Node from './Node';
 import Payload from './Payload';
 
+export const getNode = ( state, serialNumber ) => {
+    return (function ( state, serialNumber ) {
+        let callback = function ( node ) {
+            if ( !callback.found ) callback.found = [];
+            // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+            if ( node.data === serialNumber ) {
+                callback.found.push( node );
+                // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                return true;
+            }
+            return false;
+        };
+        traverseDF( state.itemMap, callback );
+        let result = callback.found[ 0 ];
+        return result;
+    })( state, serialNumber )
+};
+
 export const traverseDF = ( root, callback ) => {
     // this is a recursive and immediately-invoking function
     (function recurse( currentNode ) {
         // step 2
         for (var i = 0, length = currentNode.children.length; i < length; i++) {
-            //if we are at the exam or at the last child, call
-            //the callback and return the node
-            //todo Not sure why this is here....
-            // if ( callback( currentNode ) ) {
-            //     return currentNode;
-            // }
-            // else {
-                // step 3
-                // iterate through the node's children
-                // calling the recursive function on each
-                recurse( currentNode.children[ i ] );
-            // }
-
+            // step 3
+            // iterate through the node's children
+            // calling the recursive function on each
+            recurse( currentNode.children[ i ] );
         }
         // step 4
         //We are out of children to cycle through. We can call the callback
         //node. If the callback returns true, we return the node
         if ( callback( currentNode ) ) {
-            window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
+            // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
             return currentNode;
         }
 

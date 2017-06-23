@@ -19,5 +19,9 @@ class Assignment extends Entity implements assignmentInterface
      */
     protected $closure = 'App\assignmentClosure';
 
-    protected $fillable = ['item_id', 'parent_id', 'depth'];
+    protected $fillable = ['item_id', 'parent_id', 'exam_id' ,'position',  'depth'];
+
+    public function exam(){
+        return $this->belongsTo(Exam::class );
+    }
 }

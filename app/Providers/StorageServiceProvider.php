@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Jobs\Grade\RecordScoresAndComments;
+use App\Repositories\Assignment\AssignmentRepository;
+use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Item\ItemRepository;
 use App\Repositories\Utilities\IJsDataPreparation;
@@ -117,5 +119,7 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind(IJsDataPreparation::class, JsDataPreparation::class);
 
 
+        //new setup
+        $this->app->bind(IAssignmentRepository::class, AssignmentRepository::class);
     }
 }

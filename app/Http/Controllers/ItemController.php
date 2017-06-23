@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Assignment;
 use App\Element;
 use App\Exam;
 use App\Http\Requests\ItemRequest;
@@ -25,6 +26,9 @@ use Illuminate\Http\Request;
  */
 class ItemController extends Controller
 {
+    const EXAM_JSON_NAME = 'loadedExam';
+    const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
+    const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
     public $type;
     public $exam;
 
@@ -111,9 +115,9 @@ class ItemController extends Controller
         //update its properties
         $item->update(
             ['text' => $request->input('text'),
-            'name' => $request->input('name'),
-            'max_score' => $request->input('maxScore')
-        ]);
+                'name' => $request->input('name'),
+                'max_score' => $request->input('maxScore')
+            ]);
         return $item;
 
 //        return $this->itemRepository->handleStoreAndUpdate($request);
@@ -133,7 +137,40 @@ class ItemController extends Controller
      */
     public function show( Exam $exam ) //Item $item, ItemRequest $request )
     {
-        $items = [];
+        $itemObjects = [];
+        $itemOrder = [];
+
+        $assignments = Assignment::where('exam_id', $exam->id)->get();
+        foreach ( $assignments as $assignment ) {
+            $item = Item::where('id', $assignment->item_id)->first();
+            if ( $item ) {
+                $itemObjects[] = $item;
+                $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();
+
+                $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
+
+                $itemOrder[] = [
+                    'examId' => $exam->id,
+                    'itemId' => $item->id,
+                    'parentId' => $parentItemId,
+                    'itemOrder' => $assignment->position
+                ];
+            }
+        }
+
+        $out = [
+            'examObjectJsonName' => self::EXAM_JSON_NAME,
+            'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
+            'itemOrderJsonName' => self::ITEM_ORDER_JSON_NAME,
+            'exam' => $exam,
+            'itemObjects' => $itemObjects,
+            'itemOrder' => $itemOrder
+        ];
+        return view('development.newsetup', $out);
+    }
+
+    public function thePreviousVersionOfshow( Exam $exam )
+    {//Item $item, ItemRequest $request )
 
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         foreach ( $questionAssignments as $qAssignment ) {
@@ -143,11 +180,15 @@ class ItemController extends Controller
             //$allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $index);
             //['maxScore' => $question->maxScore, 'name' => $question->name, 'id' => $question->id];
         }
-        //get items
-        // load all current student scores & comments
-        //       $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
+//        get items
+//         load all current student scores & comments
+        $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
+        $out = [
+            'exam' => $exam,
+        ];
 
-        return view('development.newsetup', ['exam' => $exam, 'items' => $items]);
+        return view('development.newsetup', $out);
+
     }
 
     /**

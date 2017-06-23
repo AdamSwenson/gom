@@ -30320,7 +30320,7 @@ module.exports = exporter;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getSerialNumber = exports.traverseBF = exports.traverseDF = undefined;
+exports.getSerialNumber = exports.traverseBF = exports.traverseDF = exports.getNode = undefined;
 
 var _Item = __webpack_require__(9);
 
@@ -30336,39 +30336,49 @@ var _Payload2 = _interopRequireDefault(_Payload);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var traverseDF = exports.traverseDF = function traverseDF(root, callback) {
-    // this is a recursive and immediately-invoking function
-    (function recurse(currentNode) {
-        // step 2
-        for (var i = 0, length = currentNode.children.length; i < length; i++) {
-            //if we are at the exam or at the last child, call
-            //the callback and return the node
-            //todo Not sure why this is here....
-            // if ( callback( currentNode ) ) {
-            //     return currentNode;
-            // }
-            // else {
-            // step 3
-            // iterate through the node's children
-            // calling the recursive function on each
-            recurse(currentNode.children[i]);
-            // }
-        }
-        // step 4
-        //We are out of children to cycle through. We can call the callback
-        //node. If the callback returns true, we return the node
-        if (callback(currentNode)) {
-            window.console.log('orderings', 'recurse', 50, 'FOUND IT!', currentNode);
-            return currentNode;
-        }
-
-        // step 1
-    })(root);
+var getNode = exports.getNode = function getNode(state, serialNumber) {
+    return function (state, serialNumber) {
+        var callback = function callback(node) {
+            if (!callback.found) callback.found = [];
+            // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+            if (node.data === serialNumber) {
+                callback.found.push(node);
+                // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                return true;
+            }
+            return false;
+        };
+        traverseDF(state.itemMap, callback);
+        var result = callback.found[0];
+        return result;
+    }(state, serialNumber);
 }; /**
     * Created by adam on 6/9/17.
     */
 
 // import IModel from './IModel';
+var traverseDF = exports.traverseDF = function traverseDF(root, callback) {
+    // this is a recursive and immediately-invoking function
+    (function recurse(currentNode) {
+        // step 2
+        for (var i = 0, length = currentNode.children.length; i < length; i++) {
+            // step 3
+            // iterate through the node's children
+            // calling the recursive function on each
+            recurse(currentNode.children[i]);
+        }
+        // step 4
+        //We are out of children to cycle through. We can call the callback
+        //node. If the callback returns true, we return the node
+        if (callback(currentNode)) {
+            // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
+            return currentNode;
+        }
+
+        // step 1
+    })(root);
+};
+
 var traverseBF = exports.traverseBF = function traverseBF(root, callback) {
     var queue = [];
     queue.push(root);
@@ -51199,7 +51209,7 @@ exports.default = {
             _this.$emit('items-ready');
             //                var qList = document.getElementsByClassName( 'card-list' );
             var qList = document.getElementById('card-list');
-            var editableList = Sortable.create(qList, _this.options);
+            //                var editableList = Sortable.create( qList, this.options );
         });
     },
 
@@ -51218,6 +51228,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.default = function (store) {
     // Called after every mutation.
     // The mutation comes in the format of { type, payload }.
@@ -51229,13 +51241,18 @@ exports.default = function (store) {
 
         //Check if mutateSilently has been set
         //If it has, respect its privacy
+        // window.console.log( 'apiPlugin', '', 234, mutation );
 
-        window.console.log('apiPlugin', '', 234, mutation);
         if (!shouldTellServerAboutThis(mutation)) return false;
-        window.console.log('apiPlugin', '', 236, mutation);
+        // window.console.log( 'apiPlugin', '', 236, mutation );
         var item = payload.getStoredObject(store);
 
         switch (type) {
+
+            case mTypes.insertNodeIntoOrder:
+                updateItemsOrderNEW(store);
+                break;
+
             /**
              * This mutation type indicates that we are supposed to ask
              * the server to create something for us
@@ -51376,7 +51393,59 @@ var errorHandling = function errorHandling(error) {
     console.log(error.config);
 };
 
+var handleItemResponse = function handleItemResponse(store, item, response) {
+    // return new Promise( ( resolve, reject ) => {
+    _Item2.default.fillableProps.forEach(function (p) {
+        if (p !== 'index') {
+            if (Object.keys(response.data).includes(p)) {
+                store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                    obj: item,
+                    updateProp: p,
+                    updateVal: response.data[p],
+                    mutateSilently: true
+                }));
+            }
+        }
+    });
+
+    _.forEach(_Item2.default.aliasMap, function (v, k) {
+        if (Object.keys(response.data).includes(k)) {
+            store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                obj: item,
+                updateProp: v,
+                updateVal: response.data[k],
+                mutateSilently: true
+            }));
+        }
+    });
+    // resolve();
+    // } );
+};
+
+var handleExamResponse = function handleExamResponse(store, item, response) {
+    return new Promise(function (resolve, reject) {
+        if (typeof item.index !== 'undefined' && item.index === 0) {
+            _Exam2.default.fillableProps.forEach(function (p) {
+                if (p !== 'index') {
+                    // window.console.log('apiPlugin', 50, p);
+                    if (Object.keys(response.data).includes(p)) {
+                        var jsProp = p === 'max_score' ? 'maxScore' : p;
+                        store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                            index: item.index,
+                            updateProp: jsProp,
+                            updateVal: response.data[p],
+                            mutateSilently: true
+                        }));
+                    }
+                }
+            });
+            resolve();
+        }
+    });
+};
+
 var handleResponse = function handleResponse(store, item, response) {
+    // return new Promise( ( resolve, reject ) => {
     // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
     if (typeof response.data === 'undefined') return false;
 
@@ -51385,52 +51454,25 @@ var handleResponse = function handleResponse(store, item, response) {
 
         switch (item.kind) {
             case 'exam':
-                if (typeof item.index !== 'undefined' && item.index === 0) {
-                    _Exam2.default.fillableProps.forEach(function (p) {
-                        if (p !== 'index') {
-                            // window.console.log('apiPlugin', 50, p);
-                            if (Object.keys(response.data).includes(p)) {
-                                var jsProp = p === 'max_score' ? 'maxScore' : p;
-                                store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
-                                    index: item.index,
-                                    updateProp: jsProp,
-                                    updateVal: response.data[p],
-                                    mutateSilently: true
-                                }));
-                            }
-                        }
-                    });
-                }
+                handleExamResponse(store, item, response);
+                // .then( ( resolve ) => {
+                //     resolve();
+                // } );
                 break;
 
             case 'item':
-                _Item2.default.fillableProps.forEach(function (p) {
-                    if (p !== 'index') {
-                        if (Object.keys(response.data).includes(p)) {
-                            store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
-                                obj: item,
-                                updateProp: p,
-                                updateVal: response.data[p],
-                                mutateSilently: true
-                            }));
-                        }
-                    }
-                });
+                handleItemResponse(store, item, response);
+                // resolve();
+                // .then( ( resolve ) => {
+                //     resolve();
+                // } );
 
-                _.forEach(_Item2.default.aliasMap, function (v, k) {
-                    if (Object.keys(response.data).includes(k)) {
-                        store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
-                            index: item.index,
-                            updateProp: v,
-                            updateVal: response.data[k],
-                            mutateSilently: true
-                        }));
-                    }
-                });
                 break;
             default:
+                reject();
         }
     }
+    // } );
 };
 
 /**
@@ -51480,9 +51522,12 @@ var updateItem = function updateItem(store, item) {
  */
 var createItem = function createItem(store, item) {
     if (item && item.isNew()) {
-        // if ( !item instanceof Exam ) {
-        item.requestVersion = REQUEST_VERSION;
-        item.examId = store.getters.currentExam.id;
+        var exam = store.getters.currentExam;
+        var toSend = _extends({}, item, {
+            requestVersion: REQUEST_VERSION,
+            examId: exam.id
+        });
+
         // }
 
         //id === 'undefined' || payload.obj.id === -1)
@@ -51490,7 +51535,7 @@ var createItem = function createItem(store, item) {
         //This is replaced with the real id once one is returned from the server.
         //Thus, this request is to create the item.
         //When the server has done this, it will send back an id
-        window.axios.post('items', item).then(function (response) {
+        window.axios.post('items', toSend).then(function (response) {
             handleResponse(store, item, response);
         }).catch(function (error) {
             errorHandling(error);
@@ -51502,11 +51547,36 @@ var createItem = function createItem(store, item) {
  * Asks the server to update the order of items
  * @param store
  */
+var updateItemsOrderNEW = function updateItemsOrderNEW(store) {
+    var ord = store.getters.getOrderForSync;
+    // let sortedIds = store.getters.getSortedIds;
+    var exam = store.getters.currentExam;
+
+    var payload = {
+        examId: exam.id,
+        requestVersion: REQUEST_VERSION,
+        order: ord
+    };
+
+    window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
+
+    var route = 'items/' + exam.id + '/order';
+    window.axios.post(route, payload).then(function (response) {
+        window.console.log('apiPlugin', '#### SERVER SAYS ####', 169, response);
+        //  handleResponse(store, items, response);
+    }).catch(function (error) {
+        errorHandling(error);
+    });
+};
+
+/**
+ * Asks the server to update the order of items
+ * @param store
+ */
 var updateItemsOrder = function updateItemsOrder(store) {
     var items = store.getters.getAllItems;
     var examId = store.getters.currentExam.id;
     //if(typeof exam === 'undefined') return false;
-
     var payload = {
         examId: examId,
         requestVersion: REQUEST_VERSION,
@@ -51522,7 +51592,7 @@ var updateItemsOrder = function updateItemsOrder(store) {
         }
     }
 
-    window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
+    // window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
 
     if (items && examId) {
         var route = 'items/' + examId + '/order';
@@ -51800,10 +51870,7 @@ exports.default = Question;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.setupOnMount = exports.parseItemData = exports.parseExamData = exports.updateExam = exports.createExam = undefined;
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _mutationTypes = __webpack_require__(1);
 
@@ -51837,6 +51904,10 @@ var _controller = __webpack_require__(112);
 
 var api = _interopRequireWildcard(_controller);
 
+var _JsonReaders = __webpack_require__(550);
+
+var _JsonReaders2 = _interopRequireDefault(_JsonReaders);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -51847,160 +51918,115 @@ window._ = __webpack_require__(29);
 
 var standardTimeout = 1000;
 
+var EXAM_JSON_NAME = 'loadedExam';
+var ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
+var ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+
 // export const actions = {
+module.exports = _extends({}, _JsonReaders2.default, {
+    /**
+     * Creates a new exam on the client, sets
+     * it as the active exam, and requests an
+     * exam id from the server
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    createExam: function createExam(_ref, payload) {
+        var state = _ref.state,
+            commit = _ref.commit;
 
-/**
- * Creates a new exam on the client, sets
- * it as the active exam, and requests an
- * exam id from the server
- * @param state
- * @param commit
- * @param payload
- */
-var createExam = exports.createExam = function createExam(_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
+        return new Promise(function (resolve, reject) {
+            //instantiate the new exam
+            var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
+            //set it in the items list
+            //this will call the api lister.
+            commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
+            //set it as active (in case anything is depending on the older structure)
+            // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+            resolve();
+        });
+    },
 
-    return new Promise(function (resolve, reject) {
-        //instantiate the new exam
-        var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
-        //set it in the items list
-        //this will call the api lister.
-        commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
-        //set it as active (in case anything is depending on the older structure)
-        // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
-        resolve();
-    });
-};
+    /**
+     * The payload should contain the exam that is presently set
+     * as the active exam, but with updated properties. This
+     * will replace the exam stored, so that vue can see the change
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    updateExam: function updateExam(_ref2, payload) {
+        var state = _ref2.state,
+            commit = _ref2.commit;
 
-/**
- * The payload should contain the exam that is presently set
- * as the active exam, but with updated properties. This
- * will replace the exam stored, so that vue can see the change
- * @param state
- * @param commit
- * @param payload
- */
-var updateExam = exports.updateExam = function updateExam(_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
+        //set it as active
+        commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+    },
 
-    //set it as active
-    commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-};
+    /**
+     * These are actions which different parts of the gom
+     * call to when they initialize.
+     *
+     */
+    /** This is what gets run when the root instance is mounted for the setup page */
+    setupOnMount: function setupOnMount(_ref3) {
+        var state = _ref3.state,
+            commit = _ref3.commit,
+            dispatch = _ref3.dispatch;
 
-var parseExamData = exports.parseExamData = function parseExamData(_ref3) {
-    var state = _ref3.state,
-        commit = _ref3.commit,
-        dispatch = _ref3.dispatch,
-        getters = _ref3.getters;
+        //wrap in promise? probably not since this doesn't yet hit the server
+        commit('initializeItemStore', _Payload2.default.factory({ mutateSilently: true }));
+        dispatch('parseExamData');
+        dispatch('parseItemObjectData');
+        dispatch('parseItemOrderData');
+        // .then( () => {
+        //
+        // } ).then( () => {
+        //
+        // } );
+    }
+});
 
-    return new Promise(function (resolve, reject) {
-        //Check and see if the server gave us data to start off with.
-        //Grab any preloaded data from the div on the page where the server would've put it
-        var examData = JSON.parse(document.getElementById('loadedExam').getAttribute('data'));
-        window.console.log('actions', 'parseExamData', 103, examData);
-        //there was exam data, load an exam from it
-        if (typeof examData != 'undefined') {
+// export const parseItemData = ( { state, commit, dispatch } ) => {
+//     return new Promise( ( resolve, reject ) => {
+//         //Check and see if the server gave us data to start off with.
+//         //Grab any pre loaded data from the div on the page where the server would've put it
+//         let data = JSON.parse( document.getElementById( 'loadedItems' ).getAttribute( 'data' ) );
+//         // window.console.log('actions', 'parseItemData', 128, data);
+//
+//         //if there was item data, load items from it
+//         if ( typeof data !== 'undefined' ) {
+//             _.forEach( data, function ( d, i ) {
+//                 d.index = i;
+//                 let item = Item.factory( d ); //.factory( {id: id, index: index} );
+//                 //set it in the items list without calling the api listener
+//                 commit( mTypes.setItem, Payload.factory( {
+//                     obj: item,
+//                     mutateSilently: true
+//                 } ) );
+//
+//                 //todo how to find the parent?
+//                 let pl = Payload.factory( {
+//                     index: i,
+//                     obj: item,
+//                     parent: exam,
+//                     mutateSilently: true
+//                 } );
+//
+//                 dispatch( aTypes.addItemToOrder, pl );
+//             } );
+//         } else {
+//
+//             dispatch( aTypes.createItem ).then( () => {
+//                 return true;
+//             } );
+//         }
+//
+//         resolve();
+//     } );
+// };
 
-            //We need to do work on the exam in two places.
-            //First, we will update the stored object properties.
-            //Make sure the index is what we expect
-            examData.index = 0;
-
-            var examSerialNumber = state.items.items[0].serialNumber;
-            //window.console.log( 'actions', 'esn', 117, examSerialNumber );
-
-            _Exam2.default.fillableProps.forEach(function (prop) {
-                window.console.log('actions', 'prop', 119, prop, examData[prop]);
-                if (examData[prop]) {
-                    commit(mTypes.updateItem, _Payload2.default.factory({
-                        mutateSilently: true,
-                        index: 0,
-                        updateProp: prop,
-                        updateVal: examData[prop]
-                    }));
-                }
-            });
-        }
-
-        //Second, we need to make sure that everything is still
-        //cool with the ordering.
-        //In particular we need to be sure that the serial numbers
-        //still correspond
-        var ex = state.items.items[0];
-        var esn = ex.serialNumber;
-        var im = getters.getRootNode;
-        if (im.parent === esn && im.data === esn) return true;
-        //if they've diverged, update them
-        commit('setRootNode', _Payload2.default.factory({ obj: ex }));
-
-        resolve();
-    });
-};
-
-var parseItemData = exports.parseItemData = function parseItemData(_ref4) {
-    var state = _ref4.state,
-        commit = _ref4.commit,
-        dispatch = _ref4.dispatch;
-
-    return new Promise(function (resolve, reject) {
-        //Check and see if the server gave us data to start off with.
-        //Grab any pre loaded data from the div on the page where the server would've put it
-        var data = JSON.parse(document.getElementById('loadedItems').getAttribute('data'));
-        // window.console.log('actions', 'parseItemData', 128, data);
-
-        //if there was item data, load items from it
-        if (typeof data !== 'undefined') {
-            _.forEach(data, function (d, i) {
-                d.index = i;
-                var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
-                //set it in the items list without calling the api listener
-                commit(mTypes.setItem, _Payload2.default.factory({
-                    obj: item,
-                    mutateSilently: true
-                }));
-
-                //todo how to find the parent?
-                var pl = _Payload2.default.factory({
-                    index: i,
-                    obj: item,
-                    parent: exam,
-                    mutateSilently: true
-                });
-
-                dispatch(aTypes.addItemToOrder, pl);
-            });
-        } else {
-
-            dispatch(aTypes.createItem).then(function () {
-                return true;
-            });
-        }
-
-        resolve();
-    });
-};
-
-/**
- * These are actions which different parts of the gom
- * call to when they initialize.
- *
- */
-/** This is what gets run when the root instance is mounted for the setup page */
-var setupOnMount = exports.setupOnMount = function setupOnMount(_ref5) {
-    var state = _ref5.state,
-        commit = _ref5.commit,
-        dispatch = _ref5.dispatch;
-
-    //wrap in promise? probably not since this doesn't yet hit the server
-    commit('initializeItemStore', _Payload2.default.factory({ mutateSilently: true }));
-    dispatch('parseExamData').then(function () {
-        dispatch('parseItemData');
-    }).then(function () {
-        // emit('items-ready');
-    });
-};
 
 //if there already is a root, update its serial number
 //Now update the root with the exam's serial number
@@ -53743,7 +53769,12 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends2;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * This ties together the two types of storage for
+                                                                                                                                                                                                                                                                   * items
+                                                                                                                                                                                                                                                                   */
 
 var _mutationTypes = __webpack_require__(1);
 
@@ -53787,10 +53818,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * This ties together the two types of storage for
-                                                                                                                                                                                                                   * items
-                                                                                                                                                                                                                   */
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var Vue = __webpack_require__(36);
 var _ = window._ = __webpack_require__(29);
@@ -53817,7 +53845,19 @@ var helpers = {
         //     //get the item
         //     return state.items[payload.index];
         // }
+    },
+    getItem: function getItem(state, id) {
+        return function (state, id) {
+            var r = state.items.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+                ;
+            });
+            return r[0];
+        }(state, id);
     }
+
 };
 
 /**
@@ -53862,7 +53902,7 @@ var state = Object.assign({}, _items2.default.state, _items4.default.state); ///
  *
  * @type {{getSortedIds: ((p1:*, p2?:*))}}
  */
-var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, getters) {
+var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_extends2 = {}, _defineProperty(_extends2, gTypes.getSortedIds, function (state, getters) {
     //get the serial number map
     //we explicitly use the getter rather than
     //just looking in the state because this
@@ -53874,13 +53914,15 @@ var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, get
     // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
 
     var updater = function updater(currentNode) {
+        currentNode = _extends({}, currentNode);
         //Look up the id
         var isn = currentNode.data;
 
         //ignore the exam
         if (isn === 0) return true;
+        var item = getters.getItemBySerialNumber(isn);
 
-        var item = getters[gTypes.getItemBySerialNumber](state, getters, isn);
+        // let item = getters[ gTypes.getItemBySerialNumber ]( state, getters, isn );
         // window.console.log( 'items', 'updater isn item', 144, isn, item);
         if (!_.isUndefined(item)) {
             //we don't check if id is defined.
@@ -53889,8 +53931,8 @@ var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, get
             currentNode.dataType = 'id';
             // window.console.log( 'items', 'recurse', 150, currentNode);
         }
+        return currentNode;
     };
-
     // window.console.log( 'items', 'getSortedIds', 123, map);
     // //transform to ids
     //map is the exam represented as a Node object
@@ -53908,7 +53950,40 @@ var getters_both = _defineProperty({}, gTypes.getSortedIds, function (state, get
         updater(currentNode);
     })(map);
     return map;
-});
+}), _defineProperty(_extends2, 'getOrderForSync', function getOrderForSync(state, getters) {
+    var out = [];
+    var map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
+    window.console.log('items', 'getOrderForSync', 162, map);
+    // if ( map.length > 0 ) {
+
+    //map is the exam represented as a Node object
+    // Doing this depth first
+    // this is a recurse and immediately-invoking function
+    (function recurse(currentNode) {
+        var cnt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+        // window.console.log( 'items', 'recurse', 129, currentNode);
+        // step 2
+        for (var i = 0; i < currentNode.children.length; i++) {
+            // step 3
+            recurse(currentNode.children[i], i);
+        }
+        // window.console.log( 'items', 'recurse', 153, currentNode );
+        // step 4
+        var exam = getters.currentExam;
+        var item = getters.getItemBySerialNumber(currentNode.data);
+        var parent = getters.getItemBySerialNumber(currentNode.parent);
+
+        out.push({
+            examId: exam.id,
+            itemId: item.id,
+            parentId: parent.id,
+            itemOrder: cnt
+        });
+    })(map);
+    // }
+    return out;
+}), _extends2));
 
 var actions = _extends({}, _items2.default.actions, _items4.default.actions, _defineProperty({}, aTypes.createItem, function (_ref, parent) {
     var state = _ref.state,
@@ -53942,7 +54017,7 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _de
 
 // const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
 // Object.assign(getters, orderGetters);//
-var getters = _extends({}, getters_both, _items4.default.getters, _items2.default.getters);
+// const getters = { ...getters_both, ...Orderings.getters, ...Objects.getters };
 
 window.console.log('ww items', 'f ************ getters', 112, getters, _items2.default, _items4.default);
 // };
@@ -53956,6 +54031,43 @@ var mutations = _extends({}, _items2.default.mutations, _items4.default.mutation
         var exam = new _Exam2.default();
         state.items[0] = exam;
         state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
+    },
+
+    directLoadOrderFromJson: function directLoadOrderFromJson(state, payload) {
+
+        if (typeof payload.obj !== 'undefined') {
+            _.forEach(payload.obj, function (d, i) {
+                window.console.log('JsonReaders', '', 34, d, i);
+
+                var item = function (state, d) {
+                    return helpers.getItem(state, d.itemId);
+                }(state, d);
+                window.console.log('items', 'state', 259, state);
+                window.console.log('items', '', 259, item);
+                //if the parent is null, these are top level
+                //and should be added as children of the exam.
+                //if the parent is null, we add the exam instead
+                var parentNode = d.parentId === null ? state.itemMap : function (state, d) {
+                    var parentItem = helpers.getItem(state, d.parentId);
+                    return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
+                }(state, d);
+
+                var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
+                var index = d.itemOrder;
+
+                window.console.log('items', 'direct load itemNode', 256, itemNode);
+                window.console.log('items', 'direct load item', 256, item);
+                window.console.log('items', 'direct load parentNode', 256, parentNode);
+
+                //if an index was specified, splice it in at the index
+                if (!_.isUndefined(index)) {
+                    parentNode.children.splice(index, 0, itemNode);
+                } else {
+                    //otherwise just push it on the end
+                    parentNode.children.push(itemNode);
+                }
+            });
+        }
     }
 
 });
@@ -54223,15 +54335,18 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         }
     }
 }), _defineProperty(_module$exports, gTypes.getItemById, function (state, getters, rootState, id) {
-    // window.console.log( 'items', 'getItemById', 148, state, id );
-    return function (state, id) {
-        var r = state.items.filter(function (i) {
-            if (i.id === id) {
-                return i;
-            }
-        });
-        return r[0];
-    }(state, id);
+    return function (id) {
+        // [gTypes.getItemById]: function ( state, getters, rootState, id ) {
+        // window.console.log( 'items', 'getItemById', 148, state, id );
+        return function (state, id) {
+            var r = state.items.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, id);
+    };
 }), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, rootState, index) {
     return function (index) {
 
@@ -54653,26 +54768,32 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         _vue2.default.set(itm, payload.updateProp, payload.updateVal);
     }
 }), _defineProperty(_module$exports, mTypes.updateItemSilently, function (state, payload) {
-    var itm = getItemFromPayload(state, payload);
-    if (typeof itm !== 'undefined') {
+    return new Promise(function (resolve, reject) {
+        var itm = getItemFromPayload(state, payload);
+        // if ( typeof itm === 'undefined' ) return reject();
         //Set the value so vue can see it
         _vue2.default.set(itm, payload.updateProp, payload.updateVal);
-    }
+        return resolve();
+    });
 }), _defineProperty(_module$exports, mTypes.updateOrder, function (state, payload) {
-    if (state.items.length === 0) return false;
-    // console.log(mTypes.updateOrder, state, payload);
-    // this just requires us to match list indexes w the
-    //property of the item
-    for (var i = 0; i < state.items.length; i++) {
-        var item = state.items[i];
-        // window.console.log('items', 'updateOrder', 87, i, item);
-        if (typeof item !== 'undefined') {
-            //set the property on the object
-            _vue2.default.set(item, 'index', i);
-            //set it in the array with vue
-            _vue2.default.set(state.items, i, item);
+    return new Promise(function (resolve, reject) {
+
+        // if ( state.items.length === 0 ) return reject();
+        // console.log(mTypes.updateOrder, state, payload);
+        // this just requires us to match list indexes w the
+        //property of the item
+        for (var i = 0; i < state.items.length; i++) {
+            var item = state.items[i];
+            // window.console.log('items', 'updateOrder', 87, i, item);
+            if (typeof item !== 'undefined') {
+                //set the property on the object
+                _vue2.default.set(item, 'index', i);
+                //set it in the array with vue
+                _vue2.default.set(state.items, i, item);
+            }
         }
-    }
+        resolve();
+    });
 }), _module$exports);
 
 // /**
@@ -54845,10 +54966,12 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         commit = _ref.commit,
         getters = _ref.getters;
 
-    // window.console.log( 'items.order.actions', 'pppp', 31, payload );
+    window.console.log('items.order.actions', 'pppp', 31, payload);
     return new Promise(function (resolve, reject) {
         var obj = payload.obj,
-            parent = payload.parent;
+            parent = payload.parent,
+            index = payload.index,
+            mutateSilently = payload.mutateSilently;
 
         //Sort out whether obj and parent are nodes or items
 
@@ -54860,7 +54983,13 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         var parentNode = getters.getItemNodeFromOrder(parentSerialNumber);
         // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
 
-        var pl = _Payload2.default.factory({ objNode: newNode, parentNode: parentNode });
+
+        var pl = _Payload2.default.factory({
+            objNode: newNode,
+            parentNode: parentNode,
+            index: index,
+            mutateSilently: mutateSilently
+        });
         // window.console.log( 'items.order.actions', 'pl', 47, pl );
 
         commit(mTypes.insertNodeIntoOrder, pl);
@@ -54933,23 +55062,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var _ = window._ = __webpack_require__(29);
 var Vue = __webpack_require__(36);
 
-var getNode = function getNode(state, serialNumber) {
-    return function (state, serialNumber) {
-        var callback = function callback(node) {
-            if (!callback.found) callback.found = [];
-            // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-            if (node.data === serialNumber) {
-                callback.found.push(node);
-                // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-                return true;
-            }
-            return false;
-        };
-        (0, _NodeTools.traverseDF)(state.itemMap, callback);
-        var result = callback.found[0];
-        return result;
-    }(state, serialNumber);
-};
+// const  getNode = (state, serialNumber) => {
+//     return (function ( state, serialNumber ) {
+//         let callback = function ( node ) {
+//             if ( !callback.found ) callback.found = [];
+//             // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+//             if ( node.data === serialNumber ) {
+//                 callback.found.push( node );
+//                 // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+//                 return true;
+//             }
+//             return false;
+//         };
+//         traverseDF( state.itemMap, callback );
+//         let result = callback.found[ 0 ];
+//         return result;
+//     })( state, serialNumber )
+// }
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
     return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
@@ -54957,7 +55086,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
     return function (serialNumber) {
 
         // [gTypes.getItemNodeFromOrder]: function( state, getters,   rootState,  serialNumber )  {
-        return getNode(state, serialNumber);
+        return (0, _NodeTools.getNode)(state, serialNumber);
         // return (function ( state, serialNumber ) {
         //     let callback = function ( node ) {
         //         if ( !callback.found ) callback.found = [];
@@ -54979,13 +55108,13 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
     // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
     var level = 0;
 
-    var node = getNode(state, serialNumber);
+    var node = (0, _NodeTools.getNode)(state, serialNumber);
     if (node) {
         while (node.parent !== node.data) {
             var parent = node.parent;
             //get the parent node
             //set it as node so that we operate on it next time
-            node = getNode(state, parent);
+            node = (0, _NodeTools.getNode)(state, parent);
             //increment level
             level += 1;
         }
@@ -55008,10 +55137,10 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
     // })( serialNumber );
 }), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, rootState, serialNumber) {
     //look up the node whose serial number we've just  been handed.
-    var node = getNode(state, serialNumber);
+    var node = (0, _NodeTools.getNode)(state, serialNumber);
     //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
     if (node) {
-        var parent = getNode(state, node.parent);
+        var parent = (0, _NodeTools.getNode)(state, node.parent);
         // let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
         if (parent) {
             for (var index = 0; index < parent.children.length; index++) {
@@ -55600,31 +55729,36 @@ var checkExpectedType = function checkExpectedType(toBeSet) {
 };
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
-    window.console.log('items.order.mutations', 'insertNodeIntoOrder', 21, payload);
+    return new Promise(function (resolve, reject) {
 
-    var index = payload.index,
-        objNode = payload.objNode,
-        parentNode = payload.parentNode;
+        window.console.log('items.order.mutations', 'insertNodeIntoOrder', 21, payload);
 
-    //type check
+        var index = payload.index,
+            objNode = payload.objNode,
+            parentNode = payload.parentNode;
 
-    if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
-        //Try out the un type checked properties to see if they have
-        //nodes
-        var obj = payload.obj,
-            parent = payload.parent;
-        //if not, oh well
+        //type check
 
-        return false;
-    }
+        if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
+            //Try out the un type checked properties to see if they have
+            //nodes
+            var obj = payload.obj,
+                parent = payload.parent;
+            //if not, oh well
 
-    //if an index was specified, splice it in at the index
-    if (!_.isUndefined(index)) {
-        return parentNode.children.splice(index, 0, objNode);
-    }
+            return false;
+        }
 
-    //otherwise just push it on the end
-    return parentNode.children.push(objNode);
+        //if an index was specified, splice it in at the index
+        if (!_.isUndefined(index)) {
+            parentNode.children.splice(index, 0, objNode);
+            return resolve();
+        }
+
+        //otherwise just push it on the end
+        parentNode.children.push(objNode);
+        return resolve();
+    });
 }), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
     var obj = payload.obj,
         parent = payload.parent;
@@ -78694,6 +78828,196 @@ if(false) {
  // When the module is disposed, remove the <style> tags
  module.hot.dispose(function() { update(); });
 }
+
+/***/ }),
+/* 550 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Student = __webpack_require__(78);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Exam = __webpack_require__(18);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = __webpack_require__(9);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Node = __webpack_require__(37);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _controller = __webpack_require__(112);
+
+var api = _interopRequireWildcard(_controller);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 6/22/17.
+ */
+
+window._ = __webpack_require__(29);
+
+var Vue = __webpack_require__(36);
+
+var standardTimeout = 1000;
+
+var EXAM_JSON_NAME = 'loadedExam';
+var ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
+var ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+
+module.exports = {
+
+    parseItemOrderData: function parseItemOrderData(_ref) {
+        var state = _ref.state,
+            commit = _ref.commit,
+            dispatch = _ref.dispatch,
+            getters = _ref.getters;
+
+
+        //The data needs to be in determinate order for this to work
+        var data = JSON.parse(document.getElementById(ITEM_ORDER_JSON_NAME).getAttribute('data'));
+
+        window.console.log('actions', 'parseItemORDERData', 128, data, getters);
+        var pl = _Payload2.default.factory({ obj: data, mutateSilently: true });
+        commit('directLoadOrderFromJson', pl);
+
+        // //if there was item data, load items from it
+        // if ( typeof data !== 'undefined' ) {
+        //     _.forEach( data, function ( d, i ) {
+        //         window.console.log( 'JsonReaders', '', 34, d, i );
+        //
+        //         let item = getters.getItemById( d.itemId );
+        //         //if the parent is null, these are top level
+        //         //and should be added as children of the exam
+        //         let parent = ( d.parentId === null ) ? getters.currentExam : getters.getItemById( d.parentId );
+        //
+        //         let pl = Payload.factory( {
+        //             obj: item,
+        //             parent: parent,
+        //             index: d.itemOrder,
+        //             mutateSilently: true
+        //         } );
+        //
+        //         window.console.log( 'JsonReaders', 'preDispatch', 39, pl );
+        //         dispatch( aTypes.addItemToOrder, pl );
+        //     } );
+        // }
+        //
+        // dispatch( aTypes.addItemToOrder , pl);
+        //
+        // var queue = [];
+        // queue.push( root );
+        // let currentTree = queue.pop();
+        //
+        // while (currentTree) {
+        //     for (var i = 0, length = currentTree.children.length; i < length; i++) {
+        //         queue.push( currentTree.children[ i ] );
+        //     }
+        //
+        //     callback( currentTree );
+        //     currentTree = queue.pop();
+        // }
+    },
+
+    parseExamData: function parseExamData(_ref2) {
+        var state = _ref2.state,
+            commit = _ref2.commit,
+            dispatch = _ref2.dispatch,
+            getters = _ref2.getters;
+
+        return new Promise(function (resolve, reject) {
+            //Check and see if the server gave us data to start off with.
+            //Grab any preloaded data from the div on the page where the server would've put it
+            var examData = JSON.parse(document.getElementById(EXAM_JSON_NAME).getAttribute('data'));
+            window.console.log('actions', 'parseExamData', 103, examData);
+            //there was exam data, load an exam from it
+            if (typeof examData != 'undefined') {
+
+                //We need to do work on the exam in two places.
+                //First, we will update the stored object properties.
+                //Make sure the index is what we expect
+                examData.index = 0;
+
+                var examSerialNumber = state.items.items[0].serialNumber;
+                //window.console.log( 'actions', 'esn', 117, examSerialNumber );
+
+                _Exam2.default.fillableProps.forEach(function (prop) {
+                    // window.console.log( 'actions', 'prop', 119, prop, examData[ prop ] );
+                    if (examData[prop]) {
+                        commit(mTypes.updateItem, _Payload2.default.factory({
+                            mutateSilently: true,
+                            index: 0,
+                            updateProp: prop,
+                            updateVal: examData[prop]
+                        }));
+                    }
+                });
+            }
+            //
+            // //Second, we need to make sure that everything is still
+            // //cool with the ordering.
+            // //In particular we need to be sure that the serial numbers
+            // //still correspond
+            // let ex = state.items.items[ 0 ];
+            // let esn = ex.serialNumber;
+            // let im = getters.getRootNode;
+            // if ( im.parent === esn && im.data === esn ) return true;
+            // //if they've diverged, update them
+            // commit( 'setRootNode', Payload.factory( { obj: ex } ) );
+            //
+            return resolve();
+        });
+    },
+
+    parseItemObjectData: function parseItemObjectData(_ref3) {
+        var state = _ref3.state,
+            commit = _ref3.commit,
+            dispatch = _ref3.dispatch;
+
+        return new Promise(function (resolve, reject) {
+
+            //Check and see if the server gave us data to start off with.
+            //Grab any pre loaded data from the div on the page where the server would've put it
+            var data = JSON.parse(document.getElementById(ITEM_OBJECT_JSON_NAME).getAttribute('data'));
+            window.console.log('actions', 'parseItemObjectData', 128, data);
+
+            //if there was item data, load items from it
+            if (typeof data !== 'undefined') {
+                _.forEach(data, function (d, i) {
+                    //d.index = i;
+                    var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
+                    //set it in the items list without calling the api listener
+                    commit(mTypes.setItem, _Payload2.default.factory({
+                        obj: item,
+                        mutateSilently: true
+                    }));
+                });
+                resolve();
+            }
+        });
+    }
+};
 
 /***/ })
 /******/ ]);

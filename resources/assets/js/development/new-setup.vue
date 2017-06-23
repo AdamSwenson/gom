@@ -144,7 +144,7 @@
                 this.$emit( 'items-ready' );
 //                var qList = document.getElementsByClassName( 'card-list' );
                 var qList = document.getElementById( 'card-list' );
-                var editableList = Sortable.create( qList, this.options );
+//                var editableList = Sortable.create( qList, this.options );
             } );
         },
 

@@ -14,25 +14,25 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
-import { traverseDF, traverseBF, getSerialNumber } from '../../models/NodeTools'
+import { traverseDF, traverseBF, getSerialNumber , getNode} from '../../models/NodeTools'
 
-const  getNode = (state, serialNumber) => {
-    return (function ( state, serialNumber ) {
-        let callback = function ( node ) {
-            if ( !callback.found ) callback.found = [];
-            // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-            if ( node.data === serialNumber ) {
-                callback.found.push( node );
-                // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-                return true;
-            }
-            return false;
-        };
-        traverseDF( state.itemMap, callback );
-        let result = callback.found[ 0 ];
-        return result;
-    })( state, serialNumber )
-}
+// const  getNode = (state, serialNumber) => {
+//     return (function ( state, serialNumber ) {
+//         let callback = function ( node ) {
+//             if ( !callback.found ) callback.found = [];
+//             // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+//             if ( node.data === serialNumber ) {
+//                 callback.found.push( node );
+//                 // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+//                 return true;
+//             }
+//             return false;
+//         };
+//         traverseDF( state.itemMap, callback );
+//         let result = callback.found[ 0 ];
+//         return result;
+//     })( state, serialNumber )
+// }
 
 module.exports = {
 

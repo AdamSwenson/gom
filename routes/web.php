@@ -159,10 +159,11 @@ Route::get('dev/test', 'TestController@test');
 //When we want those directly, we use the edit route
 Route::get('dev/newsetup', 'ItemController@index');
 Route::get('items/{exam}', 'ItemController@show')->name('show-exam');
-Route::put('items/{exam}/order', 'ItemController@updateOrder');
 Route::put('items/{item}', 'ItemController@update');
 Route::patch('items/{exam}', 'ItemController@updateAll');
 Route::resource('items', 'ItemController'); //, ['parameters' => [
+Route::post('items/{exam}/order', 'AssignmentController@store');
+
 //    'item' => 'exam'
 //]]);
 

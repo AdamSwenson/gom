@@ -77,7 +77,7 @@ module.exports = {
      * @param payload Expecting Item object to be in payload.obj
      */
     [ mTypes.addNewItem ]: ( state, payload ) => {
-        console.log(mTypes.addNewItem, state, payload);
+        console.log( mTypes.addNewItem, state, payload );
 
         return new Promise( ( resolve, reject ) => {
 
@@ -192,11 +192,13 @@ module.exports = {
      * @param payload
      */
     [ mTypes.updateItemSilently ]: ( state, payload ) => {
-        let itm = getItemFromPayload( state, payload );
-        if ( typeof itm !== 'undefined' ) {
+        return new Promise( ( resolve, reject ) => {
+            let itm = getItemFromPayload( state, payload );
+            // if ( typeof itm === 'undefined' ) return reject();
             //Set the value so vue can see it
             Vue.set( itm, payload.updateProp, payload.updateVal );
-        }
+            return resolve();
+        } );
     },
 
     /**
@@ -205,21 +207,24 @@ module.exports = {
      * @param payload
      */
     [mTypes.updateOrder]: ( state, payload ) => {
-        if ( state.items.length === 0 ) return false;
-        // console.log(mTypes.updateOrder, state, payload);
-        // this just requires us to match list indexes w the
-        //property of the item
-        for (let i = 0; i < state.items.length; i++) {
-            let item = state.items[ i ];
-            // window.console.log('items', 'updateOrder', 87, i, item);
-            if ( typeof item !== 'undefined' ) {
-                //set the property on the object
-                Vue.set( item, 'index', i );
-                //set it in the array with vue
-                Vue.set( state.items, i, item );
-            }
-        }
+        return new Promise( ( resolve, reject ) => {
 
+            // if ( state.items.length === 0 ) return reject();
+            // console.log(mTypes.updateOrder, state, payload);
+            // this just requires us to match list indexes w the
+            //property of the item
+            for (let i = 0; i < state.items.length; i++) {
+                let item = state.items[ i ];
+                // window.console.log('items', 'updateOrder', 87, i, item);
+                if ( typeof item !== 'undefined' ) {
+                    //set the property on the object
+                    Vue.set( item, 'index', i );
+                    //set it in the array with vue
+                    Vue.set( state.items, i, item );
+                }
+            }
+            resolve();
+        } );
     },
 
 };

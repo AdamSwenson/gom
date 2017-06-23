@@ -14,9 +14,13 @@ class CreateAssignmentsTable extends Migration
             $table->integer('item_id')->unsigned()->nullable();
             $table->integer('position', false, true);
             $table->integer('real_depth', false, true);
+            $table->integer('exam_id')->unsigned()->nullable();
             $table->softDeletes();
             $table->timestamps();
             $table->foreign('parent_id')->references('id')->on('assignments')->onDelete('set null');
+
+//            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+
         });
     }
 

@@ -90,7 +90,8 @@ module.exports = {
      * @param index
      */
     // getItemById: ( state, getters ) => ( id ) => {
-    [gTypes.getItemById]: function ( state, getters, rootState, id ) {
+    [gTypes.getItemById]: ( state, getters, rootState, id ) => (id) => {
+        // [gTypes.getItemById]: function ( state, getters, rootState, id ) {
         // window.console.log( 'items', 'getItemById', 148, state, id );
         return function ( state, id ) {
             var r = state.items.filter( function ( i ) {

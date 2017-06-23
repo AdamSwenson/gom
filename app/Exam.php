@@ -85,10 +85,14 @@ class Exam extends BaseModel
 
 
     //new props
-    public function getText(){}
+    public function getText()
+    {
+    }
 
 
-    public function getNumber(){}
+    public function getNumber()
+    {
+    }
 
 # -------------------------- Helpful methods
 
@@ -290,8 +294,36 @@ MYSQL;
 //     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
 //    }
 
+    /**
+     * If was associted with assignemtns, deletes the association
+     * and creates a new assignment
+     * If was none preexisting, creates new
+     */
+    public function resetAssignments()
+    {
+        Assignment::where('exam_id', $this->id)->delete();
+//
+//        $as = Assignment::find(1)->where('exam_id', $this->id)->first();
+//        if ( $as ) {
+//            $as->delete();
+////            dd($as);
+////            Assignment::find($as->id)->removeSubtree(true);
+//        }
+        //create an assignment
+        $this->assignment()->save(Assignment::create(['item_id' => $this->id]));
+
+    }
+
 
     #------------------------------------------------------ foreign keys
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function assignment()
+    {
+        return $this->hasOne(Assignment::class);
+    }
 
     /**
      * Classes (kumis) taking the exam

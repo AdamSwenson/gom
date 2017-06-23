@@ -11,7 +11,7 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
-import { traverseDF, traverseBF } from '../../models/NodeTools'
+import { traverseDF, traverseBF, getNode } from '../../models/NodeTools'
 
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
@@ -27,7 +27,7 @@ import Orderings from './items.order'
 const standardTimeout = 1000;
 
 const helpers = {
-    getItemFromPayload( state, payload ){
+    getItemFromPayload: ( state, payload ) => {
         return state.items[ payload.index ];
         // if (typeof payload.id !== 'undefined') {
         //     //get the item
@@ -41,8 +41,22 @@ const helpers = {
         //     //get the item
         //     return state.items[payload.index];
         // }
+    },
+    getItem : ( state, id ) => {
+        return (function ( state, id ) {
+            var r = state.items.filter( function ( i ) {
+                if ( i.id === id ) {
+                    return i;
+                }
+                ;
+            } );
+            return r[ 0 ];
+        })(state, id);
     }
+
 };
+
+
 
 /**
  * Build an input object out of an input object
@@ -79,7 +93,10 @@ const state = Object.assign( {}, Objects.state, Orderings.state );///orderState)
  *
  * @type {{getSortedIds: ((p1:*, p2?:*))}}
  */
-const getters_both = {
+const getters = {
+    ...Orderings.getters,
+    ...Objects.getters,
+
     /**
      * This takes the map of serial numbers in which
      * the ordering is represented and returns a map
@@ -101,13 +118,15 @@ const getters_both = {
         // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
 
         let updater = function ( currentNode ) {
+            currentNode = { ...currentNode };
             //Look up the id
             let isn = currentNode.data;
 
             //ignore the exam
             if ( isn === 0 ) return true;
+            let item = getters.getItemBySerialNumber( isn );
 
-            let item = getters[ gTypes.getItemBySerialNumber ]( state, getters, isn );
+            // let item = getters[ gTypes.getItemBySerialNumber ]( state, getters, isn );
             // window.console.log( 'items', 'updater isn item', 144, isn, item);
             if ( !_.isUndefined( item ) ) {
                 //we don't check if id is defined.
@@ -116,8 +135,8 @@ const getters_both = {
                 currentNode.dataType = 'id';
                 // window.console.log( 'items', 'recurse', 150, currentNode);
             }
+            return currentNode;
         };
-
         // window.console.log( 'items', 'getSortedIds', 123, map);
         // //transform to ids
         //map is the exam represented as a Node object
@@ -135,11 +154,44 @@ const getters_both = {
             updater( currentNode );
         })( map );
         return map;
+    },
+
+    getOrderForSync: ( state, getters ) => {
+        let out = [];
+        let map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
+        window.console.log( 'items', 'getOrderForSync', 162, map);
+        // if ( map.length > 0 ) {
+
+            //map is the exam represented as a Node object
+            // Doing this depth first
+            // this is a recurse and immediately-invoking function
+            (function recurse( currentNode, cnt = 0 ) {
+                // window.console.log( 'items', 'recurse', 129, currentNode);
+                // step 2
+                for (var i = 0; i < currentNode.children.length; i++) {
+                    // step 3
+                    recurse( currentNode.children[ i ], i );
+                }
+                // window.console.log( 'items', 'recurse', 153, currentNode );
+                // step 4
+                let exam = getters.currentExam;
+                let item = getters.getItemBySerialNumber( currentNode.data );
+                let parent = getters.getItemBySerialNumber( currentNode.parent );
+
+                out.push( {
+                    examId: exam.id,
+                    itemId: item.id,
+                    parentId: parent.id,
+                    itemOrder: cnt
+                } );
+             })( map );
+        // }
+        return out;
     }
 };
 
 
-const actions= {
+const actions = {
     ...Objects.actions,
     ...Orderings.actions,
     /**
@@ -152,7 +204,7 @@ const actions= {
      * @param state
      * @param commit
      */
-    [aTypes.createItem] : ( { state, commit, dispatch, getters }, parent ) => {
+    [aTypes.createItem]: ( { state, commit, dispatch, getters }, parent ) => {
         if ( _.isUndefined( parent ) ) {
             parent = getters.currentExam;
         }
@@ -160,7 +212,7 @@ const actions= {
         //If we were passed an item to serve as the parent
         //we will use s serial number
         let item = Item.factory( { parent: parent } );
-        let pl = Payload.factory( { parent: parent, obj: item} );
+        let pl = Payload.factory( { parent: parent, obj: item } );
 
         let p = new Promise( ( resolve, reject ) => {
             commit( mTypes.addNewItem, pl );
@@ -181,10 +233,9 @@ const actions= {
 };
 
 
-
 // const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
 // Object.assign(getters, orderGetters);//
-const getters = { ...getters_both, ...Orderings.getters, ...Objects.getters };
+// const getters = { ...getters_both, ...Orderings.getters, ...Objects.getters };
 
 window.console.log( 'ww items', 'f ************ getters', 112, getters, Objects, Orderings );
 // };
@@ -196,12 +247,52 @@ const mutations = {
     ...Objects.mutations,
     ...Orderings.mutations,
 
-    initializeItemStore : (state )=>
-    {
+    initializeItemStore: ( state ) => {
         let exam = new Exam();
-        state.items[0] = exam;
+        state.items[ 0 ] = exam;
         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-    }
+    },
+
+    directLoadOrderFromJson: ( state, payload ) => {
+
+        if ( typeof payload.obj !== 'undefined' ) {
+            _.forEach( payload.obj, function ( d, i ) {
+                window.console.log( 'JsonReaders', '', 34, d, i );
+
+                let item = (( state, d ) => {
+                    return helpers.getItem( state, d.itemId )
+                })( state, d );
+                window.console.log( 'items', 'state', 259, state );
+                window.console.log( 'items', '', 259, item );
+                //if the parent is null, these are top level
+                //and should be added as children of the exam.
+                //if the parent is null, we add the exam instead
+                let parentNode = ( d.parentId === null ) ? state.itemMap : (( state, d ) => {
+                    let parentItem = helpers.getItem(state, d.parentId );
+                    return getNode( state, parentItem.serialNumber );
+                })( state, d );
+
+                let itemNode = new Node( item.serialNumber, parentNode.data );
+                let index = d.itemOrder;
+
+                window.console.log( 'items', 'direct load itemNode', 256, itemNode );
+                window.console.log( 'items', 'direct load item', 256, item );
+                window.console.log( 'items', 'direct load parentNode', 256, parentNode );
+
+
+//if an index was specified, splice it in at the index
+                if ( !_.isUndefined( index ) ) {
+                    parentNode.children.splice( index, 0, itemNode );
+                }
+                else {
+//otherwise just push it on the end
+                    parentNode.children.push( itemNode );
+
+                }
+            } );
+        }
+    },
+
 
 };
 //Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );

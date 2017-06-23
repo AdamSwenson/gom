@@ -24,27 +24,33 @@ const checkExpectedType = ( toBeSet ) => {
 
 
 module.exports = {
+
     [mTypes.insertNodeIntoOrder]: ( state, payload ) => {
-        window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+        return new Promise( ( resolve, reject ) => {
 
-        let { index, objNode, parentNode } = payload;
+            window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
 
-        //type check
-        if ( !( checkExpectedType( parentNode ) && checkExpectedType( objNode )) ) {
-            //Try out the un type checked properties to see if they have
-            //nodes
-            let { obj, parent } = payload;
-            //if not, oh well
-            return false;
-        }
+            let { index, objNode, parentNode } = payload;
 
-        //if an index was specified, splice it in at the index
-        if ( !_.isUndefined( index ) ) {
-            return parentNode.children.splice( index, 0, objNode );
-        }
+            //type check
+            if ( !( checkExpectedType( parentNode ) && checkExpectedType( objNode )) ) {
+                //Try out the un type checked properties to see if they have
+                //nodes
+                let { obj, parent } = payload;
+                //if not, oh well
+                return false;
+            }
 
-        //otherwise just push it on the end
-        return parentNode.children.push( objNode );
+            //if an index was specified, splice it in at the index
+            if ( !_.isUndefined( index ) ) {
+                parentNode.children.splice( index, 0, objNode );
+            return resolve();
+            }
+
+            //otherwise just push it on the end
+            parentNode.children.push( objNode );
+            return resolve();
+        } );
 
     },
 
@@ -70,9 +76,9 @@ module.exports = {
         //     state.itemMap = objNode;
         //  }
         // else{
-            //we can just directly update the existing node's serial numbers
-            state.itemMap.parent = obj.serialNumber;
-            state.itemMap.data = obj.serialNumber;
+        //we can just directly update the existing node's serial numbers
+        state.itemMap.parent = obj.serialNumber;
+        state.itemMap.data = obj.serialNumber;
         // }
         //if it already exists, we need to merge the children
         //of the existing exam node into the new node
