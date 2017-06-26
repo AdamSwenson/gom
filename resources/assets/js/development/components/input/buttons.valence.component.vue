@@ -1,15 +1,28 @@
 <template>
-    <div class="valence-buttons form-group ">
-            <b-button-group
-                size="sm"
-            >
-            <b-button
-            variant="primary"
-            v-on:click="setValence(valence)"
-            v-for="valence in valences" :key="valence">{{valence}}</b-button>
-        </b-button-group>
 
+
+
+    <div class="valence-buttons field ">
+          <p class="control">
+              <button type="button"
+                     class="button is-outlined is-info"
+                    v-on:click="setValence(valence)"
+                    v-for="valence in valences" :key="valence">{{valence}}
+              </button>
+          </p>
     </div>
+    <!--</div>-->
+    <!--<div class="valence-buttons form-group ">-->
+            <!--<b-button-group-->
+                <!--size="sm"-->
+            <!--&gt;-->
+            <!--<b-button-->
+            <!--variant="primary"-->
+            <!--v-on:click="setValence(valence)"-->
+            <!--v-for="valence in valences" :key="valence">{{valence}}</b-button>-->
+        <!--</b-button-group>-->
+
+    <!--</div>-->
 
         <!--<div class="btn-group" role="group">-->
 
@@ -24,13 +37,11 @@
 
 </style>
 <script>
-    import Item from '../../../models/Item'
-    import Payload from '../../../models/Payload'
-    import Comment from '../../../models/Comment'
-    import * as mTypes from '../../../store/mutation-types'
+
+    import Comment from '../../../models/Comment';
 
     export default{
-        props: ['index', 'valence'],
+        props: ['index', 'valence', 'serialNumber', 'isExam'],
 
         data: function () {
             return {}

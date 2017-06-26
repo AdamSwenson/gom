@@ -13,8 +13,12 @@ import * as gTypes from '../getter-types'
 import Payload from '../../models/Payload'
 
 const state = {
-    /** List of indexes of items for which the settings panel is visible */
+    /** List of indexes of identifiers for which the settings panel is visible */
     itemsWithSettingsVisible: [],
+
+    /** List of serial numbers of identifiers whose children are hidden */
+    itemsWithChildrenHidden: [],
+
     //The root item (the exam) is always visible, but it's settings aren't
     examSettingsVisible: false
 };
@@ -43,7 +47,16 @@ const mutations = {
                     state.itemsWithSettingsVisible.splice( index, 1 );
             }
         }
+    },
 
+    toggleChildrenVisibility : (state, payload) => {
+        if(state.itemsWithChildrenHidden.includes( payload.serialNumber )){
+            //remove the item from the list of hidden
+            let index = state.itemsWithChildrenHidden.indexOf( payload.serialNumber );
+            state.itemsWithChildrenHidden.splice( index, 1 );
+        }else{
+            state.itemsWithChildrenHidden.push(payload.serialNumber)
+        }
     },
 
     /**
@@ -76,6 +89,11 @@ const getters = {
     [gTypes.isItemSettingsVisible]: ( state, getters, rootState ) => ( serialNumber ) => {
         return state.itemsWithSettingsVisible.includes( serialNumber )
     },
+
+    isItemChildrenVisible : ( state, getters, rootState ) => ( serialNumber ) => {
+        return ! state.itemsWithChildrenHidden.includes( serialNumber )
+    },
+
 
     /**
      * Returns boolean of whether the settings pane for the exam should be showing

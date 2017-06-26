@@ -63,7 +63,7 @@
     import Item from '../../../models/Item'
     var Sortable = require( 'sortablejs' );
 
-    //    import itemCard from './itemCard.component.vue'
+    //    import itemCard from './item-card.vue'
     //    import itemAddButton from './buttons.item.add.component.vue'
 
 

@@ -228,6 +228,28 @@ const actions = {
         } );
     },
 
+    /**
+     * Emancipates an item from its parent.
+     * That is, it removes the association between an item
+     * and its parent with the result that the item is no
+     * longer present on the exam.
+     *
+     * The item and all associated score data remain intact.
+     */
+    [aTypes.removeItem] : ()=>{
+        //remove from order
+
+        //remove from objects
+    },
+
+    /**
+     * Permanently remove the item and any associated
+     * scores from the database.
+     * This should not be called to remove the item from
+     * the exam. That is done by removeItem
+     */
+    [aTypes.deleteItem] : ( ) => {}
+
 
 };
 

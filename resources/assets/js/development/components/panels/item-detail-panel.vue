@@ -48,11 +48,11 @@
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
 
+    import Exam from '../../../models/Exam'
     import Payload from '../../../models/Payload'
-
     import Item from '../../../models/Item'
+
     export default {
-//        props: ['serialNumber'],
 
         data: function () {
             return {

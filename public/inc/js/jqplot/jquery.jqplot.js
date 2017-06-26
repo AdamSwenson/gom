@@ -318,7 +318,7 @@
                 // Style attributes seemed to be still hanging around.  wierd.  Some ticks
                 // still retained a left: 0px attribute after reusing a canvas.
                 $(canvas).css({left: '', top: '', position: ''});
-                // setting size to 0 may save memory of unused canvases?
+                // setting size to 0 may save memory of old canvases?
                 canvas.width = 0;
                 canvas.height = 0;
                 $.jqplot.CanvasManager.free[idx] = true;

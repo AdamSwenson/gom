@@ -92,7 +92,7 @@
     //    import deleteButton from './buttons.item.delete.component.vue'
     //    import itemEditPane from './item.edit-pane.component.vue'
     //    import depthControl from './buttons.depth-control.component.vue'
-    //    import itemMain from './item.main.component.vue'
+    //    import itemMain from './item-main.vue'
 
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'

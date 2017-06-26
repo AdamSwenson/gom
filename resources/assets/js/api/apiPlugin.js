@@ -30,106 +30,91 @@ import Payload from '../models/Payload'
 import Exam from '../models/Exam'
 import Item from '../models/Item'
 
-const REQUEST_VERSION = 1;
+import {createItem, updateExam, updateItem, updateItemsOrderNEW} from './requests'
 
-const errorHandling = ( error ) => {
-    if ( error.response ) {
-        // The request was made, but the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log( error.response.data );
-        console.log( error.response.status );
-        console.log( error.response.headers );
-    } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log( 'Error', error.message );
-    }
-    console.log( error.config );
-};
-
-
-const handleItemResponse = ( store, item, response ) => {
-    // return new Promise( ( resolve, reject ) => {
-    Item.fillableProps.forEach( function ( p ) {
-        if ( p !== 'index' ) {
-            if ( Object.keys( response.data ).includes( p ) ) {
-                store.commit( mTypes.updateItemSilently, Payload.factory( {
-                    obj: item,
-                    updateProp: p,
-                    updateVal: response.data[ p ],
-                    mutateSilently: true
-                } ) );
-
-            }
-        }
-    } );
-
-    _.forEach( Item.aliasMap, function ( v, k ) {
-        // if ( Object.keys( response.data ).includes( k ) ) {
-        //     store.commit( mTypes.updateItemSilently, Payload.factory( {
-        //        obj:item,
-        //         updateProp: v,
-        //         updateVal: response.data[ k ],
-        //         mutateSilently: true
-        //     } ) );
-        // }
-    } );
-    // resolve();
-    // } );
-};
-
-const handleExamResponse = ( store, item, response ) => {
-    return new Promise( ( resolve, reject ) => {
-        if ( typeof item.index !== 'undefined' && item.index === 0 ) {
-            Exam.fillableProps.forEach( function ( p ) {
-                if ( p !== 'index' ) {
-                    // window.console.log('apiPlugin', 50, p);
-                    if ( Object.keys( response.data ).includes( p ) ) {
-                        let jsProp = (p === 'max_score') ? 'maxScore' : p;
-                        store.commit( mTypes.updateItemSilently, Payload.factory( {
-                            index: item.index,
-                            updateProp: jsProp,
-                            updateVal: response.data[ p ],
-                            mutateSilently: true
-                        } ) );
-                    }
-                }
-            } );
-            resolve();
-        }
-    } );
-};
-
-const handleResponse = ( store, item, response ) => {
-    // return new Promise( ( resolve, reject ) => {
-    // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
-    if ( typeof response.data === 'undefined' ) return false;
-
-    //return Item with the new id or other data loaded
-    if ( typeof response.data !== 'undefined' ) {
-
-        switch ( item.kind ) {
-            case 'exam':
-                handleExamResponse( store, item, response );
-                // .then( ( resolve ) => {
-                //     resolve();
-                // } );
-                break;
-
-            case 'item':
-                handleItemResponse( store, item, response );
-                // resolve();
-                // .then( ( resolve ) => {
-                //     resolve();
-                // } );
-
-                break;
-            default:
-                reject()
-        }
-
-    }
-    // } );
-};
+// const handleItemResponse = ( store, item, response ) => {
+//     // return new Promise( ( resolve, reject ) => {
+//     Item.fillableProps.forEach( function ( p ) {
+//         if ( p !== 'index' ) {
+//             if ( Object.keys( response.data ).includes( p ) ) {
+//                 store.commit( mTypes.updateItemSilently, Payload.factory( {
+//                     obj: item,
+//                     updateProp: p,
+//                     updateVal: response.data[ p ],
+//                     mutateSilently: true
+//                 } ) );
+//
+//             }
+//         }
+//     } );
+//
+//     _.forEach( Item.aliasMap, function ( v, k ) {
+//         // if ( Object.keys( response.data ).includes( k ) ) {
+//         //     store.commit( mTypes.updateItemSilently, Payload.factory( {
+//         //        obj:item,
+//         //         updateProp: v,
+//         //         updateVal: response.data[ k ],
+//         //         mutateSilently: true
+//         //     } ) );
+//         // }
+//     } );
+//     // resolve();
+//     // } );
+// };
+//
+// const handleExamResponse = ( store, item, response ) => {
+//     return new Promise( ( resolve, reject ) => {
+//         if ( typeof item.index !== 'undefined' && item.index === 0 ) {
+//             Exam.fillableProps.forEach( function ( p ) {
+//                 if ( p !== 'index' ) {
+//                     // window.console.log('apiPlugin', 50, p);
+//                     if ( Object.keys( response.data ).includes( p ) ) {
+//                         let jsProp = (p === 'max_score') ? 'maxScore' : p;
+//                         store.commit( mTypes.updateItemSilently, Payload.factory( {
+//                             index: item.index,
+//                             updateProp: jsProp,
+//                             updateVal: response.data[ p ],
+//                             mutateSilently: true
+//                         } ) );
+//                     }
+//                 }
+//             } );
+//             resolve();
+//         }
+//     } );
+// };
+//
+// const handleResponse = ( store, item, response ) => {
+//     // return new Promise( ( resolve, reject ) => {
+//     // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+//     if ( typeof response.data === 'undefined' ) return false;
+//
+//     //return Item with the new id or other data loaded
+//     if ( typeof response.data !== 'undefined' ) {
+//
+//         switch ( item.kind ) {
+//             case 'exam':
+//                 handleExamResponse( store, item, response );
+//                 // .then( ( resolve ) => {
+//                 //     resolve();
+//                 // } );
+//                 break;
+//
+//             case 'item':
+//                 handleItemResponse( store, item, response );
+//                 // resolve();
+//                 // .then( ( resolve ) => {
+//                 //     resolve();
+//                 // } );
+//
+//                 break;
+//             default:
+//                 reject()
+//         }
+//
+//     }
+//     // } );
+// };
 
 /**
  * Returns true if the mutation needs to
@@ -150,164 +135,13 @@ const shouldTellServerAboutThis = ( mutation ) => {
 };
 
 /**
- * Handles the call to the server to update
- * properties of an item which already has an id
- * @param store
- * @param item
- */
-const updateItem = ( store, item ) => {
-    // if ( !item instanceof Exam ) {
-
-    item.examId = store.getters.currentExam.id;
-    item.requestVersion = REQUEST_VERSION;
-    // }
-    //put/patch
-    window.axios
-        .put( 'items/' + item.id, item )
-        .then( ( response ) => {
-            handleResponse( store, item, response );
-        } )
-        .catch( function ( error ) {
-            errorHandling( error );
-        } );
-};
-/**
- * Handles the call to the server to update
- * properties of an item which already has an id
- * @param store
- * @param item
- */
-const updateExam = ( store, exam) => {
-    window.console.log( 'apiPlugin', 'updateExam', 181, exam);
-    let out = {
-        ...exam,
-        examId : store.getters.currentExam.id,
-        requestVersion : REQUEST_VERSION
-    };
-    // }
-    //put/patch
-    window.axios
-        .put( 'editexam/' + exam.id, exam )
-        .then( ( response ) => {
-            handleResponse( store, exam, response );
-        } )
-        .catch( function ( error ) {
-            errorHandling( error );
-        } );
-};
-
-/**
- * Handles the actual call to the server to create an
- * item which doesn't have an id yet.
- * @param store
- * @param item
- */
-const createItem = ( store, item ) => {
-    if ( item && item.isNew() ) {
-        let exam = store.getters.currentExam;
-        let toSend = {
-            ...item,
-            requestVersion: REQUEST_VERSION,
-            examId: exam.id
-        };
-
-        // }
-
-        //id === 'undefined' || payload.obj.id === -1)
-        //All IModels have an id of -1 when they are initially created.
-        //This is replaced with the real id once one is returned from the server.
-        //Thus, this request is to create the item.
-        //When the server has done this, it will send back an id
-        window.axios
-            .post( 'items', toSend )
-            .then( ( response ) => {
-                handleResponse( store, item, response );
-            } )
-            .catch( function ( error ) {
-                errorHandling( error );
-            } );
-    }
-
-};
-
-
-/**
- * Asks the server to update the order of items
- * @param store
- */
-const updateItemsOrderNEW = ( store ) => {
-    let ord = store.getters.getOrderForSync;
-    // let sortedIds = store.getters.getSortedIds;
-    let exam = store.getters.currentExam;
-
-    let payload = {
-        examId: exam.id,
-        requestVersion: REQUEST_VERSION,
-        order: ord
-    };
-
-    window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
-
-    let route = 'items/' + exam.id + '/order';
-    window.axios
-        .post( route, payload )
-        .then( ( response ) => {
-            window.console.log( 'apiPlugin', '#### SERVER SAYS ####', 169, response );
-            //  handleResponse(store, items, response);
-        } )
-        .catch( function ( error ) {
-            errorHandling( error );
-        } );
-};
-
-
-/**
- * Asks the server to update the order of items
- * @param store
- */
-const updateItemsOrder = ( store ) => {
-    let items = store.getters.getAllItems;
-    let examId = store.getters.currentExam.id;
-    //if(typeof exam === 'undefined') return false;
-    let payload = {
-        examId: examId,
-        requestVersion: REQUEST_VERSION,
-        order: []
-    };
-
-    //build an array of ids to send
-    //note that we start at 1 so the exam id
-    //is not included
-    for (let i = 1; i < items.length; i++) {
-        if ( !_.isUndefined( items[ i ].id ) ) {
-            payload.order.push( items[ i ].id );
-        }
-    }
-
-    // window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
-
-    if ( items && examId ) {
-        let route = 'items/' + examId + '/order';
-        window.axios
-            .put( route, payload )
-            .then( ( response ) => {
-                window.console.log( 'apiPlugin', '####', 169, response );
-                //  handleResponse(store, items, response);
-            } )
-            .catch( function ( error ) {
-                errorHandling( error );
-            } );
-
-    }
-};
-
-/**
  *This subscribes the api package which
  * handles data exchange with the server
  * to mutations in the store.
  * Called when the store is initialized
  */
 export default function ( store ) {
+
     // Called after every mutation.
     // The mutation comes in the format of { type, payload }.
     // Thus this will catch the new item on the first mutation committing

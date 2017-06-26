@@ -1,8 +1,8 @@
 <template>
 
-    <div class="item-main-component field has-addons">
+    <div class="item-main field has-addons">
 
-        <p class="control">
+        <p v-if="isItem" class="control">
             <input type="text"
                    class="input indexDisplay is-large"
                    v-model="displayIndex" readonly>
@@ -15,11 +15,14 @@
         <p class="control">
             <settings-button :index="index" :serial-number="serialNumber" :is-exam="isExam"></settings-button>
         </p>
+        <p class="control">
+            <children-display-control :serial-number="serialNumber" :is-exam="isExam"></children-display-control>
+        </p>
     </div>
 </template>
 
 <style lang="scss">
-    .item-main-component {
+    .item-main{
         h5 {
             text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
             0 2px 3px rgba(0, 0, 0, .8),
@@ -40,10 +43,10 @@
 
 <script>
 
-    import Item from '../../models/Item'
-    import Payload from '../../models/Payload'
-    import * as aTypes from '../../store/action-types'
-    import * as mTypes from '../../store/mutation-types'
+    import Item from '../../../models/Item'
+    import Payload from '../../../models/Payload'
+    import * as aTypes from '../../../store/action-types'
+    import * as mTypes from '../../../store/mutation-types'
 
     export default{
 
@@ -76,10 +79,26 @@
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
+            isItem: function(){
+              return ! this.isExam;
+            },
+
+            position : function(){
+                return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;
+
+            },
+
             displayIndex: function () {
+                if(this.isExam) return 'Exam';
+                let idx = this.position + 1;
+                let parentIdx = this.$parent.displayIndex;
+                if(parentIdx) return `${parentIdx} - ${idx}`;
+                return idx;
+
+//                return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;
+
                 //take the depth and make a string like
                 // 2.4.5
-                return this.index;
             },
 
             /**

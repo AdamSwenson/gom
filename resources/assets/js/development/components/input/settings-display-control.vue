@@ -49,6 +49,8 @@
                 if ( this.isExam ) {
                     //exam case
                     this.$store.commit( mTypes.toggleExamSettings , Payload.factory({mutateSilently: true}));
+                    this.$router.push( { name: 'exam-detail', params: { serialNumber: this.serialNumber, active: 'details' } } );
+
                 }
                 else  {
                     //item cases

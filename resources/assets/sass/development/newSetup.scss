@@ -55,7 +55,7 @@ $rgba-primary-4: rgba(  0, 31, 45,1);
   background-image: -o-linear-gradient(0deg, transparent .05em, rgba(0, 0, 0, .05) .05em, rgba(0, 0, 0, .05) .125000em, transparent .125000em),
   -o-linear-gradient(rgba(0, 0, 0, .05) .062500em, transparent .062500em);
   background-image: linear-gradient(0deg, transparent .05em, rgba(0, 0, 0, .05) .05em, rgba(0, 0, 0, .05) .125000em, transparent .125000em),
-  inear-gradient(rgba(0, 0, 0, .05) .062500em, transparent .062500em);
+  linear-gradient(rgba(0, 0, 0, .05) .062500em, transparent .062500em);
   background-size: .75em .75em;
   background-position: 0 -0.5em;
 }
@@ -74,8 +74,8 @@ $rgba-primary-4: rgba(  0, 31, 45,1);
   linear-gradient($line 1px, $trans 1px), /*main horiz*/
   linear-gradient(90deg, rgba($line, $sublineAlpha) 1px, $trans 1px), /*sub vert*/
   linear-gradient(90deg, rgba($line, $lineAlpha) 1px, $trans 1px), /*main vert*/
-  linear-gradient($trans 3px, $block 3px, $block $gridSize - 2, $trans $gridSize - 2), /*nub horiz*/
-  linear-gradient(90deg, rgba($line, $lineAlpha) 3px, $trans 3px, $trans $gridSize - 2, rgba($line, $lineAlpha) $gridSize - 2) /*nub vert*/
+  //linear-gradient($trans 3px, $block 3px, $block $gridSize - 2, $trans $gridSize - 2), /*nub horiz*/
+  //linear-gradient(90deg, rgba($line, $lineAlpha) 3px, $trans 3px, $trans $gridSize - 2, rgba($line, $lineAlpha) $gridSize - 2) /*nub vert*/
 ;
   background-size: $gridSize / $subdivisions $gridSize / $subdivisions,
   $gridSize $gridSize,

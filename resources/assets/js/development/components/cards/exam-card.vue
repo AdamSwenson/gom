@@ -1,6 +1,6 @@
 <template xmlns="http://www.w3.org/1999/html">
     <div v-bind:id="divId"
-         class="exam-card-component card"
+         class="exam-card card "
          v-bind:data-id="serialNumber"
          v-bind:data-index="serialNumber"
     >
@@ -34,7 +34,6 @@
                         </button>
                     </p>
                     <p class="control">
-
                         <public-indicator
                                 :serial-number="serialNumber">
                         </public-indicator>
@@ -54,7 +53,7 @@
                             <span class="icon is-small">
                                 <i class="fa fa-check" aria-hidden="true"></i>
                             </span>
-                            <span>Grade it</span>
+                            <span>Grade it!</span>
                         </button>
                     </p>
                 </div>
@@ -63,7 +62,7 @@
 
         <!--Check whether the item has children, if it does-->
         <!--we will make a box that will surround the children-->
-        <div class="box" v-if="numberChildren > 0">
+        <div class="box graph-paper-background-big" v-if="numberChildren > 0">
 
             <div v-for="isn in children">
                 <!--Now we make cards recursively-->
@@ -77,7 +76,7 @@
 
 <style lang="scss">
 
-    .exam-card-component {
+    .exam-card {
         margin-top: 2em;
 
         border-bottom: solid;
@@ -88,16 +87,17 @@
         /*}*/
         /*.panel-heading {*/
 
-        background-color: #FFFDF4;
+        background-color: #00496C;
+        //background-color: #FFFDF4;
 
     }
 
 </style>
 <script>
-    //    import deleteButton from './buttons.item.delete.component.vue'
+    //    import deleteButton from './item-remove-button.vue'
     //    import itemEditPane from './item.edit-pane.component.vue'
     //    import depthControl from './buttons.depth-control.component.vue'
-    //    import itemMain from './item.main.component.vue'
+    //    import itemMain from './item-main.vue'
 
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'
@@ -289,7 +289,7 @@
 
 <!--</style>-->
 <!--<script>-->
-<!--import deleteButton from '../input/buttons.item.delete.component.vue'-->
+<!--import deleteButton from '../initem-remove-button.vue.vue'-->
 <!--import panelExamDetail from exam-detail-panel.vue.vue'-->
 
 <!--import Item from '../../../models/Item'-->

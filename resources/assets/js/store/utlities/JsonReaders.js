@@ -12,7 +12,7 @@ import Exam from '../../models/Exam'
 import Item from '../../models/Item'
 import Node from '../../models/Node'
 import Payload from '../../models/Payload'
-import * as api from '../../api/controller'
+import * as api from '../../api/old/controller'
 const Vue = require( 'vue' );
 
 const standardTimeout = 1000;

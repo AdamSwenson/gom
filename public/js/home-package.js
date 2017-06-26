@@ -1342,7 +1342,7 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				}
 			},
 			_resize: function _resize(ev) {
-				/*jshint unused:false*/
+				/*jshint old:false*/
 				this._state.offset = this._offset(this.sliderElem);
 				this._state.size = this.sliderElem[this.sizePos];
 				this._layout();
@@ -20463,7 +20463,7 @@ function flush() {
   queue$1 = [];
   queued = false;
   // dummy return, so js linters don't complain about
-  // unused variable f
+  // old variable f
   return f;
 }
 
@@ -23216,7 +23216,7 @@ function domAPI (Vue) {
    *
    * @param {Node} el
    * @param {Node} target
-   * @param {Vue} vm - unused
+   * @param {Vue} vm - old
    * @param {Function} [cb]
    */
 
@@ -23230,7 +23230,7 @@ function domAPI (Vue) {
    *
    * @param {Node} el
    * @param {Node} target
-   * @param {Vue} vm - unused
+   * @param {Vue} vm - old
    * @param {Function} [cb]
    */
 
@@ -23243,7 +23243,7 @@ function domAPI (Vue) {
    * Remove operation that takes a callback.
    *
    * @param {Node} el
-   * @param {Vue} vm - unused
+   * @param {Vue} vm - old
    * @param {Function} [cb]
    */
 

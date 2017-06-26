@@ -14,6 +14,8 @@ import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
 
+import {getNode} from '../../models/NodeTools'
+
 const checkExpectedType = ( toBeSet ) => {
     if ( toBeSet instanceof Node ) return true;
 
@@ -63,6 +65,64 @@ module.exports = {
         let idx = parent.children.indexOf( obj );
         parent.children.splice( idx, 1 );
     },
+
+    increasePosition : (state, payload) =>{
+        let {objNode, parentNode} = payload;
+
+        let currentIndex = parentNode.children.indexOf(objNode)
+
+        //make sure it is not the last item already
+        if (parentNode.children.length !== currentIndex + 1){
+
+            //We first pop the item out so that its successor
+            //slides down and occupies its current index
+            parentNode.children.pop(currentIndex);
+            //Now we push it in at  its
+            //original position + 1
+            parentNode.children.splice( currentIndex + 1, 0, objNode );
+
+        }
+
+
+    },
+
+    /**
+     * Moves the item down in the order of its siblings
+     * So if x was at Q2E3, after this it would be
+     * at Q2E4 and the item previously at E4 would be at E2.
+     *
+     * @param state
+     * @param payload
+     */
+    decreasePosition : (state, payload) =>{
+        //check whether at the end of the children list
+        //if so, ignore the call
+
+        //Splice in
+
+    },
+
+    /**
+     * Make the item a sibling of its parent
+     * @param state
+     * @param payload
+     */
+    promote : (state, payload )=>{
+        //check that we aren't at the question level
+        //where it makes no sense to promote
+        let {objNode, parentNode} = payload;
+        //get parent's parent
+        let grandParent = getNode(parentNode.parent);
+        //add to grandparent
+        grandParent.children.push(objNode);
+
+        //remove from parent's children list
+        parentNode.children.pop(parentNode.children.indexOf(objNode));
+
+    },
+
+    demote : (state, payload) =>{},
+
 
 
     setRootNode: ( state, payload ) => {

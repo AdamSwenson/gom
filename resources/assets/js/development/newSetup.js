@@ -24,7 +24,7 @@ import toolsDashboard from './components/dashboard.tools.component.vue'
 
 //Panes (main container for edit tools)
 import itemEditPane from './components/old/pane.edit-item.component.vue'
-import editTabs from './components/navigation/nav.edit-tabs.component.vue'
+import editTabs from './components/navigation/settings-navigation-tabs.vue'
 
 //Panels (objects within pane)
 import panelComments from './components/panels/comment-setup-panel.vue'
@@ -34,38 +34,43 @@ import panelNotes from './components/panels/notes-panel.vue'
 import panelItemDetail from './components/panels/item-detail-panel.vue'
 import panelStats from './components/panels/stats-panel.vue'
 import panelTags from './components/panels/tags-panel.vue'
-import panelStudents from './components/panels/add-students-panel.vue'
+import panelStudents from './components/panels/students-panel.vue'
+import panelGrades from './components/panels/grades-panel.vue'
 
 //Main editable objects
 import examMain from './components/old/exam.main.component.vue'
-import itemMain from './components/item.main.component.vue'
+import itemMain from './components/input/item-main.vue'
 
 //Item card list
 import cardList from './components/cards/cardList.component.vue'
 import itemAddButton from './components/input/buttons.item.add.component.vue'
 
 //Item card and parts
-import itemCard from './components/cards/itemCard.component.vue'
+import itemCard from './components/cards/item-card.vue'
 import depthControl from './components/input/buttons.depth-control.component.vue'
-import maxScore from './components/input/field.max-score.component.vue'
+import maxScore from './components/input/max-score-input.vue'
 import itemNumber from './components/field.item-number.component.vue'
 import itemName from './components/field.item-name.component.vue'
-import siblingAddButton from './components/input/buttons.add-sibling.component.vue'
-import childAddButton from './components/input/buttons.add-child.component.vue'
+import siblingAddButton from './components/input/add-sibling-button.vue'
+import childAddButton from './components/input/add-child-button.vue'
 
+import movementControl from './components/input/card-movement-control.vue';
 
 
 //Other buttons
-import settingsButton from './components/input/buttons.settings-control.component.vue'
+import settingsButton from './components/input/settings-display-control.vue'
+import childrenDisplayButton from './components/input/children-display-control.vue'
 import valenceButton from './components/input/buttons.valence.component.vue'
-import deleteButton from './components/input/buttons.item.delete.component.vue'
-import publicIndicator from './components/input/buttons.public-control.component.vue'
+import deleteButton from './components/input/item-delete-button.vue'
+import removeButton from './components/input/item-remove-button.vue'
+
+import publicIndicator from './components/input/visibility-control.vue'
 
 import subList from './components/cards/subList.component.vue'
-import examCard from './components/cards/examCard.component.vue'
+import examCard from './components/cards/exam-card.vue'
 
 //Server request handlers
-import api from '../api/controller'
+import api from '../api/old/controller'
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -110,10 +115,13 @@ Vue.component( 'panel-notes', panelNotes );
 Vue.component('panel-tags', panelTags);
 Vue.component( 'edit-tabs', editTabs );
 Vue.component('panel-students', panelStudents);
+Vue.component('panel-grades', panelGrades);
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
 Vue.component( 'valence-button', valenceButton );
 Vue.component( 'delete-item-button', deleteButton );
+
+Vue.component( 'remove-item-button', removeButton );
 Vue.component( 'depth-control', depthControl );
 
 Vue.component( 'max-score', maxScore );
@@ -124,6 +132,8 @@ Vue.component( 'list-dropdown', listDropdown );
 //Items
 Vue.component('add-sibling-button', siblingAddButton);
 Vue.component('add-child-button', childAddButton);
+Vue.component('card-movement-control', movementControl);
+Vue.component('children-display-control', childrenDisplayButton)
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
@@ -151,35 +161,47 @@ const routes = [
         components: { itemPanels: panelExamDetail },
         props: true
     },
+    //history
     {
         path: '/panel-history/:serialNumber',
         components: { itemPanels: panelHistory },
         props: true
     },
+    //item detail
     {
         name: 'item-detail',
         path: '/panel-item-detail/:serialNumber',
         components: { itemPanels: panelItemDetail },
         props: true
     },
+    //notes
     {
         path: '/panel-notes/:serialNumber',
         components: { itemPanels: panelNotes },
         props: true
     },
+    //stats
     {
         path: '/panel-stats/:serialNumber',
         components: { itemPanels: panelStats },
         props: true
     },
+    //students
     {
         path: '/panel-students/:serialNumber',
         components: { itemPanels: panelStudents },
         props: true
     },
+    //tags
     {
         path: '/panel-tags/:serialNumber',
         components: { itemPanels: panelTags},
+        props: true
+    },
+    //grades
+    {
+        path: '/panel-grades/:serialNumber',
+        components: { itemPanels: panelGrades},
         props: true
     }
 ];

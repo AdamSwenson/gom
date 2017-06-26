@@ -6,17 +6,17 @@
 
             <div class="columns">
                 <div class="column"></div>
-                <div class="column is-two-thirds graph-paper-background-small border-image-lft">
 
+                <div class="column is-three-quarters  border-image-lft">
                     <div id="examCardArea" class="card">
                         <exam-card ></exam-card>
                     </div>
 
                 </div>
+
                 <div class="column"></div>
+
             </div>
-
-
 
         </div>
     </div>
@@ -30,10 +30,9 @@
     }
 
     #examCardArea {
-        background-color: $color-primary-2;
+        /*<!--background-color: $color-primary-2;-->*/
 
-        /*<!--background-color: $main-background-color-gradient-limit;-->*/
-
+        background-color: $main-background-color-gradient-limit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
     }
 

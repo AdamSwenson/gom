@@ -1,8 +1,10 @@
 <template>
-    <div class="panel-exam-detail-component  ">
 
-        <div class="field">
-            <label class="label">Public Assignment Name</label>
+
+    <div class="exam-detail-panel  ">
+
+        <div class="public-name-input field">
+            <label class="label">Public Name</label>
             <p class="control">
                 <input type="text"
                        class="input"
@@ -58,7 +60,14 @@
 
 </template>
 
-<style>
+<style type="scss">
+    .exam-detail-panel {
+        .public-name-input {
+            label {
+                text-align: left;
+            }
+        }
+    }
 
 </style>
 
@@ -77,7 +86,7 @@
 
         data: function () {
             return {
-                serialNumber: _.toInteger(this.$route.params.serialNumber),
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
                 active: this.serialNumber,
 
                 defaults: {
@@ -181,7 +190,6 @@
         events: {},
 
         mounted: function () {
-            console.log( 'exam-edit-pane ready' );
         },
     };
 </script>

@@ -601,7 +601,8 @@ var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime'
 var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 
 //items
-var deleteItem = exports.deleteItem = 'deleteItem';
+var deleteItem = exports.deleteItem = 'deleteItem'; //destroys item in db
+var removeItem = exports.removeItem = 'removeItem'; //disassociates it from a parent
 var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
@@ -31306,165 +31307,7 @@ module.exports = defaults;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(452)))
 
 /***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- * Created by adam on 3/20/17.
- */
-// import Vue from 'vue'
-// import axios from 'axios'
-
-/**
- * this is the component for using axios inside of a vue or vuex process
- */
-exports.default = {
-    _connection: null,
-
-    // _api: function () {
-    //     //if the connection has not already been created
-    //     //create it
-    //     if ( this._connection == null ) {
-    //         this._connection = axios.create( {
-    //             baseURL: 'https://some-domain.com/_api/',
-    //             timeout: 1000,
-    //             headers: {'X-Custom-Header': 'foobar'}
-    //         } );
-    //
-    //         return this._connection;
-    //     }
-    //
-    // },
-    data: function data() {
-        return {
-            routeBase: {
-                item: "items",
-                exam: 'exams'
-            }
-        };
-    },
-
-    methods: {
-
-        errorHandling: function errorHandling(error) {
-            if (error.response) {
-                // The request was made, but the server responded with a status code
-                // that falls out of the range of 2xx
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                console.log('Error', error.message);
-            }
-            console.log(error.config);
-        },
-
-        /**
-         * Asks the server to create a new model.
-         * The server returns an id for the model on success.
-         * This returns the id on success
-         *
-         */
-        getIdForNewModel: function getIdForNewModel() {
-
-            var api = 'items'; //hits the resource's store method (create would've returned the form to create)
-
-            undefined.$axios.post(api).then(function (response) {
-                console.log(response.data);
-                //return Item with the new id or other data loaded
-                if (typeof response.data.id !== 'undefined') {
-                    return response.data.id;
-                }
-            }).catch(function (error) {
-                this.errorHandling(error);
-            });
-        }
-
-        //
-        // /**
-        //  * Asks the server to get the given model
-        //  * @param IModel
-        //  */
-        // readModel: ( Model ) => {
-        //     let api = this.makeRoute(Model.className) + '/' + Model.id;
-        //
-        //     this.axios
-        //         .get(api)
-        //         .then(( response ) => {
-        //
-        //             console.log(response.data)
-        //             //return Item with the new id or other data loaded
-        //             if ( typeof response.data.id !== 'undefined' ) {
-        //                 Model.id = response.data.id;
-        //             }
-        //             return Model;
-        //         })
-        //         .catch(function ( error ) {
-        //             this._errorHandling(error);
-        //             console.log(error);
-        //         });
-        // },
-        //
-        // /**
-        //  * Asks the server to create the given item
-        //  * @param Item
-        //  */
-        // updateModel: ( Model ) => {
-        //     let api = this.makeRoute(Model.className) + '/' + Model.id;
-        //
-        //     this.axios
-        //         .put(api, Model)
-        //         .then(( response ) => {
-        //
-        //             // if (response.status == 200 ){
-        //             return callback(response);
-        //             // }
-        //             //
-        //             // console.log( response.data )
-        //             // //return Item with the new id loaded
-        //             // return Model;
-        //         })
-        //         .catch(function ( error ) {
-        //             this._errorHandling(error);
-        //             console.log(error);
-        //         });
-        // },
-        //
-        //
-        // /**
-        //  * Asks the server to create the given item
-        //  * @param Item
-        //  */
-        // deleteModel: ( Model, callback ) => {
-        //
-        //     let api = this.makeRoute(Model.className()) + '/' + Model.id;
-        //
-        //     this.axios
-        //         .delete(api)
-        //         .then(( response ) => {
-        //             if ( response.status == 200 ) {
-        //                 return callback(response);
-        //             }
-        //         })
-        //         .catch(function ( error ) {
-        //             this._errorHandling(error);
-        //             console.log(error);
-        //         });
-        // },
-
-        // this.$http.get( _api ).then( ( response ) => {
-        //     console.log( response.data )
-        // } )
-    } };
-
-/***/ }),
+/* 78 */,
 /* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -45810,9 +45653,9 @@ var _paneEditItemComponent = __webpack_require__(559);
 
 var _paneEditItemComponent2 = _interopRequireDefault(_paneEditItemComponent);
 
-var _navEditTabsComponent = __webpack_require__(553);
+var _settingsNavigationTabs = __webpack_require__(599);
 
-var _navEditTabsComponent2 = _interopRequireDefault(_navEditTabsComponent);
+var _settingsNavigationTabs2 = _interopRequireDefault(_settingsNavigationTabs);
 
 var _commentSetupPanel = __webpack_require__(478);
 
@@ -45842,17 +45685,21 @@ var _tagsPanel = __webpack_require__(484);
 
 var _tagsPanel2 = _interopRequireDefault(_tagsPanel);
 
-var _addStudentsPanel = __webpack_require__(477);
+var _studentsPanel = __webpack_require__(604);
 
-var _addStudentsPanel2 = _interopRequireDefault(_addStudentsPanel);
+var _studentsPanel2 = _interopRequireDefault(_studentsPanel);
+
+var _gradesPanel = __webpack_require__(564);
+
+var _gradesPanel2 = _interopRequireDefault(_gradesPanel);
 
 var _examMainComponent = __webpack_require__(475);
 
 var _examMainComponent2 = _interopRequireDefault(_examMainComponent);
 
-var _itemMainComponent = __webpack_require__(473);
+var _itemMain = __webpack_require__(619);
 
-var _itemMainComponent2 = _interopRequireDefault(_itemMainComponent);
+var _itemMain2 = _interopRequireDefault(_itemMain);
 
 var _cardListComponent = __webpack_require__(456);
 
@@ -45862,17 +45709,17 @@ var _buttonsItemAddComponent = __webpack_require__(469);
 
 var _buttonsItemAddComponent2 = _interopRequireDefault(_buttonsItemAddComponent);
 
-var _itemCardComponent = __webpack_require__(458);
+var _itemCard = __webpack_require__(612);
 
-var _itemCardComponent2 = _interopRequireDefault(_itemCardComponent);
+var _itemCard2 = _interopRequireDefault(_itemCard);
 
 var _buttonsDepthControlComponent = __webpack_require__(468);
 
 var _buttonsDepthControlComponent2 = _interopRequireDefault(_buttonsDepthControlComponent);
 
-var _fieldMaxScoreComponent = __webpack_require__(558);
+var _maxScoreInput = __webpack_require__(594);
 
-var _fieldMaxScoreComponent2 = _interopRequireDefault(_fieldMaxScoreComponent);
+var _maxScoreInput2 = _interopRequireDefault(_maxScoreInput);
 
 var _fieldItemNumberComponent = __webpack_require__(463);
 
@@ -45882,39 +45729,51 @@ var _fieldItemNameComponent = __webpack_require__(462);
 
 var _fieldItemNameComponent2 = _interopRequireDefault(_fieldItemNameComponent);
 
-var _buttonsAddSiblingComponent = __webpack_require__(467);
+var _addSiblingButton = __webpack_require__(576);
 
-var _buttonsAddSiblingComponent2 = _interopRequireDefault(_buttonsAddSiblingComponent);
+var _addSiblingButton2 = _interopRequireDefault(_addSiblingButton);
 
-var _buttonsAddChildComponent = __webpack_require__(466);
+var _addChildButton = __webpack_require__(575);
 
-var _buttonsAddChildComponent2 = _interopRequireDefault(_buttonsAddChildComponent);
+var _addChildButton2 = _interopRequireDefault(_addChildButton);
 
-var _buttonsSettingsControlComponent = __webpack_require__(472);
+var _cardMovementControl = __webpack_require__(589);
 
-var _buttonsSettingsControlComponent2 = _interopRequireDefault(_buttonsSettingsControlComponent);
+var _cardMovementControl2 = _interopRequireDefault(_cardMovementControl);
+
+var _settingsDisplayControl = __webpack_require__(577);
+
+var _settingsDisplayControl2 = _interopRequireDefault(_settingsDisplayControl);
+
+var _childrenDisplayControl = __webpack_require__(624);
+
+var _childrenDisplayControl2 = _interopRequireDefault(_childrenDisplayControl);
 
 var _buttonsValenceComponent = __webpack_require__(142);
 
 var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
 
-var _buttonsItemDeleteComponent = __webpack_require__(470);
+var _itemDeleteButton = __webpack_require__(638);
 
-var _buttonsItemDeleteComponent2 = _interopRequireDefault(_buttonsItemDeleteComponent);
+var _itemDeleteButton2 = _interopRequireDefault(_itemDeleteButton);
 
-var _buttonsPublicControlComponent = __webpack_require__(471);
+var _itemRemoveButton = __webpack_require__(629);
 
-var _buttonsPublicControlComponent2 = _interopRequireDefault(_buttonsPublicControlComponent);
+var _itemRemoveButton2 = _interopRequireDefault(_itemRemoveButton);
+
+var _visibilityControl = __webpack_require__(578);
+
+var _visibilityControl2 = _interopRequireDefault(_visibilityControl);
 
 var _subListComponent = __webpack_require__(459);
 
 var _subListComponent2 = _interopRequireDefault(_subListComponent);
 
-var _examCardComponent = __webpack_require__(457);
+var _examCard = __webpack_require__(611);
 
-var _examCardComponent2 = _interopRequireDefault(_examCardComponent);
+var _examCard2 = _interopRequireDefault(_examCard);
 
-var _controller = __webpack_require__(78);
+var _controller = __webpack_require__(633);
 
 var _controller2 = _interopRequireDefault(_controller);
 
@@ -45993,16 +45852,16 @@ _vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
 // Vue.component( 'item-nav', itemNav )
 _vue2.default.component('item-add-button', _buttonsItemAddComponent2.default);
 _vue2.default.component('item-name', _fieldItemNameComponent2.default);
-_vue2.default.component('item-main', _itemMainComponent2.default);
-_vue2.default.component('public-indicator', _buttonsPublicControlComponent2.default);
-_vue2.default.component('settings-button', _buttonsSettingsControlComponent2.default);
+_vue2.default.component('item-main', _itemMain2.default);
+_vue2.default.component('public-indicator', _visibilityControl2.default);
+_vue2.default.component('settings-button', _settingsDisplayControl2.default);
 
 // Vue.component('item-edit-pane', itemEditPane);
 
 //cards
 _vue2.default.component('card-list', _cardListComponent2.default);
-_vue2.default.component('item-card', _itemCardComponent2.default);
-_vue2.default.component('exam-card', _examCardComponent2.default);
+_vue2.default.component('item-card', _itemCard2.default);
+_vue2.default.component('exam-card', _examCard2.default);
 _vue2.default.component('sub-list', _subListComponent2.default);
 
 //Panels
@@ -46012,26 +45871,31 @@ _vue2.default.component('panel-history', _historyPanel2.default);
 _vue2.default.component('panel-stats', _statsPanel2.default);
 _vue2.default.component('panel-notes', _notesPanel2.default);
 _vue2.default.component('panel-tags', _tagsPanel2.default);
-_vue2.default.component('edit-tabs', _navEditTabsComponent2.default);
-_vue2.default.component('panel-students', _addStudentsPanel2.default);
+_vue2.default.component('edit-tabs', _settingsNavigationTabs2.default);
+_vue2.default.component('panel-students', _studentsPanel2.default);
+_vue2.default.component('panel-grades', _gradesPanel2.default);
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
 _vue2.default.component('valence-button', _buttonsValenceComponent2.default);
-_vue2.default.component('delete-item-button', _buttonsItemDeleteComponent2.default);
+_vue2.default.component('delete-item-button', _itemDeleteButton2.default);
+
+_vue2.default.component('remove-item-button', _itemRemoveButton2.default);
 _vue2.default.component('depth-control', _buttonsDepthControlComponent2.default);
 
-_vue2.default.component('max-score', _fieldMaxScoreComponent2.default);
+_vue2.default.component('max-score', _maxScoreInput2.default);
 _vue2.default.component('item-number', _fieldItemNumberComponent2.default);
 
 _vue2.default.component('list-dropdown', _fieldListDropdownComponent2.default);
 
 //Items
-_vue2.default.component('add-sibling-button', _buttonsAddSiblingComponent2.default);
-_vue2.default.component('add-child-button', _buttonsAddChildComponent2.default);
+_vue2.default.component('add-sibling-button', _addSiblingButton2.default);
+_vue2.default.component('add-child-button', _addChildButton2.default);
+_vue2.default.component('card-movement-control', _cardMovementControl2.default);
+_vue2.default.component('children-display-control', _childrenDisplayControl2.default
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
-
+);
 _vue2.default.use(_vueRouter2.default);
 // 1. Define route components.
 // These can be imported from other files
@@ -46052,30 +45916,48 @@ var routes = [{
     path: '/panel-exam-detail/:serialNumber',
     components: { itemPanels: _examDetailPanel2.default },
     props: true
-}, {
+},
+//history
+{
     path: '/panel-history/:serialNumber',
     components: { itemPanels: _historyPanel2.default },
     props: true
-}, {
+},
+//item detail
+{
     name: 'item-detail',
     path: '/panel-item-detail/:serialNumber',
     components: { itemPanels: _itemDetailPanel2.default },
     props: true
-}, {
+},
+//notes
+{
     path: '/panel-notes/:serialNumber',
     components: { itemPanels: _notesPanel2.default },
     props: true
-}, {
+},
+//stats
+{
     path: '/panel-stats/:serialNumber',
     components: { itemPanels: _statsPanel2.default },
     props: true
-}, {
+},
+//students
+{
     path: '/panel-students/:serialNumber',
-    components: { itemPanels: _addStudentsPanel2.default },
+    components: { itemPanels: _studentsPanel2.default },
     props: true
-}, {
+},
+//tags
+{
     path: '/panel-tags/:serialNumber',
     components: { itemPanels: _tagsPanel2.default },
+    props: true
+},
+//grades
+{
+    path: '/panel-grades/:serialNumber',
+    components: { itemPanels: _gradesPanel2.default },
     props: true
 }];
 
@@ -46995,7 +46877,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 var Sortable = __webpack_require__(106);
 
-//    import itemCard from './itemCard.component.vue'
+//    import itemCard from './item-card.vue'
 //    import itemAddButton from './buttons.item.add.component.vue'
 
 
@@ -47251,602 +47133,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = __webpack_require__(10);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-//    import deleteButton from './buttons.item.delete.component.vue'
-//    import itemEditPane from './item.edit-pane.component.vue'
-//    import depthControl from './buttons.depth-control.component.vue'
-//    import itemMain from './item.main.component.vue'
-
-exports.default = {
-
-    props: [],
-
-    data: function data() {
-        return {
-
-            defaults: {},
-            isCommented: false,
-            /**
-             * Whether students can see the name of the item
-             */
-            isNamePublic: false
-        };
-    },
-
-    computed: {
-        serialNumber: function serialNumber() {
-            return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
-        },
-
-        index: function index() {
-
-            return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
-        },
-
-        exam: function exam() {
-
-            return this.$store.getters.currentExam ? this.$store.getters.currentExam : null;
-        },
-
-        /**
-         * Returns an array of serial numbers belonging to
-         * this item's children (in order)
-         */
-        children: function children() {
-            if (this.$store.getters.currentExam) {
-                var serialNumber = this.$store.getters.currentExam.serialNumber;
-
-                var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
-                var cdrn = [];
-                if (node.children.length > 0) {
-                    for (var i = 0; i < node.children.length; i++) {
-                        cdrn.push(node.children[i].data);
-                    }
-                }
-                return cdrn;
-            }
-            return [];
-        },
-
-        numberChildren: function numberChildren() {
-            var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
-            return node ? node.children.length : 0;
-        },
-
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        paneVisible: function paneVisible() {
-
-            return this.$store.getters[gTypes.isExamSettingsVisible];
-        },
-
-        divId: function divId() {
-            return "exam-card-" + this.serialNumber;
-        }
-
-    },
-
-    methods: {
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleCommentsOn: function toggleCommentsOn() {
-            console.log('CALLED', 'toggleCommentsOn');
-            this.isCommented = !this.isCommented;
-        },
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleNameVisibility: function toggleNameVisibility() {
-            console.log('CALLED', 'toggleNameVisibility');
-            this.isNamePublic = !this.isNamePublic;
-        }
-
-    },
-
-    directives: {
-        'sortable': {
-            inserted: function inserted(el, binding) {
-                //                    var sortable = new Sortable( el, binding.value || {} );
-            }
-        }
-    },
-
-    events: {
-        'display-settings': function displaySettings() {
-            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
-        }
-    },
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _computed;
-
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = __webpack_require__(10);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-//    import deleteButton from './buttons.item.delete.component.vue'
-//    import itemEditPane from './item.edit-pane.component.vue'
-//    import depthControl from './buttons.depth-control.component.vue'
-//    import itemMain from './item.main.component.vue'
-
-exports.default = {
-
-    props: ['index', 'parent-index', 'serialNumber'],
-
-    data: function data() {
-        return {
-
-            defaults: {
-                depth: null,
-                index: null,
-                type: null,
-                //how much one unit of depth will be offset
-                tabOffset: 2
-            },
-            isCommented: false,
-            /**
-             * Whether students can see the name of the item
-             */
-            isNamePublic: false
-        };
-    },
-
-    computed: (_computed = {
-        item: function item() {
-            return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
-        },
-
-        /**
-         * Returns an array of serial numbers belonging to
-         * this item's children (in order)
-         */
-        children: function children() {
-            var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
-            var cdrn = [];
-            if (node.children.length > 0) {
-                for (var i = 0; i < node.children.length; i++) {
-                    cdrn.push(node.children[i].data);
-                }
-            }
-            return cdrn;
-        },
-
-        numberChildren: function numberChildren() {
-            var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
-            return node.children.length;
-        },
-
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        paneVisible: function paneVisible() {
-            return this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
-        },
-
-        divId: function divId() {
-            return "item-card-" + this.index;
-        },
-
-        /**
-         * Returns the bootstrap class for the depth
-         */
-        offsetClass: function offsetClass() {
-            if (this.depth > 0) {
-                var amt = this.defaults.tabOffset * this.depth;
-                var col = "col-md-offset-" + amt;
-                return col;
-            }
-        },
-
-        ddepth: function ddepth() {
-
-            //start with the current instance
-            //that way, if we are at the root,
-            //the while won't run
-            //todo or do I need the other kind?
-            var current = this.$parent;
-            var d = 0;
-            var limit = 5;
-            while (_.isEmpty(current) && d < limit) {
-                //we aren't at the root, so
-                //increment our depth counter
-                d++;
-                //and set the parent of the parent as current
-                current = current.$parent;
-            }
-            return d;
-        }
-
-    }, _defineProperty(_computed, 'item', function item() {
-        return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
-    }), _defineProperty(_computed, 'depth', {
-        get: function get() {
-            //                    return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-            //                    let item = this.$store.getters.getItemById(this.id);
-            //                    let item = this.$store.getters.getItemByIndex(this.index);
-            //                    if ( typeof item !== 'undefined' ) {
-            //                        return item.depth
-            //                    }
-            //
-        },
-        set: function set(v) {
-            //                    let item = this.$store.getters.getItemById(this.id);
-            //                    let item = this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-            //                    if ( typeof item !== 'undefined' ) {
-            //                        this.$store.commit( Payload.factory( {
-            ////                            id: this.id,
-            //                            index: this.index,
-            //                            updateProp: 'depth',
-            //                            updateVal: v
-            //                        } ) );
-            //                    }
-        }
-    }), _defineProperty(_computed, 'type', {
-        get: function get() {
-            return this.defaults.index;
-        },
-        set: function set() {}
-    }), _computed),
-
-    methods: {
-
-        //            addSibling: function ( rel="younger" ) {
-        //                switch (rel){
-        //                    case 'older':
-        //                        break;
-        //                    case 'younger':
-        //                        break;
-        //                    default:
-        //                }
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleCommentsOn: function toggleCommentsOn() {
-            console.log('CALLED', 'toggleCommentsOn');
-            this.isCommented = !this.isCommented;
-        },
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleNameVisibility: function toggleNameVisibility() {
-            console.log('CALLED', 'toggleNameVisibility');
-            this.isNamePublic = !this.isNamePublic;
-        }
-
-    },
-
-    directives: {
-        'sortable': {
-            inserted: function inserted(el, binding) {
-                //                    var sortable = new Sortable( el, binding.value || {} );
-            }
-        }
-    },
-
-    events: {
-        'display-settings': function displaySettings() {
-            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
-        }
-    },
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
+/* 164 */,
+/* 165 */,
 /* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -48811,169 +48099,8 @@ exports.default = {
 
 /***/ }),
 /* 172 */,
-/* 173 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-    props: ['item', 'index', 'serialNumber'],
-
-    data: function data() {
-        return {};
-    },
-
-    computed: {
-        parentSerialNumber: function parentSerialNumber() {
-            var node = this.$store.getters.getItemNodeFromOrder(this.serialNumber);
-            return node.parent;
-        }
-    },
-
-    methods: {
-        /**
-         * Called on click.
-         * It in turn calls a handler
-         */
-        add: function add() {
-            console.log('CALLED', 'add', this.serialNumber);
-            this.sendRequest();
-        },
-
-        /**
-         * This sends the actual request(s)
-         */
-        sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.createItem, this.serialNumber);
-        }
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        //            console.log( 'itemAddButton', 'ready', this.$store );
-    }
-};
-
-/***/ }),
-/* 174 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-    props: ['item', 'index', 'serialNumber', 'type'],
-
-    data: function data() {
-        return {};
-    },
-
-    computed: {
-        node: function node() {
-            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
-        },
-        parentSerialNumber: function parentSerialNumber() {
-            return this.node.parent;
-        },
-        icon: function icon() {
-            var icons = {
-                sibling: '<span class="glyphicon glyphicon-list"></span>',
-                child: '<span class="glyphicon glyphicon-add"></span>'
-            };
-        }
-    },
-
-    methods: {
-        /**
-         * Called on click.
-         * It in turn calls a handler
-         */
-        add: function add() {
-            console.log('CALLED', 'add', this.serialNumber);
-            this.sendRequest();
-        },
-
-        /**
-         * This sends the actual request(s)
-         */
-        sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.createItem, this.parentSerialNumber);
-        }
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        //            console.log( 'itemAddButton', 'ready', this.$store );
-    }
-};
-
-/***/ }),
+/* 173 */,
+/* 174 */,
 /* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49181,353 +48308,9 @@ exports.default = {
 };
 
 /***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var bootbox = __webpack_require__(225); //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-    props: ['index', 'id', 'serialNumber'],
-
-    computed: {
-        buttonid: function buttonid() {
-            return 'delete-item-button-' + this.index;
-        },
-        visible: function visible() {
-            return this.$store.getters.isDeleteVisible;
-        }
-    },
-
-    methods: {
-        isVisible: function isVisible() {
-            return this.$store.getters.isDeleteVisible;
-        },
-
-        /**
-         * Called when the button is clicked. Handles
-         * the request for deletion.
-         */
-        remove: function remove() {
-            console.log('deleteItem pressed');
-            var me = this;
-            bootbox.dialog({
-                className: 'confirmationModal',
-                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all scores associated with the item </p>",
-                title: "Delete",
-                buttons: {
-                    success: {
-                        label: 'Cancel',
-                        className: "btn-sm bnt-primary cancelQuestionDelete",
-                        callback: function callback() {}
-                    },
-                    danger: {
-                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm confirmQuestionDelete",
-                        callback: function callback() {
-                            me.sendRequest();
-                        }
-                    }
-                }
-            });
-        },
-
-        /**
-         * This sends the actual request(s) for deletion
-         */
-        sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.deleteItem, { index: this.index, id: this.id });
-        }
-    },
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
-/* 178 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = __webpack_require__(10);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * This is the indicator which tells the user whether the thing it
- * is attached to is visible to the public.
- * On being clicked it emits an event and listens for a request
- * to change from public to hidden or vice versa.
- *
- * This can be used for anything potentially public.
- * That is, it can be used by:
- *      Exam
- *      ExamName
- *      Question
- *      QuestionName
- *      Element
- *      ElementName
- *      Comment
- *
- * Created by adam on 2/17/17.
- */
-exports.default = {
-
-    props: ['index'],
-
-    data: function data() {
-        return {
-
-            styles: {
-                public: 'bg-warning',
-                private: 'bg-default'
-            },
-
-            icons: {
-                eye: {
-                    open: 'glyphicon glyphicon-eye-open',
-                    close: 'glyphicon glyphicon-eye-close'
-                }
-            }
-        };
-    },
-
-    computed: {
-        publicity: function publicity() {
-            var item = this.$store.getters[gTypes.getItemByIndex](this.index);
-            if (typeof item !== 'undefined') {
-                return item.isPublic();
-            }
-        },
-
-        /**
-         * This alters the styling of the indicator
-         * to help highlight the possibility that others
-         * may see the thing it is attached to
-         * @returns {string}
-         */
-        styling: function styling() {
-            return this.publicity ? this.styles.public : this.styles.private;
-        },
-
-        icon: function icon() {
-            if (this.publicity) {
-                return this.icons.eye.open;
-            }
-            return this.icons.eye.close;
-        }
-    },
-
-    methods: {
-        /**
-         * Returns boolean for whether the thing
-         * this is attached to is visible to students
-         * (or potentially others, if there was a use).
-         * @returns {*}
-         */
-        isPublic: function isPublic() {
-            var item = this.$store.getters.getItemByIndex(this.index);
-
-            // let item = this.$store.getters.getItemByIndex( this.index );
-            if (typeof item !== 'undefined') {
-                return item.isPublic();
-            }
-        },
-
-        /**
-         * Returns boolean for whether the thing
-         * this is attached to is hidden from students
-         * (or potentially others, if there was a use).
-         * Just a semantically useful shortcut
-         * @returns {*}
-         */
-        isPrivate: function isPrivate() {
-            return !this.isPublic;
-        },
-
-        /**
-         * Called when the indicator is clicked.
-         * It subsequently calls other functions to
-         * do the work.
-         */
-        togglePublic: function togglePublic() {
-            //                console.log( 'CALLED', 'togglePublic' );
-            this.$store.dispatch(aTypes.toggleItemPublic, _Payload2.default.factory({ index: this.index }));
-        }
-
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
-/* 179 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = __webpack_require__(10);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Handles showing and hiding the item settings pane
- *
- * Created by adam on 2/18/17.
- */
-exports.default = {
-
-    props: ['index', 'isExam', 'serialNumber'],
-
-    data: function data() {
-        return {};
-    },
-
-    computed: {
-        settingsButtonId: function settingsButtonId() {
-            return 'item-settings-button-' + this.serialNumber;
-        }
-    },
-
-    methods: {
-        toggleVis: function toggleVis() {
-            if (this.isExam) {
-                //exam case
-                this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
-            } else {
-                //item cases
-                var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
-
-                if (isVis) {
-                    //if comes back true, we know that currently visible
-                    //call the mutation with our index
-                    this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true }));
-                } else {
-                    //call the mutation to show with our index
-                    this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true }));
-                    this.$router.push({ name: 'item-detail', params: { serialNumber: this.serialNumber, active: 'details' } });
-                }
-            }
-        }
-    },
-
-    mounted: function mounted() {}
-
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
+/* 177 */,
+/* 178 */,
+/* 179 */,
 /* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49538,54 +48321,14 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
 var _Comment = __webpack_require__(63);
 
 var _Comment2 = _interopRequireDefault(_Comment);
 
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 exports.default = {
-    props: ['index', 'valence'],
+    props: ['index', 'valence', 'serialNumber', 'isExam'],
 
     data: function data() {
         return {};
@@ -49632,39 +48375,7 @@ exports.default = {
             //  return emit('please-change-valence', this.valence);
         }
     }
-};
-
-/***/ }),
-/* 181 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+}; //
 //
 //
 //
@@ -49702,77 +48413,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
-//
-//
-
-
-exports.default = {
-
-    props: ['index', 'serialNumber', 'isExam'],
-
-    data: function data() {
-        return {
-
-            placeHolders: {
-                privateName: "Enter a descriptive name for this item"
-            },
-
-            types: ['Question', 'Element'],
-
-            display: {
-                type: {
-                    question: 'Q',
-                    element: 'E'
-                }
-            },
-
-            defaults: {
-                type: '-'
-            }
-        };
-    },
-
-    computed: {
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
-        },
-
-        displayIndex: function displayIndex() {
-            //take the depth and make a string like
-            // 2.4.5
-            return this.index;
-        },
-
-        /**
-         * For questions, this will be the question number
-         * For elements it will be the subtask number.
-         * todo This should be displayed on the left of the area and update as the item is moved.
-         * todo It could also be hidable....
-         */
-        displayOrder: {
-            get: function get() {
-                //if question, return q number
-                //if element, return order
-            },
-            set: function set(v) {}
-        }
-        //
-
-    },
-
-    methods: {},
-
-    directives: {},
-
-    events: {
-        'toggle-public': function togglePublic() {}
-    },
-
-    mounted: function mounted() {}
-};
 
 /***/ }),
+/* 181 */,
 /* 182 */,
 /* 183 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -49914,56 +48557,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 184 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-
-    props: ['serialNumber'],
-
-    components: {},
-
-    data: function data() {
-        return {
-            defaults: {}
-        };
-    },
-
-    computed: {},
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
+/* 184 */,
 /* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49981,6 +48575,10 @@ var _Comment2 = _interopRequireDefault(_Comment);
 var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = __webpack_require__(16);
+
+var _Exam2 = _interopRequireDefault(_Exam);
 
 var _mutationTypes = __webpack_require__(1);
 
@@ -50006,59 +48604,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * The comment details setup area
  * Created by adam on 2/19/17.
  */
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
 exports.default = {
     components: {
         valenceButtons: _buttonsValenceComponent2.default // 'valence-buttons': valenceButtons,
     },
 
-    props: ['index'],
+    props: [],
 
     data: function data() {
         return {
             serialNumber: _.toInteger(this.$route.params.serialNumber),
             //                active: this.serialNumber,
 
+            labels: {
+                exam: "Set up student feedback for the exam as a whole",
+                item: "Set up student feedback for this item"
+            },
 
             displayed: 'stock',
 
@@ -50066,8 +48627,8 @@ exports.default = {
                 commentText: ''
             },
             placeholders: {
-                elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
-                elementText: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student."
+                exam: "Set up a global comment on the exam as a whole",
+                item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student."
             }
         };
     },
@@ -50086,11 +48647,30 @@ exports.default = {
     },
     computed: {
 
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        //Doing this via computed property so don't have to pass in on route
+        isExam: function isExam() {
+            if (this.item instanceof _Exam2.default) return true;
+            return false;
+        },
+
+        label: function label() {
+            if (this.isExam) return this.labels.exam;
+            return this.labels.item;
+        },
+
+        placeholder: function placeholder() {
+            if (this.isExam) return this.placeholders.exam;
+            return this.placeholders.item;
+        },
+
         commentText: {
             get: function get() {
-                var item = this.$store.getters.getItemByIndex(this.$route.params.index);
-                if (typeof item !== 'undefined') {
-                    var comment = item.getComment(this.displayed);
+                if (typeof this.item !== 'undefined') {
+                    var comment = this.item.getComment(this.displayed);
                     if (typeof comment !== 'undefined') {
                         return comment.text;
                     }
@@ -50098,13 +48678,13 @@ exports.default = {
             },
 
             set: function set(v) {
-                window.console.log('panel.comment-setup.component', 'set', 97, this.index, this);
+                window.console.log('comment-setup-panel', 'set', 97, this.serialNumber, this, v);
                 var pl = _Payload2.default.factory({
-                    index: this.$route.params.index,
+                    obj: this.item,
+                    //index: this.$route.params.index,
                     updateValence: this.displayed,
                     updateVal: v
                 });
-                window.console.log('set', 101, pl);
                 this.$store.commit(mTypes.updateComment, pl);
             }
         },
@@ -50131,18 +48711,6 @@ exports.default = {
     },
 
     methods: {
-        getter: function getter(name) {
-            var item = this.$store.getters.getItemByIndex(this.$route.params.index);
-            if (typeof item !== 'undefined') {
-                return item[name];
-            }
-        },
-
-        setter: function setter(name, value) {
-            var pl = _Payload2.default.factory({ index: this.$route.params.index, updateProp: name, updateVal: value });
-            this.$store.commit(mTypes.updateItem, pl);
-        },
-
         /**
          * Alters which valence is displayed.
          * Called by child components
@@ -50167,7 +48735,29 @@ exports.default = {
     mounted: function mounted() {
         //            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
     }
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 186 */
@@ -50200,6 +48790,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -50371,9 +48970,7 @@ exports.default = {
 
     events: {},
 
-    mounted: function mounted() {
-        console.log('exam-edit-pane ready');
-    }
+    mounted: function mounted() {}
 };
 
 /***/ }),
@@ -50455,6 +49052,10 @@ var _mutationTypes = __webpack_require__(1);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
+var _Exam = __webpack_require__(16);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
 var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
@@ -50467,55 +49068,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/**
- * This is the settings component which contains
- * the more lengthy item text (like the prompt question)
- * as well as other settings, depending on which role it
- * is playing.
- *
- * todo Add an 'other uses of this quetion' area
- * Created by adam on 2/19/17.
- */
-
 exports.default = {
-    //        props: ['serialNumber'],
 
     data: function data() {
         return {
@@ -50567,7 +49120,52 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * This is the settings component which contains
+ * the more lengthy item text (like the prompt question)
+ * as well as other settings, depending on which role it
+ * is playing.
+ *
+ * todo Add an 'other uses of this quetion' area
+ * Created by adam on 2/19/17.
+ */
 
 /***/ }),
 /* 189 */
@@ -50897,7 +49495,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
 
 
 var Sortable = __webpack_require__(106);
@@ -50983,9 +49580,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 exports.default = function (store) {
+
     // Called after every mutation.
     // The mutation comes in the format of { type, payload }.
     // Thus this will catch the new item on the first mutation committing
@@ -51005,7 +49601,7 @@ exports.default = function (store) {
         switch (type) {
 
             case mTypes.insertNodeIntoOrder:
-                updateItemsOrderNEW(store);
+                (0, _requests.updateItemsOrderNEW)(store);
                 break;
 
             /**
@@ -51014,7 +49610,7 @@ exports.default = function (store) {
              */
             case mTypes.addNewItem:
                 if (item) {
-                    createItem(store, item);
+                    (0, _requests.createItem)(store, item);
                     payload.callback();
                 }
                 break;
@@ -51028,10 +49624,10 @@ exports.default = function (store) {
                         item.examId = store.getters.currentExam.id;
                     }
                     if (item.isNew()) {
-                        createItem(store, item);
+                        (0, _requests.createItem)(store, item);
                         payload.callback();
                     } else {
-                        updateItem(store, item);
+                        (0, _requests.updateItem)(store, item);
                         payload.callback();
                     }
                 }
@@ -51054,9 +49650,9 @@ exports.default = function (store) {
                 // let item = _.isObject( payload.obj ) ? payload.obj : store.getters.getItemByIndex( payload.index );
                 window.console.log('apiPlugin', 'updateItem', 263, item, payload);
                 if (item instanceof _Exam2.default) {
-                    updateExam(store, item);
+                    (0, _requests.updateExam)(store, item);
                 } else if (item instanceof _Item2.default) {
-                    updateItem(store, item);
+                    (0, _requests.updateItem)(store, item);
                 }
                 payload.callback();
                 break;
@@ -51103,6 +49699,8 @@ var _Item = __webpack_require__(5);
 
 var _Item2 = _interopRequireDefault(_Item);
 
+var _requests = __webpack_require__(634);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -51133,103 +49731,89 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 window._ = __webpack_require__(26);
 
 
-var REQUEST_VERSION = 1;
-
-var errorHandling = function errorHandling(error) {
-    if (error.response) {
-        // The request was made, but the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-    } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
-    }
-    console.log(error.config);
-};
-
-var handleItemResponse = function handleItemResponse(store, item, response) {
-    // return new Promise( ( resolve, reject ) => {
-    _Item2.default.fillableProps.forEach(function (p) {
-        if (p !== 'index') {
-            if (Object.keys(response.data).includes(p)) {
-                store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
-                    obj: item,
-                    updateProp: p,
-                    updateVal: response.data[p],
-                    mutateSilently: true
-                }));
-            }
-        }
-    });
-
-    _.forEach(_Item2.default.aliasMap, function (v, k) {
-        // if ( Object.keys( response.data ).includes( k ) ) {
-        //     store.commit( mTypes.updateItemSilently, Payload.factory( {
-        //        obj:item,
-        //         updateProp: v,
-        //         updateVal: response.data[ k ],
-        //         mutateSilently: true
-        //     } ) );
-        // }
-    });
-    // resolve();
-    // } );
-};
-
-var handleExamResponse = function handleExamResponse(store, item, response) {
-    return new Promise(function (resolve, reject) {
-        if (typeof item.index !== 'undefined' && item.index === 0) {
-            _Exam2.default.fillableProps.forEach(function (p) {
-                if (p !== 'index') {
-                    // window.console.log('apiPlugin', 50, p);
-                    if (Object.keys(response.data).includes(p)) {
-                        var jsProp = p === 'max_score' ? 'maxScore' : p;
-                        store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
-                            index: item.index,
-                            updateProp: jsProp,
-                            updateVal: response.data[p],
-                            mutateSilently: true
-                        }));
-                    }
-                }
-            });
-            resolve();
-        }
-    });
-};
-
-var handleResponse = function handleResponse(store, item, response) {
-    // return new Promise( ( resolve, reject ) => {
-    // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
-    if (typeof response.data === 'undefined') return false;
-
-    //return Item with the new id or other data loaded
-    if (typeof response.data !== 'undefined') {
-
-        switch (item.kind) {
-            case 'exam':
-                handleExamResponse(store, item, response);
-                // .then( ( resolve ) => {
-                //     resolve();
-                // } );
-                break;
-
-            case 'item':
-                handleItemResponse(store, item, response);
-                // resolve();
-                // .then( ( resolve ) => {
-                //     resolve();
-                // } );
-
-                break;
-            default:
-                reject();
-        }
-    }
-    // } );
-};
+// const handleItemResponse = ( store, item, response ) => {
+//     // return new Promise( ( resolve, reject ) => {
+//     Item.fillableProps.forEach( function ( p ) {
+//         if ( p !== 'index' ) {
+//             if ( Object.keys( response.data ).includes( p ) ) {
+//                 store.commit( mTypes.updateItemSilently, Payload.factory( {
+//                     obj: item,
+//                     updateProp: p,
+//                     updateVal: response.data[ p ],
+//                     mutateSilently: true
+//                 } ) );
+//
+//             }
+//         }
+//     } );
+//
+//     _.forEach( Item.aliasMap, function ( v, k ) {
+//         // if ( Object.keys( response.data ).includes( k ) ) {
+//         //     store.commit( mTypes.updateItemSilently, Payload.factory( {
+//         //        obj:item,
+//         //         updateProp: v,
+//         //         updateVal: response.data[ k ],
+//         //         mutateSilently: true
+//         //     } ) );
+//         // }
+//     } );
+//     // resolve();
+//     // } );
+// };
+//
+// const handleExamResponse = ( store, item, response ) => {
+//     return new Promise( ( resolve, reject ) => {
+//         if ( typeof item.index !== 'undefined' && item.index === 0 ) {
+//             Exam.fillableProps.forEach( function ( p ) {
+//                 if ( p !== 'index' ) {
+//                     // window.console.log('apiPlugin', 50, p);
+//                     if ( Object.keys( response.data ).includes( p ) ) {
+//                         let jsProp = (p === 'max_score') ? 'maxScore' : p;
+//                         store.commit( mTypes.updateItemSilently, Payload.factory( {
+//                             index: item.index,
+//                             updateProp: jsProp,
+//                             updateVal: response.data[ p ],
+//                             mutateSilently: true
+//                         } ) );
+//                     }
+//                 }
+//             } );
+//             resolve();
+//         }
+//     } );
+// };
+//
+// const handleResponse = ( store, item, response ) => {
+//     // return new Promise( ( resolve, reject ) => {
+//     // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+//     if ( typeof response.data === 'undefined' ) return false;
+//
+//     //return Item with the new id or other data loaded
+//     if ( typeof response.data !== 'undefined' ) {
+//
+//         switch ( item.kind ) {
+//             case 'exam':
+//                 handleExamResponse( store, item, response );
+//                 // .then( ( resolve ) => {
+//                 //     resolve();
+//                 // } );
+//                 break;
+//
+//             case 'item':
+//                 handleItemResponse( store, item, response );
+//                 // resolve();
+//                 // .then( ( resolve ) => {
+//                 //     resolve();
+//                 // } );
+//
+//                 break;
+//             default:
+//                 reject()
+//         }
+//
+//     }
+//     // } );
+// };
 
 /**
  * Returns true if the mutation needs to
@@ -51248,137 +49832,6 @@ var shouldTellServerAboutThis = function shouldTellServerAboutThis(mutation) {
         return false;
     }
     return true;
-};
-
-/**
- * Handles the call to the server to update
- * properties of an item which already has an id
- * @param store
- * @param item
- */
-var updateItem = function updateItem(store, item) {
-    // if ( !item instanceof Exam ) {
-
-    item.examId = store.getters.currentExam.id;
-    item.requestVersion = REQUEST_VERSION;
-    // }
-    //put/patch
-    window.axios.put('items/' + item.id, item).then(function (response) {
-        handleResponse(store, item, response);
-    }).catch(function (error) {
-        errorHandling(error);
-    });
-};
-/**
- * Handles the call to the server to update
- * properties of an item which already has an id
- * @param store
- * @param item
- */
-var updateExam = function updateExam(store, exam) {
-    window.console.log('apiPlugin', 'updateExam', 181, exam);
-    var out = _extends({}, exam, {
-        examId: store.getters.currentExam.id,
-        requestVersion: REQUEST_VERSION
-    });
-    // }
-    //put/patch
-    window.axios.put('editexam/' + exam.id, exam).then(function (response) {
-        handleResponse(store, exam, response);
-    }).catch(function (error) {
-        errorHandling(error);
-    });
-};
-
-/**
- * Handles the actual call to the server to create an
- * item which doesn't have an id yet.
- * @param store
- * @param item
- */
-var createItem = function createItem(store, item) {
-    if (item && item.isNew()) {
-        var exam = store.getters.currentExam;
-        var toSend = _extends({}, item, {
-            requestVersion: REQUEST_VERSION,
-            examId: exam.id
-        });
-
-        // }
-
-        //id === 'undefined' || payload.obj.id === -1)
-        //All IModels have an id of -1 when they are initially created.
-        //This is replaced with the real id once one is returned from the server.
-        //Thus, this request is to create the item.
-        //When the server has done this, it will send back an id
-        window.axios.post('items', toSend).then(function (response) {
-            handleResponse(store, item, response);
-        }).catch(function (error) {
-            errorHandling(error);
-        });
-    }
-};
-
-/**
- * Asks the server to update the order of items
- * @param store
- */
-var updateItemsOrderNEW = function updateItemsOrderNEW(store) {
-    var ord = store.getters.getOrderForSync;
-    // let sortedIds = store.getters.getSortedIds;
-    var exam = store.getters.currentExam;
-
-    var payload = {
-        examId: exam.id,
-        requestVersion: REQUEST_VERSION,
-        order: ord
-    };
-
-    window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
-
-    var route = 'items/' + exam.id + '/order';
-    window.axios.post(route, payload).then(function (response) {
-        window.console.log('apiPlugin', '#### SERVER SAYS ####', 169, response);
-        //  handleResponse(store, items, response);
-    }).catch(function (error) {
-        errorHandling(error);
-    });
-};
-
-/**
- * Asks the server to update the order of items
- * @param store
- */
-var updateItemsOrder = function updateItemsOrder(store) {
-    var items = store.getters.getAllItems;
-    var examId = store.getters.currentExam.id;
-    //if(typeof exam === 'undefined') return false;
-    var payload = {
-        examId: examId,
-        requestVersion: REQUEST_VERSION,
-        order: []
-    };
-
-    //build an array of ids to send
-    //note that we start at 1 so the exam id
-    //is not included
-    for (var i = 1; i < items.length; i++) {
-        if (!_.isUndefined(items[i].id)) {
-            payload.order.push(items[i].id);
-        }
-    }
-
-    // window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
-
-    if (items && examId) {
-        var route = 'items/' + examId + '/order';
-        window.axios.put(route, payload).then(function (response) {
-            window.console.log('apiPlugin', '####', 169, response);
-            //  handleResponse(store, items, response);
-        }).catch(function (error) {
-            errorHandling(error);
-        });
-    }
 };
 
 /**
@@ -51676,7 +50129,7 @@ var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _controller = __webpack_require__(78);
+var _controller = __webpack_require__(633);
 
 var api = _interopRequireWildcard(_controller);
 
@@ -53545,7 +51998,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends2;
+var _extends2, _extends3;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
                                                                                                                                                                                                                                                                    * This ties together the two types of storage for
@@ -53761,7 +52214,7 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
     return out;
 }), _extends2));
 
-var actions = _extends({}, _items2.default.actions, _items4.default.actions, _defineProperty({}, aTypes.createItem, function (_ref, parent) {
+var actions = _extends({}, _items2.default.actions, _items4.default.actions, (_extends3 = {}, _defineProperty(_extends3, aTypes.createItem, function (_ref, parent) {
     var state = _ref.state,
         commit = _ref.commit,
         dispatch = _ref.dispatch,
@@ -53789,7 +52242,11 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _de
             resolve();
         });
     });
-}));
+}), _defineProperty(_extends3, aTypes.removeItem, function () {
+    //remove from order
+
+    //remove from objects
+}), _defineProperty(_extends3, aTypes.deleteItem, function () {}), _extends3));
 
 // const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
 // Object.assign(getters, orderGetters);//
@@ -54927,21 +53384,23 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
     //     return recurse( node.parent );
     // })( serialNumber );
 }), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, rootState, serialNumber) {
-    //look up the node whose serial number we've just  been handed.
-    var node = (0, _NodeTools.getNode)(state, serialNumber);
-    //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
-    if (node) {
-        var parent = (0, _NodeTools.getNode)(state, node.parent);
-        // let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
-        if (parent) {
-            for (var index = 0; index < parent.children.length; index++) {
-                if (parent.children[index].data === node.data) {
-                    return index;
+    return function (serialNumber) {
+        //look up the node whose serial number we've just  been handed.
+        var node = (0, _NodeTools.getNode)(state, serialNumber);
+        //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
+        if (node) {
+            var parent = (0, _NodeTools.getNode)(state, node.parent);
+            // let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
+            if (parent) {
+                for (var index = 0; index < parent.children.length; index++) {
+                    if (parent.children[index].data === node.data) {
+                        return index;
+                    }
                 }
             }
         }
-    }
-    return 0;
+        return 0;
+    };
 }), _defineProperty(_module$exports, 'getRootNode', function getRootNode(state, getters, rootState) {
     return state.itemMap;
 }), _defineProperty(_module$exports, 'getRootNodeSerialNumber', function getRootNodeSerialNumber(state, getters, rootState) {
@@ -55498,6 +53957,8 @@ var _Node = __webpack_require__(34);
 
 var _Node2 = _interopRequireDefault(_Node);
 
+var _NodeTools = __webpack_require__(59);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -55559,7 +54020,43 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     //delete the node
     var idx = parent.children.indexOf(obj);
     parent.children.splice(idx, 1);
-}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
+}), _defineProperty(_module$exports, 'increasePosition', function increasePosition(state, payload) {
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+
+
+    var currentIndex = parentNode.children.indexOf(objNode
+
+    //make sure it is not the last item already
+    );if (parentNode.children.length !== currentIndex + 1) {
+
+        //We first pop the item out so that its successor
+        //slides down and occupies its current index
+        parentNode.children.pop(currentIndex);
+        //Now we push it in at  its
+        //original position + 1
+        parentNode.children.splice(currentIndex + 1, 0, objNode);
+    }
+}), _defineProperty(_module$exports, 'decreasePosition', function decreasePosition(state, payload) {
+    //check whether at the end of the children list
+    //if so, ignore the call
+
+    //Splice in
+
+}), _defineProperty(_module$exports, 'promote', function promote(state, payload) {
+    //check that we aren't at the question level
+    //where it makes no sense to promote
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+    //get parent's parent
+
+    var grandParent = (0, _NodeTools.getNode)(parentNode.parent);
+    //add to grandparent
+    grandParent.children.push(objNode);
+
+    //remove from parent's children list
+    parentNode.children.pop(parentNode.children.indexOf(objNode));
+}), _defineProperty(_module$exports, 'demote', function demote(state, payload) {}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
     var objNode = payload.objNode,
         obj = payload.obj;
     // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
@@ -56312,8 +54809,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    */
 
 var state = {
-    /** List of indexes of items for which the settings panel is visible */
+    /** List of indexes of identifiers for which the settings panel is visible */
     itemsWithSettingsVisible: [],
+
+    /** List of serial numbers of identifiers whose children are hidden */
+    itemsWithChildrenHidden: [],
+
     //The root item (the exam) is always visible, but it's settings aren't
     examSettingsVisible: false
 };
@@ -56337,6 +54838,14 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.showItemSet
             if (index > -1) state.itemsWithSettingsVisible.splice(index, 1);
         }
     }
+}), _defineProperty(_mutations, 'toggleChildrenVisibility', function toggleChildrenVisibility(state, payload) {
+    if (state.itemsWithChildrenHidden.includes(payload.serialNumber)) {
+        //remove the item from the list of hidden
+        var index = state.itemsWithChildrenHidden.indexOf(payload.serialNumber);
+        state.itemsWithChildrenHidden.splice(index, 1);
+    } else {
+        state.itemsWithChildrenHidden.push(payload.serialNumber);
+    }
 }), _defineProperty(_mutations, mTypes.toggleExamSettings, function (state, payload) {
     state.examSettingsVisible = !state.examSettingsVisible;
 }), _mutations);
@@ -56352,6 +54861,10 @@ var actions = {};
 var getters = (_getters = {}, _defineProperty(_getters, gTypes.isItemSettingsVisible, function (state, getters, rootState) {
     return function (serialNumber) {
         return state.itemsWithSettingsVisible.includes(serialNumber);
+    };
+}), _defineProperty(_getters, 'isItemChildrenVisible', function isItemChildrenVisible(state, getters, rootState) {
+    return function (serialNumber) {
+        return !state.itemsWithChildrenHidden.includes(serialNumber);
     };
 }), _defineProperty(_getters, gTypes.isExamSettingsVisible, function (state) {
     return state.examSettingsVisible;
@@ -56455,7 +54968,7 @@ var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _controller = __webpack_require__(78);
+var _controller = __webpack_require__(633);
 
 var api = _interopRequireWildcard(_controller);
 
@@ -69540,26 +68053,13 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.comment-setup-panel {\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 424 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 424 */,
 /* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69582,26 +68082,13 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "/*! bulma.io v0.4.2 | MIT License | github.com/jgthms/bulma */\n@-webkit-keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n@keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n\n/*! minireset.css v0.0.2 | MIT License | github.com/jgthms/minireset.css */\nhtml,\nbody,\np,\nol,\nul,\nli,\ndl,\ndt,\ndd,\nblockquote,\nfigure,\nfieldset,\nlegend,\ntextarea,\npre,\niframe,\nhr,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  margin: 0;\n  padding: 0;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-size: 100%;\n  font-weight: normal;\n}\nul {\n  list-style: none;\n}\nbutton,\ninput,\nselect,\ntextarea {\n  margin: 0;\n}\nhtml {\n  box-sizing: border-box;\n}\n* {\n  box-sizing: inherit;\n}\n*:before, *:after {\n    box-sizing: inherit;\n}\nimg,\nembed,\nobject,\naudio,\nvideo {\n  height: auto;\n  max-width: 100%;\n}\niframe {\n  border: 0;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\ntd,\nth {\n  padding: 0;\n  text-align: left;\n}\nhtml {\n  background-color: #fff;\n  font-size: 16px;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  min-width: 300px;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  text-rendering: optimizeLegibility;\n}\narticle,\naside,\nfigure,\nfooter,\nheader,\nhgroup,\nsection {\n  display: block;\n}\nbody,\nbutton,\ninput,\nselect,\ntextarea {\n  font-family: BlinkMacSystemFont, -apple-system, \"Segoe UI\", \"Roboto\", \"Oxygen\", \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", \"Helvetica\", \"Arial\", sans-serif;\n}\ncode,\npre {\n  -moz-osx-font-smoothing: auto;\n  -webkit-font-smoothing: auto;\n  font-family: monospace;\n}\nbody {\n  color: #4a4a4a;\n  font-size: 1rem;\n  font-weight: 400;\n  line-height: 1.5;\n}\na {\n  color: #00d1b2;\n  cursor: pointer;\n  text-decoration: none;\n  transition: none 86ms ease-out;\n}\na:hover {\n    color: #363636;\n}\ncode {\n  background-color: whitesmoke;\n  color: #ff3860;\n  font-size: 0.8em;\n  font-weight: normal;\n  padding: 0.25em 0.5em 0.25em;\n}\nhr {\n  background-color: #dbdbdb;\n  border: none;\n  display: block;\n  height: 1px;\n  margin: 1.5rem 0;\n}\nimg {\n  max-width: 100%;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  vertical-align: baseline;\n}\nsmall {\n  font-size: 0.8em;\n}\nspan {\n  font-style: inherit;\n  font-weight: inherit;\n}\nstrong {\n  color: #363636;\n  font-weight: 700;\n}\npre {\n  background-color: whitesmoke;\n  color: #4a4a4a;\n  font-size: 0.8em;\n  white-space: pre;\n  word-wrap: normal;\n}\npre code {\n    -webkit-overflow-scrolling: touch;\n    background: none;\n    color: inherit;\n    display: block;\n    font-size: 1em;\n    overflow-x: auto;\n    padding: 1.25rem 1.5rem;\n}\ntable {\n  width: 100%;\n}\ntable td,\n  table th {\n    text-align: left;\n    vertical-align: top;\n}\ntable th {\n    color: #363636;\n}\n.is-block {\n  display: block;\n}\n@media screen and (max-width: 768px) {\n.is-block-mobile {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-block-tablet {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-block-tablet-only {\n    display: block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-block-touch {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-block-desktop {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-block-desktop-only {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-block-widescreen {\n    display: block !important;\n}\n}\n.is-flex {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n@media screen and (max-width: 768px) {\n.is-flex-mobile {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-flex-tablet {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-flex-tablet-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-flex-touch {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-flex-desktop {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-flex-desktop-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-flex-widescreen {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n.is-inline {\n  display: inline;\n}\n@media screen and (max-width: 768px) {\n.is-inline-mobile {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-tablet {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-tablet-only {\n    display: inline !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-touch {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-desktop {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-desktop-only {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-widescreen {\n    display: inline !important;\n}\n}\n.is-inline-block {\n  display: inline-block;\n}\n@media screen and (max-width: 768px) {\n.is-inline-block-mobile {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-block-tablet {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-block-tablet-only {\n    display: inline-block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-block-touch {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-block-desktop {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-block-desktop-only {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-block-widescreen {\n    display: inline-block !important;\n}\n}\n.is-inline-flex {\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n}\n@media screen and (max-width: 768px) {\n.is-inline-flex-mobile {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-flex-tablet {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-flex-tablet-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-flex-touch {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-flex-desktop {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-flex-desktop-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-flex-widescreen {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n.is-clearfix:after {\n  clear: both;\n  content: \" \";\n  display: table;\n}\n.is-pulled-left {\n  float: left;\n}\n.is-pulled-right {\n  float: right;\n}\n.is-clipped {\n  overflow: hidden !important;\n}\n.is-overlay {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n.has-text-centered {\n  text-align: center;\n}\n.has-text-left {\n  text-align: left;\n}\n.has-text-right {\n  text-align: right;\n}\n.has-text-white {\n  color: white;\n}\na.has-text-white:hover, a.has-text-white:focus {\n  color: #e6e6e6;\n}\n.has-text-black {\n  color: #0a0a0a;\n}\na.has-text-black:hover, a.has-text-black:focus {\n  color: black;\n}\n.has-text-light {\n  color: whitesmoke;\n}\na.has-text-light:hover, a.has-text-light:focus {\n  color: #dbdbdb;\n}\n.has-text-dark {\n  color: #363636;\n}\na.has-text-dark:hover, a.has-text-dark:focus {\n  color: #1c1c1c;\n}\n.has-text-primary {\n  color: #00d1b2;\n}\na.has-text-primary:hover, a.has-text-primary:focus {\n  color: #009e86;\n}\n.has-text-info {\n  color: #3273dc;\n}\na.has-text-info:hover, a.has-text-info:focus {\n  color: #205bbc;\n}\n.has-text-success {\n  color: #23d160;\n}\na.has-text-success:hover, a.has-text-success:focus {\n  color: #1ca64c;\n}\n.has-text-warning {\n  color: #ffdd57;\n}\na.has-text-warning:hover, a.has-text-warning:focus {\n  color: #ffd324;\n}\n.has-text-danger {\n  color: #ff3860;\n}\na.has-text-danger:hover, a.has-text-danger:focus {\n  color: #ff0537;\n}\n.is-hidden {\n  display: none !important;\n}\n@media screen and (max-width: 768px) {\n.is-hidden-mobile {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-hidden-tablet {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-hidden-tablet-only {\n    display: none !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-hidden-touch {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-hidden-desktop {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-hidden-desktop-only {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-hidden-widescreen {\n    display: none !important;\n}\n}\n.is-marginless {\n  margin: 0 !important;\n}\n.is-paddingless {\n  padding: 0 !important;\n}\n.is-unselectable {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.box {\n  background-color: white;\n  border-radius: 5px;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  display: block;\n  padding: 1.25rem;\n}\n.box:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\na.box:hover, a.box:focus {\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px #00d1b2;\n}\na.box:active {\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2), 0 0 0 1px #00d1b2;\n}\n.button {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  cursor: pointer;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  text-align: center;\n  white-space: nowrap;\n}\n.button:focus, .button.is-focused, .button:active, .button.is-active {\n    outline: none;\n}\n.button[disabled] {\n    cursor: not-allowed;\n}\n.button strong {\n    color: inherit;\n}\n.button .icon, .button .icon.is-small, .button .icon.is-medium, .button .icon.is-large {\n    height: 1.5em;\n    width: 1.5em;\n}\n.button .icon:first-child:not(:last-child) {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: 0.1875em;\n}\n.button .icon:last-child:not(:first-child) {\n    margin-left: 0.1875em;\n    margin-right: calc(-0.375em - 1px);\n}\n.button .icon:first-child:last-child {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: calc(-0.375em - 1px);\n}\n.button:hover, .button.is-hovered {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.button:focus, .button.is-focused {\n    border-color: #00d1b2;\n    box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n    color: #363636;\n}\n.button:active, .button.is-active {\n    border-color: #4a4a4a;\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n    color: #363636;\n}\n.button.is-link {\n    background-color: transparent;\n    border-color: transparent;\n    color: #4a4a4a;\n    text-decoration: underline;\n}\n.button.is-link:hover, .button.is-link.is-hovered, .button.is-link:focus, .button.is-link.is-focused, .button.is-link:active, .button.is-link.is-active {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-link[disabled] {\n      background-color: transparent;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white {\n    background-color: white;\n    border-color: transparent;\n    color: #0a0a0a;\n}\n.button.is-white:hover, .button.is-white.is-hovered {\n      background-color: #f9f9f9;\n      border-color: transparent;\n      color: #0a0a0a;\n}\n.button.is-white:focus, .button.is-white.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 255, 255, 0.25);\n      color: #0a0a0a;\n}\n.button.is-white:active, .button.is-white.is-active {\n      background-color: #f2f2f2;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #0a0a0a;\n}\n.button.is-white[disabled] {\n      background-color: white;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white.is-inverted {\n      background-color: #0a0a0a;\n      color: white;\n}\n.button.is-white.is-inverted:hover {\n        background-color: black;\n}\n.button.is-white.is-inverted[disabled] {\n        background-color: #0a0a0a;\n        border-color: transparent;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-loading:after {\n      border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-white.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-white.is-outlined:hover, .button.is-white.is-outlined:focus {\n        background-color: white;\n        border-color: white;\n        color: #0a0a0a;\n}\n.button.is-white.is-outlined.is-loading:after {\n        border-color: transparent transparent white white !important;\n}\n.button.is-white.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-white.is-inverted.is-outlined:hover, .button.is-white.is-inverted.is-outlined:focus {\n        background-color: #0a0a0a;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black {\n    background-color: #0a0a0a;\n    border-color: transparent;\n    color: white;\n}\n.button.is-black:hover, .button.is-black.is-hovered {\n      background-color: #040404;\n      border-color: transparent;\n      color: white;\n}\n.button.is-black:focus, .button.is-black.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(10, 10, 10, 0.25);\n      color: white;\n}\n.button.is-black:active, .button.is-black.is-active {\n      background-color: black;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: white;\n}\n.button.is-black[disabled] {\n      background-color: #0a0a0a;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-black.is-inverted {\n      background-color: white;\n      color: #0a0a0a;\n}\n.button.is-black.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-black.is-inverted[disabled] {\n        background-color: white;\n        border-color: transparent;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-loading:after {\n      border-color: transparent transparent white white !important;\n}\n.button.is-black.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-black.is-outlined:hover, .button.is-black.is-outlined:focus {\n        background-color: #0a0a0a;\n        border-color: #0a0a0a;\n        color: white;\n}\n.button.is-black.is-outlined.is-loading:after {\n        border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-black.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-black.is-inverted.is-outlined:hover, .button.is-black.is-inverted.is-outlined:focus {\n        background-color: white;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-light {\n    background-color: whitesmoke;\n    border-color: transparent;\n    color: #363636;\n}\n.button.is-light:hover, .button.is-light.is-hovered {\n      background-color: #eeeeee;\n      border-color: transparent;\n      color: #363636;\n}\n.button.is-light:focus, .button.is-light.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(245, 245, 245, 0.25);\n      color: #363636;\n}\n.button.is-light:active, .button.is-light.is-active {\n      background-color: #e8e8e8;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #363636;\n}\n.button.is-light[disabled] {\n      background-color: whitesmoke;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-light.is-inverted {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.button.is-light.is-inverted:hover {\n        background-color: #292929;\n}\n.button.is-light.is-inverted[disabled] {\n        background-color: #363636;\n        border-color: transparent;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-loading:after {\n      border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-light.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-light.is-outlined:hover, .button.is-light.is-outlined:focus {\n        background-color: whitesmoke;\n        border-color: whitesmoke;\n        color: #363636;\n}\n.button.is-light.is-outlined.is-loading:after {\n        border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-light.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-light.is-inverted.is-outlined:hover, .button.is-light.is-inverted.is-outlined:focus {\n        background-color: #363636;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark {\n    background-color: #363636;\n    border-color: transparent;\n    color: whitesmoke;\n}\n.button.is-dark:hover, .button.is-dark.is-hovered {\n      background-color: #2f2f2f;\n      border-color: transparent;\n      color: whitesmoke;\n}\n.button.is-dark:focus, .button.is-dark.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(54, 54, 54, 0.25);\n      color: whitesmoke;\n}\n.button.is-dark:active, .button.is-dark.is-active {\n      background-color: #292929;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: whitesmoke;\n}\n.button.is-dark[disabled] {\n      background-color: #363636;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-dark.is-inverted {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-dark.is-inverted:hover {\n        background-color: #e8e8e8;\n}\n.button.is-dark.is-inverted[disabled] {\n        background-color: whitesmoke;\n        border-color: transparent;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-loading:after {\n      border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-dark.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-dark.is-outlined:hover, .button.is-dark.is-outlined:focus {\n        background-color: #363636;\n        border-color: #363636;\n        color: whitesmoke;\n}\n.button.is-dark.is-outlined.is-loading:after {\n        border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-dark.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-dark.is-inverted.is-outlined:hover, .button.is-dark.is-inverted.is-outlined:focus {\n        background-color: whitesmoke;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-primary {\n    background-color: #00d1b2;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-primary:hover, .button.is-primary.is-hovered {\n      background-color: #00c4a7;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-primary:focus, .button.is-primary.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n      color: #fff;\n}\n.button.is-primary:active, .button.is-primary.is-active {\n      background-color: #00b89c;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-primary[disabled] {\n      background-color: #00d1b2;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-primary.is-inverted {\n      background-color: #fff;\n      color: #00d1b2;\n}\n.button.is-primary.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-primary.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-primary.is-outlined {\n      background-color: transparent;\n      border-color: #00d1b2;\n      color: #00d1b2;\n}\n.button.is-primary.is-outlined:hover, .button.is-primary.is-outlined:focus {\n        background-color: #00d1b2;\n        border-color: #00d1b2;\n        color: #fff;\n}\n.button.is-primary.is-outlined.is-loading:after {\n        border-color: transparent transparent #00d1b2 #00d1b2 !important;\n}\n.button.is-primary.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #00d1b2;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-primary.is-inverted.is-outlined:hover, .button.is-primary.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-info {\n    background-color: #3273dc;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-info:hover, .button.is-info.is-hovered {\n      background-color: #276cda;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-info:focus, .button.is-info.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(50, 115, 220, 0.25);\n      color: #fff;\n}\n.button.is-info:active, .button.is-info.is-active {\n      background-color: #2366d1;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-info[disabled] {\n      background-color: #3273dc;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-info.is-inverted {\n      background-color: #fff;\n      color: #3273dc;\n}\n.button.is-info.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-info.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-info.is-outlined {\n      background-color: transparent;\n      border-color: #3273dc;\n      color: #3273dc;\n}\n.button.is-info.is-outlined:hover, .button.is-info.is-outlined:focus {\n        background-color: #3273dc;\n        border-color: #3273dc;\n        color: #fff;\n}\n.button.is-info.is-outlined.is-loading:after {\n        border-color: transparent transparent #3273dc #3273dc !important;\n}\n.button.is-info.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #3273dc;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-info.is-inverted.is-outlined:hover, .button.is-info.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-success {\n    background-color: #23d160;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-success:hover, .button.is-success.is-hovered {\n      background-color: #22c65b;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-success:focus, .button.is-success.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(35, 209, 96, 0.25);\n      color: #fff;\n}\n.button.is-success:active, .button.is-success.is-active {\n      background-color: #20bc56;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-success[disabled] {\n      background-color: #23d160;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-success.is-inverted {\n      background-color: #fff;\n      color: #23d160;\n}\n.button.is-success.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-success.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-success.is-outlined {\n      background-color: transparent;\n      border-color: #23d160;\n      color: #23d160;\n}\n.button.is-success.is-outlined:hover, .button.is-success.is-outlined:focus {\n        background-color: #23d160;\n        border-color: #23d160;\n        color: #fff;\n}\n.button.is-success.is-outlined.is-loading:after {\n        border-color: transparent transparent #23d160 #23d160 !important;\n}\n.button.is-success.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #23d160;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-success.is-inverted.is-outlined:hover, .button.is-success.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-warning {\n    background-color: #ffdd57;\n    border-color: transparent;\n    color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:hover, .button.is-warning.is-hovered {\n      background-color: #ffdb4a;\n      border-color: transparent;\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:focus, .button.is-warning.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 221, 87, 0.25);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:active, .button.is-warning.is-active {\n      background-color: #ffd83d;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning[disabled] {\n      background-color: #ffdd57;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-warning.is-inverted {\n      background-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.button.is-warning.is-inverted:hover {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted[disabled] {\n        background-color: rgba(0, 0, 0, 0.7);\n        border-color: transparent;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-loading:after {\n      border-color: transparent transparent rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.7) !important;\n}\n.button.is-warning.is-outlined {\n      background-color: transparent;\n      border-color: #ffdd57;\n      color: #ffdd57;\n}\n.button.is-warning.is-outlined:hover, .button.is-warning.is-outlined:focus {\n        background-color: #ffdd57;\n        border-color: #ffdd57;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-outlined.is-loading:after {\n        border-color: transparent transparent #ffdd57 #ffdd57 !important;\n}\n.button.is-warning.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ffdd57;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: rgba(0, 0, 0, 0.7);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted.is-outlined:hover, .button.is-warning.is-inverted.is-outlined:focus {\n        background-color: rgba(0, 0, 0, 0.7);\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: rgba(0, 0, 0, 0.7);\n        box-shadow: none;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-danger {\n    background-color: #ff3860;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-danger:hover, .button.is-danger.is-hovered {\n      background-color: #ff2b56;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-danger:focus, .button.is-danger.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 56, 96, 0.25);\n      color: #fff;\n}\n.button.is-danger:active, .button.is-danger.is-active {\n      background-color: #ff1f4b;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-danger[disabled] {\n      background-color: #ff3860;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-danger.is-inverted {\n      background-color: #fff;\n      color: #ff3860;\n}\n.button.is-danger.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-danger.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-danger.is-outlined {\n      background-color: transparent;\n      border-color: #ff3860;\n      color: #ff3860;\n}\n.button.is-danger.is-outlined:hover, .button.is-danger.is-outlined:focus {\n        background-color: #ff3860;\n        border-color: #ff3860;\n        color: #fff;\n}\n.button.is-danger.is-outlined.is-loading:after {\n        border-color: transparent transparent #ff3860 #ff3860 !important;\n}\n.button.is-danger.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ff3860;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-danger.is-inverted.is-outlined:hover, .button.is-danger.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.button.is-medium {\n    font-size: 1.25rem;\n}\n.button.is-large {\n    font-size: 1.5rem;\n}\n.button[disabled] {\n    background-color: white;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    opacity: 0.5;\n}\n.button.is-fullwidth {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    width: 100%;\n}\n.button.is-loading {\n    color: transparent !important;\n    pointer-events: none;\n}\n.button.is-loading:after {\n      -webkit-animation: spinAround 500ms infinite linear;\n              animation: spinAround 500ms infinite linear;\n      border: 2px solid #dbdbdb;\n      border-radius: 290486px;\n      border-right-color: transparent;\n      border-top-color: transparent;\n      content: \"\";\n      display: block;\n      height: 1em;\n      position: relative;\n      width: 1em;\n      position: absolute;\n      left: calc(50% - (1em / 2));\n      top: calc(50% - (1em / 2));\n      position: absolute !important;\n}\n.button.is-static {\n    background-color: whitesmoke;\n    border-color: #dbdbdb;\n    color: #7a7a7a;\n    box-shadow: none;\n    pointer-events: none;\n}\nbutton.button,\ninput[type=\"submit\"].button {\n  line-height: 1;\n  padding-bottom: 0.4em;\n  padding-top: 0.35em;\n}\n.content {\n  color: #4a4a4a;\n}\n.content:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.content li + li {\n    margin-top: 0.25em;\n}\n.content p:not(:last-child),\n  .content dl:not(:last-child),\n  .content ol:not(:last-child),\n  .content ul:not(:last-child),\n  .content blockquote:not(:last-child),\n  .content pre:not(:last-child),\n  .content table:not(:last-child) {\n    margin-bottom: 1em;\n}\n.content h1,\n  .content h2,\n  .content h3,\n  .content h4,\n  .content h5,\n  .content h6 {\n    color: #363636;\n    font-weight: 400;\n    line-height: 1.125;\n}\n.content h1 {\n    font-size: 2em;\n    margin-bottom: 0.5em;\n}\n.content h1:not(:first-child) {\n      margin-top: 1em;\n}\n.content h2 {\n    font-size: 1.75em;\n    margin-bottom: 0.5714em;\n}\n.content h2:not(:first-child) {\n      margin-top: 1.1428em;\n}\n.content h3 {\n    font-size: 1.5em;\n    margin-bottom: 0.6666em;\n}\n.content h3:not(:first-child) {\n      margin-top: 1.3333em;\n}\n.content h4 {\n    font-size: 1.25em;\n    margin-bottom: 0.8em;\n}\n.content h5 {\n    font-size: 1.125em;\n    margin-bottom: 0.8888em;\n}\n.content h6 {\n    font-size: 1em;\n    margin-bottom: 1em;\n}\n.content blockquote {\n    background-color: whitesmoke;\n    border-left: 5px solid #dbdbdb;\n    padding: 1.25em 1.5em;\n}\n.content ol {\n    list-style: decimal outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul {\n    list-style: disc outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul ul {\n      list-style-type: circle;\n      margin-top: 0.5em;\n}\n.content ul ul ul {\n        list-style-type: square;\n}\n.content dd {\n    margin-left: 2em;\n}\n.content pre {\n    -webkit-overflow-scrolling: touch;\n    overflow-x: auto;\n    padding: 1.25em 1.5em;\n    white-space: pre;\n    word-wrap: normal;\n}\n.content table {\n    width: 100%;\n}\n.content table td,\n    .content table th {\n      border: 1px solid #dbdbdb;\n      border-width: 0 0 1px;\n      padding: 0.5em 0.75em;\n      vertical-align: top;\n}\n.content table th {\n      color: #363636;\n      text-align: left;\n}\n.content table tr:hover {\n      background-color: whitesmoke;\n}\n.content table thead td,\n    .content table thead th {\n      border-width: 0 0 2px;\n      color: #363636;\n}\n.content table tfoot td,\n    .content table tfoot th {\n      border-width: 2px 0 0;\n      color: #363636;\n}\n.content table tbody tr:last-child td,\n    .content table tbody tr:last-child th {\n      border-bottom-width: 0;\n}\n.content.is-small {\n    font-size: 0.75rem;\n}\n.content.is-medium {\n    font-size: 1.25rem;\n}\n.content.is-large {\n    font-size: 1.5rem;\n}\n.input,\n.textarea {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);\n  max-width: 100%;\n  width: 100%;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    outline: none;\n}\n.input[disabled],\n  .textarea[disabled] {\n    cursor: not-allowed;\n}\n.input:hover, .input.is-hovered,\n  .textarea:hover,\n  .textarea.is-hovered {\n    border-color: #b5b5b5;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    border-color: #00d1b2;\n}\n.input[disabled],\n  .textarea[disabled] {\n    background-color: whitesmoke;\n    border-color: whitesmoke;\n    box-shadow: none;\n    color: #7a7a7a;\n}\n.input[disabled]::-moz-placeholder,\n    .textarea[disabled]::-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]::-webkit-input-placeholder,\n    .textarea[disabled]::-webkit-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-moz-placeholder,\n    .textarea[disabled]:-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-ms-input-placeholder,\n    .textarea[disabled]:-ms-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[type=\"search\"],\n  .textarea[type=\"search\"] {\n    border-radius: 290486px;\n}\n.input.is-white,\n  .textarea.is-white {\n    border-color: white;\n}\n.input.is-black,\n  .textarea.is-black {\n    border-color: #0a0a0a;\n}\n.input.is-light,\n  .textarea.is-light {\n    border-color: whitesmoke;\n}\n.input.is-dark,\n  .textarea.is-dark {\n    border-color: #363636;\n}\n.input.is-primary,\n  .textarea.is-primary {\n    border-color: #00d1b2;\n}\n.input.is-info,\n  .textarea.is-info {\n    border-color: #3273dc;\n}\n.input.is-success,\n  .textarea.is-success {\n    border-color: #23d160;\n}\n.input.is-warning,\n  .textarea.is-warning {\n    border-color: #ffdd57;\n}\n.input.is-danger,\n  .textarea.is-danger {\n    border-color: #ff3860;\n}\n.input.is-small,\n  .textarea.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.input.is-medium,\n  .textarea.is-medium {\n    font-size: 1.25rem;\n}\n.input.is-large,\n  .textarea.is-large {\n    font-size: 1.5rem;\n}\n.input.is-fullwidth,\n  .textarea.is-fullwidth {\n    display: block;\n    width: 100%;\n}\n.input.is-inline,\n  .textarea.is-inline {\n    display: inline;\n    width: auto;\n}\n.textarea {\n  display: block;\n  max-height: 600px;\n  max-width: 100%;\n  min-height: 120px;\n  min-width: 100%;\n  padding: 0.625em;\n  resize: vertical;\n}\n.checkbox,\n.radio {\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1.25;\n  position: relative;\n}\n.checkbox input,\n  .radio input {\n    cursor: pointer;\n}\n.checkbox:hover,\n  .radio:hover {\n    color: #363636;\n}\n.checkbox[disabled],\n  .radio[disabled] {\n    color: #7a7a7a;\n    cursor: not-allowed;\n}\n.radio + .radio {\n  margin-left: 0.5em;\n}\n.select {\n  display: inline-block;\n  height: 2.25em;\n  max-width: 100%;\n  position: relative;\n  vertical-align: top;\n}\n.select:after {\n    border: 1px solid #00d1b2;\n    border-right: 0;\n    border-top: 0;\n    content: \" \";\n    display: block;\n    height: 0.5em;\n    pointer-events: none;\n    position: absolute;\n    -webkit-transform: rotate(-45deg);\n            transform: rotate(-45deg);\n    width: 0.5em;\n    margin-top: -0.375em;\n    right: 1.125em;\n    top: 50%;\n    z-index: 4;\n}\n.select select {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border: 1px solid transparent;\n    border-radius: 3px;\n    box-shadow: none;\n    display: -webkit-inline-box;\n    display: -ms-inline-flexbox;\n    display: inline-flex;\n    font-size: 1rem;\n    height: 2.25em;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    line-height: 1.5;\n    padding-bottom: calc(0.375em - 1px);\n    padding-left: calc(0.625em - 1px);\n    padding-right: calc(0.625em - 1px);\n    padding-top: calc(0.375em - 1px);\n    position: relative;\n    vertical-align: top;\n    background-color: white;\n    border-color: #dbdbdb;\n    color: #363636;\n    cursor: pointer;\n    display: block;\n    font-size: 1em;\n    max-width: 100%;\n    outline: none;\n    padding-right: 2.5em;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      outline: none;\n}\n.select select[disabled] {\n      cursor: not-allowed;\n}\n.select select:hover, .select select.is-hovered {\n      border-color: #b5b5b5;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      border-color: #00d1b2;\n}\n.select select[disabled] {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      box-shadow: none;\n      color: #7a7a7a;\n}\n.select select[disabled]::-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]::-webkit-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-ms-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select:hover {\n      border-color: #b5b5b5;\n}\n.select select::-ms-expand {\n      display: none;\n}\n.select select[disabled]:hover {\n      border-color: whitesmoke;\n}\n.select:hover:after {\n    border-color: #363636;\n}\n.select.is-white select {\n    border-color: white;\n}\n.select.is-black select {\n    border-color: #0a0a0a;\n}\n.select.is-light select {\n    border-color: whitesmoke;\n}\n.select.is-dark select {\n    border-color: #363636;\n}\n.select.is-primary select {\n    border-color: #00d1b2;\n}\n.select.is-info select {\n    border-color: #3273dc;\n}\n.select.is-success select {\n    border-color: #23d160;\n}\n.select.is-warning select {\n    border-color: #ffdd57;\n}\n.select.is-danger select {\n    border-color: #ff3860;\n}\n.select.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.select.is-medium {\n    font-size: 1.25rem;\n}\n.select.is-large {\n    font-size: 1.5rem;\n}\n.select.is-disabled:after {\n    border-color: #7a7a7a;\n}\n.select.is-fullwidth {\n    width: 100%;\n}\n.select.is-fullwidth select {\n      width: 100%;\n}\n.select.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    margin-top: 0;\n    position: absolute;\n    right: 0.625em;\n    top: 0.625em;\n    -webkit-transform: none;\n            transform: none;\n}\n.label {\n  color: #363636;\n  display: block;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.label:not(:last-child) {\n    margin-bottom: 0.5em;\n}\n.label.is-small {\n    font-size: 0.75rem;\n}\n.label.is-medium {\n    font-size: 1.25rem;\n}\n.label.is-large {\n    font-size: 1.5rem;\n}\n.help {\n  display: block;\n  font-size: 0.75rem;\n  margin-top: 0.25rem;\n}\n.help.is-white {\n    color: white;\n}\n.help.is-black {\n    color: #0a0a0a;\n}\n.help.is-light {\n    color: whitesmoke;\n}\n.help.is-dark {\n    color: #363636;\n}\n.help.is-primary {\n    color: #00d1b2;\n}\n.help.is-info {\n    color: #3273dc;\n}\n.help.is-success {\n    color: #23d160;\n}\n.help.is-warning {\n    color: #ffdd57;\n}\n.help.is-danger {\n    color: #ff3860;\n}\n.field:not(:last-child) {\n  margin-bottom: 0.75rem;\n}\n.field.has-addons {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.has-addons .control {\n    margin-right: -1px;\n}\n.field.has-addons .control:first-child .button,\n    .field.has-addons .control:first-child .input,\n    .field.has-addons .control:first-child .select select {\n      border-bottom-left-radius: 3px;\n      border-top-left-radius: 3px;\n}\n.field.has-addons .control:last-child .button,\n    .field.has-addons .control:last-child .input,\n    .field.has-addons .control:last-child .select select {\n      border-bottom-right-radius: 3px;\n      border-top-right-radius: 3px;\n}\n.field.has-addons .control .button,\n    .field.has-addons .control .input,\n    .field.has-addons .control .select select {\n      border-radius: 0;\n}\n.field.has-addons .control .button:hover, .field.has-addons .control .button.is-hovered,\n      .field.has-addons .control .input:hover,\n      .field.has-addons .control .input.is-hovered,\n      .field.has-addons .control .select select:hover,\n      .field.has-addons .control .select select.is-hovered {\n        z-index: 2;\n}\n.field.has-addons .control .button:focus, .field.has-addons .control .button.is-focused, .field.has-addons .control .button:active, .field.has-addons .control .button.is-active,\n      .field.has-addons .control .input:focus,\n      .field.has-addons .control .input.is-focused,\n      .field.has-addons .control .input:active,\n      .field.has-addons .control .input.is-active,\n      .field.has-addons .control .select select:focus,\n      .field.has-addons .control .select select.is-focused,\n      .field.has-addons .control .select select:active,\n      .field.has-addons .control .select select.is-active {\n        z-index: 3;\n}\n.field.has-addons .control .button:focus:hover, .field.has-addons .control .button.is-focused:hover, .field.has-addons .control .button:active:hover, .field.has-addons .control .button.is-active:hover,\n        .field.has-addons .control .input:focus:hover,\n        .field.has-addons .control .input.is-focused:hover,\n        .field.has-addons .control .input:active:hover,\n        .field.has-addons .control .input.is-active:hover,\n        .field.has-addons .control .select select:focus:hover,\n        .field.has-addons .control .select select.is-focused:hover,\n        .field.has-addons .control .select select:active:hover,\n        .field.has-addons .control .select select.is-active:hover {\n          z-index: 4;\n}\n.field.has-addons .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n.field.has-addons.has-addons-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.has-addons.has-addons-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.field.has-addons.has-addons-fullwidth .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.is-grouped > .control {\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped > .control:not(:last-child) {\n      margin-bottom: 0;\n      margin-right: 0.75rem;\n}\n.field.is-grouped > .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field.is-grouped.is-grouped-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.is-grouped.is-grouped-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.field.is-horizontal {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n}\n.field-label .label {\n  font-size: inherit;\n}\n@media screen and (max-width: 768px) {\n.field-label {\n    margin-bottom: 0.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-label {\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-right: 1.5rem;\n    text-align: right;\n}\n.field-label.is-small {\n      font-size: 0.75rem;\n      padding-top: 0.375em;\n}\n.field-label.is-normal {\n      padding-top: 0.375em;\n}\n.field-label.is-medium {\n      font-size: 1.25rem;\n      padding-top: 0.375em;\n}\n.field-label.is-large {\n      font-size: 1.5rem;\n      padding-top: 0.375em;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-body {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 5;\n        -ms-flex-positive: 5;\n            flex-grow: 5;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.field-body .field {\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field-body .field:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n.field-body .field:not(:last-child) {\n        margin-bottom: 0;\n        margin-right: 0.75rem;\n}\n}\n.control {\n  font-size: 1rem;\n  position: relative;\n  text-align: left;\n}\n.control.has-icon .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icon .input:focus + .icon {\n    color: #7a7a7a;\n}\n.control.has-icon .input.is-small + .icon {\n    font-size: 0.75rem;\n}\n.control.has-icon .input.is-medium + .icon {\n    font-size: 1.25rem;\n}\n.control.has-icon .input.is-large + .icon {\n    font-size: 1.5rem;\n}\n.control.has-icon:not(.has-icon-right) .icon {\n    left: 0;\n}\n.control.has-icon:not(.has-icon-right) .input {\n    padding-left: 2.25em;\n}\n.control.has-icon.has-icon-right .icon {\n    right: 0;\n}\n.control.has-icon.has-icon-right .input {\n    padding-right: 2.25em;\n}\n.control.has-icons-left .input:focus ~ .icon,\n  .control.has-icons-left .select select:focus ~ .icon, .control.has-icons-right .input:focus ~ .icon,\n  .control.has-icons-right .select select:focus ~ .icon {\n    color: #7a7a7a;\n}\n.control.has-icons-left .input.is-small ~ .icon,\n  .control.has-icons-left .select select.is-small ~ .icon, .control.has-icons-right .input.is-small ~ .icon,\n  .control.has-icons-right .select select.is-small ~ .icon {\n    font-size: 0.75rem;\n}\n.control.has-icons-left .input.is-medium ~ .icon,\n  .control.has-icons-left .select select.is-medium ~ .icon, .control.has-icons-right .input.is-medium ~ .icon,\n  .control.has-icons-right .select select.is-medium ~ .icon {\n    font-size: 1.25rem;\n}\n.control.has-icons-left .input.is-large ~ .icon,\n  .control.has-icons-left .select select.is-large ~ .icon, .control.has-icons-right .input.is-large ~ .icon,\n  .control.has-icons-right .select select.is-large ~ .icon {\n    font-size: 1.5rem;\n}\n.control.has-icons-left .icon, .control.has-icons-right .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icons-left .input,\n  .control.has-icons-left .select select {\n    padding-left: 2.25em;\n}\n.control.has-icons-left .icon.is-left {\n    left: 0;\n}\n.control.has-icons-right .input,\n  .control.has-icons-right .select select {\n    padding-right: 2.25em;\n}\n.control.has-icons-right .icon.is-right {\n    right: 0;\n}\n.control.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    position: absolute !important;\n    right: 0.625em;\n    top: 0.625em;\n}\n.icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  height: 1.5rem;\n  width: 1.5rem;\n}\n.icon .fa {\n    font-size: 21px;\n}\n.icon.is-small {\n    height: 1rem;\n    width: 1rem;\n}\n.icon.is-small .fa {\n      font-size: 14px;\n}\n.icon.is-medium {\n    height: 2rem;\n    width: 2rem;\n}\n.icon.is-medium .fa {\n      font-size: 28px;\n}\n.icon.is-large {\n    height: 3rem;\n    width: 3rem;\n}\n.icon.is-large .fa {\n      font-size: 42px;\n}\n.image {\n  display: block;\n  position: relative;\n}\n.image img {\n    display: block;\n    height: auto;\n    width: 100%;\n}\n.image.is-square img, .image.is-1by1 img, .image.is-4by3 img, .image.is-3by2 img, .image.is-16by9 img, .image.is-2by1 img {\n    bottom: 0;\n    left: 0;\n    position: absolute;\n    right: 0;\n    top: 0;\n    height: 100%;\n    width: 100%;\n}\n.image.is-square, .image.is-1by1 {\n    padding-top: 100%;\n}\n.image.is-4by3 {\n    padding-top: 75%;\n}\n.image.is-3by2 {\n    padding-top: 66.6666%;\n}\n.image.is-16by9 {\n    padding-top: 56.25%;\n}\n.image.is-2by1 {\n    padding-top: 50%;\n}\n.image.is-16x16 {\n    height: 16px;\n    width: 16px;\n}\n.image.is-24x24 {\n    height: 24px;\n    width: 24px;\n}\n.image.is-32x32 {\n    height: 32px;\n    width: 32px;\n}\n.image.is-48x48 {\n    height: 48px;\n    width: 48px;\n}\n.image.is-64x64 {\n    height: 64px;\n    width: 64px;\n}\n.image.is-96x96 {\n    height: 96px;\n    width: 96px;\n}\n.image.is-128x128 {\n    height: 128px;\n    width: 128px;\n}\n.notification {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  padding: 1.25rem 2.5rem 1.25rem 1.5rem;\n  position: relative;\n}\n.notification:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.notification a:not(.button) {\n    color: currentColor;\n    text-decoration: underline;\n}\n.notification code,\n  .notification pre {\n    background: white;\n}\n.notification pre code {\n    background: transparent;\n}\n.notification > .delete {\n    position: absolute;\n    right: 0.5em;\n    top: 0.5em;\n}\n.notification .title,\n  .notification .subtitle,\n  .notification .content {\n    color: inherit;\n}\n.notification.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.notification.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.notification.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.notification.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.notification.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.notification.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.notification.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.notification.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.notification.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.progress {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  border: none;\n  border-radius: 290486px;\n  display: block;\n  height: 1rem;\n  overflow: hidden;\n  padding: 0;\n  width: 100%;\n}\n.progress:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.progress::-webkit-progress-bar {\n    background-color: #dbdbdb;\n}\n.progress::-webkit-progress-value {\n    background-color: #4a4a4a;\n}\n.progress::-moz-progress-bar {\n    background-color: #4a4a4a;\n}\n.progress.is-white::-webkit-progress-value {\n    background-color: white;\n}\n.progress.is-white::-moz-progress-bar {\n    background-color: white;\n}\n.progress.is-black::-webkit-progress-value {\n    background-color: #0a0a0a;\n}\n.progress.is-black::-moz-progress-bar {\n    background-color: #0a0a0a;\n}\n.progress.is-light::-webkit-progress-value {\n    background-color: whitesmoke;\n}\n.progress.is-light::-moz-progress-bar {\n    background-color: whitesmoke;\n}\n.progress.is-dark::-webkit-progress-value {\n    background-color: #363636;\n}\n.progress.is-dark::-moz-progress-bar {\n    background-color: #363636;\n}\n.progress.is-primary::-webkit-progress-value {\n    background-color: #00d1b2;\n}\n.progress.is-primary::-moz-progress-bar {\n    background-color: #00d1b2;\n}\n.progress.is-info::-webkit-progress-value {\n    background-color: #3273dc;\n}\n.progress.is-info::-moz-progress-bar {\n    background-color: #3273dc;\n}\n.progress.is-success::-webkit-progress-value {\n    background-color: #23d160;\n}\n.progress.is-success::-moz-progress-bar {\n    background-color: #23d160;\n}\n.progress.is-warning::-webkit-progress-value {\n    background-color: #ffdd57;\n}\n.progress.is-warning::-moz-progress-bar {\n    background-color: #ffdd57;\n}\n.progress.is-danger::-webkit-progress-value {\n    background-color: #ff3860;\n}\n.progress.is-danger::-moz-progress-bar {\n    background-color: #ff3860;\n}\n.progress.is-small {\n    height: 0.75rem;\n}\n.progress.is-medium {\n    height: 1.25rem;\n}\n.progress.is-large {\n    height: 1.5rem;\n}\n.table {\n  background-color: white;\n  color: #363636;\n  margin-bottom: 1.5rem;\n  width: 100%;\n}\n.table td,\n  .table th {\n    border: 1px solid #dbdbdb;\n    border-width: 0 0 1px;\n    padding: 0.5em 0.75em;\n    vertical-align: top;\n}\n.table td.is-narrow,\n    .table th.is-narrow {\n      white-space: nowrap;\n      width: 1%;\n}\n.table th {\n    color: #363636;\n    text-align: left;\n}\n.table tr:hover {\n    background-color: #fafafa;\n}\n.table tr.is-selected {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.table tr.is-selected a,\n    .table tr.is-selected strong {\n      color: currentColor;\n}\n.table tr.is-selected td,\n    .table tr.is-selected th {\n      border-color: #fff;\n      color: currentColor;\n}\n.table thead td,\n  .table thead th {\n    border-width: 0 0 2px;\n    color: #7a7a7a;\n}\n.table tfoot td,\n  .table tfoot th {\n    border-width: 2px 0 0;\n    color: #7a7a7a;\n}\n.table tbody tr:last-child td,\n  .table tbody tr:last-child th {\n    border-bottom-width: 0;\n}\n.table.is-bordered td,\n  .table.is-bordered th {\n    border-width: 1px;\n}\n.table.is-bordered tr:last-child td,\n  .table.is-bordered tr:last-child th {\n    border-bottom-width: 1px;\n}\n.table.is-narrow td,\n  .table.is-narrow th {\n    padding: 0.25em 0.5em;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even) {\n    background-color: #fafafa;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even):hover {\n      background-color: whitesmoke;\n}\n.tag {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  color: #4a4a4a;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 0.75rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding-left: 0.875em;\n  padding-right: 0.875em;\n  white-space: nowrap;\n}\n.tag .delete {\n    margin-left: 0.25em;\n    margin-right: -0.375em;\n}\n.tag.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.tag.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.tag.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.tag.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.tag.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.tag.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.tag.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.tag.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.tag.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.tag.is-medium {\n    font-size: 1rem;\n}\n.tag.is-large {\n    font-size: 1.25rem;\n}\n.title,\n.subtitle {\n  word-break: break-word;\n}\n.title:not(:last-child),\n  .subtitle:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.title em,\n  .title span,\n  .subtitle em,\n  .subtitle span {\n    font-weight: 300;\n}\n.title strong,\n  .subtitle strong {\n    font-weight: 500;\n}\n.title .tag,\n  .subtitle .tag {\n    vertical-align: middle;\n}\n.title {\n  color: #363636;\n  font-size: 2rem;\n  font-weight: 300;\n  line-height: 1.125;\n}\n.title strong {\n    color: inherit;\n}\n.title + .highlight {\n    margin-top: -0.75rem;\n}\n.title:not(.is-spaced) + .subtitle {\n    margin-top: -1.5rem;\n}\n.title.is-1 {\n    font-size: 3rem;\n}\n.title.is-2 {\n    font-size: 2.5rem;\n}\n.title.is-3 {\n    font-size: 2rem;\n}\n.title.is-4 {\n    font-size: 1.5rem;\n}\n.title.is-5 {\n    font-size: 1.25rem;\n}\n.title.is-6 {\n    font-size: 1rem;\n}\n.subtitle {\n  color: #4a4a4a;\n  font-size: 1.25rem;\n  font-weight: 300;\n  line-height: 1.25;\n}\n.subtitle strong {\n    color: #363636;\n}\n.subtitle:not(.is-spaced) + .title {\n    margin-top: -1.5rem;\n}\n.subtitle.is-1 {\n    font-size: 3rem;\n}\n.subtitle.is-2 {\n    font-size: 2.5rem;\n}\n.subtitle.is-3 {\n    font-size: 2rem;\n}\n.subtitle.is-4 {\n    font-size: 1.5rem;\n}\n.subtitle.is-5 {\n    font-size: 1.25rem;\n}\n.subtitle.is-6 {\n    font-size: 1rem;\n}\n.block:not(:last-child) {\n  margin-bottom: 1.5rem;\n}\n.container {\n  position: relative;\n}\n@media screen and (min-width: 1000px) {\n.container {\n      margin: 0 auto;\n      max-width: 960px;\n      width: 960px;\n}\n.container.is-fluid {\n        margin: 0 20px;\n        max-width: none;\n        width: auto;\n}\n}\n@media screen and (min-width: 1192px) {\n.container {\n      max-width: 1152px;\n      width: 1152px;\n}\n}\n@media screen and (min-width: 1384px) {\n.container {\n      max-width: 1344px;\n      width: 1344px;\n}\n}\n.delete {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n}\n.delete:before, .delete:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.delete:before {\n    height: 2px;\n    width: 50%;\n}\n.delete:after {\n    height: 50%;\n    width: 2px;\n}\n.delete:hover, .delete:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.delete:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.delete.is-small {\n    height: 16px;\n    width: 16px;\n}\n.delete.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.delete.is-large {\n    height: 32px;\n    width: 32px;\n}\n.fa {\n  font-size: 21px;\n  text-align: center;\n  vertical-align: top;\n}\n.heading {\n  display: block;\n  font-size: 11px;\n  letter-spacing: 1px;\n  margin-bottom: 5px;\n  text-transform: uppercase;\n}\n.highlight {\n  font-weight: 400;\n  max-width: 100%;\n  overflow: hidden;\n  padding: 0;\n}\n.highlight:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.highlight pre {\n    overflow: auto;\n    max-width: 100%;\n}\n.loader {\n  -webkit-animation: spinAround 500ms infinite linear;\n          animation: spinAround 500ms infinite linear;\n  border: 2px solid #dbdbdb;\n  border-radius: 290486px;\n  border-right-color: transparent;\n  border-top-color: transparent;\n  content: \"\";\n  display: block;\n  height: 1em;\n  position: relative;\n  width: 1em;\n}\n.number {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1.25rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-right: 1.5rem;\n  min-width: 2.5em;\n  padding: 0.25rem 0.5rem;\n  text-align: center;\n  vertical-align: top;\n}\n.card-header {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.1);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-header-title {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  font-weight: 700;\n  padding: 0.75rem;\n}\n.card-header-icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  cursor: pointer;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-image {\n  display: block;\n  position: relative;\n}\n.card-content {\n  padding: 1.5rem;\n}\n.card-footer {\n  border-top: 1px solid #dbdbdb;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-footer-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-footer-item:not(:last-child) {\n    border-right: 1px solid #dbdbdb;\n}\n.card {\n  background-color: white;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  color: #4a4a4a;\n  max-width: 100%;\n  position: relative;\n}\n.card .media:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.level-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.level-item .title,\n  .level-item .subtitle {\n    margin-bottom: 0;\n}\n@media screen and (max-width: 768px) {\n.level-item:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n}\n.level-left,\n.level-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.level-left .level-item:not(:last-child),\n  .level-right .level-item:not(:last-child) {\n    margin-right: 0.75rem;\n}\n.level-left .level-item.is-flexible,\n  .level-right .level-item.is-flexible {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n}\n.level-left {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n@media screen and (max-width: 768px) {\n.level-left + .level-right {\n      margin-top: 1.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.level-left {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level-right {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.level:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.level code {\n    border-radius: 3px;\n}\n.level img {\n    display: inline-block;\n    vertical-align: top;\n}\n.level.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.level.is-mobile .level-left,\n    .level.is-mobile .level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level.is-mobile .level-left + .level-right {\n      margin-top: 0;\n}\n.level.is-mobile .level-item:not(:last-child) {\n      margin-bottom: 0;\n}\n.level.is-mobile .level-item:not(.is-narrow) {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n@media screen and (min-width: 769px), print {\n.level {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level > .level-item:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n}\n.media-left,\n.media-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.media-left {\n  margin-right: 1rem;\n}\n.media-right {\n  margin-left: 1rem;\n}\n.media-content {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  text-align: left;\n}\n.media {\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  text-align: left;\n}\n.media .content:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.media .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    padding-top: 0.75rem;\n}\n.media .media .content:not(:last-child),\n    .media .media .control:not(:last-child) {\n      margin-bottom: 0.5rem;\n}\n.media .media .media {\n      padding-top: 0.5rem;\n}\n.media .media .media + .media {\n        margin-top: 0.5rem;\n}\n.media + .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    margin-top: 1rem;\n    padding-top: 1rem;\n}\n.media.is-large + .media {\n    margin-top: 1.5rem;\n    padding-top: 1.5rem;\n}\n.menu {\n  font-size: 1rem;\n}\n.menu-list {\n  line-height: 1.25;\n}\n.menu-list a {\n    border-radius: 2px;\n    color: #4a4a4a;\n    display: block;\n    padding: 0.5em 0.75em;\n}\n.menu-list a:hover {\n      background-color: whitesmoke;\n      color: #00d1b2;\n}\n.menu-list a.is-active {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.menu-list li ul {\n    border-left: 1px solid #dbdbdb;\n    margin: 0.75em;\n    padding-left: 0.75em;\n}\n.menu-label {\n  color: #7a7a7a;\n  font-size: 0.8em;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n}\n.menu-label:not(:first-child) {\n    margin-top: 1em;\n}\n.menu-label:not(:last-child) {\n    margin-bottom: 1em;\n}\n.message {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  font-size: 1rem;\n}\n.message:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.message.is-white {\n    background-color: white;\n}\n.message.is-white .message-header {\n      background-color: white;\n      color: #0a0a0a;\n}\n.message.is-white .message-body {\n      border-color: white;\n      color: #4d4d4d;\n}\n.message.is-black {\n    background-color: #fafafa;\n}\n.message.is-black .message-header {\n      background-color: #0a0a0a;\n      color: white;\n}\n.message.is-black .message-body {\n      border-color: #0a0a0a;\n      color: #090909;\n}\n.message.is-light {\n    background-color: #fafafa;\n}\n.message.is-light .message-header {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.message.is-light .message-body {\n      border-color: whitesmoke;\n      color: #505050;\n}\n.message.is-dark {\n    background-color: #fafafa;\n}\n.message.is-dark .message-header {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.message.is-dark .message-body {\n      border-color: #363636;\n      color: #2a2a2a;\n}\n.message.is-primary {\n    background-color: #f5fffd;\n}\n.message.is-primary .message-header {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.message.is-primary .message-body {\n      border-color: #00d1b2;\n      color: #021310;\n}\n.message.is-info {\n    background-color: #f6f9fe;\n}\n.message.is-info .message-header {\n      background-color: #3273dc;\n      color: #fff;\n}\n.message.is-info .message-body {\n      border-color: #3273dc;\n      color: #22509a;\n}\n.message.is-success {\n    background-color: #f6fef9;\n}\n.message.is-success .message-header {\n      background-color: #23d160;\n      color: #fff;\n}\n.message.is-success .message-body {\n      border-color: #23d160;\n      color: #0e301a;\n}\n.message.is-warning {\n    background-color: #fffdf5;\n}\n.message.is-warning .message-header {\n      background-color: #ffdd57;\n      color: rgba(0, 0, 0, 0.7);\n}\n.message.is-warning .message-body {\n      border-color: #ffdd57;\n      color: #3b3108;\n}\n.message.is-danger {\n    background-color: #fff5f7;\n}\n.message.is-danger .message-header {\n      background-color: #ff3860;\n      color: #fff;\n}\n.message.is-danger .message-body {\n      border-color: #ff3860;\n      color: #cd0930;\n}\n.message-header {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #4a4a4a;\n  border-radius: 3px 3px 0 0;\n  color: #fff;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n  position: relative;\n}\n.message-header a,\n  .message-header strong {\n    color: inherit;\n}\n.message-header a {\n    text-decoration: underline;\n}\n.message-header .delete {\n    -webkit-box-flex: 0;\n        -ms-flex-positive: 0;\n            flex-grow: 0;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-left: 0.75em;\n}\n.message-header + .message-body {\n    border-top-left-radius: 0;\n    border-top-right-radius: 0;\n    border-top: none;\n}\n.message-body {\n  border: 1px solid #dbdbdb;\n  border-radius: 3px;\n  color: #4a4a4a;\n  padding: 1em 1.25em;\n}\n.message-body a,\n  .message-body strong {\n    color: inherit;\n}\n.message-body a {\n    text-decoration: underline;\n}\n.message-body code,\n  .message-body pre {\n    background: white;\n}\n.message-body pre code {\n    background: transparent;\n}\n.modal-background {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  background-color: rgba(10, 10, 10, 0.86);\n}\n.modal-content,\n.modal-card {\n  margin: 0 20px;\n  max-height: calc(100vh - 160px);\n  overflow: auto;\n  position: relative;\n  width: 100%;\n}\n@media screen and (min-width: 769px), print {\n.modal-content,\n    .modal-card {\n      margin: 0 auto;\n      max-height: calc(100vh - 40px);\n      width: 640px;\n}\n}\n.modal-close {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n  background: none;\n  height: 40px;\n  position: fixed;\n  right: 20px;\n  top: 20px;\n  width: 40px;\n}\n.modal-close:before, .modal-close:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.modal-close:before {\n    height: 2px;\n    width: 50%;\n}\n.modal-close:after {\n    height: 50%;\n    width: 2px;\n}\n.modal-close:hover, .modal-close:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.modal-close:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.modal-close.is-small {\n    height: 16px;\n    width: 16px;\n}\n.modal-close.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.modal-close.is-large {\n    height: 32px;\n    width: 32px;\n}\n.modal-card {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  max-height: calc(100vh - 40px);\n  overflow: hidden;\n}\n.modal-card-head,\n.modal-card-foot {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 20px;\n  position: relative;\n}\n.modal-card-head {\n  border-bottom: 1px solid #dbdbdb;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.modal-card-title {\n  color: #363636;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1.5rem;\n  line-height: 1;\n}\n.modal-card-foot {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n  border-top: 1px solid #dbdbdb;\n}\n.modal-card-foot .button:not(:last-child) {\n    margin-right: 10px;\n}\n.modal-card-body {\n  -webkit-overflow-scrolling: touch;\n  background-color: white;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  overflow: auto;\n  padding: 20px;\n}\n.modal {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: none;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  overflow: hidden;\n  position: fixed;\n  z-index: 20;\n}\n.modal.is-active {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.nav-toggle {\n  cursor: pointer;\n  display: block;\n  height: 3.25rem;\n  position: relative;\n  width: 3.25rem;\n}\n.nav-toggle span {\n    background-color: #4a4a4a;\n    display: block;\n    height: 1px;\n    left: 50%;\n    margin-left: -7px;\n    position: absolute;\n    top: 50%;\n    transition: none 86ms ease-out;\n    transition-property: background, left, opacity, -webkit-transform;\n    transition-property: background, left, opacity, transform;\n    transition-property: background, left, opacity, transform, -webkit-transform;\n    width: 15px;\n}\n.nav-toggle span:nth-child(1) {\n      margin-top: -6px;\n}\n.nav-toggle span:nth-child(2) {\n      margin-top: -1px;\n}\n.nav-toggle span:nth-child(3) {\n      margin-top: 4px;\n}\n.nav-toggle:hover {\n    background-color: whitesmoke;\n}\n.nav-toggle.is-active span {\n    background-color: #00d1b2;\n}\n.nav-toggle.is-active span:nth-child(1) {\n      margin-left: -5px;\n      -webkit-transform: rotate(45deg);\n              transform: rotate(45deg);\n      -webkit-transform-origin: left top;\n              transform-origin: left top;\n}\n.nav-toggle.is-active span:nth-child(2) {\n      opacity: 0;\n}\n.nav-toggle.is-active span:nth-child(3) {\n      margin-left: -5px;\n      -webkit-transform: rotate(-45deg);\n              transform: rotate(-45deg);\n      -webkit-transform-origin: left bottom;\n              transform-origin: left bottom;\n}\n@media screen and (min-width: 769px), print {\n.nav-toggle {\n      display: none;\n}\n}\n.nav-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding: 0.5rem 0.75rem;\n}\n.nav-item a {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.nav-item img {\n    max-height: 1.75rem;\n}\n.nav-item .tag:first-child:not(:last-child) {\n    margin-right: 0.5rem;\n}\n.nav-item .tag:last-child:not(:first-child) {\n    margin-left: 0.5rem;\n}\n@media screen and (max-width: 768px) {\n.nav-item {\n      -webkit-box-pack: start;\n          -ms-flex-pack: start;\n              justify-content: flex-start;\n}\n}\n.nav-item a,\na.nav-item {\n  color: #7a7a7a;\n}\n.nav-item a:hover,\n  a.nav-item:hover {\n    color: #363636;\n}\n.nav-item a.is-active,\n  a.nav-item.is-active {\n    color: #363636;\n}\n.nav-item a.is-tab,\n  a.nav-item.is-tab {\n    border-bottom: 1px solid transparent;\n    border-top: 1px solid transparent;\n    padding-bottom: calc(0.75rem - 1px);\n    padding-left: 1rem;\n    padding-right: 1rem;\n    padding-top: calc(0.75rem - 1px);\n}\n.nav-item a.is-tab:hover,\n    a.nav-item.is-tab:hover {\n      border-bottom-color: #00d1b2;\n      border-top-color: transparent;\n}\n.nav-item a.is-tab.is-active,\n    a.nav-item.is-tab.is-active {\n      border-bottom: 3px solid #00d1b2;\n      color: #00d1b2;\n      padding-bottom: calc(0.75rem - 3px);\n}\n@media screen and (min-width: 1000px) {\n.nav-item a.is-brand,\n    a.nav-item.is-brand {\n      padding-left: 0;\n}\n}\n.nav-left,\n.nav-right {\n  -webkit-overflow-scrolling: touch;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  max-width: 100%;\n  overflow: auto;\n}\n@media screen and (min-width: 1192px) {\n.nav-left,\n    .nav-right {\n      -ms-flex-preferred-size: 0;\n          flex-basis: 0;\n}\n}\n.nav-left {\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  white-space: nowrap;\n}\n.nav-right {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.nav-center {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-left: auto;\n  margin-right: auto;\n}\n@media screen and (max-width: 768px) {\n.nav-menu.nav-right {\n    background-color: white;\n    box-shadow: 0 4px 7px rgba(10, 10, 10, 0.1);\n    left: 0;\n    display: none;\n    right: 0;\n    top: 100%;\n    position: absolute;\n}\n.nav-menu.nav-right .nav-item {\n      border-top: 1px solid rgba(219, 219, 219, 0.5);\n      padding: 0.75rem;\n}\n.nav-menu.nav-right.is-active {\n      display: block;\n}\n}\n.nav {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 3.25rem;\n  position: relative;\n  text-align: center;\n  z-index: 10;\n}\n.nav > .container {\n    -webkit-box-align: stretch;\n        -ms-flex-align: stretch;\n            align-items: stretch;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    min-height: 3.25rem;\n    width: 100%;\n}\n.nav.has-shadow {\n    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);\n}\n.pagination {\n  font-size: 1rem;\n  margin: -0.25rem;\n}\n.pagination.is-small {\n    font-size: 0.75rem;\n}\n.pagination.is-medium {\n    font-size: 1.25rem;\n}\n.pagination.is-large {\n    font-size: 1.5rem;\n}\n.pagination,\n.pagination-list {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  text-align: center;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link,\n.pagination-ellipsis {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  font-size: 1em;\n  padding-left: 0.5em;\n  padding-right: 0.5em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin: 0.25rem;\n  text-align: center;\n}\n.pagination-previous:focus, .pagination-previous.is-focused, .pagination-previous:active, .pagination-previous.is-active,\n  .pagination-next:focus,\n  .pagination-next.is-focused,\n  .pagination-next:active,\n  .pagination-next.is-active,\n  .pagination-link:focus,\n  .pagination-link.is-focused,\n  .pagination-link:active,\n  .pagination-link.is-active,\n  .pagination-ellipsis:focus,\n  .pagination-ellipsis.is-focused,\n  .pagination-ellipsis:active,\n  .pagination-ellipsis.is-active {\n    outline: none;\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled],\n  .pagination-ellipsis[disabled] {\n    cursor: not-allowed;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link {\n  border-color: #dbdbdb;\n  min-width: 2.25em;\n}\n.pagination-previous:hover,\n  .pagination-next:hover,\n  .pagination-link:hover {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.pagination-previous:focus,\n  .pagination-next:focus,\n  .pagination-link:focus {\n    border-color: #00d1b2;\n}\n.pagination-previous:active,\n  .pagination-next:active,\n  .pagination-link:active {\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled] {\n    background-color: #dbdbdb;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    color: #7a7a7a;\n    opacity: 0.5;\n}\n.pagination-previous,\n.pagination-next {\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  white-space: nowrap;\n}\n.pagination-link.is-current {\n  background-color: #00d1b2;\n  border-color: #00d1b2;\n  color: #fff;\n}\n.pagination-ellipsis {\n  color: #b5b5b5;\n  pointer-events: none;\n}\n.pagination-list {\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n}\n@media screen and (max-width: 768px) {\n.pagination {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.pagination-previous,\n  .pagination-next {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.pagination-list li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n}\n@media screen and (min-width: 769px), print {\n.pagination-list {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n}\n.pagination-previous {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.pagination-next {\n    -webkit-box-ordinal-group: 4;\n        -ms-flex-order: 3;\n            order: 3;\n}\n.pagination {\n    -webkit-box-pack: justify;\n        -ms-flex-pack: justify;\n            justify-content: space-between;\n}\n.pagination.is-centered .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-centered .pagination-list {\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-centered .pagination-next {\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n.pagination.is-right .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-right .pagination-next {\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-right .pagination-list {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n}\n.panel {\n  font-size: 1rem;\n}\n.panel:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.panel-heading,\n.panel-tabs,\n.panel-block {\n  border-bottom: 1px solid #dbdbdb;\n  border-left: 1px solid #dbdbdb;\n  border-right: 1px solid #dbdbdb;\n}\n.panel-heading:first-child,\n  .panel-tabs:first-child,\n  .panel-block:first-child {\n    border-top: 1px solid #dbdbdb;\n}\n.panel-heading {\n  background-color: whitesmoke;\n  border-radius: 3px 3px 0 0;\n  color: #363636;\n  font-size: 1.25em;\n  font-weight: 300;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n}\n.panel-tabs {\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 0.875em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.panel-tabs a {\n    border-bottom: 1px solid #dbdbdb;\n    margin-bottom: -1px;\n    padding: 0.5em;\n}\n.panel-tabs a.is-active {\n      border-bottom-color: #4a4a4a;\n      color: #363636;\n}\n.panel-list a {\n  color: #4a4a4a;\n}\n.panel-list a:hover {\n    color: #00d1b2;\n}\n.panel-block {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 0.5em 0.75em;\n}\n.panel-block input[type=\"checkbox\"] {\n    margin-right: 0.75em;\n}\n.panel-block > .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    width: 100%;\n}\n.panel-block.is-wrapped {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.panel-block.is-active {\n    border-left-color: #00d1b2;\n    color: #363636;\n}\n.panel-block.is-active .panel-icon {\n      color: #00d1b2;\n}\na.panel-block,\nlabel.panel-block {\n  cursor: pointer;\n}\na.panel-block:hover,\n  label.panel-block:hover {\n    background-color: whitesmoke;\n}\n.panel-icon {\n  display: inline-block;\n  font-size: 14px;\n  height: 1em;\n  line-height: 1em;\n  text-align: center;\n  vertical-align: top;\n  width: 1em;\n  color: #7a7a7a;\n  margin-right: 0.75em;\n}\n.panel-icon .fa {\n    font-size: inherit;\n    line-height: inherit;\n}\n.tabs {\n  -webkit-overflow-scrolling: touch;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 1rem;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  overflow: hidden;\n  overflow-x: auto;\n  white-space: nowrap;\n}\n.tabs:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.tabs a {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    color: #4a4a4a;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    margin-bottom: -1px;\n    padding: 0.5em 1em;\n    vertical-align: top;\n}\n.tabs a:hover {\n      border-bottom-color: #363636;\n      color: #363636;\n}\n.tabs li {\n    display: block;\n}\n.tabs li.is-active a {\n      border-bottom-color: #00d1b2;\n      color: #00d1b2;\n}\n.tabs ul {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n}\n.tabs ul.is-left {\n      padding-right: 0.75em;\n}\n.tabs ul.is-center {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      padding-left: 0.75em;\n      padding-right: 0.75em;\n}\n.tabs ul.is-right {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      padding-left: 0.75em;\n}\n.tabs .icon:first-child {\n    margin-right: 0.5em;\n}\n.tabs .icon:last-child {\n    margin-left: 0.5em;\n}\n.tabs.is-centered ul {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.tabs.is-right ul {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.tabs.is-boxed a {\n    border: 1px solid transparent;\n    border-radius: 3px 3px 0 0;\n}\n.tabs.is-boxed a:hover {\n      background-color: whitesmoke;\n      border-bottom-color: #dbdbdb;\n}\n.tabs.is-boxed li.is-active a {\n    background-color: white;\n    border-color: #dbdbdb;\n    border-bottom-color: transparent !important;\n}\n.tabs.is-fullwidth li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.tabs.is-toggle a {\n    border: 1px solid #dbdbdb;\n    margin-bottom: 0;\n    position: relative;\n}\n.tabs.is-toggle a:hover {\n      background-color: whitesmoke;\n      border-color: #b5b5b5;\n      z-index: 2;\n}\n.tabs.is-toggle li + li {\n    margin-left: -1px;\n}\n.tabs.is-toggle li:first-child a {\n    border-radius: 3px 0 0 3px;\n}\n.tabs.is-toggle li:last-child a {\n    border-radius: 0 3px 3px 0;\n}\n.tabs.is-toggle li.is-active a {\n    background-color: #00d1b2;\n    border-color: #00d1b2;\n    color: #fff;\n    z-index: 1;\n}\n.tabs.is-toggle ul {\n    border-bottom: none;\n}\n.tabs.is-small {\n    font-size: 0.75rem;\n}\n.tabs.is-medium {\n    font-size: 1.25rem;\n}\n.tabs.is-large {\n    font-size: 1.5rem;\n}\n.column {\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  padding: 0.75rem;\n}\n.columns.is-mobile > .column.is-narrow {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n}\n.columns.is-mobile > .column.is-full {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-three-quarters {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-two-thirds {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.6666%;\n}\n.columns.is-mobile > .column.is-half {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-one-third {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.3333%;\n}\n.columns.is-mobile > .column.is-one-quarter {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-three-quarters {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-offset-two-thirds {\n    margin-left: 66.6666%;\n}\n.columns.is-mobile > .column.is-offset-half {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-offset-one-third {\n    margin-left: 33.3333%;\n}\n.columns.is-mobile > .column.is-offset-one-quarter {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-1 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 8.33333%;\n}\n.columns.is-mobile > .column.is-offset-1 {\n    margin-left: 8.33333%;\n}\n.columns.is-mobile > .column.is-2 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 16.66667%;\n}\n.columns.is-mobile > .column.is-offset-2 {\n    margin-left: 16.66667%;\n}\n.columns.is-mobile > .column.is-3 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-3 {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-4 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.33333%;\n}\n.columns.is-mobile > .column.is-offset-4 {\n    margin-left: 33.33333%;\n}\n.columns.is-mobile > .column.is-5 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 41.66667%;\n}\n.columns.is-mobile > .column.is-offset-5 {\n    margin-left: 41.66667%;\n}\n.columns.is-mobile > .column.is-6 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-offset-6 {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-7 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 58.33333%;\n}\n.columns.is-mobile > .column.is-offset-7 {\n    margin-left: 58.33333%;\n}\n.columns.is-mobile > .column.is-8 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.66667%;\n}\n.columns.is-mobile > .column.is-offset-8 {\n    margin-left: 66.66667%;\n}\n.columns.is-mobile > .column.is-9 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-offset-9 {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-10 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 83.33333%;\n}\n.columns.is-mobile > .column.is-offset-10 {\n    margin-left: 83.33333%;\n}\n.columns.is-mobile > .column.is-11 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 91.66667%;\n}\n.columns.is-mobile > .column.is-offset-11 {\n    margin-left: 91.66667%;\n}\n.columns.is-mobile > .column.is-12 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-offset-12 {\n    margin-left: 100%;\n}\n@media screen and (max-width: 768px) {\n.column.is-narrow-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-mobile {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-mobile {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-mobile {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-mobile {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-mobile {\n      margin-left: 25%;\n}\n.column.is-1-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-mobile {\n      margin-left: 8.33333%;\n}\n.column.is-2-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-mobile {\n      margin-left: 16.66667%;\n}\n.column.is-3-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-mobile {\n      margin-left: 25%;\n}\n.column.is-4-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-mobile {\n      margin-left: 33.33333%;\n}\n.column.is-5-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-mobile {\n      margin-left: 41.66667%;\n}\n.column.is-6-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-mobile {\n      margin-left: 50%;\n}\n.column.is-7-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-mobile {\n      margin-left: 58.33333%;\n}\n.column.is-8-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-mobile {\n      margin-left: 66.66667%;\n}\n.column.is-9-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-mobile {\n      margin-left: 75%;\n}\n.column.is-10-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-mobile {\n      margin-left: 83.33333%;\n}\n.column.is-11-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-mobile {\n      margin-left: 91.66667%;\n}\n.column.is-12-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-mobile {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 769px), print {\n.column.is-narrow, .column.is-narrow-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full, .column.is-full-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters, .column.is-three-quarters-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds, .column.is-two-thirds-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half, .column.is-half-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third, .column.is-one-third-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter, .column.is-one-quarter-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters, .column.is-offset-three-quarters-tablet {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds, .column.is-offset-two-thirds-tablet {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half, .column.is-offset-half-tablet {\n      margin-left: 50%;\n}\n.column.is-offset-one-third, .column.is-offset-one-third-tablet {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter, .column.is-offset-one-quarter-tablet {\n      margin-left: 25%;\n}\n.column.is-1, .column.is-1-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1, .column.is-offset-1-tablet {\n      margin-left: 8.33333%;\n}\n.column.is-2, .column.is-2-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2, .column.is-offset-2-tablet {\n      margin-left: 16.66667%;\n}\n.column.is-3, .column.is-3-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3, .column.is-offset-3-tablet {\n      margin-left: 25%;\n}\n.column.is-4, .column.is-4-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4, .column.is-offset-4-tablet {\n      margin-left: 33.33333%;\n}\n.column.is-5, .column.is-5-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5, .column.is-offset-5-tablet {\n      margin-left: 41.66667%;\n}\n.column.is-6, .column.is-6-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6, .column.is-offset-6-tablet {\n      margin-left: 50%;\n}\n.column.is-7, .column.is-7-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7, .column.is-offset-7-tablet {\n      margin-left: 58.33333%;\n}\n.column.is-8, .column.is-8-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8, .column.is-offset-8-tablet {\n      margin-left: 66.66667%;\n}\n.column.is-9, .column.is-9-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9, .column.is-offset-9-tablet {\n      margin-left: 75%;\n}\n.column.is-10, .column.is-10-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10, .column.is-offset-10-tablet {\n      margin-left: 83.33333%;\n}\n.column.is-11, .column.is-11-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11, .column.is-offset-11-tablet {\n      margin-left: 91.66667%;\n}\n.column.is-12, .column.is-12-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12, .column.is-offset-12-tablet {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1000px) {\n.column.is-narrow-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-desktop {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-desktop {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-desktop {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-desktop {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-desktop {\n      margin-left: 25%;\n}\n.column.is-1-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-desktop {\n      margin-left: 8.33333%;\n}\n.column.is-2-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-desktop {\n      margin-left: 16.66667%;\n}\n.column.is-3-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-desktop {\n      margin-left: 25%;\n}\n.column.is-4-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-desktop {\n      margin-left: 33.33333%;\n}\n.column.is-5-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-desktop {\n      margin-left: 41.66667%;\n}\n.column.is-6-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-desktop {\n      margin-left: 50%;\n}\n.column.is-7-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-desktop {\n      margin-left: 58.33333%;\n}\n.column.is-8-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-desktop {\n      margin-left: 66.66667%;\n}\n.column.is-9-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-desktop {\n      margin-left: 75%;\n}\n.column.is-10-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-desktop {\n      margin-left: 83.33333%;\n}\n.column.is-11-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-desktop {\n      margin-left: 91.66667%;\n}\n.column.is-12-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-desktop {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1192px) {\n.column.is-narrow-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-widescreen {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-widescreen {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-widescreen {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-widescreen {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-widescreen {\n      margin-left: 25%;\n}\n.column.is-1-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-widescreen {\n      margin-left: 8.33333%;\n}\n.column.is-2-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-widescreen {\n      margin-left: 16.66667%;\n}\n.column.is-3-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-widescreen {\n      margin-left: 25%;\n}\n.column.is-4-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-widescreen {\n      margin-left: 33.33333%;\n}\n.column.is-5-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-widescreen {\n      margin-left: 41.66667%;\n}\n.column.is-6-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-widescreen {\n      margin-left: 50%;\n}\n.column.is-7-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-widescreen {\n      margin-left: 58.33333%;\n}\n.column.is-8-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-widescreen {\n      margin-left: 66.66667%;\n}\n.column.is-9-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-widescreen {\n      margin-left: 75%;\n}\n.column.is-10-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-widescreen {\n      margin-left: 83.33333%;\n}\n.column.is-11-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-widescreen {\n      margin-left: 91.66667%;\n}\n.column.is-12-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-widescreen {\n      margin-left: 100%;\n}\n}\n.columns {\n  margin-left: -0.75rem;\n  margin-right: -0.75rem;\n  margin-top: -0.75rem;\n}\n.columns:last-child {\n    margin-bottom: -0.75rem;\n}\n.columns:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.columns.is-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.columns.is-gapless {\n    margin-left: 0;\n    margin-right: 0;\n    margin-top: 0;\n}\n.columns.is-gapless:last-child {\n      margin-bottom: 0;\n}\n.columns.is-gapless:not(:last-child) {\n      margin-bottom: 1.5rem;\n}\n.columns.is-gapless > .column {\n      margin: 0;\n      padding: 0;\n}\n@media screen and (min-width: 769px), print {\n.columns.is-grid {\n      -ms-flex-wrap: wrap;\n          flex-wrap: wrap;\n}\n.columns.is-grid > .column {\n        max-width: 33.3333%;\n        padding: 0.75rem;\n        width: 33.3333%;\n}\n.columns.is-grid > .column + .column {\n          margin-left: 0;\n}\n}\n.columns.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.columns.is-multiline {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.columns.is-vcentered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n@media screen and (min-width: 769px), print {\n.columns:not(.is-desktop) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n@media screen and (min-width: 1000px) {\n.columns.is-desktop {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.tile {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  min-height: -webkit-min-content;\n  min-height: -moz-min-content;\n  min-height: min-content;\n}\n.tile.is-ancestor {\n    margin-left: -0.75rem;\n    margin-right: -0.75rem;\n    margin-top: -0.75rem;\n}\n.tile.is-ancestor:last-child {\n      margin-bottom: -0.75rem;\n}\n.tile.is-ancestor:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n.tile.is-child {\n    margin: 0 !important;\n}\n.tile.is-parent {\n    padding: 0.75rem;\n}\n.tile.is-vertical {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n}\n.tile.is-vertical > .tile.is-child:not(:last-child) {\n      margin-bottom: 1.5rem !important;\n}\n@media screen and (min-width: 769px), print {\n.tile:not(.is-child) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.tile.is-1 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.tile.is-2 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.tile.is-3 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.tile.is-4 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.tile.is-5 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.tile.is-6 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.tile.is-7 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.tile.is-8 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.tile.is-9 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.tile.is-10 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.tile.is-11 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.tile.is-12 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n}\n.hero-video {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  overflow: hidden;\n}\n.hero-video video {\n    left: 50%;\n    min-height: 100%;\n    min-width: 100%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translate3d(-50%, -50%, 0);\n            transform: translate3d(-50%, -50%, 0);\n}\n.hero-video.is-transparent {\n    opacity: 0.3;\n}\n@media screen and (max-width: 768px) {\n.hero-video {\n      display: none;\n}\n}\n.hero-buttons {\n  margin-top: 1.5rem;\n}\n@media screen and (max-width: 768px) {\n.hero-buttons .button {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-bottom: 0.75rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero-buttons {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-right: 1.5rem;\n}\n}\n.hero-head,\n.hero-foot {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.hero-body {\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1192px) {\n.hero-body {\n      padding-left: 0;\n      padding-right: 0;\n}\n}\n.hero {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.hero .nav {\n    background: none;\n    box-shadow: 0 1px 0 rgba(219, 219, 219, 0.3);\n}\n.hero .tabs ul {\n    border-bottom: none;\n}\n.hero.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.hero.is-white a:not(.button),\n    .hero.is-white strong {\n      color: inherit;\n}\n.hero.is-white .title {\n      color: #0a0a0a;\n}\n.hero.is-white .subtitle {\n      color: rgba(10, 10, 10, 0.9);\n}\n.hero.is-white .subtitle a:not(.button),\n      .hero.is-white .subtitle strong {\n        color: #0a0a0a;\n}\n.hero.is-white .nav {\n      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-menu {\n        background-color: white;\n}\n}\n.hero.is-white a.nav-item,\n    .hero.is-white .nav-item a:not(.button) {\n      color: rgba(10, 10, 10, 0.7);\n}\n.hero.is-white a.nav-item:hover, .hero.is-white a.nav-item.is-active,\n      .hero.is-white .nav-item a:not(.button):hover,\n      .hero.is-white .nav-item a:not(.button).is-active {\n        color: #0a0a0a;\n}\n.hero.is-white .tabs a {\n      color: #0a0a0a;\n      opacity: 0.9;\n}\n.hero.is-white .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-white .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-white .tabs.is-boxed a, .hero.is-white .tabs.is-toggle a {\n      color: #0a0a0a;\n}\n.hero.is-white .tabs.is-boxed a:hover, .hero.is-white .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .tabs.is-boxed li.is-active a, .hero.is-white .tabs.is-boxed li.is-active a:hover, .hero.is-white .tabs.is-toggle li.is-active a, .hero.is-white .tabs.is-toggle li.is-active a:hover {\n      background-color: #0a0a0a;\n      border-color: #0a0a0a;\n      color: white;\n}\n.hero.is-white.is-bold {\n      background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-toggle span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .nav-toggle.is-active span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-menu .nav-item {\n        border-top-color: rgba(10, 10, 10, 0.2);\n}\n}\n.hero.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.hero.is-black a:not(.button),\n    .hero.is-black strong {\n      color: inherit;\n}\n.hero.is-black .title {\n      color: white;\n}\n.hero.is-black .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-black .subtitle a:not(.button),\n      .hero.is-black .subtitle strong {\n        color: white;\n}\n.hero.is-black .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-menu {\n        background-color: #0a0a0a;\n}\n}\n.hero.is-black a.nav-item,\n    .hero.is-black .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-black a.nav-item:hover, .hero.is-black a.nav-item.is-active,\n      .hero.is-black .nav-item a:not(.button):hover,\n      .hero.is-black .nav-item a:not(.button).is-active {\n        color: white;\n}\n.hero.is-black .tabs a {\n      color: white;\n      opacity: 0.9;\n}\n.hero.is-black .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-black .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-black .tabs.is-boxed a, .hero.is-black .tabs.is-toggle a {\n      color: white;\n}\n.hero.is-black .tabs.is-boxed a:hover, .hero.is-black .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .tabs.is-boxed li.is-active a, .hero.is-black .tabs.is-boxed li.is-active a:hover, .hero.is-black .tabs.is-toggle li.is-active a, .hero.is-black .tabs.is-toggle li.is-active a:hover {\n      background-color: white;\n      border-color: white;\n      color: #0a0a0a;\n}\n.hero.is-black.is-bold {\n      background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-toggle span {\n        background-color: white;\n}\n.hero.is-black .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .nav-toggle.is-active span {\n        background-color: white;\n}\n.hero.is-black .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.hero.is-light a:not(.button),\n    .hero.is-light strong {\n      color: inherit;\n}\n.hero.is-light .title {\n      color: #363636;\n}\n.hero.is-light .subtitle {\n      color: rgba(54, 54, 54, 0.9);\n}\n.hero.is-light .subtitle a:not(.button),\n      .hero.is-light .subtitle strong {\n        color: #363636;\n}\n.hero.is-light .nav {\n      box-shadow: 0 1px 0 rgba(54, 54, 54, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-menu {\n        background-color: whitesmoke;\n}\n}\n.hero.is-light a.nav-item,\n    .hero.is-light .nav-item a:not(.button) {\n      color: rgba(54, 54, 54, 0.7);\n}\n.hero.is-light a.nav-item:hover, .hero.is-light a.nav-item.is-active,\n      .hero.is-light .nav-item a:not(.button):hover,\n      .hero.is-light .nav-item a:not(.button).is-active {\n        color: #363636;\n}\n.hero.is-light .tabs a {\n      color: #363636;\n      opacity: 0.9;\n}\n.hero.is-light .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-light .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-light .tabs.is-boxed a, .hero.is-light .tabs.is-toggle a {\n      color: #363636;\n}\n.hero.is-light .tabs.is-boxed a:hover, .hero.is-light .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .tabs.is-boxed li.is-active a, .hero.is-light .tabs.is-boxed li.is-active a:hover, .hero.is-light .tabs.is-toggle li.is-active a, .hero.is-light .tabs.is-toggle li.is-active a:hover {\n      background-color: #363636;\n      border-color: #363636;\n      color: whitesmoke;\n}\n.hero.is-light.is-bold {\n      background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-toggle span {\n        background-color: #363636;\n}\n.hero.is-light .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .nav-toggle.is-active span {\n        background-color: #363636;\n}\n.hero.is-light .nav-menu .nav-item {\n        border-top-color: rgba(54, 54, 54, 0.2);\n}\n}\n.hero.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.hero.is-dark a:not(.button),\n    .hero.is-dark strong {\n      color: inherit;\n}\n.hero.is-dark .title {\n      color: whitesmoke;\n}\n.hero.is-dark .subtitle {\n      color: rgba(245, 245, 245, 0.9);\n}\n.hero.is-dark .subtitle a:not(.button),\n      .hero.is-dark .subtitle strong {\n        color: whitesmoke;\n}\n.hero.is-dark .nav {\n      box-shadow: 0 1px 0 rgba(245, 245, 245, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-menu {\n        background-color: #363636;\n}\n}\n.hero.is-dark a.nav-item,\n    .hero.is-dark .nav-item a:not(.button) {\n      color: rgba(245, 245, 245, 0.7);\n}\n.hero.is-dark a.nav-item:hover, .hero.is-dark a.nav-item.is-active,\n      .hero.is-dark .nav-item a:not(.button):hover,\n      .hero.is-dark .nav-item a:not(.button).is-active {\n        color: whitesmoke;\n}\n.hero.is-dark .tabs a {\n      color: whitesmoke;\n      opacity: 0.9;\n}\n.hero.is-dark .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-dark .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-dark .tabs.is-boxed a, .hero.is-dark .tabs.is-toggle a {\n      color: whitesmoke;\n}\n.hero.is-dark .tabs.is-boxed a:hover, .hero.is-dark .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .tabs.is-boxed li.is-active a, .hero.is-dark .tabs.is-boxed li.is-active a:hover, .hero.is-dark .tabs.is-toggle li.is-active a, .hero.is-dark .tabs.is-toggle li.is-active a:hover {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      color: #363636;\n}\n.hero.is-dark.is-bold {\n      background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-toggle span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .nav-toggle.is-active span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-menu .nav-item {\n        border-top-color: rgba(245, 245, 245, 0.2);\n}\n}\n.hero.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.hero.is-primary a:not(.button),\n    .hero.is-primary strong {\n      color: inherit;\n}\n.hero.is-primary .title {\n      color: #fff;\n}\n.hero.is-primary .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-primary .subtitle a:not(.button),\n      .hero.is-primary .subtitle strong {\n        color: #fff;\n}\n.hero.is-primary .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-menu {\n        background-color: #00d1b2;\n}\n}\n.hero.is-primary a.nav-item,\n    .hero.is-primary .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-primary a.nav-item:hover, .hero.is-primary a.nav-item.is-active,\n      .hero.is-primary .nav-item a:not(.button):hover,\n      .hero.is-primary .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-primary .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-primary .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-primary .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-primary .tabs.is-boxed a, .hero.is-primary .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-primary .tabs.is-boxed a:hover, .hero.is-primary .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .tabs.is-boxed li.is-active a, .hero.is-primary .tabs.is-boxed li.is-active a:hover, .hero.is-primary .tabs.is-toggle li.is-active a, .hero.is-primary .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #00d1b2;\n}\n.hero.is-primary.is-bold {\n      background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.hero.is-info a:not(.button),\n    .hero.is-info strong {\n      color: inherit;\n}\n.hero.is-info .title {\n      color: #fff;\n}\n.hero.is-info .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-info .subtitle a:not(.button),\n      .hero.is-info .subtitle strong {\n        color: #fff;\n}\n.hero.is-info .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-menu {\n        background-color: #3273dc;\n}\n}\n.hero.is-info a.nav-item,\n    .hero.is-info .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-info a.nav-item:hover, .hero.is-info a.nav-item.is-active,\n      .hero.is-info .nav-item a:not(.button):hover,\n      .hero.is-info .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-info .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-info .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-info .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-info .tabs.is-boxed a, .hero.is-info .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-info .tabs.is-boxed a:hover, .hero.is-info .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .tabs.is-boxed li.is-active a, .hero.is-info .tabs.is-boxed li.is-active a:hover, .hero.is-info .tabs.is-toggle li.is-active a, .hero.is-info .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #3273dc;\n}\n.hero.is-info.is-bold {\n      background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-info .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-info .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.hero.is-success a:not(.button),\n    .hero.is-success strong {\n      color: inherit;\n}\n.hero.is-success .title {\n      color: #fff;\n}\n.hero.is-success .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-success .subtitle a:not(.button),\n      .hero.is-success .subtitle strong {\n        color: #fff;\n}\n.hero.is-success .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-menu {\n        background-color: #23d160;\n}\n}\n.hero.is-success a.nav-item,\n    .hero.is-success .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-success a.nav-item:hover, .hero.is-success a.nav-item.is-active,\n      .hero.is-success .nav-item a:not(.button):hover,\n      .hero.is-success .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-success .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-success .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-success .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-success .tabs.is-boxed a, .hero.is-success .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-success .tabs.is-boxed a:hover, .hero.is-success .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .tabs.is-boxed li.is-active a, .hero.is-success .tabs.is-boxed li.is-active a:hover, .hero.is-success .tabs.is-toggle li.is-active a, .hero.is-success .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #23d160;\n}\n.hero.is-success.is-bold {\n      background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-success .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-success .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a:not(.button),\n    .hero.is-warning strong {\n      color: inherit;\n}\n.hero.is-warning .title {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .subtitle {\n      color: rgba(0, 0, 0, 0.9);\n}\n.hero.is-warning .subtitle a:not(.button),\n      .hero.is-warning .subtitle strong {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav {\n      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-menu {\n        background-color: #ffdd57;\n}\n}\n.hero.is-warning a.nav-item,\n    .hero.is-warning .nav-item a:not(.button) {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a.nav-item:hover, .hero.is-warning a.nav-item.is-active,\n      .hero.is-warning .nav-item a:not(.button):hover,\n      .hero.is-warning .nav-item a:not(.button).is-active {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs a {\n      color: rgba(0, 0, 0, 0.7);\n      opacity: 0.9;\n}\n.hero.is-warning .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-warning .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-warning .tabs.is-boxed a, .hero.is-warning .tabs.is-toggle a {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs.is-boxed a:hover, .hero.is-warning .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .tabs.is-boxed li.is-active a, .hero.is-warning .tabs.is-boxed li.is-active a:hover, .hero.is-warning .tabs.is-toggle li.is-active a, .hero.is-warning .tabs.is-toggle li.is-active a:hover {\n      background-color: rgba(0, 0, 0, 0.7);\n      border-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.hero.is-warning.is-bold {\n      background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-toggle span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .nav-toggle.is-active span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-menu .nav-item {\n        border-top-color: rgba(0, 0, 0, 0.2);\n}\n}\n.hero.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.hero.is-danger a:not(.button),\n    .hero.is-danger strong {\n      color: inherit;\n}\n.hero.is-danger .title {\n      color: #fff;\n}\n.hero.is-danger .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-danger .subtitle a:not(.button),\n      .hero.is-danger .subtitle strong {\n        color: #fff;\n}\n.hero.is-danger .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-menu {\n        background-color: #ff3860;\n}\n}\n.hero.is-danger a.nav-item,\n    .hero.is-danger .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-danger a.nav-item:hover, .hero.is-danger a.nav-item.is-active,\n      .hero.is-danger .nav-item a:not(.button):hover,\n      .hero.is-danger .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-danger .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-danger .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-danger .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-danger .tabs.is-boxed a, .hero.is-danger .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-danger .tabs.is-boxed a:hover, .hero.is-danger .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .tabs.is-boxed li.is-active a, .hero.is-danger .tabs.is-boxed li.is-active a:hover, .hero.is-danger .tabs.is-toggle li.is-active a, .hero.is-danger .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #ff3860;\n}\n.hero.is-danger.is-bold {\n      background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-medium .hero-body {\n      padding-bottom: 9rem;\n      padding-top: 9rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-large .hero-body {\n      padding-bottom: 18rem;\n      padding-top: 18rem;\n}\n}\n.hero.is-fullheight {\n    min-height: 100vh;\n}\n.hero.is-fullheight .hero-body {\n      -webkit-box-align: center;\n          -ms-flex-align: center;\n              align-items: center;\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero.is-fullheight .hero-body > .container {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n        -ms-flex-negative: 1;\n            flex-shrink: 1;\n}\n.section {\n  background-color: white;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1000px) {\n.section.is-medium {\n      padding: 9rem 1.5rem;\n}\n.section.is-large {\n      padding: 18rem 1.5rem;\n}\n}\n.footer {\n  background-color: whitesmoke;\n  padding: 3rem 1.5rem 6rem;\n}\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em;\n}\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px;\n}\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n}\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n}\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n}\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/\n}\n.card-list-component .list-group-item {\n  background-color: #FFFDF4;\n}\n", ""]);
+exports.push([module.i, "/*! bulma.io v0.4.2 | MIT License | github.com/jgthms/bulma */\n@-webkit-keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n@keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n\n/*! minireset.css v0.0.2 | MIT License | github.com/jgthms/minireset.css */\nhtml,\nbody,\np,\nol,\nul,\nli,\ndl,\ndt,\ndd,\nblockquote,\nfigure,\nfieldset,\nlegend,\ntextarea,\npre,\niframe,\nhr,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  margin: 0;\n  padding: 0;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-size: 100%;\n  font-weight: normal;\n}\nul {\n  list-style: none;\n}\nbutton,\ninput,\nselect,\ntextarea {\n  margin: 0;\n}\nhtml {\n  box-sizing: border-box;\n}\n* {\n  box-sizing: inherit;\n}\n*:before, *:after {\n    box-sizing: inherit;\n}\nimg,\nembed,\nobject,\naudio,\nvideo {\n  height: auto;\n  max-width: 100%;\n}\niframe {\n  border: 0;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\ntd,\nth {\n  padding: 0;\n  text-align: left;\n}\nhtml {\n  background-color: #fff;\n  font-size: 16px;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  min-width: 300px;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  text-rendering: optimizeLegibility;\n}\narticle,\naside,\nfigure,\nfooter,\nheader,\nhgroup,\nsection {\n  display: block;\n}\nbody,\nbutton,\ninput,\nselect,\ntextarea {\n  font-family: BlinkMacSystemFont, -apple-system, \"Segoe UI\", \"Roboto\", \"Oxygen\", \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", \"Helvetica\", \"Arial\", sans-serif;\n}\ncode,\npre {\n  -moz-osx-font-smoothing: auto;\n  -webkit-font-smoothing: auto;\n  font-family: monospace;\n}\nbody {\n  color: #4a4a4a;\n  font-size: 1rem;\n  font-weight: 400;\n  line-height: 1.5;\n}\na {\n  color: #00d1b2;\n  cursor: pointer;\n  text-decoration: none;\n  transition: none 86ms ease-out;\n}\na:hover {\n    color: #363636;\n}\ncode {\n  background-color: whitesmoke;\n  color: #ff3860;\n  font-size: 0.8em;\n  font-weight: normal;\n  padding: 0.25em 0.5em 0.25em;\n}\nhr {\n  background-color: #dbdbdb;\n  border: none;\n  display: block;\n  height: 1px;\n  margin: 1.5rem 0;\n}\nimg {\n  max-width: 100%;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  vertical-align: baseline;\n}\nsmall {\n  font-size: 0.8em;\n}\nspan {\n  font-style: inherit;\n  font-weight: inherit;\n}\nstrong {\n  color: #363636;\n  font-weight: 700;\n}\npre {\n  background-color: whitesmoke;\n  color: #4a4a4a;\n  font-size: 0.8em;\n  white-space: pre;\n  word-wrap: normal;\n}\npre code {\n    -webkit-overflow-scrolling: touch;\n    background: none;\n    color: inherit;\n    display: block;\n    font-size: 1em;\n    overflow-x: auto;\n    padding: 1.25rem 1.5rem;\n}\ntable {\n  width: 100%;\n}\ntable td,\n  table th {\n    text-align: left;\n    vertical-align: top;\n}\ntable th {\n    color: #363636;\n}\n.is-block {\n  display: block;\n}\n@media screen and (max-width: 768px) {\n.is-block-mobile {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-block-tablet {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-block-tablet-only {\n    display: block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-block-touch {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-block-desktop {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-block-desktop-only {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-block-widescreen {\n    display: block !important;\n}\n}\n.is-flex {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n@media screen and (max-width: 768px) {\n.is-flex-mobile {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-flex-tablet {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-flex-tablet-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-flex-touch {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-flex-desktop {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-flex-desktop-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-flex-widescreen {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n.is-inline {\n  display: inline;\n}\n@media screen and (max-width: 768px) {\n.is-inline-mobile {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-tablet {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-tablet-only {\n    display: inline !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-touch {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-desktop {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-desktop-only {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-widescreen {\n    display: inline !important;\n}\n}\n.is-inline-block {\n  display: inline-block;\n}\n@media screen and (max-width: 768px) {\n.is-inline-block-mobile {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-block-tablet {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-block-tablet-only {\n    display: inline-block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-block-touch {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-block-desktop {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-block-desktop-only {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-block-widescreen {\n    display: inline-block !important;\n}\n}\n.is-inline-flex {\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n}\n@media screen and (max-width: 768px) {\n.is-inline-flex-mobile {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-flex-tablet {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-flex-tablet-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-flex-touch {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-flex-desktop {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-flex-desktop-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-flex-widescreen {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n.is-clearfix:after {\n  clear: both;\n  content: \" \";\n  display: table;\n}\n.is-pulled-left {\n  float: left;\n}\n.is-pulled-right {\n  float: right;\n}\n.is-clipped {\n  overflow: hidden !important;\n}\n.is-overlay {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n.has-text-centered {\n  text-align: center;\n}\n.has-text-left {\n  text-align: left;\n}\n.has-text-right {\n  text-align: right;\n}\n.has-text-white {\n  color: white;\n}\na.has-text-white:hover, a.has-text-white:focus {\n  color: #e6e6e6;\n}\n.has-text-black {\n  color: #0a0a0a;\n}\na.has-text-black:hover, a.has-text-black:focus {\n  color: black;\n}\n.has-text-light {\n  color: whitesmoke;\n}\na.has-text-light:hover, a.has-text-light:focus {\n  color: #dbdbdb;\n}\n.has-text-dark {\n  color: #363636;\n}\na.has-text-dark:hover, a.has-text-dark:focus {\n  color: #1c1c1c;\n}\n.has-text-primary {\n  color: #00d1b2;\n}\na.has-text-primary:hover, a.has-text-primary:focus {\n  color: #009e86;\n}\n.has-text-info {\n  color: #3273dc;\n}\na.has-text-info:hover, a.has-text-info:focus {\n  color: #205bbc;\n}\n.has-text-success {\n  color: #23d160;\n}\na.has-text-success:hover, a.has-text-success:focus {\n  color: #1ca64c;\n}\n.has-text-warning {\n  color: #ffdd57;\n}\na.has-text-warning:hover, a.has-text-warning:focus {\n  color: #ffd324;\n}\n.has-text-danger {\n  color: #ff3860;\n}\na.has-text-danger:hover, a.has-text-danger:focus {\n  color: #ff0537;\n}\n.is-hidden {\n  display: none !important;\n}\n@media screen and (max-width: 768px) {\n.is-hidden-mobile {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-hidden-tablet {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-hidden-tablet-only {\n    display: none !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-hidden-touch {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-hidden-desktop {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-hidden-desktop-only {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-hidden-widescreen {\n    display: none !important;\n}\n}\n.is-marginless {\n  margin: 0 !important;\n}\n.is-paddingless {\n  padding: 0 !important;\n}\n.is-unselectable {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.box {\n  background-color: white;\n  border-radius: 5px;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  display: block;\n  padding: 1.25rem;\n}\n.box:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\na.box:hover, a.box:focus {\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px #00d1b2;\n}\na.box:active {\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2), 0 0 0 1px #00d1b2;\n}\n.button {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  cursor: pointer;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  text-align: center;\n  white-space: nowrap;\n}\n.button:focus, .button.is-focused, .button:active, .button.is-active {\n    outline: none;\n}\n.button[disabled] {\n    cursor: not-allowed;\n}\n.button strong {\n    color: inherit;\n}\n.button .icon, .button .icon.is-small, .button .icon.is-medium, .button .icon.is-large {\n    height: 1.5em;\n    width: 1.5em;\n}\n.button .icon:first-child:not(:last-child) {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: 0.1875em;\n}\n.button .icon:last-child:not(:first-child) {\n    margin-left: 0.1875em;\n    margin-right: calc(-0.375em - 1px);\n}\n.button .icon:first-child:last-child {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: calc(-0.375em - 1px);\n}\n.button:hover, .button.is-hovered {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.button:focus, .button.is-focused {\n    border-color: #00d1b2;\n    box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n    color: #363636;\n}\n.button:active, .button.is-active {\n    border-color: #4a4a4a;\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n    color: #363636;\n}\n.button.is-link {\n    background-color: transparent;\n    border-color: transparent;\n    color: #4a4a4a;\n    text-decoration: underline;\n}\n.button.is-link:hover, .button.is-link.is-hovered, .button.is-link:focus, .button.is-link.is-focused, .button.is-link:active, .button.is-link.is-active {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-link[disabled] {\n      background-color: transparent;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white {\n    background-color: white;\n    border-color: transparent;\n    color: #0a0a0a;\n}\n.button.is-white:hover, .button.is-white.is-hovered {\n      background-color: #f9f9f9;\n      border-color: transparent;\n      color: #0a0a0a;\n}\n.button.is-white:focus, .button.is-white.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 255, 255, 0.25);\n      color: #0a0a0a;\n}\n.button.is-white:active, .button.is-white.is-active {\n      background-color: #f2f2f2;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #0a0a0a;\n}\n.button.is-white[disabled] {\n      background-color: white;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white.is-inverted {\n      background-color: #0a0a0a;\n      color: white;\n}\n.button.is-white.is-inverted:hover {\n        background-color: black;\n}\n.button.is-white.is-inverted[disabled] {\n        background-color: #0a0a0a;\n        border-color: transparent;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-loading:after {\n      border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-white.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-white.is-outlined:hover, .button.is-white.is-outlined:focus {\n        background-color: white;\n        border-color: white;\n        color: #0a0a0a;\n}\n.button.is-white.is-outlined.is-loading:after {\n        border-color: transparent transparent white white !important;\n}\n.button.is-white.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-white.is-inverted.is-outlined:hover, .button.is-white.is-inverted.is-outlined:focus {\n        background-color: #0a0a0a;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black {\n    background-color: #0a0a0a;\n    border-color: transparent;\n    color: white;\n}\n.button.is-black:hover, .button.is-black.is-hovered {\n      background-color: #040404;\n      border-color: transparent;\n      color: white;\n}\n.button.is-black:focus, .button.is-black.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(10, 10, 10, 0.25);\n      color: white;\n}\n.button.is-black:active, .button.is-black.is-active {\n      background-color: black;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: white;\n}\n.button.is-black[disabled] {\n      background-color: #0a0a0a;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-black.is-inverted {\n      background-color: white;\n      color: #0a0a0a;\n}\n.button.is-black.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-black.is-inverted[disabled] {\n        background-color: white;\n        border-color: transparent;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-loading:after {\n      border-color: transparent transparent white white !important;\n}\n.button.is-black.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-black.is-outlined:hover, .button.is-black.is-outlined:focus {\n        background-color: #0a0a0a;\n        border-color: #0a0a0a;\n        color: white;\n}\n.button.is-black.is-outlined.is-loading:after {\n        border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-black.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-black.is-inverted.is-outlined:hover, .button.is-black.is-inverted.is-outlined:focus {\n        background-color: white;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-light {\n    background-color: whitesmoke;\n    border-color: transparent;\n    color: #363636;\n}\n.button.is-light:hover, .button.is-light.is-hovered {\n      background-color: #eeeeee;\n      border-color: transparent;\n      color: #363636;\n}\n.button.is-light:focus, .button.is-light.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(245, 245, 245, 0.25);\n      color: #363636;\n}\n.button.is-light:active, .button.is-light.is-active {\n      background-color: #e8e8e8;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #363636;\n}\n.button.is-light[disabled] {\n      background-color: whitesmoke;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-light.is-inverted {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.button.is-light.is-inverted:hover {\n        background-color: #292929;\n}\n.button.is-light.is-inverted[disabled] {\n        background-color: #363636;\n        border-color: transparent;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-loading:after {\n      border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-light.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-light.is-outlined:hover, .button.is-light.is-outlined:focus {\n        background-color: whitesmoke;\n        border-color: whitesmoke;\n        color: #363636;\n}\n.button.is-light.is-outlined.is-loading:after {\n        border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-light.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-light.is-inverted.is-outlined:hover, .button.is-light.is-inverted.is-outlined:focus {\n        background-color: #363636;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark {\n    background-color: #363636;\n    border-color: transparent;\n    color: whitesmoke;\n}\n.button.is-dark:hover, .button.is-dark.is-hovered {\n      background-color: #2f2f2f;\n      border-color: transparent;\n      color: whitesmoke;\n}\n.button.is-dark:focus, .button.is-dark.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(54, 54, 54, 0.25);\n      color: whitesmoke;\n}\n.button.is-dark:active, .button.is-dark.is-active {\n      background-color: #292929;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: whitesmoke;\n}\n.button.is-dark[disabled] {\n      background-color: #363636;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-dark.is-inverted {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-dark.is-inverted:hover {\n        background-color: #e8e8e8;\n}\n.button.is-dark.is-inverted[disabled] {\n        background-color: whitesmoke;\n        border-color: transparent;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-loading:after {\n      border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-dark.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-dark.is-outlined:hover, .button.is-dark.is-outlined:focus {\n        background-color: #363636;\n        border-color: #363636;\n        color: whitesmoke;\n}\n.button.is-dark.is-outlined.is-loading:after {\n        border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-dark.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-dark.is-inverted.is-outlined:hover, .button.is-dark.is-inverted.is-outlined:focus {\n        background-color: whitesmoke;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-primary {\n    background-color: #00d1b2;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-primary:hover, .button.is-primary.is-hovered {\n      background-color: #00c4a7;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-primary:focus, .button.is-primary.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n      color: #fff;\n}\n.button.is-primary:active, .button.is-primary.is-active {\n      background-color: #00b89c;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-primary[disabled] {\n      background-color: #00d1b2;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-primary.is-inverted {\n      background-color: #fff;\n      color: #00d1b2;\n}\n.button.is-primary.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-primary.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-primary.is-outlined {\n      background-color: transparent;\n      border-color: #00d1b2;\n      color: #00d1b2;\n}\n.button.is-primary.is-outlined:hover, .button.is-primary.is-outlined:focus {\n        background-color: #00d1b2;\n        border-color: #00d1b2;\n        color: #fff;\n}\n.button.is-primary.is-outlined.is-loading:after {\n        border-color: transparent transparent #00d1b2 #00d1b2 !important;\n}\n.button.is-primary.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #00d1b2;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-primary.is-inverted.is-outlined:hover, .button.is-primary.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-info {\n    background-color: #3273dc;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-info:hover, .button.is-info.is-hovered {\n      background-color: #276cda;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-info:focus, .button.is-info.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(50, 115, 220, 0.25);\n      color: #fff;\n}\n.button.is-info:active, .button.is-info.is-active {\n      background-color: #2366d1;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-info[disabled] {\n      background-color: #3273dc;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-info.is-inverted {\n      background-color: #fff;\n      color: #3273dc;\n}\n.button.is-info.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-info.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-info.is-outlined {\n      background-color: transparent;\n      border-color: #3273dc;\n      color: #3273dc;\n}\n.button.is-info.is-outlined:hover, .button.is-info.is-outlined:focus {\n        background-color: #3273dc;\n        border-color: #3273dc;\n        color: #fff;\n}\n.button.is-info.is-outlined.is-loading:after {\n        border-color: transparent transparent #3273dc #3273dc !important;\n}\n.button.is-info.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #3273dc;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-info.is-inverted.is-outlined:hover, .button.is-info.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-success {\n    background-color: #23d160;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-success:hover, .button.is-success.is-hovered {\n      background-color: #22c65b;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-success:focus, .button.is-success.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(35, 209, 96, 0.25);\n      color: #fff;\n}\n.button.is-success:active, .button.is-success.is-active {\n      background-color: #20bc56;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-success[disabled] {\n      background-color: #23d160;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-success.is-inverted {\n      background-color: #fff;\n      color: #23d160;\n}\n.button.is-success.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-success.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-success.is-outlined {\n      background-color: transparent;\n      border-color: #23d160;\n      color: #23d160;\n}\n.button.is-success.is-outlined:hover, .button.is-success.is-outlined:focus {\n        background-color: #23d160;\n        border-color: #23d160;\n        color: #fff;\n}\n.button.is-success.is-outlined.is-loading:after {\n        border-color: transparent transparent #23d160 #23d160 !important;\n}\n.button.is-success.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #23d160;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-success.is-inverted.is-outlined:hover, .button.is-success.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-warning {\n    background-color: #ffdd57;\n    border-color: transparent;\n    color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:hover, .button.is-warning.is-hovered {\n      background-color: #ffdb4a;\n      border-color: transparent;\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:focus, .button.is-warning.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 221, 87, 0.25);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:active, .button.is-warning.is-active {\n      background-color: #ffd83d;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning[disabled] {\n      background-color: #ffdd57;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-warning.is-inverted {\n      background-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.button.is-warning.is-inverted:hover {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted[disabled] {\n        background-color: rgba(0, 0, 0, 0.7);\n        border-color: transparent;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-loading:after {\n      border-color: transparent transparent rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.7) !important;\n}\n.button.is-warning.is-outlined {\n      background-color: transparent;\n      border-color: #ffdd57;\n      color: #ffdd57;\n}\n.button.is-warning.is-outlined:hover, .button.is-warning.is-outlined:focus {\n        background-color: #ffdd57;\n        border-color: #ffdd57;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-outlined.is-loading:after {\n        border-color: transparent transparent #ffdd57 #ffdd57 !important;\n}\n.button.is-warning.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ffdd57;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: rgba(0, 0, 0, 0.7);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted.is-outlined:hover, .button.is-warning.is-inverted.is-outlined:focus {\n        background-color: rgba(0, 0, 0, 0.7);\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: rgba(0, 0, 0, 0.7);\n        box-shadow: none;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-danger {\n    background-color: #ff3860;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-danger:hover, .button.is-danger.is-hovered {\n      background-color: #ff2b56;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-danger:focus, .button.is-danger.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 56, 96, 0.25);\n      color: #fff;\n}\n.button.is-danger:active, .button.is-danger.is-active {\n      background-color: #ff1f4b;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-danger[disabled] {\n      background-color: #ff3860;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-danger.is-inverted {\n      background-color: #fff;\n      color: #ff3860;\n}\n.button.is-danger.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-danger.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-danger.is-outlined {\n      background-color: transparent;\n      border-color: #ff3860;\n      color: #ff3860;\n}\n.button.is-danger.is-outlined:hover, .button.is-danger.is-outlined:focus {\n        background-color: #ff3860;\n        border-color: #ff3860;\n        color: #fff;\n}\n.button.is-danger.is-outlined.is-loading:after {\n        border-color: transparent transparent #ff3860 #ff3860 !important;\n}\n.button.is-danger.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ff3860;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-danger.is-inverted.is-outlined:hover, .button.is-danger.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.button.is-medium {\n    font-size: 1.25rem;\n}\n.button.is-large {\n    font-size: 1.5rem;\n}\n.button[disabled] {\n    background-color: white;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    opacity: 0.5;\n}\n.button.is-fullwidth {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    width: 100%;\n}\n.button.is-loading {\n    color: transparent !important;\n    pointer-events: none;\n}\n.button.is-loading:after {\n      -webkit-animation: spinAround 500ms infinite linear;\n              animation: spinAround 500ms infinite linear;\n      border: 2px solid #dbdbdb;\n      border-radius: 290486px;\n      border-right-color: transparent;\n      border-top-color: transparent;\n      content: \"\";\n      display: block;\n      height: 1em;\n      position: relative;\n      width: 1em;\n      position: absolute;\n      left: calc(50% - (1em / 2));\n      top: calc(50% - (1em / 2));\n      position: absolute !important;\n}\n.button.is-static {\n    background-color: whitesmoke;\n    border-color: #dbdbdb;\n    color: #7a7a7a;\n    box-shadow: none;\n    pointer-events: none;\n}\nbutton.button,\ninput[type=\"submit\"].button {\n  line-height: 1;\n  padding-bottom: 0.4em;\n  padding-top: 0.35em;\n}\n.content {\n  color: #4a4a4a;\n}\n.content:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.content li + li {\n    margin-top: 0.25em;\n}\n.content p:not(:last-child),\n  .content dl:not(:last-child),\n  .content ol:not(:last-child),\n  .content ul:not(:last-child),\n  .content blockquote:not(:last-child),\n  .content pre:not(:last-child),\n  .content table:not(:last-child) {\n    margin-bottom: 1em;\n}\n.content h1,\n  .content h2,\n  .content h3,\n  .content h4,\n  .content h5,\n  .content h6 {\n    color: #363636;\n    font-weight: 400;\n    line-height: 1.125;\n}\n.content h1 {\n    font-size: 2em;\n    margin-bottom: 0.5em;\n}\n.content h1:not(:first-child) {\n      margin-top: 1em;\n}\n.content h2 {\n    font-size: 1.75em;\n    margin-bottom: 0.5714em;\n}\n.content h2:not(:first-child) {\n      margin-top: 1.1428em;\n}\n.content h3 {\n    font-size: 1.5em;\n    margin-bottom: 0.6666em;\n}\n.content h3:not(:first-child) {\n      margin-top: 1.3333em;\n}\n.content h4 {\n    font-size: 1.25em;\n    margin-bottom: 0.8em;\n}\n.content h5 {\n    font-size: 1.125em;\n    margin-bottom: 0.8888em;\n}\n.content h6 {\n    font-size: 1em;\n    margin-bottom: 1em;\n}\n.content blockquote {\n    background-color: whitesmoke;\n    border-left: 5px solid #dbdbdb;\n    padding: 1.25em 1.5em;\n}\n.content ol {\n    list-style: decimal outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul {\n    list-style: disc outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul ul {\n      list-style-type: circle;\n      margin-top: 0.5em;\n}\n.content ul ul ul {\n        list-style-type: square;\n}\n.content dd {\n    margin-left: 2em;\n}\n.content pre {\n    -webkit-overflow-scrolling: touch;\n    overflow-x: auto;\n    padding: 1.25em 1.5em;\n    white-space: pre;\n    word-wrap: normal;\n}\n.content table {\n    width: 100%;\n}\n.content table td,\n    .content table th {\n      border: 1px solid #dbdbdb;\n      border-width: 0 0 1px;\n      padding: 0.5em 0.75em;\n      vertical-align: top;\n}\n.content table th {\n      color: #363636;\n      text-align: left;\n}\n.content table tr:hover {\n      background-color: whitesmoke;\n}\n.content table thead td,\n    .content table thead th {\n      border-width: 0 0 2px;\n      color: #363636;\n}\n.content table tfoot td,\n    .content table tfoot th {\n      border-width: 2px 0 0;\n      color: #363636;\n}\n.content table tbody tr:last-child td,\n    .content table tbody tr:last-child th {\n      border-bottom-width: 0;\n}\n.content.is-small {\n    font-size: 0.75rem;\n}\n.content.is-medium {\n    font-size: 1.25rem;\n}\n.content.is-large {\n    font-size: 1.5rem;\n}\n.input,\n.textarea {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);\n  max-width: 100%;\n  width: 100%;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    outline: none;\n}\n.input[disabled],\n  .textarea[disabled] {\n    cursor: not-allowed;\n}\n.input:hover, .input.is-hovered,\n  .textarea:hover,\n  .textarea.is-hovered {\n    border-color: #b5b5b5;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    border-color: #00d1b2;\n}\n.input[disabled],\n  .textarea[disabled] {\n    background-color: whitesmoke;\n    border-color: whitesmoke;\n    box-shadow: none;\n    color: #7a7a7a;\n}\n.input[disabled]::-moz-placeholder,\n    .textarea[disabled]::-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]::-webkit-input-placeholder,\n    .textarea[disabled]::-webkit-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-moz-placeholder,\n    .textarea[disabled]:-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-ms-input-placeholder,\n    .textarea[disabled]:-ms-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[type=\"search\"],\n  .textarea[type=\"search\"] {\n    border-radius: 290486px;\n}\n.input.is-white,\n  .textarea.is-white {\n    border-color: white;\n}\n.input.is-black,\n  .textarea.is-black {\n    border-color: #0a0a0a;\n}\n.input.is-light,\n  .textarea.is-light {\n    border-color: whitesmoke;\n}\n.input.is-dark,\n  .textarea.is-dark {\n    border-color: #363636;\n}\n.input.is-primary,\n  .textarea.is-primary {\n    border-color: #00d1b2;\n}\n.input.is-info,\n  .textarea.is-info {\n    border-color: #3273dc;\n}\n.input.is-success,\n  .textarea.is-success {\n    border-color: #23d160;\n}\n.input.is-warning,\n  .textarea.is-warning {\n    border-color: #ffdd57;\n}\n.input.is-danger,\n  .textarea.is-danger {\n    border-color: #ff3860;\n}\n.input.is-small,\n  .textarea.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.input.is-medium,\n  .textarea.is-medium {\n    font-size: 1.25rem;\n}\n.input.is-large,\n  .textarea.is-large {\n    font-size: 1.5rem;\n}\n.input.is-fullwidth,\n  .textarea.is-fullwidth {\n    display: block;\n    width: 100%;\n}\n.input.is-inline,\n  .textarea.is-inline {\n    display: inline;\n    width: auto;\n}\n.textarea {\n  display: block;\n  max-height: 600px;\n  max-width: 100%;\n  min-height: 120px;\n  min-width: 100%;\n  padding: 0.625em;\n  resize: vertical;\n}\n.checkbox,\n.radio {\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1.25;\n  position: relative;\n}\n.checkbox input,\n  .radio input {\n    cursor: pointer;\n}\n.checkbox:hover,\n  .radio:hover {\n    color: #363636;\n}\n.checkbox[disabled],\n  .radio[disabled] {\n    color: #7a7a7a;\n    cursor: not-allowed;\n}\n.radio + .radio {\n  margin-left: 0.5em;\n}\n.select {\n  display: inline-block;\n  height: 2.25em;\n  max-width: 100%;\n  position: relative;\n  vertical-align: top;\n}\n.select:after {\n    border: 1px solid #00d1b2;\n    border-right: 0;\n    border-top: 0;\n    content: \" \";\n    display: block;\n    height: 0.5em;\n    pointer-events: none;\n    position: absolute;\n    -webkit-transform: rotate(-45deg);\n            transform: rotate(-45deg);\n    width: 0.5em;\n    margin-top: -0.375em;\n    right: 1.125em;\n    top: 50%;\n    z-index: 4;\n}\n.select select {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border: 1px solid transparent;\n    border-radius: 3px;\n    box-shadow: none;\n    display: -webkit-inline-box;\n    display: -ms-inline-flexbox;\n    display: inline-flex;\n    font-size: 1rem;\n    height: 2.25em;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    line-height: 1.5;\n    padding-bottom: calc(0.375em - 1px);\n    padding-left: calc(0.625em - 1px);\n    padding-right: calc(0.625em - 1px);\n    padding-top: calc(0.375em - 1px);\n    position: relative;\n    vertical-align: top;\n    background-color: white;\n    border-color: #dbdbdb;\n    color: #363636;\n    cursor: pointer;\n    display: block;\n    font-size: 1em;\n    max-width: 100%;\n    outline: none;\n    padding-right: 2.5em;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      outline: none;\n}\n.select select[disabled] {\n      cursor: not-allowed;\n}\n.select select:hover, .select select.is-hovered {\n      border-color: #b5b5b5;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      border-color: #00d1b2;\n}\n.select select[disabled] {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      box-shadow: none;\n      color: #7a7a7a;\n}\n.select select[disabled]::-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]::-webkit-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-ms-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select:hover {\n      border-color: #b5b5b5;\n}\n.select select::-ms-expand {\n      display: none;\n}\n.select select[disabled]:hover {\n      border-color: whitesmoke;\n}\n.select:hover:after {\n    border-color: #363636;\n}\n.select.is-white select {\n    border-color: white;\n}\n.select.is-black select {\n    border-color: #0a0a0a;\n}\n.select.is-light select {\n    border-color: whitesmoke;\n}\n.select.is-dark select {\n    border-color: #363636;\n}\n.select.is-primary select {\n    border-color: #00d1b2;\n}\n.select.is-info select {\n    border-color: #3273dc;\n}\n.select.is-success select {\n    border-color: #23d160;\n}\n.select.is-warning select {\n    border-color: #ffdd57;\n}\n.select.is-danger select {\n    border-color: #ff3860;\n}\n.select.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.select.is-medium {\n    font-size: 1.25rem;\n}\n.select.is-large {\n    font-size: 1.5rem;\n}\n.select.is-disabled:after {\n    border-color: #7a7a7a;\n}\n.select.is-fullwidth {\n    width: 100%;\n}\n.select.is-fullwidth select {\n      width: 100%;\n}\n.select.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    margin-top: 0;\n    position: absolute;\n    right: 0.625em;\n    top: 0.625em;\n    -webkit-transform: none;\n            transform: none;\n}\n.label {\n  color: #363636;\n  display: block;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.label:not(:last-child) {\n    margin-bottom: 0.5em;\n}\n.label.is-small {\n    font-size: 0.75rem;\n}\n.label.is-medium {\n    font-size: 1.25rem;\n}\n.label.is-large {\n    font-size: 1.5rem;\n}\n.help {\n  display: block;\n  font-size: 0.75rem;\n  margin-top: 0.25rem;\n}\n.help.is-white {\n    color: white;\n}\n.help.is-black {\n    color: #0a0a0a;\n}\n.help.is-light {\n    color: whitesmoke;\n}\n.help.is-dark {\n    color: #363636;\n}\n.help.is-primary {\n    color: #00d1b2;\n}\n.help.is-info {\n    color: #3273dc;\n}\n.help.is-success {\n    color: #23d160;\n}\n.help.is-warning {\n    color: #ffdd57;\n}\n.help.is-danger {\n    color: #ff3860;\n}\n.field:not(:last-child) {\n  margin-bottom: 0.75rem;\n}\n.field.has-addons {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.has-addons .control {\n    margin-right: -1px;\n}\n.field.has-addons .control:first-child .button,\n    .field.has-addons .control:first-child .input,\n    .field.has-addons .control:first-child .select select {\n      border-bottom-left-radius: 3px;\n      border-top-left-radius: 3px;\n}\n.field.has-addons .control:last-child .button,\n    .field.has-addons .control:last-child .input,\n    .field.has-addons .control:last-child .select select {\n      border-bottom-right-radius: 3px;\n      border-top-right-radius: 3px;\n}\n.field.has-addons .control .button,\n    .field.has-addons .control .input,\n    .field.has-addons .control .select select {\n      border-radius: 0;\n}\n.field.has-addons .control .button:hover, .field.has-addons .control .button.is-hovered,\n      .field.has-addons .control .input:hover,\n      .field.has-addons .control .input.is-hovered,\n      .field.has-addons .control .select select:hover,\n      .field.has-addons .control .select select.is-hovered {\n        z-index: 2;\n}\n.field.has-addons .control .button:focus, .field.has-addons .control .button.is-focused, .field.has-addons .control .button:active, .field.has-addons .control .button.is-active,\n      .field.has-addons .control .input:focus,\n      .field.has-addons .control .input.is-focused,\n      .field.has-addons .control .input:active,\n      .field.has-addons .control .input.is-active,\n      .field.has-addons .control .select select:focus,\n      .field.has-addons .control .select select.is-focused,\n      .field.has-addons .control .select select:active,\n      .field.has-addons .control .select select.is-active {\n        z-index: 3;\n}\n.field.has-addons .control .button:focus:hover, .field.has-addons .control .button.is-focused:hover, .field.has-addons .control .button:active:hover, .field.has-addons .control .button.is-active:hover,\n        .field.has-addons .control .input:focus:hover,\n        .field.has-addons .control .input.is-focused:hover,\n        .field.has-addons .control .input:active:hover,\n        .field.has-addons .control .input.is-active:hover,\n        .field.has-addons .control .select select:focus:hover,\n        .field.has-addons .control .select select.is-focused:hover,\n        .field.has-addons .control .select select:active:hover,\n        .field.has-addons .control .select select.is-active:hover {\n          z-index: 4;\n}\n.field.has-addons .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n.field.has-addons.has-addons-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.has-addons.has-addons-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.field.has-addons.has-addons-fullwidth .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.is-grouped > .control {\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped > .control:not(:last-child) {\n      margin-bottom: 0;\n      margin-right: 0.75rem;\n}\n.field.is-grouped > .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field.is-grouped.is-grouped-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.is-grouped.is-grouped-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.field.is-horizontal {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n}\n.field-label .label {\n  font-size: inherit;\n}\n@media screen and (max-width: 768px) {\n.field-label {\n    margin-bottom: 0.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-label {\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-right: 1.5rem;\n    text-align: right;\n}\n.field-label.is-small {\n      font-size: 0.75rem;\n      padding-top: 0.375em;\n}\n.field-label.is-normal {\n      padding-top: 0.375em;\n}\n.field-label.is-medium {\n      font-size: 1.25rem;\n      padding-top: 0.375em;\n}\n.field-label.is-large {\n      font-size: 1.5rem;\n      padding-top: 0.375em;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-body {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 5;\n        -ms-flex-positive: 5;\n            flex-grow: 5;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.field-body .field {\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field-body .field:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n.field-body .field:not(:last-child) {\n        margin-bottom: 0;\n        margin-right: 0.75rem;\n}\n}\n.control {\n  font-size: 1rem;\n  position: relative;\n  text-align: left;\n}\n.control.has-icon .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icon .input:focus + .icon {\n    color: #7a7a7a;\n}\n.control.has-icon .input.is-small + .icon {\n    font-size: 0.75rem;\n}\n.control.has-icon .input.is-medium + .icon {\n    font-size: 1.25rem;\n}\n.control.has-icon .input.is-large + .icon {\n    font-size: 1.5rem;\n}\n.control.has-icon:not(.has-icon-right) .icon {\n    left: 0;\n}\n.control.has-icon:not(.has-icon-right) .input {\n    padding-left: 2.25em;\n}\n.control.has-icon.has-icon-right .icon {\n    right: 0;\n}\n.control.has-icon.has-icon-right .input {\n    padding-right: 2.25em;\n}\n.control.has-icons-left .input:focus ~ .icon,\n  .control.has-icons-left .select select:focus ~ .icon, .control.has-icons-right .input:focus ~ .icon,\n  .control.has-icons-right .select select:focus ~ .icon {\n    color: #7a7a7a;\n}\n.control.has-icons-left .input.is-small ~ .icon,\n  .control.has-icons-left .select select.is-small ~ .icon, .control.has-icons-right .input.is-small ~ .icon,\n  .control.has-icons-right .select select.is-small ~ .icon {\n    font-size: 0.75rem;\n}\n.control.has-icons-left .input.is-medium ~ .icon,\n  .control.has-icons-left .select select.is-medium ~ .icon, .control.has-icons-right .input.is-medium ~ .icon,\n  .control.has-icons-right .select select.is-medium ~ .icon {\n    font-size: 1.25rem;\n}\n.control.has-icons-left .input.is-large ~ .icon,\n  .control.has-icons-left .select select.is-large ~ .icon, .control.has-icons-right .input.is-large ~ .icon,\n  .control.has-icons-right .select select.is-large ~ .icon {\n    font-size: 1.5rem;\n}\n.control.has-icons-left .icon, .control.has-icons-right .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icons-left .input,\n  .control.has-icons-left .select select {\n    padding-left: 2.25em;\n}\n.control.has-icons-left .icon.is-left {\n    left: 0;\n}\n.control.has-icons-right .input,\n  .control.has-icons-right .select select {\n    padding-right: 2.25em;\n}\n.control.has-icons-right .icon.is-right {\n    right: 0;\n}\n.control.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    position: absolute !important;\n    right: 0.625em;\n    top: 0.625em;\n}\n.icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  height: 1.5rem;\n  width: 1.5rem;\n}\n.icon .fa {\n    font-size: 21px;\n}\n.icon.is-small {\n    height: 1rem;\n    width: 1rem;\n}\n.icon.is-small .fa {\n      font-size: 14px;\n}\n.icon.is-medium {\n    height: 2rem;\n    width: 2rem;\n}\n.icon.is-medium .fa {\n      font-size: 28px;\n}\n.icon.is-large {\n    height: 3rem;\n    width: 3rem;\n}\n.icon.is-large .fa {\n      font-size: 42px;\n}\n.image {\n  display: block;\n  position: relative;\n}\n.image img {\n    display: block;\n    height: auto;\n    width: 100%;\n}\n.image.is-square img, .image.is-1by1 img, .image.is-4by3 img, .image.is-3by2 img, .image.is-16by9 img, .image.is-2by1 img {\n    bottom: 0;\n    left: 0;\n    position: absolute;\n    right: 0;\n    top: 0;\n    height: 100%;\n    width: 100%;\n}\n.image.is-square, .image.is-1by1 {\n    padding-top: 100%;\n}\n.image.is-4by3 {\n    padding-top: 75%;\n}\n.image.is-3by2 {\n    padding-top: 66.6666%;\n}\n.image.is-16by9 {\n    padding-top: 56.25%;\n}\n.image.is-2by1 {\n    padding-top: 50%;\n}\n.image.is-16x16 {\n    height: 16px;\n    width: 16px;\n}\n.image.is-24x24 {\n    height: 24px;\n    width: 24px;\n}\n.image.is-32x32 {\n    height: 32px;\n    width: 32px;\n}\n.image.is-48x48 {\n    height: 48px;\n    width: 48px;\n}\n.image.is-64x64 {\n    height: 64px;\n    width: 64px;\n}\n.image.is-96x96 {\n    height: 96px;\n    width: 96px;\n}\n.image.is-128x128 {\n    height: 128px;\n    width: 128px;\n}\n.notification {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  padding: 1.25rem 2.5rem 1.25rem 1.5rem;\n  position: relative;\n}\n.notification:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.notification a:not(.button) {\n    color: currentColor;\n    text-decoration: underline;\n}\n.notification code,\n  .notification pre {\n    background: white;\n}\n.notification pre code {\n    background: transparent;\n}\n.notification > .delete {\n    position: absolute;\n    right: 0.5em;\n    top: 0.5em;\n}\n.notification .title,\n  .notification .subtitle,\n  .notification .content {\n    color: inherit;\n}\n.notification.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.notification.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.notification.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.notification.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.notification.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.notification.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.notification.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.notification.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.notification.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.progress {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  border: none;\n  border-radius: 290486px;\n  display: block;\n  height: 1rem;\n  overflow: hidden;\n  padding: 0;\n  width: 100%;\n}\n.progress:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.progress::-webkit-progress-bar {\n    background-color: #dbdbdb;\n}\n.progress::-webkit-progress-value {\n    background-color: #4a4a4a;\n}\n.progress::-moz-progress-bar {\n    background-color: #4a4a4a;\n}\n.progress.is-white::-webkit-progress-value {\n    background-color: white;\n}\n.progress.is-white::-moz-progress-bar {\n    background-color: white;\n}\n.progress.is-black::-webkit-progress-value {\n    background-color: #0a0a0a;\n}\n.progress.is-black::-moz-progress-bar {\n    background-color: #0a0a0a;\n}\n.progress.is-light::-webkit-progress-value {\n    background-color: whitesmoke;\n}\n.progress.is-light::-moz-progress-bar {\n    background-color: whitesmoke;\n}\n.progress.is-dark::-webkit-progress-value {\n    background-color: #363636;\n}\n.progress.is-dark::-moz-progress-bar {\n    background-color: #363636;\n}\n.progress.is-primary::-webkit-progress-value {\n    background-color: #00d1b2;\n}\n.progress.is-primary::-moz-progress-bar {\n    background-color: #00d1b2;\n}\n.progress.is-info::-webkit-progress-value {\n    background-color: #3273dc;\n}\n.progress.is-info::-moz-progress-bar {\n    background-color: #3273dc;\n}\n.progress.is-success::-webkit-progress-value {\n    background-color: #23d160;\n}\n.progress.is-success::-moz-progress-bar {\n    background-color: #23d160;\n}\n.progress.is-warning::-webkit-progress-value {\n    background-color: #ffdd57;\n}\n.progress.is-warning::-moz-progress-bar {\n    background-color: #ffdd57;\n}\n.progress.is-danger::-webkit-progress-value {\n    background-color: #ff3860;\n}\n.progress.is-danger::-moz-progress-bar {\n    background-color: #ff3860;\n}\n.progress.is-small {\n    height: 0.75rem;\n}\n.progress.is-medium {\n    height: 1.25rem;\n}\n.progress.is-large {\n    height: 1.5rem;\n}\n.table {\n  background-color: white;\n  color: #363636;\n  margin-bottom: 1.5rem;\n  width: 100%;\n}\n.table td,\n  .table th {\n    border: 1px solid #dbdbdb;\n    border-width: 0 0 1px;\n    padding: 0.5em 0.75em;\n    vertical-align: top;\n}\n.table td.is-narrow,\n    .table th.is-narrow {\n      white-space: nowrap;\n      width: 1%;\n}\n.table th {\n    color: #363636;\n    text-align: left;\n}\n.table tr:hover {\n    background-color: #fafafa;\n}\n.table tr.is-selected {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.table tr.is-selected a,\n    .table tr.is-selected strong {\n      color: currentColor;\n}\n.table tr.is-selected td,\n    .table tr.is-selected th {\n      border-color: #fff;\n      color: currentColor;\n}\n.table thead td,\n  .table thead th {\n    border-width: 0 0 2px;\n    color: #7a7a7a;\n}\n.table tfoot td,\n  .table tfoot th {\n    border-width: 2px 0 0;\n    color: #7a7a7a;\n}\n.table tbody tr:last-child td,\n  .table tbody tr:last-child th {\n    border-bottom-width: 0;\n}\n.table.is-bordered td,\n  .table.is-bordered th {\n    border-width: 1px;\n}\n.table.is-bordered tr:last-child td,\n  .table.is-bordered tr:last-child th {\n    border-bottom-width: 1px;\n}\n.table.is-narrow td,\n  .table.is-narrow th {\n    padding: 0.25em 0.5em;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even) {\n    background-color: #fafafa;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even):hover {\n      background-color: whitesmoke;\n}\n.tag {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  color: #4a4a4a;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 0.75rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding-left: 0.875em;\n  padding-right: 0.875em;\n  white-space: nowrap;\n}\n.tag .delete {\n    margin-left: 0.25em;\n    margin-right: -0.375em;\n}\n.tag.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.tag.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.tag.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.tag.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.tag.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.tag.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.tag.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.tag.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.tag.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.tag.is-medium {\n    font-size: 1rem;\n}\n.tag.is-large {\n    font-size: 1.25rem;\n}\n.title,\n.subtitle {\n  word-break: break-word;\n}\n.title:not(:last-child),\n  .subtitle:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.title em,\n  .title span,\n  .subtitle em,\n  .subtitle span {\n    font-weight: 300;\n}\n.title strong,\n  .subtitle strong {\n    font-weight: 500;\n}\n.title .tag,\n  .subtitle .tag {\n    vertical-align: middle;\n}\n.title {\n  color: #363636;\n  font-size: 2rem;\n  font-weight: 300;\n  line-height: 1.125;\n}\n.title strong {\n    color: inherit;\n}\n.title + .highlight {\n    margin-top: -0.75rem;\n}\n.title:not(.is-spaced) + .subtitle {\n    margin-top: -1.5rem;\n}\n.title.is-1 {\n    font-size: 3rem;\n}\n.title.is-2 {\n    font-size: 2.5rem;\n}\n.title.is-3 {\n    font-size: 2rem;\n}\n.title.is-4 {\n    font-size: 1.5rem;\n}\n.title.is-5 {\n    font-size: 1.25rem;\n}\n.title.is-6 {\n    font-size: 1rem;\n}\n.subtitle {\n  color: #4a4a4a;\n  font-size: 1.25rem;\n  font-weight: 300;\n  line-height: 1.25;\n}\n.subtitle strong {\n    color: #363636;\n}\n.subtitle:not(.is-spaced) + .title {\n    margin-top: -1.5rem;\n}\n.subtitle.is-1 {\n    font-size: 3rem;\n}\n.subtitle.is-2 {\n    font-size: 2.5rem;\n}\n.subtitle.is-3 {\n    font-size: 2rem;\n}\n.subtitle.is-4 {\n    font-size: 1.5rem;\n}\n.subtitle.is-5 {\n    font-size: 1.25rem;\n}\n.subtitle.is-6 {\n    font-size: 1rem;\n}\n.block:not(:last-child) {\n  margin-bottom: 1.5rem;\n}\n.container {\n  position: relative;\n}\n@media screen and (min-width: 1000px) {\n.container {\n      margin: 0 auto;\n      max-width: 960px;\n      width: 960px;\n}\n.container.is-fluid {\n        margin: 0 20px;\n        max-width: none;\n        width: auto;\n}\n}\n@media screen and (min-width: 1192px) {\n.container {\n      max-width: 1152px;\n      width: 1152px;\n}\n}\n@media screen and (min-width: 1384px) {\n.container {\n      max-width: 1344px;\n      width: 1344px;\n}\n}\n.delete {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n}\n.delete:before, .delete:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.delete:before {\n    height: 2px;\n    width: 50%;\n}\n.delete:after {\n    height: 50%;\n    width: 2px;\n}\n.delete:hover, .delete:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.delete:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.delete.is-small {\n    height: 16px;\n    width: 16px;\n}\n.delete.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.delete.is-large {\n    height: 32px;\n    width: 32px;\n}\n.fa {\n  font-size: 21px;\n  text-align: center;\n  vertical-align: top;\n}\n.heading {\n  display: block;\n  font-size: 11px;\n  letter-spacing: 1px;\n  margin-bottom: 5px;\n  text-transform: uppercase;\n}\n.highlight {\n  font-weight: 400;\n  max-width: 100%;\n  overflow: hidden;\n  padding: 0;\n}\n.highlight:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.highlight pre {\n    overflow: auto;\n    max-width: 100%;\n}\n.loader {\n  -webkit-animation: spinAround 500ms infinite linear;\n          animation: spinAround 500ms infinite linear;\n  border: 2px solid #dbdbdb;\n  border-radius: 290486px;\n  border-right-color: transparent;\n  border-top-color: transparent;\n  content: \"\";\n  display: block;\n  height: 1em;\n  position: relative;\n  width: 1em;\n}\n.number {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1.25rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-right: 1.5rem;\n  min-width: 2.5em;\n  padding: 0.25rem 0.5rem;\n  text-align: center;\n  vertical-align: top;\n}\n.card-header {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.1);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-header-title {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  font-weight: 700;\n  padding: 0.75rem;\n}\n.card-header-icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  cursor: pointer;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-image {\n  display: block;\n  position: relative;\n}\n.card-content {\n  padding: 1.5rem;\n}\n.card-footer {\n  border-top: 1px solid #dbdbdb;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-footer-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-footer-item:not(:last-child) {\n    border-right: 1px solid #dbdbdb;\n}\n.card {\n  background-color: white;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  color: #4a4a4a;\n  max-width: 100%;\n  position: relative;\n}\n.card .media:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.level-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.level-item .title,\n  .level-item .subtitle {\n    margin-bottom: 0;\n}\n@media screen and (max-width: 768px) {\n.level-item:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n}\n.level-left,\n.level-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.level-left .level-item:not(:last-child),\n  .level-right .level-item:not(:last-child) {\n    margin-right: 0.75rem;\n}\n.level-left .level-item.is-flexible,\n  .level-right .level-item.is-flexible {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n}\n.level-left {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n@media screen and (max-width: 768px) {\n.level-left + .level-right {\n      margin-top: 1.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.level-left {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level-right {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.level:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.level code {\n    border-radius: 3px;\n}\n.level img {\n    display: inline-block;\n    vertical-align: top;\n}\n.level.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.level.is-mobile .level-left,\n    .level.is-mobile .level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level.is-mobile .level-left + .level-right {\n      margin-top: 0;\n}\n.level.is-mobile .level-item:not(:last-child) {\n      margin-bottom: 0;\n}\n.level.is-mobile .level-item:not(.is-narrow) {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n@media screen and (min-width: 769px), print {\n.level {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level > .level-item:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n}\n.media-left,\n.media-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.media-left {\n  margin-right: 1rem;\n}\n.media-right {\n  margin-left: 1rem;\n}\n.media-content {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  text-align: left;\n}\n.media {\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  text-align: left;\n}\n.media .content:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.media .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    padding-top: 0.75rem;\n}\n.media .media .content:not(:last-child),\n    .media .media .control:not(:last-child) {\n      margin-bottom: 0.5rem;\n}\n.media .media .media {\n      padding-top: 0.5rem;\n}\n.media .media .media + .media {\n        margin-top: 0.5rem;\n}\n.media + .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    margin-top: 1rem;\n    padding-top: 1rem;\n}\n.media.is-large + .media {\n    margin-top: 1.5rem;\n    padding-top: 1.5rem;\n}\n.menu {\n  font-size: 1rem;\n}\n.menu-list {\n  line-height: 1.25;\n}\n.menu-list a {\n    border-radius: 2px;\n    color: #4a4a4a;\n    display: block;\n    padding: 0.5em 0.75em;\n}\n.menu-list a:hover {\n      background-color: whitesmoke;\n      color: #00d1b2;\n}\n.menu-list a.is-active {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.menu-list li ul {\n    border-left: 1px solid #dbdbdb;\n    margin: 0.75em;\n    padding-left: 0.75em;\n}\n.menu-label {\n  color: #7a7a7a;\n  font-size: 0.8em;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n}\n.menu-label:not(:first-child) {\n    margin-top: 1em;\n}\n.menu-label:not(:last-child) {\n    margin-bottom: 1em;\n}\n.message {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  font-size: 1rem;\n}\n.message:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.message.is-white {\n    background-color: white;\n}\n.message.is-white .message-header {\n      background-color: white;\n      color: #0a0a0a;\n}\n.message.is-white .message-body {\n      border-color: white;\n      color: #4d4d4d;\n}\n.message.is-black {\n    background-color: #fafafa;\n}\n.message.is-black .message-header {\n      background-color: #0a0a0a;\n      color: white;\n}\n.message.is-black .message-body {\n      border-color: #0a0a0a;\n      color: #090909;\n}\n.message.is-light {\n    background-color: #fafafa;\n}\n.message.is-light .message-header {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.message.is-light .message-body {\n      border-color: whitesmoke;\n      color: #505050;\n}\n.message.is-dark {\n    background-color: #fafafa;\n}\n.message.is-dark .message-header {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.message.is-dark .message-body {\n      border-color: #363636;\n      color: #2a2a2a;\n}\n.message.is-primary {\n    background-color: #f5fffd;\n}\n.message.is-primary .message-header {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.message.is-primary .message-body {\n      border-color: #00d1b2;\n      color: #021310;\n}\n.message.is-info {\n    background-color: #f6f9fe;\n}\n.message.is-info .message-header {\n      background-color: #3273dc;\n      color: #fff;\n}\n.message.is-info .message-body {\n      border-color: #3273dc;\n      color: #22509a;\n}\n.message.is-success {\n    background-color: #f6fef9;\n}\n.message.is-success .message-header {\n      background-color: #23d160;\n      color: #fff;\n}\n.message.is-success .message-body {\n      border-color: #23d160;\n      color: #0e301a;\n}\n.message.is-warning {\n    background-color: #fffdf5;\n}\n.message.is-warning .message-header {\n      background-color: #ffdd57;\n      color: rgba(0, 0, 0, 0.7);\n}\n.message.is-warning .message-body {\n      border-color: #ffdd57;\n      color: #3b3108;\n}\n.message.is-danger {\n    background-color: #fff5f7;\n}\n.message.is-danger .message-header {\n      background-color: #ff3860;\n      color: #fff;\n}\n.message.is-danger .message-body {\n      border-color: #ff3860;\n      color: #cd0930;\n}\n.message-header {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #4a4a4a;\n  border-radius: 3px 3px 0 0;\n  color: #fff;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n  position: relative;\n}\n.message-header a,\n  .message-header strong {\n    color: inherit;\n}\n.message-header a {\n    text-decoration: underline;\n}\n.message-header .delete {\n    -webkit-box-flex: 0;\n        -ms-flex-positive: 0;\n            flex-grow: 0;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-left: 0.75em;\n}\n.message-header + .message-body {\n    border-top-left-radius: 0;\n    border-top-right-radius: 0;\n    border-top: none;\n}\n.message-body {\n  border: 1px solid #dbdbdb;\n  border-radius: 3px;\n  color: #4a4a4a;\n  padding: 1em 1.25em;\n}\n.message-body a,\n  .message-body strong {\n    color: inherit;\n}\n.message-body a {\n    text-decoration: underline;\n}\n.message-body code,\n  .message-body pre {\n    background: white;\n}\n.message-body pre code {\n    background: transparent;\n}\n.modal-background {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  background-color: rgba(10, 10, 10, 0.86);\n}\n.modal-content,\n.modal-card {\n  margin: 0 20px;\n  max-height: calc(100vh - 160px);\n  overflow: auto;\n  position: relative;\n  width: 100%;\n}\n@media screen and (min-width: 769px), print {\n.modal-content,\n    .modal-card {\n      margin: 0 auto;\n      max-height: calc(100vh - 40px);\n      width: 640px;\n}\n}\n.modal-close {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n  background: none;\n  height: 40px;\n  position: fixed;\n  right: 20px;\n  top: 20px;\n  width: 40px;\n}\n.modal-close:before, .modal-close:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.modal-close:before {\n    height: 2px;\n    width: 50%;\n}\n.modal-close:after {\n    height: 50%;\n    width: 2px;\n}\n.modal-close:hover, .modal-close:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.modal-close:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.modal-close.is-small {\n    height: 16px;\n    width: 16px;\n}\n.modal-close.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.modal-close.is-large {\n    height: 32px;\n    width: 32px;\n}\n.modal-card {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  max-height: calc(100vh - 40px);\n  overflow: hidden;\n}\n.modal-card-head,\n.modal-card-foot {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 20px;\n  position: relative;\n}\n.modal-card-head {\n  border-bottom: 1px solid #dbdbdb;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.modal-card-title {\n  color: #363636;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1.5rem;\n  line-height: 1;\n}\n.modal-card-foot {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n  border-top: 1px solid #dbdbdb;\n}\n.modal-card-foot .button:not(:last-child) {\n    margin-right: 10px;\n}\n.modal-card-body {\n  -webkit-overflow-scrolling: touch;\n  background-color: white;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  overflow: auto;\n  padding: 20px;\n}\n.modal {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: none;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  overflow: hidden;\n  position: fixed;\n  z-index: 20;\n}\n.modal.is-active {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.nav-toggle {\n  cursor: pointer;\n  display: block;\n  height: 3.25rem;\n  position: relative;\n  width: 3.25rem;\n}\n.nav-toggle span {\n    background-color: #4a4a4a;\n    display: block;\n    height: 1px;\n    left: 50%;\n    margin-left: -7px;\n    position: absolute;\n    top: 50%;\n    transition: none 86ms ease-out;\n    transition-property: background, left, opacity, -webkit-transform;\n    transition-property: background, left, opacity, transform;\n    transition-property: background, left, opacity, transform, -webkit-transform;\n    width: 15px;\n}\n.nav-toggle span:nth-child(1) {\n      margin-top: -6px;\n}\n.nav-toggle span:nth-child(2) {\n      margin-top: -1px;\n}\n.nav-toggle span:nth-child(3) {\n      margin-top: 4px;\n}\n.nav-toggle:hover {\n    background-color: whitesmoke;\n}\n.nav-toggle.is-active span {\n    background-color: #00d1b2;\n}\n.nav-toggle.is-active span:nth-child(1) {\n      margin-left: -5px;\n      -webkit-transform: rotate(45deg);\n              transform: rotate(45deg);\n      -webkit-transform-origin: left top;\n              transform-origin: left top;\n}\n.nav-toggle.is-active span:nth-child(2) {\n      opacity: 0;\n}\n.nav-toggle.is-active span:nth-child(3) {\n      margin-left: -5px;\n      -webkit-transform: rotate(-45deg);\n              transform: rotate(-45deg);\n      -webkit-transform-origin: left bottom;\n              transform-origin: left bottom;\n}\n@media screen and (min-width: 769px), print {\n.nav-toggle {\n      display: none;\n}\n}\n.nav-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding: 0.5rem 0.75rem;\n}\n.nav-item a {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.nav-item img {\n    max-height: 1.75rem;\n}\n.nav-item .tag:first-child:not(:last-child) {\n    margin-right: 0.5rem;\n}\n.nav-item .tag:last-child:not(:first-child) {\n    margin-left: 0.5rem;\n}\n@media screen and (max-width: 768px) {\n.nav-item {\n      -webkit-box-pack: start;\n          -ms-flex-pack: start;\n              justify-content: flex-start;\n}\n}\n.nav-item a,\na.nav-item {\n  color: #7a7a7a;\n}\n.nav-item a:hover,\n  a.nav-item:hover {\n    color: #363636;\n}\n.nav-item a.is-active,\n  a.nav-item.is-active {\n    color: #363636;\n}\n.nav-item a.is-tab,\n  a.nav-item.is-tab {\n    border-bottom: 1px solid transparent;\n    border-top: 1px solid transparent;\n    padding-bottom: calc(0.75rem - 1px);\n    padding-left: 1rem;\n    padding-right: 1rem;\n    padding-top: calc(0.75rem - 1px);\n}\n.nav-item a.is-tab:hover,\n    a.nav-item.is-tab:hover {\n      border-bottom-color: #00d1b2;\n      border-top-color: transparent;\n}\n.nav-item a.is-tab.is-active,\n    a.nav-item.is-tab.is-active {\n      border-bottom: 3px solid #00d1b2;\n      color: #00d1b2;\n      padding-bottom: calc(0.75rem - 3px);\n}\n@media screen and (min-width: 1000px) {\n.nav-item a.is-brand,\n    a.nav-item.is-brand {\n      padding-left: 0;\n}\n}\n.nav-left,\n.nav-right {\n  -webkit-overflow-scrolling: touch;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  max-width: 100%;\n  overflow: auto;\n}\n@media screen and (min-width: 1192px) {\n.nav-left,\n    .nav-right {\n      -ms-flex-preferred-size: 0;\n          flex-basis: 0;\n}\n}\n.nav-left {\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  white-space: nowrap;\n}\n.nav-right {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.nav-center {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-left: auto;\n  margin-right: auto;\n}\n@media screen and (max-width: 768px) {\n.nav-menu.nav-right {\n    background-color: white;\n    box-shadow: 0 4px 7px rgba(10, 10, 10, 0.1);\n    left: 0;\n    display: none;\n    right: 0;\n    top: 100%;\n    position: absolute;\n}\n.nav-menu.nav-right .nav-item {\n      border-top: 1px solid rgba(219, 219, 219, 0.5);\n      padding: 0.75rem;\n}\n.nav-menu.nav-right.is-active {\n      display: block;\n}\n}\n.nav {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 3.25rem;\n  position: relative;\n  text-align: center;\n  z-index: 10;\n}\n.nav > .container {\n    -webkit-box-align: stretch;\n        -ms-flex-align: stretch;\n            align-items: stretch;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    min-height: 3.25rem;\n    width: 100%;\n}\n.nav.has-shadow {\n    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);\n}\n.pagination {\n  font-size: 1rem;\n  margin: -0.25rem;\n}\n.pagination.is-small {\n    font-size: 0.75rem;\n}\n.pagination.is-medium {\n    font-size: 1.25rem;\n}\n.pagination.is-large {\n    font-size: 1.5rem;\n}\n.pagination,\n.pagination-list {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  text-align: center;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link,\n.pagination-ellipsis {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  font-size: 1em;\n  padding-left: 0.5em;\n  padding-right: 0.5em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin: 0.25rem;\n  text-align: center;\n}\n.pagination-previous:focus, .pagination-previous.is-focused, .pagination-previous:active, .pagination-previous.is-active,\n  .pagination-next:focus,\n  .pagination-next.is-focused,\n  .pagination-next:active,\n  .pagination-next.is-active,\n  .pagination-link:focus,\n  .pagination-link.is-focused,\n  .pagination-link:active,\n  .pagination-link.is-active,\n  .pagination-ellipsis:focus,\n  .pagination-ellipsis.is-focused,\n  .pagination-ellipsis:active,\n  .pagination-ellipsis.is-active {\n    outline: none;\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled],\n  .pagination-ellipsis[disabled] {\n    cursor: not-allowed;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link {\n  border-color: #dbdbdb;\n  min-width: 2.25em;\n}\n.pagination-previous:hover,\n  .pagination-next:hover,\n  .pagination-link:hover {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.pagination-previous:focus,\n  .pagination-next:focus,\n  .pagination-link:focus {\n    border-color: #00d1b2;\n}\n.pagination-previous:active,\n  .pagination-next:active,\n  .pagination-link:active {\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled] {\n    background-color: #dbdbdb;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    color: #7a7a7a;\n    opacity: 0.5;\n}\n.pagination-previous,\n.pagination-next {\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  white-space: nowrap;\n}\n.pagination-link.is-current {\n  background-color: #00d1b2;\n  border-color: #00d1b2;\n  color: #fff;\n}\n.pagination-ellipsis {\n  color: #b5b5b5;\n  pointer-events: none;\n}\n.pagination-list {\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n}\n@media screen and (max-width: 768px) {\n.pagination {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.pagination-previous,\n  .pagination-next {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.pagination-list li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n}\n@media screen and (min-width: 769px), print {\n.pagination-list {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n}\n.pagination-previous {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.pagination-next {\n    -webkit-box-ordinal-group: 4;\n        -ms-flex-order: 3;\n            order: 3;\n}\n.pagination {\n    -webkit-box-pack: justify;\n        -ms-flex-pack: justify;\n            justify-content: space-between;\n}\n.pagination.is-centered .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-centered .pagination-list {\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-centered .pagination-next {\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n.pagination.is-right .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-right .pagination-next {\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-right .pagination-list {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n}\n.panel {\n  font-size: 1rem;\n}\n.panel:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.panel-heading,\n.panel-tabs,\n.panel-block {\n  border-bottom: 1px solid #dbdbdb;\n  border-left: 1px solid #dbdbdb;\n  border-right: 1px solid #dbdbdb;\n}\n.panel-heading:first-child,\n  .panel-tabs:first-child,\n  .panel-block:first-child {\n    border-top: 1px solid #dbdbdb;\n}\n.panel-heading {\n  background-color: whitesmoke;\n  border-radius: 3px 3px 0 0;\n  color: #363636;\n  font-size: 1.25em;\n  font-weight: 300;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n}\n.panel-tabs {\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 0.875em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.panel-tabs a {\n    border-bottom: 1px solid #dbdbdb;\n    margin-bottom: -1px;\n    padding: 0.5em;\n}\n.panel-tabs a.is-active {\n      border-bottom-color: #4a4a4a;\n      color: #363636;\n}\n.panel-list a {\n  color: #4a4a4a;\n}\n.panel-list a:hover {\n    color: #00d1b2;\n}\n.panel-block {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 0.5em 0.75em;\n}\n.panel-block input[type=\"checkbox\"] {\n    margin-right: 0.75em;\n}\n.panel-block > .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    width: 100%;\n}\n.panel-block.is-wrapped {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.panel-block.is-active {\n    border-left-color: #00d1b2;\n    color: #363636;\n}\n.panel-block.is-active .panel-icon {\n      color: #00d1b2;\n}\na.panel-block,\nlabel.panel-block {\n  cursor: pointer;\n}\na.panel-block:hover,\n  label.panel-block:hover {\n    background-color: whitesmoke;\n}\n.panel-icon {\n  display: inline-block;\n  font-size: 14px;\n  height: 1em;\n  line-height: 1em;\n  text-align: center;\n  vertical-align: top;\n  width: 1em;\n  color: #7a7a7a;\n  margin-right: 0.75em;\n}\n.panel-icon .fa {\n    font-size: inherit;\n    line-height: inherit;\n}\n.tabs {\n  -webkit-overflow-scrolling: touch;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 1rem;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  overflow: hidden;\n  overflow-x: auto;\n  white-space: nowrap;\n}\n.tabs:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.tabs a {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    color: #4a4a4a;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    margin-bottom: -1px;\n    padding: 0.5em 1em;\n    vertical-align: top;\n}\n.tabs a:hover {\n      border-bottom-color: #363636;\n      color: #363636;\n}\n.tabs li {\n    display: block;\n}\n.tabs li.is-active a {\n      border-bottom-color: #00d1b2;\n      color: #00d1b2;\n}\n.tabs ul {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n}\n.tabs ul.is-left {\n      padding-right: 0.75em;\n}\n.tabs ul.is-center {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      padding-left: 0.75em;\n      padding-right: 0.75em;\n}\n.tabs ul.is-right {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      padding-left: 0.75em;\n}\n.tabs .icon:first-child {\n    margin-right: 0.5em;\n}\n.tabs .icon:last-child {\n    margin-left: 0.5em;\n}\n.tabs.is-centered ul {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.tabs.is-right ul {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.tabs.is-boxed a {\n    border: 1px solid transparent;\n    border-radius: 3px 3px 0 0;\n}\n.tabs.is-boxed a:hover {\n      background-color: whitesmoke;\n      border-bottom-color: #dbdbdb;\n}\n.tabs.is-boxed li.is-active a {\n    background-color: white;\n    border-color: #dbdbdb;\n    border-bottom-color: transparent !important;\n}\n.tabs.is-fullwidth li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.tabs.is-toggle a {\n    border: 1px solid #dbdbdb;\n    margin-bottom: 0;\n    position: relative;\n}\n.tabs.is-toggle a:hover {\n      background-color: whitesmoke;\n      border-color: #b5b5b5;\n      z-index: 2;\n}\n.tabs.is-toggle li + li {\n    margin-left: -1px;\n}\n.tabs.is-toggle li:first-child a {\n    border-radius: 3px 0 0 3px;\n}\n.tabs.is-toggle li:last-child a {\n    border-radius: 0 3px 3px 0;\n}\n.tabs.is-toggle li.is-active a {\n    background-color: #00d1b2;\n    border-color: #00d1b2;\n    color: #fff;\n    z-index: 1;\n}\n.tabs.is-toggle ul {\n    border-bottom: none;\n}\n.tabs.is-small {\n    font-size: 0.75rem;\n}\n.tabs.is-medium {\n    font-size: 1.25rem;\n}\n.tabs.is-large {\n    font-size: 1.5rem;\n}\n.column {\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  padding: 0.75rem;\n}\n.columns.is-mobile > .column.is-narrow {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n}\n.columns.is-mobile > .column.is-full {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-three-quarters {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-two-thirds {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.6666%;\n}\n.columns.is-mobile > .column.is-half {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-one-third {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.3333%;\n}\n.columns.is-mobile > .column.is-one-quarter {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-three-quarters {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-offset-two-thirds {\n    margin-left: 66.6666%;\n}\n.columns.is-mobile > .column.is-offset-half {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-offset-one-third {\n    margin-left: 33.3333%;\n}\n.columns.is-mobile > .column.is-offset-one-quarter {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-1 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 8.33333%;\n}\n.columns.is-mobile > .column.is-offset-1 {\n    margin-left: 8.33333%;\n}\n.columns.is-mobile > .column.is-2 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 16.66667%;\n}\n.columns.is-mobile > .column.is-offset-2 {\n    margin-left: 16.66667%;\n}\n.columns.is-mobile > .column.is-3 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-3 {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-4 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.33333%;\n}\n.columns.is-mobile > .column.is-offset-4 {\n    margin-left: 33.33333%;\n}\n.columns.is-mobile > .column.is-5 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 41.66667%;\n}\n.columns.is-mobile > .column.is-offset-5 {\n    margin-left: 41.66667%;\n}\n.columns.is-mobile > .column.is-6 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-offset-6 {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-7 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 58.33333%;\n}\n.columns.is-mobile > .column.is-offset-7 {\n    margin-left: 58.33333%;\n}\n.columns.is-mobile > .column.is-8 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.66667%;\n}\n.columns.is-mobile > .column.is-offset-8 {\n    margin-left: 66.66667%;\n}\n.columns.is-mobile > .column.is-9 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-offset-9 {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-10 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 83.33333%;\n}\n.columns.is-mobile > .column.is-offset-10 {\n    margin-left: 83.33333%;\n}\n.columns.is-mobile > .column.is-11 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 91.66667%;\n}\n.columns.is-mobile > .column.is-offset-11 {\n    margin-left: 91.66667%;\n}\n.columns.is-mobile > .column.is-12 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-offset-12 {\n    margin-left: 100%;\n}\n@media screen and (max-width: 768px) {\n.column.is-narrow-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-mobile {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-mobile {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-mobile {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-mobile {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-mobile {\n      margin-left: 25%;\n}\n.column.is-1-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-mobile {\n      margin-left: 8.33333%;\n}\n.column.is-2-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-mobile {\n      margin-left: 16.66667%;\n}\n.column.is-3-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-mobile {\n      margin-left: 25%;\n}\n.column.is-4-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-mobile {\n      margin-left: 33.33333%;\n}\n.column.is-5-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-mobile {\n      margin-left: 41.66667%;\n}\n.column.is-6-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-mobile {\n      margin-left: 50%;\n}\n.column.is-7-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-mobile {\n      margin-left: 58.33333%;\n}\n.column.is-8-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-mobile {\n      margin-left: 66.66667%;\n}\n.column.is-9-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-mobile {\n      margin-left: 75%;\n}\n.column.is-10-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-mobile {\n      margin-left: 83.33333%;\n}\n.column.is-11-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-mobile {\n      margin-left: 91.66667%;\n}\n.column.is-12-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-mobile {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 769px), print {\n.column.is-narrow, .column.is-narrow-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full, .column.is-full-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters, .column.is-three-quarters-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds, .column.is-two-thirds-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half, .column.is-half-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third, .column.is-one-third-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter, .column.is-one-quarter-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters, .column.is-offset-three-quarters-tablet {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds, .column.is-offset-two-thirds-tablet {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half, .column.is-offset-half-tablet {\n      margin-left: 50%;\n}\n.column.is-offset-one-third, .column.is-offset-one-third-tablet {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter, .column.is-offset-one-quarter-tablet {\n      margin-left: 25%;\n}\n.column.is-1, .column.is-1-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1, .column.is-offset-1-tablet {\n      margin-left: 8.33333%;\n}\n.column.is-2, .column.is-2-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2, .column.is-offset-2-tablet {\n      margin-left: 16.66667%;\n}\n.column.is-3, .column.is-3-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3, .column.is-offset-3-tablet {\n      margin-left: 25%;\n}\n.column.is-4, .column.is-4-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4, .column.is-offset-4-tablet {\n      margin-left: 33.33333%;\n}\n.column.is-5, .column.is-5-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5, .column.is-offset-5-tablet {\n      margin-left: 41.66667%;\n}\n.column.is-6, .column.is-6-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6, .column.is-offset-6-tablet {\n      margin-left: 50%;\n}\n.column.is-7, .column.is-7-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7, .column.is-offset-7-tablet {\n      margin-left: 58.33333%;\n}\n.column.is-8, .column.is-8-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8, .column.is-offset-8-tablet {\n      margin-left: 66.66667%;\n}\n.column.is-9, .column.is-9-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9, .column.is-offset-9-tablet {\n      margin-left: 75%;\n}\n.column.is-10, .column.is-10-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10, .column.is-offset-10-tablet {\n      margin-left: 83.33333%;\n}\n.column.is-11, .column.is-11-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11, .column.is-offset-11-tablet {\n      margin-left: 91.66667%;\n}\n.column.is-12, .column.is-12-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12, .column.is-offset-12-tablet {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1000px) {\n.column.is-narrow-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-desktop {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-desktop {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-desktop {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-desktop {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-desktop {\n      margin-left: 25%;\n}\n.column.is-1-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-desktop {\n      margin-left: 8.33333%;\n}\n.column.is-2-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-desktop {\n      margin-left: 16.66667%;\n}\n.column.is-3-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-desktop {\n      margin-left: 25%;\n}\n.column.is-4-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-desktop {\n      margin-left: 33.33333%;\n}\n.column.is-5-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-desktop {\n      margin-left: 41.66667%;\n}\n.column.is-6-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-desktop {\n      margin-left: 50%;\n}\n.column.is-7-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-desktop {\n      margin-left: 58.33333%;\n}\n.column.is-8-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-desktop {\n      margin-left: 66.66667%;\n}\n.column.is-9-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-desktop {\n      margin-left: 75%;\n}\n.column.is-10-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-desktop {\n      margin-left: 83.33333%;\n}\n.column.is-11-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-desktop {\n      margin-left: 91.66667%;\n}\n.column.is-12-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-desktop {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1192px) {\n.column.is-narrow-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-widescreen {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-widescreen {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-widescreen {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-widescreen {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-widescreen {\n      margin-left: 25%;\n}\n.column.is-1-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-widescreen {\n      margin-left: 8.33333%;\n}\n.column.is-2-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-widescreen {\n      margin-left: 16.66667%;\n}\n.column.is-3-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-widescreen {\n      margin-left: 25%;\n}\n.column.is-4-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-widescreen {\n      margin-left: 33.33333%;\n}\n.column.is-5-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-widescreen {\n      margin-left: 41.66667%;\n}\n.column.is-6-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-widescreen {\n      margin-left: 50%;\n}\n.column.is-7-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-widescreen {\n      margin-left: 58.33333%;\n}\n.column.is-8-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-widescreen {\n      margin-left: 66.66667%;\n}\n.column.is-9-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-widescreen {\n      margin-left: 75%;\n}\n.column.is-10-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-widescreen {\n      margin-left: 83.33333%;\n}\n.column.is-11-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-widescreen {\n      margin-left: 91.66667%;\n}\n.column.is-12-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-widescreen {\n      margin-left: 100%;\n}\n}\n.columns {\n  margin-left: -0.75rem;\n  margin-right: -0.75rem;\n  margin-top: -0.75rem;\n}\n.columns:last-child {\n    margin-bottom: -0.75rem;\n}\n.columns:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.columns.is-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.columns.is-gapless {\n    margin-left: 0;\n    margin-right: 0;\n    margin-top: 0;\n}\n.columns.is-gapless:last-child {\n      margin-bottom: 0;\n}\n.columns.is-gapless:not(:last-child) {\n      margin-bottom: 1.5rem;\n}\n.columns.is-gapless > .column {\n      margin: 0;\n      padding: 0;\n}\n@media screen and (min-width: 769px), print {\n.columns.is-grid {\n      -ms-flex-wrap: wrap;\n          flex-wrap: wrap;\n}\n.columns.is-grid > .column {\n        max-width: 33.3333%;\n        padding: 0.75rem;\n        width: 33.3333%;\n}\n.columns.is-grid > .column + .column {\n          margin-left: 0;\n}\n}\n.columns.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.columns.is-multiline {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.columns.is-vcentered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n@media screen and (min-width: 769px), print {\n.columns:not(.is-desktop) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n@media screen and (min-width: 1000px) {\n.columns.is-desktop {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.tile {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  min-height: -webkit-min-content;\n  min-height: -moz-min-content;\n  min-height: min-content;\n}\n.tile.is-ancestor {\n    margin-left: -0.75rem;\n    margin-right: -0.75rem;\n    margin-top: -0.75rem;\n}\n.tile.is-ancestor:last-child {\n      margin-bottom: -0.75rem;\n}\n.tile.is-ancestor:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n.tile.is-child {\n    margin: 0 !important;\n}\n.tile.is-parent {\n    padding: 0.75rem;\n}\n.tile.is-vertical {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n}\n.tile.is-vertical > .tile.is-child:not(:last-child) {\n      margin-bottom: 1.5rem !important;\n}\n@media screen and (min-width: 769px), print {\n.tile:not(.is-child) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.tile.is-1 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.tile.is-2 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.tile.is-3 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.tile.is-4 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.tile.is-5 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.tile.is-6 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.tile.is-7 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.tile.is-8 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.tile.is-9 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.tile.is-10 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.tile.is-11 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.tile.is-12 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n}\n.hero-video {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  overflow: hidden;\n}\n.hero-video video {\n    left: 50%;\n    min-height: 100%;\n    min-width: 100%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translate3d(-50%, -50%, 0);\n            transform: translate3d(-50%, -50%, 0);\n}\n.hero-video.is-transparent {\n    opacity: 0.3;\n}\n@media screen and (max-width: 768px) {\n.hero-video {\n      display: none;\n}\n}\n.hero-buttons {\n  margin-top: 1.5rem;\n}\n@media screen and (max-width: 768px) {\n.hero-buttons .button {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-bottom: 0.75rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero-buttons {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-right: 1.5rem;\n}\n}\n.hero-head,\n.hero-foot {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.hero-body {\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1192px) {\n.hero-body {\n      padding-left: 0;\n      padding-right: 0;\n}\n}\n.hero {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.hero .nav {\n    background: none;\n    box-shadow: 0 1px 0 rgba(219, 219, 219, 0.3);\n}\n.hero .tabs ul {\n    border-bottom: none;\n}\n.hero.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.hero.is-white a:not(.button),\n    .hero.is-white strong {\n      color: inherit;\n}\n.hero.is-white .title {\n      color: #0a0a0a;\n}\n.hero.is-white .subtitle {\n      color: rgba(10, 10, 10, 0.9);\n}\n.hero.is-white .subtitle a:not(.button),\n      .hero.is-white .subtitle strong {\n        color: #0a0a0a;\n}\n.hero.is-white .nav {\n      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-menu {\n        background-color: white;\n}\n}\n.hero.is-white a.nav-item,\n    .hero.is-white .nav-item a:not(.button) {\n      color: rgba(10, 10, 10, 0.7);\n}\n.hero.is-white a.nav-item:hover, .hero.is-white a.nav-item.is-active,\n      .hero.is-white .nav-item a:not(.button):hover,\n      .hero.is-white .nav-item a:not(.button).is-active {\n        color: #0a0a0a;\n}\n.hero.is-white .tabs a {\n      color: #0a0a0a;\n      opacity: 0.9;\n}\n.hero.is-white .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-white .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-white .tabs.is-boxed a, .hero.is-white .tabs.is-toggle a {\n      color: #0a0a0a;\n}\n.hero.is-white .tabs.is-boxed a:hover, .hero.is-white .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .tabs.is-boxed li.is-active a, .hero.is-white .tabs.is-boxed li.is-active a:hover, .hero.is-white .tabs.is-toggle li.is-active a, .hero.is-white .tabs.is-toggle li.is-active a:hover {\n      background-color: #0a0a0a;\n      border-color: #0a0a0a;\n      color: white;\n}\n.hero.is-white.is-bold {\n      background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-toggle span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .nav-toggle.is-active span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-menu .nav-item {\n        border-top-color: rgba(10, 10, 10, 0.2);\n}\n}\n.hero.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.hero.is-black a:not(.button),\n    .hero.is-black strong {\n      color: inherit;\n}\n.hero.is-black .title {\n      color: white;\n}\n.hero.is-black .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-black .subtitle a:not(.button),\n      .hero.is-black .subtitle strong {\n        color: white;\n}\n.hero.is-black .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-menu {\n        background-color: #0a0a0a;\n}\n}\n.hero.is-black a.nav-item,\n    .hero.is-black .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-black a.nav-item:hover, .hero.is-black a.nav-item.is-active,\n      .hero.is-black .nav-item a:not(.button):hover,\n      .hero.is-black .nav-item a:not(.button).is-active {\n        color: white;\n}\n.hero.is-black .tabs a {\n      color: white;\n      opacity: 0.9;\n}\n.hero.is-black .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-black .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-black .tabs.is-boxed a, .hero.is-black .tabs.is-toggle a {\n      color: white;\n}\n.hero.is-black .tabs.is-boxed a:hover, .hero.is-black .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .tabs.is-boxed li.is-active a, .hero.is-black .tabs.is-boxed li.is-active a:hover, .hero.is-black .tabs.is-toggle li.is-active a, .hero.is-black .tabs.is-toggle li.is-active a:hover {\n      background-color: white;\n      border-color: white;\n      color: #0a0a0a;\n}\n.hero.is-black.is-bold {\n      background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-toggle span {\n        background-color: white;\n}\n.hero.is-black .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .nav-toggle.is-active span {\n        background-color: white;\n}\n.hero.is-black .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.hero.is-light a:not(.button),\n    .hero.is-light strong {\n      color: inherit;\n}\n.hero.is-light .title {\n      color: #363636;\n}\n.hero.is-light .subtitle {\n      color: rgba(54, 54, 54, 0.9);\n}\n.hero.is-light .subtitle a:not(.button),\n      .hero.is-light .subtitle strong {\n        color: #363636;\n}\n.hero.is-light .nav {\n      box-shadow: 0 1px 0 rgba(54, 54, 54, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-menu {\n        background-color: whitesmoke;\n}\n}\n.hero.is-light a.nav-item,\n    .hero.is-light .nav-item a:not(.button) {\n      color: rgba(54, 54, 54, 0.7);\n}\n.hero.is-light a.nav-item:hover, .hero.is-light a.nav-item.is-active,\n      .hero.is-light .nav-item a:not(.button):hover,\n      .hero.is-light .nav-item a:not(.button).is-active {\n        color: #363636;\n}\n.hero.is-light .tabs a {\n      color: #363636;\n      opacity: 0.9;\n}\n.hero.is-light .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-light .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-light .tabs.is-boxed a, .hero.is-light .tabs.is-toggle a {\n      color: #363636;\n}\n.hero.is-light .tabs.is-boxed a:hover, .hero.is-light .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .tabs.is-boxed li.is-active a, .hero.is-light .tabs.is-boxed li.is-active a:hover, .hero.is-light .tabs.is-toggle li.is-active a, .hero.is-light .tabs.is-toggle li.is-active a:hover {\n      background-color: #363636;\n      border-color: #363636;\n      color: whitesmoke;\n}\n.hero.is-light.is-bold {\n      background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-toggle span {\n        background-color: #363636;\n}\n.hero.is-light .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .nav-toggle.is-active span {\n        background-color: #363636;\n}\n.hero.is-light .nav-menu .nav-item {\n        border-top-color: rgba(54, 54, 54, 0.2);\n}\n}\n.hero.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.hero.is-dark a:not(.button),\n    .hero.is-dark strong {\n      color: inherit;\n}\n.hero.is-dark .title {\n      color: whitesmoke;\n}\n.hero.is-dark .subtitle {\n      color: rgba(245, 245, 245, 0.9);\n}\n.hero.is-dark .subtitle a:not(.button),\n      .hero.is-dark .subtitle strong {\n        color: whitesmoke;\n}\n.hero.is-dark .nav {\n      box-shadow: 0 1px 0 rgba(245, 245, 245, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-menu {\n        background-color: #363636;\n}\n}\n.hero.is-dark a.nav-item,\n    .hero.is-dark .nav-item a:not(.button) {\n      color: rgba(245, 245, 245, 0.7);\n}\n.hero.is-dark a.nav-item:hover, .hero.is-dark a.nav-item.is-active,\n      .hero.is-dark .nav-item a:not(.button):hover,\n      .hero.is-dark .nav-item a:not(.button).is-active {\n        color: whitesmoke;\n}\n.hero.is-dark .tabs a {\n      color: whitesmoke;\n      opacity: 0.9;\n}\n.hero.is-dark .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-dark .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-dark .tabs.is-boxed a, .hero.is-dark .tabs.is-toggle a {\n      color: whitesmoke;\n}\n.hero.is-dark .tabs.is-boxed a:hover, .hero.is-dark .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .tabs.is-boxed li.is-active a, .hero.is-dark .tabs.is-boxed li.is-active a:hover, .hero.is-dark .tabs.is-toggle li.is-active a, .hero.is-dark .tabs.is-toggle li.is-active a:hover {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      color: #363636;\n}\n.hero.is-dark.is-bold {\n      background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-toggle span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .nav-toggle.is-active span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-menu .nav-item {\n        border-top-color: rgba(245, 245, 245, 0.2);\n}\n}\n.hero.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.hero.is-primary a:not(.button),\n    .hero.is-primary strong {\n      color: inherit;\n}\n.hero.is-primary .title {\n      color: #fff;\n}\n.hero.is-primary .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-primary .subtitle a:not(.button),\n      .hero.is-primary .subtitle strong {\n        color: #fff;\n}\n.hero.is-primary .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-menu {\n        background-color: #00d1b2;\n}\n}\n.hero.is-primary a.nav-item,\n    .hero.is-primary .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-primary a.nav-item:hover, .hero.is-primary a.nav-item.is-active,\n      .hero.is-primary .nav-item a:not(.button):hover,\n      .hero.is-primary .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-primary .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-primary .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-primary .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-primary .tabs.is-boxed a, .hero.is-primary .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-primary .tabs.is-boxed a:hover, .hero.is-primary .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .tabs.is-boxed li.is-active a, .hero.is-primary .tabs.is-boxed li.is-active a:hover, .hero.is-primary .tabs.is-toggle li.is-active a, .hero.is-primary .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #00d1b2;\n}\n.hero.is-primary.is-bold {\n      background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.hero.is-info a:not(.button),\n    .hero.is-info strong {\n      color: inherit;\n}\n.hero.is-info .title {\n      color: #fff;\n}\n.hero.is-info .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-info .subtitle a:not(.button),\n      .hero.is-info .subtitle strong {\n        color: #fff;\n}\n.hero.is-info .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-menu {\n        background-color: #3273dc;\n}\n}\n.hero.is-info a.nav-item,\n    .hero.is-info .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-info a.nav-item:hover, .hero.is-info a.nav-item.is-active,\n      .hero.is-info .nav-item a:not(.button):hover,\n      .hero.is-info .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-info .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-info .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-info .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-info .tabs.is-boxed a, .hero.is-info .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-info .tabs.is-boxed a:hover, .hero.is-info .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .tabs.is-boxed li.is-active a, .hero.is-info .tabs.is-boxed li.is-active a:hover, .hero.is-info .tabs.is-toggle li.is-active a, .hero.is-info .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #3273dc;\n}\n.hero.is-info.is-bold {\n      background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-info .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-info .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.hero.is-success a:not(.button),\n    .hero.is-success strong {\n      color: inherit;\n}\n.hero.is-success .title {\n      color: #fff;\n}\n.hero.is-success .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-success .subtitle a:not(.button),\n      .hero.is-success .subtitle strong {\n        color: #fff;\n}\n.hero.is-success .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-menu {\n        background-color: #23d160;\n}\n}\n.hero.is-success a.nav-item,\n    .hero.is-success .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-success a.nav-item:hover, .hero.is-success a.nav-item.is-active,\n      .hero.is-success .nav-item a:not(.button):hover,\n      .hero.is-success .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-success .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-success .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-success .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-success .tabs.is-boxed a, .hero.is-success .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-success .tabs.is-boxed a:hover, .hero.is-success .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .tabs.is-boxed li.is-active a, .hero.is-success .tabs.is-boxed li.is-active a:hover, .hero.is-success .tabs.is-toggle li.is-active a, .hero.is-success .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #23d160;\n}\n.hero.is-success.is-bold {\n      background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-success .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-success .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a:not(.button),\n    .hero.is-warning strong {\n      color: inherit;\n}\n.hero.is-warning .title {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .subtitle {\n      color: rgba(0, 0, 0, 0.9);\n}\n.hero.is-warning .subtitle a:not(.button),\n      .hero.is-warning .subtitle strong {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav {\n      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-menu {\n        background-color: #ffdd57;\n}\n}\n.hero.is-warning a.nav-item,\n    .hero.is-warning .nav-item a:not(.button) {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a.nav-item:hover, .hero.is-warning a.nav-item.is-active,\n      .hero.is-warning .nav-item a:not(.button):hover,\n      .hero.is-warning .nav-item a:not(.button).is-active {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs a {\n      color: rgba(0, 0, 0, 0.7);\n      opacity: 0.9;\n}\n.hero.is-warning .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-warning .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-warning .tabs.is-boxed a, .hero.is-warning .tabs.is-toggle a {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs.is-boxed a:hover, .hero.is-warning .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .tabs.is-boxed li.is-active a, .hero.is-warning .tabs.is-boxed li.is-active a:hover, .hero.is-warning .tabs.is-toggle li.is-active a, .hero.is-warning .tabs.is-toggle li.is-active a:hover {\n      background-color: rgba(0, 0, 0, 0.7);\n      border-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.hero.is-warning.is-bold {\n      background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-toggle span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .nav-toggle.is-active span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-menu .nav-item {\n        border-top-color: rgba(0, 0, 0, 0.2);\n}\n}\n.hero.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.hero.is-danger a:not(.button),\n    .hero.is-danger strong {\n      color: inherit;\n}\n.hero.is-danger .title {\n      color: #fff;\n}\n.hero.is-danger .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-danger .subtitle a:not(.button),\n      .hero.is-danger .subtitle strong {\n        color: #fff;\n}\n.hero.is-danger .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-menu {\n        background-color: #ff3860;\n}\n}\n.hero.is-danger a.nav-item,\n    .hero.is-danger .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-danger a.nav-item:hover, .hero.is-danger a.nav-item.is-active,\n      .hero.is-danger .nav-item a:not(.button):hover,\n      .hero.is-danger .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-danger .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-danger .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-danger .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-danger .tabs.is-boxed a, .hero.is-danger .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-danger .tabs.is-boxed a:hover, .hero.is-danger .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .tabs.is-boxed li.is-active a, .hero.is-danger .tabs.is-boxed li.is-active a:hover, .hero.is-danger .tabs.is-toggle li.is-active a, .hero.is-danger .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #ff3860;\n}\n.hero.is-danger.is-bold {\n      background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-medium .hero-body {\n      padding-bottom: 9rem;\n      padding-top: 9rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-large .hero-body {\n      padding-bottom: 18rem;\n      padding-top: 18rem;\n}\n}\n.hero.is-fullheight {\n    min-height: 100vh;\n}\n.hero.is-fullheight .hero-body {\n      -webkit-box-align: center;\n          -ms-flex-align: center;\n              align-items: center;\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero.is-fullheight .hero-body > .container {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n        -ms-flex-negative: 1;\n            flex-shrink: 1;\n}\n.section {\n  background-color: white;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1000px) {\n.section.is-medium {\n      padding: 9rem 1.5rem;\n}\n.section.is-large {\n      padding: 18rem 1.5rem;\n}\n}\n.footer {\n  background-color: whitesmoke;\n  padding: 3rem 1.5rem 6rem;\n}\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em;\n}\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px;\n}\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n}\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n}\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n}\n.card-list-component .item-cards {\n  margin-top: 1em;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n  /*border-color: #990002;*/\n  /*border-width: thin;*/\n  /*border-style: solid;*/\n}\n.card-list-component .list-group-item {\n  background-color: #FFFDF4;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 427 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
+/* 427 */,
 /* 428 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69616,20 +68103,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 
 /***/ }),
-/* 429 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 429 */,
 /* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69644,20 +68118,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 
 /***/ }),
-/* 431 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.exam-card-component {\n  margin-top: 2em;\n  border-bottom: solid;\n  /*!*width: 80%;*!*/\n  /*.button-row {*/\n  /*padding: 1em;*/\n  /*}*/\n  /*.panel-heading {*/\n  background-color: #FFFDF4;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 431 */,
 /* 432 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69680,26 +68141,13 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 434 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 434 */,
 /* 435 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69750,7 +68198,7 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.exam-detail-panel {\n.public-name-input {\nlabel {\n            text-align: left;\n}\n}\n}\n\n", ""]);
 
 // exports
 
@@ -69770,20 +68218,7 @@ exports.push([module.i, "\n.panel-notes-component label {\n  text-align: left;\n
 
 
 /***/ }),
-/* 440 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 440 */,
 /* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69798,20 +68233,7 @@ exports.push([module.i, "\n#setupToolDashboard {\n  padding-bottom: 1em;\n}\n", 
 
 
 /***/ }),
-/* 442 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.item-card-component {\n  margin-top: 2em;\n  border-bottom: solid;\n  /*!*width: 80%;*!*/\n  /*.button-row {*/\n  /*padding: 1em;*/\n  /*}*/\n  /*.panel-heading {*/\n  /*background-color: #FFFDF4;*/\n}\n.item-card-component .nav-tabs {\n    text-align: center;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 442 */,
 /* 443 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69820,7 +68242,7 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "/*! bulma.io v0.4.2 | MIT License | github.com/jgthms/bulma */\n@-webkit-keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n@keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n\n/*! minireset.css v0.0.2 | MIT License | github.com/jgthms/minireset.css */\nhtml,\nbody,\np,\nol,\nul,\nli,\ndl,\ndt,\ndd,\nblockquote,\nfigure,\nfieldset,\nlegend,\ntextarea,\npre,\niframe,\nhr,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  margin: 0;\n  padding: 0;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-size: 100%;\n  font-weight: normal;\n}\nul {\n  list-style: none;\n}\nbutton,\ninput,\nselect,\ntextarea {\n  margin: 0;\n}\nhtml {\n  box-sizing: border-box;\n}\n* {\n  box-sizing: inherit;\n}\n*:before, *:after {\n    box-sizing: inherit;\n}\nimg,\nembed,\nobject,\naudio,\nvideo {\n  height: auto;\n  max-width: 100%;\n}\niframe {\n  border: 0;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\ntd,\nth {\n  padding: 0;\n  text-align: left;\n}\nhtml {\n  background-color: #fff;\n  font-size: 16px;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  min-width: 300px;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  text-rendering: optimizeLegibility;\n}\narticle,\naside,\nfigure,\nfooter,\nheader,\nhgroup,\nsection {\n  display: block;\n}\nbody,\nbutton,\ninput,\nselect,\ntextarea {\n  font-family: BlinkMacSystemFont, -apple-system, \"Segoe UI\", \"Roboto\", \"Oxygen\", \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", \"Helvetica\", \"Arial\", sans-serif;\n}\ncode,\npre {\n  -moz-osx-font-smoothing: auto;\n  -webkit-font-smoothing: auto;\n  font-family: monospace;\n}\nbody {\n  color: #4a4a4a;\n  font-size: 1rem;\n  font-weight: 400;\n  line-height: 1.5;\n}\na {\n  color: #00d1b2;\n  cursor: pointer;\n  text-decoration: none;\n  transition: none 86ms ease-out;\n}\na:hover {\n    color: #363636;\n}\ncode {\n  background-color: whitesmoke;\n  color: #ff3860;\n  font-size: 0.8em;\n  font-weight: normal;\n  padding: 0.25em 0.5em 0.25em;\n}\nhr {\n  background-color: #dbdbdb;\n  border: none;\n  display: block;\n  height: 1px;\n  margin: 1.5rem 0;\n}\nimg {\n  max-width: 100%;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  vertical-align: baseline;\n}\nsmall {\n  font-size: 0.8em;\n}\nspan {\n  font-style: inherit;\n  font-weight: inherit;\n}\nstrong {\n  color: #363636;\n  font-weight: 700;\n}\npre {\n  background-color: whitesmoke;\n  color: #4a4a4a;\n  font-size: 0.8em;\n  white-space: pre;\n  word-wrap: normal;\n}\npre code {\n    -webkit-overflow-scrolling: touch;\n    background: none;\n    color: inherit;\n    display: block;\n    font-size: 1em;\n    overflow-x: auto;\n    padding: 1.25rem 1.5rem;\n}\ntable {\n  width: 100%;\n}\ntable td,\n  table th {\n    text-align: left;\n    vertical-align: top;\n}\ntable th {\n    color: #363636;\n}\n.is-block {\n  display: block;\n}\n@media screen and (max-width: 768px) {\n.is-block-mobile {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-block-tablet {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-block-tablet-only {\n    display: block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-block-touch {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-block-desktop {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-block-desktop-only {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-block-widescreen {\n    display: block !important;\n}\n}\n.is-flex {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n@media screen and (max-width: 768px) {\n.is-flex-mobile {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-flex-tablet {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-flex-tablet-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-flex-touch {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-flex-desktop {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-flex-desktop-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-flex-widescreen {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n.is-inline {\n  display: inline;\n}\n@media screen and (max-width: 768px) {\n.is-inline-mobile {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-tablet {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-tablet-only {\n    display: inline !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-touch {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-desktop {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-desktop-only {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-widescreen {\n    display: inline !important;\n}\n}\n.is-inline-block {\n  display: inline-block;\n}\n@media screen and (max-width: 768px) {\n.is-inline-block-mobile {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-block-tablet {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-block-tablet-only {\n    display: inline-block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-block-touch {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-block-desktop {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-block-desktop-only {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-block-widescreen {\n    display: inline-block !important;\n}\n}\n.is-inline-flex {\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n}\n@media screen and (max-width: 768px) {\n.is-inline-flex-mobile {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-flex-tablet {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-flex-tablet-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-flex-touch {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-flex-desktop {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-flex-desktop-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-flex-widescreen {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n.is-clearfix:after {\n  clear: both;\n  content: \" \";\n  display: table;\n}\n.is-pulled-left {\n  float: left;\n}\n.is-pulled-right {\n  float: right;\n}\n.is-clipped {\n  overflow: hidden !important;\n}\n.is-overlay {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n.has-text-centered {\n  text-align: center;\n}\n.has-text-left {\n  text-align: left;\n}\n.has-text-right {\n  text-align: right;\n}\n.has-text-white {\n  color: white;\n}\na.has-text-white:hover, a.has-text-white:focus {\n  color: #e6e6e6;\n}\n.has-text-black {\n  color: #0a0a0a;\n}\na.has-text-black:hover, a.has-text-black:focus {\n  color: black;\n}\n.has-text-light {\n  color: whitesmoke;\n}\na.has-text-light:hover, a.has-text-light:focus {\n  color: #dbdbdb;\n}\n.has-text-dark {\n  color: #363636;\n}\na.has-text-dark:hover, a.has-text-dark:focus {\n  color: #1c1c1c;\n}\n.has-text-primary {\n  color: #00d1b2;\n}\na.has-text-primary:hover, a.has-text-primary:focus {\n  color: #009e86;\n}\n.has-text-info {\n  color: #3273dc;\n}\na.has-text-info:hover, a.has-text-info:focus {\n  color: #205bbc;\n}\n.has-text-success {\n  color: #23d160;\n}\na.has-text-success:hover, a.has-text-success:focus {\n  color: #1ca64c;\n}\n.has-text-warning {\n  color: #ffdd57;\n}\na.has-text-warning:hover, a.has-text-warning:focus {\n  color: #ffd324;\n}\n.has-text-danger {\n  color: #ff3860;\n}\na.has-text-danger:hover, a.has-text-danger:focus {\n  color: #ff0537;\n}\n.is-hidden {\n  display: none !important;\n}\n@media screen and (max-width: 768px) {\n.is-hidden-mobile {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-hidden-tablet {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-hidden-tablet-only {\n    display: none !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-hidden-touch {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-hidden-desktop {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-hidden-desktop-only {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-hidden-widescreen {\n    display: none !important;\n}\n}\n.is-marginless {\n  margin: 0 !important;\n}\n.is-paddingless {\n  padding: 0 !important;\n}\n.is-unselectable {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.box {\n  background-color: white;\n  border-radius: 5px;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  display: block;\n  padding: 1.25rem;\n}\n.box:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\na.box:hover, a.box:focus {\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px #00d1b2;\n}\na.box:active {\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2), 0 0 0 1px #00d1b2;\n}\n.button {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  cursor: pointer;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  text-align: center;\n  white-space: nowrap;\n}\n.button:focus, .button.is-focused, .button:active, .button.is-active {\n    outline: none;\n}\n.button[disabled] {\n    cursor: not-allowed;\n}\n.button strong {\n    color: inherit;\n}\n.button .icon, .button .icon.is-small, .button .icon.is-medium, .button .icon.is-large {\n    height: 1.5em;\n    width: 1.5em;\n}\n.button .icon:first-child:not(:last-child) {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: 0.1875em;\n}\n.button .icon:last-child:not(:first-child) {\n    margin-left: 0.1875em;\n    margin-right: calc(-0.375em - 1px);\n}\n.button .icon:first-child:last-child {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: calc(-0.375em - 1px);\n}\n.button:hover, .button.is-hovered {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.button:focus, .button.is-focused {\n    border-color: #00d1b2;\n    box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n    color: #363636;\n}\n.button:active, .button.is-active {\n    border-color: #4a4a4a;\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n    color: #363636;\n}\n.button.is-link {\n    background-color: transparent;\n    border-color: transparent;\n    color: #4a4a4a;\n    text-decoration: underline;\n}\n.button.is-link:hover, .button.is-link.is-hovered, .button.is-link:focus, .button.is-link.is-focused, .button.is-link:active, .button.is-link.is-active {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-link[disabled] {\n      background-color: transparent;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white {\n    background-color: white;\n    border-color: transparent;\n    color: #0a0a0a;\n}\n.button.is-white:hover, .button.is-white.is-hovered {\n      background-color: #f9f9f9;\n      border-color: transparent;\n      color: #0a0a0a;\n}\n.button.is-white:focus, .button.is-white.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 255, 255, 0.25);\n      color: #0a0a0a;\n}\n.button.is-white:active, .button.is-white.is-active {\n      background-color: #f2f2f2;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #0a0a0a;\n}\n.button.is-white[disabled] {\n      background-color: white;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white.is-inverted {\n      background-color: #0a0a0a;\n      color: white;\n}\n.button.is-white.is-inverted:hover {\n        background-color: black;\n}\n.button.is-white.is-inverted[disabled] {\n        background-color: #0a0a0a;\n        border-color: transparent;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-loading:after {\n      border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-white.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-white.is-outlined:hover, .button.is-white.is-outlined:focus {\n        background-color: white;\n        border-color: white;\n        color: #0a0a0a;\n}\n.button.is-white.is-outlined.is-loading:after {\n        border-color: transparent transparent white white !important;\n}\n.button.is-white.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-white.is-inverted.is-outlined:hover, .button.is-white.is-inverted.is-outlined:focus {\n        background-color: #0a0a0a;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black {\n    background-color: #0a0a0a;\n    border-color: transparent;\n    color: white;\n}\n.button.is-black:hover, .button.is-black.is-hovered {\n      background-color: #040404;\n      border-color: transparent;\n      color: white;\n}\n.button.is-black:focus, .button.is-black.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(10, 10, 10, 0.25);\n      color: white;\n}\n.button.is-black:active, .button.is-black.is-active {\n      background-color: black;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: white;\n}\n.button.is-black[disabled] {\n      background-color: #0a0a0a;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-black.is-inverted {\n      background-color: white;\n      color: #0a0a0a;\n}\n.button.is-black.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-black.is-inverted[disabled] {\n        background-color: white;\n        border-color: transparent;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-loading:after {\n      border-color: transparent transparent white white !important;\n}\n.button.is-black.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-black.is-outlined:hover, .button.is-black.is-outlined:focus {\n        background-color: #0a0a0a;\n        border-color: #0a0a0a;\n        color: white;\n}\n.button.is-black.is-outlined.is-loading:after {\n        border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-black.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-black.is-inverted.is-outlined:hover, .button.is-black.is-inverted.is-outlined:focus {\n        background-color: white;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-light {\n    background-color: whitesmoke;\n    border-color: transparent;\n    color: #363636;\n}\n.button.is-light:hover, .button.is-light.is-hovered {\n      background-color: #eeeeee;\n      border-color: transparent;\n      color: #363636;\n}\n.button.is-light:focus, .button.is-light.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(245, 245, 245, 0.25);\n      color: #363636;\n}\n.button.is-light:active, .button.is-light.is-active {\n      background-color: #e8e8e8;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #363636;\n}\n.button.is-light[disabled] {\n      background-color: whitesmoke;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-light.is-inverted {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.button.is-light.is-inverted:hover {\n        background-color: #292929;\n}\n.button.is-light.is-inverted[disabled] {\n        background-color: #363636;\n        border-color: transparent;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-loading:after {\n      border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-light.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-light.is-outlined:hover, .button.is-light.is-outlined:focus {\n        background-color: whitesmoke;\n        border-color: whitesmoke;\n        color: #363636;\n}\n.button.is-light.is-outlined.is-loading:after {\n        border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-light.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-light.is-inverted.is-outlined:hover, .button.is-light.is-inverted.is-outlined:focus {\n        background-color: #363636;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark {\n    background-color: #363636;\n    border-color: transparent;\n    color: whitesmoke;\n}\n.button.is-dark:hover, .button.is-dark.is-hovered {\n      background-color: #2f2f2f;\n      border-color: transparent;\n      color: whitesmoke;\n}\n.button.is-dark:focus, .button.is-dark.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(54, 54, 54, 0.25);\n      color: whitesmoke;\n}\n.button.is-dark:active, .button.is-dark.is-active {\n      background-color: #292929;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: whitesmoke;\n}\n.button.is-dark[disabled] {\n      background-color: #363636;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-dark.is-inverted {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-dark.is-inverted:hover {\n        background-color: #e8e8e8;\n}\n.button.is-dark.is-inverted[disabled] {\n        background-color: whitesmoke;\n        border-color: transparent;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-loading:after {\n      border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-dark.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-dark.is-outlined:hover, .button.is-dark.is-outlined:focus {\n        background-color: #363636;\n        border-color: #363636;\n        color: whitesmoke;\n}\n.button.is-dark.is-outlined.is-loading:after {\n        border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-dark.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-dark.is-inverted.is-outlined:hover, .button.is-dark.is-inverted.is-outlined:focus {\n        background-color: whitesmoke;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-primary {\n    background-color: #00d1b2;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-primary:hover, .button.is-primary.is-hovered {\n      background-color: #00c4a7;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-primary:focus, .button.is-primary.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n      color: #fff;\n}\n.button.is-primary:active, .button.is-primary.is-active {\n      background-color: #00b89c;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-primary[disabled] {\n      background-color: #00d1b2;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-primary.is-inverted {\n      background-color: #fff;\n      color: #00d1b2;\n}\n.button.is-primary.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-primary.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-primary.is-outlined {\n      background-color: transparent;\n      border-color: #00d1b2;\n      color: #00d1b2;\n}\n.button.is-primary.is-outlined:hover, .button.is-primary.is-outlined:focus {\n        background-color: #00d1b2;\n        border-color: #00d1b2;\n        color: #fff;\n}\n.button.is-primary.is-outlined.is-loading:after {\n        border-color: transparent transparent #00d1b2 #00d1b2 !important;\n}\n.button.is-primary.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #00d1b2;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-primary.is-inverted.is-outlined:hover, .button.is-primary.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-info {\n    background-color: #3273dc;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-info:hover, .button.is-info.is-hovered {\n      background-color: #276cda;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-info:focus, .button.is-info.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(50, 115, 220, 0.25);\n      color: #fff;\n}\n.button.is-info:active, .button.is-info.is-active {\n      background-color: #2366d1;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-info[disabled] {\n      background-color: #3273dc;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-info.is-inverted {\n      background-color: #fff;\n      color: #3273dc;\n}\n.button.is-info.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-info.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-info.is-outlined {\n      background-color: transparent;\n      border-color: #3273dc;\n      color: #3273dc;\n}\n.button.is-info.is-outlined:hover, .button.is-info.is-outlined:focus {\n        background-color: #3273dc;\n        border-color: #3273dc;\n        color: #fff;\n}\n.button.is-info.is-outlined.is-loading:after {\n        border-color: transparent transparent #3273dc #3273dc !important;\n}\n.button.is-info.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #3273dc;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-info.is-inverted.is-outlined:hover, .button.is-info.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-success {\n    background-color: #23d160;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-success:hover, .button.is-success.is-hovered {\n      background-color: #22c65b;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-success:focus, .button.is-success.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(35, 209, 96, 0.25);\n      color: #fff;\n}\n.button.is-success:active, .button.is-success.is-active {\n      background-color: #20bc56;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-success[disabled] {\n      background-color: #23d160;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-success.is-inverted {\n      background-color: #fff;\n      color: #23d160;\n}\n.button.is-success.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-success.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-success.is-outlined {\n      background-color: transparent;\n      border-color: #23d160;\n      color: #23d160;\n}\n.button.is-success.is-outlined:hover, .button.is-success.is-outlined:focus {\n        background-color: #23d160;\n        border-color: #23d160;\n        color: #fff;\n}\n.button.is-success.is-outlined.is-loading:after {\n        border-color: transparent transparent #23d160 #23d160 !important;\n}\n.button.is-success.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #23d160;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-success.is-inverted.is-outlined:hover, .button.is-success.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-warning {\n    background-color: #ffdd57;\n    border-color: transparent;\n    color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:hover, .button.is-warning.is-hovered {\n      background-color: #ffdb4a;\n      border-color: transparent;\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:focus, .button.is-warning.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 221, 87, 0.25);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:active, .button.is-warning.is-active {\n      background-color: #ffd83d;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning[disabled] {\n      background-color: #ffdd57;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-warning.is-inverted {\n      background-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.button.is-warning.is-inverted:hover {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted[disabled] {\n        background-color: rgba(0, 0, 0, 0.7);\n        border-color: transparent;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-loading:after {\n      border-color: transparent transparent rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.7) !important;\n}\n.button.is-warning.is-outlined {\n      background-color: transparent;\n      border-color: #ffdd57;\n      color: #ffdd57;\n}\n.button.is-warning.is-outlined:hover, .button.is-warning.is-outlined:focus {\n        background-color: #ffdd57;\n        border-color: #ffdd57;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-outlined.is-loading:after {\n        border-color: transparent transparent #ffdd57 #ffdd57 !important;\n}\n.button.is-warning.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ffdd57;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: rgba(0, 0, 0, 0.7);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted.is-outlined:hover, .button.is-warning.is-inverted.is-outlined:focus {\n        background-color: rgba(0, 0, 0, 0.7);\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: rgba(0, 0, 0, 0.7);\n        box-shadow: none;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-danger {\n    background-color: #ff3860;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-danger:hover, .button.is-danger.is-hovered {\n      background-color: #ff2b56;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-danger:focus, .button.is-danger.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 56, 96, 0.25);\n      color: #fff;\n}\n.button.is-danger:active, .button.is-danger.is-active {\n      background-color: #ff1f4b;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-danger[disabled] {\n      background-color: #ff3860;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-danger.is-inverted {\n      background-color: #fff;\n      color: #ff3860;\n}\n.button.is-danger.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-danger.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-danger.is-outlined {\n      background-color: transparent;\n      border-color: #ff3860;\n      color: #ff3860;\n}\n.button.is-danger.is-outlined:hover, .button.is-danger.is-outlined:focus {\n        background-color: #ff3860;\n        border-color: #ff3860;\n        color: #fff;\n}\n.button.is-danger.is-outlined.is-loading:after {\n        border-color: transparent transparent #ff3860 #ff3860 !important;\n}\n.button.is-danger.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ff3860;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-danger.is-inverted.is-outlined:hover, .button.is-danger.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.button.is-medium {\n    font-size: 1.25rem;\n}\n.button.is-large {\n    font-size: 1.5rem;\n}\n.button[disabled] {\n    background-color: white;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    opacity: 0.5;\n}\n.button.is-fullwidth {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    width: 100%;\n}\n.button.is-loading {\n    color: transparent !important;\n    pointer-events: none;\n}\n.button.is-loading:after {\n      -webkit-animation: spinAround 500ms infinite linear;\n              animation: spinAround 500ms infinite linear;\n      border: 2px solid #dbdbdb;\n      border-radius: 290486px;\n      border-right-color: transparent;\n      border-top-color: transparent;\n      content: \"\";\n      display: block;\n      height: 1em;\n      position: relative;\n      width: 1em;\n      position: absolute;\n      left: calc(50% - (1em / 2));\n      top: calc(50% - (1em / 2));\n      position: absolute !important;\n}\n.button.is-static {\n    background-color: whitesmoke;\n    border-color: #dbdbdb;\n    color: #7a7a7a;\n    box-shadow: none;\n    pointer-events: none;\n}\nbutton.button,\ninput[type=\"submit\"].button {\n  line-height: 1;\n  padding-bottom: 0.4em;\n  padding-top: 0.35em;\n}\n.content {\n  color: #4a4a4a;\n}\n.content:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.content li + li {\n    margin-top: 0.25em;\n}\n.content p:not(:last-child),\n  .content dl:not(:last-child),\n  .content ol:not(:last-child),\n  .content ul:not(:last-child),\n  .content blockquote:not(:last-child),\n  .content pre:not(:last-child),\n  .content table:not(:last-child) {\n    margin-bottom: 1em;\n}\n.content h1,\n  .content h2,\n  .content h3,\n  .content h4,\n  .content h5,\n  .content h6 {\n    color: #363636;\n    font-weight: 400;\n    line-height: 1.125;\n}\n.content h1 {\n    font-size: 2em;\n    margin-bottom: 0.5em;\n}\n.content h1:not(:first-child) {\n      margin-top: 1em;\n}\n.content h2 {\n    font-size: 1.75em;\n    margin-bottom: 0.5714em;\n}\n.content h2:not(:first-child) {\n      margin-top: 1.1428em;\n}\n.content h3 {\n    font-size: 1.5em;\n    margin-bottom: 0.6666em;\n}\n.content h3:not(:first-child) {\n      margin-top: 1.3333em;\n}\n.content h4 {\n    font-size: 1.25em;\n    margin-bottom: 0.8em;\n}\n.content h5 {\n    font-size: 1.125em;\n    margin-bottom: 0.8888em;\n}\n.content h6 {\n    font-size: 1em;\n    margin-bottom: 1em;\n}\n.content blockquote {\n    background-color: whitesmoke;\n    border-left: 5px solid #dbdbdb;\n    padding: 1.25em 1.5em;\n}\n.content ol {\n    list-style: decimal outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul {\n    list-style: disc outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul ul {\n      list-style-type: circle;\n      margin-top: 0.5em;\n}\n.content ul ul ul {\n        list-style-type: square;\n}\n.content dd {\n    margin-left: 2em;\n}\n.content pre {\n    -webkit-overflow-scrolling: touch;\n    overflow-x: auto;\n    padding: 1.25em 1.5em;\n    white-space: pre;\n    word-wrap: normal;\n}\n.content table {\n    width: 100%;\n}\n.content table td,\n    .content table th {\n      border: 1px solid #dbdbdb;\n      border-width: 0 0 1px;\n      padding: 0.5em 0.75em;\n      vertical-align: top;\n}\n.content table th {\n      color: #363636;\n      text-align: left;\n}\n.content table tr:hover {\n      background-color: whitesmoke;\n}\n.content table thead td,\n    .content table thead th {\n      border-width: 0 0 2px;\n      color: #363636;\n}\n.content table tfoot td,\n    .content table tfoot th {\n      border-width: 2px 0 0;\n      color: #363636;\n}\n.content table tbody tr:last-child td,\n    .content table tbody tr:last-child th {\n      border-bottom-width: 0;\n}\n.content.is-small {\n    font-size: 0.75rem;\n}\n.content.is-medium {\n    font-size: 1.25rem;\n}\n.content.is-large {\n    font-size: 1.5rem;\n}\n.input,\n.textarea {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);\n  max-width: 100%;\n  width: 100%;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    outline: none;\n}\n.input[disabled],\n  .textarea[disabled] {\n    cursor: not-allowed;\n}\n.input:hover, .input.is-hovered,\n  .textarea:hover,\n  .textarea.is-hovered {\n    border-color: #b5b5b5;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    border-color: #00d1b2;\n}\n.input[disabled],\n  .textarea[disabled] {\n    background-color: whitesmoke;\n    border-color: whitesmoke;\n    box-shadow: none;\n    color: #7a7a7a;\n}\n.input[disabled]::-moz-placeholder,\n    .textarea[disabled]::-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]::-webkit-input-placeholder,\n    .textarea[disabled]::-webkit-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-moz-placeholder,\n    .textarea[disabled]:-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-ms-input-placeholder,\n    .textarea[disabled]:-ms-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[type=\"search\"],\n  .textarea[type=\"search\"] {\n    border-radius: 290486px;\n}\n.input.is-white,\n  .textarea.is-white {\n    border-color: white;\n}\n.input.is-black,\n  .textarea.is-black {\n    border-color: #0a0a0a;\n}\n.input.is-light,\n  .textarea.is-light {\n    border-color: whitesmoke;\n}\n.input.is-dark,\n  .textarea.is-dark {\n    border-color: #363636;\n}\n.input.is-primary,\n  .textarea.is-primary {\n    border-color: #00d1b2;\n}\n.input.is-info,\n  .textarea.is-info {\n    border-color: #3273dc;\n}\n.input.is-success,\n  .textarea.is-success {\n    border-color: #23d160;\n}\n.input.is-warning,\n  .textarea.is-warning {\n    border-color: #ffdd57;\n}\n.input.is-danger,\n  .textarea.is-danger {\n    border-color: #ff3860;\n}\n.input.is-small,\n  .textarea.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.input.is-medium,\n  .textarea.is-medium {\n    font-size: 1.25rem;\n}\n.input.is-large,\n  .textarea.is-large {\n    font-size: 1.5rem;\n}\n.input.is-fullwidth,\n  .textarea.is-fullwidth {\n    display: block;\n    width: 100%;\n}\n.input.is-inline,\n  .textarea.is-inline {\n    display: inline;\n    width: auto;\n}\n.textarea {\n  display: block;\n  max-height: 600px;\n  max-width: 100%;\n  min-height: 120px;\n  min-width: 100%;\n  padding: 0.625em;\n  resize: vertical;\n}\n.checkbox,\n.radio {\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1.25;\n  position: relative;\n}\n.checkbox input,\n  .radio input {\n    cursor: pointer;\n}\n.checkbox:hover,\n  .radio:hover {\n    color: #363636;\n}\n.checkbox[disabled],\n  .radio[disabled] {\n    color: #7a7a7a;\n    cursor: not-allowed;\n}\n.radio + .radio {\n  margin-left: 0.5em;\n}\n.select {\n  display: inline-block;\n  height: 2.25em;\n  max-width: 100%;\n  position: relative;\n  vertical-align: top;\n}\n.select:after {\n    border: 1px solid #00d1b2;\n    border-right: 0;\n    border-top: 0;\n    content: \" \";\n    display: block;\n    height: 0.5em;\n    pointer-events: none;\n    position: absolute;\n    -webkit-transform: rotate(-45deg);\n            transform: rotate(-45deg);\n    width: 0.5em;\n    margin-top: -0.375em;\n    right: 1.125em;\n    top: 50%;\n    z-index: 4;\n}\n.select select {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border: 1px solid transparent;\n    border-radius: 3px;\n    box-shadow: none;\n    display: -webkit-inline-box;\n    display: -ms-inline-flexbox;\n    display: inline-flex;\n    font-size: 1rem;\n    height: 2.25em;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    line-height: 1.5;\n    padding-bottom: calc(0.375em - 1px);\n    padding-left: calc(0.625em - 1px);\n    padding-right: calc(0.625em - 1px);\n    padding-top: calc(0.375em - 1px);\n    position: relative;\n    vertical-align: top;\n    background-color: white;\n    border-color: #dbdbdb;\n    color: #363636;\n    cursor: pointer;\n    display: block;\n    font-size: 1em;\n    max-width: 100%;\n    outline: none;\n    padding-right: 2.5em;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      outline: none;\n}\n.select select[disabled] {\n      cursor: not-allowed;\n}\n.select select:hover, .select select.is-hovered {\n      border-color: #b5b5b5;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      border-color: #00d1b2;\n}\n.select select[disabled] {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      box-shadow: none;\n      color: #7a7a7a;\n}\n.select select[disabled]::-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]::-webkit-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-ms-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select:hover {\n      border-color: #b5b5b5;\n}\n.select select::-ms-expand {\n      display: none;\n}\n.select select[disabled]:hover {\n      border-color: whitesmoke;\n}\n.select:hover:after {\n    border-color: #363636;\n}\n.select.is-white select {\n    border-color: white;\n}\n.select.is-black select {\n    border-color: #0a0a0a;\n}\n.select.is-light select {\n    border-color: whitesmoke;\n}\n.select.is-dark select {\n    border-color: #363636;\n}\n.select.is-primary select {\n    border-color: #00d1b2;\n}\n.select.is-info select {\n    border-color: #3273dc;\n}\n.select.is-success select {\n    border-color: #23d160;\n}\n.select.is-warning select {\n    border-color: #ffdd57;\n}\n.select.is-danger select {\n    border-color: #ff3860;\n}\n.select.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.select.is-medium {\n    font-size: 1.25rem;\n}\n.select.is-large {\n    font-size: 1.5rem;\n}\n.select.is-disabled:after {\n    border-color: #7a7a7a;\n}\n.select.is-fullwidth {\n    width: 100%;\n}\n.select.is-fullwidth select {\n      width: 100%;\n}\n.select.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    margin-top: 0;\n    position: absolute;\n    right: 0.625em;\n    top: 0.625em;\n    -webkit-transform: none;\n            transform: none;\n}\n.label {\n  color: #363636;\n  display: block;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.label:not(:last-child) {\n    margin-bottom: 0.5em;\n}\n.label.is-small {\n    font-size: 0.75rem;\n}\n.label.is-medium {\n    font-size: 1.25rem;\n}\n.label.is-large {\n    font-size: 1.5rem;\n}\n.help {\n  display: block;\n  font-size: 0.75rem;\n  margin-top: 0.25rem;\n}\n.help.is-white {\n    color: white;\n}\n.help.is-black {\n    color: #0a0a0a;\n}\n.help.is-light {\n    color: whitesmoke;\n}\n.help.is-dark {\n    color: #363636;\n}\n.help.is-primary {\n    color: #00d1b2;\n}\n.help.is-info {\n    color: #3273dc;\n}\n.help.is-success {\n    color: #23d160;\n}\n.help.is-warning {\n    color: #ffdd57;\n}\n.help.is-danger {\n    color: #ff3860;\n}\n.field:not(:last-child) {\n  margin-bottom: 0.75rem;\n}\n.field.has-addons {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.has-addons .control {\n    margin-right: -1px;\n}\n.field.has-addons .control:first-child .button,\n    .field.has-addons .control:first-child .input,\n    .field.has-addons .control:first-child .select select {\n      border-bottom-left-radius: 3px;\n      border-top-left-radius: 3px;\n}\n.field.has-addons .control:last-child .button,\n    .field.has-addons .control:last-child .input,\n    .field.has-addons .control:last-child .select select {\n      border-bottom-right-radius: 3px;\n      border-top-right-radius: 3px;\n}\n.field.has-addons .control .button,\n    .field.has-addons .control .input,\n    .field.has-addons .control .select select {\n      border-radius: 0;\n}\n.field.has-addons .control .button:hover, .field.has-addons .control .button.is-hovered,\n      .field.has-addons .control .input:hover,\n      .field.has-addons .control .input.is-hovered,\n      .field.has-addons .control .select select:hover,\n      .field.has-addons .control .select select.is-hovered {\n        z-index: 2;\n}\n.field.has-addons .control .button:focus, .field.has-addons .control .button.is-focused, .field.has-addons .control .button:active, .field.has-addons .control .button.is-active,\n      .field.has-addons .control .input:focus,\n      .field.has-addons .control .input.is-focused,\n      .field.has-addons .control .input:active,\n      .field.has-addons .control .input.is-active,\n      .field.has-addons .control .select select:focus,\n      .field.has-addons .control .select select.is-focused,\n      .field.has-addons .control .select select:active,\n      .field.has-addons .control .select select.is-active {\n        z-index: 3;\n}\n.field.has-addons .control .button:focus:hover, .field.has-addons .control .button.is-focused:hover, .field.has-addons .control .button:active:hover, .field.has-addons .control .button.is-active:hover,\n        .field.has-addons .control .input:focus:hover,\n        .field.has-addons .control .input.is-focused:hover,\n        .field.has-addons .control .input:active:hover,\n        .field.has-addons .control .input.is-active:hover,\n        .field.has-addons .control .select select:focus:hover,\n        .field.has-addons .control .select select.is-focused:hover,\n        .field.has-addons .control .select select:active:hover,\n        .field.has-addons .control .select select.is-active:hover {\n          z-index: 4;\n}\n.field.has-addons .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n.field.has-addons.has-addons-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.has-addons.has-addons-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.field.has-addons.has-addons-fullwidth .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.is-grouped > .control {\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped > .control:not(:last-child) {\n      margin-bottom: 0;\n      margin-right: 0.75rem;\n}\n.field.is-grouped > .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field.is-grouped.is-grouped-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.is-grouped.is-grouped-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.field.is-horizontal {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n}\n.field-label .label {\n  font-size: inherit;\n}\n@media screen and (max-width: 768px) {\n.field-label {\n    margin-bottom: 0.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-label {\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-right: 1.5rem;\n    text-align: right;\n}\n.field-label.is-small {\n      font-size: 0.75rem;\n      padding-top: 0.375em;\n}\n.field-label.is-normal {\n      padding-top: 0.375em;\n}\n.field-label.is-medium {\n      font-size: 1.25rem;\n      padding-top: 0.375em;\n}\n.field-label.is-large {\n      font-size: 1.5rem;\n      padding-top: 0.375em;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-body {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 5;\n        -ms-flex-positive: 5;\n            flex-grow: 5;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.field-body .field {\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field-body .field:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n.field-body .field:not(:last-child) {\n        margin-bottom: 0;\n        margin-right: 0.75rem;\n}\n}\n.control {\n  font-size: 1rem;\n  position: relative;\n  text-align: left;\n}\n.control.has-icon .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icon .input:focus + .icon {\n    color: #7a7a7a;\n}\n.control.has-icon .input.is-small + .icon {\n    font-size: 0.75rem;\n}\n.control.has-icon .input.is-medium + .icon {\n    font-size: 1.25rem;\n}\n.control.has-icon .input.is-large + .icon {\n    font-size: 1.5rem;\n}\n.control.has-icon:not(.has-icon-right) .icon {\n    left: 0;\n}\n.control.has-icon:not(.has-icon-right) .input {\n    padding-left: 2.25em;\n}\n.control.has-icon.has-icon-right .icon {\n    right: 0;\n}\n.control.has-icon.has-icon-right .input {\n    padding-right: 2.25em;\n}\n.control.has-icons-left .input:focus ~ .icon,\n  .control.has-icons-left .select select:focus ~ .icon, .control.has-icons-right .input:focus ~ .icon,\n  .control.has-icons-right .select select:focus ~ .icon {\n    color: #7a7a7a;\n}\n.control.has-icons-left .input.is-small ~ .icon,\n  .control.has-icons-left .select select.is-small ~ .icon, .control.has-icons-right .input.is-small ~ .icon,\n  .control.has-icons-right .select select.is-small ~ .icon {\n    font-size: 0.75rem;\n}\n.control.has-icons-left .input.is-medium ~ .icon,\n  .control.has-icons-left .select select.is-medium ~ .icon, .control.has-icons-right .input.is-medium ~ .icon,\n  .control.has-icons-right .select select.is-medium ~ .icon {\n    font-size: 1.25rem;\n}\n.control.has-icons-left .input.is-large ~ .icon,\n  .control.has-icons-left .select select.is-large ~ .icon, .control.has-icons-right .input.is-large ~ .icon,\n  .control.has-icons-right .select select.is-large ~ .icon {\n    font-size: 1.5rem;\n}\n.control.has-icons-left .icon, .control.has-icons-right .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icons-left .input,\n  .control.has-icons-left .select select {\n    padding-left: 2.25em;\n}\n.control.has-icons-left .icon.is-left {\n    left: 0;\n}\n.control.has-icons-right .input,\n  .control.has-icons-right .select select {\n    padding-right: 2.25em;\n}\n.control.has-icons-right .icon.is-right {\n    right: 0;\n}\n.control.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    position: absolute !important;\n    right: 0.625em;\n    top: 0.625em;\n}\n.icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  height: 1.5rem;\n  width: 1.5rem;\n}\n.icon .fa {\n    font-size: 21px;\n}\n.icon.is-small {\n    height: 1rem;\n    width: 1rem;\n}\n.icon.is-small .fa {\n      font-size: 14px;\n}\n.icon.is-medium {\n    height: 2rem;\n    width: 2rem;\n}\n.icon.is-medium .fa {\n      font-size: 28px;\n}\n.icon.is-large {\n    height: 3rem;\n    width: 3rem;\n}\n.icon.is-large .fa {\n      font-size: 42px;\n}\n.image {\n  display: block;\n  position: relative;\n}\n.image img {\n    display: block;\n    height: auto;\n    width: 100%;\n}\n.image.is-square img, .image.is-1by1 img, .image.is-4by3 img, .image.is-3by2 img, .image.is-16by9 img, .image.is-2by1 img {\n    bottom: 0;\n    left: 0;\n    position: absolute;\n    right: 0;\n    top: 0;\n    height: 100%;\n    width: 100%;\n}\n.image.is-square, .image.is-1by1 {\n    padding-top: 100%;\n}\n.image.is-4by3 {\n    padding-top: 75%;\n}\n.image.is-3by2 {\n    padding-top: 66.6666%;\n}\n.image.is-16by9 {\n    padding-top: 56.25%;\n}\n.image.is-2by1 {\n    padding-top: 50%;\n}\n.image.is-16x16 {\n    height: 16px;\n    width: 16px;\n}\n.image.is-24x24 {\n    height: 24px;\n    width: 24px;\n}\n.image.is-32x32 {\n    height: 32px;\n    width: 32px;\n}\n.image.is-48x48 {\n    height: 48px;\n    width: 48px;\n}\n.image.is-64x64 {\n    height: 64px;\n    width: 64px;\n}\n.image.is-96x96 {\n    height: 96px;\n    width: 96px;\n}\n.image.is-128x128 {\n    height: 128px;\n    width: 128px;\n}\n.notification {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  padding: 1.25rem 2.5rem 1.25rem 1.5rem;\n  position: relative;\n}\n.notification:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.notification a:not(.button) {\n    color: currentColor;\n    text-decoration: underline;\n}\n.notification code,\n  .notification pre {\n    background: white;\n}\n.notification pre code {\n    background: transparent;\n}\n.notification > .delete {\n    position: absolute;\n    right: 0.5em;\n    top: 0.5em;\n}\n.notification .title,\n  .notification .subtitle,\n  .notification .content {\n    color: inherit;\n}\n.notification.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.notification.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.notification.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.notification.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.notification.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.notification.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.notification.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.notification.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.notification.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.progress {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  border: none;\n  border-radius: 290486px;\n  display: block;\n  height: 1rem;\n  overflow: hidden;\n  padding: 0;\n  width: 100%;\n}\n.progress:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.progress::-webkit-progress-bar {\n    background-color: #dbdbdb;\n}\n.progress::-webkit-progress-value {\n    background-color: #4a4a4a;\n}\n.progress::-moz-progress-bar {\n    background-color: #4a4a4a;\n}\n.progress.is-white::-webkit-progress-value {\n    background-color: white;\n}\n.progress.is-white::-moz-progress-bar {\n    background-color: white;\n}\n.progress.is-black::-webkit-progress-value {\n    background-color: #0a0a0a;\n}\n.progress.is-black::-moz-progress-bar {\n    background-color: #0a0a0a;\n}\n.progress.is-light::-webkit-progress-value {\n    background-color: whitesmoke;\n}\n.progress.is-light::-moz-progress-bar {\n    background-color: whitesmoke;\n}\n.progress.is-dark::-webkit-progress-value {\n    background-color: #363636;\n}\n.progress.is-dark::-moz-progress-bar {\n    background-color: #363636;\n}\n.progress.is-primary::-webkit-progress-value {\n    background-color: #00d1b2;\n}\n.progress.is-primary::-moz-progress-bar {\n    background-color: #00d1b2;\n}\n.progress.is-info::-webkit-progress-value {\n    background-color: #3273dc;\n}\n.progress.is-info::-moz-progress-bar {\n    background-color: #3273dc;\n}\n.progress.is-success::-webkit-progress-value {\n    background-color: #23d160;\n}\n.progress.is-success::-moz-progress-bar {\n    background-color: #23d160;\n}\n.progress.is-warning::-webkit-progress-value {\n    background-color: #ffdd57;\n}\n.progress.is-warning::-moz-progress-bar {\n    background-color: #ffdd57;\n}\n.progress.is-danger::-webkit-progress-value {\n    background-color: #ff3860;\n}\n.progress.is-danger::-moz-progress-bar {\n    background-color: #ff3860;\n}\n.progress.is-small {\n    height: 0.75rem;\n}\n.progress.is-medium {\n    height: 1.25rem;\n}\n.progress.is-large {\n    height: 1.5rem;\n}\n.table {\n  background-color: white;\n  color: #363636;\n  margin-bottom: 1.5rem;\n  width: 100%;\n}\n.table td,\n  .table th {\n    border: 1px solid #dbdbdb;\n    border-width: 0 0 1px;\n    padding: 0.5em 0.75em;\n    vertical-align: top;\n}\n.table td.is-narrow,\n    .table th.is-narrow {\n      white-space: nowrap;\n      width: 1%;\n}\n.table th {\n    color: #363636;\n    text-align: left;\n}\n.table tr:hover {\n    background-color: #fafafa;\n}\n.table tr.is-selected {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.table tr.is-selected a,\n    .table tr.is-selected strong {\n      color: currentColor;\n}\n.table tr.is-selected td,\n    .table tr.is-selected th {\n      border-color: #fff;\n      color: currentColor;\n}\n.table thead td,\n  .table thead th {\n    border-width: 0 0 2px;\n    color: #7a7a7a;\n}\n.table tfoot td,\n  .table tfoot th {\n    border-width: 2px 0 0;\n    color: #7a7a7a;\n}\n.table tbody tr:last-child td,\n  .table tbody tr:last-child th {\n    border-bottom-width: 0;\n}\n.table.is-bordered td,\n  .table.is-bordered th {\n    border-width: 1px;\n}\n.table.is-bordered tr:last-child td,\n  .table.is-bordered tr:last-child th {\n    border-bottom-width: 1px;\n}\n.table.is-narrow td,\n  .table.is-narrow th {\n    padding: 0.25em 0.5em;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even) {\n    background-color: #fafafa;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even):hover {\n      background-color: whitesmoke;\n}\n.tag {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  color: #4a4a4a;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 0.75rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding-left: 0.875em;\n  padding-right: 0.875em;\n  white-space: nowrap;\n}\n.tag .delete {\n    margin-left: 0.25em;\n    margin-right: -0.375em;\n}\n.tag.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.tag.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.tag.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.tag.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.tag.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.tag.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.tag.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.tag.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.tag.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.tag.is-medium {\n    font-size: 1rem;\n}\n.tag.is-large {\n    font-size: 1.25rem;\n}\n.title,\n.subtitle {\n  word-break: break-word;\n}\n.title:not(:last-child),\n  .subtitle:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.title em,\n  .title span,\n  .subtitle em,\n  .subtitle span {\n    font-weight: 300;\n}\n.title strong,\n  .subtitle strong {\n    font-weight: 500;\n}\n.title .tag,\n  .subtitle .tag {\n    vertical-align: middle;\n}\n.title {\n  color: #363636;\n  font-size: 2rem;\n  font-weight: 300;\n  line-height: 1.125;\n}\n.title strong {\n    color: inherit;\n}\n.title + .highlight {\n    margin-top: -0.75rem;\n}\n.title:not(.is-spaced) + .subtitle {\n    margin-top: -1.5rem;\n}\n.title.is-1 {\n    font-size: 3rem;\n}\n.title.is-2 {\n    font-size: 2.5rem;\n}\n.title.is-3 {\n    font-size: 2rem;\n}\n.title.is-4 {\n    font-size: 1.5rem;\n}\n.title.is-5 {\n    font-size: 1.25rem;\n}\n.title.is-6 {\n    font-size: 1rem;\n}\n.subtitle {\n  color: #4a4a4a;\n  font-size: 1.25rem;\n  font-weight: 300;\n  line-height: 1.25;\n}\n.subtitle strong {\n    color: #363636;\n}\n.subtitle:not(.is-spaced) + .title {\n    margin-top: -1.5rem;\n}\n.subtitle.is-1 {\n    font-size: 3rem;\n}\n.subtitle.is-2 {\n    font-size: 2.5rem;\n}\n.subtitle.is-3 {\n    font-size: 2rem;\n}\n.subtitle.is-4 {\n    font-size: 1.5rem;\n}\n.subtitle.is-5 {\n    font-size: 1.25rem;\n}\n.subtitle.is-6 {\n    font-size: 1rem;\n}\n.block:not(:last-child) {\n  margin-bottom: 1.5rem;\n}\n.container {\n  position: relative;\n}\n@media screen and (min-width: 1000px) {\n.container {\n      margin: 0 auto;\n      max-width: 960px;\n      width: 960px;\n}\n.container.is-fluid {\n        margin: 0 20px;\n        max-width: none;\n        width: auto;\n}\n}\n@media screen and (min-width: 1192px) {\n.container {\n      max-width: 1152px;\n      width: 1152px;\n}\n}\n@media screen and (min-width: 1384px) {\n.container {\n      max-width: 1344px;\n      width: 1344px;\n}\n}\n.delete {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n}\n.delete:before, .delete:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.delete:before {\n    height: 2px;\n    width: 50%;\n}\n.delete:after {\n    height: 50%;\n    width: 2px;\n}\n.delete:hover, .delete:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.delete:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.delete.is-small {\n    height: 16px;\n    width: 16px;\n}\n.delete.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.delete.is-large {\n    height: 32px;\n    width: 32px;\n}\n.fa {\n  font-size: 21px;\n  text-align: center;\n  vertical-align: top;\n}\n.heading {\n  display: block;\n  font-size: 11px;\n  letter-spacing: 1px;\n  margin-bottom: 5px;\n  text-transform: uppercase;\n}\n.highlight {\n  font-weight: 400;\n  max-width: 100%;\n  overflow: hidden;\n  padding: 0;\n}\n.highlight:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.highlight pre {\n    overflow: auto;\n    max-width: 100%;\n}\n.loader {\n  -webkit-animation: spinAround 500ms infinite linear;\n          animation: spinAround 500ms infinite linear;\n  border: 2px solid #dbdbdb;\n  border-radius: 290486px;\n  border-right-color: transparent;\n  border-top-color: transparent;\n  content: \"\";\n  display: block;\n  height: 1em;\n  position: relative;\n  width: 1em;\n}\n.number {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1.25rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-right: 1.5rem;\n  min-width: 2.5em;\n  padding: 0.25rem 0.5rem;\n  text-align: center;\n  vertical-align: top;\n}\n.card-header {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.1);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-header-title {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  font-weight: 700;\n  padding: 0.75rem;\n}\n.card-header-icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  cursor: pointer;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-image {\n  display: block;\n  position: relative;\n}\n.card-content {\n  padding: 1.5rem;\n}\n.card-footer {\n  border-top: 1px solid #dbdbdb;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-footer-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-footer-item:not(:last-child) {\n    border-right: 1px solid #dbdbdb;\n}\n.card {\n  background-color: white;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  color: #4a4a4a;\n  max-width: 100%;\n  position: relative;\n}\n.card .media:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.level-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.level-item .title,\n  .level-item .subtitle {\n    margin-bottom: 0;\n}\n@media screen and (max-width: 768px) {\n.level-item:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n}\n.level-left,\n.level-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.level-left .level-item:not(:last-child),\n  .level-right .level-item:not(:last-child) {\n    margin-right: 0.75rem;\n}\n.level-left .level-item.is-flexible,\n  .level-right .level-item.is-flexible {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n}\n.level-left {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n@media screen and (max-width: 768px) {\n.level-left + .level-right {\n      margin-top: 1.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.level-left {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level-right {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.level:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.level code {\n    border-radius: 3px;\n}\n.level img {\n    display: inline-block;\n    vertical-align: top;\n}\n.level.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.level.is-mobile .level-left,\n    .level.is-mobile .level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level.is-mobile .level-left + .level-right {\n      margin-top: 0;\n}\n.level.is-mobile .level-item:not(:last-child) {\n      margin-bottom: 0;\n}\n.level.is-mobile .level-item:not(.is-narrow) {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n@media screen and (min-width: 769px), print {\n.level {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level > .level-item:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n}\n.media-left,\n.media-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.media-left {\n  margin-right: 1rem;\n}\n.media-right {\n  margin-left: 1rem;\n}\n.media-content {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  text-align: left;\n}\n.media {\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  text-align: left;\n}\n.media .content:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.media .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    padding-top: 0.75rem;\n}\n.media .media .content:not(:last-child),\n    .media .media .control:not(:last-child) {\n      margin-bottom: 0.5rem;\n}\n.media .media .media {\n      padding-top: 0.5rem;\n}\n.media .media .media + .media {\n        margin-top: 0.5rem;\n}\n.media + .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    margin-top: 1rem;\n    padding-top: 1rem;\n}\n.media.is-large + .media {\n    margin-top: 1.5rem;\n    padding-top: 1.5rem;\n}\n.menu {\n  font-size: 1rem;\n}\n.menu-list {\n  line-height: 1.25;\n}\n.menu-list a {\n    border-radius: 2px;\n    color: #4a4a4a;\n    display: block;\n    padding: 0.5em 0.75em;\n}\n.menu-list a:hover {\n      background-color: whitesmoke;\n      color: #00d1b2;\n}\n.menu-list a.is-active {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.menu-list li ul {\n    border-left: 1px solid #dbdbdb;\n    margin: 0.75em;\n    padding-left: 0.75em;\n}\n.menu-label {\n  color: #7a7a7a;\n  font-size: 0.8em;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n}\n.menu-label:not(:first-child) {\n    margin-top: 1em;\n}\n.menu-label:not(:last-child) {\n    margin-bottom: 1em;\n}\n.message {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  font-size: 1rem;\n}\n.message:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.message.is-white {\n    background-color: white;\n}\n.message.is-white .message-header {\n      background-color: white;\n      color: #0a0a0a;\n}\n.message.is-white .message-body {\n      border-color: white;\n      color: #4d4d4d;\n}\n.message.is-black {\n    background-color: #fafafa;\n}\n.message.is-black .message-header {\n      background-color: #0a0a0a;\n      color: white;\n}\n.message.is-black .message-body {\n      border-color: #0a0a0a;\n      color: #090909;\n}\n.message.is-light {\n    background-color: #fafafa;\n}\n.message.is-light .message-header {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.message.is-light .message-body {\n      border-color: whitesmoke;\n      color: #505050;\n}\n.message.is-dark {\n    background-color: #fafafa;\n}\n.message.is-dark .message-header {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.message.is-dark .message-body {\n      border-color: #363636;\n      color: #2a2a2a;\n}\n.message.is-primary {\n    background-color: #f5fffd;\n}\n.message.is-primary .message-header {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.message.is-primary .message-body {\n      border-color: #00d1b2;\n      color: #021310;\n}\n.message.is-info {\n    background-color: #f6f9fe;\n}\n.message.is-info .message-header {\n      background-color: #3273dc;\n      color: #fff;\n}\n.message.is-info .message-body {\n      border-color: #3273dc;\n      color: #22509a;\n}\n.message.is-success {\n    background-color: #f6fef9;\n}\n.message.is-success .message-header {\n      background-color: #23d160;\n      color: #fff;\n}\n.message.is-success .message-body {\n      border-color: #23d160;\n      color: #0e301a;\n}\n.message.is-warning {\n    background-color: #fffdf5;\n}\n.message.is-warning .message-header {\n      background-color: #ffdd57;\n      color: rgba(0, 0, 0, 0.7);\n}\n.message.is-warning .message-body {\n      border-color: #ffdd57;\n      color: #3b3108;\n}\n.message.is-danger {\n    background-color: #fff5f7;\n}\n.message.is-danger .message-header {\n      background-color: #ff3860;\n      color: #fff;\n}\n.message.is-danger .message-body {\n      border-color: #ff3860;\n      color: #cd0930;\n}\n.message-header {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #4a4a4a;\n  border-radius: 3px 3px 0 0;\n  color: #fff;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n  position: relative;\n}\n.message-header a,\n  .message-header strong {\n    color: inherit;\n}\n.message-header a {\n    text-decoration: underline;\n}\n.message-header .delete {\n    -webkit-box-flex: 0;\n        -ms-flex-positive: 0;\n            flex-grow: 0;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-left: 0.75em;\n}\n.message-header + .message-body {\n    border-top-left-radius: 0;\n    border-top-right-radius: 0;\n    border-top: none;\n}\n.message-body {\n  border: 1px solid #dbdbdb;\n  border-radius: 3px;\n  color: #4a4a4a;\n  padding: 1em 1.25em;\n}\n.message-body a,\n  .message-body strong {\n    color: inherit;\n}\n.message-body a {\n    text-decoration: underline;\n}\n.message-body code,\n  .message-body pre {\n    background: white;\n}\n.message-body pre code {\n    background: transparent;\n}\n.modal-background {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  background-color: rgba(10, 10, 10, 0.86);\n}\n.modal-content,\n.modal-card {\n  margin: 0 20px;\n  max-height: calc(100vh - 160px);\n  overflow: auto;\n  position: relative;\n  width: 100%;\n}\n@media screen and (min-width: 769px), print {\n.modal-content,\n    .modal-card {\n      margin: 0 auto;\n      max-height: calc(100vh - 40px);\n      width: 640px;\n}\n}\n.modal-close {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n  background: none;\n  height: 40px;\n  position: fixed;\n  right: 20px;\n  top: 20px;\n  width: 40px;\n}\n.modal-close:before, .modal-close:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.modal-close:before {\n    height: 2px;\n    width: 50%;\n}\n.modal-close:after {\n    height: 50%;\n    width: 2px;\n}\n.modal-close:hover, .modal-close:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.modal-close:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.modal-close.is-small {\n    height: 16px;\n    width: 16px;\n}\n.modal-close.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.modal-close.is-large {\n    height: 32px;\n    width: 32px;\n}\n.modal-card {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  max-height: calc(100vh - 40px);\n  overflow: hidden;\n}\n.modal-card-head,\n.modal-card-foot {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 20px;\n  position: relative;\n}\n.modal-card-head {\n  border-bottom: 1px solid #dbdbdb;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.modal-card-title {\n  color: #363636;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1.5rem;\n  line-height: 1;\n}\n.modal-card-foot {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n  border-top: 1px solid #dbdbdb;\n}\n.modal-card-foot .button:not(:last-child) {\n    margin-right: 10px;\n}\n.modal-card-body {\n  -webkit-overflow-scrolling: touch;\n  background-color: white;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  overflow: auto;\n  padding: 20px;\n}\n.modal {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: none;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  overflow: hidden;\n  position: fixed;\n  z-index: 20;\n}\n.modal.is-active {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.nav-toggle {\n  cursor: pointer;\n  display: block;\n  height: 3.25rem;\n  position: relative;\n  width: 3.25rem;\n}\n.nav-toggle span {\n    background-color: #4a4a4a;\n    display: block;\n    height: 1px;\n    left: 50%;\n    margin-left: -7px;\n    position: absolute;\n    top: 50%;\n    transition: none 86ms ease-out;\n    transition-property: background, left, opacity, -webkit-transform;\n    transition-property: background, left, opacity, transform;\n    transition-property: background, left, opacity, transform, -webkit-transform;\n    width: 15px;\n}\n.nav-toggle span:nth-child(1) {\n      margin-top: -6px;\n}\n.nav-toggle span:nth-child(2) {\n      margin-top: -1px;\n}\n.nav-toggle span:nth-child(3) {\n      margin-top: 4px;\n}\n.nav-toggle:hover {\n    background-color: whitesmoke;\n}\n.nav-toggle.is-active span {\n    background-color: #00d1b2;\n}\n.nav-toggle.is-active span:nth-child(1) {\n      margin-left: -5px;\n      -webkit-transform: rotate(45deg);\n              transform: rotate(45deg);\n      -webkit-transform-origin: left top;\n              transform-origin: left top;\n}\n.nav-toggle.is-active span:nth-child(2) {\n      opacity: 0;\n}\n.nav-toggle.is-active span:nth-child(3) {\n      margin-left: -5px;\n      -webkit-transform: rotate(-45deg);\n              transform: rotate(-45deg);\n      -webkit-transform-origin: left bottom;\n              transform-origin: left bottom;\n}\n@media screen and (min-width: 769px), print {\n.nav-toggle {\n      display: none;\n}\n}\n.nav-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding: 0.5rem 0.75rem;\n}\n.nav-item a {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.nav-item img {\n    max-height: 1.75rem;\n}\n.nav-item .tag:first-child:not(:last-child) {\n    margin-right: 0.5rem;\n}\n.nav-item .tag:last-child:not(:first-child) {\n    margin-left: 0.5rem;\n}\n@media screen and (max-width: 768px) {\n.nav-item {\n      -webkit-box-pack: start;\n          -ms-flex-pack: start;\n              justify-content: flex-start;\n}\n}\n.nav-item a,\na.nav-item {\n  color: #7a7a7a;\n}\n.nav-item a:hover,\n  a.nav-item:hover {\n    color: #363636;\n}\n.nav-item a.is-active,\n  a.nav-item.is-active {\n    color: #363636;\n}\n.nav-item a.is-tab,\n  a.nav-item.is-tab {\n    border-bottom: 1px solid transparent;\n    border-top: 1px solid transparent;\n    padding-bottom: calc(0.75rem - 1px);\n    padding-left: 1rem;\n    padding-right: 1rem;\n    padding-top: calc(0.75rem - 1px);\n}\n.nav-item a.is-tab:hover,\n    a.nav-item.is-tab:hover {\n      border-bottom-color: #00d1b2;\n      border-top-color: transparent;\n}\n.nav-item a.is-tab.is-active,\n    a.nav-item.is-tab.is-active {\n      border-bottom: 3px solid #00d1b2;\n      color: #00d1b2;\n      padding-bottom: calc(0.75rem - 3px);\n}\n@media screen and (min-width: 1000px) {\n.nav-item a.is-brand,\n    a.nav-item.is-brand {\n      padding-left: 0;\n}\n}\n.nav-left,\n.nav-right {\n  -webkit-overflow-scrolling: touch;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  max-width: 100%;\n  overflow: auto;\n}\n@media screen and (min-width: 1192px) {\n.nav-left,\n    .nav-right {\n      -ms-flex-preferred-size: 0;\n          flex-basis: 0;\n}\n}\n.nav-left {\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  white-space: nowrap;\n}\n.nav-right {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.nav-center {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-left: auto;\n  margin-right: auto;\n}\n@media screen and (max-width: 768px) {\n.nav-menu.nav-right {\n    background-color: white;\n    box-shadow: 0 4px 7px rgba(10, 10, 10, 0.1);\n    left: 0;\n    display: none;\n    right: 0;\n    top: 100%;\n    position: absolute;\n}\n.nav-menu.nav-right .nav-item {\n      border-top: 1px solid rgba(219, 219, 219, 0.5);\n      padding: 0.75rem;\n}\n.nav-menu.nav-right.is-active {\n      display: block;\n}\n}\n.nav {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 3.25rem;\n  position: relative;\n  text-align: center;\n  z-index: 10;\n}\n.nav > .container {\n    -webkit-box-align: stretch;\n        -ms-flex-align: stretch;\n            align-items: stretch;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    min-height: 3.25rem;\n    width: 100%;\n}\n.nav.has-shadow {\n    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);\n}\n.pagination {\n  font-size: 1rem;\n  margin: -0.25rem;\n}\n.pagination.is-small {\n    font-size: 0.75rem;\n}\n.pagination.is-medium {\n    font-size: 1.25rem;\n}\n.pagination.is-large {\n    font-size: 1.5rem;\n}\n.pagination,\n.pagination-list {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  text-align: center;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link,\n.pagination-ellipsis {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  font-size: 1em;\n  padding-left: 0.5em;\n  padding-right: 0.5em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin: 0.25rem;\n  text-align: center;\n}\n.pagination-previous:focus, .pagination-previous.is-focused, .pagination-previous:active, .pagination-previous.is-active,\n  .pagination-next:focus,\n  .pagination-next.is-focused,\n  .pagination-next:active,\n  .pagination-next.is-active,\n  .pagination-link:focus,\n  .pagination-link.is-focused,\n  .pagination-link:active,\n  .pagination-link.is-active,\n  .pagination-ellipsis:focus,\n  .pagination-ellipsis.is-focused,\n  .pagination-ellipsis:active,\n  .pagination-ellipsis.is-active {\n    outline: none;\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled],\n  .pagination-ellipsis[disabled] {\n    cursor: not-allowed;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link {\n  border-color: #dbdbdb;\n  min-width: 2.25em;\n}\n.pagination-previous:hover,\n  .pagination-next:hover,\n  .pagination-link:hover {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.pagination-previous:focus,\n  .pagination-next:focus,\n  .pagination-link:focus {\n    border-color: #00d1b2;\n}\n.pagination-previous:active,\n  .pagination-next:active,\n  .pagination-link:active {\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled] {\n    background-color: #dbdbdb;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    color: #7a7a7a;\n    opacity: 0.5;\n}\n.pagination-previous,\n.pagination-next {\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  white-space: nowrap;\n}\n.pagination-link.is-current {\n  background-color: #00d1b2;\n  border-color: #00d1b2;\n  color: #fff;\n}\n.pagination-ellipsis {\n  color: #b5b5b5;\n  pointer-events: none;\n}\n.pagination-list {\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n}\n@media screen and (max-width: 768px) {\n.pagination {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.pagination-previous,\n  .pagination-next {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.pagination-list li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n}\n@media screen and (min-width: 769px), print {\n.pagination-list {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n}\n.pagination-previous {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.pagination-next {\n    -webkit-box-ordinal-group: 4;\n        -ms-flex-order: 3;\n            order: 3;\n}\n.pagination {\n    -webkit-box-pack: justify;\n        -ms-flex-pack: justify;\n            justify-content: space-between;\n}\n.pagination.is-centered .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-centered .pagination-list {\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-centered .pagination-next {\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n.pagination.is-right .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-right .pagination-next {\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-right .pagination-list {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n}\n.panel {\n  font-size: 1rem;\n}\n.panel:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.panel-heading,\n.panel-tabs,\n.panel-block {\n  border-bottom: 1px solid #dbdbdb;\n  border-left: 1px solid #dbdbdb;\n  border-right: 1px solid #dbdbdb;\n}\n.panel-heading:first-child,\n  .panel-tabs:first-child,\n  .panel-block:first-child {\n    border-top: 1px solid #dbdbdb;\n}\n.panel-heading {\n  background-color: whitesmoke;\n  border-radius: 3px 3px 0 0;\n  color: #363636;\n  font-size: 1.25em;\n  font-weight: 300;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n}\n.panel-tabs {\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 0.875em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.panel-tabs a {\n    border-bottom: 1px solid #dbdbdb;\n    margin-bottom: -1px;\n    padding: 0.5em;\n}\n.panel-tabs a.is-active {\n      border-bottom-color: #4a4a4a;\n      color: #363636;\n}\n.panel-list a {\n  color: #4a4a4a;\n}\n.panel-list a:hover {\n    color: #00d1b2;\n}\n.panel-block {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 0.5em 0.75em;\n}\n.panel-block input[type=\"checkbox\"] {\n    margin-right: 0.75em;\n}\n.panel-block > .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    width: 100%;\n}\n.panel-block.is-wrapped {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.panel-block.is-active {\n    border-left-color: #00d1b2;\n    color: #363636;\n}\n.panel-block.is-active .panel-icon {\n      color: #00d1b2;\n}\na.panel-block,\nlabel.panel-block {\n  cursor: pointer;\n}\na.panel-block:hover,\n  label.panel-block:hover {\n    background-color: whitesmoke;\n}\n.panel-icon {\n  display: inline-block;\n  font-size: 14px;\n  height: 1em;\n  line-height: 1em;\n  text-align: center;\n  vertical-align: top;\n  width: 1em;\n  color: #7a7a7a;\n  margin-right: 0.75em;\n}\n.panel-icon .fa {\n    font-size: inherit;\n    line-height: inherit;\n}\n.tabs {\n  -webkit-overflow-scrolling: touch;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 1rem;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  overflow: hidden;\n  overflow-x: auto;\n  white-space: nowrap;\n}\n.tabs:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.tabs a {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    color: #4a4a4a;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    margin-bottom: -1px;\n    padding: 0.5em 1em;\n    vertical-align: top;\n}\n.tabs a:hover {\n      border-bottom-color: #363636;\n      color: #363636;\n}\n.tabs li {\n    display: block;\n}\n.tabs li.is-active a {\n      border-bottom-color: #00d1b2;\n      color: #00d1b2;\n}\n.tabs ul {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n}\n.tabs ul.is-left {\n      padding-right: 0.75em;\n}\n.tabs ul.is-center {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      padding-left: 0.75em;\n      padding-right: 0.75em;\n}\n.tabs ul.is-right {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      padding-left: 0.75em;\n}\n.tabs .icon:first-child {\n    margin-right: 0.5em;\n}\n.tabs .icon:last-child {\n    margin-left: 0.5em;\n}\n.tabs.is-centered ul {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.tabs.is-right ul {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.tabs.is-boxed a {\n    border: 1px solid transparent;\n    border-radius: 3px 3px 0 0;\n}\n.tabs.is-boxed a:hover {\n      background-color: whitesmoke;\n      border-bottom-color: #dbdbdb;\n}\n.tabs.is-boxed li.is-active a {\n    background-color: white;\n    border-color: #dbdbdb;\n    border-bottom-color: transparent !important;\n}\n.tabs.is-fullwidth li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.tabs.is-toggle a {\n    border: 1px solid #dbdbdb;\n    margin-bottom: 0;\n    position: relative;\n}\n.tabs.is-toggle a:hover {\n      background-color: whitesmoke;\n      border-color: #b5b5b5;\n      z-index: 2;\n}\n.tabs.is-toggle li + li {\n    margin-left: -1px;\n}\n.tabs.is-toggle li:first-child a {\n    border-radius: 3px 0 0 3px;\n}\n.tabs.is-toggle li:last-child a {\n    border-radius: 0 3px 3px 0;\n}\n.tabs.is-toggle li.is-active a {\n    background-color: #00d1b2;\n    border-color: #00d1b2;\n    color: #fff;\n    z-index: 1;\n}\n.tabs.is-toggle ul {\n    border-bottom: none;\n}\n.tabs.is-small {\n    font-size: 0.75rem;\n}\n.tabs.is-medium {\n    font-size: 1.25rem;\n}\n.tabs.is-large {\n    font-size: 1.5rem;\n}\n.column {\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  padding: 0.75rem;\n}\n.columns.is-mobile > .column.is-narrow {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n}\n.columns.is-mobile > .column.is-full {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-three-quarters {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-two-thirds {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.6666%;\n}\n.columns.is-mobile > .column.is-half {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-one-third {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.3333%;\n}\n.columns.is-mobile > .column.is-one-quarter {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-three-quarters {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-offset-two-thirds {\n    margin-left: 66.6666%;\n}\n.columns.is-mobile > .column.is-offset-half {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-offset-one-third {\n    margin-left: 33.3333%;\n}\n.columns.is-mobile > .column.is-offset-one-quarter {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-1 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 8.33333%;\n}\n.columns.is-mobile > .column.is-offset-1 {\n    margin-left: 8.33333%;\n}\n.columns.is-mobile > .column.is-2 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 16.66667%;\n}\n.columns.is-mobile > .column.is-offset-2 {\n    margin-left: 16.66667%;\n}\n.columns.is-mobile > .column.is-3 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-3 {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-4 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.33333%;\n}\n.columns.is-mobile > .column.is-offset-4 {\n    margin-left: 33.33333%;\n}\n.columns.is-mobile > .column.is-5 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 41.66667%;\n}\n.columns.is-mobile > .column.is-offset-5 {\n    margin-left: 41.66667%;\n}\n.columns.is-mobile > .column.is-6 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-offset-6 {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-7 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 58.33333%;\n}\n.columns.is-mobile > .column.is-offset-7 {\n    margin-left: 58.33333%;\n}\n.columns.is-mobile > .column.is-8 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.66667%;\n}\n.columns.is-mobile > .column.is-offset-8 {\n    margin-left: 66.66667%;\n}\n.columns.is-mobile > .column.is-9 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-offset-9 {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-10 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 83.33333%;\n}\n.columns.is-mobile > .column.is-offset-10 {\n    margin-left: 83.33333%;\n}\n.columns.is-mobile > .column.is-11 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 91.66667%;\n}\n.columns.is-mobile > .column.is-offset-11 {\n    margin-left: 91.66667%;\n}\n.columns.is-mobile > .column.is-12 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-offset-12 {\n    margin-left: 100%;\n}\n@media screen and (max-width: 768px) {\n.column.is-narrow-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-mobile {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-mobile {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-mobile {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-mobile {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-mobile {\n      margin-left: 25%;\n}\n.column.is-1-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-mobile {\n      margin-left: 8.33333%;\n}\n.column.is-2-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-mobile {\n      margin-left: 16.66667%;\n}\n.column.is-3-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-mobile {\n      margin-left: 25%;\n}\n.column.is-4-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-mobile {\n      margin-left: 33.33333%;\n}\n.column.is-5-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-mobile {\n      margin-left: 41.66667%;\n}\n.column.is-6-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-mobile {\n      margin-left: 50%;\n}\n.column.is-7-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-mobile {\n      margin-left: 58.33333%;\n}\n.column.is-8-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-mobile {\n      margin-left: 66.66667%;\n}\n.column.is-9-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-mobile {\n      margin-left: 75%;\n}\n.column.is-10-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-mobile {\n      margin-left: 83.33333%;\n}\n.column.is-11-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-mobile {\n      margin-left: 91.66667%;\n}\n.column.is-12-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-mobile {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 769px), print {\n.column.is-narrow, .column.is-narrow-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full, .column.is-full-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters, .column.is-three-quarters-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds, .column.is-two-thirds-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half, .column.is-half-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third, .column.is-one-third-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter, .column.is-one-quarter-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters, .column.is-offset-three-quarters-tablet {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds, .column.is-offset-two-thirds-tablet {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half, .column.is-offset-half-tablet {\n      margin-left: 50%;\n}\n.column.is-offset-one-third, .column.is-offset-one-third-tablet {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter, .column.is-offset-one-quarter-tablet {\n      margin-left: 25%;\n}\n.column.is-1, .column.is-1-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1, .column.is-offset-1-tablet {\n      margin-left: 8.33333%;\n}\n.column.is-2, .column.is-2-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2, .column.is-offset-2-tablet {\n      margin-left: 16.66667%;\n}\n.column.is-3, .column.is-3-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3, .column.is-offset-3-tablet {\n      margin-left: 25%;\n}\n.column.is-4, .column.is-4-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4, .column.is-offset-4-tablet {\n      margin-left: 33.33333%;\n}\n.column.is-5, .column.is-5-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5, .column.is-offset-5-tablet {\n      margin-left: 41.66667%;\n}\n.column.is-6, .column.is-6-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6, .column.is-offset-6-tablet {\n      margin-left: 50%;\n}\n.column.is-7, .column.is-7-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7, .column.is-offset-7-tablet {\n      margin-left: 58.33333%;\n}\n.column.is-8, .column.is-8-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8, .column.is-offset-8-tablet {\n      margin-left: 66.66667%;\n}\n.column.is-9, .column.is-9-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9, .column.is-offset-9-tablet {\n      margin-left: 75%;\n}\n.column.is-10, .column.is-10-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10, .column.is-offset-10-tablet {\n      margin-left: 83.33333%;\n}\n.column.is-11, .column.is-11-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11, .column.is-offset-11-tablet {\n      margin-left: 91.66667%;\n}\n.column.is-12, .column.is-12-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12, .column.is-offset-12-tablet {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1000px) {\n.column.is-narrow-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-desktop {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-desktop {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-desktop {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-desktop {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-desktop {\n      margin-left: 25%;\n}\n.column.is-1-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-desktop {\n      margin-left: 8.33333%;\n}\n.column.is-2-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-desktop {\n      margin-left: 16.66667%;\n}\n.column.is-3-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-desktop {\n      margin-left: 25%;\n}\n.column.is-4-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-desktop {\n      margin-left: 33.33333%;\n}\n.column.is-5-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-desktop {\n      margin-left: 41.66667%;\n}\n.column.is-6-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-desktop {\n      margin-left: 50%;\n}\n.column.is-7-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-desktop {\n      margin-left: 58.33333%;\n}\n.column.is-8-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-desktop {\n      margin-left: 66.66667%;\n}\n.column.is-9-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-desktop {\n      margin-left: 75%;\n}\n.column.is-10-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-desktop {\n      margin-left: 83.33333%;\n}\n.column.is-11-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-desktop {\n      margin-left: 91.66667%;\n}\n.column.is-12-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-desktop {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1192px) {\n.column.is-narrow-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-widescreen {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-widescreen {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-widescreen {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-widescreen {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-widescreen {\n      margin-left: 25%;\n}\n.column.is-1-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-widescreen {\n      margin-left: 8.33333%;\n}\n.column.is-2-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-widescreen {\n      margin-left: 16.66667%;\n}\n.column.is-3-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-widescreen {\n      margin-left: 25%;\n}\n.column.is-4-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-widescreen {\n      margin-left: 33.33333%;\n}\n.column.is-5-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-widescreen {\n      margin-left: 41.66667%;\n}\n.column.is-6-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-widescreen {\n      margin-left: 50%;\n}\n.column.is-7-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-widescreen {\n      margin-left: 58.33333%;\n}\n.column.is-8-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-widescreen {\n      margin-left: 66.66667%;\n}\n.column.is-9-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-widescreen {\n      margin-left: 75%;\n}\n.column.is-10-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-widescreen {\n      margin-left: 83.33333%;\n}\n.column.is-11-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-widescreen {\n      margin-left: 91.66667%;\n}\n.column.is-12-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-widescreen {\n      margin-left: 100%;\n}\n}\n.columns {\n  margin-left: -0.75rem;\n  margin-right: -0.75rem;\n  margin-top: -0.75rem;\n}\n.columns:last-child {\n    margin-bottom: -0.75rem;\n}\n.columns:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.columns.is-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.columns.is-gapless {\n    margin-left: 0;\n    margin-right: 0;\n    margin-top: 0;\n}\n.columns.is-gapless:last-child {\n      margin-bottom: 0;\n}\n.columns.is-gapless:not(:last-child) {\n      margin-bottom: 1.5rem;\n}\n.columns.is-gapless > .column {\n      margin: 0;\n      padding: 0;\n}\n@media screen and (min-width: 769px), print {\n.columns.is-grid {\n      -ms-flex-wrap: wrap;\n          flex-wrap: wrap;\n}\n.columns.is-grid > .column {\n        max-width: 33.3333%;\n        padding: 0.75rem;\n        width: 33.3333%;\n}\n.columns.is-grid > .column + .column {\n          margin-left: 0;\n}\n}\n.columns.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.columns.is-multiline {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.columns.is-vcentered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n@media screen and (min-width: 769px), print {\n.columns:not(.is-desktop) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n@media screen and (min-width: 1000px) {\n.columns.is-desktop {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.tile {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  min-height: -webkit-min-content;\n  min-height: -moz-min-content;\n  min-height: min-content;\n}\n.tile.is-ancestor {\n    margin-left: -0.75rem;\n    margin-right: -0.75rem;\n    margin-top: -0.75rem;\n}\n.tile.is-ancestor:last-child {\n      margin-bottom: -0.75rem;\n}\n.tile.is-ancestor:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n.tile.is-child {\n    margin: 0 !important;\n}\n.tile.is-parent {\n    padding: 0.75rem;\n}\n.tile.is-vertical {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n}\n.tile.is-vertical > .tile.is-child:not(:last-child) {\n      margin-bottom: 1.5rem !important;\n}\n@media screen and (min-width: 769px), print {\n.tile:not(.is-child) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.tile.is-1 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.tile.is-2 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.tile.is-3 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.tile.is-4 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.tile.is-5 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.tile.is-6 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.tile.is-7 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.tile.is-8 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.tile.is-9 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.tile.is-10 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.tile.is-11 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.tile.is-12 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n}\n.hero-video {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  overflow: hidden;\n}\n.hero-video video {\n    left: 50%;\n    min-height: 100%;\n    min-width: 100%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translate3d(-50%, -50%, 0);\n            transform: translate3d(-50%, -50%, 0);\n}\n.hero-video.is-transparent {\n    opacity: 0.3;\n}\n@media screen and (max-width: 768px) {\n.hero-video {\n      display: none;\n}\n}\n.hero-buttons {\n  margin-top: 1.5rem;\n}\n@media screen and (max-width: 768px) {\n.hero-buttons .button {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-bottom: 0.75rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero-buttons {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-right: 1.5rem;\n}\n}\n.hero-head,\n.hero-foot {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.hero-body {\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1192px) {\n.hero-body {\n      padding-left: 0;\n      padding-right: 0;\n}\n}\n.hero {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.hero .nav {\n    background: none;\n    box-shadow: 0 1px 0 rgba(219, 219, 219, 0.3);\n}\n.hero .tabs ul {\n    border-bottom: none;\n}\n.hero.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.hero.is-white a:not(.button),\n    .hero.is-white strong {\n      color: inherit;\n}\n.hero.is-white .title {\n      color: #0a0a0a;\n}\n.hero.is-white .subtitle {\n      color: rgba(10, 10, 10, 0.9);\n}\n.hero.is-white .subtitle a:not(.button),\n      .hero.is-white .subtitle strong {\n        color: #0a0a0a;\n}\n.hero.is-white .nav {\n      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-menu {\n        background-color: white;\n}\n}\n.hero.is-white a.nav-item,\n    .hero.is-white .nav-item a:not(.button) {\n      color: rgba(10, 10, 10, 0.7);\n}\n.hero.is-white a.nav-item:hover, .hero.is-white a.nav-item.is-active,\n      .hero.is-white .nav-item a:not(.button):hover,\n      .hero.is-white .nav-item a:not(.button).is-active {\n        color: #0a0a0a;\n}\n.hero.is-white .tabs a {\n      color: #0a0a0a;\n      opacity: 0.9;\n}\n.hero.is-white .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-white .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-white .tabs.is-boxed a, .hero.is-white .tabs.is-toggle a {\n      color: #0a0a0a;\n}\n.hero.is-white .tabs.is-boxed a:hover, .hero.is-white .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .tabs.is-boxed li.is-active a, .hero.is-white .tabs.is-boxed li.is-active a:hover, .hero.is-white .tabs.is-toggle li.is-active a, .hero.is-white .tabs.is-toggle li.is-active a:hover {\n      background-color: #0a0a0a;\n      border-color: #0a0a0a;\n      color: white;\n}\n.hero.is-white.is-bold {\n      background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-toggle span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .nav-toggle.is-active span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-menu .nav-item {\n        border-top-color: rgba(10, 10, 10, 0.2);\n}\n}\n.hero.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.hero.is-black a:not(.button),\n    .hero.is-black strong {\n      color: inherit;\n}\n.hero.is-black .title {\n      color: white;\n}\n.hero.is-black .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-black .subtitle a:not(.button),\n      .hero.is-black .subtitle strong {\n        color: white;\n}\n.hero.is-black .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-menu {\n        background-color: #0a0a0a;\n}\n}\n.hero.is-black a.nav-item,\n    .hero.is-black .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-black a.nav-item:hover, .hero.is-black a.nav-item.is-active,\n      .hero.is-black .nav-item a:not(.button):hover,\n      .hero.is-black .nav-item a:not(.button).is-active {\n        color: white;\n}\n.hero.is-black .tabs a {\n      color: white;\n      opacity: 0.9;\n}\n.hero.is-black .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-black .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-black .tabs.is-boxed a, .hero.is-black .tabs.is-toggle a {\n      color: white;\n}\n.hero.is-black .tabs.is-boxed a:hover, .hero.is-black .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .tabs.is-boxed li.is-active a, .hero.is-black .tabs.is-boxed li.is-active a:hover, .hero.is-black .tabs.is-toggle li.is-active a, .hero.is-black .tabs.is-toggle li.is-active a:hover {\n      background-color: white;\n      border-color: white;\n      color: #0a0a0a;\n}\n.hero.is-black.is-bold {\n      background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-toggle span {\n        background-color: white;\n}\n.hero.is-black .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .nav-toggle.is-active span {\n        background-color: white;\n}\n.hero.is-black .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.hero.is-light a:not(.button),\n    .hero.is-light strong {\n      color: inherit;\n}\n.hero.is-light .title {\n      color: #363636;\n}\n.hero.is-light .subtitle {\n      color: rgba(54, 54, 54, 0.9);\n}\n.hero.is-light .subtitle a:not(.button),\n      .hero.is-light .subtitle strong {\n        color: #363636;\n}\n.hero.is-light .nav {\n      box-shadow: 0 1px 0 rgba(54, 54, 54, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-menu {\n        background-color: whitesmoke;\n}\n}\n.hero.is-light a.nav-item,\n    .hero.is-light .nav-item a:not(.button) {\n      color: rgba(54, 54, 54, 0.7);\n}\n.hero.is-light a.nav-item:hover, .hero.is-light a.nav-item.is-active,\n      .hero.is-light .nav-item a:not(.button):hover,\n      .hero.is-light .nav-item a:not(.button).is-active {\n        color: #363636;\n}\n.hero.is-light .tabs a {\n      color: #363636;\n      opacity: 0.9;\n}\n.hero.is-light .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-light .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-light .tabs.is-boxed a, .hero.is-light .tabs.is-toggle a {\n      color: #363636;\n}\n.hero.is-light .tabs.is-boxed a:hover, .hero.is-light .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .tabs.is-boxed li.is-active a, .hero.is-light .tabs.is-boxed li.is-active a:hover, .hero.is-light .tabs.is-toggle li.is-active a, .hero.is-light .tabs.is-toggle li.is-active a:hover {\n      background-color: #363636;\n      border-color: #363636;\n      color: whitesmoke;\n}\n.hero.is-light.is-bold {\n      background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-toggle span {\n        background-color: #363636;\n}\n.hero.is-light .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .nav-toggle.is-active span {\n        background-color: #363636;\n}\n.hero.is-light .nav-menu .nav-item {\n        border-top-color: rgba(54, 54, 54, 0.2);\n}\n}\n.hero.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.hero.is-dark a:not(.button),\n    .hero.is-dark strong {\n      color: inherit;\n}\n.hero.is-dark .title {\n      color: whitesmoke;\n}\n.hero.is-dark .subtitle {\n      color: rgba(245, 245, 245, 0.9);\n}\n.hero.is-dark .subtitle a:not(.button),\n      .hero.is-dark .subtitle strong {\n        color: whitesmoke;\n}\n.hero.is-dark .nav {\n      box-shadow: 0 1px 0 rgba(245, 245, 245, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-menu {\n        background-color: #363636;\n}\n}\n.hero.is-dark a.nav-item,\n    .hero.is-dark .nav-item a:not(.button) {\n      color: rgba(245, 245, 245, 0.7);\n}\n.hero.is-dark a.nav-item:hover, .hero.is-dark a.nav-item.is-active,\n      .hero.is-dark .nav-item a:not(.button):hover,\n      .hero.is-dark .nav-item a:not(.button).is-active {\n        color: whitesmoke;\n}\n.hero.is-dark .tabs a {\n      color: whitesmoke;\n      opacity: 0.9;\n}\n.hero.is-dark .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-dark .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-dark .tabs.is-boxed a, .hero.is-dark .tabs.is-toggle a {\n      color: whitesmoke;\n}\n.hero.is-dark .tabs.is-boxed a:hover, .hero.is-dark .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .tabs.is-boxed li.is-active a, .hero.is-dark .tabs.is-boxed li.is-active a:hover, .hero.is-dark .tabs.is-toggle li.is-active a, .hero.is-dark .tabs.is-toggle li.is-active a:hover {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      color: #363636;\n}\n.hero.is-dark.is-bold {\n      background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-toggle span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .nav-toggle.is-active span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-menu .nav-item {\n        border-top-color: rgba(245, 245, 245, 0.2);\n}\n}\n.hero.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.hero.is-primary a:not(.button),\n    .hero.is-primary strong {\n      color: inherit;\n}\n.hero.is-primary .title {\n      color: #fff;\n}\n.hero.is-primary .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-primary .subtitle a:not(.button),\n      .hero.is-primary .subtitle strong {\n        color: #fff;\n}\n.hero.is-primary .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-menu {\n        background-color: #00d1b2;\n}\n}\n.hero.is-primary a.nav-item,\n    .hero.is-primary .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-primary a.nav-item:hover, .hero.is-primary a.nav-item.is-active,\n      .hero.is-primary .nav-item a:not(.button):hover,\n      .hero.is-primary .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-primary .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-primary .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-primary .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-primary .tabs.is-boxed a, .hero.is-primary .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-primary .tabs.is-boxed a:hover, .hero.is-primary .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .tabs.is-boxed li.is-active a, .hero.is-primary .tabs.is-boxed li.is-active a:hover, .hero.is-primary .tabs.is-toggle li.is-active a, .hero.is-primary .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #00d1b2;\n}\n.hero.is-primary.is-bold {\n      background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.hero.is-info a:not(.button),\n    .hero.is-info strong {\n      color: inherit;\n}\n.hero.is-info .title {\n      color: #fff;\n}\n.hero.is-info .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-info .subtitle a:not(.button),\n      .hero.is-info .subtitle strong {\n        color: #fff;\n}\n.hero.is-info .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-menu {\n        background-color: #3273dc;\n}\n}\n.hero.is-info a.nav-item,\n    .hero.is-info .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-info a.nav-item:hover, .hero.is-info a.nav-item.is-active,\n      .hero.is-info .nav-item a:not(.button):hover,\n      .hero.is-info .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-info .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-info .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-info .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-info .tabs.is-boxed a, .hero.is-info .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-info .tabs.is-boxed a:hover, .hero.is-info .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .tabs.is-boxed li.is-active a, .hero.is-info .tabs.is-boxed li.is-active a:hover, .hero.is-info .tabs.is-toggle li.is-active a, .hero.is-info .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #3273dc;\n}\n.hero.is-info.is-bold {\n      background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-info .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-info .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.hero.is-success a:not(.button),\n    .hero.is-success strong {\n      color: inherit;\n}\n.hero.is-success .title {\n      color: #fff;\n}\n.hero.is-success .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-success .subtitle a:not(.button),\n      .hero.is-success .subtitle strong {\n        color: #fff;\n}\n.hero.is-success .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-menu {\n        background-color: #23d160;\n}\n}\n.hero.is-success a.nav-item,\n    .hero.is-success .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-success a.nav-item:hover, .hero.is-success a.nav-item.is-active,\n      .hero.is-success .nav-item a:not(.button):hover,\n      .hero.is-success .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-success .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-success .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-success .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-success .tabs.is-boxed a, .hero.is-success .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-success .tabs.is-boxed a:hover, .hero.is-success .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .tabs.is-boxed li.is-active a, .hero.is-success .tabs.is-boxed li.is-active a:hover, .hero.is-success .tabs.is-toggle li.is-active a, .hero.is-success .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #23d160;\n}\n.hero.is-success.is-bold {\n      background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-success .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-success .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a:not(.button),\n    .hero.is-warning strong {\n      color: inherit;\n}\n.hero.is-warning .title {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .subtitle {\n      color: rgba(0, 0, 0, 0.9);\n}\n.hero.is-warning .subtitle a:not(.button),\n      .hero.is-warning .subtitle strong {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav {\n      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-menu {\n        background-color: #ffdd57;\n}\n}\n.hero.is-warning a.nav-item,\n    .hero.is-warning .nav-item a:not(.button) {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a.nav-item:hover, .hero.is-warning a.nav-item.is-active,\n      .hero.is-warning .nav-item a:not(.button):hover,\n      .hero.is-warning .nav-item a:not(.button).is-active {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs a {\n      color: rgba(0, 0, 0, 0.7);\n      opacity: 0.9;\n}\n.hero.is-warning .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-warning .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-warning .tabs.is-boxed a, .hero.is-warning .tabs.is-toggle a {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs.is-boxed a:hover, .hero.is-warning .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .tabs.is-boxed li.is-active a, .hero.is-warning .tabs.is-boxed li.is-active a:hover, .hero.is-warning .tabs.is-toggle li.is-active a, .hero.is-warning .tabs.is-toggle li.is-active a:hover {\n      background-color: rgba(0, 0, 0, 0.7);\n      border-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.hero.is-warning.is-bold {\n      background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-toggle span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .nav-toggle.is-active span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-menu .nav-item {\n        border-top-color: rgba(0, 0, 0, 0.2);\n}\n}\n.hero.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.hero.is-danger a:not(.button),\n    .hero.is-danger strong {\n      color: inherit;\n}\n.hero.is-danger .title {\n      color: #fff;\n}\n.hero.is-danger .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-danger .subtitle a:not(.button),\n      .hero.is-danger .subtitle strong {\n        color: #fff;\n}\n.hero.is-danger .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-menu {\n        background-color: #ff3860;\n}\n}\n.hero.is-danger a.nav-item,\n    .hero.is-danger .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-danger a.nav-item:hover, .hero.is-danger a.nav-item.is-active,\n      .hero.is-danger .nav-item a:not(.button):hover,\n      .hero.is-danger .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-danger .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-danger .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-danger .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-danger .tabs.is-boxed a, .hero.is-danger .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-danger .tabs.is-boxed a:hover, .hero.is-danger .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .tabs.is-boxed li.is-active a, .hero.is-danger .tabs.is-boxed li.is-active a:hover, .hero.is-danger .tabs.is-toggle li.is-active a, .hero.is-danger .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #ff3860;\n}\n.hero.is-danger.is-bold {\n      background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-medium .hero-body {\n      padding-bottom: 9rem;\n      padding-top: 9rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-large .hero-body {\n      padding-bottom: 18rem;\n      padding-top: 18rem;\n}\n}\n.hero.is-fullheight {\n    min-height: 100vh;\n}\n.hero.is-fullheight .hero-body {\n      -webkit-box-align: center;\n          -ms-flex-align: center;\n              align-items: center;\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero.is-fullheight .hero-body > .container {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n        -ms-flex-negative: 1;\n            flex-shrink: 1;\n}\n.section {\n  background-color: white;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1000px) {\n.section.is-medium {\n      padding: 9rem 1.5rem;\n}\n.section.is-large {\n      padding: 18rem 1.5rem;\n}\n}\n.footer {\n  background-color: whitesmoke;\n  padding: 3rem 1.5rem 6rem;\n}\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), inear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em;\n}\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px), linear-gradient(transparent 3px, #fff 3px, #fff 58px, transparent 58px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 3px, transparent 3px, transparent 58px, rgba(25, 70, 91, 0.7) 58px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px;\n}\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n}\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n}\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n}\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768);\n}\n#examCardArea {\n  background-color: #005B88;\n  /*<!--background-color: $main-background-color-gradient-limit;-->*/\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n}\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n}\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/\n}\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/\n}\n", ""]);
+exports.push([module.i, "/*! bulma.io v0.4.2 | MIT License | github.com/jgthms/bulma */\n@-webkit-keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n@keyframes spinAround {\nfrom {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n}\nto {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n}\n}\n\n/*! minireset.css v0.0.2 | MIT License | github.com/jgthms/minireset.css */\nhtml,\nbody,\np,\nol,\nul,\nli,\ndl,\ndt,\ndd,\nblockquote,\nfigure,\nfieldset,\nlegend,\ntextarea,\npre,\niframe,\nhr,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  margin: 0;\n  padding: 0;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-size: 100%;\n  font-weight: normal;\n}\nul {\n  list-style: none;\n}\nbutton,\ninput,\nselect,\ntextarea {\n  margin: 0;\n}\nhtml {\n  box-sizing: border-box;\n}\n* {\n  box-sizing: inherit;\n}\n*:before, *:after {\n    box-sizing: inherit;\n}\nimg,\nembed,\nobject,\naudio,\nvideo {\n  height: auto;\n  max-width: 100%;\n}\niframe {\n  border: 0;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\ntd,\nth {\n  padding: 0;\n  text-align: left;\n}\nhtml {\n  background-color: #fff;\n  font-size: 16px;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  min-width: 300px;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  text-rendering: optimizeLegibility;\n}\narticle,\naside,\nfigure,\nfooter,\nheader,\nhgroup,\nsection {\n  display: block;\n}\nbody,\nbutton,\ninput,\nselect,\ntextarea {\n  font-family: BlinkMacSystemFont, -apple-system, \"Segoe UI\", \"Roboto\", \"Oxygen\", \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", \"Helvetica\", \"Arial\", sans-serif;\n}\ncode,\npre {\n  -moz-osx-font-smoothing: auto;\n  -webkit-font-smoothing: auto;\n  font-family: monospace;\n}\nbody {\n  color: #4a4a4a;\n  font-size: 1rem;\n  font-weight: 400;\n  line-height: 1.5;\n}\na {\n  color: #00d1b2;\n  cursor: pointer;\n  text-decoration: none;\n  transition: none 86ms ease-out;\n}\na:hover {\n    color: #363636;\n}\ncode {\n  background-color: whitesmoke;\n  color: #ff3860;\n  font-size: 0.8em;\n  font-weight: normal;\n  padding: 0.25em 0.5em 0.25em;\n}\nhr {\n  background-color: #dbdbdb;\n  border: none;\n  display: block;\n  height: 1px;\n  margin: 1.5rem 0;\n}\nimg {\n  max-width: 100%;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  vertical-align: baseline;\n}\nsmall {\n  font-size: 0.8em;\n}\nspan {\n  font-style: inherit;\n  font-weight: inherit;\n}\nstrong {\n  color: #363636;\n  font-weight: 700;\n}\npre {\n  background-color: whitesmoke;\n  color: #4a4a4a;\n  font-size: 0.8em;\n  white-space: pre;\n  word-wrap: normal;\n}\npre code {\n    -webkit-overflow-scrolling: touch;\n    background: none;\n    color: inherit;\n    display: block;\n    font-size: 1em;\n    overflow-x: auto;\n    padding: 1.25rem 1.5rem;\n}\ntable {\n  width: 100%;\n}\ntable td,\n  table th {\n    text-align: left;\n    vertical-align: top;\n}\ntable th {\n    color: #363636;\n}\n.is-block {\n  display: block;\n}\n@media screen and (max-width: 768px) {\n.is-block-mobile {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-block-tablet {\n    display: block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-block-tablet-only {\n    display: block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-block-touch {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-block-desktop {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-block-desktop-only {\n    display: block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-block-widescreen {\n    display: block !important;\n}\n}\n.is-flex {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n@media screen and (max-width: 768px) {\n.is-flex-mobile {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-flex-tablet {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-flex-tablet-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-flex-touch {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-flex-desktop {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-flex-desktop-only {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-flex-widescreen {\n    display: -webkit-box !important;\n    display: -ms-flexbox !important;\n    display: flex !important;\n}\n}\n.is-inline {\n  display: inline;\n}\n@media screen and (max-width: 768px) {\n.is-inline-mobile {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-tablet {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-tablet-only {\n    display: inline !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-touch {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-desktop {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-desktop-only {\n    display: inline !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-widescreen {\n    display: inline !important;\n}\n}\n.is-inline-block {\n  display: inline-block;\n}\n@media screen and (max-width: 768px) {\n.is-inline-block-mobile {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-block-tablet {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-block-tablet-only {\n    display: inline-block !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-block-touch {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-block-desktop {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-block-desktop-only {\n    display: inline-block !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-block-widescreen {\n    display: inline-block !important;\n}\n}\n.is-inline-flex {\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n}\n@media screen and (max-width: 768px) {\n.is-inline-flex-mobile {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-inline-flex-tablet {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-inline-flex-tablet-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-inline-flex-touch {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-inline-flex-desktop {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-inline-flex-desktop-only {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-inline-flex-widescreen {\n    display: -webkit-inline-box !important;\n    display: -ms-inline-flexbox !important;\n    display: inline-flex !important;\n}\n}\n.is-clearfix:after {\n  clear: both;\n  content: \" \";\n  display: table;\n}\n.is-pulled-left {\n  float: left;\n}\n.is-pulled-right {\n  float: right;\n}\n.is-clipped {\n  overflow: hidden !important;\n}\n.is-overlay {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n.has-text-centered {\n  text-align: center;\n}\n.has-text-left {\n  text-align: left;\n}\n.has-text-right {\n  text-align: right;\n}\n.has-text-white {\n  color: white;\n}\na.has-text-white:hover, a.has-text-white:focus {\n  color: #e6e6e6;\n}\n.has-text-black {\n  color: #0a0a0a;\n}\na.has-text-black:hover, a.has-text-black:focus {\n  color: black;\n}\n.has-text-light {\n  color: whitesmoke;\n}\na.has-text-light:hover, a.has-text-light:focus {\n  color: #dbdbdb;\n}\n.has-text-dark {\n  color: #363636;\n}\na.has-text-dark:hover, a.has-text-dark:focus {\n  color: #1c1c1c;\n}\n.has-text-primary {\n  color: #00d1b2;\n}\na.has-text-primary:hover, a.has-text-primary:focus {\n  color: #009e86;\n}\n.has-text-info {\n  color: #3273dc;\n}\na.has-text-info:hover, a.has-text-info:focus {\n  color: #205bbc;\n}\n.has-text-success {\n  color: #23d160;\n}\na.has-text-success:hover, a.has-text-success:focus {\n  color: #1ca64c;\n}\n.has-text-warning {\n  color: #ffdd57;\n}\na.has-text-warning:hover, a.has-text-warning:focus {\n  color: #ffd324;\n}\n.has-text-danger {\n  color: #ff3860;\n}\na.has-text-danger:hover, a.has-text-danger:focus {\n  color: #ff0537;\n}\n.is-hidden {\n  display: none !important;\n}\n@media screen and (max-width: 768px) {\n.is-hidden-mobile {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px), print {\n.is-hidden-tablet {\n    display: none !important;\n}\n}\n@media screen and (min-width: 769px) and (max-width: 999px) {\n.is-hidden-tablet-only {\n    display: none !important;\n}\n}\n@media screen and (max-width: 999px) {\n.is-hidden-touch {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) {\n.is-hidden-desktop {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1000px) and (max-width: 1191px) {\n.is-hidden-desktop-only {\n    display: none !important;\n}\n}\n@media screen and (min-width: 1192px) {\n.is-hidden-widescreen {\n    display: none !important;\n}\n}\n.is-marginless {\n  margin: 0 !important;\n}\n.is-paddingless {\n  padding: 0 !important;\n}\n.is-unselectable {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.box {\n  background-color: white;\n  border-radius: 5px;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  display: block;\n  padding: 1.25rem;\n}\n.box:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\na.box:hover, a.box:focus {\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px #00d1b2;\n}\na.box:active {\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2), 0 0 0 1px #00d1b2;\n}\n.button {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  cursor: pointer;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  text-align: center;\n  white-space: nowrap;\n}\n.button:focus, .button.is-focused, .button:active, .button.is-active {\n    outline: none;\n}\n.button[disabled] {\n    cursor: not-allowed;\n}\n.button strong {\n    color: inherit;\n}\n.button .icon, .button .icon.is-small, .button .icon.is-medium, .button .icon.is-large {\n    height: 1.5em;\n    width: 1.5em;\n}\n.button .icon:first-child:not(:last-child) {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: 0.1875em;\n}\n.button .icon:last-child:not(:first-child) {\n    margin-left: 0.1875em;\n    margin-right: calc(-0.375em - 1px);\n}\n.button .icon:first-child:last-child {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: calc(-0.375em - 1px);\n}\n.button:hover, .button.is-hovered {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.button:focus, .button.is-focused {\n    border-color: #00d1b2;\n    box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n    color: #363636;\n}\n.button:active, .button.is-active {\n    border-color: #4a4a4a;\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n    color: #363636;\n}\n.button.is-link {\n    background-color: transparent;\n    border-color: transparent;\n    color: #4a4a4a;\n    text-decoration: underline;\n}\n.button.is-link:hover, .button.is-link.is-hovered, .button.is-link:focus, .button.is-link.is-focused, .button.is-link:active, .button.is-link.is-active {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-link[disabled] {\n      background-color: transparent;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white {\n    background-color: white;\n    border-color: transparent;\n    color: #0a0a0a;\n}\n.button.is-white:hover, .button.is-white.is-hovered {\n      background-color: #f9f9f9;\n      border-color: transparent;\n      color: #0a0a0a;\n}\n.button.is-white:focus, .button.is-white.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 255, 255, 0.25);\n      color: #0a0a0a;\n}\n.button.is-white:active, .button.is-white.is-active {\n      background-color: #f2f2f2;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #0a0a0a;\n}\n.button.is-white[disabled] {\n      background-color: white;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-white.is-inverted {\n      background-color: #0a0a0a;\n      color: white;\n}\n.button.is-white.is-inverted:hover {\n        background-color: black;\n}\n.button.is-white.is-inverted[disabled] {\n        background-color: #0a0a0a;\n        border-color: transparent;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-loading:after {\n      border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-white.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-white.is-outlined:hover, .button.is-white.is-outlined:focus {\n        background-color: white;\n        border-color: white;\n        color: #0a0a0a;\n}\n.button.is-white.is-outlined.is-loading:after {\n        border-color: transparent transparent white white !important;\n}\n.button.is-white.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-white.is-inverted.is-outlined:hover, .button.is-white.is-inverted.is-outlined:focus {\n        background-color: #0a0a0a;\n        color: white;\n}\n.button.is-white.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black {\n    background-color: #0a0a0a;\n    border-color: transparent;\n    color: white;\n}\n.button.is-black:hover, .button.is-black.is-hovered {\n      background-color: #040404;\n      border-color: transparent;\n      color: white;\n}\n.button.is-black:focus, .button.is-black.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(10, 10, 10, 0.25);\n      color: white;\n}\n.button.is-black:active, .button.is-black.is-active {\n      background-color: black;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: white;\n}\n.button.is-black[disabled] {\n      background-color: #0a0a0a;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-black.is-inverted {\n      background-color: white;\n      color: #0a0a0a;\n}\n.button.is-black.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-black.is-inverted[disabled] {\n        background-color: white;\n        border-color: transparent;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-loading:after {\n      border-color: transparent transparent white white !important;\n}\n.button.is-black.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a;\n}\n.button.is-black.is-outlined:hover, .button.is-black.is-outlined:focus {\n        background-color: #0a0a0a;\n        border-color: #0a0a0a;\n        color: white;\n}\n.button.is-black.is-outlined.is-loading:after {\n        border-color: transparent transparent #0a0a0a #0a0a0a !important;\n}\n.button.is-black.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white;\n}\n.button.is-black.is-inverted.is-outlined:hover, .button.is-black.is-inverted.is-outlined:focus {\n        background-color: white;\n        color: #0a0a0a;\n}\n.button.is-black.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white;\n}\n.button.is-light {\n    background-color: whitesmoke;\n    border-color: transparent;\n    color: #363636;\n}\n.button.is-light:hover, .button.is-light.is-hovered {\n      background-color: #eeeeee;\n      border-color: transparent;\n      color: #363636;\n}\n.button.is-light:focus, .button.is-light.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(245, 245, 245, 0.25);\n      color: #363636;\n}\n.button.is-light:active, .button.is-light.is-active {\n      background-color: #e8e8e8;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #363636;\n}\n.button.is-light[disabled] {\n      background-color: whitesmoke;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-light.is-inverted {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.button.is-light.is-inverted:hover {\n        background-color: #292929;\n}\n.button.is-light.is-inverted[disabled] {\n        background-color: #363636;\n        border-color: transparent;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-loading:after {\n      border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-light.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-light.is-outlined:hover, .button.is-light.is-outlined:focus {\n        background-color: whitesmoke;\n        border-color: whitesmoke;\n        color: #363636;\n}\n.button.is-light.is-outlined.is-loading:after {\n        border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-light.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-light.is-inverted.is-outlined:hover, .button.is-light.is-inverted.is-outlined:focus {\n        background-color: #363636;\n        color: whitesmoke;\n}\n.button.is-light.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark {\n    background-color: #363636;\n    border-color: transparent;\n    color: whitesmoke;\n}\n.button.is-dark:hover, .button.is-dark.is-hovered {\n      background-color: #2f2f2f;\n      border-color: transparent;\n      color: whitesmoke;\n}\n.button.is-dark:focus, .button.is-dark.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(54, 54, 54, 0.25);\n      color: whitesmoke;\n}\n.button.is-dark:active, .button.is-dark.is-active {\n      background-color: #292929;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: whitesmoke;\n}\n.button.is-dark[disabled] {\n      background-color: #363636;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-dark.is-inverted {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.button.is-dark.is-inverted:hover {\n        background-color: #e8e8e8;\n}\n.button.is-dark.is-inverted[disabled] {\n        background-color: whitesmoke;\n        border-color: transparent;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-loading:after {\n      border-color: transparent transparent whitesmoke whitesmoke !important;\n}\n.button.is-dark.is-outlined {\n      background-color: transparent;\n      border-color: #363636;\n      color: #363636;\n}\n.button.is-dark.is-outlined:hover, .button.is-dark.is-outlined:focus {\n        background-color: #363636;\n        border-color: #363636;\n        color: whitesmoke;\n}\n.button.is-dark.is-outlined.is-loading:after {\n        border-color: transparent transparent #363636 #363636 !important;\n}\n.button.is-dark.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #363636;\n        box-shadow: none;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: whitesmoke;\n      color: whitesmoke;\n}\n.button.is-dark.is-inverted.is-outlined:hover, .button.is-dark.is-inverted.is-outlined:focus {\n        background-color: whitesmoke;\n        color: #363636;\n}\n.button.is-dark.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: whitesmoke;\n        box-shadow: none;\n        color: whitesmoke;\n}\n.button.is-primary {\n    background-color: #00d1b2;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-primary:hover, .button.is-primary.is-hovered {\n      background-color: #00c4a7;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-primary:focus, .button.is-primary.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(0, 209, 178, 0.25);\n      color: #fff;\n}\n.button.is-primary:active, .button.is-primary.is-active {\n      background-color: #00b89c;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-primary[disabled] {\n      background-color: #00d1b2;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-primary.is-inverted {\n      background-color: #fff;\n      color: #00d1b2;\n}\n.button.is-primary.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-primary.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-primary.is-outlined {\n      background-color: transparent;\n      border-color: #00d1b2;\n      color: #00d1b2;\n}\n.button.is-primary.is-outlined:hover, .button.is-primary.is-outlined:focus {\n        background-color: #00d1b2;\n        border-color: #00d1b2;\n        color: #fff;\n}\n.button.is-primary.is-outlined.is-loading:after {\n        border-color: transparent transparent #00d1b2 #00d1b2 !important;\n}\n.button.is-primary.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #00d1b2;\n        box-shadow: none;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-primary.is-inverted.is-outlined:hover, .button.is-primary.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #00d1b2;\n}\n.button.is-primary.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-info {\n    background-color: #3273dc;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-info:hover, .button.is-info.is-hovered {\n      background-color: #276cda;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-info:focus, .button.is-info.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(50, 115, 220, 0.25);\n      color: #fff;\n}\n.button.is-info:active, .button.is-info.is-active {\n      background-color: #2366d1;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-info[disabled] {\n      background-color: #3273dc;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-info.is-inverted {\n      background-color: #fff;\n      color: #3273dc;\n}\n.button.is-info.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-info.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-info.is-outlined {\n      background-color: transparent;\n      border-color: #3273dc;\n      color: #3273dc;\n}\n.button.is-info.is-outlined:hover, .button.is-info.is-outlined:focus {\n        background-color: #3273dc;\n        border-color: #3273dc;\n        color: #fff;\n}\n.button.is-info.is-outlined.is-loading:after {\n        border-color: transparent transparent #3273dc #3273dc !important;\n}\n.button.is-info.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #3273dc;\n        box-shadow: none;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-info.is-inverted.is-outlined:hover, .button.is-info.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #3273dc;\n}\n.button.is-info.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-success {\n    background-color: #23d160;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-success:hover, .button.is-success.is-hovered {\n      background-color: #22c65b;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-success:focus, .button.is-success.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(35, 209, 96, 0.25);\n      color: #fff;\n}\n.button.is-success:active, .button.is-success.is-active {\n      background-color: #20bc56;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-success[disabled] {\n      background-color: #23d160;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-success.is-inverted {\n      background-color: #fff;\n      color: #23d160;\n}\n.button.is-success.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-success.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-success.is-outlined {\n      background-color: transparent;\n      border-color: #23d160;\n      color: #23d160;\n}\n.button.is-success.is-outlined:hover, .button.is-success.is-outlined:focus {\n        background-color: #23d160;\n        border-color: #23d160;\n        color: #fff;\n}\n.button.is-success.is-outlined.is-loading:after {\n        border-color: transparent transparent #23d160 #23d160 !important;\n}\n.button.is-success.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #23d160;\n        box-shadow: none;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-success.is-inverted.is-outlined:hover, .button.is-success.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #23d160;\n}\n.button.is-success.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-warning {\n    background-color: #ffdd57;\n    border-color: transparent;\n    color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:hover, .button.is-warning.is-hovered {\n      background-color: #ffdb4a;\n      border-color: transparent;\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:focus, .button.is-warning.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 221, 87, 0.25);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning:active, .button.is-warning.is-active {\n      background-color: #ffd83d;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning[disabled] {\n      background-color: #ffdd57;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-warning.is-inverted {\n      background-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.button.is-warning.is-inverted:hover {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted[disabled] {\n        background-color: rgba(0, 0, 0, 0.7);\n        border-color: transparent;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-loading:after {\n      border-color: transparent transparent rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.7) !important;\n}\n.button.is-warning.is-outlined {\n      background-color: transparent;\n      border-color: #ffdd57;\n      color: #ffdd57;\n}\n.button.is-warning.is-outlined:hover, .button.is-warning.is-outlined:focus {\n        background-color: #ffdd57;\n        border-color: #ffdd57;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-outlined.is-loading:after {\n        border-color: transparent transparent #ffdd57 #ffdd57 !important;\n}\n.button.is-warning.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ffdd57;\n        box-shadow: none;\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: rgba(0, 0, 0, 0.7);\n      color: rgba(0, 0, 0, 0.7);\n}\n.button.is-warning.is-inverted.is-outlined:hover, .button.is-warning.is-inverted.is-outlined:focus {\n        background-color: rgba(0, 0, 0, 0.7);\n        color: #ffdd57;\n}\n.button.is-warning.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: rgba(0, 0, 0, 0.7);\n        box-shadow: none;\n        color: rgba(0, 0, 0, 0.7);\n}\n.button.is-danger {\n    background-color: #ff3860;\n    border-color: transparent;\n    color: #fff;\n}\n.button.is-danger:hover, .button.is-danger.is-hovered {\n      background-color: #ff2b56;\n      border-color: transparent;\n      color: #fff;\n}\n.button.is-danger:focus, .button.is-danger.is-focused {\n      border-color: transparent;\n      box-shadow: 0 0 0.5em rgba(255, 56, 96, 0.25);\n      color: #fff;\n}\n.button.is-danger:active, .button.is-danger.is-active {\n      background-color: #ff1f4b;\n      border-color: transparent;\n      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n      color: #fff;\n}\n.button.is-danger[disabled] {\n      background-color: #ff3860;\n      border-color: transparent;\n      box-shadow: none;\n}\n.button.is-danger.is-inverted {\n      background-color: #fff;\n      color: #ff3860;\n}\n.button.is-danger.is-inverted:hover {\n        background-color: #f2f2f2;\n}\n.button.is-danger.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-loading:after {\n      border-color: transparent transparent #fff #fff !important;\n}\n.button.is-danger.is-outlined {\n      background-color: transparent;\n      border-color: #ff3860;\n      color: #ff3860;\n}\n.button.is-danger.is-outlined:hover, .button.is-danger.is-outlined:focus {\n        background-color: #ff3860;\n        border-color: #ff3860;\n        color: #fff;\n}\n.button.is-danger.is-outlined.is-loading:after {\n        border-color: transparent transparent #ff3860 #ff3860 !important;\n}\n.button.is-danger.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ff3860;\n        box-shadow: none;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff;\n}\n.button.is-danger.is-inverted.is-outlined:hover, .button.is-danger.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #ff3860;\n}\n.button.is-danger.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff;\n}\n.button.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.button.is-medium {\n    font-size: 1.25rem;\n}\n.button.is-large {\n    font-size: 1.5rem;\n}\n.button[disabled] {\n    background-color: white;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    opacity: 0.5;\n}\n.button.is-fullwidth {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    width: 100%;\n}\n.button.is-loading {\n    color: transparent !important;\n    pointer-events: none;\n}\n.button.is-loading:after {\n      -webkit-animation: spinAround 500ms infinite linear;\n              animation: spinAround 500ms infinite linear;\n      border: 2px solid #dbdbdb;\n      border-radius: 290486px;\n      border-right-color: transparent;\n      border-top-color: transparent;\n      content: \"\";\n      display: block;\n      height: 1em;\n      position: relative;\n      width: 1em;\n      position: absolute;\n      left: calc(50% - (1em / 2));\n      top: calc(50% - (1em / 2));\n      position: absolute !important;\n}\n.button.is-static {\n    background-color: whitesmoke;\n    border-color: #dbdbdb;\n    color: #7a7a7a;\n    box-shadow: none;\n    pointer-events: none;\n}\nbutton.button,\ninput[type=\"submit\"].button {\n  line-height: 1;\n  padding-bottom: 0.4em;\n  padding-top: 0.35em;\n}\n.content {\n  color: #4a4a4a;\n}\n.content:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.content li + li {\n    margin-top: 0.25em;\n}\n.content p:not(:last-child),\n  .content dl:not(:last-child),\n  .content ol:not(:last-child),\n  .content ul:not(:last-child),\n  .content blockquote:not(:last-child),\n  .content pre:not(:last-child),\n  .content table:not(:last-child) {\n    margin-bottom: 1em;\n}\n.content h1,\n  .content h2,\n  .content h3,\n  .content h4,\n  .content h5,\n  .content h6 {\n    color: #363636;\n    font-weight: 400;\n    line-height: 1.125;\n}\n.content h1 {\n    font-size: 2em;\n    margin-bottom: 0.5em;\n}\n.content h1:not(:first-child) {\n      margin-top: 1em;\n}\n.content h2 {\n    font-size: 1.75em;\n    margin-bottom: 0.5714em;\n}\n.content h2:not(:first-child) {\n      margin-top: 1.1428em;\n}\n.content h3 {\n    font-size: 1.5em;\n    margin-bottom: 0.6666em;\n}\n.content h3:not(:first-child) {\n      margin-top: 1.3333em;\n}\n.content h4 {\n    font-size: 1.25em;\n    margin-bottom: 0.8em;\n}\n.content h5 {\n    font-size: 1.125em;\n    margin-bottom: 0.8888em;\n}\n.content h6 {\n    font-size: 1em;\n    margin-bottom: 1em;\n}\n.content blockquote {\n    background-color: whitesmoke;\n    border-left: 5px solid #dbdbdb;\n    padding: 1.25em 1.5em;\n}\n.content ol {\n    list-style: decimal outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul {\n    list-style: disc outside;\n    margin-left: 2em;\n    margin-right: 2em;\n    margin-top: 1em;\n}\n.content ul ul {\n      list-style-type: circle;\n      margin-top: 0.5em;\n}\n.content ul ul ul {\n        list-style-type: square;\n}\n.content dd {\n    margin-left: 2em;\n}\n.content pre {\n    -webkit-overflow-scrolling: touch;\n    overflow-x: auto;\n    padding: 1.25em 1.5em;\n    white-space: pre;\n    word-wrap: normal;\n}\n.content table {\n    width: 100%;\n}\n.content table td,\n    .content table th {\n      border: 1px solid #dbdbdb;\n      border-width: 0 0 1px;\n      padding: 0.5em 0.75em;\n      vertical-align: top;\n}\n.content table th {\n      color: #363636;\n      text-align: left;\n}\n.content table tr:hover {\n      background-color: whitesmoke;\n}\n.content table thead td,\n    .content table thead th {\n      border-width: 0 0 2px;\n      color: #363636;\n}\n.content table tfoot td,\n    .content table tfoot th {\n      border-width: 2px 0 0;\n      color: #363636;\n}\n.content table tbody tr:last-child td,\n    .content table tbody tr:last-child th {\n      border-bottom-width: 0;\n}\n.content.is-small {\n    font-size: 0.75rem;\n}\n.content.is-medium {\n    font-size: 1.25rem;\n}\n.content.is-large {\n    font-size: 1.5rem;\n}\n.input,\n.textarea {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  background-color: white;\n  border-color: #dbdbdb;\n  color: #363636;\n  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);\n  max-width: 100%;\n  width: 100%;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    outline: none;\n}\n.input[disabled],\n  .textarea[disabled] {\n    cursor: not-allowed;\n}\n.input:hover, .input.is-hovered,\n  .textarea:hover,\n  .textarea.is-hovered {\n    border-color: #b5b5b5;\n}\n.input:focus, .input.is-focused, .input:active, .input.is-active,\n  .textarea:focus,\n  .textarea.is-focused,\n  .textarea:active,\n  .textarea.is-active {\n    border-color: #00d1b2;\n}\n.input[disabled],\n  .textarea[disabled] {\n    background-color: whitesmoke;\n    border-color: whitesmoke;\n    box-shadow: none;\n    color: #7a7a7a;\n}\n.input[disabled]::-moz-placeholder,\n    .textarea[disabled]::-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]::-webkit-input-placeholder,\n    .textarea[disabled]::-webkit-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-moz-placeholder,\n    .textarea[disabled]:-moz-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[disabled]:-ms-input-placeholder,\n    .textarea[disabled]:-ms-input-placeholder {\n      color: rgba(54, 54, 54, 0.3);\n}\n.input[type=\"search\"],\n  .textarea[type=\"search\"] {\n    border-radius: 290486px;\n}\n.input.is-white,\n  .textarea.is-white {\n    border-color: white;\n}\n.input.is-black,\n  .textarea.is-black {\n    border-color: #0a0a0a;\n}\n.input.is-light,\n  .textarea.is-light {\n    border-color: whitesmoke;\n}\n.input.is-dark,\n  .textarea.is-dark {\n    border-color: #363636;\n}\n.input.is-primary,\n  .textarea.is-primary {\n    border-color: #00d1b2;\n}\n.input.is-info,\n  .textarea.is-info {\n    border-color: #3273dc;\n}\n.input.is-success,\n  .textarea.is-success {\n    border-color: #23d160;\n}\n.input.is-warning,\n  .textarea.is-warning {\n    border-color: #ffdd57;\n}\n.input.is-danger,\n  .textarea.is-danger {\n    border-color: #ff3860;\n}\n.input.is-small,\n  .textarea.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.input.is-medium,\n  .textarea.is-medium {\n    font-size: 1.25rem;\n}\n.input.is-large,\n  .textarea.is-large {\n    font-size: 1.5rem;\n}\n.input.is-fullwidth,\n  .textarea.is-fullwidth {\n    display: block;\n    width: 100%;\n}\n.input.is-inline,\n  .textarea.is-inline {\n    display: inline;\n    width: auto;\n}\n.textarea {\n  display: block;\n  max-height: 600px;\n  max-width: 100%;\n  min-height: 120px;\n  min-width: 100%;\n  padding: 0.625em;\n  resize: vertical;\n}\n.checkbox,\n.radio {\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1.25;\n  position: relative;\n}\n.checkbox input,\n  .radio input {\n    cursor: pointer;\n}\n.checkbox:hover,\n  .radio:hover {\n    color: #363636;\n}\n.checkbox[disabled],\n  .radio[disabled] {\n    color: #7a7a7a;\n    cursor: not-allowed;\n}\n.radio + .radio {\n  margin-left: 0.5em;\n}\n.select {\n  display: inline-block;\n  height: 2.25em;\n  max-width: 100%;\n  position: relative;\n  vertical-align: top;\n}\n.select:after {\n    border: 1px solid #00d1b2;\n    border-right: 0;\n    border-top: 0;\n    content: \" \";\n    display: block;\n    height: 0.5em;\n    pointer-events: none;\n    position: absolute;\n    -webkit-transform: rotate(-45deg);\n            transform: rotate(-45deg);\n    width: 0.5em;\n    margin-top: -0.375em;\n    right: 1.125em;\n    top: 50%;\n    z-index: 4;\n}\n.select select {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border: 1px solid transparent;\n    border-radius: 3px;\n    box-shadow: none;\n    display: -webkit-inline-box;\n    display: -ms-inline-flexbox;\n    display: inline-flex;\n    font-size: 1rem;\n    height: 2.25em;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    line-height: 1.5;\n    padding-bottom: calc(0.375em - 1px);\n    padding-left: calc(0.625em - 1px);\n    padding-right: calc(0.625em - 1px);\n    padding-top: calc(0.375em - 1px);\n    position: relative;\n    vertical-align: top;\n    background-color: white;\n    border-color: #dbdbdb;\n    color: #363636;\n    cursor: pointer;\n    display: block;\n    font-size: 1em;\n    max-width: 100%;\n    outline: none;\n    padding-right: 2.5em;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      outline: none;\n}\n.select select[disabled] {\n      cursor: not-allowed;\n}\n.select select:hover, .select select.is-hovered {\n      border-color: #b5b5b5;\n}\n.select select:focus, .select select.is-focused, .select select:active, .select select.is-active {\n      border-color: #00d1b2;\n}\n.select select[disabled] {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      box-shadow: none;\n      color: #7a7a7a;\n}\n.select select[disabled]::-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]::-webkit-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-moz-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select[disabled]:-ms-input-placeholder {\n        color: rgba(54, 54, 54, 0.3);\n}\n.select select:hover {\n      border-color: #b5b5b5;\n}\n.select select::-ms-expand {\n      display: none;\n}\n.select select[disabled]:hover {\n      border-color: whitesmoke;\n}\n.select:hover:after {\n    border-color: #363636;\n}\n.select.is-white select {\n    border-color: white;\n}\n.select.is-black select {\n    border-color: #0a0a0a;\n}\n.select.is-light select {\n    border-color: whitesmoke;\n}\n.select.is-dark select {\n    border-color: #363636;\n}\n.select.is-primary select {\n    border-color: #00d1b2;\n}\n.select.is-info select {\n    border-color: #3273dc;\n}\n.select.is-success select {\n    border-color: #23d160;\n}\n.select.is-warning select {\n    border-color: #ffdd57;\n}\n.select.is-danger select {\n    border-color: #ff3860;\n}\n.select.is-small {\n    border-radius: 2px;\n    font-size: 0.75rem;\n}\n.select.is-medium {\n    font-size: 1.25rem;\n}\n.select.is-large {\n    font-size: 1.5rem;\n}\n.select.is-disabled:after {\n    border-color: #7a7a7a;\n}\n.select.is-fullwidth {\n    width: 100%;\n}\n.select.is-fullwidth select {\n      width: 100%;\n}\n.select.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    margin-top: 0;\n    position: absolute;\n    right: 0.625em;\n    top: 0.625em;\n    -webkit-transform: none;\n            transform: none;\n}\n.label {\n  color: #363636;\n  display: block;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.label:not(:last-child) {\n    margin-bottom: 0.5em;\n}\n.label.is-small {\n    font-size: 0.75rem;\n}\n.label.is-medium {\n    font-size: 1.25rem;\n}\n.label.is-large {\n    font-size: 1.5rem;\n}\n.help {\n  display: block;\n  font-size: 0.75rem;\n  margin-top: 0.25rem;\n}\n.help.is-white {\n    color: white;\n}\n.help.is-black {\n    color: #0a0a0a;\n}\n.help.is-light {\n    color: whitesmoke;\n}\n.help.is-dark {\n    color: #363636;\n}\n.help.is-primary {\n    color: #00d1b2;\n}\n.help.is-info {\n    color: #3273dc;\n}\n.help.is-success {\n    color: #23d160;\n}\n.help.is-warning {\n    color: #ffdd57;\n}\n.help.is-danger {\n    color: #ff3860;\n}\n.field:not(:last-child) {\n  margin-bottom: 0.75rem;\n}\n.field.has-addons {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.has-addons .control {\n    margin-right: -1px;\n}\n.field.has-addons .control:first-child .button,\n    .field.has-addons .control:first-child .input,\n    .field.has-addons .control:first-child .select select {\n      border-bottom-left-radius: 3px;\n      border-top-left-radius: 3px;\n}\n.field.has-addons .control:last-child .button,\n    .field.has-addons .control:last-child .input,\n    .field.has-addons .control:last-child .select select {\n      border-bottom-right-radius: 3px;\n      border-top-right-radius: 3px;\n}\n.field.has-addons .control .button,\n    .field.has-addons .control .input,\n    .field.has-addons .control .select select {\n      border-radius: 0;\n}\n.field.has-addons .control .button:hover, .field.has-addons .control .button.is-hovered,\n      .field.has-addons .control .input:hover,\n      .field.has-addons .control .input.is-hovered,\n      .field.has-addons .control .select select:hover,\n      .field.has-addons .control .select select.is-hovered {\n        z-index: 2;\n}\n.field.has-addons .control .button:focus, .field.has-addons .control .button.is-focused, .field.has-addons .control .button:active, .field.has-addons .control .button.is-active,\n      .field.has-addons .control .input:focus,\n      .field.has-addons .control .input.is-focused,\n      .field.has-addons .control .input:active,\n      .field.has-addons .control .input.is-active,\n      .field.has-addons .control .select select:focus,\n      .field.has-addons .control .select select.is-focused,\n      .field.has-addons .control .select select:active,\n      .field.has-addons .control .select select.is-active {\n        z-index: 3;\n}\n.field.has-addons .control .button:focus:hover, .field.has-addons .control .button.is-focused:hover, .field.has-addons .control .button:active:hover, .field.has-addons .control .button.is-active:hover,\n        .field.has-addons .control .input:focus:hover,\n        .field.has-addons .control .input.is-focused:hover,\n        .field.has-addons .control .input:active:hover,\n        .field.has-addons .control .input.is-active:hover,\n        .field.has-addons .control .select select:focus:hover,\n        .field.has-addons .control .select select.is-focused:hover,\n        .field.has-addons .control .select select:active:hover,\n        .field.has-addons .control .select select.is-active:hover {\n          z-index: 4;\n}\n.field.has-addons .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n.field.has-addons.has-addons-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.has-addons.has-addons-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.field.has-addons.has-addons-fullwidth .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n.field.is-grouped > .control {\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.field.is-grouped > .control:not(:last-child) {\n      margin-bottom: 0;\n      margin-right: 0.75rem;\n}\n.field.is-grouped > .control.is-expanded {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field.is-grouped.is-grouped-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.field.is-grouped.is-grouped-right {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.field.is-horizontal {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n}\n.field-label .label {\n  font-size: inherit;\n}\n@media screen and (max-width: 768px) {\n.field-label {\n    margin-bottom: 0.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-label {\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-right: 1.5rem;\n    text-align: right;\n}\n.field-label.is-small {\n      font-size: 0.75rem;\n      padding-top: 0.375em;\n}\n.field-label.is-normal {\n      padding-top: 0.375em;\n}\n.field-label.is-medium {\n      font-size: 1.25rem;\n      padding-top: 0.375em;\n}\n.field-label.is-large {\n      font-size: 1.5rem;\n      padding-top: 0.375em;\n}\n}\n@media screen and (min-width: 769px), print {\n.field-body {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -ms-flex-preferred-size: 0;\n        flex-basis: 0;\n    -webkit-box-flex: 5;\n        -ms-flex-positive: 5;\n            flex-grow: 5;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.field-body .field {\n      -ms-flex-negative: 1;\n          flex-shrink: 1;\n}\n.field-body .field:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n.field-body .field:not(:last-child) {\n        margin-bottom: 0;\n        margin-right: 0.75rem;\n}\n}\n.control {\n  font-size: 1rem;\n  position: relative;\n  text-align: left;\n}\n.control.has-icon .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icon .input:focus + .icon {\n    color: #7a7a7a;\n}\n.control.has-icon .input.is-small + .icon {\n    font-size: 0.75rem;\n}\n.control.has-icon .input.is-medium + .icon {\n    font-size: 1.25rem;\n}\n.control.has-icon .input.is-large + .icon {\n    font-size: 1.5rem;\n}\n.control.has-icon:not(.has-icon-right) .icon {\n    left: 0;\n}\n.control.has-icon:not(.has-icon-right) .input {\n    padding-left: 2.25em;\n}\n.control.has-icon.has-icon-right .icon {\n    right: 0;\n}\n.control.has-icon.has-icon-right .input {\n    padding-right: 2.25em;\n}\n.control.has-icons-left .input:focus ~ .icon,\n  .control.has-icons-left .select select:focus ~ .icon, .control.has-icons-right .input:focus ~ .icon,\n  .control.has-icons-right .select select:focus ~ .icon {\n    color: #7a7a7a;\n}\n.control.has-icons-left .input.is-small ~ .icon,\n  .control.has-icons-left .select select.is-small ~ .icon, .control.has-icons-right .input.is-small ~ .icon,\n  .control.has-icons-right .select select.is-small ~ .icon {\n    font-size: 0.75rem;\n}\n.control.has-icons-left .input.is-medium ~ .icon,\n  .control.has-icons-left .select select.is-medium ~ .icon, .control.has-icons-right .input.is-medium ~ .icon,\n  .control.has-icons-right .select select.is-medium ~ .icon {\n    font-size: 1.25rem;\n}\n.control.has-icons-left .input.is-large ~ .icon,\n  .control.has-icons-left .select select.is-large ~ .icon, .control.has-icons-right .input.is-large ~ .icon,\n  .control.has-icons-right .select select.is-large ~ .icon {\n    font-size: 1.5rem;\n}\n.control.has-icons-left .icon, .control.has-icons-right .icon {\n    color: #dbdbdb;\n    height: 2.25em;\n    pointer-events: none;\n    position: absolute;\n    top: 0;\n    width: 2.25em;\n    z-index: 4;\n}\n.control.has-icons-left .input,\n  .control.has-icons-left .select select {\n    padding-left: 2.25em;\n}\n.control.has-icons-left .icon.is-left {\n    left: 0;\n}\n.control.has-icons-right .input,\n  .control.has-icons-right .select select {\n    padding-right: 2.25em;\n}\n.control.has-icons-right .icon.is-right {\n    right: 0;\n}\n.control.is-loading:after {\n    -webkit-animation: spinAround 500ms infinite linear;\n            animation: spinAround 500ms infinite linear;\n    border: 2px solid #dbdbdb;\n    border-radius: 290486px;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    content: \"\";\n    display: block;\n    height: 1em;\n    position: relative;\n    width: 1em;\n    position: absolute !important;\n    right: 0.625em;\n    top: 0.625em;\n}\n.icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  height: 1.5rem;\n  width: 1.5rem;\n}\n.icon .fa {\n    font-size: 21px;\n}\n.icon.is-small {\n    height: 1rem;\n    width: 1rem;\n}\n.icon.is-small .fa {\n      font-size: 14px;\n}\n.icon.is-medium {\n    height: 2rem;\n    width: 2rem;\n}\n.icon.is-medium .fa {\n      font-size: 28px;\n}\n.icon.is-large {\n    height: 3rem;\n    width: 3rem;\n}\n.icon.is-large .fa {\n      font-size: 42px;\n}\n.image {\n  display: block;\n  position: relative;\n}\n.image img {\n    display: block;\n    height: auto;\n    width: 100%;\n}\n.image.is-square img, .image.is-1by1 img, .image.is-4by3 img, .image.is-3by2 img, .image.is-16by9 img, .image.is-2by1 img {\n    bottom: 0;\n    left: 0;\n    position: absolute;\n    right: 0;\n    top: 0;\n    height: 100%;\n    width: 100%;\n}\n.image.is-square, .image.is-1by1 {\n    padding-top: 100%;\n}\n.image.is-4by3 {\n    padding-top: 75%;\n}\n.image.is-3by2 {\n    padding-top: 66.6666%;\n}\n.image.is-16by9 {\n    padding-top: 56.25%;\n}\n.image.is-2by1 {\n    padding-top: 50%;\n}\n.image.is-16x16 {\n    height: 16px;\n    width: 16px;\n}\n.image.is-24x24 {\n    height: 24px;\n    width: 24px;\n}\n.image.is-32x32 {\n    height: 32px;\n    width: 32px;\n}\n.image.is-48x48 {\n    height: 48px;\n    width: 48px;\n}\n.image.is-64x64 {\n    height: 64px;\n    width: 64px;\n}\n.image.is-96x96 {\n    height: 96px;\n    width: 96px;\n}\n.image.is-128x128 {\n    height: 128px;\n    width: 128px;\n}\n.notification {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  padding: 1.25rem 2.5rem 1.25rem 1.5rem;\n  position: relative;\n}\n.notification:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.notification a:not(.button) {\n    color: currentColor;\n    text-decoration: underline;\n}\n.notification code,\n  .notification pre {\n    background: white;\n}\n.notification pre code {\n    background: transparent;\n}\n.notification > .delete {\n    position: absolute;\n    right: 0.5em;\n    top: 0.5em;\n}\n.notification .title,\n  .notification .subtitle,\n  .notification .content {\n    color: inherit;\n}\n.notification.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.notification.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.notification.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.notification.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.notification.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.notification.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.notification.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.notification.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.notification.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.progress {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  border: none;\n  border-radius: 290486px;\n  display: block;\n  height: 1rem;\n  overflow: hidden;\n  padding: 0;\n  width: 100%;\n}\n.progress:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.progress::-webkit-progress-bar {\n    background-color: #dbdbdb;\n}\n.progress::-webkit-progress-value {\n    background-color: #4a4a4a;\n}\n.progress::-moz-progress-bar {\n    background-color: #4a4a4a;\n}\n.progress.is-white::-webkit-progress-value {\n    background-color: white;\n}\n.progress.is-white::-moz-progress-bar {\n    background-color: white;\n}\n.progress.is-black::-webkit-progress-value {\n    background-color: #0a0a0a;\n}\n.progress.is-black::-moz-progress-bar {\n    background-color: #0a0a0a;\n}\n.progress.is-light::-webkit-progress-value {\n    background-color: whitesmoke;\n}\n.progress.is-light::-moz-progress-bar {\n    background-color: whitesmoke;\n}\n.progress.is-dark::-webkit-progress-value {\n    background-color: #363636;\n}\n.progress.is-dark::-moz-progress-bar {\n    background-color: #363636;\n}\n.progress.is-primary::-webkit-progress-value {\n    background-color: #00d1b2;\n}\n.progress.is-primary::-moz-progress-bar {\n    background-color: #00d1b2;\n}\n.progress.is-info::-webkit-progress-value {\n    background-color: #3273dc;\n}\n.progress.is-info::-moz-progress-bar {\n    background-color: #3273dc;\n}\n.progress.is-success::-webkit-progress-value {\n    background-color: #23d160;\n}\n.progress.is-success::-moz-progress-bar {\n    background-color: #23d160;\n}\n.progress.is-warning::-webkit-progress-value {\n    background-color: #ffdd57;\n}\n.progress.is-warning::-moz-progress-bar {\n    background-color: #ffdd57;\n}\n.progress.is-danger::-webkit-progress-value {\n    background-color: #ff3860;\n}\n.progress.is-danger::-moz-progress-bar {\n    background-color: #ff3860;\n}\n.progress.is-small {\n    height: 0.75rem;\n}\n.progress.is-medium {\n    height: 1.25rem;\n}\n.progress.is-large {\n    height: 1.5rem;\n}\n.table {\n  background-color: white;\n  color: #363636;\n  margin-bottom: 1.5rem;\n  width: 100%;\n}\n.table td,\n  .table th {\n    border: 1px solid #dbdbdb;\n    border-width: 0 0 1px;\n    padding: 0.5em 0.75em;\n    vertical-align: top;\n}\n.table td.is-narrow,\n    .table th.is-narrow {\n      white-space: nowrap;\n      width: 1%;\n}\n.table th {\n    color: #363636;\n    text-align: left;\n}\n.table tr:hover {\n    background-color: #fafafa;\n}\n.table tr.is-selected {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.table tr.is-selected a,\n    .table tr.is-selected strong {\n      color: currentColor;\n}\n.table tr.is-selected td,\n    .table tr.is-selected th {\n      border-color: #fff;\n      color: currentColor;\n}\n.table thead td,\n  .table thead th {\n    border-width: 0 0 2px;\n    color: #7a7a7a;\n}\n.table tfoot td,\n  .table tfoot th {\n    border-width: 2px 0 0;\n    color: #7a7a7a;\n}\n.table tbody tr:last-child td,\n  .table tbody tr:last-child th {\n    border-bottom-width: 0;\n}\n.table.is-bordered td,\n  .table.is-bordered th {\n    border-width: 1px;\n}\n.table.is-bordered tr:last-child td,\n  .table.is-bordered tr:last-child th {\n    border-bottom-width: 1px;\n}\n.table.is-narrow td,\n  .table.is-narrow th {\n    padding: 0.25em 0.5em;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even) {\n    background-color: #fafafa;\n}\n.table.is-striped tbody tr:not(.is-selected):nth-child(even):hover {\n      background-color: whitesmoke;\n}\n.tag {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  color: #4a4a4a;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 0.75rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding-left: 0.875em;\n  padding-right: 0.875em;\n  white-space: nowrap;\n}\n.tag .delete {\n    margin-left: 0.25em;\n    margin-right: -0.375em;\n}\n.tag.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.tag.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.tag.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.tag.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.tag.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.tag.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.tag.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.tag.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.tag.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.tag.is-medium {\n    font-size: 1rem;\n}\n.tag.is-large {\n    font-size: 1.25rem;\n}\n.title,\n.subtitle {\n  word-break: break-word;\n}\n.title:not(:last-child),\n  .subtitle:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.title em,\n  .title span,\n  .subtitle em,\n  .subtitle span {\n    font-weight: 300;\n}\n.title strong,\n  .subtitle strong {\n    font-weight: 500;\n}\n.title .tag,\n  .subtitle .tag {\n    vertical-align: middle;\n}\n.title {\n  color: #363636;\n  font-size: 2rem;\n  font-weight: 300;\n  line-height: 1.125;\n}\n.title strong {\n    color: inherit;\n}\n.title + .highlight {\n    margin-top: -0.75rem;\n}\n.title:not(.is-spaced) + .subtitle {\n    margin-top: -1.5rem;\n}\n.title.is-1 {\n    font-size: 3rem;\n}\n.title.is-2 {\n    font-size: 2.5rem;\n}\n.title.is-3 {\n    font-size: 2rem;\n}\n.title.is-4 {\n    font-size: 1.5rem;\n}\n.title.is-5 {\n    font-size: 1.25rem;\n}\n.title.is-6 {\n    font-size: 1rem;\n}\n.subtitle {\n  color: #4a4a4a;\n  font-size: 1.25rem;\n  font-weight: 300;\n  line-height: 1.25;\n}\n.subtitle strong {\n    color: #363636;\n}\n.subtitle:not(.is-spaced) + .title {\n    margin-top: -1.5rem;\n}\n.subtitle.is-1 {\n    font-size: 3rem;\n}\n.subtitle.is-2 {\n    font-size: 2.5rem;\n}\n.subtitle.is-3 {\n    font-size: 2rem;\n}\n.subtitle.is-4 {\n    font-size: 1.5rem;\n}\n.subtitle.is-5 {\n    font-size: 1.25rem;\n}\n.subtitle.is-6 {\n    font-size: 1rem;\n}\n.block:not(:last-child) {\n  margin-bottom: 1.5rem;\n}\n.container {\n  position: relative;\n}\n@media screen and (min-width: 1000px) {\n.container {\n      margin: 0 auto;\n      max-width: 960px;\n      width: 960px;\n}\n.container.is-fluid {\n        margin: 0 20px;\n        max-width: none;\n        width: auto;\n}\n}\n@media screen and (min-width: 1192px) {\n.container {\n      max-width: 1152px;\n      width: 1152px;\n}\n}\n@media screen and (min-width: 1384px) {\n.container {\n      max-width: 1344px;\n      width: 1344px;\n}\n}\n.delete {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n}\n.delete:before, .delete:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.delete:before {\n    height: 2px;\n    width: 50%;\n}\n.delete:after {\n    height: 50%;\n    width: 2px;\n}\n.delete:hover, .delete:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.delete:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.delete.is-small {\n    height: 16px;\n    width: 16px;\n}\n.delete.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.delete.is-large {\n    height: 32px;\n    width: 32px;\n}\n.fa {\n  font-size: 21px;\n  text-align: center;\n  vertical-align: top;\n}\n.heading {\n  display: block;\n  font-size: 11px;\n  letter-spacing: 1px;\n  margin-bottom: 5px;\n  text-transform: uppercase;\n}\n.highlight {\n  font-weight: 400;\n  max-width: 100%;\n  overflow: hidden;\n  padding: 0;\n}\n.highlight:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.highlight pre {\n    overflow: auto;\n    max-width: 100%;\n}\n.loader {\n  -webkit-animation: spinAround 500ms infinite linear;\n          animation: spinAround 500ms infinite linear;\n  border: 2px solid #dbdbdb;\n  border-radius: 290486px;\n  border-right-color: transparent;\n  border-top-color: transparent;\n  content: \"\";\n  display: block;\n  height: 1em;\n  position: relative;\n  width: 1em;\n}\n.number {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  border-radius: 290486px;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1.25rem;\n  height: 2em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-right: 1.5rem;\n  min-width: 2.5em;\n  padding: 0.25rem 0.5rem;\n  text-align: center;\n  vertical-align: top;\n}\n.card-header {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.1);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-header-title {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  font-weight: 700;\n  padding: 0.75rem;\n}\n.card-header-icon {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  cursor: pointer;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-image {\n  display: block;\n  position: relative;\n}\n.card-content {\n  padding: 1.5rem;\n}\n.card-footer {\n  border-top: 1px solid #dbdbdb;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.card-footer-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0.75rem;\n}\n.card-footer-item:not(:last-child) {\n    border-right: 1px solid #dbdbdb;\n}\n.card {\n  background-color: white;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  color: #4a4a4a;\n  max-width: 100%;\n  position: relative;\n}\n.card .media:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.level-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.level-item .title,\n  .level-item .subtitle {\n    margin-bottom: 0;\n}\n@media screen and (max-width: 768px) {\n.level-item:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n}\n.level-left,\n.level-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.level-left .level-item:not(:last-child),\n  .level-right .level-item:not(:last-child) {\n    margin-right: 0.75rem;\n}\n.level-left .level-item.is-flexible,\n  .level-right .level-item.is-flexible {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n}\n.level-left {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n}\n@media screen and (max-width: 768px) {\n.level-left + .level-right {\n      margin-top: 1.5rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.level-left {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level-right {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n@media screen and (min-width: 769px), print {\n.level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.level {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.level:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.level code {\n    border-radius: 3px;\n}\n.level img {\n    display: inline-block;\n    vertical-align: top;\n}\n.level.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.level.is-mobile .level-left,\n    .level.is-mobile .level-right {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level.is-mobile .level-left + .level-right {\n      margin-top: 0;\n}\n.level.is-mobile .level-item:not(:last-child) {\n      margin-bottom: 0;\n}\n.level.is-mobile .level-item:not(.is-narrow) {\n      -webkit-box-flex: 1;\n          -ms-flex-positive: 1;\n              flex-grow: 1;\n}\n@media screen and (min-width: 769px), print {\n.level {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.level > .level-item:not(.is-narrow) {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n}\n}\n.media-left,\n.media-right {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.media-left {\n  margin-right: 1rem;\n}\n.media-right {\n  margin-left: 1rem;\n}\n.media-content {\n  -ms-flex-preferred-size: auto;\n      flex-basis: auto;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  text-align: left;\n}\n.media {\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  text-align: left;\n}\n.media .content:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.media .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    padding-top: 0.75rem;\n}\n.media .media .content:not(:last-child),\n    .media .media .control:not(:last-child) {\n      margin-bottom: 0.5rem;\n}\n.media .media .media {\n      padding-top: 0.5rem;\n}\n.media .media .media + .media {\n        margin-top: 0.5rem;\n}\n.media + .media {\n    border-top: 1px solid rgba(219, 219, 219, 0.5);\n    margin-top: 1rem;\n    padding-top: 1rem;\n}\n.media.is-large + .media {\n    margin-top: 1.5rem;\n    padding-top: 1.5rem;\n}\n.menu {\n  font-size: 1rem;\n}\n.menu-list {\n  line-height: 1.25;\n}\n.menu-list a {\n    border-radius: 2px;\n    color: #4a4a4a;\n    display: block;\n    padding: 0.5em 0.75em;\n}\n.menu-list a:hover {\n      background-color: whitesmoke;\n      color: #00d1b2;\n}\n.menu-list a.is-active {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.menu-list li ul {\n    border-left: 1px solid #dbdbdb;\n    margin: 0.75em;\n    padding-left: 0.75em;\n}\n.menu-label {\n  color: #7a7a7a;\n  font-size: 0.8em;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n}\n.menu-label:not(:first-child) {\n    margin-top: 1em;\n}\n.menu-label:not(:last-child) {\n    margin-bottom: 1em;\n}\n.message {\n  background-color: whitesmoke;\n  border-radius: 3px;\n  font-size: 1rem;\n}\n.message:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.message.is-white {\n    background-color: white;\n}\n.message.is-white .message-header {\n      background-color: white;\n      color: #0a0a0a;\n}\n.message.is-white .message-body {\n      border-color: white;\n      color: #4d4d4d;\n}\n.message.is-black {\n    background-color: #fafafa;\n}\n.message.is-black .message-header {\n      background-color: #0a0a0a;\n      color: white;\n}\n.message.is-black .message-body {\n      border-color: #0a0a0a;\n      color: #090909;\n}\n.message.is-light {\n    background-color: #fafafa;\n}\n.message.is-light .message-header {\n      background-color: whitesmoke;\n      color: #363636;\n}\n.message.is-light .message-body {\n      border-color: whitesmoke;\n      color: #505050;\n}\n.message.is-dark {\n    background-color: #fafafa;\n}\n.message.is-dark .message-header {\n      background-color: #363636;\n      color: whitesmoke;\n}\n.message.is-dark .message-body {\n      border-color: #363636;\n      color: #2a2a2a;\n}\n.message.is-primary {\n    background-color: #f5fffd;\n}\n.message.is-primary .message-header {\n      background-color: #00d1b2;\n      color: #fff;\n}\n.message.is-primary .message-body {\n      border-color: #00d1b2;\n      color: #021310;\n}\n.message.is-info {\n    background-color: #f6f9fe;\n}\n.message.is-info .message-header {\n      background-color: #3273dc;\n      color: #fff;\n}\n.message.is-info .message-body {\n      border-color: #3273dc;\n      color: #22509a;\n}\n.message.is-success {\n    background-color: #f6fef9;\n}\n.message.is-success .message-header {\n      background-color: #23d160;\n      color: #fff;\n}\n.message.is-success .message-body {\n      border-color: #23d160;\n      color: #0e301a;\n}\n.message.is-warning {\n    background-color: #fffdf5;\n}\n.message.is-warning .message-header {\n      background-color: #ffdd57;\n      color: rgba(0, 0, 0, 0.7);\n}\n.message.is-warning .message-body {\n      border-color: #ffdd57;\n      color: #3b3108;\n}\n.message.is-danger {\n    background-color: #fff5f7;\n}\n.message.is-danger .message-header {\n      background-color: #ff3860;\n      color: #fff;\n}\n.message.is-danger .message-body {\n      border-color: #ff3860;\n      color: #cd0930;\n}\n.message-header {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #4a4a4a;\n  border-radius: 3px 3px 0 0;\n  color: #fff;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n  position: relative;\n}\n.message-header a,\n  .message-header strong {\n    color: inherit;\n}\n.message-header a {\n    text-decoration: underline;\n}\n.message-header .delete {\n    -webkit-box-flex: 0;\n        -ms-flex-positive: 0;\n            flex-grow: 0;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    margin-left: 0.75em;\n}\n.message-header + .message-body {\n    border-top-left-radius: 0;\n    border-top-right-radius: 0;\n    border-top: none;\n}\n.message-body {\n  border: 1px solid #dbdbdb;\n  border-radius: 3px;\n  color: #4a4a4a;\n  padding: 1em 1.25em;\n}\n.message-body a,\n  .message-body strong {\n    color: inherit;\n}\n.message-body a {\n    text-decoration: underline;\n}\n.message-body code,\n  .message-body pre {\n    background: white;\n}\n.message-body pre code {\n    background: transparent;\n}\n.modal-background {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  background-color: rgba(10, 10, 10, 0.86);\n}\n.modal-content,\n.modal-card {\n  margin: 0 20px;\n  max-height: calc(100vh - 160px);\n  overflow: auto;\n  position: relative;\n  width: 100%;\n}\n@media screen and (min-width: 769px), print {\n.modal-content,\n    .modal-card {\n      margin: 0 auto;\n      max-height: calc(100vh - 40px);\n      width: 640px;\n}\n}\n.modal-close {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  display: inline-block;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px;\n  background: none;\n  height: 40px;\n  position: fixed;\n  right: 20px;\n  top: 20px;\n  width: 40px;\n}\n.modal-close:before, .modal-close:after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center;\n}\n.modal-close:before {\n    height: 2px;\n    width: 50%;\n}\n.modal-close:after {\n    height: 50%;\n    width: 2px;\n}\n.modal-close:hover, .modal-close:focus {\n    background-color: rgba(10, 10, 10, 0.3);\n}\n.modal-close:active {\n    background-color: rgba(10, 10, 10, 0.4);\n}\n.modal-close.is-small {\n    height: 16px;\n    width: 16px;\n}\n.modal-close.is-medium {\n    height: 24px;\n    width: 24px;\n}\n.modal-close.is-large {\n    height: 32px;\n    width: 32px;\n}\n.modal-card {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  max-height: calc(100vh - 40px);\n  overflow: hidden;\n}\n.modal-card-head,\n.modal-card-foot {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: whitesmoke;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 20px;\n  position: relative;\n}\n.modal-card-head {\n  border-bottom: 1px solid #dbdbdb;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.modal-card-title {\n  color: #363636;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1.5rem;\n  line-height: 1;\n}\n.modal-card-foot {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n  border-top: 1px solid #dbdbdb;\n}\n.modal-card-foot .button:not(:last-child) {\n    margin-right: 10px;\n}\n.modal-card-body {\n  -webkit-overflow-scrolling: touch;\n  background-color: white;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  overflow: auto;\n  padding: 20px;\n}\n.modal {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: none;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  overflow: hidden;\n  position: fixed;\n  z-index: 20;\n}\n.modal.is-active {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.nav-toggle {\n  cursor: pointer;\n  display: block;\n  height: 3.25rem;\n  position: relative;\n  width: 3.25rem;\n}\n.nav-toggle span {\n    background-color: #4a4a4a;\n    display: block;\n    height: 1px;\n    left: 50%;\n    margin-left: -7px;\n    position: absolute;\n    top: 50%;\n    transition: none 86ms ease-out;\n    transition-property: background, left, opacity, -webkit-transform;\n    transition-property: background, left, opacity, transform;\n    transition-property: background, left, opacity, transform, -webkit-transform;\n    width: 15px;\n}\n.nav-toggle span:nth-child(1) {\n      margin-top: -6px;\n}\n.nav-toggle span:nth-child(2) {\n      margin-top: -1px;\n}\n.nav-toggle span:nth-child(3) {\n      margin-top: 4px;\n}\n.nav-toggle:hover {\n    background-color: whitesmoke;\n}\n.nav-toggle.is-active span {\n    background-color: #00d1b2;\n}\n.nav-toggle.is-active span:nth-child(1) {\n      margin-left: -5px;\n      -webkit-transform: rotate(45deg);\n              transform: rotate(45deg);\n      -webkit-transform-origin: left top;\n              transform-origin: left top;\n}\n.nav-toggle.is-active span:nth-child(2) {\n      opacity: 0;\n}\n.nav-toggle.is-active span:nth-child(3) {\n      margin-left: -5px;\n      -webkit-transform: rotate(-45deg);\n              transform: rotate(-45deg);\n      -webkit-transform-origin: left bottom;\n              transform-origin: left bottom;\n}\n@media screen and (min-width: 769px), print {\n.nav-toggle {\n      display: none;\n}\n}\n.nav-item {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  font-size: 1rem;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  line-height: 1.5;\n  padding: 0.5rem 0.75rem;\n}\n.nav-item a {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.nav-item img {\n    max-height: 1.75rem;\n}\n.nav-item .tag:first-child:not(:last-child) {\n    margin-right: 0.5rem;\n}\n.nav-item .tag:last-child:not(:first-child) {\n    margin-left: 0.5rem;\n}\n@media screen and (max-width: 768px) {\n.nav-item {\n      -webkit-box-pack: start;\n          -ms-flex-pack: start;\n              justify-content: flex-start;\n}\n}\n.nav-item a,\na.nav-item {\n  color: #7a7a7a;\n}\n.nav-item a:hover,\n  a.nav-item:hover {\n    color: #363636;\n}\n.nav-item a.is-active,\n  a.nav-item.is-active {\n    color: #363636;\n}\n.nav-item a.is-tab,\n  a.nav-item.is-tab {\n    border-bottom: 1px solid transparent;\n    border-top: 1px solid transparent;\n    padding-bottom: calc(0.75rem - 1px);\n    padding-left: 1rem;\n    padding-right: 1rem;\n    padding-top: calc(0.75rem - 1px);\n}\n.nav-item a.is-tab:hover,\n    a.nav-item.is-tab:hover {\n      border-bottom-color: #00d1b2;\n      border-top-color: transparent;\n}\n.nav-item a.is-tab.is-active,\n    a.nav-item.is-tab.is-active {\n      border-bottom: 3px solid #00d1b2;\n      color: #00d1b2;\n      padding-bottom: calc(0.75rem - 3px);\n}\n@media screen and (min-width: 1000px) {\n.nav-item a.is-brand,\n    a.nav-item.is-brand {\n      padding-left: 0;\n}\n}\n.nav-left,\n.nav-right {\n  -webkit-overflow-scrolling: touch;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  max-width: 100%;\n  overflow: auto;\n}\n@media screen and (min-width: 1192px) {\n.nav-left,\n    .nav-right {\n      -ms-flex-preferred-size: 0;\n          flex-basis: 0;\n}\n}\n.nav-left {\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  white-space: nowrap;\n}\n.nav-right {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.nav-center {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin-left: auto;\n  margin-right: auto;\n}\n@media screen and (max-width: 768px) {\n.nav-menu.nav-right {\n    background-color: white;\n    box-shadow: 0 4px 7px rgba(10, 10, 10, 0.1);\n    left: 0;\n    display: none;\n    right: 0;\n    top: 100%;\n    position: absolute;\n}\n.nav-menu.nav-right .nav-item {\n      border-top: 1px solid rgba(219, 219, 219, 0.5);\n      padding: 0.75rem;\n}\n.nav-menu.nav-right.is-active {\n      display: block;\n}\n}\n.nav {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 3.25rem;\n  position: relative;\n  text-align: center;\n  z-index: 10;\n}\n.nav > .container {\n    -webkit-box-align: stretch;\n        -ms-flex-align: stretch;\n            align-items: stretch;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    min-height: 3.25rem;\n    width: 100%;\n}\n.nav.has-shadow {\n    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);\n}\n.pagination {\n  font-size: 1rem;\n  margin: -0.25rem;\n}\n.pagination.is-small {\n    font-size: 0.75rem;\n}\n.pagination.is-medium {\n    font-size: 1.25rem;\n}\n.pagination.is-large {\n    font-size: 1.5rem;\n}\n.pagination,\n.pagination-list {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  text-align: center;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link,\n.pagination-ellipsis {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  box-shadow: none;\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  font-size: 1rem;\n  height: 2.25em;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  font-size: 1em;\n  padding-left: 0.5em;\n  padding-right: 0.5em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  margin: 0.25rem;\n  text-align: center;\n}\n.pagination-previous:focus, .pagination-previous.is-focused, .pagination-previous:active, .pagination-previous.is-active,\n  .pagination-next:focus,\n  .pagination-next.is-focused,\n  .pagination-next:active,\n  .pagination-next.is-active,\n  .pagination-link:focus,\n  .pagination-link.is-focused,\n  .pagination-link:active,\n  .pagination-link.is-active,\n  .pagination-ellipsis:focus,\n  .pagination-ellipsis.is-focused,\n  .pagination-ellipsis:active,\n  .pagination-ellipsis.is-active {\n    outline: none;\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled],\n  .pagination-ellipsis[disabled] {\n    cursor: not-allowed;\n}\n.pagination-previous,\n.pagination-next,\n.pagination-link {\n  border-color: #dbdbdb;\n  min-width: 2.25em;\n}\n.pagination-previous:hover,\n  .pagination-next:hover,\n  .pagination-link:hover {\n    border-color: #b5b5b5;\n    color: #363636;\n}\n.pagination-previous:focus,\n  .pagination-next:focus,\n  .pagination-link:focus {\n    border-color: #00d1b2;\n}\n.pagination-previous:active,\n  .pagination-next:active,\n  .pagination-link:active {\n    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2);\n}\n.pagination-previous[disabled],\n  .pagination-next[disabled],\n  .pagination-link[disabled] {\n    background-color: #dbdbdb;\n    border-color: #dbdbdb;\n    box-shadow: none;\n    color: #7a7a7a;\n    opacity: 0.5;\n}\n.pagination-previous,\n.pagination-next {\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  white-space: nowrap;\n}\n.pagination-link.is-current {\n  background-color: #00d1b2;\n  border-color: #00d1b2;\n  color: #fff;\n}\n.pagination-ellipsis {\n  color: #b5b5b5;\n  pointer-events: none;\n}\n.pagination-list {\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n}\n@media screen and (max-width: 768px) {\n.pagination {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.pagination-previous,\n  .pagination-next {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n.pagination-list li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n}\n}\n@media screen and (min-width: 769px), print {\n.pagination-list {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n}\n.pagination-previous {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.pagination-next {\n    -webkit-box-ordinal-group: 4;\n        -ms-flex-order: 3;\n            order: 3;\n}\n.pagination {\n    -webkit-box-pack: justify;\n        -ms-flex-pack: justify;\n            justify-content: space-between;\n}\n.pagination.is-centered .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-centered .pagination-list {\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-centered .pagination-next {\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n.pagination.is-right .pagination-previous {\n      -webkit-box-ordinal-group: 2;\n          -ms-flex-order: 1;\n              order: 1;\n}\n.pagination.is-right .pagination-next {\n      -webkit-box-ordinal-group: 3;\n          -ms-flex-order: 2;\n              order: 2;\n}\n.pagination.is-right .pagination-list {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      -webkit-box-ordinal-group: 4;\n          -ms-flex-order: 3;\n              order: 3;\n}\n}\n.panel {\n  font-size: 1rem;\n}\n.panel:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.panel-heading,\n.panel-tabs,\n.panel-block {\n  border-bottom: 1px solid #dbdbdb;\n  border-left: 1px solid #dbdbdb;\n  border-right: 1px solid #dbdbdb;\n}\n.panel-heading:first-child,\n  .panel-tabs:first-child,\n  .panel-block:first-child {\n    border-top: 1px solid #dbdbdb;\n}\n.panel-heading {\n  background-color: whitesmoke;\n  border-radius: 3px 3px 0 0;\n  color: #363636;\n  font-size: 1.25em;\n  font-weight: 300;\n  line-height: 1.25;\n  padding: 0.5em 0.75em;\n}\n.panel-tabs {\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 0.875em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n.panel-tabs a {\n    border-bottom: 1px solid #dbdbdb;\n    margin-bottom: -1px;\n    padding: 0.5em;\n}\n.panel-tabs a.is-active {\n      border-bottom-color: #4a4a4a;\n      color: #363636;\n}\n.panel-list a {\n  color: #4a4a4a;\n}\n.panel-list a:hover {\n    color: #00d1b2;\n}\n.panel-block {\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: #363636;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  padding: 0.5em 0.75em;\n}\n.panel-block input[type=\"checkbox\"] {\n    margin-right: 0.75em;\n}\n.panel-block > .control {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 1;\n        flex-shrink: 1;\n    width: 100%;\n}\n.panel-block.is-wrapped {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.panel-block.is-active {\n    border-left-color: #00d1b2;\n    color: #363636;\n}\n.panel-block.is-active .panel-icon {\n      color: #00d1b2;\n}\na.panel-block,\nlabel.panel-block {\n  cursor: pointer;\n}\na.panel-block:hover,\n  label.panel-block:hover {\n    background-color: whitesmoke;\n}\n.panel-icon {\n  display: inline-block;\n  font-size: 14px;\n  height: 1em;\n  line-height: 1em;\n  text-align: center;\n  vertical-align: top;\n  width: 1em;\n  color: #7a7a7a;\n  margin-right: 0.75em;\n}\n.panel-icon .fa {\n    font-size: inherit;\n    line-height: inherit;\n}\n.tabs {\n  -webkit-overflow-scrolling: touch;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-size: 1rem;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  overflow: hidden;\n  overflow-x: auto;\n  white-space: nowrap;\n}\n.tabs:not(:last-child) {\n    margin-bottom: 1.5rem;\n}\n.tabs a {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    color: #4a4a4a;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    margin-bottom: -1px;\n    padding: 0.5em 1em;\n    vertical-align: top;\n}\n.tabs a:hover {\n      border-bottom-color: #363636;\n      color: #363636;\n}\n.tabs li {\n    display: block;\n}\n.tabs li.is-active a {\n      border-bottom-color: #00d1b2;\n      color: #00d1b2;\n}\n.tabs ul {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    border-bottom: 1px solid #dbdbdb;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n    -webkit-box-pack: start;\n        -ms-flex-pack: start;\n            justify-content: flex-start;\n}\n.tabs ul.is-left {\n      padding-right: 0.75em;\n}\n.tabs ul.is-center {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n      padding-left: 0.75em;\n      padding-right: 0.75em;\n}\n.tabs ul.is-right {\n      -webkit-box-pack: end;\n          -ms-flex-pack: end;\n              justify-content: flex-end;\n      padding-left: 0.75em;\n}\n.tabs .icon:first-child {\n    margin-right: 0.5em;\n}\n.tabs .icon:last-child {\n    margin-left: 0.5em;\n}\n.tabs.is-centered ul {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.tabs.is-right ul {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n}\n.tabs.is-boxed a {\n    border: 1px solid transparent;\n    border-radius: 3px 3px 0 0;\n}\n.tabs.is-boxed a:hover {\n      background-color: whitesmoke;\n      border-bottom-color: #dbdbdb;\n}\n.tabs.is-boxed li.is-active a {\n    background-color: white;\n    border-color: #dbdbdb;\n    border-bottom-color: transparent !important;\n}\n.tabs.is-fullwidth li {\n    -webkit-box-flex: 1;\n        -ms-flex-positive: 1;\n            flex-grow: 1;\n    -ms-flex-negative: 0;\n        flex-shrink: 0;\n}\n.tabs.is-toggle a {\n    border: 1px solid #dbdbdb;\n    margin-bottom: 0;\n    position: relative;\n}\n.tabs.is-toggle a:hover {\n      background-color: whitesmoke;\n      border-color: #b5b5b5;\n      z-index: 2;\n}\n.tabs.is-toggle li + li {\n    margin-left: -1px;\n}\n.tabs.is-toggle li:first-child a {\n    border-radius: 3px 0 0 3px;\n}\n.tabs.is-toggle li:last-child a {\n    border-radius: 0 3px 3px 0;\n}\n.tabs.is-toggle li.is-active a {\n    background-color: #00d1b2;\n    border-color: #00d1b2;\n    color: #fff;\n    z-index: 1;\n}\n.tabs.is-toggle ul {\n    border-bottom: none;\n}\n.tabs.is-small {\n    font-size: 0.75rem;\n}\n.tabs.is-medium {\n    font-size: 1.25rem;\n}\n.tabs.is-large {\n    font-size: 1.5rem;\n}\n.column {\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  padding: 0.75rem;\n}\n.columns.is-mobile > .column.is-narrow {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n}\n.columns.is-mobile > .column.is-full {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-three-quarters {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-two-thirds {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.6666%;\n}\n.columns.is-mobile > .column.is-half {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-one-third {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.3333%;\n}\n.columns.is-mobile > .column.is-one-quarter {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-three-quarters {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-offset-two-thirds {\n    margin-left: 66.6666%;\n}\n.columns.is-mobile > .column.is-offset-half {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-offset-one-third {\n    margin-left: 33.3333%;\n}\n.columns.is-mobile > .column.is-offset-one-quarter {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-1 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 8.33333%;\n}\n.columns.is-mobile > .column.is-offset-1 {\n    margin-left: 8.33333%;\n}\n.columns.is-mobile > .column.is-2 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 16.66667%;\n}\n.columns.is-mobile > .column.is-offset-2 {\n    margin-left: 16.66667%;\n}\n.columns.is-mobile > .column.is-3 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 25%;\n}\n.columns.is-mobile > .column.is-offset-3 {\n    margin-left: 25%;\n}\n.columns.is-mobile > .column.is-4 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 33.33333%;\n}\n.columns.is-mobile > .column.is-offset-4 {\n    margin-left: 33.33333%;\n}\n.columns.is-mobile > .column.is-5 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 41.66667%;\n}\n.columns.is-mobile > .column.is-offset-5 {\n    margin-left: 41.66667%;\n}\n.columns.is-mobile > .column.is-6 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 50%;\n}\n.columns.is-mobile > .column.is-offset-6 {\n    margin-left: 50%;\n}\n.columns.is-mobile > .column.is-7 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 58.33333%;\n}\n.columns.is-mobile > .column.is-offset-7 {\n    margin-left: 58.33333%;\n}\n.columns.is-mobile > .column.is-8 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 66.66667%;\n}\n.columns.is-mobile > .column.is-offset-8 {\n    margin-left: 66.66667%;\n}\n.columns.is-mobile > .column.is-9 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 75%;\n}\n.columns.is-mobile > .column.is-offset-9 {\n    margin-left: 75%;\n}\n.columns.is-mobile > .column.is-10 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 83.33333%;\n}\n.columns.is-mobile > .column.is-offset-10 {\n    margin-left: 83.33333%;\n}\n.columns.is-mobile > .column.is-11 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 91.66667%;\n}\n.columns.is-mobile > .column.is-offset-11 {\n    margin-left: 91.66667%;\n}\n.columns.is-mobile > .column.is-12 {\n    -webkit-box-flex: 0;\n        -ms-flex: none;\n            flex: none;\n    width: 100%;\n}\n.columns.is-mobile > .column.is-offset-12 {\n    margin-left: 100%;\n}\n@media screen and (max-width: 768px) {\n.column.is-narrow-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-mobile {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-mobile {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-mobile {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-mobile {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-mobile {\n      margin-left: 25%;\n}\n.column.is-1-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-mobile {\n      margin-left: 8.33333%;\n}\n.column.is-2-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-mobile {\n      margin-left: 16.66667%;\n}\n.column.is-3-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-mobile {\n      margin-left: 25%;\n}\n.column.is-4-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-mobile {\n      margin-left: 33.33333%;\n}\n.column.is-5-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-mobile {\n      margin-left: 41.66667%;\n}\n.column.is-6-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-mobile {\n      margin-left: 50%;\n}\n.column.is-7-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-mobile {\n      margin-left: 58.33333%;\n}\n.column.is-8-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-mobile {\n      margin-left: 66.66667%;\n}\n.column.is-9-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-mobile {\n      margin-left: 75%;\n}\n.column.is-10-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-mobile {\n      margin-left: 83.33333%;\n}\n.column.is-11-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-mobile {\n      margin-left: 91.66667%;\n}\n.column.is-12-mobile {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-mobile {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 769px), print {\n.column.is-narrow, .column.is-narrow-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full, .column.is-full-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters, .column.is-three-quarters-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds, .column.is-two-thirds-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half, .column.is-half-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third, .column.is-one-third-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter, .column.is-one-quarter-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters, .column.is-offset-three-quarters-tablet {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds, .column.is-offset-two-thirds-tablet {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half, .column.is-offset-half-tablet {\n      margin-left: 50%;\n}\n.column.is-offset-one-third, .column.is-offset-one-third-tablet {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter, .column.is-offset-one-quarter-tablet {\n      margin-left: 25%;\n}\n.column.is-1, .column.is-1-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1, .column.is-offset-1-tablet {\n      margin-left: 8.33333%;\n}\n.column.is-2, .column.is-2-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2, .column.is-offset-2-tablet {\n      margin-left: 16.66667%;\n}\n.column.is-3, .column.is-3-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3, .column.is-offset-3-tablet {\n      margin-left: 25%;\n}\n.column.is-4, .column.is-4-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4, .column.is-offset-4-tablet {\n      margin-left: 33.33333%;\n}\n.column.is-5, .column.is-5-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5, .column.is-offset-5-tablet {\n      margin-left: 41.66667%;\n}\n.column.is-6, .column.is-6-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6, .column.is-offset-6-tablet {\n      margin-left: 50%;\n}\n.column.is-7, .column.is-7-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7, .column.is-offset-7-tablet {\n      margin-left: 58.33333%;\n}\n.column.is-8, .column.is-8-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8, .column.is-offset-8-tablet {\n      margin-left: 66.66667%;\n}\n.column.is-9, .column.is-9-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9, .column.is-offset-9-tablet {\n      margin-left: 75%;\n}\n.column.is-10, .column.is-10-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10, .column.is-offset-10-tablet {\n      margin-left: 83.33333%;\n}\n.column.is-11, .column.is-11-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11, .column.is-offset-11-tablet {\n      margin-left: 91.66667%;\n}\n.column.is-12, .column.is-12-tablet {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12, .column.is-offset-12-tablet {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1000px) {\n.column.is-narrow-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-desktop {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-desktop {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-desktop {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-desktop {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-desktop {\n      margin-left: 25%;\n}\n.column.is-1-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-desktop {\n      margin-left: 8.33333%;\n}\n.column.is-2-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-desktop {\n      margin-left: 16.66667%;\n}\n.column.is-3-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-desktop {\n      margin-left: 25%;\n}\n.column.is-4-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-desktop {\n      margin-left: 33.33333%;\n}\n.column.is-5-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-desktop {\n      margin-left: 41.66667%;\n}\n.column.is-6-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-desktop {\n      margin-left: 50%;\n}\n.column.is-7-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-desktop {\n      margin-left: 58.33333%;\n}\n.column.is-8-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-desktop {\n      margin-left: 66.66667%;\n}\n.column.is-9-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-desktop {\n      margin-left: 75%;\n}\n.column.is-10-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-desktop {\n      margin-left: 83.33333%;\n}\n.column.is-11-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-desktop {\n      margin-left: 91.66667%;\n}\n.column.is-12-desktop {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-desktop {\n      margin-left: 100%;\n}\n}\n@media screen and (min-width: 1192px) {\n.column.is-narrow-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n}\n.column.is-full-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-three-quarters-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-two-thirds-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.6666%;\n}\n.column.is-half-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-one-third-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.3333%;\n}\n.column.is-one-quarter-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-three-quarters-widescreen {\n      margin-left: 75%;\n}\n.column.is-offset-two-thirds-widescreen {\n      margin-left: 66.6666%;\n}\n.column.is-offset-half-widescreen {\n      margin-left: 50%;\n}\n.column.is-offset-one-third-widescreen {\n      margin-left: 33.3333%;\n}\n.column.is-offset-one-quarter-widescreen {\n      margin-left: 25%;\n}\n.column.is-1-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.column.is-offset-1-widescreen {\n      margin-left: 8.33333%;\n}\n.column.is-2-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.column.is-offset-2-widescreen {\n      margin-left: 16.66667%;\n}\n.column.is-3-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.column.is-offset-3-widescreen {\n      margin-left: 25%;\n}\n.column.is-4-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.column.is-offset-4-widescreen {\n      margin-left: 33.33333%;\n}\n.column.is-5-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.column.is-offset-5-widescreen {\n      margin-left: 41.66667%;\n}\n.column.is-6-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.column.is-offset-6-widescreen {\n      margin-left: 50%;\n}\n.column.is-7-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.column.is-offset-7-widescreen {\n      margin-left: 58.33333%;\n}\n.column.is-8-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.column.is-offset-8-widescreen {\n      margin-left: 66.66667%;\n}\n.column.is-9-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.column.is-offset-9-widescreen {\n      margin-left: 75%;\n}\n.column.is-10-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.column.is-offset-10-widescreen {\n      margin-left: 83.33333%;\n}\n.column.is-11-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.column.is-offset-11-widescreen {\n      margin-left: 91.66667%;\n}\n.column.is-12-widescreen {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n.column.is-offset-12-widescreen {\n      margin-left: 100%;\n}\n}\n.columns {\n  margin-left: -0.75rem;\n  margin-right: -0.75rem;\n  margin-top: -0.75rem;\n}\n.columns:last-child {\n    margin-bottom: -0.75rem;\n}\n.columns:not(:last-child) {\n    margin-bottom: 0.75rem;\n}\n.columns.is-centered {\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n}\n.columns.is-gapless {\n    margin-left: 0;\n    margin-right: 0;\n    margin-top: 0;\n}\n.columns.is-gapless:last-child {\n      margin-bottom: 0;\n}\n.columns.is-gapless:not(:last-child) {\n      margin-bottom: 1.5rem;\n}\n.columns.is-gapless > .column {\n      margin: 0;\n      padding: 0;\n}\n@media screen and (min-width: 769px), print {\n.columns.is-grid {\n      -ms-flex-wrap: wrap;\n          flex-wrap: wrap;\n}\n.columns.is-grid > .column {\n        max-width: 33.3333%;\n        padding: 0.75rem;\n        width: 33.3333%;\n}\n.columns.is-grid > .column + .column {\n          margin-left: 0;\n}\n}\n.columns.is-mobile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.columns.is-multiline {\n    -ms-flex-wrap: wrap;\n        flex-wrap: wrap;\n}\n.columns.is-vcentered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n@media screen and (min-width: 769px), print {\n.columns:not(.is-desktop) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n@media screen and (min-width: 1000px) {\n.columns.is-desktop {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n}\n.tile {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  display: block;\n  -ms-flex-preferred-size: 0;\n      flex-basis: 0;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  min-height: -webkit-min-content;\n  min-height: -moz-min-content;\n  min-height: min-content;\n}\n.tile.is-ancestor {\n    margin-left: -0.75rem;\n    margin-right: -0.75rem;\n    margin-top: -0.75rem;\n}\n.tile.is-ancestor:last-child {\n      margin-bottom: -0.75rem;\n}\n.tile.is-ancestor:not(:last-child) {\n      margin-bottom: 0.75rem;\n}\n.tile.is-child {\n    margin: 0 !important;\n}\n.tile.is-parent {\n    padding: 0.75rem;\n}\n.tile.is-vertical {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n}\n.tile.is-vertical > .tile.is-child:not(:last-child) {\n      margin-bottom: 1.5rem !important;\n}\n@media screen and (min-width: 769px), print {\n.tile:not(.is-child) {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.tile.is-1 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 8.33333%;\n}\n.tile.is-2 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 16.66667%;\n}\n.tile.is-3 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 25%;\n}\n.tile.is-4 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 33.33333%;\n}\n.tile.is-5 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 41.66667%;\n}\n.tile.is-6 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 50%;\n}\n.tile.is-7 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 58.33333%;\n}\n.tile.is-8 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 66.66667%;\n}\n.tile.is-9 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 75%;\n}\n.tile.is-10 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 83.33333%;\n}\n.tile.is-11 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 91.66667%;\n}\n.tile.is-12 {\n      -webkit-box-flex: 0;\n          -ms-flex: none;\n              flex: none;\n      width: 100%;\n}\n}\n.hero-video {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0;\n  overflow: hidden;\n}\n.hero-video video {\n    left: 50%;\n    min-height: 100%;\n    min-width: 100%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translate3d(-50%, -50%, 0);\n            transform: translate3d(-50%, -50%, 0);\n}\n.hero-video.is-transparent {\n    opacity: 0.3;\n}\n@media screen and (max-width: 768px) {\n.hero-video {\n      display: none;\n}\n}\n.hero-buttons {\n  margin-top: 1.5rem;\n}\n@media screen and (max-width: 768px) {\n.hero-buttons .button {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-bottom: 0.75rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero-buttons {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-pack: center;\n          -ms-flex-pack: center;\n              justify-content: center;\n}\n.hero-buttons .button:not(:last-child) {\n        margin-right: 1.5rem;\n}\n}\n.hero-head,\n.hero-foot {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n.hero-body {\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1192px) {\n.hero-body {\n      padding-left: 0;\n      padding-right: 0;\n}\n}\n.hero {\n  -webkit-box-align: stretch;\n      -ms-flex-align: stretch;\n          align-items: stretch;\n  background-color: white;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n.hero .nav {\n    background: none;\n    box-shadow: 0 1px 0 rgba(219, 219, 219, 0.3);\n}\n.hero .tabs ul {\n    border-bottom: none;\n}\n.hero.is-white {\n    background-color: white;\n    color: #0a0a0a;\n}\n.hero.is-white a:not(.button),\n    .hero.is-white strong {\n      color: inherit;\n}\n.hero.is-white .title {\n      color: #0a0a0a;\n}\n.hero.is-white .subtitle {\n      color: rgba(10, 10, 10, 0.9);\n}\n.hero.is-white .subtitle a:not(.button),\n      .hero.is-white .subtitle strong {\n        color: #0a0a0a;\n}\n.hero.is-white .nav {\n      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-menu {\n        background-color: white;\n}\n}\n.hero.is-white a.nav-item,\n    .hero.is-white .nav-item a:not(.button) {\n      color: rgba(10, 10, 10, 0.7);\n}\n.hero.is-white a.nav-item:hover, .hero.is-white a.nav-item.is-active,\n      .hero.is-white .nav-item a:not(.button):hover,\n      .hero.is-white .nav-item a:not(.button).is-active {\n        color: #0a0a0a;\n}\n.hero.is-white .tabs a {\n      color: #0a0a0a;\n      opacity: 0.9;\n}\n.hero.is-white .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-white .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-white .tabs.is-boxed a, .hero.is-white .tabs.is-toggle a {\n      color: #0a0a0a;\n}\n.hero.is-white .tabs.is-boxed a:hover, .hero.is-white .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .tabs.is-boxed li.is-active a, .hero.is-white .tabs.is-boxed li.is-active a:hover, .hero.is-white .tabs.is-toggle li.is-active a, .hero.is-white .tabs.is-toggle li.is-active a:hover {\n      background-color: #0a0a0a;\n      border-color: #0a0a0a;\n      color: white;\n}\n.hero.is-white.is-bold {\n      background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-white.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #e6e6e6 0%, white 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-white .nav-toggle span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-white .nav-toggle.is-active span {\n        background-color: #0a0a0a;\n}\n.hero.is-white .nav-menu .nav-item {\n        border-top-color: rgba(10, 10, 10, 0.2);\n}\n}\n.hero.is-black {\n    background-color: #0a0a0a;\n    color: white;\n}\n.hero.is-black a:not(.button),\n    .hero.is-black strong {\n      color: inherit;\n}\n.hero.is-black .title {\n      color: white;\n}\n.hero.is-black .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-black .subtitle a:not(.button),\n      .hero.is-black .subtitle strong {\n        color: white;\n}\n.hero.is-black .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-menu {\n        background-color: #0a0a0a;\n}\n}\n.hero.is-black a.nav-item,\n    .hero.is-black .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-black a.nav-item:hover, .hero.is-black a.nav-item.is-active,\n      .hero.is-black .nav-item a:not(.button):hover,\n      .hero.is-black .nav-item a:not(.button).is-active {\n        color: white;\n}\n.hero.is-black .tabs a {\n      color: white;\n      opacity: 0.9;\n}\n.hero.is-black .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-black .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-black .tabs.is-boxed a, .hero.is-black .tabs.is-toggle a {\n      color: white;\n}\n.hero.is-black .tabs.is-boxed a:hover, .hero.is-black .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .tabs.is-boxed li.is-active a, .hero.is-black .tabs.is-boxed li.is-active a:hover, .hero.is-black .tabs.is-toggle li.is-active a, .hero.is-black .tabs.is-toggle li.is-active a:hover {\n      background-color: white;\n      border-color: white;\n      color: #0a0a0a;\n}\n.hero.is-black.is-bold {\n      background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-black.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, black 0%, #0a0a0a 71%, #181616 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-black .nav-toggle span {\n        background-color: white;\n}\n.hero.is-black .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-black .nav-toggle.is-active span {\n        background-color: white;\n}\n.hero.is-black .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-light {\n    background-color: whitesmoke;\n    color: #363636;\n}\n.hero.is-light a:not(.button),\n    .hero.is-light strong {\n      color: inherit;\n}\n.hero.is-light .title {\n      color: #363636;\n}\n.hero.is-light .subtitle {\n      color: rgba(54, 54, 54, 0.9);\n}\n.hero.is-light .subtitle a:not(.button),\n      .hero.is-light .subtitle strong {\n        color: #363636;\n}\n.hero.is-light .nav {\n      box-shadow: 0 1px 0 rgba(54, 54, 54, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-menu {\n        background-color: whitesmoke;\n}\n}\n.hero.is-light a.nav-item,\n    .hero.is-light .nav-item a:not(.button) {\n      color: rgba(54, 54, 54, 0.7);\n}\n.hero.is-light a.nav-item:hover, .hero.is-light a.nav-item.is-active,\n      .hero.is-light .nav-item a:not(.button):hover,\n      .hero.is-light .nav-item a:not(.button).is-active {\n        color: #363636;\n}\n.hero.is-light .tabs a {\n      color: #363636;\n      opacity: 0.9;\n}\n.hero.is-light .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-light .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-light .tabs.is-boxed a, .hero.is-light .tabs.is-toggle a {\n      color: #363636;\n}\n.hero.is-light .tabs.is-boxed a:hover, .hero.is-light .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .tabs.is-boxed li.is-active a, .hero.is-light .tabs.is-boxed li.is-active a:hover, .hero.is-light .tabs.is-toggle li.is-active a, .hero.is-light .tabs.is-toggle li.is-active a:hover {\n      background-color: #363636;\n      border-color: #363636;\n      color: whitesmoke;\n}\n.hero.is-light.is-bold {\n      background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-light.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #dfd8d9 0%, whitesmoke 71%, white 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-light .nav-toggle span {\n        background-color: #363636;\n}\n.hero.is-light .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-light .nav-toggle.is-active span {\n        background-color: #363636;\n}\n.hero.is-light .nav-menu .nav-item {\n        border-top-color: rgba(54, 54, 54, 0.2);\n}\n}\n.hero.is-dark {\n    background-color: #363636;\n    color: whitesmoke;\n}\n.hero.is-dark a:not(.button),\n    .hero.is-dark strong {\n      color: inherit;\n}\n.hero.is-dark .title {\n      color: whitesmoke;\n}\n.hero.is-dark .subtitle {\n      color: rgba(245, 245, 245, 0.9);\n}\n.hero.is-dark .subtitle a:not(.button),\n      .hero.is-dark .subtitle strong {\n        color: whitesmoke;\n}\n.hero.is-dark .nav {\n      box-shadow: 0 1px 0 rgba(245, 245, 245, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-menu {\n        background-color: #363636;\n}\n}\n.hero.is-dark a.nav-item,\n    .hero.is-dark .nav-item a:not(.button) {\n      color: rgba(245, 245, 245, 0.7);\n}\n.hero.is-dark a.nav-item:hover, .hero.is-dark a.nav-item.is-active,\n      .hero.is-dark .nav-item a:not(.button):hover,\n      .hero.is-dark .nav-item a:not(.button).is-active {\n        color: whitesmoke;\n}\n.hero.is-dark .tabs a {\n      color: whitesmoke;\n      opacity: 0.9;\n}\n.hero.is-dark .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-dark .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-dark .tabs.is-boxed a, .hero.is-dark .tabs.is-toggle a {\n      color: whitesmoke;\n}\n.hero.is-dark .tabs.is-boxed a:hover, .hero.is-dark .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .tabs.is-boxed li.is-active a, .hero.is-dark .tabs.is-boxed li.is-active a:hover, .hero.is-dark .tabs.is-toggle li.is-active a, .hero.is-dark .tabs.is-toggle li.is-active a:hover {\n      background-color: whitesmoke;\n      border-color: whitesmoke;\n      color: #363636;\n}\n.hero.is-dark.is-bold {\n      background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1f191a 0%, #363636 71%, #46403f 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-dark .nav-toggle span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-dark .nav-toggle.is-active span {\n        background-color: whitesmoke;\n}\n.hero.is-dark .nav-menu .nav-item {\n        border-top-color: rgba(245, 245, 245, 0.2);\n}\n}\n.hero.is-primary {\n    background-color: #00d1b2;\n    color: #fff;\n}\n.hero.is-primary a:not(.button),\n    .hero.is-primary strong {\n      color: inherit;\n}\n.hero.is-primary .title {\n      color: #fff;\n}\n.hero.is-primary .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-primary .subtitle a:not(.button),\n      .hero.is-primary .subtitle strong {\n        color: #fff;\n}\n.hero.is-primary .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-menu {\n        background-color: #00d1b2;\n}\n}\n.hero.is-primary a.nav-item,\n    .hero.is-primary .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-primary a.nav-item:hover, .hero.is-primary a.nav-item.is-active,\n      .hero.is-primary .nav-item a:not(.button):hover,\n      .hero.is-primary .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-primary .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-primary .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-primary .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-primary .tabs.is-boxed a, .hero.is-primary .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-primary .tabs.is-boxed a:hover, .hero.is-primary .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .tabs.is-boxed li.is-active a, .hero.is-primary .tabs.is-boxed li.is-active a:hover, .hero.is-primary .tabs.is-toggle li.is-active a, .hero.is-primary .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #00d1b2;\n}\n.hero.is-primary.is-bold {\n      background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #009e6c 0%, #00d1b2 71%, #00e7eb 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-primary .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-primary .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-primary .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-info {\n    background-color: #3273dc;\n    color: #fff;\n}\n.hero.is-info a:not(.button),\n    .hero.is-info strong {\n      color: inherit;\n}\n.hero.is-info .title {\n      color: #fff;\n}\n.hero.is-info .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-info .subtitle a:not(.button),\n      .hero.is-info .subtitle strong {\n        color: #fff;\n}\n.hero.is-info .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-menu {\n        background-color: #3273dc;\n}\n}\n.hero.is-info a.nav-item,\n    .hero.is-info .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-info a.nav-item:hover, .hero.is-info a.nav-item.is-active,\n      .hero.is-info .nav-item a:not(.button):hover,\n      .hero.is-info .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-info .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-info .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-info .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-info .tabs.is-boxed a, .hero.is-info .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-info .tabs.is-boxed a:hover, .hero.is-info .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .tabs.is-boxed li.is-active a, .hero.is-info .tabs.is-boxed li.is-active a:hover, .hero.is-info .tabs.is-toggle li.is-active a, .hero.is-info .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #3273dc;\n}\n.hero.is-info.is-bold {\n      background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-info.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #1577c6 0%, #3273dc 71%, #4366e5 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-info .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-info .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-info .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-info .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-success {\n    background-color: #23d160;\n    color: #fff;\n}\n.hero.is-success a:not(.button),\n    .hero.is-success strong {\n      color: inherit;\n}\n.hero.is-success .title {\n      color: #fff;\n}\n.hero.is-success .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-success .subtitle a:not(.button),\n      .hero.is-success .subtitle strong {\n        color: #fff;\n}\n.hero.is-success .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-menu {\n        background-color: #23d160;\n}\n}\n.hero.is-success a.nav-item,\n    .hero.is-success .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-success a.nav-item:hover, .hero.is-success a.nav-item.is-active,\n      .hero.is-success .nav-item a:not(.button):hover,\n      .hero.is-success .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-success .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-success .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-success .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-success .tabs.is-boxed a, .hero.is-success .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-success .tabs.is-boxed a:hover, .hero.is-success .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .tabs.is-boxed li.is-active a, .hero.is-success .tabs.is-boxed li.is-active a:hover, .hero.is-success .tabs.is-toggle li.is-active a, .hero.is-success .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #23d160;\n}\n.hero.is-success.is-bold {\n      background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-success.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #12af2f 0%, #23d160 71%, #2ce28a 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-success .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-success .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-success .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-success .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n.hero.is-warning {\n    background-color: #ffdd57;\n    color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a:not(.button),\n    .hero.is-warning strong {\n      color: inherit;\n}\n.hero.is-warning .title {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .subtitle {\n      color: rgba(0, 0, 0, 0.9);\n}\n.hero.is-warning .subtitle a:not(.button),\n      .hero.is-warning .subtitle strong {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav {\n      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-menu {\n        background-color: #ffdd57;\n}\n}\n.hero.is-warning a.nav-item,\n    .hero.is-warning .nav-item a:not(.button) {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning a.nav-item:hover, .hero.is-warning a.nav-item.is-active,\n      .hero.is-warning .nav-item a:not(.button):hover,\n      .hero.is-warning .nav-item a:not(.button).is-active {\n        color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs a {\n      color: rgba(0, 0, 0, 0.7);\n      opacity: 0.9;\n}\n.hero.is-warning .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-warning .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-warning .tabs.is-boxed a, .hero.is-warning .tabs.is-toggle a {\n      color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .tabs.is-boxed a:hover, .hero.is-warning .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .tabs.is-boxed li.is-active a, .hero.is-warning .tabs.is-boxed li.is-active a:hover, .hero.is-warning .tabs.is-toggle li.is-active a, .hero.is-warning .tabs.is-toggle li.is-active a:hover {\n      background-color: rgba(0, 0, 0, 0.7);\n      border-color: rgba(0, 0, 0, 0.7);\n      color: #ffdd57;\n}\n.hero.is-warning.is-bold {\n      background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ffaf24 0%, #ffdd57 71%, #fffa70 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-warning .nav-toggle span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-warning .nav-toggle.is-active span {\n        background-color: rgba(0, 0, 0, 0.7);\n}\n.hero.is-warning .nav-menu .nav-item {\n        border-top-color: rgba(0, 0, 0, 0.2);\n}\n}\n.hero.is-danger {\n    background-color: #ff3860;\n    color: #fff;\n}\n.hero.is-danger a:not(.button),\n    .hero.is-danger strong {\n      color: inherit;\n}\n.hero.is-danger .title {\n      color: #fff;\n}\n.hero.is-danger .subtitle {\n      color: rgba(255, 255, 255, 0.9);\n}\n.hero.is-danger .subtitle a:not(.button),\n      .hero.is-danger .subtitle strong {\n        color: #fff;\n}\n.hero.is-danger .nav {\n      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-menu {\n        background-color: #ff3860;\n}\n}\n.hero.is-danger a.nav-item,\n    .hero.is-danger .nav-item a:not(.button) {\n      color: rgba(255, 255, 255, 0.7);\n}\n.hero.is-danger a.nav-item:hover, .hero.is-danger a.nav-item.is-active,\n      .hero.is-danger .nav-item a:not(.button):hover,\n      .hero.is-danger .nav-item a:not(.button).is-active {\n        color: #fff;\n}\n.hero.is-danger .tabs a {\n      color: #fff;\n      opacity: 0.9;\n}\n.hero.is-danger .tabs a:hover {\n        opacity: 1;\n}\n.hero.is-danger .tabs li.is-active a {\n      opacity: 1;\n}\n.hero.is-danger .tabs.is-boxed a, .hero.is-danger .tabs.is-toggle a {\n      color: #fff;\n}\n.hero.is-danger .tabs.is-boxed a:hover, .hero.is-danger .tabs.is-toggle a:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .tabs.is-boxed li.is-active a, .hero.is-danger .tabs.is-boxed li.is-active a:hover, .hero.is-danger .tabs.is-toggle li.is-active a, .hero.is-danger .tabs.is-toggle li.is-active a:hover {\n      background-color: #fff;\n      border-color: #fff;\n      color: #ff3860;\n}\n.hero.is-danger.is-bold {\n      background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger.is-bold .nav-menu {\n          background-image: linear-gradient(141deg, #ff0561 0%, #ff3860 71%, #ff5257 100%);\n}\n}\n@media screen and (max-width: 768px) {\n.hero.is-danger .nav-toggle span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-toggle:hover {\n        background-color: rgba(10, 10, 10, 0.1);\n}\n.hero.is-danger .nav-toggle.is-active span {\n        background-color: #fff;\n}\n.hero.is-danger .nav-menu .nav-item {\n        border-top-color: rgba(255, 255, 255, 0.2);\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-medium .hero-body {\n      padding-bottom: 9rem;\n      padding-top: 9rem;\n}\n}\n@media screen and (min-width: 769px), print {\n.hero.is-large .hero-body {\n      padding-bottom: 18rem;\n      padding-top: 18rem;\n}\n}\n.hero.is-fullheight {\n    min-height: 100vh;\n}\n.hero.is-fullheight .hero-body {\n      -webkit-box-align: center;\n          -ms-flex-align: center;\n              align-items: center;\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n}\n.hero.is-fullheight .hero-body > .container {\n        -webkit-box-flex: 1;\n            -ms-flex-positive: 1;\n                flex-grow: 1;\n        -ms-flex-negative: 1;\n            flex-shrink: 1;\n}\n.section {\n  background-color: white;\n  padding: 3rem 1.5rem;\n}\n@media screen and (min-width: 1000px) {\n.section.is-medium {\n      padding: 9rem 1.5rem;\n}\n.section.is-large {\n      padding: 18rem 1.5rem;\n}\n}\n.footer {\n  background-color: whitesmoke;\n  padding: 3rem 1.5rem 6rem;\n}\n.graph-paper-background-small {\n  font-size: 93.8%;\n  background-color: #f1f2f3;\n  background-image: linear-gradient(0deg, transparent 0.05em, rgba(0, 0, 0, 0.05) 0.05em, rgba(0, 0, 0, 0.05) 0.125em, transparent 0.125em), linear-gradient(rgba(0, 0, 0, 0.05) 0.0625em, transparent 0.0625em);\n  background-size: .75em .75em;\n  background-position: 0 -0.5em;\n}\n.graph-paper-background-big {\n  background-color: #fff;\n  background-image: linear-gradient(rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(#19465b 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(25, 70, 91, 0.7) 1px, transparent 1px);\n  background-size: 15px 15px, 60px 60px, 15px 15px, 60px 60px, 60px 60px, 60px 60px;\n}\n.border-image-made {\n  border-style: solid;\n  border-width: 30px 750px 27px 21px;\n  -o-border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n  border-image: url(http://www.csszengarden.com/191/cover.png) 30 750 27 21 repeat;\n}\n.border-image-long {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-side {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 stretch;\n  border-image: url(\"http://localhost:8000/images/styling/border-long.png\") 0 21 fill stretch;\n}\n.border-image-bottom {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n  border-image: url(\"http://localhost:8000/images/styling/border-horiz-sm.png\") 21 0 fill repeat;\n}\n.border-image-lft {\n  border-style: solid;\n  border-width: 0px 15px 15px;\n  -o-border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n     border-image: url(\"http://localhost:8000/images/styling/border-tiled.png\") 21 repeat;\n}\n.setup-main {\n  background-image: linear-gradient(bottom left, #00496C, #004768);\n}\n#examCardArea {\n  /*<!--background-color: $color-primary-2;-->*/\n  background-color: #004768;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n}\n#itemCardArea {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 3px 9px rgba(0, 0, 0, 0.2);\n}\n.itemCol {\n  border-left-color: #990002;\n  border-left-width: thin;\n  border-left-style: solid;\n  border-right-color: #990002;\n  border-right-width: thin;\n  border-right-style: solid;\n  /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/\n  /*border-width: 10px;*/\n  /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/\n}\n.infoCol {\n  margin-top: 2em;\n  /*background-color: #00496C;*/\n}\n", ""]);
 
 // exports
 
@@ -69854,20 +68276,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 
 /***/ }),
-/* 446 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 446 */,
 /* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -69910,20 +68319,7 @@ exports.push([module.i, "\n.question-text-area label {\n  text-align: left;\n}\n
 
 
 /***/ }),
-/* 450 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(9)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.item-main-component {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/\n}\n.item-main-component h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);\n}\n.item-main-component .indexDisplay {\n    width: 2em;\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 450 */,
 /* 451 */,
 /* 452 */
 /***/ (function(module, exports) {
@@ -72731,94 +71127,8 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 457 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(537)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(164),
-  /* template */
-  __webpack_require__(495),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/cards/examCard.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] examCard.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-32d622f8", Component.options)
-  } else {
-    hotAPI.reload("data-v-32d622f8", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 458 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(542)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(165),
-  /* template */
-  __webpack_require__(506),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/cards/itemCard.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] itemCard.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-8ddede28", Component.options)
-  } else {
-    hotAPI.reload("data-v-8ddede28", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 457 */,
+/* 458 */,
 /* 459 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -73084,94 +71394,8 @@ module.exports = Component.exports
 
 /***/ }),
 /* 465 */,
-/* 466 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(527)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(173),
-  /* template */
-  __webpack_require__(504),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/buttons.add-child.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] buttons.add-child.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-79c4d3e2", Component.options)
-  } else {
-    hotAPI.reload("data-v-79c4d3e2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 467 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(518)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(174),
-  /* template */
-  __webpack_require__(488),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/buttons.add-sibling.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] buttons.add-sibling.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-0da18a35", Component.options)
-  } else {
-    hotAPI.reload("data-v-0da18a35", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 466 */,
+/* 467 */,
 /* 468 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -73260,182 +71484,10 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 470 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(529)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(177),
-  /* template */
-  __webpack_require__(510),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/buttons.item.delete.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] buttons.item.delete.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-a8f45cf6", Component.options)
-  } else {
-    hotAPI.reload("data-v-a8f45cf6", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 471 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(523)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(178),
-  /* template */
-  __webpack_require__(498),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/buttons.public-control.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] buttons.public-control.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4f3ed130", Component.options)
-  } else {
-    hotAPI.reload("data-v-4f3ed130", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 472 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(520)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(179),
-  /* template */
-  __webpack_require__(493),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/buttons.settings-control.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] buttons.settings-control.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-30e9f7a2", Component.options)
-  } else {
-    hotAPI.reload("data-v-30e9f7a2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 473 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(546)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(181),
-  /* template */
-  __webpack_require__(514),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/item.main.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] item.main.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-e2319df6", Component.options)
-  } else {
-    hotAPI.reload("data-v-e2319df6", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 470 */,
+/* 471 */,
+/* 472 */,
+/* 473 */,
 /* 474 */,
 /* 475 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -73482,50 +71534,7 @@ module.exports = Component.exports
 
 /***/ }),
 /* 476 */,
-/* 477 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(536)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(184),
-  /* template */
-  __webpack_require__(491),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/add-students-panel.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] add-students-panel.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-268a54c6", Component.options)
-  } else {
-    hotAPI.reload("data-v-268a54c6", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 477 */,
 /* 478 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -73884,13 +71893,13 @@ module.exports = Component.exports
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "item-settings-comment-setup-component"
+    staticClass: "comment-setup-panel"
   }, [_c('div', {
-    staticClass: "row"
-  }, [_c('div', {
-    staticClass: "col-md-12 "
-  }, [_c('h5', [_vm._v("Set up your comments for this item")]), _vm._v(" "), _c('div', {
-    staticClass: "form-group"
+    staticClass: "field "
+  }, [_c('label', {
+    staticClass: "label "
+  }, [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), _c('p', {
+    staticClass: "control"
   }, [_c('textarea', {
     directives: [{
       name: "model",
@@ -73898,10 +71907,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.commentText),
       expression: "commentText"
     }],
-    staticClass: "form-control",
+    staticClass: "textarea comment-text",
     attrs: {
       "rows": "3",
-      "placeholder": _vm.placeholders.elementText
+      "placeholder": _vm.placeholder
     },
     domProps: {
       "value": (_vm.commentText)
@@ -73912,11 +71921,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.commentText = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('valence-buttons', {
+  })])]), _vm._v(" "), _c('valence-buttons', {
     attrs: {
-      "index": _vm.index
+      "serial-number": _vm.serialNumber,
+      "is-exam": _vm.isExam
     }
-  })], 1)])])
+  })], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -73927,35 +71937,7 @@ if (false) {
 }
 
 /***/ }),
-/* 488 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('button', {
-    staticClass: "button add-sibling-button is-primary is-outlined",
-    on: {
-      "click": _vm.add
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Add Sibling")])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-plus",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-0da18a35", module.exports)
-  }
-}
-
-/***/ }),
+/* 488 */,
 /* 489 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74033,23 +72015,7 @@ if (false) {
 }
 
 /***/ }),
-/* 491 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "add-students-panel"
-  }, [_vm._v("\n\n\"students here\"\n    ")])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-268a54c6", module.exports)
-  }
-}
-
-/***/ }),
+/* 491 */,
 /* 492 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74069,38 +72035,7 @@ if (false) {
 }
 
 /***/ }),
-/* 493 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('button', {
-    staticClass: "button settings-button is-info is-outlined is-large",
-    attrs: {
-      "id": _vm.settingsButtonId
-    },
-    on: {
-      "click": _vm.toggleVis
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span')])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-large"
-  }, [_c('i', {
-    staticClass: "fa fa-cogs",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-30e9f7a2", module.exports)
-  }
-}
-
-/***/ }),
+/* 493 */,
 /* 494 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74124,116 +72059,7 @@ if (false) {
 }
 
 /***/ }),
-/* 495 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "exam-card-component card",
-    attrs: {
-      "id": _vm.divId,
-      "data-id": _vm.serialNumber,
-      "data-index": _vm.serialNumber
-    }
-  }, [_c('div', {
-    staticClass: "card-content"
-  }, [_c('item-main', {
-    attrs: {
-      "serial-number": _vm.serialNumber,
-      "is-exam": true
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.paneVisible),
-      expression: "paneVisible"
-    }],
-    staticClass: "card-content"
-  }, [_c('edit-tabs', {
-    attrs: {
-      "serial-number": _vm.serialNumber,
-      "is-exam": true
-    }
-  }), _vm._v(" "), _c('router-view', {
-    attrs: {
-      "name": "itemPanels"
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    staticClass: "card-footer"
-  }, [_c('div', {
-    staticClass: "card-footer-item"
-  }, [_c('div', {
-    staticClass: "field is-grouped"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('add-child-button', {
-    attrs: {
-      "serial-number": _vm.serialNumber
-    }
-  })], 1), _vm._v(" "), _vm._m(0), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('public-indicator', {
-    attrs: {
-      "serial-number": _vm.serialNumber
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('delete-item-button', {
-    attrs: {
-      "serial-number": _vm.serialNumber
-    }
-  })], 1)])]), _vm._v(" "), _vm._m(1)]), _vm._v(" "), (_vm.numberChildren > 0) ? _c('div', {
-    staticClass: "box"
-  }, _vm._l((_vm.children), function(isn) {
-    return _c('div', [_c('item-card', {
-      key: isn,
-      attrs: {
-        "serial-number": isn,
-        "index": isn
-      }
-    })], 1)
-  })) : _vm._e(), _vm._v(" "), _c('progress-dashboard')], 1)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
-    staticClass: "control"
-  }, [_c('button', {
-    staticClass: "button is-primary is-outlined"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-clone",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Clone")])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "card-footer-item"
-  }, [_c('div', {
-    staticClass: "field is-grouped"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('button', {
-    staticClass: "button add-child-button is-success is-outlined"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-check",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Grade it")])])])])])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-32d622f8", module.exports)
-  }
-}
-
-/***/ }),
+/* 495 */,
 /* 496 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74331,24 +72157,23 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "valence-buttons form-group "
-  }, [_c('b-button-group', {
-    attrs: {
-      "size": "sm"
-    }
+    staticClass: "valence-buttons field "
+  }, [_c('p', {
+    staticClass: "control"
   }, _vm._l((_vm.valences), function(valence) {
-    return _c('b-button', {
+    return _c('button', {
       key: valence,
+      staticClass: "button is-outlined is-info",
       attrs: {
-        "variant": "primary"
+        "type": "button"
       },
       on: {
         "click": function($event) {
           _vm.setValence(valence)
         }
       }
-    }, [_vm._v(_vm._s(valence))])
-  }))], 1)
+    }, [_vm._v(_vm._s(valence) + "\n          ")])
+  }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -74359,38 +72184,7 @@ if (false) {
 }
 
 /***/ }),
-/* 498 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('button', {
-    staticClass: "public-indicator button is-outlined ",
-    class: {
-      'is-warning': _vm.publicity
-    },
-    on: {
-      "click": _vm.togglePublic
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Visibility")])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-eye",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-4f3ed130", module.exports)
-  }
-}
-
-/***/ }),
+/* 498 */,
 /* 499 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74490,12 +72284,12 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "panel-exam-detail-component  "
+    staticClass: "exam-detail-panel  "
   }, [_c('div', {
-    staticClass: "field"
+    staticClass: "public-name-input field"
   }, [_c('label', {
     staticClass: "label"
-  }, [_vm._v("Public Assignment Name")]), _vm._v(" "), _c('p', {
+  }, [_vm._v("Public Name")]), _vm._v(" "), _c('p', {
     staticClass: "control"
   }, [_c('input', {
     directives: [{
@@ -74679,35 +72473,7 @@ if (false) {
 }
 
 /***/ }),
-/* 504 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('button', {
-    staticClass: "button add-child-button is-primary is-outlined",
-    on: {
-      "click": _vm.add
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Add Child")])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-list-alt",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-79c4d3e2", module.exports)
-  }
-}
-
-/***/ }),
+/* 504 */,
 /* 505 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74751,148 +72517,7 @@ if (false) {
 }
 
 /***/ }),
-/* 506 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "item-card-component card",
-    class: _vm.offsetClass,
-    attrs: {
-      "id": _vm.divId,
-      "data-id": _vm.index,
-      "data-index": _vm.index,
-      "data-parent-index": _vm.parentIndex
-    }
-  }, [_c('div', {
-    staticClass: "card-content"
-  }, [_c('item-main', {
-    attrs: {
-      "index": _vm.index,
-      "serial-number": _vm.serialNumber,
-      "is-exam": false
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.paneVisible),
-      expression: "paneVisible"
-    }],
-    staticClass: "card-content"
-  }, [_c('edit-tabs', {
-    attrs: {
-      "index": _vm.index,
-      "serial-number": _vm.serialNumber,
-      "is-exam": false
-    }
-  }), _vm._v(" "), _c('router-view', {
-    attrs: {
-      "name": "itemPanels"
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    staticClass: "card-footer"
-  }, [_c('div', {
-    staticClass: "card-footer-item"
-  }, [_c('div', {
-    staticClass: "field is-grouped"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('add-sibling-button', {
-    attrs: {
-      "index": _vm.serialNumber,
-      "serial-number": _vm.serialNumber
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('add-child-button', {
-    attrs: {
-      "index": _vm.serialNumber,
-      "serial-number": _vm.serialNumber
-    }
-  })], 1), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('public-indicator', {
-    attrs: {
-      "index": _vm.index,
-      "serial-number": _vm.serialNumber
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('delete-item-button', {
-    attrs: {
-      "index": _vm.index,
-      "serial-number": _vm.serialNumber
-    }
-  })], 1)])])]), _vm._v(" "), _vm._m(2), _vm._v(" "), (_vm.numberChildren > 0) ? _c('div', {
-    staticClass: "box"
-  }, _vm._l((_vm.children), function(isn) {
-    return _c('div', [_c('item-card', {
-      key: isn,
-      attrs: {
-        "serial-number": isn,
-        "index": isn
-      }
-    })], 1)
-  })) : _vm._e()])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
-    staticClass: "control"
-  }, [_c('button', {
-    staticClass: "button is-primary is-outlined"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-clone",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Clone")])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
-    staticClass: "control"
-  }, [_c('button', {
-    staticClass: "button is-primary is-outlined"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-clone",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Import item")])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "card-footer navTabs is-centered"
-  }, [_c('div', {
-    staticClass: "tabs "
-  }, [_c('ul', [_c('li', [_c('a', [_c('span', {
-    staticClass: "icon"
-  }, [_c('i', {
-    staticClass: "fa fa-angle-left"
-  })]), _vm._v(" "), _c('span', [_vm._v("Left")])])]), _vm._v(" "), _c('li', [_c('a', [_c('span', {
-    staticClass: "icon"
-  }, [_c('i', {
-    staticClass: "fa fa-angle-up"
-  })]), _vm._v(" "), _c('span', [_vm._v("Up")])])]), _vm._v(" "), _c('li', [_c('h5', [_vm._v("Move")])]), _vm._v(" "), _c('li', [_c('a', [_c('span', {
-    staticClass: "icon"
-  }, [_c('i', {
-    staticClass: "fa fa-angle-down"
-  })]), _vm._v(" "), _c('span', [_vm._v("Down")])])]), _vm._v(" "), _c('li', [_c('a', [_c('span', [_vm._v("Right")]), _vm._v(" "), _c('span', {
-    staticClass: "icon"
-  }, [_c('i', {
-    staticClass: "fa fa-angle-right"
-  })])])])])])])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-8ddede28", module.exports)
-  }
-}
-
-/***/ }),
+/* 506 */,
 /* 507 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74909,7 +72534,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "column"
   }), _vm._v(" "), _c('div', {
-    staticClass: "column is-two-thirds graph-paper-background-small border-image-lft"
+    staticClass: "column is-three-quarters  border-image-lft"
   }, [_c('div', {
     staticClass: "card",
     attrs: {
@@ -74989,38 +72614,7 @@ if (false) {
 }
 
 /***/ }),
-/* 510 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('button', {
-    staticClass: "deleteButton button is-danger is-outlined js-remove ",
-    attrs: {
-      "id": _vm.buttonid
-    },
-    on: {
-      "click": _vm.remove
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Delete")])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-times",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-a8f45cf6", module.exports)
-  }
-}
-
-/***/ }),
+/* 510 */,
 /* 511 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75149,61 +72743,7 @@ if (false) {
 }
 
 /***/ }),
-/* 514 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "item-main-component field has-addons"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.displayIndex),
-      expression: "displayIndex"
-    }],
-    staticClass: "input indexDisplay is-large",
-    attrs: {
-      "type": "text",
-      "readonly": ""
-    },
-    domProps: {
-      "value": (_vm.displayIndex)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.displayIndex = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('p', {
-    staticClass: "control is-expanded"
-  }, [_c('item-name', {
-    attrs: {
-      "index": _vm.index,
-      "serial-number": _vm.serialNumber
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('settings-button', {
-    attrs: {
-      "index": _vm.index,
-      "serial-number": _vm.serialNumber,
-      "is-exam": _vm.isExam
-    }
-  })], 1)])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-e2319df6", module.exports)
-  }
-}
-
-/***/ }),
+/* 514 */,
 /* 515 */,
 /* 516 */,
 /* 517 */
@@ -75232,32 +72772,7 @@ if(false) {
 }
 
 /***/ }),
-/* 518 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(424);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(18)("058e97cb", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0da18a35\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.add-sibling.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0da18a35\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.add-sibling.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 518 */,
 /* 519 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75284,32 +72799,7 @@ if(false) {
 }
 
 /***/ }),
-/* 520 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(429);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(18)("44c66c44", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30e9f7a2\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.settings-control.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30e9f7a2\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.settings-control.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 520 */,
 /* 521 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75362,32 +72852,7 @@ if(false) {
 }
 
 /***/ }),
-/* 523 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(434);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(18)("2e0d199d", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f3ed130\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.public-control.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f3ed130\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.public-control.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 523 */,
 /* 524 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75466,32 +72931,7 @@ if(false) {
 }
 
 /***/ }),
-/* 527 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(440);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(18)("3c523e51", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79c4d3e2\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.add-child.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79c4d3e2\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.add-child.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 527 */,
 /* 528 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75518,32 +72958,7 @@ if(false) {
 }
 
 /***/ }),
-/* 529 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(446);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(18)("4f28c42f", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-a8f45cf6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.item.delete.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-a8f45cf6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.item.delete.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 529 */,
 /* 530 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -78189,58 +75604,8 @@ if(false) {
 }
 
 /***/ }),
-/* 536 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(427);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(20)("3d81f971", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-268a54c6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-students-panel.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-268a54c6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-students-panel.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 537 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(431);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(20)("57a0999c", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-32d622f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./examCard.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-32d622f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./examCard.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 536 */,
+/* 537 */,
 /* 538 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -78345,32 +75710,7 @@ if(false) {
 }
 
 /***/ }),
-/* 542 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(442);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(20)("1369c96f", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8ddede28\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./itemCard.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8ddede28\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./itemCard.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 542 */,
 /* 543 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -78449,32 +75789,7 @@ if(false) {
 }
 
 /***/ }),
-/* 546 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(450);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(20)("2e9956aa", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e2319df6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item.main.component.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e2319df6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item.main.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 546 */,
 /* 547 */,
 /* 548 */
 /***/ (function(module, exports) {
@@ -78545,7 +75860,1683 @@ module.exports = __webpack_require__(144);
 
 
 /***/ }),
-/* 551 */
+/* 551 */,
+/* 552 */,
+/* 553 */,
+/* 554 */,
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */,
+/* 559 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(7)(
+  /* script */
+  null,
+  /* template */
+  null,
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/old/pane.edit-item.component.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 560 */,
+/* 561 */,
+/* 562 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+    //        props: ['index'],
+
+    data: function data() {
+        return {
+            serialNumber: _.toInteger(this.$route.params.serialNumber),
+            placeholders: {}
+        };
+    },
+
+    computed: {
+
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        //Doing this via computed property so don't have to pass in on route
+        isExam: function isExam() {
+            if (this.item instanceof Exam) return true;
+            return false;
+        }
+    },
+
+    methods: {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 563 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 564 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(566)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(562),
+  /* template */
+  __webpack_require__(565),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/grades-panel.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] grades-panel.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-65793555", Component.options)
+  } else {
+    hotAPI.reload("data-v-65793555", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 565 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "grades-panel"
+  }, [_c('p', [_vm._v("Setting grade distribution happens here")])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-65793555", module.exports)
+  }
+}
+
+/***/ }),
+/* 566 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(563);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("1b51a0aa", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-65793555\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grades-panel.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-65793555\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grades-panel.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 567 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: ['item', 'index', 'serialNumber'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {
+        parentSerialNumber: function parentSerialNumber() {
+            var node = this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+            return node.parent;
+        }
+    },
+
+    methods: {
+        /**
+         * Called on click.
+         * It in turn calls a handler
+         */
+        add: function add() {
+            console.log('CALLED', 'add', this.serialNumber);
+            this.sendRequest();
+        },
+
+        /**
+         * This sends the actual request(s)
+         */
+        sendRequest: function sendRequest() {
+            this.$store.dispatch(aTypes.createItem, this.serialNumber);
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        //            console.log( 'itemAddButton', 'ready', this.$store );
+    }
+};
+
+/***/ }),
+/* 568 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: ['item', 'index', 'serialNumber', 'type'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {
+        node: function node() {
+            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+        },
+        parentSerialNumber: function parentSerialNumber() {
+            return this.node.parent;
+        },
+        icon: function icon() {
+            var icons = {
+                sibling: '<span class="glyphicon glyphicon-list"></span>',
+                child: '<span class="glyphicon glyphicon-add"></span>'
+            };
+        }
+    },
+
+    methods: {
+        /**
+         * Called on click.
+         * It in turn calls a handler
+         */
+        add: function add() {
+            console.log('CALLED', 'add', this.serialNumber);
+            this.sendRequest();
+        },
+
+        /**
+         * This sends the actual request(s)
+         */
+        sendRequest: function sendRequest() {
+            this.$store.dispatch(aTypes.createItem, this.parentSerialNumber);
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        //            console.log( 'itemAddButton', 'ready', this.$store );
+    }
+};
+
+/***/ }),
+/* 569 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Handles showing and hiding the item settings pane
+ *
+ * Created by adam on 2/18/17.
+ */
+exports.default = {
+
+    props: ['index', 'isExam', 'serialNumber'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {
+        settingsButtonId: function settingsButtonId() {
+            return 'item-settings-button-' + this.serialNumber;
+        }
+    },
+
+    methods: {
+        toggleVis: function toggleVis() {
+            if (this.isExam) {
+                //exam case
+                this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
+                this.$router.push({ name: 'exam-detail', params: { serialNumber: this.serialNumber, active: 'details' } });
+            } else {
+                //item cases
+                var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
+
+                if (isVis) {
+                    //if comes back true, we know that currently visible
+                    //call the mutation with our index
+                    this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true }));
+                } else {
+                    //call the mutation to show with our index
+                    this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true }));
+                    this.$router.push({ name: 'item-detail', params: { serialNumber: this.serialNumber, active: 'details' } });
+                }
+            }
+        }
+    },
+
+    mounted: function mounted() {}
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 570 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * This is the indicator which tells the user whether the thing it
+ * is attached to is visible to the public.
+ * On being clicked it emits an event and listens for a request
+ * to change from public to hidden or vice versa.
+ *
+ * This can be used for anything potentially public.
+ * That is, it can be used by:
+ *      Exam
+ *      ExamName
+ *      Question
+ *      QuestionName
+ *      Element
+ *      ElementName
+ *      Comment
+ *
+ * Created by adam on 2/17/17.
+ */
+exports.default = {
+
+    props: ['index', 'serialNumber'],
+
+    data: function data() {
+        return {
+            styles: {
+                public: 'is-warning',
+                private: 'is-primary'
+            },
+
+            icons: {
+                eye: {
+                    open: 'fa fa-eye',
+                    close: 'fa fa-eye-slash'
+                }
+            }
+        };
+    },
+
+    computed: {
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        //Doing this via computed property so don't have to pass in on route
+        isExam: function isExam() {
+            if (this.item instanceof Exam) return true;
+            return false;
+        },
+
+        publicity: function publicity() {
+            var item = this.$store.getters[gTypes.getItemByIndex](this.index);
+            if (typeof item !== 'undefined') {
+                return item.isPublic();
+            }
+        },
+
+        /**
+         * This alters the styling of the indicator
+         * to help highlight the possibility that others
+         * may see the thing it is attached to
+         * @returns {string}
+         */
+        displayClass: function displayClass() {
+            return this.publicity ? this.styles.public : this.styles.private;
+        },
+
+        icon: function icon() {
+            if (this.publicity) {
+                return this.icons.eye.open;
+            }
+            return this.icons.eye.close;
+        }
+
+    },
+
+    methods: {
+        /**
+         * Returns boolean for whether the thing
+         * this is attached to is visible to students
+         * (or potentially others, if there was a use).
+         * @returns {*}
+         */
+        isPublic: function isPublic() {
+            var item = this.$store.getters.getItemBySerialNumber(this.serialNumber);
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if (typeof item !== 'undefined') {
+                return item.isPublic();
+            }
+        },
+
+        /**
+         * Returns boolean for whether the thing
+         * this is attached to is hidden from students
+         * (or potentially others, if there was a use).
+         * Just a semantically useful shortcut
+         * @returns {*}
+         */
+        isPrivate: function isPrivate() {
+            return !this.isPublic;
+        },
+
+        /**
+         * Called when the indicator is clicked.
+         * It subsequently calls other functions to
+         * do the work.
+         */
+        togglePublic: function togglePublic() {
+            //                console.log( 'CALLED', 'togglePublic' );
+            this.$store.dispatch(aTypes.toggleItemPublic, _Payload2.default.factory({ serialNumber: this.serialNumber }));
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 571 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 572 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 573 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 574 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 575 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(585)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(567),
+  /* template */
+  __webpack_require__(581),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/add-child-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] add-child-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-51a70602", Component.options)
+  } else {
+    hotAPI.reload("data-v-51a70602", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 576 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(584)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(568),
+  /* template */
+  __webpack_require__(580),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/add-sibling-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] add-sibling-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4bc812dc", Component.options)
+  } else {
+    hotAPI.reload("data-v-4bc812dc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 577 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(583)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(569),
+  /* template */
+  __webpack_require__(579),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/settings-display-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] settings-display-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-37fea50a", Component.options)
+  } else {
+    hotAPI.reload("data-v-37fea50a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 578 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(586)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(570),
+  /* template */
+  __webpack_require__(582),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/visibility-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] visibility-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c69b6696", Component.options)
+  } else {
+    hotAPI.reload("data-v-c69b6696", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 579 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('button', {
+    staticClass: "button settings-button is-info is-outlined is-large",
+    attrs: {
+      "id": _vm.settingsButtonId
+    },
+    on: {
+      "click": _vm.toggleVis
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span')])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-large"
+  }, [_c('i', {
+    staticClass: "fa fa-cogs",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-37fea50a", module.exports)
+  }
+}
+
+/***/ }),
+/* 580 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('button', {
+    staticClass: "button add-sibling-button is-primary is-outlined",
+    on: {
+      "click": _vm.add
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Add Sibling")])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-plus",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-4bc812dc", module.exports)
+  }
+}
+
+/***/ }),
+/* 581 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('button', {
+    staticClass: "button add-child-button is-primary is-outlined",
+    on: {
+      "click": _vm.add
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Add Child")])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-list-alt",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-51a70602", module.exports)
+  }
+}
+
+/***/ }),
+/* 582 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('button', {
+    staticClass: "public-indicator button is-outlined ",
+    class: _vm.displayClass,
+    on: {
+      "click": _vm.togglePublic
+    }
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    class: _vm.icon,
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Visibility")])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c69b6696", module.exports)
+  }
+}
+
+/***/ }),
+/* 583 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(571);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("02e6bd10", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-37fea50a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-display-control.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-37fea50a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-display-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 584 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(572);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("1778baf4", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4bc812dc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-sibling-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4bc812dc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-sibling-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 585 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(573);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("7bb4b9d7", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-51a70602\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-child-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-51a70602\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-child-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 586 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(574);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("da2240b6", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c69b6696\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./visibility-control.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c69b6696\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./visibility-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 587 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['serialNumber'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+        node: function node() {
+            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+        },
+        parent: function parent() {
+            return this.$store.getters.getItemNodeFromOrder(this.node.parent);
+        }
+    },
+
+    methods: {
+        //increases position relative to siblings
+        moveUp: function moveUp() {
+            window.console.log('card-movement-control', 'moveUp', 65);
+            var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent });
+            this.$store.commit('increasePosition', payload);
+        },
+
+        /**
+         * Decreases position relative to siblings
+         */
+        moveDown: function moveDown() {
+            window.console.log('card-movement-control', 'moveDown', 69);
+        },
+
+        /**
+         * Makes sibling of parent
+         */
+        moveLeft: function moveLeft() {
+            window.console.log('card-movement-control', 'moveLeft', 72);
+        },
+        /**
+         * Makes into child of its immediate sibling
+         */
+        moveRight: function moveRight() {
+            window.console.log('card-movement-control', 'moveRight', 75);
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 588 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 589 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(591)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(587),
+  /* template */
+  __webpack_require__(590),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/card-movement-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] card-movement-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6d496499", Component.options)
+  } else {
+    hotAPI.reload("data-v-6d496499", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 590 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "card-movement-control tabs "
+  }, [_c('ul', [_c('li', [_c('a', {
+    on: {
+      "click": _vm.moveLeft
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Left")])])]), _vm._v(" "), _c('li', [_c('a', {
+    on: {
+      "click": _vm.moveUp
+    }
+  }, [_vm._m(1), _vm._v(" "), _c('span', [_vm._v("Up")])])]), _vm._v(" "), _vm._m(2), _vm._v(" "), _c('li', [_c('a', {
+    on: {
+      "click": _vm.moveDown
+    }
+  }, [_vm._m(3), _vm._v(" "), _c('span', [_vm._v("Down")])])]), _vm._v(" "), _c('li', [_c('a', {
+    on: {
+      "click": _vm.moveRight
+    }
+  }, [_c('span', [_vm._v("Right")]), _vm._v(" "), _vm._m(4)])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-angle-left"
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-angle-up"
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('li', [_c('h5', [_vm._v("Move")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-angle-down"
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-angle-right"
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-6d496499", module.exports)
+  }
+}
+
+/***/ }),
+/* 591 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(588);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("838388cc", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6d496499\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./card-movement-control.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6d496499\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./card-movement-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 592 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+window._ = __webpack_require__(26);
+exports.default = {
+    props: ['index'],
+
+    data: function data() {
+        return {
+            //                index: this.$route.params.index,
+            serialNumber: _.toInteger(this.$route.params.serialNumber),
+
+            labels: {
+                scoreInput: 'Max Score',
+                countsInTotal: 'Counts toward total score'
+            },
+
+            title: 'Maximum possible score for this item',
+
+            placeholders: {
+                'score': 100
+            },
+            defaults: {
+                score: 100,
+                countsInTotal: true
+            }
+        };
+    },
+
+    computed: {
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        maxScoreId: function maxScoreId() {
+            return 'max-score-' + this.index;
+        },
+
+        maxScore: {
+            get: function get() {
+                if (this.item instanceof _Item2.default) {
+                    return this.item.maxScore;
+                }
+            },
+
+            set: function set(value) {
+                if (this.item instanceof _Item2.default) {
+                    var pl = _Payload2.default.factory({
+                        obj: this.item,
+                        updateProp: 'maxScore',
+                        updateVal: _.toInteger(value)
+                    });
+                    this.$store.commit(mTypes.updateItem, pl);
+                }
+            }
+        },
+
+        countsInTotal: {
+            get: function get() {
+                return this.defaults.countsInTotal;
+            },
+            set: function set(v) {}
+        }
+    },
+
+    methods: {}
+};
+
+/***/ }),
+/* 593 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.max-score-label {\n  text-align: left;\n}\n\n/*input {*/\n/*width: 4em;*/\n/*outline: none;*/\n/*}*/\n.max-score-input {\n  width: 5em;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 594 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(596)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(592),
+  /* template */
+  __webpack_require__(595),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/max-score-input.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] max-score-input.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1dcf2de3", Component.options)
+  } else {
+    hotAPI.reload("data-v-1dcf2de3", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 595 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "max-score-area"
+  }, [_c('div', {
+    staticClass: "columns"
+  }, [_c('div', {
+    staticClass: "column"
+  }, [_c('div', {
+    staticClass: "field"
+  }, [_c('label', {
+    staticClass: "label max-score-label"
+  }, [_vm._v(_vm._s(_vm.labels.scoreInput))]), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.maxScore),
+      expression: "maxScore"
+    }],
+    staticClass: "input max-score-input",
+    attrs: {
+      "type": "number",
+      "id": _vm.maxScoreId,
+      "title": _vm.title
+    },
+    domProps: {
+      "value": (_vm.maxScore)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.maxScore = $event.target.value
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })])])]), _vm._v(" "), _c('div', {
+    staticClass: "column"
+  }, [_c('div', {
+    staticClass: "field"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.countsInTotal),
+      expression: "countsInTotal"
+    }],
+    attrs: {
+      "type": "checkbox"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.countsInTotal) ? _vm._i(_vm.countsInTotal, null) > -1 : (_vm.countsInTotal)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.countsInTotal,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.countsInTotal = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.countsInTotal = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.countsInTotal = $$c
+        }
+      }
+    }
+  }), _vm._v("\n                        " + _vm._s(_vm.labels.countsInTotal) + "\n                    ")])])])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-1dcf2de3", module.exports)
+  }
+}
+
+/***/ }),
+/* 596 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(593);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("110898ab", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1dcf2de3\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./max-score-input.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1dcf2de3\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./max-score-input.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 597 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78692,47 +77683,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 exports.default = {
@@ -78751,19 +77701,9 @@ exports.default = {
     },
 
     computed: {
-        tabTitle: function tabTitle() {
-            //  return this.tab.
+        routeToComments: function routeToComments() {
+            return "/panel-comments/" + this.serialNumber;
         },
-
-        tabActive: function tabActive() {},
-        //
-        //            /**
-        //             * Returns true if the settings pane for this item should be displayed
-        //             */
-        //            visible: function () {
-        //                return this.$store.getters[ gTypes.isItemSettingsVisible ](this.index)
-        //            },
-
 
         routeToExamDetails: function routeToExamDetails() {
             return "/panel-exam-detail/" + this.serialNumber;
@@ -78771,19 +77711,10 @@ exports.default = {
 
         routeToItemDetails: function routeToItemDetails() {
             return "/panel-item-detail/" + this.serialNumber;
-            //                return "/panel-item-detail/" + this.index + '/' + this.serialNumber;
         },
 
-        routeToComments: function routeToComments() {
-            return "/panel-comments/" + this.serialNumber;
-        },
-
-        routeToStats: function routeToStats() {
-            return "/panel-stats/" + this.serialNumber;
-        },
-
-        routeToStudents: function routeToStudents() {
-            return "/panel-students/" + this.serialNumber;
+        routeToGrades: function routeToGrades() {
+            return "/panel-grades/" + this.serialNumber;
         },
 
         routeToHistory: function routeToHistory() {
@@ -78794,34 +77725,29 @@ exports.default = {
             return "/panel-notes/" + this.serialNumber;
         },
 
-        routeToTags: function routeToTags() {
-            return "/panel-tags/" + this.serialNumber;
+        routeToStats: function routeToStats() {
+            return "/panel-stats/" + this.serialNumber;
         },
 
-        /**
-         Exams fail this and thus don't have the arrows shown
-         */
-        promotable: function promotable() {
-            return this.depth > 0;
+        routeToStudents: function routeToStudents() {
+            return "/panel-students/" + this.serialNumber;
         },
-        /**
-         Only Exams fail this and thus don't have the right arrow shown
-         */
-        demotable: function demotable() {
-            return this.index > 0;
+
+        routeToTags: function routeToTags() {
+            return "/panel-tags/" + this.serialNumber;
         }
 
     },
 
     methods: {
-        show: function show() {
-            //                console.log('itemSetting', 'CALLED', 'show');
-            this.$store.commit(mTypes.showItemSettings(_Payload2.default.factory({ index: this.index })));
-        },
-        hide: function hide() {
-            //                console.log('itemSetting', 'CALLED', 'hide');
-            this.$store.commit(mTypes.hideItemSettings(_Payload2.default.factory({ index: this.index })));
-        }
+        //            show: function () {
+        //                console.log('itemSetting', 'CALLED', 'show');
+        //                this.$store.commit( mTypes.showItemSettings( Payload.factory( { index: this.index } ) ) );
+        //            },
+        //            hide: function () {
+        //                console.log('itemSetting', 'CALLED', 'hide');
+        //                this.$store.commit( mTypes.hideItemSettings( Payload.factory( { index: this.index } ) ) );
+        //            },
 
     },
 
@@ -78841,7 +77767,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 552 */
+/* 598 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(9)();
@@ -78849,25 +77775,25 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 553 */
+/* 599 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(555)
+  __webpack_require__(601)
 }
 var Component = __webpack_require__(7)(
   /* script */
-  __webpack_require__(551),
+  __webpack_require__(597),
   /* template */
-  __webpack_require__(554),
+  __webpack_require__(600),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -78875,9 +77801,9 @@ var Component = __webpack_require__(7)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/navigation/nav.edit-tabs.component.vue"
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/navigation/settings-navigation-tabs.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] nav.edit-tabs.component.vue: functional components are not supported with templates, they should use render functions.")}
+if (Component.options.functional) {console.error("[vue-loader] settings-navigation-tabs.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
@@ -78886,9 +77812,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7f7e9418", Component.options)
+    hotAPI.createRecord("data-v-77e440ca", Component.options)
   } else {
-    hotAPI.reload("data-v-7f7e9418", Component.options)
+    hotAPI.reload("data-v-77e440ca", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -78899,7 +77825,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 554 */
+/* 600 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -78946,11 +77872,26 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('a', [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
+    staticClass: "fa fa-group",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Students")])])])], 1) : _vm._e(), _vm._v(" "), (_vm.isExam) ? _c('li', {
+    attrs: {
+      "role": "presentation"
+    }
+  }, [_c('router-link', {
+    attrs: {
+      "to": _vm.routeToGrades
+    }
+  }, [_c('a', [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
     staticClass: "fa fa-graduation-cap",
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("Students")])])])], 1) : _vm._e(), _vm._v(" "), _c('li', {
+  })]), _vm._v(" "), _c('span', [_vm._v("Grades")])])])], 1) : _vm._e(), _vm._v(" "), _c('li', {
     attrs: {
       "role": "presentation"
     }
@@ -78976,7 +77917,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('a', [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
-    staticClass: "fa fa-line-chart",
+    staticClass: "fa fa-bar-chart",
     attrs: {
       "aria-hidden": "true"
     }
@@ -79031,28 +77972,28 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-7f7e9418", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-77e440ca", module.exports)
   }
 }
 
 /***/ }),
-/* 555 */
+/* 601 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(552);
+var content = __webpack_require__(598);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(18)("6ed011a4", content, false);
+var update = __webpack_require__(18)("692c396a", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7f7e9418\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./nav.edit-tabs.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7f7e9418\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./nav.edit-tabs.component.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77e440ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-navigation-tabs.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77e440ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-navigation-tabs.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -79062,7 +78003,1753 @@ if(false) {
 }
 
 /***/ }),
-/* 556 */
+/* 602 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Comment = __webpack_require__(63);
+
+var _Comment2 = _interopRequireDefault(_Comment);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = __webpack_require__(16);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        //Doing this via computed property so don't have to pass in on route
+        isExam: function isExam() {
+            if (this.item instanceof _Exam2.default) return true;
+            return false;
+        },
+
+        students: function students() {
+            return ['Jill Smith', 'Jill Chen'];
+        }
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 603 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 604 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(606)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(602),
+  /* template */
+  __webpack_require__(605),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/students-panel.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] students-panel.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4d0801f1", Component.options)
+  } else {
+    hotAPI.reload("data-v-4d0801f1", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 605 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "add-students-panel panel"
+  }, [_c('p', {
+    staticClass: "panel-heading"
+  }, [_vm._v("\n        Add students, remove students from class, create classes, see individual grades\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._l((_vm.students), function(student) {
+    return _c('a', {
+      staticClass: "panel-block "
+    }, [_vm._m(2, true), _vm._v("\n        " + _vm._s(student) + "\n    ")])
+  }), _vm._v(" "), _vm._m(3)], 2)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "panel-block"
+  }, [_c('p', {
+    staticClass: "control has-icons-left"
+  }, [_c('input', {
+    staticClass: "input is-small",
+    attrs: {
+      "type": "text",
+      "placeholder": "Search"
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "icon is-small is-left"
+  }, [_c('i', {
+    staticClass: "fa fa-search"
+  })])])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "panel-tabs"
+  }, [_c('a', {
+    staticClass: "is-active"
+  }, [_vm._v("All")]), _vm._v(" "), _c('a', [_vm._v("Section 1")]), _vm._v(" "), _c('a', [_vm._v("Section 2")]), _vm._v(" "), _c('a', [_vm._v("Section 3")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "panel-icon"
+  }, [_c('i', {
+    staticClass: "fa fa-user"
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "panel-block"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined is-fullwidth"
+  }, [_vm._v("\n            Add students\n        ")])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-4d0801f1", module.exports)
+  }
+}
+
+/***/ }),
+/* 606 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(603);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("45180962", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d0801f1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./students-panel.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d0801f1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./students-panel.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 607 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+//    import deleteButton from './item-remove-button.vue'
+//    import itemEditPane from './item.edit-pane.component.vue'
+//    import depthControl from './buttons.depth-control.component.vue'
+//    import itemMain from './item-main.vue'
+
+exports.default = {
+
+    props: [],
+
+    data: function data() {
+        return {
+
+            defaults: {},
+            isCommented: false,
+            /**
+             * Whether students can see the name of the item
+             */
+            isNamePublic: false
+        };
+    },
+
+    computed: {
+        serialNumber: function serialNumber() {
+            return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
+        },
+
+        index: function index() {
+
+            return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
+        },
+
+        exam: function exam() {
+
+            return this.$store.getters.currentExam ? this.$store.getters.currentExam : null;
+        },
+
+        /**
+         * Returns an array of serial numbers belonging to
+         * this item's children (in order)
+         */
+        children: function children() {
+            if (this.$store.getters.currentExam) {
+                var serialNumber = this.$store.getters.currentExam.serialNumber;
+
+                var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
+                var cdrn = [];
+                if (node.children.length > 0) {
+                    for (var i = 0; i < node.children.length; i++) {
+                        cdrn.push(node.children[i].data);
+                    }
+                }
+                return cdrn;
+            }
+            return [];
+        },
+
+        numberChildren: function numberChildren() {
+            var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
+            return node ? node.children.length : 0;
+        },
+
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        paneVisible: function paneVisible() {
+
+            return this.$store.getters[gTypes.isExamSettingsVisible];
+        },
+
+        divId: function divId() {
+            return "exam-card-" + this.serialNumber;
+        }
+
+    },
+
+    methods: {
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleCommentsOn: function toggleCommentsOn() {
+            console.log('CALLED', 'toggleCommentsOn');
+            this.isCommented = !this.isCommented;
+        },
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleNameVisibility: function toggleNameVisibility() {
+            console.log('CALLED', 'toggleNameVisibility');
+            this.isNamePublic = !this.isNamePublic;
+        }
+
+    },
+
+    directives: {
+        'sortable': {
+            inserted: function inserted(el, binding) {
+                //                    var sortable = new Sortable( el, binding.value || {} );
+            }
+        }
+    },
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
+        }
+    },
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 608 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _computed;
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+//    import deleteButton from './item-remove-button.vue'
+//    import itemEditPane from './item.edit-pane.component.vue'
+//    import depthControl from './buttons.depth-control.component.vue'
+//    import itemMain from './item-main.vue'
+
+exports.default = {
+
+    props: ['index', 'parent-index', 'serialNumber'],
+
+    data: function data() {
+        return {
+
+            defaults: {
+                depth: null,
+                index: null,
+                type: null,
+                //how much one unit of depth will be offset
+                tabOffset: 2
+            },
+            isCommented: false,
+            /**
+             * Whether students can see the name of the item
+             */
+            isNamePublic: false
+        };
+    },
+
+    computed: (_computed = {
+        item: function item() {
+            return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
+        },
+
+        /**
+         * Returns an array of serial numbers belonging to
+         * this item's children (in order)
+         */
+        children: function children() {
+            var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
+            var cdrn = [];
+            if (node.children.length > 0) {
+                for (var i = 0; i < node.children.length; i++) {
+                    cdrn.push(node.children[i].data);
+                }
+            }
+            return cdrn;
+        },
+
+        numberChildren: function numberChildren() {
+            var node = this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
+            return node.children.length;
+        },
+
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        paneVisible: function paneVisible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
+        },
+
+        divId: function divId() {
+            return "item-card-" + this.index;
+        },
+
+        /**
+         * Returns the bootstrap class for the depth
+         */
+        offsetClass: function offsetClass() {
+            if (this.depth > 0) {
+                var amt = this.defaults.tabOffset * this.depth;
+                var col = "col-md-offset-" + amt;
+                return col;
+            }
+        },
+
+        ddepth: function ddepth() {
+
+            //start with the current instance
+            //that way, if we are at the root,
+            //the while won't run
+            //todo or do I need the other kind?
+            var current = this.$parent;
+            var d = 0;
+            var limit = 5;
+            while (_.isEmpty(current) && d < limit) {
+                //we aren't at the root, so
+                //increment our depth counter
+                d++;
+                //and set the parent of the parent as current
+                current = current.$parent;
+            }
+            return d;
+        }
+
+    }, _defineProperty(_computed, 'item', function item() {
+        return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
+    }), _defineProperty(_computed, 'depth', {
+        get: function get() {
+            //                    return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            //                    let item = this.$store.getters.getItemById(this.id);
+            //                    let item = this.$store.getters.getItemByIndex(this.index);
+            //                    if ( typeof item !== 'undefined' ) {
+            //                        return item.depth
+            //                    }
+            //
+        },
+        set: function set(v) {
+            //                    let item = this.$store.getters.getItemById(this.id);
+            //                    let item = this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            //                    if ( typeof item !== 'undefined' ) {
+            //                        this.$store.commit( Payload.factory( {
+            ////                            id: this.id,
+            //                            index: this.index,
+            //                            updateProp: 'depth',
+            //                            updateVal: v
+            //                        } ) );
+            //                    }
+        }
+    }), _defineProperty(_computed, 'type', {
+        get: function get() {
+            return this.defaults.index;
+        },
+        set: function set() {}
+    }), _computed),
+
+    methods: {
+
+        //            addSibling: function ( rel="younger" ) {
+        //                switch (rel){
+        //                    case 'older':
+        //                        break;
+        //                    case 'younger':
+        //                        break;
+        //                    default:
+        //                }
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleCommentsOn: function toggleCommentsOn() {
+            console.log('CALLED', 'toggleCommentsOn');
+            this.isCommented = !this.isCommented;
+        },
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleNameVisibility: function toggleNameVisibility() {
+            console.log('CALLED', 'toggleNameVisibility');
+            this.isNamePublic = !this.isNamePublic;
+        }
+
+    },
+
+    directives: {
+        'sortable': {
+            inserted: function inserted(el, binding) {
+                //                    var sortable = new Sortable( el, binding.value || {} );
+            }
+        }
+    },
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
+        }
+    },
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 609 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.item-card-component {\n  margin-top: 2em;\n  border-bottom: solid;\n  /*!*width: 80%;*!*/\n  /*.button-row {*/\n  /*padding: 1em;*/\n  /*}*/\n  /*.panel-heading {*/\n  /*background-color: #FFFDF4;*/\n}\n.item-card-component .nav-tabs {\n    /*text-align: center;*/\n}\n.item-card-component .box {\n    /*padding-left: 2%;*/\n    margin-left: 1em;\n    margin-right: 1em;\n    margin-bottom: 1em;\n    /*border-top-width: 0;*/\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 610 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.exam-card {\n  margin-top: 2em;\n  border-bottom: solid;\n  /*!*width: 80%;*!*/\n  /*.button-row {*/\n  /*padding: 1em;*/\n  /*}*/\n  /*.panel-heading {*/\n  background-color: #00496C;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 611 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(616)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(607),
+  /* template */
+  __webpack_require__(614),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/cards/exam-card.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] exam-card.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1e710b94", Component.options)
+  } else {
+    hotAPI.reload("data-v-1e710b94", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 612 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(615)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(608),
+  /* template */
+  __webpack_require__(613),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/cards/item-card.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] item-card.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0d495b20", Component.options)
+  } else {
+    hotAPI.reload("data-v-0d495b20", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 613 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "item-card-component card",
+    class: _vm.offsetClass,
+    attrs: {
+      "id": _vm.divId,
+      "data-id": _vm.index,
+      "data-index": _vm.index,
+      "data-parent-index": _vm.parentIndex
+    }
+  }, [_c('div', {
+    staticClass: "card-content"
+  }, [_c('item-main', {
+    attrs: {
+      "index": _vm.index,
+      "serial-number": _vm.serialNumber,
+      "is-exam": false
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.paneVisible),
+      expression: "paneVisible"
+    }],
+    staticClass: "card-content"
+  }, [_c('edit-tabs', {
+    attrs: {
+      "index": _vm.index,
+      "serial-number": _vm.serialNumber,
+      "is-exam": false
+    }
+  }), _vm._v(" "), _c('router-view', {
+    attrs: {
+      "name": "itemPanels"
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "card-footer"
+  }, [_c('div', {
+    staticClass: "card-footer-item"
+  }, [_c('div', {
+    staticClass: "field is-grouped"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('add-sibling-button', {
+    attrs: {
+      "index": _vm.serialNumber,
+      "serial-number": _vm.serialNumber
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('add-child-button', {
+    attrs: {
+      "index": _vm.serialNumber,
+      "serial-number": _vm.serialNumber
+    }
+  })], 1), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('public-indicator', {
+    attrs: {
+      "index": _vm.index,
+      "serial-number": _vm.serialNumber
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('remove-item-button', {
+    attrs: {
+      "index": _vm.index,
+      "serial-number": _vm.serialNumber
+    }
+  })], 1)])])]), _vm._v(" "), _c('div', {
+    staticClass: "card-footer navTabs"
+  }, [_c('div', {
+    staticClass: "card-footer-item is-fullwidth"
+  }, [_c('card-movement-control', {
+    attrs: {
+      "serialNumber": _vm.serialNumber
+    }
+  })], 1)]), _vm._v(" "), (_vm.numberChildren > 0) ? _c('div', {
+    staticClass: "box"
+  }, _vm._l((_vm.children), function(isn) {
+    return _c('div', [_c('item-card', {
+      key: isn,
+      attrs: {
+        "serial-number": isn,
+        "index": isn
+      }
+    })], 1)
+  })) : _vm._e()])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "control"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined"
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-clone",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Clone")])])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "control"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined"
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-mail-forward",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Import item")])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-0d495b20", module.exports)
+  }
+}
+
+/***/ }),
+/* 614 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "exam-card card ",
+    attrs: {
+      "id": _vm.divId,
+      "data-id": _vm.serialNumber,
+      "data-index": _vm.serialNumber
+    }
+  }, [_c('div', {
+    staticClass: "card-content"
+  }, [_c('item-main', {
+    attrs: {
+      "serial-number": _vm.serialNumber,
+      "is-exam": true
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.paneVisible),
+      expression: "paneVisible"
+    }],
+    staticClass: "card-content"
+  }, [_c('edit-tabs', {
+    attrs: {
+      "serial-number": _vm.serialNumber,
+      "is-exam": true
+    }
+  }), _vm._v(" "), _c('router-view', {
+    attrs: {
+      "name": "itemPanels"
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "card-footer"
+  }, [_c('div', {
+    staticClass: "card-footer-item"
+  }, [_c('div', {
+    staticClass: "field is-grouped"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('add-child-button', {
+    attrs: {
+      "serial-number": _vm.serialNumber
+    }
+  })], 1), _vm._v(" "), _vm._m(0), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('public-indicator', {
+    attrs: {
+      "serial-number": _vm.serialNumber
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('delete-item-button', {
+    attrs: {
+      "serial-number": _vm.serialNumber
+    }
+  })], 1)])]), _vm._v(" "), _vm._m(1)]), _vm._v(" "), (_vm.numberChildren > 0) ? _c('div', {
+    staticClass: "box graph-paper-background-big"
+  }, _vm._l((_vm.children), function(isn) {
+    return _c('div', [_c('item-card', {
+      key: isn,
+      attrs: {
+        "serial-number": isn,
+        "index": isn
+      }
+    })], 1)
+  })) : _vm._e(), _vm._v(" "), _c('progress-dashboard')], 1)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "control"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined"
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-clone",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Clone")])])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "card-footer-item"
+  }, [_c('div', {
+    staticClass: "field is-grouped"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('button', {
+    staticClass: "button add-child-button is-success is-outlined"
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-check",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Grade it!")])])])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-1e710b94", module.exports)
+  }
+}
+
+/***/ }),
+/* 615 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(609);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("0a9091d9", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0d495b20\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-card.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0d495b20\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-card.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 616 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(610);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("3affa94e", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1e710b94\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./exam-card.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1e710b94\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./exam-card.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 617 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+exports.default = {
+
+    props: ['index', 'serialNumber', 'isExam'],
+
+    data: function data() {
+        return {
+
+            placeHolders: {
+                privateName: "Enter a descriptive name for this item"
+            },
+
+            types: ['Question', 'Element'],
+
+            display: {
+                type: {
+                    question: 'Q',
+                    element: 'E'
+                }
+            },
+
+            defaults: {
+                type: '-'
+            }
+        };
+    },
+
+    computed: {
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        isItem: function isItem() {
+            return !this.isExam;
+        },
+
+        position: function position() {
+            return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;
+        },
+
+        displayIndex: function displayIndex() {
+            if (this.isExam) return 'Exam';
+            var idx = this.position + 1;
+            var parentIdx = this.$parent.displayIndex;
+            if (parentIdx) return parentIdx + ' - ' + idx;
+            return idx;
+
+            //                return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;
+
+            //take the depth and make a string like
+            // 2.4.5
+        },
+
+        /**
+         * For questions, this will be the question number
+         * For elements it will be the subtask number.
+         * todo This should be displayed on the left of the area and update as the item is moved.
+         * todo It could also be hidable....
+         */
+        displayOrder: {
+            get: function get() {
+                //if question, return q number
+                //if element, return order
+            },
+            set: function set(v) {}
+        }
+        //
+
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {
+        'toggle-public': function togglePublic() {}
+    },
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 618 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.item-main {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/\n}\n.item-main h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);\n}\n.item-main .indexDisplay {\n    width: 2em;\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 619 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(621)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(617),
+  /* template */
+  __webpack_require__(620),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/item-main.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] item-main.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-e436cd20", Component.options)
+  } else {
+    hotAPI.reload("data-v-e436cd20", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 620 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "item-main field has-addons"
+  }, [(_vm.isItem) ? _c('p', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.displayIndex),
+      expression: "displayIndex"
+    }],
+    staticClass: "input indexDisplay is-large",
+    attrs: {
+      "type": "text",
+      "readonly": ""
+    },
+    domProps: {
+      "value": (_vm.displayIndex)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.displayIndex = $event.target.value
+      }
+    }
+  })]) : _vm._e(), _vm._v(" "), _c('p', {
+    staticClass: "control is-expanded"
+  }, [_c('item-name', {
+    attrs: {
+      "index": _vm.index,
+      "serial-number": _vm.serialNumber
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('settings-button', {
+    attrs: {
+      "index": _vm.index,
+      "serial-number": _vm.serialNumber,
+      "is-exam": _vm.isExam
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('children-display-control', {
+    attrs: {
+      "serial-number": _vm.serialNumber,
+      "is-exam": _vm.isExam
+    }
+  })], 1)])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-e436cd20", module.exports)
+  }
+}
+
+/***/ }),
+/* 621 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(618);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("4ed2c4fa", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e436cd20\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-main.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e436cd20\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-main.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 622 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Handles showing and hiding the item settings pane
+ *
+ * Created by adam on 2/18/17.
+ */
+exports.default = {
+
+    props: ['index', 'isExam', 'serialNumber'],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {
+        buttonId: function buttonId() {
+            return 'children-display-button-' + this.serialNumber;
+        },
+
+        //for toggling the display state of the button
+        isActive: function isActive() {}
+
+    },
+
+    methods: {
+        toggleVisibility: function toggleVisibility() {
+            //change stored state
+            window.console.log('children-display-control', 'toggleVisibility', 45, this.serialNumber);
+            //            this.$state.commit();
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 623 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 624 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(626)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(622),
+  /* template */
+  __webpack_require__(625),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/children-display-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] children-display-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3dc0c957", Component.options)
+  } else {
+    hotAPI.reload("data-v-3dc0c957", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 625 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('button', {
+    staticClass: "button children-display-control is-info is-outlined is-large",
+    attrs: {
+      "id": _vm.buttonId
+    },
+    on: {
+      "click": _vm.toggleVisibility
+    }
+  }, [_vm._m(0)])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-large"
+  }, [_c('i', {
+    staticClass: "fa fa-sitemap",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-3dc0c957", module.exports)
+  }
+}
+
+/***/ }),
+/* 626 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(623);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("78e2ee34", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3dc0c957\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./children-display-control.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3dc0c957\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./children-display-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 627 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79076,58 +79763,9 @@ var _actionTypes = __webpack_require__(3);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _Payload = __webpack_require__(2);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(5);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+var bootbox = __webpack_require__(225); //
 //
 //
 //
@@ -79142,73 +79780,46 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 
-window._ = __webpack_require__(26);
 exports.default = {
-    props: ['index'],
-
-    data: function data() {
-        return {
-            //                index: this.$route.params.index,
-            serialNumber: _.toInteger(this.$route.params.serialNumber),
-
-            labels: {
-                scoreInput: 'Max Score',
-                countsInTotal: 'Counts toward total score'
-            },
-
-            title: 'Maximum possible score for this item',
-
-            placeholders: {
-                'score': 100
-            },
-            defaults: {
-                score: 100,
-                countsInTotal: true
-            }
-        };
-    },
+    props: ['index', 'id', 'serialNumber'],
 
     computed: {
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        buttonId: function buttonId() {
+            return 'remove-item-button-' + this.serialNumber;
         },
+        visible: function visible() {},
 
-        maxScoreId: function maxScoreId() {
-            return 'max-score-' + this.index;
-        },
-
-        maxScore: {
-            get: function get() {
-                if (this.item instanceof _Item2.default) {
-                    return this.item.maxScore;
-                }
-            },
-
-            set: function set(value) {
-                if (this.item instanceof _Item2.default) {
-                    var pl = _Payload2.default.factory({
-                        obj: this.item,
-                        updateProp: 'maxScore',
-                        updateVal: _.toInteger(value)
-                    });
-                    this.$store.commit(mTypes.updateItem, pl);
-                }
-            }
-        },
-
-        countsInTotal: {
-            get: function get() {
-                return this.defaults.countsInTotal;
-            },
-            set: function set(v) {}
+        label: function label() {
+            return "Remove";
         }
     },
 
-    methods: {}
+    methods: {
+        isVisible: function isVisible() {},
+
+        /**
+         * Called when the button is clicked. Handles
+         * the request to remove the item from the exam.
+         * This does not request that the item be deleted from
+         * the database.
+         */
+        remove: function remove() {
+            console.log('remove  pressed');
+        },
+
+        /**
+         * This sends the actual request(s) for deletion
+         */
+        sendRequest: function sendRequest() {
+            this.$store.dispatch(aTypes.removeItem, { index: this.index, id: this.id });
+        }
+    },
+
+    mounted: function mounted() {}
 };
 
 /***/ }),
-/* 557 */
+/* 628 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(9)();
@@ -79216,25 +79827,25 @@ exports = module.exports = __webpack_require__(9)();
 
 
 // module
-exports.push([module.i, "\n.max-score-label {\n  text-align: left;\n}\n\n/*input {*/\n/*width: 4em;*/\n/*outline: none;*/\n/*}*/\n.max-score-input {\n  width: 5em;\n}\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 558 */
+/* 629 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(561)
+  __webpack_require__(631)
 }
 var Component = __webpack_require__(7)(
   /* script */
-  __webpack_require__(556),
+  __webpack_require__(627),
   /* template */
-  __webpack_require__(560),
+  __webpack_require__(630),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -79242,9 +79853,9 @@ var Component = __webpack_require__(7)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/field.max-score.component.vue"
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/item-remove-button.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] field.max-score.component.vue: functional components are not supported with templates, they should use render functions.")}
+if (Component.options.functional) {console.error("[vue-loader] item-remove-button.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
@@ -79253,9 +79864,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4b018201", Component.options)
+    hotAPI.createRecord("data-v-604d26f4", Component.options)
   } else {
-    hotAPI.reload("data-v-4b018201", Component.options)
+    hotAPI.reload("data-v-604d26f4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -79266,136 +79877,715 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 559 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(7)(
-  /* script */
-  null,
-  /* template */
-  null,
-  /* styles */
-  null,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/old/pane.edit-item.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 560 */
+/* 630 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "max-score-area"
-  }, [_c('div', {
-    staticClass: "columns"
-  }, [_c('div', {
-    staticClass: "column"
-  }, [_c('div', {
-    staticClass: "field"
-  }, [_c('label', {
-    staticClass: "label max-score-label"
-  }, [_vm._v(_vm._s(_vm.labels.scoreInput))]), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.maxScore),
-      expression: "maxScore"
-    }],
-    staticClass: "input max-score-input",
+  return _c('button', {
+    staticClass: "item-remove-button button is-danger is-outlined ",
     attrs: {
-      "type": "number",
-      "id": _vm.maxScoreId,
-      "title": _vm.title
-    },
-    domProps: {
-      "value": (_vm.maxScore)
+      "id": _vm.buttonId
     },
     on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.maxScore = $event.target.value
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
+      "click": _vm.remove
     }
-  })])])]), _vm._v(" "), _c('div', {
-    staticClass: "column"
-  }, [_c('div', {
-    staticClass: "field"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.countsInTotal),
-      expression: "countsInTotal"
-    }],
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.label))])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-times",
     attrs: {
-      "type": "checkbox"
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.countsInTotal) ? _vm._i(_vm.countsInTotal, null) > -1 : (_vm.countsInTotal)
-    },
-    on: {
-      "__c": function($event) {
-        var $$a = _vm.countsInTotal,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.countsInTotal = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.countsInTotal = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.countsInTotal = $$c
-        }
-      }
+      "aria-hidden": "true"
     }
-  }), _vm._v("\n                        " + _vm._s(_vm.labels.countsInTotal) + "\n                    ")])])])])])])
-},staticRenderFns: []}
+  })])
+}]}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-4b018201", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-604d26f4", module.exports)
   }
 }
 
 /***/ }),
-/* 561 */
+/* 631 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(557);
+var content = __webpack_require__(628);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(20)("aed15a0e", content, false);
+var update = __webpack_require__(18)("1a9dc003", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4b018201\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./field.max-score.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4b018201\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./field.max-score.component.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-604d26f4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-remove-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-604d26f4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-remove-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 632 */,
+/* 633 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Created by adam on 3/20/17.
+ */
+// import Vue from 'vue'
+// import axios from 'axios'
+
+/**
+ * this is the component for using axios inside of a vue or vuex process
+ */
+exports.default = {
+    _connection: null,
+
+    // _api: function () {
+    //     //if the connection has not already been created
+    //     //create it
+    //     if ( this._connection == null ) {
+    //         this._connection = axios.create( {
+    //             baseURL: 'https://some-domain.com/_api/',
+    //             timeout: 1000,
+    //             headers: {'X-Custom-Header': 'foobar'}
+    //         } );
+    //
+    //         return this._connection;
+    //     }
+    //
+    // },
+    data: function data() {
+        return {
+            routeBase: {
+                item: "items",
+                exam: 'exams'
+            }
+        };
+    },
+
+    methods: {
+
+        errorHandling: function errorHandling(error) {
+            if (error.response) {
+                // The request was made, but the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
+        },
+
+        /**
+         * Asks the server to create a new model.
+         * The server returns an id for the model on success.
+         * This returns the id on success
+         *
+         */
+        getIdForNewModel: function getIdForNewModel() {
+
+            var api = 'items'; //hits the resource's store method (create would've returned the form to create)
+
+            undefined.$axios.post(api).then(function (response) {
+                console.log(response.data);
+                //return Item with the new id or other data loaded
+                if (typeof response.data.id !== 'undefined') {
+                    return response.data.id;
+                }
+            }).catch(function (error) {
+                this.errorHandling(error);
+            });
+        }
+
+        //
+        // /**
+        //  * Asks the server to get the given model
+        //  * @param IModel
+        //  */
+        // readModel: ( Model ) => {
+        //     let api = this.makeRoute(Model.className) + '/' + Model.id;
+        //
+        //     this.axios
+        //         .get(api)
+        //         .then(( response ) => {
+        //
+        //             console.log(response.data)
+        //             //return Item with the new id or other data loaded
+        //             if ( typeof response.data.id !== 'undefined' ) {
+        //                 Model.id = response.data.id;
+        //             }
+        //             return Model;
+        //         })
+        //         .catch(function ( error ) {
+        //             this._errorHandling(error);
+        //             console.log(error);
+        //         });
+        // },
+        //
+        // /**
+        //  * Asks the server to create the given item
+        //  * @param Item
+        //  */
+        // updateModel: ( Model ) => {
+        //     let api = this.makeRoute(Model.className) + '/' + Model.id;
+        //
+        //     this.axios
+        //         .put(api, Model)
+        //         .then(( response ) => {
+        //
+        //             // if (response.status == 200 ){
+        //             return callback(response);
+        //             // }
+        //             //
+        //             // console.log( response.data )
+        //             // //return Item with the new id loaded
+        //             // return Model;
+        //         })
+        //         .catch(function ( error ) {
+        //             this._errorHandling(error);
+        //             console.log(error);
+        //         });
+        // },
+        //
+        //
+        // /**
+        //  * Asks the server to create the given item
+        //  * @param Item
+        //  */
+        // deleteModel: ( Model, callback ) => {
+        //
+        //     let api = this.makeRoute(Model.className()) + '/' + Model.id;
+        //
+        //     this.axios
+        //         .delete(api)
+        //         .then(( response ) => {
+        //             if ( response.status == 200 ) {
+        //                 return callback(response);
+        //             }
+        //         })
+        //         .catch(function ( error ) {
+        //             this._errorHandling(error);
+        //             console.log(error);
+        //         });
+        // },
+
+        // this.$http.get( _api ).then( ( response ) => {
+        //     console.log( response.data )
+        // } )
+    } };
+
+/***/ }),
+/* 634 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * Created by adam on 6/23/17.
+                                                                                                                                                                                                                                                                   */
+
+var _responseHandlers = __webpack_require__(635);
+
+var REQUEST_VERSION = 1;
+
+module.exports = {
+
+    /**
+     * Handles the call to the server to update
+     * properties of an item which already has an id
+     * @param store
+     * @param item
+     */
+    updateItem: function updateItem(store, item) {
+        // if ( !item instanceof Exam ) {
+
+        item.examId = store.getters.currentExam.id;
+        item.requestVersion = REQUEST_VERSION;
+        // }
+        //put/patch
+        window.axios.put('items/' + item.id, item).then(function (response) {
+            (0, _responseHandlers.handleResponse)(store, item, response);
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+    /**
+     * Handles the call to the server to update
+     * properties of an item which already has an id
+     * @param store
+     * @param item
+     */
+    updateExam: function updateExam(store, exam) {
+        window.console.log('apiPlugin', 'updateExam', 181, exam);
+        var out = _extends({}, exam, {
+            examId: store.getters.currentExam.id,
+            requestVersion: REQUEST_VERSION
+        });
+        // }
+        //put/patch
+        window.axios.put('editexam/' + exam.id, exam).then(function (response) {
+            (0, _responseHandlers.handleResponse)(store, exam, response);
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    /**
+     * Handles the actual call to the server to create an
+     * item which doesn't have an id yet.
+     * @param store
+     * @param item
+     */
+    createItem: function createItem(store, item) {
+        if (item && item.isNew()) {
+            var exam = store.getters.currentExam;
+            var toSend = _extends({}, item, {
+                requestVersion: REQUEST_VERSION,
+                examId: exam.id
+            });
+
+            // }
+
+            //id === 'undefined' || payload.obj.id === -1)
+            //All IModels have an id of -1 when they are initially created.
+            //This is replaced with the real id once one is returned from the server.
+            //Thus, this request is to create the item.
+            //When the server has done this, it will send back an id
+            window.axios.post('items', toSend).then(function (response) {
+                (0, _responseHandlers.handleResponse)(store, item, response);
+            }).catch(function (error) {
+                (0, _responseHandlers.errorHandling)(error);
+            });
+        }
+    },
+    /**
+     * Asks the server to update the order of items
+     * @param store
+     */
+    updateItemsOrderNEW: function updateItemsOrderNEW(store) {
+        var ord = store.getters.getOrderForSync;
+        // let sortedIds = store.getters.getSortedIds;
+        var exam = store.getters.currentExam;
+
+        var payload = {
+            examId: exam.id,
+            requestVersion: REQUEST_VERSION,
+            order: ord
+        };
+
+        window.console.log('apiPlugin', 'updateItemsOrder', 178, payload);
+
+        var route = 'items/' + exam.id + '/order';
+        window.axios.post(route, payload).then(function (response) {
+            window.console.log('apiPlugin', '#### SERVER SAYS ####', 169, response);
+            //  handleResponse(store, items, response);
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    }
+
+};
+/**
+ //  * Asks the server to update the order of items
+ //  * @param store
+ //  */
+// const updateItemsOrder = ( store ) => {
+//     let items = store.getters.getAllItems;
+//     let examId = store.getters.currentExam.id;
+//     //if(typeof exam === 'undefined') return false;
+//     let payload = {
+//         examId: examId,
+//         requestVersion: REQUEST_VERSION,
+//         order: []
+//     };
+//
+//     //build an array of ids to send
+//     //note that we start at 1 so the exam id
+//     //is not included
+//     for (let i = 1; i < items.length; i++) {
+//         if ( !_.isUndefined( items[ i ].id ) ) {
+//             payload.order.push( items[ i ].id );
+//         }
+//     }
+//
+//     // window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
+//
+//     if ( items && examId ) {
+//         let route = 'items/' + examId + '/order';
+//         window.axios
+//             .put( route, payload )
+//             .then( ( response ) => {
+//                 window.console.log( 'apiPlugin', '####', 169, response );
+//                 //  handleResponse(store, items, response);
+//             } )
+//             .catch( function ( error ) {
+//                 errorHandling( error );
+//             } );
+//
+//     }
+// };
+
+/***/ }),
+/* 635 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = __webpack_require__(16);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 6/23/17.
+ */
+
+window._ = __webpack_require__(26);
+
+
+module.exports = {
+    handleItemResponse: function handleItemResponse(store, item, response) {
+        // return new Promise( ( resolve, reject ) => {
+        _Item2.default.fillableProps.forEach(function (p) {
+            if (p !== 'index') {
+                if (Object.keys(response.data).includes(p)) {
+                    store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                        obj: item,
+                        updateProp: p,
+                        updateVal: response.data[p],
+                        mutateSilently: true
+                    }));
+                }
+            }
+        });
+
+        _.forEach(_Item2.default.aliasMap, function (v, k) {
+            // if ( Object.keys( response.data ).includes( k ) ) {
+            //     store.commit( mTypes.updateItemSilently, Payload.factory( {
+            //        obj:item,
+            //         updateProp: v,
+            //         updateVal: response.data[ k ],
+            //         mutateSilently: true
+            //     } ) );
+            // }
+        });
+        // resolve();
+        // } );
+    },
+
+    handleExamResponse: function handleExamResponse(store, item, response) {
+        return new Promise(function (resolve, reject) {
+            if (typeof item.index !== 'undefined' && item.index === 0) {
+                _Exam2.default.fillableProps.forEach(function (p) {
+                    if (p !== 'index') {
+                        // window.console.log('apiPlugin', 50, p);
+                        if (Object.keys(response.data).includes(p)) {
+                            var jsProp = p === 'max_score' ? 'maxScore' : p;
+                            store.commit(mTypes.updateItemSilently, _Payload2.default.factory({
+                                index: item.index,
+                                updateProp: jsProp,
+                                updateVal: response.data[p],
+                                mutateSilently: true
+                            }));
+                        }
+                    }
+                });
+                resolve();
+            }
+        });
+    },
+
+    handleResponse: function handleResponse(store, item, response) {
+        // return new Promise( ( resolve, reject ) => {
+        // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+        if (typeof response.data === 'undefined') return false;
+
+        //return Item with the new id or other data loaded
+        if (typeof response.data !== 'undefined') {
+
+            switch (item.kind) {
+                case 'exam':
+                    handleExamResponse(store, item, response);
+                    // .then( ( resolve ) => {
+                    //     resolve();
+                    // } );
+                    break;
+
+                case 'item':
+                    handleItemResponse(store, item, response);
+                    // resolve();
+                    // .then( ( resolve ) => {
+                    //     resolve();
+                    // } );
+
+                    break;
+                default:
+                    reject();
+            }
+        }
+        // } );
+    },
+
+    errorHandling: function errorHandling(error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+        }
+        console.log(error.config);
+    }
+
+};
+
+/***/ }),
+/* 636 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var bootbox = __webpack_require__(225); //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: ['index', 'id', 'serialNumber'],
+
+    computed: {
+        buttonid: function buttonid() {
+            return 'remove-item-button-' + this.serialNumber;
+        },
+        visible: function visible() {
+            return this.$store.getters.isDeleteVisible;
+        }
+    },
+
+    methods: {
+        isVisible: function isVisible() {
+            return this.$store.getters.isDeleteVisible;
+        },
+
+        /**
+         * Called when the button is clicked. Handles
+         * the request for deletion.
+         */
+        deleteItem: function deleteItem() {
+            console.log('deleteItem pressed');
+            var me = this;
+            bootbox.dialog({
+                className: 'confirmationModal',
+                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all scores associated with the item </p>",
+                title: "Delete",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm bnt-primary cancelQuestionDelete",
+                        callback: function callback() {}
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                        className: "btn-danger btn-sm confirmQuestionDelete",
+                        callback: function callback() {
+                            me.sendRequest();
+                        }
+                    }
+                }
+            });
+        },
+
+        /**
+         * This sends the actual request(s) for deletion
+         */
+        sendRequest: function sendRequest() {
+            this.$store.dispatch(aTypes.deleteItem, { index: this.index, id: this.id });
+        }
+    },
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 637 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 638 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(640)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(636),
+  /* template */
+  __webpack_require__(639),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/item-delete-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] item-delete-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2510a926", Component.options)
+  } else {
+    hotAPI.reload("data-v-2510a926", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 639 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('button', {
+    staticClass: "item-delete-button button is-danger is-outlined js-remove ",
+    attrs: {
+      "id": _vm.buttonid
+    },
+    on: {
+      "click": _vm.deleteItem
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Delete")])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-times",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-2510a926", module.exports)
+  }
+}
+
+/***/ }),
+/* 640 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(637);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(18)("6d9c8cc8", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2510a926\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-delete-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2510a926\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-delete-button.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });

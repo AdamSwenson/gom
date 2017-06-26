@@ -4384,7 +4384,7 @@ exports.emit = function(el, name, opts) {
     }
     ev[init].apply(ev, args);
 
-    // attach remaining unused options to the object
+    // attach remaining old options to the object
     for (var key in opts) {
         if (!used[key]) {
             ev[key] = opts[key];

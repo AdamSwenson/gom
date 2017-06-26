@@ -1,11 +1,11 @@
 <template>
     <button
             class="public-indicator button is-outlined "
-            v-bind:class="{'is-warning': publicity}"
+            v-bind:class="displayClass"
             v-on:click="togglePublic"
     >
        <span class="icon is-small">
-           <i class="fa fa-eye" aria-hidden="true"></i>
+           <i v-bind:class="icon" aria-hidden="true"></i>
        </span>
         <span>Visibility</span>
     </button>
@@ -41,26 +41,35 @@
      */
     export default {
 
-        props: [ 'index' ],
+        props: [ 'index' , 'serialNumber'],
 
         data: function () {
             return {
-
                 styles: {
-                    public: 'bg-warning',
-                    private: 'bg-default'
+                    public: 'is-warning',
+                    private: 'is-primary'
                 },
 
                 icons: {
                     eye: {
-                        open: 'glyphicon glyphicon-eye-open',
-                        close: 'glyphicon glyphicon-eye-close'
+                        open: 'fa fa-eye',
+                        close: 'fa fa-eye-slash'
                     }
                 }
             };
         },
 
         computed: {
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            //Doing this via computed property so don't have to pass in on route
+            isExam: function () {
+                if ( this.item instanceof Exam ) return true;
+                return false;
+            },
+
             publicity: function () {
                 let item = this.$store.getters[ gTypes.getItemByIndex ]( this.index );
                 if ( typeof item !== 'undefined' ) {
@@ -74,7 +83,7 @@
              * may see the thing it is attached to
              * @returns {string}
              */
-            styling: function () {
+            displayClass: function () {
                 return this.publicity ? this.styles.public : this.styles.private;
             },
 
@@ -84,7 +93,8 @@
                     return this.icons.eye.open;
                 }
                 return this.icons.eye.close;
-            }
+            },
+
         },
 
         methods: {
@@ -95,8 +105,7 @@
              * @returns {*}
              */
             isPublic: function () {
-                let item = this.$store.getters.getItemByIndex( this.index );
-
+                let item = this.$store.getters.getItemBySerialNumber( this.serialNumber );
                 // let item = this.$store.getters.getItemByIndex( this.index );
                 if ( typeof item !== 'undefined' ) {
                     return item.isPublic();
@@ -121,7 +130,7 @@
              */
             togglePublic: function () {
 //                console.log( 'CALLED', 'togglePublic' );
-                this.$store.dispatch( aTypes.toggleItemPublic, Payload.factory( { index: this.index } ) );
+                this.$store.dispatch( aTypes.toggleItemPublic, Payload.factory( { serialNumber: this.serialNumber } ) );
             },
 
 

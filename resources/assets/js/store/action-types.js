@@ -70,7 +70,8 @@ export const loadGradingTimes = 'loadGradingTimes';
 
 
 //items
-export const deleteItem = 'deleteItem';
+export const deleteItem = 'deleteItem'; //destroys item in db
+export const removeItem = 'removeItem'; //disassociates it from a parent
 export const addNewItem = 'addNewItem';
 export const loadItems = 'loadItems';
 export const updateItemName = 'updateItemName';

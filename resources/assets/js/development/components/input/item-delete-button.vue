@@ -1,7 +1,10 @@
+<!--Removes an item and all associated scores from the database permanently-->
+<!--This is not for use in removing items from exams-->
+<!--It is only for use in explicit item management contexts-->
 <template>
-    <button class="deleteButton button is-danger is-outlined js-remove "
-            v-on:click="remove"
-            v-bind:id="buttonid">
+    <button class="item-delete-button button is-danger is-outlined js-remove "
+            v-on:click="deleteItem" v-bind:id="buttonid"
+    >
        <span class="icon is-small">
            <i class="fa fa-times" aria-hidden="true"></i>
        </span>
@@ -21,7 +24,7 @@
 
         computed: {
             buttonid: function () {
-                return 'delete-item-button-' + this.index;
+                return 'remove-item-button-' + this.serialNumber;
             },
             visible: function () {
                 return this.$store.getters.isDeleteVisible;
@@ -37,7 +40,7 @@
              * Called when the button is clicked. Handles
              * the request for deletion.
              */
-            remove: function () {
+            deleteItem: function () {
                 console.log( 'deleteItem pressed' );
                 let me = this;
                 bootbox.dialog( {

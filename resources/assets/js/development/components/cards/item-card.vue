@@ -21,7 +21,6 @@
         </div>
 
         <div class="card-footer">
-
             <div class="card-footer-item">
                 <div class="field is-grouped">
                     <p class="control">
@@ -47,64 +46,30 @@
                     <p class="control">
                         <button class="button is-primary is-outlined">
                                 <span class="icon is-small">
-                                    <i class="fa fa-clone" aria-hidden="true"></i>
+                                    <i class="fa fa-mail-forward" aria-hidden="true"></i>
                                 </span>
                             <span>Import item</span>
                         </button>
                     </p>
 
-                <p class="control">
+                    <p class="control">
                         <public-indicator :index="index"
                                           :serial-number="serialNumber">
                         </public-indicator>
                     </p>
                     <p class="control">
-                        <delete-item-button :index="index"
+                        <remove-item-button :index="index"
                                             :serial-number="serialNumber">
-                        </delete-item-button>
+                        </remove-item-button>
                     </p>
                 </div>
 
             </div>
-
         </div>
 
-        <div class="card-footer navTabs is-centered">
-            <div class="tabs ">
-                <ul>
-                    <li>
-                        <a>
-                            <span class="icon"><i class="fa fa-angle-left"></i></span>
-                            <span>Left</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a>
-                            <span class="icon"><i class="fa fa-angle-up"></i></span>
-                            <span>Up</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <h5>Move</h5>
-                    </li>
-
-                    <li>
-                        <a>
-                            <span class="icon"><i class="fa fa-angle-down"></i></span>
-                            <span>Down</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a>
-                            <span>Right</span>
-                            <span class="icon"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                    </li>
-
-                </ul>
+        <div class="card-footer navTabs">
+            <div class="card-footer-item is-fullwidth">
+                <card-movement-control :serialNumber="serialNumber"></card-movement-control>
             </div>
         </div>
 
@@ -128,10 +93,18 @@
 
         border-bottom: solid;
 
-        .nav-tabs{
-            text-align: center;
+        .nav-tabs {
+            /*text-align: center;*/
         }
 
+        .box {
+            /*padding-left: 2%;*/
+            margin-left:1em;
+            margin-right:1em;
+            margin-bottom:1em;
+
+            /*border-top-width: 0;*/
+        }
         /*!*width: 80%;*!*/
         /*.button-row {*/
         /*padding: 1em;*/
@@ -144,10 +117,10 @@
 
 </style>
 <script>
-    //    import deleteButton from './buttons.item.delete.component.vue'
+    //    import deleteButton from './item-remove-button.vue'
     //    import itemEditPane from './item.edit-pane.component.vue'
     //    import depthControl from './buttons.depth-control.component.vue'
-    //    import itemMain from './item.main.component.vue'
+    //    import itemMain from './item-main.vue'
 
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'

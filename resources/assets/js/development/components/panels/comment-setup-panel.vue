@@ -1,46 +1,31 @@
 <template>
-    <!-- Template used by 'edit_element' to hold the fields and buttons for an individual element.  -->
-    <div
-            class="item-settings-comment-setup-component">
-
-        <div class="row">
-            <div class="col-md-12 ">
-
-                <h5>Set up your comments for this item</h5>
-                <!-- element description (the "stock comment") -->
-                <div class="form-group">
-                        <textarea
-                                class="form-control"
-                                rows="3"
-                                v-bind:placeholder="placeholders.elementText"
-                                v-model="commentText"></textarea>
-                </div>
-
-                <valence-buttons :index="index"></valence-buttons>
-                <!--<div class="btn-group-justified"-->
-                <!--role="group"-->
-                <!--aria-label="valence buttons">-->
-
-                <!--<valence-button-->
-                <!--v-for="v in valences"-->
-                <!--:valence="v"></valence-button>-->
-
-                <!--</div>-->
-                <!--</div>-->
-
-            </div>
-
+    <div class="comment-setup-panel">
+        <div class="field ">
+            <label class="label ">{{ label }}</label>
+            <p class="control">
+                <textarea
+                        class="textarea comment-text"
+                        rows="3"
+                        v-bind:placeholder="placeholder"
+                        v-model="commentText"></textarea>
+            </p>
         </div>
+
+        <valence-buttons :serial-number="serialNumber" :is-exam="isExam"></valence-buttons>
+
     </div>
 
 </template>
 <style>
+    .comment-setup-panel {
 
+    }
 </style>
 <script>
 
     import Comment from '../../../models/Comment'
     import Payload from '../../../models/Payload'
+    import Exam from '../../../models/Exam'
     import * as mTypes from '../../../store/mutation-types';
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
@@ -55,13 +40,17 @@
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
-        props: [ 'index' ],
+        props: [],
 
         data: function () {
             return {
-                serialNumber: _.toInteger(this.$route.params.serialNumber),
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
 //                active: this.serialNumber,
 
+                labels: {
+                    exam: "Set up student feedback for the exam as a whole",
+                    item: "Set up student feedback for this item"
+                },
 
                 displayed: 'stock',
 
@@ -69,8 +58,8 @@
                     commentText: ''
                 },
                 placeholders: {
-                    elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
-                    elementText: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
+                    exam: "Set up a global comment on the exam as a whole",
+                    item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
                 },
             };
         },
@@ -90,11 +79,30 @@
         },
         computed: {
 
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            //Doing this via computed property so don't have to pass in on route
+            isExam: function () {
+                if ( this.item instanceof Exam ) return true;
+                return false;
+            },
+
+            label: function () {
+                if ( this.isExam ) return this.labels.exam;
+                return this.labels.item;
+            },
+
+            placeholder: function () {
+                if ( this.isExam ) return this.placeholders.exam;
+                return this.placeholders.item;
+            },
+
             commentText: {
                 get: function () {
-                    let item = this.$store.getters.getItemByIndex(this.$route.params.index);
-                    if ( typeof item !== 'undefined' ) {
-                        let comment = item.getComment(this.displayed);
+                    if ( typeof this.item !== 'undefined' ) {
+                        let comment = this.item.getComment( this.displayed );
                         if ( typeof comment !== 'undefined' ) {
                             return comment.text;
                         }
@@ -102,14 +110,14 @@
                 },
 
                 set: function ( v ) {
-                    window.console.log('panel.comment-setup.component', 'set', 97, this.index, this);
-                    let pl = Payload.factory({
-                        index: this.$route.params.index,
+                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this, v );
+                    let pl = Payload.factory( {
+                        obj: this.item,
+                        //index: this.$route.params.index,
                         updateValence: this.displayed,
                         updateVal: v
-                    });
-                    window.console.log('set', 101, pl);
-                    this.$store.commit(mTypes.updateComment, pl);
+                    } );
+                    this.$store.commit( mTypes.updateComment, pl );
                 }
             },
 
@@ -120,7 +128,7 @@
 
                 set: function ( newValence ) {
                     if ( newValence ) {
-                        let idx = Comment.valences.indexOf(newValence);
+                        let idx = Comment.valences.indexOf( newValence );
                         if ( idx >= 0 ) {
                             this.displayed = Comment.valences[ idx ];
                         }
@@ -136,25 +144,12 @@
         },
 
         methods: {
-            getter: function ( name ) {
-                let item = this.$store.getters.getItemByIndex(this.$route.params.index);
-                if ( typeof item !== 'undefined' ) {
-                    return item[ name ]
-                }
-            },
-
-            setter: function ( name, value ) {
-                let pl = Payload.factory({index: this.$route.params.index, updateProp: name, updateVal: value});
-                this.$store.commit(mTypes.updateItem, pl);
-            },
-
-
             /**
              * Alters which valence is displayed.
              * Called by child components
              */
             changeDisplayedValence: function ( newValence ) {
-                window.console.log('changeDisplayedValence', 130, newValence);
+                window.console.log( 'changeDisplayedValence', 130, newValence );
                 if ( newValence ) {
                     this.displayedValence = newValence;
                 }
@@ -166,7 +161,7 @@
 
         events: {
             'please-change-valence': function ( evt ) {
-                console.log('caught please-change-valence', evt);
+                console.log( 'caught please-change-valence', evt );
                 this.displayedValence = evt;
             }
         },

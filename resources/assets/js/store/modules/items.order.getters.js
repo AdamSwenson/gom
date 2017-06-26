@@ -122,7 +122,7 @@ module.exports = {
      * @param getters
      * @param serialNumber
      */
-    [gTypes.getDepthOfNode]: function( state, getters,   rootState,  serialNumber )  {
+    [gTypes.getDepthOfNode]: ( state, getters,   rootState,  serialNumber ) => (serialNumber) =>{
         //look up the node whose serial number we've just  been handed.
         let node = getNode(state, serialNumber);
 //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
