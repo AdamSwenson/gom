@@ -39,7 +39,8 @@
                         </public-indicator>
                     </p>
                     <p class="control">
-                        <delete-item-button :serial-number="serialNumber">
+                        <delete-item-button
+                                :serial-number="serialNumber">
                         </delete-item-button>
                     </p>
                 </div>

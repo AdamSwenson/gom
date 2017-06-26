@@ -6,8 +6,8 @@
 
             <div class="columns">
                 <div class="column"></div>
-
-                <div class="column is-three-quarters  border-image-lft">
+                <div class="column is-three-quarters ">
+                <!--<div class="column is-three-quarters  border-image-lft">-->
                     <div id="examCardArea" class="card">
                         <exam-card ></exam-card>
                     </div>

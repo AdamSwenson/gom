@@ -184,7 +184,7 @@
             },
 
             divId: function () {
-                return "item-card-" + this.index
+                return "item-card-" + this.serialNumber;
             },
 
             /**

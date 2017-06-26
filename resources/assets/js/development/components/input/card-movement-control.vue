@@ -82,6 +82,8 @@
              */
             moveDown: function () {
                 window.console.log( 'card-movement-control', 'moveDown', 69, );
+                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
+                this.$store.commit('decreasePosition', payload)
             },
 
             /**
@@ -89,12 +91,17 @@
              */
             moveLeft: function () {
                 window.console.log( 'card-movement-control', 'moveLeft', 72, );
+                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
+                this.$store.commit('promote', payload)
+
             },
             /**
              * Makes into child of its immediate sibling
              */
             moveRight: function () {
                 window.console.log( 'card-movement-control', 'moveRight', 75, );
+                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
+                this.$store.commit('demote', payload)
 
             }
         },

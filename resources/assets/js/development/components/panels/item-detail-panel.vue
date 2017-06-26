@@ -7,7 +7,7 @@
         ></max-score>
 
         <div class="question-text-area field ">
-            <label class="label ">Long name or full text</label>
+            <label class="label ">{{ labels.questionText }}</label>
 
             <p class="control">
                         <textarea v-bind:id="itemTextId"
@@ -59,14 +59,22 @@
                 serialNumber: _.toInteger(this.$route.params.serialNumber),
 //                active: this.serialNumber,
 
+                labels: {
+                   questionText: 'Long name or full text'
+                },
+
                 placeholders: {
-                    questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
+                    questionName: `Enter a brief description of the question or task, e.g. &quot; { $this.questionNameExample }&quot;`,
                     questionText: "Enter the full text or other longer description"
                 },
             };
         },
 
         computed: {
+            questionNameExample: function(){
+               return "I am the example for the question name";
+            },
+
 
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
@@ -95,9 +103,7 @@
                 return 'item-text-' + this.serialNumber;
             },
 
-            isDetailTabActive: function () {
-
-            },
+            isDetailTabActive: function () {},
 
 
         },

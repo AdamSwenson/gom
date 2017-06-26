@@ -70,6 +70,7 @@ module.exports = {
         let {objNode, parentNode} = payload;
 
         let currentIndex = parentNode.children.indexOf(objNode)
+        if(currentIndex + 1 === parentNode.children.length) return true;
 
         //make sure it is not the last item already
         if (parentNode.children.length !== currentIndex + 1){
@@ -80,10 +81,7 @@ module.exports = {
             //Now we push it in at  its
             //original position + 1
             parentNode.children.splice( currentIndex + 1, 0, objNode );
-
         }
-
-
     },
 
     /**
@@ -95,10 +93,17 @@ module.exports = {
      * @param payload
      */
     decreasePosition : (state, payload) =>{
+        let {objNode, parentNode} = payload;
+        let currentIndex = parentNode.children.indexOf(objNode)
         //check whether at the end of the children list
         //if so, ignore the call
+        if(currentIndex  === 0) return true;
 
-        //Splice in
+            //We first pop the item out so that its successor
+            //slides down and occupies its current index
+        //Now we push it in at  its
+        //original position -1 1
+        parentNode.children.pop(currentIndex).splice( currentIndex + 1, 0, objNode );;
 
     },
 
