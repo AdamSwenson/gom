@@ -62,7 +62,7 @@ class ElementScoreTest extends \TestCase
         $result = $this->object->recordScore($score);
         //check
         $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
-        $this->seeInDatabase('element_scores', [
+        $this->assertDatabaseHas('element_scores', [
             'element_assignment_id' => $this->elementAssignment->id,
             'student_id' => $this->student->id,
             'score' => $score
@@ -78,7 +78,7 @@ class ElementScoreTest extends \TestCase
         $result = $es->recordScore($score);
         //check
         $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
-        $this->seeInDatabase('element_scores', [
+        $this->assertDatabaseHas('element_scores', [
             'id' => $es->id,
             'element_assignment_id' => $es->element_assignment_id,
             'student_id' => $es->student_id,
@@ -97,7 +97,7 @@ class ElementScoreTest extends \TestCase
         $result = $this->object->recordCommentText($text);
         //check
         $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
-        $this->seeInDatabase('element_scores', [
+        $this->assertDatabaseHas('element_scores', [
             'element_assignment_id' => $this->elementAssignment->id,
             'student_id' => $this->student->id,
             'comment_text' => $text
@@ -113,7 +113,7 @@ class ElementScoreTest extends \TestCase
         $result = $es->recordCommentText($text);
         //check
         $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
-        $this->seeInDatabase('element_scores', [
+        $this->assertDatabaseHas('element_scores', [
             'id' => $es->id,
             'element_assignment_id' => $es->element_assignment_id,
             'student_id' => $es->student_id,

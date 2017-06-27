@@ -75,7 +75,7 @@ class ElementScoreRepositoryTest extends \TestCase
         $this->object->recordCommentText($elementAssignmentId, $studentId, $text);
 
         #check
-        $this->seeInDatabase('element_scores', [
+        $this->assertDatabaseHas('element_scores', [
             'element_assignment_id' => $elementAssignmentId,
             'student_id'            => $studentId,
             'comment_text'          => $text,
@@ -162,7 +162,7 @@ class ElementScoreRepositoryTest extends \TestCase
 
         //check
         $this->assertTrue($result, "returns as expected");
-        $this->notSeeInDatabase('element_scores', [
+        $this->assertDatabaseMissing('element_scores', [
             'element_assignment_id' => $elementAssignmentId,
             'student_id'            => $studentId,
         ]);

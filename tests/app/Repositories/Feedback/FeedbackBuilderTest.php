@@ -15,10 +15,15 @@ use App\Feedback;
 use App\QuestionAssignment;
 use App\Repositories\Element\CommentRepository;
 use App\Repositories\Element\ElementAssignmentRepository;
+use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\QuestionAssignmentRepository;
 use App\Repositories\Score\ElementScoreRepository;
+use App\Repositories\Score\IElementScoreRepository;
+use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Score\QuestionScoreRepository;
+use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Student\StudentRepository;
 use App\Student;
 use Mockery\Mock;
@@ -40,17 +45,16 @@ class FeedbackBuilderTest extends \TestCase
     {
         parent::setUp();
 
-        $this->questionAssignmentRepository = $this->makeMock('App\Repositories\Question\IQuestionAssignmentRepository');
-        $this->elementAssignmentRepository = $this->makeMock('App\Repositories\Element\IElementAssignmentRepository');
-        $this->questionScoreRepository = $this->makeMock('App\Repositories\Score\IQuestionScoreRepository');
-        $this->elementScoreRepository = $this->makeMock('App\Repositories\Score\IElementScoreRepository');
-        $this->commentRepository = $this->makeMock('App\Repositories\Element\ICommentRepository');
-        $this->studentRepository = $this->makeMock('App\Repositories\Student\IStudentRepository');
-        $this->accessKeyRepository = $this->makeMock('App\Repositories\Feedback\IAccessKeyRepository');
+        $this->questionAssignmentRepository = $this->makeMock(IQuestionAssignmentRepository::class);
+        $this->elementAssignmentRepository = $this->makeMock(IElementAssignmentRepository::class);
+        $this->questionScoreRepository = $this->makeMock(IQuestionScoreRepository::class);
+        $this->elementScoreRepository = $this->makeMock(IElementScoreRepository::class);
+        $this->commentRepository = $this->makeMock(ICommentRepository::class);
+        $this->studentRepository = $this->makeMock(IStudentRepository::class);
+        $this->accessKeyRepository = $this->makeMock(IAccessKeyRepository::class);
         $this->object = new FeedbackBuilder();
 
-        $ex = Exam::all()->random(1);
-        $this->exam = $ex[0];
+        $this->exam  = Exam::all()->random();
 
     }
 
@@ -329,13 +333,13 @@ class FeedbackBuilderTest extends \TestCase
 //        $this->assertTrue($result, "update feedback returns boolean");
 //
 //        //New content written to db with same access key
-//        $this->seeInDatabase('feedback', [
+//        $this->assertDatabaseHas('feedback', [
 //            'access_key' => $accessKey,
 //            'content'    => json_encode($testContent),
 //        ]);
 //
 //        //Make sure that the old content has been replaced
-//        $this->notSeeInDatabase('feedback', [
+//        $this->assertDatabaseMissing('feedback', [
 //            'access_key' => $accessKey,
 //            'content'    => json_encode($existingContent),
 //        ]);

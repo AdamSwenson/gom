@@ -122,7 +122,7 @@ class CreateExamCest
         $I->seeInCurrentUrl('/question/edit');
 
         $I->expectTo("see the exam in the database");
-        $I->seeInDatabase('exams', [
+        $I->assertDatabaseHas('exams', [
             'user_id'  => 1,
             'term'     => $testTerm,
             'year'     => $testYear,

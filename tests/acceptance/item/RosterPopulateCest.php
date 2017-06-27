@@ -105,30 +105,30 @@ public $examId;
         $scenario->incomplete();
 
         $I->amGoingTo("Check that all the students were saved to the database");
-        $I->seeInDatabase('students', ['user_id' => 1,
+        $I->assertDatabaseHas('students', ['user_id' => 1,
                                        'last_name' => 'student1last',
                                        'first_name' => 'student1first',
                                        'student_identifier' => 111111111,
                                        'email' => 'student1@email.com']);
 
-        $I->seeInDatabase('students', ['user_id' => 1,
+        $I->assertDatabaseHas('students', ['user_id' => 1,
                                        'last_name' => 'student2last',
                                        'first_name' => 'student2first',
                                        'student_identifier' => 222222222,
                                        'email' => 'student2@email.com']);
 
-        $I->seeInDatabase('students', ['user_id' => 1,
+        $I->assertDatabaseHas('students', ['user_id' => 1,
                                        'last_name' => 'student3last',
                                        'first_name' => 'student3first',
                                        'student_identifier' => 333333333]);
 
-        $I->seeInDatabase('students', ['user_id' => 1,
+        $I->assertDatabaseHas('students', ['user_id' => 1,
                                        'last_name' => 'student4last',
                                        'first_name' => 'student4first',
                                        'email' => 'student4@email.com']);
 
 
-        $I->seeInDatabase('students', ['user_id' => 1,
+        $I->assertDatabaseHas('students', ['user_id' => 1,
                                        'last_name' => 'student5last',
                                        'first_name' => 'student5first']);
 

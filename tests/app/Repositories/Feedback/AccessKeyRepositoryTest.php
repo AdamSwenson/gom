@@ -103,7 +103,7 @@ class AccessKeyRepositoryTest extends \TestCase
 
         //Check
         $this->assertNotEmpty($result);
-        $this->seeInDatabase('access_keys', ['exam_id' => $exam->id, 'student_id' => $student->id]);
+        $this->assertDatabaseHas('access_keys', ['exam_id' => $exam->id, 'student_id' => $student->id]);
     }
 
 
@@ -151,13 +151,13 @@ class AccessKeyRepositoryTest extends \TestCase
     {
         //prep
         $this->createAccessKeyRecordForTest();
-        $this->seeInDatabase('access_keys', ['access_key' => $this->key]);
+        $this->assertDatabaseHas('access_keys', ['access_key' => $this->key]);
 
         //call
         $this->object->removeAccessKey($this->key);
 
         //check
-        $this->notSeeInDatabase('access_keys', ['access_key' => $this->key]);
+        $this->assertDatabaseMissing('access_keys', ['access_key' => $this->key]);
     }
 
 
@@ -165,15 +165,15 @@ class AccessKeyRepositoryTest extends \TestCase
     {
         //Prep
         $this->createAccessKeyRecordForTest();
-        $this->seeInDatabase('access_keys', ['access_key' => $this->key]);
+        $this->assertDatabaseHas('access_keys', ['access_key' => $this->key]);
 
         //Call
         $this->object->removeAccessForExam($this->exam->id);
 
         //Check
-        $this->notSeeInDatabase('access_keys', ['exam_id' => $this->exam->id]);
+        $this->assertDatabaseMissing('access_keys', ['exam_id' => $this->exam->id]);
         //make sure delete cascaded to feedback table
-        $this->notSeeInDatabase('feedback', ['access_key' => $this->key]);
+        $this->assertDatabaseMissing('feedback', ['access_key' => $this->key]);
     }
 
 
@@ -181,17 +181,17 @@ class AccessKeyRepositoryTest extends \TestCase
     {
         //Prep
         $this->createAccessKeyRecordForTest();
-        $this->seeInDatabase('access_keys', ['access_key' => $this->key]);
+        $this->assertDatabaseHas('access_keys', ['access_key' => $this->key]);
 
         //Call
         $this->object->removeAccessForStudent($this->exam->id, $this->student->id);
 
         //Check
-        $this->notSeeInDatabase('access_keys', ['exam_id' => $this->exam->id, 'student_id' => $this->student->id]);
+        $this->assertDatabaseMissing('access_keys', ['exam_id' => $this->exam->id, 'student_id' => $this->student->id]);
         //check deletion of key separately to help disentangle possible errors
-        $this->notSeeInDatabase('access_keys', ['access_key' => $this->key]);
+        $this->assertDatabaseMissing('access_keys', ['access_key' => $this->key]);
         //make sure delete cascaded to feedback table
-        $this->notSeeInDatabase('feedback', ['access_key' => $this->key]);
+        $this->assertDatabaseMissing('feedback', ['access_key' => $this->key]);
     }
 
 

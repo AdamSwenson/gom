@@ -8,7 +8,7 @@ class LoginPage
 
     //routes
     // include url of current page
-    public static $URL = '/auth/login';
+    public static $URL = '/login';
     public static $forgotPasswordUrl = 'http://localhost:8000/password/email';
     public static $forgotPasswordRoute = '/password/email';
 
@@ -21,8 +21,8 @@ class LoginPage
 
     //common
     public static $mainBodyLocator = ['id' => 'loginPage'];
-    public static $pageHeadingText = "Login";
-    public static $pageTitleText = "Login | gradeomatic";
+    public static $pageHeadingText = "LoginTest";
+    public static $pageTitleText = "LoginTest | gradeomatic";
 
     //fields
     public static $emailField = '//*[@id="email"]';

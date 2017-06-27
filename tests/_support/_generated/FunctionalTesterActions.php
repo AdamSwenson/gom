@@ -1209,7 +1209,7 @@ trait FunctionalTesterActions
      * // link in context
      * $I->click('Logout', '#nav');
      * // using strict locator
-     * $I->click(['link' => 'Login']);
+     * $I->click(['link' => 'LoginTest']);
      * ?>
      * ```
      *
@@ -1307,7 +1307,7 @@ trait FunctionalTesterActions
      *
      * ```php
      * <?php
-     * $I->dontSee('Login');                         // I can suppose user is already logged in
+     * $I->dontSee('LoginTest');                         // I can suppose user is already logged in
      * $I->dontSee('Sign Up','h1');                  // I can suppose it's not a signup page
      * $I->dontSee('Sign Up','//body/h1');           // with XPath
      * $I->dontSee('Sign Up', ['css' => 'body h1']); // with strict CSS locator
@@ -1343,7 +1343,7 @@ trait FunctionalTesterActions
      *
      * ```php
      * <?php
-     * $I->dontSee('Login');                         // I can suppose user is already logged in
+     * $I->dontSee('LoginTest');                         // I can suppose user is already logged in
      * $I->dontSee('Sign Up','h1');                  // I can suppose it's not a signup page
      * $I->dontSee('Sign Up','//body/h1');           // with XPath
      * $I->dontSee('Sign Up', ['css' => 'body h1']); // with strict CSS locator
@@ -2259,7 +2259,7 @@ trait FunctionalTesterActions
      *
      * ``` html
      * <form action="/sign_up">
-     *     Login:
+     *     LoginTest:
      *     <input type="text" name="user[login]" /><br/>
      *     Password:
      *     <input type="password" name="user[password]" /><br/>

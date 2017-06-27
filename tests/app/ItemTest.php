@@ -9,7 +9,9 @@
 namespace App;
 
 
-class ItemTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ItemTest extends TestCase
 {
 
     protected $object;

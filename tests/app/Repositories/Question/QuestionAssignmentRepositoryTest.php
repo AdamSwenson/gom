@@ -63,7 +63,7 @@ public function tearDown()
         $qnum = 14;
         $result = $this->object->record($this->exam->getId(), $newQuestion->getId(), $qnum);
       //  $this->assertInstanceOf('App\QuestionAssignment', $result);
-        $this->seeInDatabase('question_assignments',
+        $this->assertDatabaseHas('question_assignments',
             ['exam_id' => $this->exam->getId(),
                 'question_id' => $newQuestion->getId(),
                 'question_number' => $qnum
@@ -84,7 +84,7 @@ public function tearDown()
 
         //  $this->assertInstanceOf('App\QuestionAssignment', $result);
 
-        $this->seeInDatabase('question_assignments',
+        $this->assertDatabaseHas('question_assignments',
             ['exam_id' => $eid, 'question_id' => $this->question->id, 'question_number' => $qnum]);
     }
 
@@ -116,7 +116,7 @@ public function tearDown()
         $aid = $this->assignment->getId();
         $result = $this->object->remove($this->assignment->exam_id, $this->assignment->question_id);
         $this->assertNotEmpty($result);
-        $this->notSeeInDatabase('question_assignments', ['id' => $aid]);
+        $this->assertDatabaseMissing('question_assignments', ['id' => $aid]);
     }
 
 }

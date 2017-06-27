@@ -138,7 +138,7 @@ class ItemRosterEditCest
         $I->wait(5);
 
         $I->expect("that the deleted student has been removed from the db");
-        $I->dontSeeInDatabase('students',
+        $I->dontassertDatabaseHas('students',
                               [
                                   'user_id'    => 1,
                                   'last_name'  => 'lastNameOfExisting2',
@@ -148,21 +148,21 @@ class ItemRosterEditCest
 
 
         $I->amGoingTo("Check that the unchanged students are still in the db");
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'    => 1,
             'last_name'  => 'lastNameOfExisting1',
             'first_name' => 'firstNameOfExisting1',
         ]);
         //student 2 was deleted
         //student 3 had all values changed. empty string replaced sid
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => 'lastNameOfExisting4',
             'first_name'         => 'firstNameOfExisting4',
             'student_identifier' => '444444444',
             'email'              => 'student4@email.com',
         ]);
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => 'lastNameOfExisting5',
             'first_name'         => 'firstNameOfExisting5',
@@ -192,7 +192,7 @@ class ItemRosterEditCest
 
 
         $I->amGoingTo("Check that the edited student is in the db");
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'    => 1,
             'last_name'  => $this->editedStudentLastName,
             'first_name' => $this->editedStudentFirstName,
@@ -200,21 +200,21 @@ class ItemRosterEditCest
         ]);
 
         $I->amGoingTo("Check that the unchanged students are still in the db");
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'    => 1,
             'last_name'  => 'lastNameOfExisting1',
             'first_name' => 'firstNameOfExisting1',
         ]);
         //student 2 was deleted
         //student 3 had all values changed. empty string replaced sid
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => 'lastNameOfExisting4',
             'first_name'         => 'firstNameOfExisting4',
             'student_identifier' => '444444444',
             'email'              => 'student4@email.com',
         ]);
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => 'lastNameOfExisting5',
             'first_name'         => 'firstNameOfExisting5',
@@ -256,7 +256,7 @@ class ItemRosterEditCest
         //$I->seeInCurrentUrl("/exam/{$examId}/question/1/element/edit");
 
         $I->amGoingTo("Check that the new student is in the db");
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => $this->newStudentLastName,
             'first_name'         => $this->newStudentFirstName,
@@ -266,21 +266,21 @@ class ItemRosterEditCest
 
 
         $I->amGoingTo("Check that the unchanged students are still in the db");
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'    => 1,
             'last_name'  => 'lastNameOfExisting1',
             'first_name' => 'firstNameOfExisting1',
         ]);
         //student 2 was deleted
         //student 3 had all values changed. empty string replaced sid
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => 'lastNameOfExisting4',
             'first_name'         => 'firstNameOfExisting4',
             'student_identifier' => '444444444',
             'email'              => 'student4@email.com',
         ]);
-        $I->seeInDatabase('students', [
+        $I->assertDatabaseHas('students', [
             'user_id'            => 1,
             'last_name'          => 'lastNameOfExisting5',
             'first_name'         => 'firstNameOfExisting5',

@@ -81,7 +81,7 @@ class QuestionTest extends \TestCase
         $result = $this->object->setQuestionNumber($exam->id, $qnum);
 
         //Check that has been entered into the database in correct place
-        $this->seeInDatabase('question_assignments',
+        $this->assertDatabaseHas('question_assignments',
                              [
                                  'exam_id' => $exam->id,
                                  'question_id' => $question->id,
@@ -103,7 +103,7 @@ class QuestionTest extends \TestCase
 //
 //        //check
 //        $this->assertInstanceOf('App\Question', $result);
-//        $this->seeInDatabase('question_assignments', ['exam_id' => $this->exam->getId(), 'question_id' => $this->question->getId(), 'question_number' => $qnum]);
+//        $this->assertDatabaseHas('question_assignments', ['exam_id' => $this->exam->getId(), 'question_id' => $this->question->getId(), 'question_number' => $qnum]);
     }
 
     /**
@@ -128,7 +128,7 @@ class QuestionTest extends \TestCase
         $result = $this->object->setQuestionNumber($exam->id, $qnum);
 
         //Check that has been entered into the database in correct place
-        $this->seeInDatabase('question_assignments',
+        $this->assertDatabaseHas('question_assignments',
                              [
                                  'exam_id' => $exam->id,
                                  'question_id' => $question->id,
@@ -136,7 +136,7 @@ class QuestionTest extends \TestCase
                              ]);
 
         //Make sure that pre-existing question has been removed
-        $this->notSeeInDatabase('question_assignments',
+        $this->assertDatabaseMissing('question_assignments',
                                 [
                                     'exam_id' => $exam->id,
                                     'question_id' => $otherQuestion->id
@@ -167,7 +167,7 @@ class QuestionTest extends \TestCase
 //        $this->assertEquals($question_id_to_add, $result->id);
 
 //        //Check that has been entered into the database in correct place
-//        $this->seeInDatabase('question_assignments',
+//        $this->assertDatabaseHas('question_assignments',
 //                             [
 //                                 'exam_id' => $target_exam_id,
 //                                 'question_id' => $question_id_to_add,
@@ -175,7 +175,7 @@ class QuestionTest extends \TestCase
 //                             ]);
 //
 //        //Make sure that pre-existing question has been removed
-//        $this->notSeeInDatabase('question_assignments',
+//        $this->assertDatabaseMissing('question_assignments',
 //                             [
 //                                 'exam_id' => $target_exam_id,
 //                                 'question_id' => $question_id_to_replace

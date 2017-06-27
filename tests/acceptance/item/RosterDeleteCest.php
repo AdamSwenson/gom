@@ -171,7 +171,7 @@ class ItemRosterDeleteCest
                 $record['email'] = $v['email'];
             }
 
-            $I->dontSeeInDatabase('students', $record);
+            $I->dontassertDatabaseHas('students', $record);
         }
 
     }

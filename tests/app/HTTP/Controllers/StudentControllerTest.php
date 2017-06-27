@@ -285,7 +285,7 @@ class StudentControllerTest extends \TestCase
         #Check
         foreach($this->expectedDbEntries as $data)
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
 
     }
@@ -318,7 +318,7 @@ class StudentControllerTest extends \TestCase
         $this->assertNotNull($response);
         foreach($this->expectedDbEntries as $data)
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -345,7 +345,7 @@ class StudentControllerTest extends \TestCase
             $this->assertEquals($data['last_name'], $s->last_name);
             $this->assertEquals($data['first_name'], $s->first_name);
             $this->assertEquals($data['id'], $s->id, "Has expected student id");
-        //    $this->seeInDatabase('students', $data);
+        //    $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -364,7 +364,7 @@ class StudentControllerTest extends \TestCase
         $this->assertNotNull($response);
         foreach($this->expectedDbEntries as $data)
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -392,7 +392,7 @@ class StudentControllerTest extends \TestCase
 //            $this->assertEquals($data['last_name'], $s->last_name);
 //            $this->assertEquals($data['first_name'], $s->first_name);
 //            $this->assertEquals($data['id'], $s->id, "Has expected student id");
-////            $this->seeInDatabase('students', $data);
+////            $this->assertDatabaseHas('students', $data);
 //        }
 //    }
 //

@@ -84,7 +84,7 @@ class ElementTest extends \TestCase
 //        $this->assertEquals($element_id_to_add_to_exam, $this->object->getId());
 //
 //        //Make sure that the element has been written into the database
-//        $this->seeInDatabase('element_assignments',
+//        $this->assertDatabaseHas('element_assignments',
 //                             [
 //                                 'question_id' => $question_id_being_assigned_to,
 //                                 'exam_id' => $target_exam_id,
@@ -92,7 +92,7 @@ class ElementTest extends \TestCase
 //                                 'subtask' => $subtask_being_assigned_to
 //                             ]);
 //        //Make sure that the target element has been overwritten (in case somehow the unique constraint got altered)
-//        $this->notSeeInDatabase('element_assignments',
+//        $this->assertDatabaseMissing('element_assignments',
 //                             [
 //                                 'question_id' => $question_id_being_assigned_to,
 //                                 'exam_id' => $target_exam_id,
@@ -103,7 +103,7 @@ class ElementTest extends \TestCase
 //        //Finally make sure that the other elements assigned to the question haven't been touched
 //        for($i=2; $i<=5; $i++)
 //        {
-//            $this->seeInDatabase('element_assignments',
+//            $this->assertDatabaseHas('element_assignments',
 //                                 [
 //                                     'question_id' => $question_id_being_assigned_to,
 //                                     'exam_id' => $target_exam_id,
@@ -162,7 +162,7 @@ class ElementTest extends \TestCase
 //        $this->assertEquals($element_id_to_reassign, $this->object->getId());
 //
 //        //Make sure that the element has been written into the new position
-//        $this->seeInDatabase('element_assignments',
+//        $this->assertDatabaseHas('element_assignments',
 //                             [
 //                                 'question_id' => $question_id_being_assigned_to,
 //                                 'exam_id' => $target_exam_id,
@@ -171,7 +171,7 @@ class ElementTest extends \TestCase
 //                             ]);
 //
 //        //Make sure that its previous assignment was removed
-//        $this->notSeeInDatabase('element_assignments',
+//        $this->assertDatabaseMissing('element_assignments',
 //                                [
 //                                    'question_id' => $question_id_being_assigned_to,
 //                                    'exam_id' => $target_exam_id,
@@ -182,7 +182,7 @@ class ElementTest extends \TestCase
 //        //Finally make sure that the other elements assigned to the question haven't been touched
 //        for($i=1; $i<=3; $i++)
 //        {
-//            $this->seeInDatabase('element_assignments',
+//            $this->assertDatabaseHas('element_assignments',
 //                                 [
 //                                     'question_id' => $question_id_being_assigned_to,
 //                                     'exam_id' => $target_exam_id,

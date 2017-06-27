@@ -11,6 +11,7 @@ namespace App\Repositories\Grade;
 use App\Exam;
 use App\Repositories\Grade\GradeFactory;
 use App\Student;
+use App\Repositories\Score\IQuestionScoreRepository;
 
 /**
  * This handles retrieving and storing the grades given to each individual
@@ -37,8 +38,8 @@ class StudentGradeRepository
      */
     public function __construct()
     {
-        $this->assignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
-        $this->questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
+        $this->assignmentDao = app()->make(IGradeAssignmentRepository::class);
+        $this->questionScoreDao = app()->make(IQuestionScoreRepository::class);
     }
 
     /**

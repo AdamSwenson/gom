@@ -57,7 +57,7 @@ public $expiration_date;
         $ak->setExpirationDate($this->expiration_date);
         $ak->save();
 
-        $this->seeInDatabase('access_keys', [
+        $this->assertDatabaseHas('access_keys', [
             'exam_id' => $this->exam->id,
             'student_id' => $this->student->id
         ]);

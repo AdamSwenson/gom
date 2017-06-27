@@ -31,7 +31,7 @@ return [
     |
     */
 
-    'url' => 'http://localhost',
+    'url' => env('APP_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -157,6 +157,7 @@ return [
          * Laravel tools imported
          */
         Collective\Html\HtmlServiceProvider::class,
+        Laravel\Tinker\TinkerServiceProvider::class,
 
         /*
          * Third party tools
@@ -166,7 +167,8 @@ return [
         BackupManager\Laravel\Laravel5ServiceProvider::class,
         Spatie\Tail\TailServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
-        Franzose\ClosureTable\ClosureTableServiceProvider::class,
+// todo reenable this
+//        Franzose\ClosureTable\ClosureTableServiceProvider::class,
         /*
          * Custom service providers
          */

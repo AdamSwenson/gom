@@ -49,7 +49,7 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
         //check
         $this->assertInstanceOf('\App\Element', $result);
-        $this->seeInDatabase('element_assignments',
+        $this->assertDatabaseHas('element_assignments',
             [
                 'question_id' => $questionAssignment->question_id,
                 'element_id' => $element->id,

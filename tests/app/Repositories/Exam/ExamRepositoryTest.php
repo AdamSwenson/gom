@@ -62,7 +62,7 @@ class ExamRepositoryTest extends \TestCase
     {
         foreach(self::$tables_using_exam as $table)
         {
-            $this->notSeeInDatabase($table, ['exam_id' => $examId]);
+            $this->assertDatabaseMissing($table, ['exam_id' => $examId]);
         }
     }
 #----------------------------------------------- delete exam
@@ -74,7 +74,7 @@ class ExamRepositoryTest extends \TestCase
         //prep
         $exam = factory(Exam::class)->create();
         $eid = $exam->id;
-        $this->seeInDatabase('exams', ['id' => $eid]);
+        $this->assertDatabaseHas('exams', ['id' => $eid]);
 
         //call
         $result = $this->object->delete_exam($exam);
@@ -82,7 +82,7 @@ class ExamRepositoryTest extends \TestCase
         //check
         $this->assertTrue($result);
         $this->assertEmpty(Exam::find($eid));
-        $this->notSeeInDatabase('exams', ['id' => $eid]);
+        $this->assertDatabaseMissing('exams', ['id' => $eid]);
         $this->checkThatExamRemovedFromAllTables($eid);
     }
     /**
@@ -93,7 +93,7 @@ class ExamRepositoryTest extends \TestCase
         //prep
         $exam = factory(Exam::class)->create();
         $eid = $exam->id;
-        $this->seeInDatabase('exams', ['id' => $eid]);
+        $this->assertDatabaseHas('exams', ['id' => $eid]);
 
         //call
         $result = $this->object->delete_exam($eid);
@@ -101,7 +101,7 @@ class ExamRepositoryTest extends \TestCase
         //check
         $this->assertTrue( $result || $result === 1);
         $this->assertEmpty(Exam::find($eid));
-        $this->notSeeInDatabase('exams', ['id' => $eid]);
+        $this->assertDatabaseMissing('exams', ['id' => $eid]);
         $this->checkThatExamRemovedFromAllTables($eid);
     }
 
@@ -155,7 +155,7 @@ class ExamRepositoryTest extends \TestCase
         #check
         $this->assertInstanceOf('\App\Exam', $result);
         $this->assertTrue($db_count < DB::table('exams')->count());
-        $this->seeInDatabase('exams', $data);
+        $this->assertDatabaseHas('exams', $data);
     }
 
 //    /**
@@ -294,7 +294,7 @@ class ExamRepositoryTest extends \TestCase
         //make sure questions were copied
         foreach($questionsToClone as $qa)
         {
-            $this->seeInDatabase('question_assignments',
+            $this->assertDatabaseHas('question_assignments',
                                  [
                                      'exam_id' => $newExam->id,
                                      'question_id' => $qa->question_id,
@@ -304,7 +304,7 @@ class ExamRepositoryTest extends \TestCase
 
         foreach($elementsToClone as $ea)
         {
-            $this->seeInDatabase('element_assignments',
+            $this->assertDatabaseHas('element_assignments',
                                  [
                                      'exam_id' => $newExam->id,
                                      'question_id' => $ea->question_id,
@@ -373,7 +373,7 @@ class ExamRepositoryTest extends \TestCase
 
         $result = $this->object->lock_exam($knownUnlocked);
         $this->assertInstanceOf('\App\Exam', $result, "returns exam");
-        $this->seeInDatabase('exams', ['id' => $knownUnlocked, 'locked' => 1]);
+        $this->assertDatabaseHas('exams', ['id' => $knownUnlocked, 'locked' => 1]);
 //        $check = Exam::find($knownUnlocked);
 //        $this->assertEquals(1, $check->locked);
     }
@@ -395,7 +395,7 @@ class ExamRepositoryTest extends \TestCase
         //unlock and test
         $result = $this->object->unlock_exam($eid);
         $this->assertInstanceOf('\App\Exam', $result, "returns exam");
-        $this->seeInDatabase('exams', ['id' => $eid, 'locked' => 0]);
+        $this->assertDatabaseHas('exams', ['id' => $eid, 'locked' => 0]);
         $this->assertEquals(0, $result->locked);
     }
 

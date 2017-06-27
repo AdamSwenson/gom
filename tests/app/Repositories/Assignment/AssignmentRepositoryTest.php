@@ -110,15 +110,15 @@ class AssignmentRepositoryTest extends \TestCase
         $assignments = Assignment::where('exam_id', $this->exam->id)->get();
 
         //Check that the desired records are present
-        $this->seeInDatabase('assignments', [
+        $this->assertDatabaseHas('assignments', [
             'exam_id' => $this->exam->id,
             'item_id' => $item1->id,
             'position' => 0]);
-        $this->seeInDatabase('assignments', [
+        $this->assertDatabaseHas('assignments', [
             'exam_id' => $this->exam->id,
             'item_id' => $item2->id,
             'position' => 1]);
-        $this->seeInDatabase('assignments', [
+        $this->assertDatabaseHas('assignments', [
             'exam_id' => $this->exam->id,
             'item_id' => $item3->id,
 //            'parent_id' => Assignment::where('exam_id', $this->exam->id)->
@@ -133,7 +133,7 @@ class AssignmentRepositoryTest extends \TestCase
     public function getItemOrderForClient()
     {
         $order = $this->makeData($this->exam);
-        dd($order);
+        $this->assertEquals(1, 1);
     }
 
 

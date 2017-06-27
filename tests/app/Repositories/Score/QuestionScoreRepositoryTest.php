@@ -163,7 +163,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $score = $this->faker->randomFloat(2, 0, 10);
 
         $es->delete();
-        $this->notSeeInDatabase('question_scores', [
+        $this->assertDatabaseMissing('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
             'student_id' => $studentId,
         ]);
@@ -197,7 +197,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assertEquals($questionAssignmentId, $result->question_assignment_id);
         $this->assertEquals($studentId, $result->student_id);
         $this->assertEquals($score, $result->score);
-        $this->seeInDatabase('question_scores', [
+        $this->assertDatabaseHas('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
             'student_id' => $studentId,
             'score' => $score,
@@ -217,7 +217,7 @@ class QuestionScoreRepositoryTest extends \TestCase
 
         #check
         $this->assertTrue($result, "returns as expected");
-        $this->notSeeInDatabase('question_scores', [
+        $this->assertDatabaseMissing('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
             'student_id' => $studentId,
         ]);

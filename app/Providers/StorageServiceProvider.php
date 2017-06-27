@@ -2,13 +2,68 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\helpers\assignments\AssignmentHelper;
+use App\Http\Controllers\helpers\assignments\IAssignmentHelper;
+use App\HTTP\Controllers\helpers\cleaning\CleanerFactory;
+use App\HTTP\Controllers\helpers\cleaning\ICleanerFactory;
+use App\Http\Controllers\helpers\validation\IStudentRecordValidator;
+use App\Http\Controllers\helpers\validation\StudentRecordValidator;
+use App\Http\Controllers\Report\ReportController;
+use App\Jobs\Export\ExportScores;
+use App\Jobs\Feedback\INotifyStudentsHelper;
+use App\Jobs\Feedback\NotifyStudentsHelper;
 use App\Jobs\Grade\RecordScoresAndComments;
+use App\Jobs\StudentImport\IImportStudentsFromCsv;
+use App\Jobs\StudentImport\ImportStudentsFromCsv;
 use App\Repositories\Assignment\AssignmentRepository;
 use App\Repositories\Assignment\IAssignmentRepository;
+use App\Repositories\Element\CommentRepository;
+use App\Repositories\Element\ElementAssignmentRepository;
+use App\Repositories\Element\ElementRepository;
+use App\Repositories\Element\ICommentRepository;
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Element\IElementRepository;
+use App\Repositories\Exam\ExamRepository;
+use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Exam\INumberGradedRepository;
+use App\Repositories\Exam\IStoredExamStatsRepository;
+use App\Repositories\Exam\NumberGradedRepository;
+use App\Repositories\Exam\StoredExamStatsRepository;
+use App\Repositories\Feedback\AccessKeyRepository;
+use App\Repositories\Feedback\FeedbackBuilder;
+use App\Repositories\Feedback\IAccessKeyRepository;
+use App\Repositories\Feedback\IFeedbackBuilder;
+use App\Repositories\Grade\GradeAssignmentRepository;
+use App\Repositories\Grade\IGradeAssignmentRepository;
+use App\Repositories\Grade\StudentGradeRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Item\ItemRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Question\IQuestionRepository;
+use App\Repositories\Question\QuestionAssignmentRepository;
+use App\Repositories\Question\QuestionRepository;
+use App\Repositories\Question\QuestionsForExamGenerator;
+use App\Repositories\Score\ElementScoreRepository;
+use App\Repositories\Score\IElementScoreRepository;
+use App\Repositories\Score\IQuestionScoreRepository;
+use App\Repositories\Score\IScoreStatisticsRepository;
+use App\Repositories\Score\QuestionScoreRepository;
+use App\Repositories\Score\ScoreStatisticsRepository;
+use App\Repositories\Student\IKumiRepository;
+use App\Repositories\Student\IStudentRepository;
+use App\Repositories\Student\KumiRepository;
+use App\Repositories\Student\StudentRepository;
+use App\Repositories\Student\StudentsForExamGenerator;
+use App\Repositories\Time\GradingStatsRepository;
+use App\Repositories\Time\GradingTimeRepository;
+use App\Repositories\Time\IGradingStatsRepository;
+use App\Repositories\Time\IGradingTimeRepository;
+use App\Repositories\Utilities\BackupFlagRepository;
+use App\Repositories\Utilities\IBackupFlagRepository;
 use App\Repositories\Utilities\IJsDataPreparation;
+use App\Repositories\Utilities\IMailSender;
 use App\Repositories\Utilities\JsDataPreparation;
+use App\Repositories\Utilities\MailSender;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -42,84 +97,119 @@ class StorageServiceProvider extends ServiceProvider
     {
         /* ---------------------------------------------- Repositories ---------------------------------------------- */
         //Exams
-        $this->app->bind('App\Repositories\Exam\IExamRepository', 'App\Repositories\Exam\ExamRepository');
+        $this->app->bind(IExamRepository::class,
+            ExamRepository::class);
 
         //Elements and comments
-        $this->app->bind('App\Repositories\Element\IElementRepository', 'App\Repositories\Element\ElementRepository');
-        $this->app->bind('App\Repositories\Element\IElementAssignmentRepository', 'App\Repositories\Element\ElementAssignmentRepository');
-        $this->app->bind('App\Repositories\Element\ICommentRepository', 'App\Repositories\Element\CommentRepository');
+        $this->app->bind(IElementRepository::class,
+            ElementRepository::class);
+        $this->app->bind(IElementAssignmentRepository::class,
+            ElementAssignmentRepository::class);
+        $this->app->bind(ICommentRepository::class,
+            CommentRepository::class);
 
         //Feedback
-        $this->app->bind('App\Repositories\Feedback\IAccessKeyRepository', 'App\Repositories\Feedback\AccessKeyRepository');
-        $this->app->bind('App\Repositories\Feedback\IFeedbackBuilder', 'App\Repositories\Feedback\FeedbackBuilder');
+        $this->app->bind(IAccessKeyRepository::class,
+            AccessKeyRepository::class);
+        $this->app->bind(IFeedbackBuilder::class,
+            FeedbackBuilder::class);
 
         //Grade and grade assignments
-        $this->app->bind('App\Repositories\Grade\IGradeAssignmentRepository', 'App\Repositories\Grade\GradeAssignmentRepository');
-        $this->app->bind('App\Repositories\Grade\IStudentGradeRepository', 'App\Repositories\Grade\StudentGradeRepository');
+        $this->app->bind(IGradeAssignmentRepository::class,
+            GradeAssignmentRepository::class);
+        $this->app->bind(IStudentGradeRepository::class,
+            StudentGradeRepository::class);
 
         //Item
-        $this->app->bind(IItemRepository::class, ItemRepository::class);
+        $this->app->bind(IItemRepository::class,
+            ItemRepository::class);
 
         //Kumi (classes)
-        $this->app->bind('App\Repositories\Student\IKumiRepository', 'App\Repositories\Student\KumiRepository');
+        $this->app->bind(IKumiRepository::class,
+            KumiRepository::class);
 
         //Questions
-        $this->app->bind('App\Repositories\Question\IQuestionRepository', 'App\Repositories\Question\QuestionRepository');
-        $this->app->bind('App\Repositories\Question\IQuestionAssignmentRepository', 'App\Repositories\Question\QuestionAssignmentRepository');
+        $this->app->bind(IQuestionRepository::class,
+            QuestionRepository::class);
+        $this->app->bind(IQuestionAssignmentRepository::class,
+            QuestionAssignmentRepository::class);
 
         //Scores
-        $this->app->bind('App\Repositories\Score\IQuestionScoreRepository', 'App\Repositories\Score\QuestionScoreRepository');
-        $this->app->bind('App\Repositories\Score\IElementScoreRepository', 'App\Repositories\Score\ElementScoreRepository');
+        $this->app->bind(IQuestionScoreRepository::class,
+            QuestionScoreRepository::class);
+        $this->app->bind(IElementScoreRepository::class,
+            ElementScoreRepository::class);
 
         //Stats
-        $this->app->bind('App\Repositories\Score\IScoreStatisticsRepository', 'App\Repositories\Score\ScoreStatisticsRepository');
+        $this->app->bind(IScoreStatisticsRepository::class,
+            ScoreStatisticsRepository::class);
 
         //Students
-        $this->app->bind('App\Repositories\Student\IStudentRepository', 'App\Repositories\Student\StudentRepository');
+        $this->app->bind(IStudentRepository::class,
+            StudentRepository::class);
 
         //Time
-        $this->app->bind('App\Repositories\Time\IGradingTimeRepository', 'App\Repositories\Time\GradingTimeRepository');
-        $this->app->bind('App\Repositories\Time\IGradingStatsRepository', 'App\Repositories\Time\GradingStatsRepository');
+        $this->app->bind(IGradingTimeRepository::class,
+            GradingTimeRepository::class);
+        $this->app->bind(IGradingStatsRepository::class,
+            GradingStatsRepository::class);
 
 
         /* ------------------------------------------------ Jobs -----------------------------------------------------*/
         //Students
-        $this->app->bind('App\Jobs\StudentImport\IImportStudentsFromCsv', 'App\Jobs\StudentImport\ImportStudentsFromCsv');
+        $this->app->bind(IImportStudentsFromCsv::class,
+            ImportStudentsFromCsv::class);
+
         //Email notifications
-        $this->app->bind('App\Jobs\Feedback\INotifyStudentsHelper', 'App\Jobs\Feedback\NotifyStudentsHelper');
+        $this->app->bind(INotifyStudentsHelper::class,
+            NotifyStudentsHelper::class);
         //Backup
-        $this->app->bind('ExportScores', '\App\Jobs\Export\ExportScores');
+        $this->app->bind(ExportScores::class,
+            ExportScores::class);
         //Scores
-        $this->app->bind(RecordScoresAndComments::class, RecordScoresAndComments::class);
+        $this->app->bind(RecordScoresAndComments::class,
+            RecordScoresAndComments::class);
 
         /* ------------------------------------------------ Tools ----------------------------------------------------- */
-        $this->app->bind('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory', 'App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
+        $this->app->bind(ICleanerFactory::class,
+            CleanerFactory::class);
 
-        $this->app->bind('App\Http\Controllers\helpers\assignments\IAssignmentHelper', 'App\Http\Controllers\helpers\assignments\AssignmentHelper');
+        $this->app->bind(IAssignmentHelper::class,
+            AssignmentHelper::class);
 
-        $this->app->bind('App\Http\Controllers\helpers\validation\IStudentRecordValidator', 'App\Http\Controllers\helpers\validation\StudentRecordValidator');
+        $this->app->bind(IStudentRecordValidator::class,
+            StudentRecordValidator::class);
 
         /* -------------------------------------------------- Generators ----------------------------------------------- */
-        $this->app->bind('QuestionsForExamGenerator', 'App\Repositories\Question\QuestionsForExamGenerator');
-        $this->app->bind('StudentsForExamGenerator', '\App\Repositories\Student\StudentsForExamGenerator');
+        $this->app->bind(QuestionsForExamGenerator::class,
+            QuestionsForExamGenerator::class);
+        $this->app->bind(StudentsForExamGenerator::class,
+            StudentsForExamGenerator::class);
 
 
         /* -------------------------------------------------- Other ---------------------------------------------------- */
         //yes. dumb. i know.
-        $this->app->bind('App\HTTP\Controllers\ReportController', 'App\HTTP\Controllers\ReportController');
+        $this->app->bind(ReportController::class,
+            ReportController::class);
 
-        $this->app->bind('App\Repositories\Exam\INumberGradedRepository', 'App\Repositories\Exam\NumberGradedRepository');
-        $this->app->bind('App\Repositories\Exam\IStoredExamStatsRepository', 'App\Repositories\Exam\StoredExamStatsRepository');
+        $this->app->bind(INumberGradedRepository::class,
+            NumberGradedRepository::class);
+        $this->app->bind(IStoredExamStatsRepository::class,
+            StoredExamStatsRepository::class);
 
-        $this->app->bind('App\Repositories\Utilities\IBackupFlagRepository', 'App\Repositories\Utilities\BackupFlagRepository');
+        $this->app->bind(IBackupFlagRepository::class,
+            BackupFlagRepository::class);
 
 
-        $this->app->bind('App\Repositories\Utilities\IMailSender', 'App\Repositories\Utilities\MailSender');
+        $this->app->bind(IMailSender::class,
+            MailSender::class);
 
-        $this->app->bind(IJsDataPreparation::class, JsDataPreparation::class);
+        $this->app->bind(IJsDataPreparation::class,
+            JsDataPreparation::class);
 
 
         //new setup
-        $this->app->bind(IAssignmentRepository::class, AssignmentRepository::class);
+        $this->app->bind(IAssignmentRepository::class,
+            AssignmentRepository::class);
     }
 }

@@ -44,7 +44,7 @@ class GradingTimeRepositoryTest extends \TestCase
 
         $db = GradingTime::where('exam_id', $this->gt->exam_id)->where('student_id', $this->gt->student_id)->first();
         $this->assertEquals($newTime, $db->seconds, "expected time is in db", 0.1);
-//        $this->seeInDatabase('grading_times', ['exam_id' => $this->gt->exam_id, 'student_id' => $this->gt->student_id, 'seconds' => $newTime]);
+//        $this->assertDatabaseHas('grading_times', ['exam_id' => $this->gt->exam_id, 'student_id' => $this->gt->student_id, 'seconds' => $newTime]);
     }
 
     public function testUpdate()
@@ -55,7 +55,7 @@ class GradingTimeRepositoryTest extends \TestCase
 
         $db = GradingTime::where('exam_id', $this->gt->exam_id)->where('student_id', $this->gt->student_id)->first();
         $this->assertEquals($newTime, $db->seconds, "expected time is in db", 0.001);
-//        $this->seeInDatabase('grading_times', ['exam_id' => $this->gt->exam_id, 'student_id' => $this->gt->student_id, 'seconds' => $newTime]);
+//        $this->assertDatabaseHas('grading_times', ['exam_id' => $this->gt->exam_id, 'student_id' => $this->gt->student_id, 'seconds' => $newTime]);
     }
 
     /** @test */

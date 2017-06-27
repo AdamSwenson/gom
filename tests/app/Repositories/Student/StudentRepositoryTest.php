@@ -316,7 +316,7 @@ class StudentRepositoryTest extends \TestCase
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', [
+        $this->assertDatabaseHas('students', [
             'last_name'          => $lastName,
             'first_name'         => $firstName,
             'student_identifier' => $studentId,
@@ -344,7 +344,7 @@ class StudentRepositoryTest extends \TestCase
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students',
+        $this->assertDatabaseHas('students',
                              [
                                  'last_name'  => $student->last_name,
                                  'first_name' => $student->first_name,
@@ -384,8 +384,8 @@ class StudentRepositoryTest extends \TestCase
         $this->assertEquals($s->id, $result->id, "Looked up object has same id");
 
 //        $this->assertEquals($s, $result);
-        //       $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
-//        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
+        //       $this->assertDatabaseHas('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
+//        $this->assertDatabaseHas('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
     }
 
     /**
@@ -403,7 +403,7 @@ class StudentRepositoryTest extends \TestCase
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName]);
+        $this->assertDatabaseHas('students', ['last_name' => $lastName, 'first_name' => $firstName]);
     }
 
 
@@ -467,7 +467,7 @@ class StudentRepositoryTest extends \TestCase
         #call
         $result = $this->object->delete_student_by_sid($student->student_identifier);
         $this->assertEquals(1, $result);
-        $this->notSeeInDatabase('students', [
+        $this->assertDatabaseMissing('students', [
             'user_id'            => self::$userid,
             'student_identifier' => $sid,
         ]);
@@ -533,7 +533,7 @@ class StudentRepositoryTest extends \TestCase
         #Check
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
 
     }
@@ -574,12 +574,12 @@ class StudentRepositoryTest extends \TestCase
 
         foreach ( $expectedDeletedIds as $id )
         {
-            $this->notSeeInDatabase('students', ['id' => $id]);
+            $this->assertDatabaseMissing('students', ['id' => $id]);
         }
 
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
     
@@ -598,7 +598,7 @@ class StudentRepositoryTest extends \TestCase
         $this->assertNotNull($response);
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -617,7 +617,7 @@ class StudentRepositoryTest extends \TestCase
         $this->assertNotNull($response);
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -636,7 +636,7 @@ class StudentRepositoryTest extends \TestCase
         $this->assertNotNull($response);
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -658,7 +658,7 @@ class StudentRepositoryTest extends \TestCase
         $this->assertNotNull($response);
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data);
+            $this->assertDatabaseHas('students', $data);
         }
     }
 
@@ -682,7 +682,7 @@ class StudentRepositoryTest extends \TestCase
         $this->assertNotNull($response);
         //assert: the record of the student was not deleted
         //assert: the record was not updated with the invalid info
-        $this->seeInDatabase('students', ['id' => $recordId, 'email' => $originalEmail]);
+        $this->assertDatabaseHas('students', ['id' => $recordId, 'email' => $originalEmail]);
 
         //assert: the returned allStudents array had a 'failed' field for the bad record
         $c = 0;
@@ -726,7 +726,7 @@ class StudentRepositoryTest extends \TestCase
 
         //assert: not written to database
         //assert : returned allStudents array has the bad record with a 'failed' field
-        $this->notSeeInDatabase('students', [
+        $this->assertDatabaseMissing('students', [
             'first_name'         => $originalFName,
             'last_name'          => $originalLName,
             'student_identifier' => $originalIdentifier,
@@ -778,7 +778,7 @@ class StudentRepositoryTest extends \TestCase
         foreach ( $this->students as $s )
         {
             $this->assertTrue($s->id > 0, "stored student retains valid id (despite being removed from db");
-            $this->dontSeeInDatabase('students', ['id' => $s->id]);
+            $this->assertDatabaseMissing('students', ['id' => $s->id]);
         }
 
     }

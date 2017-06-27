@@ -40,7 +40,7 @@ class PasswordResetRequestCest
      * @param AcceptanceTester $I
      */
     public function assertInDb(AcceptanceTester $I){
-        $I->seeInDatabase('password_resets', ['email' => $this->email, 'token' => $this->token]);
+        $I->assertDatabaseHas('password_resets', ['email' => $this->email, 'token' => $this->token]);
     }
 
     /* ----------------------- Reset page ------------------------------- */
