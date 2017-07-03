@@ -19,6 +19,9 @@ class CreateAssignmentsTable extends Migration
             $table->timestamps();
             $table->foreign('parent_id')->references('id')->on('assignments')->onDelete('set null');
 
+            //one item instance per exam
+//            $table->unique(['item_id', 'exam_id']);
+
 //            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
 
         });

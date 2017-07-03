@@ -294,24 +294,48 @@ MYSQL;
 //     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
 //    }
 
+
+#----------------------------------------------------------- Item ordering
+
     /**
-     * If was associted with assignemtns, deletes the association
+     * Returns the Assignment representing the exam
+     */
+    public function getAssignmentsRoot()
+    {
+        return Assignment::where('exam_id', $this->id)
+            ->where('parent_id', null)
+            ->where('item_id', $this->id)
+            ->first();
+    }
+
+    /**
+     * Creates an assignment in the assignments table
+     * with this exam's id as item_id and exam_id
+     * @return bool
+     */
+    public function initializeAssignmentRoot(){
+        if($this->getAssignmentsRoot()) return true;
+        $assignment = Assignment::create([
+                'item_id' => $this->id,
+                'exam_id' => $this->id
+            ]);
+
+        $this->assignments()->save($assignment);
+    }
+
+
+    /**
+     * If was associated with assignments, deletes the association
      * and creates a new assignment
      * If was none preexisting, creates new
      */
     public function resetAssignments()
     {
+        //delete all items from assignment table with this
+        //exam id
         Assignment::where('exam_id', $this->id)->delete();
-//
-//        $as = Assignment::find(1)->where('exam_id', $this->id)->first();
-//        if ( $as ) {
-//            $as->delete();
-////            dd($as);
-////            Assignment::find($as->id)->removeSubtree(true);
-//        }
-        //create an assignment
-        $this->assignment()->save(Assignment::create(['item_id' => $this->id]));
-
+        //create a new assignment
+        $this->initializeAssignmentRoot();
     }
 
 
@@ -322,8 +346,15 @@ MYSQL;
      */
     public function assignment()
     {
-        return $this->hasOne(Assignment::class);
+        return $this->getAssignmentsRoot();
+        //hasOne(Assignment::class);
     }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
 
     /**
      * Classes (kumis) taking the exam

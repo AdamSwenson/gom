@@ -14,9 +14,9 @@ class AddAssignmentIdToExams extends Migration
     public function up()
     {
         Schema::table('exams', function ( Blueprint $table ) {
-            $table->integer('assignment_id')
-                ->unsigned()
-                ->nullable();
+//            $table->integer('assignment_id')
+//                ->unsigned()
+//                ->nullable();
 
 //            $table->foreign('assignment_id')
 //                ->references('id')

@@ -33,6 +33,19 @@ const isItemsEmpty = ( state ) => {
 
 module.exports = {
 
+canSync : ( state, getters, rootState )=> {
+    if(state.items.length === 0) return false;
+
+    return (function ( state) {
+        var r = state.items.filter( function ( item ) {
+            if ( item.id === -1 ) {
+                return item;
+            }
+        } );
+        return r.length === 0;
+    })(state);
+},
+
     /**
      * Returns all stored item objects in whatever
      * data structure is housing them.
@@ -168,17 +181,18 @@ module.exports = {
      * @param state
      * @param getters
      */
-    [gTypes.getItemBySerialNumber]: ( state, getters, rootState, serialNumber ) => (serialNumber) => {
+    [gTypes.getItemBySerialNumber]: ( state, getters, rootState, serialNumber ) =>
+        (serialNumber) => {
     // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
         // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
-        return function ( state, serialNumber ) {
+        return (function ( state, serialNumber ) {
             var r = state.items.filter( function ( i ) {
                 if ( i.serialNumber === serialNumber ) {
                     return i;
                 }
             } );
             return r[ 0 ];
-        }( state, serialNumber )
+        })( state, serialNumber )
     },
 
 
@@ -261,7 +275,10 @@ module.exports = {
      */
     currentExam: ( state, getters ) => {
         return state.items[ 0 ];
-    }
+    },
 
+    getExamSerialNumber: ( state, getters ) => {
+        return state.items[ 0 ] ? state.items[ 0 ].serialNumber : null;
+    }
 
 };

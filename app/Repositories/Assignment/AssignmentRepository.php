@@ -40,7 +40,7 @@ class AssignmentRepository implements IAssignmentRepository
             foreach ( $parent->getChildren() as $c ) {
                 for ( $k = 0; $k < $numSiblings; $k++ ) {
 //                    //add elements for the questions
-                    $eid = factory(Element::class)->create()->id;
+                    $eid = factory(Item::class)->create()->id;
                     $c->addChild(new Assignment(['item_id' => $eid]));
                 }
 
@@ -51,6 +51,15 @@ class AssignmentRepository implements IAssignmentRepository
 
         $root->save();
         return $root;
+    }
+
+    public function canBeSynced($record)
+    {
+        if ( $record['itemId'] === -1 ) return false;
+
+        if ( $record['examId'] === $record['itemId'] && $record['itemOrder'] === 0 ) return false;
+
+        return true;
     }
 
     /**
@@ -75,11 +84,12 @@ class AssignmentRepository implements IAssignmentRepository
 
         //Process the incoming array
         foreach ( $incoming as $record ) {
-//            foreach ( collect($incoming)->sortBy('parentId') as $record ) {
-            if ( $record['itemId'] !== -1 ) {
+            //check to make sure an unready item hasn't slipped by
+            if ( $this->canBeSynced($record) ) {
 
-                //find the parent
+                //find the item
                 $item = Item::where('id', $record['itemId'])->first();
+
                 if($item) {
                     $depth = $record['itemOrder'];
 
@@ -88,18 +98,19 @@ class AssignmentRepository implements IAssignmentRepository
                     //This is okay as long as we can presume that
                     //if we haven't processed the parent
                     //yet, it will be updated when we get to it.
-                    $parentAssign = Assignment::firstOrCreate(
+//                    $parentAssign = $record['itemOrder'] === 0 ? $exam->getAssignmentsRoot() :
+                        $parentAssign = Assignment::firstOrCreate(
                         [
                             'exam_id' => $exam->id,
                             'item_id' => $record['parentId']
                         ]);
 
                     //Now we can make the actual assignment entry
-                    $assignment = Assignment::create([
+                    $assignment = Assignment::firstOrCreate([
                         'exam_id' => $exam->id,
                         'item_id' => $item->id,
                     ]);
-
+//dd($parentAssign);
                     //and finally associate it into the tree.
                     $parentAssign->addChild($assignment, $depth);
 
@@ -125,9 +136,9 @@ class AssignmentRepository implements IAssignmentRepository
         //For now, we've left the original record in up to this point.
         //Eventually we will want to avoid creating it in the first place.
         //So let's remove it.
-        Assignment::where('item_id', $exam->id)
-            ->where('exam_id' , $exam->id)
-            ->delete();
+//        Assignment::where('item_id', $exam->id)
+//            ->where('exam_id' , $exam->id)
+//            ->delete();
 
     }
 
@@ -138,8 +149,32 @@ class AssignmentRepository implements IAssignmentRepository
     public function getItemOrderForClient($examOrItem){
         //this needs to have a determinate ordering
         //so that the client can parse it straightforwardly
-        $tree = Assignment::getTreeWhere('exam_id', '==', $examOrItem->id);
+//        $tree = Assignment::getTreeWhere('exam_id', '==', $examOrItem->id);
 
-        dd($tree);
+        //exam or item primary key, depending on request
+        $identifier = $examOrItem instanceof Exam ? 'exam_id' : 'item_id';
+
+        //Get the assignments, ignoring the exam whose item_id is null
+        $assignments = Assignment::where($identifier, $examOrItem->id)
+            ->where('item_id', '!==', null)
+            ->get();
+
+        //Put them all in a format for sending to the client
+        foreach ( $assignments as $assignment ) {
+            $item = Item::where('id', $assignment->item_id)->first();
+            if ( $item ) {
+                $itemObjects[] = $item;
+                $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();
+
+                $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
+
+                $itemOrder[] = [
+                    'examId' => $assignment->exam_id,
+                    'itemId' => $item->id,
+                    'parentId' => $parentItemId,
+                    'itemOrder' => $assignment->position
+                ];
+            }
+        }
     }
 }

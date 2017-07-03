@@ -44,25 +44,38 @@ fdescribe( "store.modules.items | ", function () {
         this.item = factories.itemFactory();
     } );
 
-    describe( description( "actions" ), function () {
+    fdescribe( description( "actions" ), function () {
         describe( description( aTypes.createItem ), function () {
             beforeEach( function () {
                 let s = { itemMap: new Node( 0, 0 ) };
                 this.filledState = makeFilledState( s, this.numItems );
             } );
+
             describe( description( "Happy path" ), function () {
                 it( "parent defined", function () {
 
+                    let state = { itemMap: new Node( 0, 0 ) };
+                    makeFilledState( state, 5 );
+                    window.console.log( 'items.spec', 'ff', 56,  state);
                     //prep
-                    let payload = {}; //has to be a parent
+                    let parent = state.itemMap.children[1]; //has to be a parent
+                    let payload = parent.data; //has to be a parent
+                    let expectedItem = Item.factory( { parent: parent.data } );
+
                     let expectedMutations = [
                         {
                             type: mTypes.addNewItem,
-                            payload: {parent: this.filledState}
+                            payload: {
+                                parent: parent.data,
+                                // obj: expectedItem //this won't work because of serial numbers
+                            }
                         },
-                    ]
+                        {
+                            type: mTypes.insertNodeIntoOrder
+                        }
+                    ];
 
-                    testAction( aTypes.createItem, payload, this.state, expectedMutations, { getters: getters } );
+                    testAction( actions[aTypes.createItem], payload, state, expectedMutations, { getters: getters } );
                 } );
 
                 xit( "parent not defined", function () {
@@ -73,9 +86,28 @@ fdescribe( "store.modules.items | ", function () {
         } );
     } );
 
-    describe( "getters | ", function () {
+    fdescribe( "getters | ", function () {
+        describe( 'getOrderForSync | ', function () {
+            beforeEach( function () {
+                this.parent = new Item();
+                this.filledState = {
+                    items: [this.parent],
+                    itemMap: new Node( this.parent.serialNumber, this.parent.serialNumber)
+                };
+                makeFilledState( this.filledState, 5 );
+            } );
 
-        describe( 'getSortedIds | ', function () {
+            it( "happy path", function () {
+                //prep
+                window.console.log( 'items.spec', 'fs', 98, this.filledState);
+                //call
+                let result = getters.getOrderForSync(this.filledState, getters, {});
+                this.expect(result).not.toBeEmpty();
+            } );
+        } );
+
+
+        xdescribe( 'getSortedIds | ', function () {
             beforeEach( function () {
                 this.numItems = 5;
                 this.expectedIds = [];

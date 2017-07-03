@@ -34,7 +34,7 @@ import { traverseDF } from '../../../../../resources/assets/js/models/NodeTools'
 
 const getters = require('../../../../../resources/assets/js/store/modules/items.obj.getters');
 
-fdescribe( "store.modules.items.obj getters  ", function () {
+describe( "store.modules.items.obj getters  ", function () {
     beforeEach( function () {
         this.state = makeState();
         this.rootState = makeRootState();
@@ -43,6 +43,36 @@ fdescribe( "store.modules.items.obj getters  ", function () {
         this.item = factories.itemFactory();
     } );
 
+    describe( description( "canSync" ), function () {
+        it("all items have ids", function(){
+            //prep
+            this.state.items = [];
+            let numItems = 3;
+            for (let i = 0; i < numItems; i++) {
+                this.state.items[ i ] = Item.factory( { id: i } );
+            }
+            //call and check
+            expect(getters.canSync(this.state, getters, {})).toBe(true);
+        });
+        it("one item lacks id", function(){
+            //prep
+            this.state.items = [];
+            let numItems = 3;
+            for (let i = 0; i < numItems; i++) {
+                this.state.items[ i ] = Item.factory( { id: i } );
+            }
+            this.state.items.push(new Item());
+            //call and check
+            expect(getters.canSync(this.state, getters, {})).toBe(false);
+        });
+        it("empty items list", function(){
+            //prep
+            this.state.items = [];
+            //call and check
+            expect(getters.canSync(this.state, getters, {})).toBe(false);
+        });
+    } );
+    
         describe( description( gTypes.getItem ), function () {
             describe( description( 'payload contains id ' ), function () {
                 it( "happy path", function () {

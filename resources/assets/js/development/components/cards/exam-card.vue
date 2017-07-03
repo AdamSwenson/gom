@@ -21,7 +21,8 @@
             <div class="card-footer-item">
                 <div class="field is-grouped">
                     <p class="control">
-                        <add-child-button :serial-number="serialNumber">
+                        <add-child-button
+                                :serial-number="serialNumber">
                         </add-child-button>
                     </p>
 
@@ -67,7 +68,8 @@
 
             <div v-for="isn in children">
                 <!--Now we make cards recursively-->
-                <item-card :serial-number="isn" :index="isn" :key="isn"></item-card>
+                <item-card :serial-number="isn"
+                           :key="isn"></item-card>
             </div>
         </div>
 
@@ -107,7 +109,11 @@
 
     export default{
 
-        props: [],
+        //NB, the decisive consideration in favor of making this
+        //a prop was that we may want to use the exam card on a page
+        //with other exams. It thus won't do to assume that it is
+        //the only exam and have it look up its serial number on its own
+        props: ['serialNumber'],
 
         data: function () {
             return {
@@ -123,20 +129,32 @@
 
 
         computed: {
-            serialNumber: function () {
-                return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
+
+            /**
+             * The object representing the exam's intrinsic properties
+             */
+            exam: function () {
+                return this.$store.getters.getItemBySerialNumber(this.serialNumber);
             },
+
+            /**
+             * The Node representing the item's assignment
+             */
+            node: function(){
+                this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
+            },
+
+
+//            serialNumber: function () {
+//                return this.exam.serialNumber;
+//                //$store.getters.currentExam.serialNumber
+////                return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
+//            },
 
             index: function () {
+                return this.serialNumber;
+},
 
-                return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
-            },
-
-            exam: function () {
-
-                return this.$store.getters.currentExam ? this.$store.getters.currentExam : null;
-
-            },
 
 
             /**
@@ -144,24 +162,19 @@
              * this item's children (in order)
              */
             children: function () {
-                if ( this.$store.getters.currentExam ) {
-                    let serialNumber = this.$store.getters.currentExam.serialNumber;
-
-                    let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-                    let cdrn = [];
-                    if ( node.children.length > 0 ) {
-                        for (let i = 0; i < node.children.length; i++) {
-                            cdrn.push( node.children[ i ].data );
-                        }
+                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
+                let cdrn = [];
+                if ( node.children.length > 0 ) {
+                    for (let i = 0; i < node.children.length; i++) {
+                        cdrn.push( node.children[ i ].data );
                     }
-                    return cdrn;
                 }
-                return [];
+                return cdrn;
             },
 
             numberChildren: function () {
-                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-                return node ? node.children.length : 0;
+                return this.children.length;
+//                return node ? node.children.length : 0;
             },
 
 
@@ -219,148 +232,6 @@
             },
         },
 
-        mounted: function () {
-        },
+        mounted: function () {},
     }
 </script>
-
-
-<!--<template>-->
-<!--<div class="exam-card-component">-->
-
-<!--<div class="row">-->
-<!--<div class="col-md-12 text-left ">-->
-
-<!--<exam-main></exam-main>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<div class="row">-->
-<!--<div class="col-md-12 text-left ">-->
-<!--<progress-dashboard></progress-dashboard>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<div class="exam-edit-pane row" v-show="paneVisible">-->
-<!--<div class="col-md-12">-->
-
-<!--<edit-tabs :index="index" :is-exam="true"></edit-tabs>-->
-
-<!--<div class="tab-panel-area">-->
-<!--<router-view name="examPanels"></router-view>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-
-
-<!--<div class="row" v-show="paneVisible">-->
-<!--<div class="col-md-12 text-left ">-->
-<!--<div class="btn-group"-->
-<!--role="group"-->
-<!--aria-label="Item tool buttons">-->
-
-<!--<delete-button :index="index"></delete-button>-->
-
-<!--<public-indicator :index="index"></public-indicator>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--</div>-->
-
-<!--</template>-->
-
-<!--<style lang="scss">-->
-<!--@import '../../../../sass/development/newSetup';-->
-
-<!--.exam-card-component {-->
-<!--/*width: 80%;*/-->
-
-<!--.panel-heading {-->
-
-<!--/*background-color: #FFFDF4;*/-->
-<!--}-->
-
-<!--.bottom-stripe {-->
-<!--/*line-height: 3em;*/-->
-<!--/*background-color: #385a7f;*/-->
-<!--}-->
-
-<!--}-->
-
-<!--</style>-->
-<!--<script>-->
-<!--import deleteButton from '../initem-remove-button.vue.vue'-->
-<!--import panelExamDetail from exam-detail-panel.vue.vue'-->
-
-<!--import Item from '../../../models/Item'-->
-<!--import Payload from '../../../models/Payload'-->
-
-<!--import * as aTypes from '../../../store/action-types';-->
-<!--import * as mTypes from '../../../store/mutation-types';-->
-<!--import * as gTypes from '../../../store/getter-types';-->
-
-
-<!--export default{-->
-
-<!--props: [ 'index' ],-->
-<!--components: {'delete-button': deleteButton},-->
-
-<!--data: function () {-->
-<!--return {}-->
-<!--},-->
-
-<!--computed: {-->
-<!--/**-->
-<!--* Returns true if the settings pane for this item should be displayed-->
-<!--*/-->
-<!--paneVisible: function () {-->
-<!--return this.$store.getters[ gTypes.isExamSettingsVisible ];-->
-<!--},-->
-<!--},-->
-
-<!--methods: {-->
-<!--/**-->
-<!--* Toggles whether comments are shown for this item.-->
-<!--* Turning comments off does not delete any existing-->
-<!--* comments.-->
-<!--*/-->
-<!--toggleCommentsOn: function () {-->
-<!--console.log('CALLED', 'toggleCommentsOn');-->
-<!--this.isCommented = !this.isCommented;-->
-<!--},-->
-
-<!--/**-->
-<!--* Toggles whether comments are shown for this item.-->
-<!--* Turning comments off does not delete any existing-->
-<!--* comments.-->
-<!--*/-->
-<!--toggleNameVisibility: function () {-->
-<!--console.log('CALLED', 'toggleNameVisibility');-->
-<!--this.isNamePublic = !this.isNamePublic;-->
-<!--},-->
-
-
-<!--},-->
-
-<!--directives: {},-->
-
-<!--events: {-->
-<!--'please-hide-all' :function (  ) {-->
-<!--this.$dispatch(mTypes.hideItemSettings, Payload.factory({index: 0}));-->
-
-<!--},-->
-<!--'please-show-all' :function (  ) {-->
-<!--this.$dispatch(mTypes.showItemSettings, Payload.factory({index: 0}));-->
-<!--},-->
-
-
-<!--'display-settings': function () {-->
-<!--console.log('itemMain', 'CAUGHT', 'display-settings', this.index);-->
-<!--},-->
-<!--},-->
-
-<!--mounted: function () {-->
-<!--},-->
-<!--}-->
-<!--</script>-->

@@ -41,7 +41,7 @@
      */
     export default {
 
-        props: [ 'index' , 'serialNumber'],
+        props: [ 'serialNumber'],
 
         data: function () {
             return {
@@ -71,9 +71,9 @@
             },
 
             publicity: function () {
-                let item = this.$store.getters[ gTypes.getItemByIndex ]( this.index );
-                if ( typeof item !== 'undefined' ) {
-                    return item.isPublic();
+//                let item = this.$store.getters[ gTypes.getItemByIndex ]( this.index );
+                if ( typeof this.item !== 'undefined' ) {
+                    return this.item.isPublic();
                 }
             },
 
@@ -105,10 +105,10 @@
              * @returns {*}
              */
             isPublic: function () {
-                let item = this.$store.getters.getItemBySerialNumber( this.serialNumber );
+//                let item = this.$store.getters.getItemBySerialNumber( this.serialNumber );
                 // let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item !== 'undefined' ) {
-                    return item.isPublic();
+                if ( typeof this.item !== 'undefined' ) {
+                    return this.item.isPublic();
                 }
             },
 

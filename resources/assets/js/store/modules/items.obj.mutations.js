@@ -79,10 +79,10 @@ module.exports = {
     [ mTypes.addNewItem ]: ( state, payload ) => {
         console.log( mTypes.addNewItem, state, payload );
 
-        return new Promise( ( resolve, reject ) => {
+        // return new Promise( ( resolve, reject ) => {
 
             if ( Payload.checkIfPayload( payload ) ) {
-                let { obj } = payload;
+                let { obj, callback } = payload;
                 //and here we meet the problem of deciding what data
                 //structure to use to store the items and the many
                 //times I've changed my mind
@@ -92,9 +92,11 @@ module.exports = {
                 //to not use this method to update.
                 //Of course, everyone is on their honor to not do so....
                 state.items.push( obj );
-                return resolve();
+
+                if(! _.isUndefined(callback)) callback(payload);
+                // return resolve();
             }
-        } );
+        // } );
     },
 
     //utility, not called from outside

@@ -32,7 +32,7 @@ let obj = orderings.default;
 //tested methods
 let { getters, actions, mutations, state } = obj;
 
-fdescribe( "store.modules.item.order actions ", function () {
+describe( "store.modules.item.order actions ", function () {
 
     beforeEach( function () {
         this.numItems = 5;

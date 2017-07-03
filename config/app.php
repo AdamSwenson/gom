@@ -168,7 +168,7 @@ return [
         Spatie\Tail\TailServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
 // todo reenable this
-//        Franzose\ClosureTable\ClosureTableServiceProvider::class,
+        Franzose\ClosureTable\ClosureTableServiceProvider::class,
         /*
          * Custom service providers
          */

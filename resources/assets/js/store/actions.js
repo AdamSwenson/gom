@@ -21,7 +21,6 @@ const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
 
 // export const actions = {
 module.exports = {
-    ...JsonReaders,
     /**
      * Creates a new exam on the client, sets
      * it as the active exam, and requests an
@@ -56,27 +55,30 @@ module.exports = {
         //set it as active
         commit( mTypes.setActiveExam, Payload.factory( { obj: exam } ) );
     }
-    ,
-
-    /**
-     * These are actions which different parts of the gom
-     * call to when they initialize.
-     *
-     */
-    /** This is what gets run when the root instance is mounted for the setup page */
-    setupOnMount: ( { state, commit, dispatch } ) => {
-        //wrap in promise? probably not since this doesn't yet hit the server
-        commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
-        dispatch( 'parseExamData' );
-        dispatch( 'parseItemObjectData' );
-        dispatch( 'parseItemOrderData' );
-        // .then( () => {
-        //
-        // } ).then( () => {
-        //
-        // } );
-
-    }
+    //,
+    //
+    // /**
+    //  * These are actions which different parts of the gom
+    //  * call to when they initialize.
+    //  *
+    //  */
+    // /** This is what gets run when the root instance is mounted for the setup page */
+    // setupOnMount: ( { state, commit, dispatch } ) => {
+    //     //wrap in promise? probably not since this doesn't yet hit the server
+    //     commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
+    //     dispatch( 'parseExamData' ).then( () => {
+    //         dispatch( 'parseItemObjectData' ).then(
+    //             () => {
+    //                 dispatch( 'parseItemOrderData' );
+    //             } );
+    //     } );
+    //     // .then( () => {
+    //     //
+    //     // } ).then( () => {
+    //     //
+    //     // } );
+    //
+    // }
 }
 ;
 

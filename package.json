@@ -88,6 +88,8 @@
   },
   "dependencies": {
     "axios": "^0.15.3",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-regenerator": "^6.24.1",
     "bootbox": "^4.4.0",
     "bootstrap": "^3.3.6",
     "bootstrap-sass": "^3.0.0",

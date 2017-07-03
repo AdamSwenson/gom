@@ -38,9 +38,29 @@ describe(" models.Item | ", function () {
             });
         });
 
-
-
     });
+
+    fdescribe( description( "canSync" ), function () {
+        it("Returns false when id is -1", function(){
+            let item = Item.factory();
+            expect(item.id).toBe(-1);
+            expect(item.canSync()).toBe(false);
+        });
+
+        it("Returns true when id is 0", function(){
+            let item = Item.factory({id: 0});
+            expect(item.id).toBe(0);
+            expect(item.canSync()).toBe(true);
+        });
+
+        it("Returns true when id is > 0", function(){
+            let id = faker.random.number;
+            let item = Item.factory({id: id});
+            expect(item.id).toBe(id);
+            expect(item.canSync()).toBe(true);
+        });
+
+    } );
 
     describe('all other tests', function(){
 

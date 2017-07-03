@@ -45,7 +45,7 @@ class ExamTest extends \TestCase
 
         #check
         $e = Exam::find($examId);
-        $this->assertTrue(! is_null($e), "found something");
+        $this->assertTrue(!is_null($e), "found something");
         $this->assertInstanceOf(Exam::class, $e, "found an exam");
         $this->assertTrue($exam->released == true, "Released set to true in db");
         $this->assertTrue($exam->previously_released == true, "Previously released set to true in db");
@@ -71,7 +71,7 @@ class ExamTest extends \TestCase
 
         #check
         $e = Exam::find($examId);
-        $this->assertTrue(! is_null($e), "found something");
+        $this->assertTrue(!is_null($e), "found something");
         $this->assertInstanceOf(Exam::class, $e, "found an exam");
         $this->assertTrue($exam->released == false, "Released set to false in db");
         $this->assertTrue($exam->previously_released == true, "Previously released still set to true in db");
@@ -90,7 +90,7 @@ class ExamTest extends \TestCase
         $examId = $exam->id;
         $exam = Exam::find($examId);
 
-       $this->assertTrue($exam->released === true, "Starts not released");
+        $this->assertTrue($exam->released === true, "Starts not released");
         $this->assertTrue($exam->previously_released === false, "Starts not previously released");
 
         #call and check
@@ -115,7 +115,6 @@ class ExamTest extends \TestCase
     }
 
 
-
     /**
      * @test
      */
@@ -123,7 +122,7 @@ class ExamTest extends \TestCase
     {
         $qs = factory(QuestionScore::class)->create();
         $qa = QuestionAssignment::find($qs->question_assignment_id);
-        $exam1 =  Exam::find($qa->exam_id);
+        $exam1 = Exam::find($qa->exam_id);
         $this->assertEquals(true, $exam1->isGraded(), "is in fact graded");
 
         $exam2 = factory(Exam::class)->create();
@@ -133,7 +132,8 @@ class ExamTest extends \TestCase
     /**
      * @test
      */
-    public function wasPreviouslyReleasedWhereTrue(){
+    public function wasPreviouslyReleasedWhereTrue()
+    {
         #prep
         $exam = factory(Exam::class)->create(['previously_released' => true]);
         $exam->previously_released = true;
@@ -147,10 +147,11 @@ class ExamTest extends \TestCase
     /**
      * @test
      */
-    public function wasPreviouslyReleasedWhereFalse(){
+    public function wasPreviouslyReleasedWhereFalse()
+    {
         #prep
         $exam = factory(Exam::class)->create(['previously_released' => false]);
-        $this->assertTrue($exam->released  == false, "Starts released");
+        $this->assertTrue($exam->released == false, "Starts released");
         $this->assertTrue($exam->previously_released == false, "Starts not previously released");
 
         #call and check
@@ -160,7 +161,8 @@ class ExamTest extends \TestCase
     /**
      * @test
      */
-    public function isGradableGivesTrueWithQuestionsAndStudents(){
+    public function isGradableGivesTrueWithQuestionsAndStudents()
+    {
         #prep
         $fixture = $this->setupExamWithStudents();
         $exam = $fixture['exam'];
@@ -173,7 +175,8 @@ class ExamTest extends \TestCase
     /**
      * @test
      */
-    public function isGradableGivesFalseWithNoQuestions(){
+    public function isGradableGivesFalseWithNoQuestions()
+    {
         $exam = factory(Exam::class)->create();
 
         $this->assertEquals(false, $exam->isGradable());
@@ -182,7 +185,8 @@ class ExamTest extends \TestCase
     /**
      * @test
      */
-    public function isGradableGivesFalseWithNoStudents(){
+    public function isGradableGivesFalseWithNoStudents()
+    {
         #prep
         $exam = Exam::find($this->examWithQuestionsButNoStudentsId);
         $this->assertInstanceOf(Exam::class, $exam, "exam object to test");
@@ -199,6 +203,8 @@ class ExamTest extends \TestCase
 
     /* ----------------- Queries --------------- */
 
+    /**
+     */
     public function testScopeOnClasses()
     {
 
@@ -208,8 +214,7 @@ class ExamTest extends \TestCase
     public function testScopeUnlocked()
     {
         $exams = Exam::unlocked()->get();
-        foreach ($exams as $e)
-        {
+        foreach ( $exams as $e ) {
             $this->assertInstanceOf('App\Exam', $e);
             $this->assertEquals(0, $e->locked);
         }
@@ -219,8 +224,7 @@ class ExamTest extends \TestCase
     public function testScopeUnreleased()
     {
         $exams = Exam::unreleased()->get();
-        foreach ($exams as $e)
-        {
+        foreach ( $exams as $e ) {
             $this->assertInstanceOf('App\Exam', $e);
             $this->assertEquals(0, $e->released);
         }
@@ -229,8 +233,7 @@ class ExamTest extends \TestCase
     public function testScopeReleased()
     {
         $exams = Exam::released()->get();
-        foreach ($exams as $e)
-        {
+        foreach ( $exams as $e ) {
             $this->assertInstanceOf('App\Exam', $e);
             $this->assertEquals(1, $e->released);
         }
@@ -283,10 +286,8 @@ class ExamTest extends \TestCase
         //make sure has students
         $this->assertTrue(count($exam->classes) > 0, "At least one associated class");
         $students = [];
-        foreach ($exam->classes as $c)
-        {
-            foreach ($c->students as $s)
-            {
+        foreach ( $exam->classes as $c ) {
+            foreach ( $c->students as $s ) {
                 $students[] = $s;
             }
         }
@@ -297,20 +298,123 @@ class ExamTest extends \TestCase
 
         #check
         $this->assertTrue(count($associatedStudents) > 0, "At least one student associated with exam");
-        foreach ($associatedStudents as $as)
-        {
+        foreach ( $associatedStudents as $as ) {
             $this->assertContains($as, $students, "returned student in the array of expected students");
         }
 
     }
+
+#----------------------------------------------------------- Item ordering
+
+    /** @test */
+    public function initializeAssignmentRoot()
+    {
+        $exam = factory(Exam::class)->create();
+
+        //call
+        $exam->initializeAssignmentRoot();
+
+        //check
+        $this->assertDatabaseHas('assignments', ['exam_id' => $exam->id, 'item_id' => $exam->id, 'parent_id' => null]);
+
+        //make sure only one record
+        $this->assertEquals(1, Assignment::where('exam_id', $exam->id)->get()->count());
+
+    }
+
+
+    /** @test */
+    public function initializeAssignmentRootWhenAlreadySet()
+    {
+        //prep
+        $exam = factory(Exam::class)->create();
+        $exam->initializeAssignmentRoot();
+        //check setup
+        $this->assertDatabaseHas('assignments',
+            ['exam_id' => $exam->id,
+                'item_id' => $exam->id,
+                'parent_id' => null
+            ]);
+
+
+        //call again
+        $result = $exam->initializeAssignmentRoot();
+
+        //check
+        $this->assertEquals(true, $result, "returned true without fuss");
+        //make sure only one record
+        $this->assertEquals(1, Assignment::where('exam_id', $exam->id)->get()->count(), "still only one item ");
+    }
+
+
+    /** @test */
+    public function getAssignmentsRoot()
+    {
+        $exam = factory(Exam::class)->create();
+        //prep
+        $expected = Assignment::create(['exam_id' => $exam->id,
+            'parent_id' => null,
+            'item_id' => $exam->id,
+            'position' => 0]);
+
+
+        //call
+        $result = $exam->getAssignmentsRoot();
+
+        //check
+        $this->assertTrue(!empty($result));
+        $this->assertInstanceOf(Assignment::class, $result);
+
+        $this->assertEquals($exam->id, $result->exam_id, "has correct exam id set");
+        $this->assertEquals(null, $result->parent_id, "parent id is null as expected");
+        $this->assertEquals(0, $result->position, "at 0th position as expected");
+        $this->assertEquals($exam->id, $result->item_id, "exam id used in item id field");
+
+    }
+
+    /** @test */
+    public function resetAssignments()
+    {
+        //prep by creating assignments for an exam
+        $exam = factory(Exam::class)->create();
+        $exam->initializeAssignmentRoot();
+        //check setup
+        $this->assertDatabaseHas('assignments',
+            ['exam_id' => $exam->id,
+                'item_id' => $exam->id,
+                'parent_id' => null
+            ]);
+        //grab the id of the assignment row
+        $oldAssignmentId = Assignment::where('exam_id', $exam->id)
+            ->where('item_id', $exam->id)
+            ->where('parent_id', null)
+            ->first()
+            ->id;
+
+        //call
+        $exam->resetAssignments();
+
+        //check
+        $this->assertDatabaseHas('assignments',
+            ['exam_id' => $exam->id,
+                'item_id' => $exam->id,
+                'parent_id' => null
+            ]);
+        $newAssignmentId = Assignment::where('exam_id', $exam->id)
+            ->where('item_id', $exam->id)
+            ->where('parent_id', null)
+            ->first()
+            ->id;
+        $this->assertNotEquals($newAssignmentId, $oldAssignmentId);
+    }
+
 
     #------------------------------------------------------ foreign keys
 
 
     public function testClasses()
     {
-        foreach ($this->exam->classes as $r)
-        {
+        foreach ( $this->exam->classes as $r ) {
             $this->assertInstanceOf('App\Kumi', $r);
         }
     }
@@ -320,10 +424,9 @@ class ExamTest extends \TestCase
     {
         $fixture = $this->makeElementAssignmentsForQuestion(3);
         $elements = $fixture['exam']->elements;
-        $this->assertTrue(! is_null($elements), "Returned something");
-        $this->assertTrue(count($elements) >0, "At least one thing returned");
-        foreach ($elements as $r)
-        {
+        $this->assertTrue(!is_null($elements), "Returned something");
+        $this->assertTrue(count($elements) > 0, "At least one thing returned");
+        foreach ( $elements as $r ) {
             $this->assertInstanceOf('App\Element', $r, "Object returned is element model");
         }
     }
@@ -335,10 +438,9 @@ class ExamTest extends \TestCase
         $exam = $fixture['exam'];
         $elements = $exam->elements;
         $elementAssignments = $exam->elementAssignments;
-        $this->assertTrue(! is_null($elementAssignments), "Returned something");
-        $this->assertTrue(count($elementAssignments) >0, "At least one thing returned");
-        foreach ($elementAssignments as $r)
-        {
+        $this->assertTrue(!is_null($elementAssignments), "Returned something");
+        $this->assertTrue(count($elementAssignments) > 0, "At least one thing returned");
+        foreach ( $elementAssignments as $r ) {
             $this->assertInstanceOf('App\Element', $r, "Returned element object");
             $this->assertTrue(is_numeric($r->pivot->subtask), "Returned object has subtask");
         }
@@ -365,11 +467,10 @@ class ExamTest extends \TestCase
 
         #call
         $questions = $exam->questionAssignments;
-        $this->assertTrue(! is_null($questions), "Returned something");
-        $this->assertTrue(count($questions) >0, "At least one question returned");
+        $this->assertTrue(!is_null($questions), "Returned something");
+        $this->assertTrue(count($questions) > 0, "At least one question returned");
         $this->assertEquals(count($questionIds), count($questions), "Correct number of questions returned");
-        foreach ($exam->questions as $q)
-        {
+        foreach ( $exam->questions as $q ) {
             $this->assertInstanceOf('App\Question', $q, "Object returned was a question model");
             $qid = $q->id; //easier to see in debug
             $this->assertTrue(in_array($qid, $questionIds), "Question in the expected list");
@@ -378,10 +479,9 @@ class ExamTest extends \TestCase
 
     public function testQuestionAssignments()
     {
-        $this->assertTrue(! is_null($this->exam->questionAssignments));
+        $this->assertTrue(!is_null($this->exam->questionAssignments));
 
-        foreach ($this->exam->questionAssignments as $r)
-        {
+        foreach ( $this->exam->questionAssignments as $r ) {
             $this->assertInstanceOf('App\Question', $r, "question object returned");
             $this->assertTrue(is_integer($r->pivot->question_number));
         }
@@ -390,8 +490,7 @@ class ExamTest extends \TestCase
 
     public function testQuestionScores()
     {
-        foreach ($this->exam->questionScores as $r)
-        {
+        foreach ( $this->exam->questionScores as $r ) {
             $this->assertInstanceOf('App\QuestionScore', $r);
         }
 
@@ -407,7 +506,6 @@ class ExamTest extends \TestCase
 //            $this->assertInstanceOf(Student::class, $r, "student object returned");
 //        }
 //    }
-
 
 
     public function testUser()
@@ -431,9 +529,10 @@ class ExamTest extends \TestCase
         $this->assertTrue(count($result) >= 1);
     }
 
-    
-    public function testGetUserId(){
-        $this->assertEquals(self::$userid, $this->exam->getUserId(), "returns user id" );
+
+    public function testGetUserId()
+    {
+        $this->assertEquals(self::$userid, $this->exam->getUserId(), "returns user id");
     }
 
     public function testGetLocked()

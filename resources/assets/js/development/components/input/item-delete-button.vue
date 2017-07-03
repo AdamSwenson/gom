@@ -2,8 +2,10 @@
 <!--This is not for use in removing items from exams-->
 <!--It is only for use in explicit item management contexts-->
 <template>
-    <button class="item-delete-button button is-danger is-outlined js-remove "
-            v-on:click="deleteItem" v-bind:id="buttonid"
+    <button class="button is-danger is-outlined js-remove "
+            v-bind:id="id"
+            v-bind:class="styling"
+            v-on:click="deleteItem"
     >
        <span class="icon is-small">
            <i class="fa fa-times" aria-hidden="true"></i>
@@ -20,14 +22,90 @@
     let bootbox = require( 'bootbox' );
 
     export default {
-        props: [ 'index', 'id', 'serialNumber' ],
+        props: [ 'serialNumber' ],
+        data: function () {
+            return {
+
+                //Base for the class and id strings
+                identifiers: {
+                    item: 'remove-item-button',
+                    exam: 'remove-exam-button'
+                }
+            };
+        },
+
+        computed: {
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            isExam: function(){
+                return this.item.isExam;
+            },
+
+            node: function () {
+                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+            },
+
+            parentSerialNumber: function () {
+                return this.node.parent;
+            },
+
+            /**
+             * Gets the appropriate base string for the input
+             * depending on whether it is attached to an exam or
+             * regular item
+             */
+            identifier : function(){
+                return this.isExam ? this.identifiers.exam : this.identifiers.item;
+            },
+
+            /**
+             * The input's css id
+             */
+            id : function(){
+                return this.identifier + '-' + this.serialNumber;
+            },
+
+            /**
+             * Injected into the classes of the input
+             * */
+            styling: function(){
+                return this.identifier + '-' + this.serialNumber;
+            },
+
+            visible: function () {
+                return this.$store.getters.isDeleteVisible;
+            },
+        },
+
 
         computed: {
             buttonid: function () {
                 return 'remove-item-button-' + this.serialNumber;
             },
-            visible: function () {
-                return this.$store.getters.isDeleteVisible;
+
+            /**
+             * Gets the appropriate base string for the input
+             * depending on whether it is attached to an exam or
+             * regular item
+             */
+            identifier : function(){
+                return this.isExam ? this.identifiers.exam : this.identifiers.item;
+            },
+
+            /**
+             * The input's css id
+             */
+            id : function(){
+                return this.identifier + '-' + this.serialNumber;
+            },
+
+            /**
+             * Injected into the classes of the input
+             * */
+            styling: function(){
+                return this.identifier + '-' + this.serialNumber;
             }
         },
 

@@ -57,23 +57,23 @@ module.exports = {
      */
     [gTypes.getItemNodeFromOrder]: ( state, getters,   rootState, serialNumber) => ( serialNumber ) => {
 
-        // [gTypes.getItemNodeFromOrder]: function( state, getters,   rootState,  serialNumber )  {
-        return getNode(state, serialNumber);
-        // return (function ( state, serialNumber ) {
-        //     let callback = function ( node ) {
-        //         if ( !callback.found ) callback.found = [];
-        //         // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-        //         if ( node.data === serialNumber ) {
-        //             callback.found.push( node );
-        //             // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-        //             return true;
-        //         }
-        //         return false;
-        //     };
-        //     traverseDF( state.itemMap, callback );
-        //     let result = callback.found[ 0 ];
-        //     return result;
-        // })( state, serialNumber )
+        return (function ( state, serialNumber ) {
+            let callback = function ( node ) {
+                if ( !callback.found ) callback.found = [];
+                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+                if ( node.data === serialNumber ) {
+                    callback.found.push( node );
+                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                    return true;
+                }
+                return false;
+            };
+            traverseDF( state.itemMap, callback );
+            return callback.found[ 0 ];
+
+        })( state, serialNumber )
+
+        //    return state.itemMap ? getNode(state, serialNumber) : null;
     },
 
     /**

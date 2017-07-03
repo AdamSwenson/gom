@@ -115,6 +115,7 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
     }
 
     // window.console.log( 'vuex.spec.helpers', 'getters', 115, getters);
+    const dispatch =(type, payload)=>{};
 
     // mock commit
     const commit = ( type, payload ) => {
@@ -163,7 +164,7 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
     }
 
     // call the action with mocked store and arguments
-    action( { commit, state, getters }, payload )
+    action( { commit, state, dispatch, getters }, payload )
 
     // check if no mutations should have been dispatched
     if ( expectedMutations.length === 0 ) {

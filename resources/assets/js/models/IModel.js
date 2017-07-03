@@ -30,7 +30,6 @@ export default class IModel {
 
         this.publicName;
 
-
         /**
          * The maximum possible value of the item
          */
@@ -45,7 +44,16 @@ export default class IModel {
          */
         this.depth = 0;
 
+    }
 
+    /**
+     * Boolean of whether the item is an exam
+     * Defaults to false; the exam class which inherits
+     * from Item overrides this.
+     * @returns {boolean}
+     */
+    isExam() {
+        return false;
     }
 
 

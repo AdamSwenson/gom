@@ -50,7 +50,7 @@ import itemCard from './components/cards/item-card.vue'
 import depthControl from './components/input/buttons.depth-control.component.vue'
 import maxScore from './components/input/max-score-input.vue'
 import itemNumber from './components/field.item-number.component.vue'
-import itemName from './components/field.item-name.component.vue'
+import itemName from './components/input/item-name-input.vue'
 import siblingAddButton from './components/input/add-sibling-button.vue'
 import childAddButton from './components/input/add-child-button.vue'
 

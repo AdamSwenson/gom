@@ -28,7 +28,7 @@ import Payload from '../../../../../resources/assets/js/models/Payload'
 // //tested methods
 // let { getters, actions, mutations } = obj;
 
-fdescribe( "store.modules.items.obj actions ", function () {
+describe( "store.modules.items.obj actions ", function () {
     beforeEach(function(){
 
     });

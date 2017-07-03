@@ -93,6 +93,10 @@ export default class Exam extends Item {
         return this.id === -1;
     }
 
+    isExam(){
+        return true;
+    }
+
 
     /**
      * Returns a list of fields which may

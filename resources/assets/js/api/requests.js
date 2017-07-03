@@ -2,9 +2,18 @@
  * Created by adam on 6/23/17.
  */
 
-import {errorHandling, handleResponse} from './responseHandlers';
+import { errorHandling, handleResponse } from './responseHandlers';
+import { holdForIdLoading } from './apiHelpers';
 
 const REQUEST_VERSION = 1;
+const ID_WAIT_TIMEOUT = 5000;
+const POLL_TIMEOUT = 100;
+
+
+const checkItemForId = ( item ) => {
+    return item.id >= 0;
+};
+
 
 module.exports = {
 
@@ -17,18 +26,23 @@ module.exports = {
     updateItem: ( store, item ) => {
         // if ( !item instanceof Exam ) {
 
-        item.examId = store.getters.currentExam.id;
-        item.requestVersion = REQUEST_VERSION;
-        // }
-        //put/patch
-        window.axios
-            .put( 'items/' + item.id, item )
-            .then( ( response ) => {
-                handleResponse( store, item, response );
-            } )
-            .catch( function ( error ) {
-                errorHandling( error );
-            } );
+
+        if ( holdForIdLoading( item ) ) {
+//copy so vuex doesn't yell
+            let out = Object.assign( {}, item );
+            out.examId = store.getters.currentExam.id;
+            out.requestVersion = REQUEST_VERSION;
+
+            //put/patch
+            window.axios
+                .put( 'items/' + item.id, item )
+                .then( ( response ) => {
+                    handleResponse( store, item, response );
+                } )
+                .catch( function ( error ) {
+                    errorHandling( error );
+                } );
+        }
     },
     /**
      * Handles the call to the server to update
@@ -92,10 +106,32 @@ module.exports = {
      * Asks the server to update the order of items
      * @param store
      */
-    updateItemsOrderNEW: ( store ) => {
+    updateItemsOrder: ( store ) => {
+        //This getter will also check to make sure we have ids
+        //if not, it will wait until we have an id for each item
         let ord = store.getters.getOrderForSync;
-        // let sortedIds = store.getters.getSortedIds;
+
         let exam = store.getters.currentExam;
+
+        window.console.log( 'requests', 'updateItemsOrder can sync', 112, store.getters.canSync );
+        let i = 0;
+
+//         while (! store.getters.canSync || i < 100) {
+//             window.console.log( 'requests', 'updateItemsOrder', 116, i );
+//             // for (let i = 0; i < 100; i++) {
+//             //     if ( ! store.getters.canSync ) {
+//             setTimeout( ( i ) => {
+//                 window.console.log( 'requests', 'waiting', 119, i, store.getters.canSync );
+//             }, 100 );
+//
+//             i++;
+//             // }
+//             // }else{
+//             //     return true;
+//             // }
+//         }
+// //
+        // let sortedIds = store.getters.getSortedIds;
 
         let payload = {
             examId: exam.id,
@@ -103,7 +139,8 @@ module.exports = {
             order: ord
         };
 
-        window.console.log( 'apiPlugin', 'updateItemsOrder', 178, payload );
+        // if ( holdForIdLoading( item ) ) {
+        window.console.log( 'apiPlugin', 'updateItemsOrder NEW', 178, payload );
 
         let route = 'items/' + exam.id + '/order';
         window.axios

@@ -348,7 +348,9 @@ class ExamRepositoryTest extends \TestCase
 
         $ex = Exam::all()->random(1);
         $ex->locked = 0;
-        $ex->update();
+        $ex->save();
+
+        //check
         $this->assertInstanceOf('\App\Exam', $ex);
      //   $knownUnlocked = $ex->getId();
 
@@ -367,7 +369,7 @@ class ExamRepositoryTest extends \TestCase
 
         $ex = Exam::all()->random(1);
         $ex->locked = 0;
-        $ex->update();
+        $ex->save();
         $this->assertInstanceOf('\App\Exam', $ex);
         $knownUnlocked = $ex->getId();
 

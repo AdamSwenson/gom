@@ -39,7 +39,7 @@ const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
     }
 };
 
-fdescribe( "store.modules.item.order getters  ", function () {
+describe( "store.modules.item.order getters  ", function () {
 
     beforeEach( function () {
         this.numItems = 5;

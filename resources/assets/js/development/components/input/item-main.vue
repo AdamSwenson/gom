@@ -9,14 +9,23 @@
         </p>
 
         <p class="control is-expanded">
-            <item-name :index="index" :serial-number="serialNumber"></item-name>
+            <item-name
+                    :serial-number="serialNumber"
+            ></item-name>
         </p>
 
         <p class="control">
-            <settings-button :index="index" :serial-number="serialNumber" :is-exam="isExam"></settings-button>
+            <settings-button
+                    :serial-number="serialNumber"
+                    :is-exam="isExam"
+            ></settings-button>
         </p>
+
         <p class="control">
-            <children-display-control :serial-number="serialNumber" :is-exam="isExam"></children-display-control>
+            <children-display-control
+                    :serial-number="serialNumber"
+                    :is-exam="isExam">
+            </children-display-control>
         </p>
     </div>
 </template>
@@ -50,16 +59,17 @@
 
     export default{
 
-        props: [ 'index', 'serialNumber' , 'isExam'],
+        props: [ 'serialNumber' ],
 
         data: function () {
             return {
-
-                placeHolders: {
-                    privateName: "Enter a descriptive name for this item"
+                identifiers :{
+                    exam: 'exam-main',
+                    item : 'item-main'
                 },
 
-                types: [ 'Question', 'Element' ],
+                placeHolders: {
+                },
 
                 display: {
                     type: {
@@ -81,6 +91,26 @@
 
             isItem: function(){
               return ! this.isExam;
+            },
+
+            isExam: function(){
+                return this.item ? this.item.isExam : false;
+            },
+
+            /**
+             * Gets the appropriate base string for the input
+             * depending on whether it is attached to an exam or
+             * regular item
+             */
+            identifier : function(){
+                return this.isExam ? this.identifiers.exam : this.identifiers.item;
+            },
+
+            /**
+             * The input's css id
+             */
+            id : function(){
+                return this.identifier + '-' + this.serialNumber;
             },
 
             position : function(){

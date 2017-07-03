@@ -67,49 +67,6 @@ class AssignmentController extends Controller
         $this->itemRepository = $itemRepository;
     }
 
-    /*
-
-        public function traverseDF ( $root, $callback )
-        {
-        // this is a recurse and immediately-invoking function
-        function recurse( $currentNode ) {
-        // while(stillLooking) {
-        // step 2
-        for ($i = 0; $i < size($currentNode.children); $i++)
-        {
-            if ( callback( $currentNode ) ) {
-                return $currentNode;
-            } else {
-
-                // step 3
-                recurse( $currentNode.children[ i ] );
-            }
-
-        }
-            // }
-            // window.console.log( 'orderings', 'recurse', 47, callback(currentNode));
-            // step 4
-            if ( $callback( $currentNode ) ) {
-                // window.console.log( 'orderings', 'recurse', 50, 'FOUND IT!', currentNode );
-                $stillLooking = false;
-                return currentNode;
-            }
-
-            // step 1
-        })( root );
-
-    */
-
-//    /**
-//     * Display a listing of the resource.
-//     *
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function index()
-//    {
-//        //
-//    }
-
 
     /**
      * Expects incoming order to have
@@ -126,21 +83,21 @@ class AssignmentController extends Controller
         //expected format of incoming is a list of nodes
         // with the form
 
-
 //todo add check so don't start if no ordering
         $requestRoot = $request->has('order') ? $request->input('order') : false;
 
-
+        if ( $requestRoot ) {
 //        $assignmentTree = isset($exam->assignment->id) ? $exam->assignment : $exam->assignment()->save(Assignment::create());
 
-        //we will want to wrap this in a transaction
-        //in case something goes wrong
-        $exam->resetAssignments();
-        $serverRoot = $exam->assignment;
+            //we will want to wrap this in a transaction
+            //in case something goes wrong
+            $exam->resetAssignments();
+            $serverRoot = $exam->assignment;
 
-        if ( sizeof($requestRoot['children']) > 0 ) {
-            //call recursively
-            $this->recursiveStore($requestRoot, $serverRoot);
+            if ( sizeof($requestRoot['children']) > 0 ) {
+                //call recursively
+                $this->recursiveStore($requestRoot, $serverRoot);
+            }
         }
 
     }
@@ -161,8 +118,7 @@ class AssignmentController extends Controller
     }
 
 
-    public
-    function getTreeForExam( Exam $exam )
+    public function getTreeForExam( Exam $exam )
     {
         $tree = Assignment::where(['item_id', $exam->id])->get();
         return $tree->filter(function ( $key, $value ) {
@@ -181,14 +137,22 @@ class AssignmentController extends Controller
      */
     public function store( Exam $exam, Request $request )
     {
+        try {
+            $assignmentDao = app()->make(IAssignmentRepository::class);
+            $assignmentDao->processIncoming($exam, $request->input('order'));
+            $assignments = [];
 
-        $assignmentDao = app()->make(IAssignmentRepository::class);
-        $assignmentDao->processIncoming($exam, $request->input('order'));
-        $assignments = [];
-        $assignments[] = $exam->assignment;
-        $assignments[] = $exam->assignment->getChildren();
-        return $assignments;
-        //return $this->sendAjaxSuccess();
+//        $root = $exam->getAssignmentsRoot();
+//        if($root){
+//            $assignments[] = $root;
+//            $assignments[] = $root->hasChildren() ? $root->assignment->getChildren() : [];
+//        }
+//
+//        return $assignments;
+            return $this->sendAjaxSuccess();
+        } catch (Exception $e) {
+            return $this->sendAjaxFailure();
+        }
     }
 
     //expected format of incoming is a list of nodes

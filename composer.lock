@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a379b328f3a5ddcaea5f9e7ffd7d7cc",
+    "content-hash": "fa34769456d84ca39fb9f9b45ecee9f4",
     "packages": [
         {
             "name": "backup-manager/backup-manager",
@@ -727,16 +727,16 @@
         },
         {
             "name": "franzose/closure-table",
-            "version": "4.1.4",
+            "version": "v5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/franzose/ClosureTable.git",
-                "reference": "8198a43f2237da35a2b9298d286a073650e95568"
+                "reference": "e3e897283d86ae7f4f2549e9191300a768cced83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/franzose/ClosureTable/zipball/8198a43f2237da35a2b9298d286a073650e95568",
-                "reference": "8198a43f2237da35a2b9298d286a073650e95568",
+                "url": "https://api.github.com/repos/franzose/ClosureTable/zipball/e3e897283d86ae7f4f2549e9191300a768cced83",
+                "reference": "e3e897283d86ae7f4f2549e9191300a768cced83",
                 "shasum": ""
             },
             "require": {
@@ -781,7 +781,7 @@
                 "laravel",
                 "pages"
             ],
-            "time": "2016-07-08T08:19:46+00:00"
+            "time": "2017-02-10T13:14:59+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

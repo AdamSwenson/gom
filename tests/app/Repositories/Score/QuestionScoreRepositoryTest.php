@@ -36,7 +36,8 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assignments = [$this->questionAssignment];
     }
 
-    public function testLoad_for_student_on_exam()
+    /** @test */
+    public function load_for_student_on_exam()
     {
         //prep
         $numQuestions = 3;

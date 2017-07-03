@@ -21,11 +21,12 @@ class CreateItemsTable extends Migration
             $table->text('comment_text')->nullable();
             $table->float('max_score')->nullable();
             $table->json('settings')->nullable();
+            $table->integer('exam_id')->unsigned()->nullable();
             $table->integer('user_id')->unsigned();
             $table->timestamps();
 
             $table->softDeletes();
-
+$table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
 //            $table->foreign('user_id')
 //                ->references('id')
 //                ->on('users')

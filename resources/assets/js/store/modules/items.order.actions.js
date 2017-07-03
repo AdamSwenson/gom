@@ -19,34 +19,34 @@ import { traverseDF, traverseBF, getSerialNumber } from '../../models/NodeTools'
 
 module.exports = {
     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-        window.console.log( 'items.order.actions', 'pppp', 31, payload );
-        return new Promise( ( resolve, reject ) => {
+        window.console.log( 'items.order.actions', aTypes.addItemToOrder, 31, payload );
+        // return new Promise( ( resolve, reject ) => {
 
-            let { obj, parent, index, mutateSilently } = payload;
+        let { obj, parent, index, mutateSilently } = payload;
 
-            //Sort out whether obj and parent are nodes or items
-            let toAddSerialNumber = obj.serialNumber; // getSerialNumber( obj );
-            let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
-            // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
+        //Sort out whether obj and parent are nodes or items
+        let toAddSerialNumber = obj.serialNumber; // getSerialNumber( obj );
+        let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
+        // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
-            let newNode = new Node( toAddSerialNumber, parentSerialNumber );
-            let parentNode = getters.getItemNodeFromOrder( parentSerialNumber );
-            // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
+        let newNode = new Node( toAddSerialNumber, parentSerialNumber );
+        let parentNode = getters.getItemNodeFromOrder( parentSerialNumber );
+        // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
 
 
-            let pl = Payload.factory( {
-                objNode: newNode,
-                parentNode: parentNode,
-                index: index,
-                mutateSilently: mutateSilently
-            } );
-            // window.console.log( 'items.order.actions', 'pl', 47, pl );
-
-            commit( mTypes.insertNodeIntoOrder, pl );
-
-            resolve();
-
+        let pl = Payload.factory( {
+            objNode: newNode,
+            parentNode: parentNode,
+            index: index,
+            mutateSilently: mutateSilently
         } );
+        // window.console.log( 'items.order.actions', 'pl', 47, pl );
+
+        commit( mTypes.insertNodeIntoOrder, pl );
+
+        // resolve();
+
+        // } );
     },
     //
     // let f = function ( currentNode ) {

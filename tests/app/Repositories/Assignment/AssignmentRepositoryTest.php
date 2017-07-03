@@ -125,15 +125,54 @@ class AssignmentRepositoryTest extends \TestCase
             'position' => 0]);
 
         //Check tha these are the only records for the exam
-        $this->assertEquals(4, $assignments->count());
+        $this->assertEquals(5, $assignments->count());
+    }
+
+
+    public function sadPathProcessIncomingWhereUnsetItemIdsHaveSnuckIn()
+    {
+
     }
 
 
     /** @test */
     public function getItemOrderForClient()
     {
-        $order = $this->makeData($this->exam);
-        $this->assertEquals(1, 1);
+        //prep
+        $item0 = factory(Item::class)->create(); //sib
+        $item1 = factory(Item::class)->create(); //sib
+        $item2 = factory(Item::class)->create(); //sib
+        $item3 = factory(Item::class)->create(); //child of 1
+//        examId: 9, itemId: 81, parentId: 9, itemOrder: 0}
+        $order = [
+            ['examId' => $this->exam->id, 'parentId' => $item0->id, 'itemId' => $item1->id, 'itemOrder' => 0],
+            ['examId' => $this->exam->id, 'parentId' => $item0->id, 'itemId' => $item2->id, 'itemOrder' => 1],
+            ['examId' => $this->exam->id, 'parentId' => $item1->id, 'itemId' => $item3->id, 'itemOrder' => 0]];
+        foreach ( $order as $o ) {
+            $parentAssign = Assignment::firstOrCreate(
+                [
+                    'exam_id' => $o['examId'],
+                    'item_id' => $o['parentId']
+                ]);
+
+            //Now we can make the actual assignment entry
+            $assignment = Assignment::firstOrCreate([
+                'exam_id' => $o['examId'],
+                'item_id' => $o['itemId']
+            ]);
+            $parentAssign->addChild($assignment, $o['itemOrder']);
+        }
+
+        //call
+        $result = $this->object->getItemOrderForClient($this->exam, $order);
+
+        //check
+        $this->assertEquals(sizeof($order), sizeOf($result));
+
+        for ( $i = 0; $i < sizeof($order); $i++ ) {
+            $this->assertEquals($order[i], $result[$i]);
+        }
+
     }
 
 

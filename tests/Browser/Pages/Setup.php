@@ -21,6 +21,15 @@ class Setup extends BasePage
         return '/items';// . $exam->id;
     }
 
+    static public function urlToExam( $examId)
+    {
+        return '/items/' . $examId;
+        // . $exam->id;
+//        $browser->assertPathIs($this->url());
+    }
+
+
+
     /**
      * Assert that the browser is on the page.
      *
@@ -41,6 +50,11 @@ class Setup extends BasePage
     {
         return [
             '@element' => '#selector',
+            '@addSibling' => '.add-sibling-button',
+            '@addQuestion' => 'button.add-child-to-exam-button',
+        '@addChild' => '.add-child-button',
+            '@item-card' => 'div .item-card-component',
+            '@item-name' => 'item-name'
         ];
     }
 }

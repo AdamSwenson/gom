@@ -9,6 +9,25 @@ import IModel from './IModel';
 
 
 const separator = '-';
+const REQUEST_VERSION = 1;
+const ID_WAIT_TIMEOUT = 5000;
+const POLL_TIMEOUT = 100;
+
+// const holdForIdLoading = ( item ) => {
+//     if ( ! _.isUndefined(item ) && ! item.isExam() ) {
+//         window.console.log( 'requests', 'holdForIdLoading', 12, item.id );
+//         if ( !holdForIdLoading.timeWaited ) holdForIdLoading.timeWaited = 0;
+//         while (item._id === -1 && holdForIdLoading.timeWaited <= ID_WAIT_TIMEOUT) {
+//             holdForIdLoading.timeWaited += POLL_TIMEOUT;
+//             setTimeout( holdForIdLoading( item ), POLL_TIMEOUT );
+//         }
+//         holdForIdLoading.timeWaited = 0;
+//         return item._id >= 0;
+//     }
+//     return false;
+//
+//
+// }
 
 export default class Item extends IModel {
 
@@ -28,8 +47,8 @@ export default class Item extends IModel {
      * The actual value doesn't matter, only its uniqueness.
      * @returns {number}
      */
-    static makeSerialNumber(){
-        if(!Item.makeSerialNumber.count) Item.makeSerialNumber.count = 0;
+    static makeSerialNumber() {
+        if ( !Item.makeSerialNumber.count ) Item.makeSerialNumber.count = 0;
         Item.makeSerialNumber.count += 1;
         return Item.makeSerialNumber.count;
     }
@@ -49,8 +68,6 @@ export default class Item extends IModel {
          * @type {number}
          */
         this.serialNumber = Item.makeSerialNumber();
-
-        this.idxStore = '';
 
         /**
          * The db identifier of the model
@@ -77,19 +94,25 @@ export default class Item extends IModel {
         this.publicity = false;
 
         /** The DB question assignment id or elementAssignmentId if applicable */
-        this.assignmentId = -1;
+        // this.assignmentId = -1;
 
         //The id of the exam the item is associated with
         this.examId = -1;
 
-        this.children = [];
+        // this.children = [];
         // this.props = super.fillableProps;
     }
 
+
+    get idx() {
+
+        return this.idxStore.split( separator );
+    } //[ this.index,  this.depth];}
+
     set idx( index ) {
         this.idxStore = Item.buildKeyFromIdx( index );
-
     }
+
 
     /**
      * Take either a string or array input and convert
@@ -111,15 +134,21 @@ export default class Item extends IModel {
         }
     }
 
-    get idx() {
-
-        return this.idxStore.split( separator );
-    } //[ this.index,  this.depth];}
+    /**
+     * Tells whether the item has a valid id and thus can
+     * be synced with the server.
+     * @returns {boolean}
+     */
+    canSync(){
+        if(this.id >= 0) return true;
+        return false;
+    }
 
 
     isNew() {
         return this.id === -1;
     }
+
 
     /**
      * utility for determining which of the older types
@@ -127,7 +156,6 @@ export default class Item extends IModel {
      */
     determineType() {
         return this.depth > 0 ? 'element' : 'question';
-
     }
 
 
@@ -155,9 +183,10 @@ export default class Item extends IModel {
         this.depth += 1;
     }
 
-static setExamId(id){
+    static setExamId( id ) {
         Item.examId = id;
-}
+    }
+
     /**
      * Returns the relationship (if any) of the item represented by
      * idx1 and the item represented by idx2

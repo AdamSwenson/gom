@@ -2,20 +2,16 @@
     <div v-bind:id="divId"
          class="item-card-component card"
          v-bind:class="offsetClass"
-         v-bind:data-id="index"
-         v-bind:data-index="index"
-         v-bind:data-parent-index="parentIndex"
     >
 
         <div class="card-content">
-            <item-main :index="index" :serial-number="serialNumber" :is-exam="false"></item-main>
+            <item-main :serial-number="serialNumber" :is-exam="false"></item-main>
         </div>
 
         <div class="card-content" v-show="paneVisible">
-            <edit-tabs :index="index"
+            <edit-tabs
                        :serial-number="serialNumber"
                        :is-exam="false">
-
             </edit-tabs>
             <router-view name="itemPanels"></router-view>
         </div>
@@ -24,14 +20,14 @@
             <div class="card-footer-item">
                 <div class="field is-grouped">
                     <p class="control">
-                        <add-sibling-button :index="serialNumber"
-                                            :serial-number="serialNumber">
+                        <add-sibling-button
+                                :serial-number="serialNumber">
                         </add-sibling-button>
                     </p>
 
                     <p class="control">
-                        <add-child-button :index="serialNumber"
-                                          :serial-number="serialNumber">
+                        <add-child-button
+                                :serial-number="serialNumber">
                         </add-child-button>
                     </p>
 
@@ -43,6 +39,7 @@
                             <span>Clone</span>
                         </button>
                     </p>
+
                     <p class="control">
                         <button class="button is-primary is-outlined">
                                 <span class="icon is-small">
@@ -53,12 +50,13 @@
                     </p>
 
                     <p class="control">
-                        <public-indicator :index="index"
+                        <public-indicator
                                           :serial-number="serialNumber">
                         </public-indicator>
                     </p>
+
                     <p class="control">
-                        <remove-item-button :index="index"
+                        <remove-item-button
                                             :serial-number="serialNumber">
                         </remove-item-button>
                     </p>
@@ -69,7 +67,8 @@
 
         <div class="card-footer navTabs">
             <div class="card-footer-item is-fullwidth">
-                <card-movement-control :serialNumber="serialNumber"></card-movement-control>
+                <card-movement-control :serialNumber="serialNumber"
+                ></card-movement-control>
             </div>
         </div>
 
@@ -80,7 +79,9 @@
 
             <div v-for="isn in children">
                 <!--Now we make cards recursively-->
-                <item-card :serial-number="isn" :index="isn" :key="isn"></item-card>
+                <item-card
+                        :serial-number="isn"
+                        :key="isn"></item-card>
             </div>
         </div>
     </div>
@@ -99,9 +100,9 @@
 
         .box {
             /*padding-left: 2%;*/
-            margin-left:1em;
-            margin-right:1em;
-            margin-bottom:1em;
+            margin-left: 1em;
+            margin-right: 1em;
+            margin-bottom: 1em;
 
             /*border-top-width: 0;*/
         }
@@ -129,11 +130,11 @@
 
     export default{
 
-        props: [ 'index', 'parent-index', 'serialNumber' ],
+        props: [  'serialNumber' ],
 
         data: function () {
             return {
-
+                node: this.getNode(),
                 defaults: {
                     depth: null,
                     index: null,
@@ -151,28 +152,63 @@
 
 
         computed: {
+            /**
+             * The object representing the item's intrinsic properties
+             * */
             item: function () {
                 return this.$store.getters[ gTypes.getItemBySerialNumber ]( this.serialNumber );
             },
+
+
+//            /**
+//             * The Node representing the item's assignment
+//             */
+//
+//                this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+//            },
 
             /**
              * Returns an array of serial numbers belonging to
              * this item's children (in order)
              */
             children: function () {
-                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-                let cdrn = [];
-                if ( node.children.length > 0 ) {
-                    for (let i = 0; i < node.children.length; i++) {
-                        cdrn.push( node.children[ i ].data );
+                let c = [];
+                if(this.node){
+                    for(let i=0; i<this.node.children.length; i++){
+                        c.push(this.node.children[i].data);
+// return this.node.children.filter( function( n ) { return n.data;} );
                     }
                 }
-                return cdrn;
+                return c;
+//                return this.node ? this.node.children: [];
             },
+////                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
+//                let cdrn = [];
+//                if ( this.node ) {
+//                    return this.node.children.filter( ( n ) => {
+//                        return n.data;
+//                    } );
+//                }
+//
+//////                    &&
+//////                } this.node.children.length > 0 ) {
+////
+////                    window.console.log( 'item-card', 'children', 178, this.node);
+////                    _.forEach( this.node.children, function ( d, i ) {
+////                        cdrn.push( d.data );
+////
+////                    } );
+////                }
+//////                if ( this.node && this.node.children.length > 0 ) {
+//////                    for (let i = 0; i < this.node.children.length; i++) {
+//////                        cdrn.push( this.node.children[ i ].data );
+//////                    }
+//////                }
+//                return cdrn;
+//            },
 
             numberChildren: function () {
-                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-                return node.children.length;
+                return this.children.length;
             },
 
 
@@ -184,7 +220,7 @@
             },
 
             divId: function () {
-                return "item-card-" + this.serialNumber;
+                return "item-card"; // + this.serialNumber;
             },
 
             /**
@@ -217,33 +253,29 @@
                 return d;
             },
 
-            item: function () {
-                return this.$store.getters[ gTypes.getItemBySerialNumber ]( this.serialNumber );
-            },
-
-            depth: {
-                get: function () {
-//                    return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-//                    let item = this.$store.getters.getItemById(this.id);
-//                    let item = this.$store.getters.getItemByIndex(this.index);
-//                    if ( typeof item !== 'undefined' ) {
-//                        return item.depth
-//                    }
-//
-                },
-                set: function ( v ) {
-//                    let item = this.$store.getters.getItemById(this.id);
-//                    let item = this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-//                    if ( typeof item !== 'undefined' ) {
-//                        this.$store.commit( Payload.factory( {
-////                            id: this.id,
-//                            index: this.index,
-//                            updateProp: 'depth',
-//                            updateVal: v
-//                        } ) );
-//                    }
-                }
-            },
+//            depth: {
+//                get: function () {
+////                    return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+////                    let item = this.$store.getters.getItemById(this.id);
+////                    let item = this.$store.getters.getItemByIndex(this.index);
+////                    if ( typeof item !== 'undefined' ) {
+////                        return item.depth
+////                    }
+////
+//                },
+//                set: function ( v ) {
+////                    let item = this.$store.getters.getItemById(this.id);
+////                    let item = this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+////                    if ( typeof item !== 'undefined' ) {
+////                        this.$store.commit( Payload.factory( {
+//////                            id: this.id,
+////                            index: this.index,
+////                            updateProp: 'depth',
+////                            updateVal: v
+////                        } ) );
+////                    }
+//                }
+//            },
 
             type: {
                 get: function () {
@@ -256,7 +288,9 @@
         },
 
         methods: {
-
+getNode: function (  ) {
+return     this.$store.getters.getItemNodeFromOrder( this.serialNumber )
+},
 //            addSibling: function ( rel="younger" ) {
 //                switch (rel){
 //                    case 'older':

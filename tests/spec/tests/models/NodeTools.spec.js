@@ -38,7 +38,7 @@ const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
     }
 };
 
-fdescribe( description( "NodeTools" ), function () {
+describe( description( "NodeTools" ), function () {
 
     beforeEach( function () {
         this.numItems = 5;

@@ -322,7 +322,7 @@ class FeedbackBuilder implements IFeedbackBuilder
      */
     public function storeFeedback( $accessKey, $content, $gradeDisplay = null, $gradeCalc = null )
     {
-        $feedback = Feedback::where(Access_key::class, $accessKey)->first();
+        $feedback = Feedback::where('access_key', $accessKey)->first();
         if ( !$feedback ) {
             $feedback = new Feedback();
             $feedback->access_key = $accessKey;

@@ -13,7 +13,7 @@ use App\Exam;
 use App\Repositories\Exam\NumberGradedRepository;
 use Illuminate\Support\Facades\Redis;
 
-class NumberGradedRepositoryTest extends \TestCase
+class NumberGradedRepositoryTest extends \BrowserKitTestCase
 {
 
     protected $object;

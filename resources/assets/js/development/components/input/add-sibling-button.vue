@@ -1,6 +1,7 @@
 <template>
-    <button
-            class="button add-sibling-button is-primary is-outlined"
+    <button v-bind:id="id"
+            class="button is-primary is-outlined"
+            v-bind:class="styling"
             v-on:click="add"
     >
        <span class="icon is-small">
@@ -17,19 +18,35 @@
     import * as mTypes from '../../../store/mutation-types';
 
     export default {
-        props: [ 'item', 'index', 'serialNumber', 'type' ],
+        props: [ 'serialNumber', 'type' ],
 
         data: function () {
-            return {};
+            return {
+                identifier: 'add-sibling-button'
+            };
         },
 
         computed: {
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
             node: function () {
                 return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
             },
+
             parentSerialNumber: function () {
                 return this.node.parent;
             },
+
+            id : function(){
+              return this.identifier + '-' + this.serialNumber;
+            },
+
+            styling: function(){
+                return this.identifier + '-' + this.serialNumber;
+            },
+
             icon: function () {
                 let icons = {
                     sibling: '<span class="glyphicon glyphicon-list"></span>',

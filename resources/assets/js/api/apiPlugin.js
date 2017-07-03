@@ -30,91 +30,7 @@ import Payload from '../models/Payload'
 import Exam from '../models/Exam'
 import Item from '../models/Item'
 
-import {createItem, updateExam, updateItem, updateItemsOrderNEW} from './requests'
-
-// const handleItemResponse = ( store, item, response ) => {
-//     // return new Promise( ( resolve, reject ) => {
-//     Item.fillableProps.forEach( function ( p ) {
-//         if ( p !== 'index' ) {
-//             if ( Object.keys( response.data ).includes( p ) ) {
-//                 store.commit( mTypes.updateItemSilently, Payload.factory( {
-//                     obj: item,
-//                     updateProp: p,
-//                     updateVal: response.data[ p ],
-//                     mutateSilently: true
-//                 } ) );
-//
-//             }
-//         }
-//     } );
-//
-//     _.forEach( Item.aliasMap, function ( v, k ) {
-//         // if ( Object.keys( response.data ).includes( k ) ) {
-//         //     store.commit( mTypes.updateItemSilently, Payload.factory( {
-//         //        obj:item,
-//         //         updateProp: v,
-//         //         updateVal: response.data[ k ],
-//         //         mutateSilently: true
-//         //     } ) );
-//         // }
-//     } );
-//     // resolve();
-//     // } );
-// };
-//
-// const handleExamResponse = ( store, item, response ) => {
-//     return new Promise( ( resolve, reject ) => {
-//         if ( typeof item.index !== 'undefined' && item.index === 0 ) {
-//             Exam.fillableProps.forEach( function ( p ) {
-//                 if ( p !== 'index' ) {
-//                     // window.console.log('apiPlugin', 50, p);
-//                     if ( Object.keys( response.data ).includes( p ) ) {
-//                         let jsProp = (p === 'max_score') ? 'maxScore' : p;
-//                         store.commit( mTypes.updateItemSilently, Payload.factory( {
-//                             index: item.index,
-//                             updateProp: jsProp,
-//                             updateVal: response.data[ p ],
-//                             mutateSilently: true
-//                         } ) );
-//                     }
-//                 }
-//             } );
-//             resolve();
-//         }
-//     } );
-// };
-//
-// const handleResponse = ( store, item, response ) => {
-//     // return new Promise( ( resolve, reject ) => {
-//     // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
-//     if ( typeof response.data === 'undefined' ) return false;
-//
-//     //return Item with the new id or other data loaded
-//     if ( typeof response.data !== 'undefined' ) {
-//
-//         switch ( item.kind ) {
-//             case 'exam':
-//                 handleExamResponse( store, item, response );
-//                 // .then( ( resolve ) => {
-//                 //     resolve();
-//                 // } );
-//                 break;
-//
-//             case 'item':
-//                 handleItemResponse( store, item, response );
-//                 // resolve();
-//                 // .then( ( resolve ) => {
-//                 //     resolve();
-//                 // } );
-//
-//                 break;
-//             default:
-//                 reject()
-//         }
-//
-//     }
-//     // } );
-// };
+import {createItem, updateExam, updateItem, updateItemsOrder} from './requests'
 
 /**
  * Returns true if the mutation needs to
@@ -153,14 +69,11 @@ export default function ( store ) {
         //If it has, respect its privacy
         // window.console.log( 'apiPlugin', '', 234, mutation );
         if ( !shouldTellServerAboutThis( mutation ) ) return false;
-        // window.console.log( 'apiPlugin', '', 236, mutation );
-        let item = payload.getStoredObject( store );
+        window.console.log( 'apiPlugin', '', 236, mutation, payload );
+
+        let item = payload ? payload.getStoredObject( store ) : null;
 
         switch ( type ) {
-
-            case mTypes.insertNodeIntoOrder:
-                updateItemsOrderNEW( store );
-                break;
 
             /**
              * This mutation type indicates that we are supposed to ask
@@ -169,7 +82,7 @@ export default function ( store ) {
             case mTypes.addNewItem:
                 if ( item ) {
                     createItem( store, item );
-                    payload.callback();
+                    // payload.callback();
                 }
                 break;
 
@@ -216,6 +129,10 @@ export default function ( store ) {
                 payload.callback();
                 break;
 
+
+            case mTypes.insertNodeIntoOrder:
+                updateItemsOrder( store );
+                break;
 
             case mTypes.updateOrder:
                 window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );

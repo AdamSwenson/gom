@@ -332,6 +332,8 @@ $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
     return ['item_id' => \factory(App\Element::class)->create()->id];
 });
 
+
+
 $factory->define(App\Item::class, function ( Faker\Generator $faker ) {
     $userId = 1;
     Auth::logInUsingId($userId);

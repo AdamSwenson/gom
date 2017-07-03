@@ -13,78 +13,28 @@ import Exam from '../../models/Exam'
 import Node from '../../models/Node'
 import { traverseDF, traverseBF, getNode } from '../../models/NodeTools'
 
+import JsonReaders from '../utlities/JsonReaders'
+
+import { holdForIdLoading, holdForCanSync } from '../../api/apiHelpers';
+
+import { buildPayloadFromInput } from '../utlities/itemHelpers'
+
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
 
 import Objects from './items.obj'
 import Orderings from './items.order'
 
-// let orderMutations  = require( './items.order.mutations');
-// let orderActions  = require('./items.order.actions');
-// let orderGetters = require( './items.order.getters');
-// let orderState  = require( './items.order.state');
+const REQUEST_VERSION = 1;
 
 const standardTimeout = 1000;
 
-const helpers = {
-    getItemFromPayload: ( state, payload ) => {
-        return state.items[ payload.index ];
-        // if (typeof payload.id !== 'undefined') {
-        //     //get the item
-        //     var item = state.items.filter(function (i) {
-        //         if (typeof i.id != 'undefined' && i.id === id) {
-        //             return i;
-        //         }
-        //     });
-        //     return item;
-        // } else {
-        //     //get the item
-        //     return state.items[payload.index];
-        // }
-    },
-    getItem: ( state, id ) => {
-        return (function ( state, id ) {
-            var r = state.items.filter( function ( i ) {
-                if ( i.id === id ) {
-                    return i;
-                }
-                ;
-            } );
-            return r[ 0 ];
-        })( state, id );
-    }
+const state = {
+
+    ...Objects.state,
+    ...Orderings.state
 
 };
-
-
-/**
- * Build an input object out of an input object
- * and return a payload object containing it
- * @param input
- */
-const buildPayloadFromInput = ( state, rootState, payload ) => {
-    //either a json or an item object have been passed in
-    let { ItemId, ItemIndex, obj, ItemObject } = payload;
-
-    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
-
-    //check and see if an Item object has already been passed in
-    if ( !obj instanceof Item ) {
-        //create a new Item
-        let { name, id, index } = payload;
-        let ItemJson = { name, ItemIndex };
-        obj = Item.factory( ItemJson );
-    }
-
-    //assemble the expected payload
-    // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
-    let out = Payload.factory( { id: obj.id, index: obj.index, obj: obj } );
-    //Add to the Items store
-    return out;
-};
-
-const state = Object.assign( {}, Objects.state, Orderings.state );///orderState); //Orderings.state );
-
 
 /**
  * The make use of both the item object store
@@ -159,7 +109,8 @@ const getters = {
         let out = [];
         let map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
         window.console.log( 'items', 'getOrderForSync', 162, map );
-        // if ( map.length > 0 ) {
+
+        if ( _.isUndefined( map ) || map.length === 0 ) return false;
 
         //map is the exam represented as a Node object
         // Doing this depth first
@@ -173,9 +124,12 @@ const getters = {
             }
             // window.console.log( 'items', 'recurse', 153, currentNode );
             // step 4
-            let exam = getters.currentExam;
             let item = getters.getItemBySerialNumber( currentNode.data );
+            // holdForIdLoading(item);
+            // window.console.log( 'items', 'recurse', 193, 'post hold', item.id );
+            let exam = item.isExam() ? item : getters.currentExam;
             let parent = getters.getItemBySerialNumber( currentNode.parent );
+
 
             out.push( {
                 examId: exam.id,
@@ -193,9 +147,14 @@ const getters = {
 const actions = {
     ...Objects.actions,
     ...Orderings.actions,
+    ...JsonReaders.actions,
+
     /**
+     * This is the master handler of the process of adding an item
+     *
      * Called when a brand new item needs to be created and inserted into
      * the store.
+     *
      * This handles the creation of the item and then the subsequent actions
      * like notifying the server and placing the item in the appropriate
      * place in the order
@@ -204,28 +163,41 @@ const actions = {
      * @param commit
      */
     [aTypes.createItem]: ( { state, commit, dispatch, getters }, parent ) => {
-        if ( _.isUndefined( parent ) ) {
-            parent = getters.currentExam;
-        }
+        return (function ( state, commit, dispatch, getters, parent ) {
+            // window.console.log( 'items', aTypes.createItem, 220, parent );
+            if ( _.isUndefined( parent ) ) {
+                parent = getters.currentExam;
+            }
 
-        //If we were passed an item to serve as the parent
-        //we will use s serial number
-        let item = Item.factory( { parent: parent } );
-        let pl = Payload.factory( { parent: parent, obj: item } );
+            //If we were passed an item to serve as the parent
+            //we will use s serial number
+            let item = Item.factory( { parent: parent } );
+            let payload = Payload.factory( { parent: parent, obj: item } );
 
-        let p = new Promise( ( resolve, reject ) => {
-            commit( mTypes.addNewItem, pl );
-            resolve();
-//                commit( mTypes.setItem, Payload.factory( { index: index, obj: item, } ) );
-        } );
+            commit( mTypes.addNewItem, payload );
+            // window.console.log( 'items', 'canSync', 245, getters.canSync );
+            // holdForCanSync( item )
+            // {
+            dispatch( aTypes.addItemToOrder, payload );
+            // }
+        })( state, commit, dispatch, getters, parent );
 
-        return p.then( () => {
-            return new Promise( ( resolve, reject ) => {
-                window.console.log( 'items', 'addItemToOrder', 172, pl );
-                dispatch( aTypes.addItemToOrder, pl );
-                resolve()
-            } );
-        } );
+
+        // resolve();
+//
+//         let p = new Promise( ( resolve, reject ) => {
+//             commit( mTypes.addNewItem, pl );
+//             resolve();
+// //                commit( mTypes.setItem, Payload.factory( { index: index, obj: item, } ) );
+//         } );
+
+        // return p.then( () => {
+        //     return new Promise( ( resolve, reject ) => {
+        //         window.console.log( 'items', 'addItemToOrder', 172, pl );
+        //         dispatch( aTypes.addItemToOrder, pl );
+        //         resolve()
+        //     } );
+        // } );
     },
 
     /**
@@ -236,7 +208,7 @@ const actions = {
      *
      * The item and all associated score data remain intact.
      */
-    [aTypes.removeItem] : ()=>{
+    [aTypes.removeItem]: () => {
         //remove from order
 
         //remove from objects
@@ -248,7 +220,8 @@ const actions = {
      * This should not be called to remove the item from
      * the exam. That is done by removeItem
      */
-    [aTypes.deleteItem] : ( ) => {}
+    [aTypes.deleteItem]: () => {
+    }
 
 
 };
@@ -258,7 +231,6 @@ const actions = {
 // Object.assign(getters, orderGetters);//
 // const getters = { ...getters_both, ...Orderings.getters, ...Objects.getters };
 
-window.console.log( 'ww items', 'f ************ getters', 112, getters, Objects, Orderings );
 // };
 
 // const actions = { ...actions_both, ...Objects.actions, ...Orderings.actions }; //Orderings.actions );
@@ -267,68 +239,7 @@ window.console.log( 'ww items', 'f ************ getters', 112, getters, Objects,
 const mutations = {
     ...Objects.mutations,
     ...Orderings.mutations,
-
-    initializeItemStore: ( state ) => {
-        let exam = new Exam();
-        state.items[ 0 ] = exam;
-        state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-    },
-
-    directLoadObjectsFromJson: ( state, payload ) => {
-        if ( typeof payload.obj !== 'undefined' ) {
-            _.forEach( payload.obj, function ( d, i ) {
-                let item = Item.factory( d ); //.factory( {id: id, index: index} );
-                state.items.push(item);
-            //     //set it in the items list without calling the api listener
-            //     commit( mTypes.setItem, Payload.factory( {
-            //         obj: item,
-            //         mutateSilently: true
-            //     } ) );
-            } );
-            // resolve();
-        }
-    },
-
-    directLoadOrderFromJson: ( state, payload ) => {
-
-        if ( typeof payload.obj !== 'undefined' ) {
-            _.forEach( payload.obj, function ( d, i ) {
-                window.console.log( 'JsonReaders', '', 34, d, i );
-
-                let item = (( state, d ) => {
-                    return helpers.getItem( state, d.itemId )
-                })( state, d );
-                window.console.log( 'items', 'state', 259, state );
-                window.console.log( 'items', '', 259, item );
-                //if the parent is null, these are top level
-                //and should be added as children of the exam.
-                //if the parent is null, we add the exam instead
-                let parentNode = ( d.parentId === null ) ? state.itemMap : (( state, d ) => {
-                    let parentItem = helpers.getItem( state, d.parentId );
-                    return getNode( state, parentItem.serialNumber );
-                })( state, d );
-
-                let itemNode = new Node( item.serialNumber, parentNode.data );
-                let index = d.itemOrder;
-
-                window.console.log( 'items', 'direct load itemNode', 256, itemNode );
-                window.console.log( 'items', 'direct load item', 256, item );
-                window.console.log( 'items', 'direct load parentNode', 256, parentNode );
-
-
-//if an index was specified, splice it in at the index
-                if ( !_.isUndefined( index ) ) {
-                    parentNode.children.splice( index, 0, itemNode );
-                }
-                else {
-//otherwise just push it on the end
-                    parentNode.children.push( itemNode );
-
-                }
-            } );
-        }
-    },
-
+    ...JsonReaders.mutations
 
 };
 //Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );

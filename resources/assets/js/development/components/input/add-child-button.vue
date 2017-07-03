@@ -1,6 +1,8 @@
 <template>
 
-    <button class="button add-child-button is-primary is-outlined"
+    <button v-bind:id="id"
+            class="button is-primary is-outlined"
+            v-bind:class="stylz"
             v-on:click="add"
     >
        <span class="icon is-small">
@@ -18,16 +20,57 @@
     import * as mTypes from '../../../store/mutation-types';
 
     export default {
-        props: [ 'item', 'index', 'serialNumber' ],
+        props: [ 'serialNumber' ],
 
         data: function () {
-            return {};
+            return {
+
+                //Base for the class and id strings
+                identifiers: {
+                    item: 'add-child-button',
+                    exam: 'add-child-to-exam-button'
+                }
+            };
         },
 
         computed: {
-            parentSerialNumber: function () {
-                let node = this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-                return node.parent;
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            isExam: function(){
+              return this.item ? this.item.isExam() : false;
+            },
+
+//            node: function () {
+//                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+//            },
+
+//            parentSerialNumber: function () {
+//                return this.node.parent;
+//            },
+
+            /**
+             * Gets the appropriate base string for the input
+             * depending on whether it is attached to an exam or
+             * regular item
+             */
+            identifier : function(){
+              return this.isExam ? this.identifiers.exam : this.identifiers.item;
+            },
+
+            /**
+             * The input's css id
+             */
+            id : function(){
+                return this.identifier + '-' + this.serialNumber;
+            },
+
+            /**
+             * Injected into the classes of the input
+             * */
+            stylz: function(){
+                return this.identifier; // + '-' + this.serialNumber;
             }
         },
 

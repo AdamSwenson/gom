@@ -7,9 +7,9 @@
             <div class="columns">
                 <div class="column"></div>
                 <div class="column is-three-quarters ">
-                <!--<div class="column is-three-quarters  border-image-lft">-->
+                    <!--<div class="column is-three-quarters  border-image-lft">-->
                     <div id="examCardArea" class="card">
-                        <exam-card ></exam-card>
+                        <exam-card :serial-number="examSerialNumber"></exam-card>
                     </div>
 
                 </div>
@@ -17,7 +17,8 @@
                 <div class="column"></div>
 
             </div>
-
+            <p>Can sync {{ canSync}}</p>
+            <input type="hidden" id="examId" v-model="examId"/>
         </div>
     </div>
 </template>
@@ -71,17 +72,17 @@
     import * as mTypes from '../store/mutation-types'
     import * as gTypes from '../store/getter-types'
 
+    import { updateItemsOrder } from '../api/requests'
+
     var Sortable = require( 'sortablejs' );
 
-    //    import store from '../store'
-    //    window.console.log( 'new-setup', 'store', 116, store );
     export default {
-
-//        store,
 
         data: function () {
             return {
+//                isSyncable: this.$store.getters.canSync,
                 defaults: {},
+
                 options: {
                     group: 'items', //name must be common to drag between menus
                     filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
@@ -115,9 +116,29 @@
             };
         },
 
+        watch: {
+            canSync: function ( newVal, oldVal ) {
+                window.console.log( 'new-setup', 'canSync', 118, newVal, oldVal );
+                //if the can Sync is newly true, call update
+                if ( newVal ) updateItemsOrder( this.$store );
+            }
+        },
+
         computed: {
+            canSync: function () {
+                return this.$store.getters.canSync;
+            },
+
+            exam: function () {
+                return this.$store.getters.currentExam;
+            },
+
+            examId: function(){
+              return this.exam.id;
+            },
+
             examSerialNumber: function () {
-                return this.$store.getters.getRootNodeSerialNumber;
+                return this.$store.getters.getExamSerialNumber;
             }
         },
 
@@ -127,15 +148,13 @@
 
         events: {},
 
-        mounted: function () {
-//            window.console.log( 'new-setup', 'mounted', 166, store);
-            this.$store.dispatch( 'setupOnMount' ).then( () => {
-                this.$emit( 'items-ready' );
-//                var qList = document.getElementsByClassName( 'card-list' );
-                var qList = document.getElementById( 'card-list' );
-//                var editableList = Sortable.create( qList, this.options );
-            } );
+        created: function () {
+            this.$store.commit( 'loadInitialData' );
+
+            //            this.$store.dispatch( 'setupOnMount' );
+
         },
+
 
         components: {},
 

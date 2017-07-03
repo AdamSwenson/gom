@@ -28,7 +28,7 @@
      */
     export default {
 
-        props: [ 'index' , 'isExam', 'serialNumber'],
+        props: [ 'isExam', 'serialNumber'],
 
         data: function () {
             return {};
