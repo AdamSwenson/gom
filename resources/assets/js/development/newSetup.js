@@ -23,7 +23,6 @@ import progressDashboard from './components/dashboard.progress.component.vue'
 import toolsDashboard from './components/dashboard.tools.component.vue'
 
 //Panes (main container for edit tools)
-import itemEditPane from './components/old/pane.edit-item.component.vue'
 import editTabs from './components/navigation/settings-navigation-tabs.vue'
 
 //Panels (objects within pane)
@@ -158,7 +157,7 @@ const routes = [
     {
         name: 'exam-detail',
         path: '/panel-exam-detail/:serialNumber',
-        components: { itemPanels: panelExamDetail },
+        components: { examPanels: panelExamDetail },
         props: true
     },
     //history

@@ -28,6 +28,7 @@
 <script>
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
+    import * as gTypes from '../../../store/getter-types';
 
     import Payload from '../../../models/Payload'
     import Item from '../../../models/Item'
@@ -62,6 +63,16 @@
                 return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
             },
 
+            depth: function () {
+                return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            },
+
+
+            height: function () {
+                return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+            },
+
+
             parentSerialNumber: function () {
                 return this.node.parent;
             },
@@ -79,8 +90,11 @@
              * The input's css id
              */
             id : function(){
-                return this.identifier + '-' + this.serialNumber;
+                if(this.isExam) return this.identifier;
+
+                return this.identifier + "-" + this.height + '-' + this.depth;
             },
+
             /**
              * Injected into the classes of the input
              * */

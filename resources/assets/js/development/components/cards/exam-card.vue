@@ -13,7 +13,7 @@
             <edit-tabs :serial-number="serialNumber"
                        :is-exam="true">
             </edit-tabs>
-            <router-view name="itemPanels"></router-view>
+            <router-view name="examPanels"></router-view>
         </div>
 
         <div class="card-footer">

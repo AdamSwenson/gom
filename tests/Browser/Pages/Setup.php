@@ -3,6 +3,7 @@
 namespace Tests\Browser\Pages;
 
 use App\Exam;
+use App\User;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\Page as BasePage;
 
@@ -26,6 +27,23 @@ class Setup extends BasePage
         return '/items/' . $examId;
         // . $exam->id;
 //        $browser->assertPathIs($this->url());
+    }
+
+    static public function settingsToggleButton($height=0, $depth=1){
+        return `item-settings-button-{$height}-{$depth}`;
+    }
+
+    static public $addItemToExamButton = '.add-child-to-exam-button';
+
+    static public function navigateToExam(Browser $browser, $examId, $userId=1)
+    {
+
+        $browser
+            ->loginAs(User::find($userId))
+            ->visit(self::urlToExam($examId))
+            ->assertPathIs(self::urlToExam($examId))
+            ->waitFor(self::$mainBodyLocator);
+
     }
 
 

@@ -30164,7 +30164,7 @@ var traverseDF = exports.traverseDF = function traverseDF(root, callback) {
     // this is a recursive and immediately-invoking function
     (function recurse(currentNode) {
         // step 2
-        for (var i = 0, length = currentNode.children.length; i < length; i++) {
+        for (var i = 0; i < currentNode.children.length; i++) {
             // step 3
             // iterate through the node's children
             // calling the recursive function on each
@@ -47539,10 +47539,6 @@ var _dashboardToolsComponent = __webpack_require__(473);
 
 var _dashboardToolsComponent2 = _interopRequireDefault(_dashboardToolsComponent);
 
-var _paneEditItemComponent = __webpack_require__(491);
-
-var _paneEditItemComponent2 = _interopRequireDefault(_paneEditItemComponent);
-
 var _settingsNavigationTabs = __webpack_require__(489);
 
 var _settingsNavigationTabs2 = _interopRequireDefault(_settingsNavigationTabs);
@@ -47804,7 +47800,7 @@ var routes = [{
 {
     name: 'exam-detail',
     path: '/panel-exam-detail/:serialNumber',
-    components: { itemPanels: _examDetailPanel2.default },
+    components: { examPanels: _examDetailPanel2.default },
     props: true
 },
 //history
@@ -49428,6 +49424,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
 
 //    import deleteButton from './item-remove-button.vue'
 //    import itemEditPane from './item.edit-pane.component.vue'
@@ -49441,6 +49439,8 @@ exports.default = {
     data: function data() {
         return {
             node: this.getNode(),
+            identifier: 'item-card',
+
             defaults: {
                 depth: null,
                 index: null,
@@ -49457,19 +49457,21 @@ exports.default = {
     },
 
     computed: {
+
+        id: function id() {
+            return this.identifier + "-" + this.height + '-' + this.depth; // + this.serialNumber;
+        },
+
+        contentId: function contentId() {
+            return "card-content-" + this.height + '-' + this.depth;
+        },
+
         /**
          * The object representing the item's intrinsic properties
          * */
         item: function item() {
             return this.$store.getters[gTypes.getItemBySerialNumber](this.serialNumber);
         },
-
-        //            /**
-        //             * The Node representing the item's assignment
-        //             */
-        //
-        //                this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-        //            },
 
         /**
          * Returns an array of serial numbers belonging to
@@ -49480,39 +49482,21 @@ exports.default = {
             if (this.node) {
                 for (var i = 0; i < this.node.children.length; i++) {
                     c.push(this.node.children[i].data);
-                    // return this.node.children.filter( function( n ) { return n.data;} );
                 }
             }
             return c;
-            //                return this.node ? this.node.children: [];
         },
-        ////                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-        //                let cdrn = [];
-        //                if ( this.node ) {
-        //                    return this.node.children.filter( ( n ) => {
-        //                        return n.data;
-        //                    } );
-        //                }
-        //
-        //////                    &&
-        //////                } this.node.children.length > 0 ) {
-        ////
-        ////                    window.console.log( 'item-card', 'children', 178, this.node);
-        ////                    _.forEach( this.node.children, function ( d, i ) {
-        ////                        cdrn.push( d.data );
-        ////
-        ////                    } );
-        ////                }
-        //////                if ( this.node && this.node.children.length > 0 ) {
-        //////                    for (let i = 0; i < this.node.children.length; i++) {
-        //////                        cdrn.push( this.node.children[ i ].data );
-        //////                    }
-        //////                }
-        //                return cdrn;
-        //            },
 
         numberChildren: function numberChildren() {
             return this.children.length;
+        },
+
+        depth: function depth() {
+            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
+        },
+
+        height: function height() {
+            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
         },
 
         /**
@@ -49522,63 +49506,7 @@ exports.default = {
             return this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
         },
 
-        divId: function divId() {
-            return "item-card"; // + this.serialNumber;
-        },
-
-        /**
-         * Returns the bootstrap class for the depth
-         */
-        offsetClass: function offsetClass() {
-            if (this.depth > 0) {
-                var amt = this.defaults.tabOffset * this.depth;
-                var col = "col-md-offset-" + amt;
-                return col;
-            }
-        },
-
-        ddepth: function ddepth() {
-
-            //start with the current instance
-            //that way, if we are at the root,
-            //the while won't run
-            //todo or do I need the other kind?
-            var current = this.$parent;
-            var d = 0;
-            var limit = 5;
-            while (_.isEmpty(current) && d < limit) {
-                //we aren't at the root, so
-                //increment our depth counter
-                d++;
-                //and set the parent of the parent as current
-                current = current.$parent;
-            }
-            return d;
-        },
-
-        //            depth: {
-        //                get: function () {
-        ////                    return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-        ////                    let item = this.$store.getters.getItemById(this.id);
-        ////                    let item = this.$store.getters.getItemByIndex(this.index);
-        ////                    if ( typeof item !== 'undefined' ) {
-        ////                        return item.depth
-        ////                    }
-        ////
-        //                },
-        //                set: function ( v ) {
-        ////                    let item = this.$store.getters.getItemById(this.id);
-        ////                    let item = this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-        ////                    if ( typeof item !== 'undefined' ) {
-        ////                        this.$store.commit( Payload.factory( {
-        //////                            id: this.id,
-        ////                            index: this.index,
-        ////                            updateProp: 'depth',
-        ////                            updateVal: v
-        ////                        } ) );
-        ////                    }
-        //                }
-        //            },
+        styling: function styling() {},
 
         type: {
             get: function get() {
@@ -49586,6 +49514,7 @@ exports.default = {
             },
             set: function set() {}
         }
+
     },
 
     methods: {
@@ -51104,8 +51033,6 @@ exports.default = {
 
     props: ['serialNumber'],
 
-    components: {},
-
     data: function data() {
         return {
             defaults: {}
@@ -51145,16 +51072,21 @@ exports.default = {
          * Makes sibling of parent
          */
         moveLeft: function moveLeft() {
-            window.console.log('card-movement-control', 'moveLeft', 72);
-            var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent });
+
+            var payload = _Payload2.default.factory({ objNode: this.node,
+                parentNode: this.parent });
+
+            window.console.log('card-movement-control', 'moveLeft', 72, payload);
+
             this.$store.commit('promote', payload);
         },
         /**
          * Makes into child of its immediate sibling
          */
         moveRight: function moveRight() {
-            window.console.log('card-movement-control', 'moveRight', 75);
             var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent });
+            window.console.log('card-movement-control', 'moveRight', 75, payload);
+
             this.$store.commit('demote', payload);
         }
     },
@@ -51208,15 +51140,61 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.default = {
 
-    props: ['isExam', 'serialNumber'],
+    props: ['serialNumber'],
 
     data: function data() {
-        return {};
+        return {
+            identifiers: {
+                exam: 'exam-children-display-button',
+                item: 'item-children-display-button'
+            }
+        };
     },
 
     computed: {
-        buttonId: function buttonId() {
-            return 'children-display-button-' + this.serialNumber;
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        isExam: function isExam() {
+            return this.item ? this.item.isExam() : false;
+        },
+
+        node: function node() {
+            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+        },
+
+        depth: function depth() {
+            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
+        },
+
+        height: function height() {
+            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
+        },
+
+        /**
+         * Gets the appropriate base string for the input
+         * depending on whether it is attached to an exam or
+         * regular item
+         */
+        identifier: function identifier() {
+            return this.isExam ? this.identifiers.exam : this.identifiers.item;
+        },
+
+        /**
+         * The input's css id
+         */
+        id: function id() {
+            if (this.isExam) return this.identifier;
+
+            return this.identifier + "-" + this.height + '-' + this.depth;
+        },
+
+        /**
+         * Injected into the classes of the input
+         * */
+        styling: function styling() {
+            return this.identifier; // + '-' + this.serialNumber;
         },
 
         //for toggling the display state of the button
@@ -51229,6 +51207,12 @@ exports.default = {
             //change stored state
             window.console.log('children-display-control', 'toggleVisibility', 45, this.serialNumber);
             //            this.$state.commit();
+            if (this.isExam) {
+                this.$store.commit('toggleExamChildrenVisibility');
+            } else {
+                var payload = _Payload2.default.factory({ serialNumber: this.serialNumber });
+                this.$store.commit('toggleChildrenVisibility', payload);
+            }
         }
     },
 
@@ -51238,6 +51222,8 @@ exports.default = {
 
     mounted: function mounted() {}
 }; //
+//
+//
 //
 //
 //
@@ -51862,37 +51848,109 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.default = {
 
-    props: ['isExam', 'serialNumber'],
+    props: ['serialNumber'],
 
     data: function data() {
-        return {};
+        return {
+            identifiers: {
+                exam: 'exam-settings-button',
+                item: 'item-settings-button'
+            }
+        };
     },
 
     computed: {
-        settingsButtonId: function settingsButtonId() {
-            return 'item-settings-button-' + this.serialNumber;
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        isExam: function isExam() {
+            return this.item ? this.item.isExam() : false;
+        },
+
+        node: function node() {
+            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+        },
+
+        depth: function depth() {
+            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
+        },
+
+        height: function height() {
+            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
+        },
+
+        parentSerialNumber: function parentSerialNumber() {
+            return this.node.parent;
+        },
+
+        /**
+         * Gets the appropriate base string for the input
+         * depending on whether it is attached to an exam or
+         * regular item
+         */
+        identifier: function identifier() {
+            return this.isExam ? this.identifiers.exam : this.identifiers.item;
+        },
+
+        /**
+         * The input's css id
+         */
+        id: function id() {
+            if (this.isExam) return this.identifier;
+            return this.identifier + "-" + this.height + '-' + this.depth;
+        },
+
+        /**
+         * Injected into the classes of the input
+         * */
+        styling: function styling() {
+            return this.identifier; // + '-' + this.serialNumber;
         }
     },
 
     methods: {
+
+        toggleExamVisibility: function toggleExamVisibility() {
+            this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
+            this.$router.push({
+                name: 'exam-detail',
+                params: {
+                    serialNumber: this.serialNumber,
+                    active: 'details'
+                }
+            });
+        },
+
+        toggleItemVisibility: function toggleItemVisibility() {
+            //item cases
+            var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
+
+            if (isVis) {
+                //if comes back true, we know that currently visible
+                //call the mutation with our index
+                this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({
+                    serialNumber: this.serialNumber,
+                    mutateSilently: true
+                }));
+            } else {
+                //call the mutation to show with our index
+                this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({
+                    serialNumber: this.serialNumber,
+                    mutateSilently: true
+                }));
+                this.$router.push({
+                    name: 'item-detail',
+                    params: { serialNumber: this.serialNumber, active: 'details' }
+                });
+            }
+        },
+
         toggleVis: function toggleVis() {
             if (this.isExam) {
-                //exam case
-                this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
-                this.$router.push({ name: 'exam-detail', params: { serialNumber: this.serialNumber, active: 'details' } });
+                this.toggleExamVisibility();
             } else {
-                //item cases
-                var isVis = this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
-
-                if (isVis) {
-                    //if comes back true, we know that currently visible
-                    //call the mutation with our index
-                    this.$store.commit(mTypes.hideItemSettings, _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true }));
-                } else {
-                    //call the mutation to show with our index
-                    this.$store.commit(mTypes.showItemSettings, _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true }));
-                    this.$router.push({ name: 'item-detail', params: { serialNumber: this.serialNumber, active: 'details' } });
-                }
+                this.toggleItemVisibility();
             }
         }
     },
@@ -52240,10 +52298,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 
 exports.default = {
-    props: ['index', 'is-exam', 'serialNumber'],
+    props: ['serialNumber'],
 
     data: function data() {
         return {
+            identifiers: {
+                exam: 'exam-nav-tabs',
+                item: 'item-nav-tabs'
+            },
             defaults: {
                 types: ['question', 'element']
             },
@@ -52289,6 +52351,54 @@ exports.default = {
 
         routeToTags: function routeToTags() {
             return "/panel-tags/" + this.serialNumber;
+        },
+
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        isExam: function isExam() {
+            return this.item ? this.item.isExam() : false;
+        },
+
+        node: function node() {
+            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+        },
+
+        depth: function depth() {
+            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
+        },
+
+        height: function height() {
+            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
+        },
+
+        parentSerialNumber: function parentSerialNumber() {
+            return this.node.parent;
+        },
+
+        /**
+         * Gets the appropriate base string for the input
+         * depending on whether it is attached to an exam or
+         * regular item
+         */
+        identifier: function identifier() {
+            return this.isExam ? this.identifiers.exam : this.identifiers.item;
+        },
+
+        /**
+         * The input's css id
+         */
+        id: function id() {
+            if (this.isExam) return this.identifier;
+            return this.identifier + "-" + this.height + '-' + this.depth;
+        },
+
+        /**
+         * Injected into the classes of the input
+         * */
+        styling: function styling() {
+            return this.identifier; // + '-' + this.serialNumber;
         }
 
     },
@@ -57432,37 +57542,42 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         );
     };
 }), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters, rootState, serialNumber) {
-    return 1;
-    // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
-    var level = 0;
+    return function (serialNumber) {
+        // return 1;
+        // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
+        return function (state, serialNumber) {
 
-    var node = (0, _NodeTools.getNode)(state, serialNumber);
-    if (node) {
-        while (node.parent !== node.data) {
-            var parent = node.parent;
-            //get the parent node
-            //set it as node so that we operate on it next time
-            node = (0, _NodeTools.getNode)(state, parent);
-            //increment level
-            level += 1;
-        }
-    }
-    return level;
-    //
-    //
-    // return (function recurse( serialNumber ) {
-    //     // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-    //     //look up the node whose serial number we've just  been handed.
-    //     let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
-    //     //break condition is that we've hit the exam
-    //     //which is of course the only item which is its
-    //     //own parent
-    //     if ( node.parent === node.data ) return level;
-    //     //Otherwise, increment the level counter
-    //     // and re-run on the parent
-    //     level += 1;
-    //     return recurse( node.parent );
-    // })( serialNumber );
+            var level = 0;
+
+            var node = (0, _NodeTools.getNode)(state, serialNumber);
+            if (node) {
+                while (node.parent !== node.data) {
+                    var parent = node.parent;
+                    //get the parent node
+                    //set it as node so that we operate on it next time
+                    node = (0, _NodeTools.getNode)(state, parent);
+                    //increment level
+                    level += 1;
+                }
+            }
+            return level;
+        }(state, serialNumber);
+        //
+        //
+        // return (function recurse( serialNumber ) {
+        //     // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
+        //     //look up the node whose serial number we've just  been handed.
+        //     let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
+        //     //break condition is that we've hit the exam
+        //     //which is of course the only item which is its
+        //     //own parent
+        //     if ( node.parent === node.data ) return level;
+        //     //Otherwise, increment the level counter
+        //     // and re-run on the parent
+        //     level += 1;
+        //     return recurse( node.parent );
+        // })( serialNumber );
+    };
 }), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, rootState, serialNumber) {
     return function (serialNumber) {
         //look up the node whose serial number we've just  been handed.
@@ -58105,19 +58220,18 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         parentNode = payload.parentNode;
 
 
-    var currentIndex = parentNode.children.indexOf(objNode);
-    if (currentIndex + 1 === parentNode.children.length) return true;
-
-    //make sure it is not the last item already
-    if (parentNode.children.length !== currentIndex + 1) {
-
-        //We first pop the item out so that its successor
-        //slides down and occupies its current index
-        parentNode.children.pop(currentIndex);
-        //Now we push it in at  its
-        //original position + 1
-        parentNode.children.splice(currentIndex + 1, 0, objNode);
-    }
+    var currentIndex = parentNode.children.indexOf(objNode
+    // if ( currentIndex + 1 === parentNode.children.length ) return true;
+    //
+    // //make sure it is not the last item already
+    // if ( parentNode.children.length !== currentIndex + 1 ) {
+    //We first pop the item out so that its successor
+    //slides down and occupies its current index
+    );parentNode.children.splice(currentIndex, 1);
+    //Now we push it in at  its
+    //original position + 1
+    parentNode.children.splice(currentIndex - 1, 0, objNode);
+    // }
 }), _defineProperty(_module$exports, 'decreasePosition', function decreasePosition(state, payload) {
     var objNode = payload.objNode,
         parentNode = payload.parentNode;
@@ -58125,27 +58239,44 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     var currentIndex = parentNode.children.indexOf(objNode
     //check whether at the end of the children list
     //if so, ignore the call
-    );if (currentIndex === 0) return true;
+    //   if ( currentIndex === 0 ) return true;
 
     //We first pop the item out so that its successor
     //slides down and occupies its current index
     //Now we push it in at  its
     //original position -1 1
-    parentNode.children.pop(currentIndex).splice(currentIndex + 1, 0, objNode);;
+    );parentNode.children.splice(currentIndex, 1); //remove it
+    parentNode.children.splice(currentIndex + 1, 0, objNode); //push it in
 }), _defineProperty(_module$exports, 'promote', function promote(state, payload) {
-    //check that we aren't at the question level
     //where it makes no sense to promote
     var objNode = payload.objNode,
         parentNode = payload.parentNode;
     //get parent's parent
 
-    var grandParent = (0, _NodeTools.getNode)(parentNode.parent);
-    //add to grandparent
-    grandParent.children.push(objNode);
+    if (parentNode instanceof _Node2.default) {
+        var grandParent = (0, _NodeTools.getNode)(state, parentNode.parent);
 
-    //remove from parent's children list
-    parentNode.children.pop(parentNode.children.indexOf(objNode));
-}), _defineProperty(_module$exports, 'demote', function demote(state, payload) {}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
+        //check that we aren't at the question level
+        // if ( grandParent ) {
+        //add to grandparent
+        grandParent.children.push(objNode);
+
+        //remove from parent's children list
+        parentNode.children.splice(parentNode.children.indexOf(objNode), 1);
+        // }
+    }
+}), _defineProperty(_module$exports, 'demote', function demote(state, payload) {
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+
+    var currentIndex = parentNode.children.indexOf(objNode);
+    //get the node who will become parent
+    var newParent = parentNode.children[currentIndex - 1];
+    //remove from parent
+    parentNode.children.splice(currentIndex, 1); //remove it
+    //push it in to its former older sibling's children
+    newParent.children.push(objNode);
+}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
     var objNode = payload.objNode,
         obj = payload.obj;
     // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
@@ -58905,7 +59036,9 @@ var state = {
     itemsWithChildrenHidden: [],
 
     //The root item (the exam) is always visible, but it's settings aren't
-    examSettingsVisible: false
+    examSettingsVisible: false,
+
+    examChildrenVisible: true
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.showItemSettings, function (state, payload) {
@@ -58937,6 +59070,8 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.showItemSet
     }
 }), _defineProperty(_mutations, mTypes.toggleExamSettings, function (state, payload) {
     state.examSettingsVisible = !state.examSettingsVisible;
+}), _defineProperty(_mutations, 'toggleExamChildrenVisibility', function toggleExamChildrenVisibility(state) {
+    state.examChildrenVisible = !state.examChildrenVisible;
 }), _mutations);
 
 // [mTypes.toggleItemSettings] : ( state, rootState, payload ) => {
@@ -58957,6 +59092,8 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.isItemSettingsVis
     };
 }), _defineProperty(_getters, gTypes.isExamSettingsVisible, function (state) {
     return state.examSettingsVisible;
+}), _defineProperty(_getters, 'isExamChildrenVisible', function isExamChildrenVisible(state) {
+    return state.examChildrenVisible;
 }), _getters);
 
 exports.default = {
@@ -71107,7 +71244,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -75139,28 +75276,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 491 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(5)(
-  /* script */
-  null,
-  /* template */
-  null,
-  /* styles */
-  null,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/old/pane.edit-item.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 491 */,
 /* 492 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75656,9 +75772,9 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "item-card-component card",
-    class: _vm.offsetClass,
+    class: _vm.styling,
     attrs: {
-      "id": _vm.divId
+      "id": _vm.id
     }
   }, [_c('div', {
     staticClass: "card-content"
@@ -75674,7 +75790,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.paneVisible),
       expression: "paneVisible"
     }],
-    staticClass: "card-content"
+    staticClass: "card-content",
+    attrs: {
+      "id": _vm.contentId
+    }
   }, [_c('edit-tabs', {
     attrs: {
       "serial-number": _vm.serialNumber,
@@ -75969,7 +76088,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }), _vm._v(" "), _c('router-view', {
     attrs: {
-      "name": "itemPanels"
+      "name": "examPanels"
     }
   })], 1), _vm._v(" "), _c('div', {
     staticClass: "card-footer"
@@ -76219,7 +76338,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('button', {
     staticClass: "button settings-button is-info is-outlined is-large",
     attrs: {
-      "id": _vm.settingsButtonId
+      "id": _vm.id
     },
     on: {
       "click": _vm.toggleVis
@@ -76251,7 +76370,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('button', {
     staticClass: "button children-display-control is-info is-outlined is-large",
     attrs: {
-      "id": _vm.buttonId
+      "id": _vm.id
     },
     on: {
       "click": _vm.toggleVisibility
@@ -76767,7 +76886,11 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('nav', {
     staticClass: "nav-edit-tabs-component tabs is-centered"
-  }, [_c('ul', [(_vm.isExam) ? _c('li', {
+  }, [_c('ul', {
+    attrs: {
+      "id": _vm.id
+    }
+  }, [(_vm.isExam) ? _c('li', {
     attrs: {
       "role": "presentation"
     }
@@ -77857,7 +77980,7 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /**
-  * vue-router v2.6.0
+  * vue-router v2.7.0
   * (c) 2017 Evan You
   * @license MIT
   */
@@ -77873,6 +77996,10 @@ function warn (condition, message) {
   if ("development" !== 'production' && !condition) {
     typeof console !== 'undefined' && console.warn(("[vue-router] " + message));
   }
+}
+
+function isError (err) {
+  return Object.prototype.toString.call(err).indexOf('Error') > -1
 }
 
 var View = {
@@ -78376,7 +78503,7 @@ function install (Vue) {
 
   var strats = Vue.config.optionMergeStrategies;
   // use the same hook merging strategy for route hooks
-  strats.beforeRouteEnter = strats.beforeRouteLeave = strats.created;
+  strats.beforeRouteEnter = strats.beforeRouteLeave = strats.beforeRouteUpdate = strats.created;
 }
 
 /*  */
@@ -79516,6 +79643,107 @@ function runQueue (queue, fn, cb) {
 
 /*  */
 
+function resolveAsyncComponents (matched) {
+  return function (to, from, next) {
+    var hasAsync = false;
+    var pending = 0;
+    var error = null;
+
+    flatMapComponents(matched, function (def, _, match, key) {
+      // if it's a function and doesn't have cid attached,
+      // assume it's an async component resolve function.
+      // we are not using Vue's default async resolving mechanism because
+      // we want to halt the navigation until the incoming component has been
+      // resolved.
+      if (typeof def === 'function' && def.cid === undefined) {
+        hasAsync = true;
+        pending++;
+
+        var resolve = once(function (resolvedDef) {
+          if (resolvedDef.__esModule && resolvedDef.default) {
+            resolvedDef = resolvedDef.default;
+          }
+          // save resolved on async factory in case it's used elsewhere
+          def.resolved = typeof resolvedDef === 'function'
+            ? resolvedDef
+            : _Vue.extend(resolvedDef);
+          match.components[key] = resolvedDef;
+          pending--;
+          if (pending <= 0) {
+            next();
+          }
+        });
+
+        var reject = once(function (reason) {
+          var msg = "Failed to resolve async component " + key + ": " + reason;
+          "development" !== 'production' && warn(false, msg);
+          if (!error) {
+            error = isError(reason)
+              ? reason
+              : new Error(msg);
+            next(error);
+          }
+        });
+
+        var res;
+        try {
+          res = def(resolve, reject);
+        } catch (e) {
+          reject(e);
+        }
+        if (res) {
+          if (typeof res.then === 'function') {
+            res.then(resolve, reject);
+          } else {
+            // new syntax in Vue 2.3
+            var comp = res.component;
+            if (comp && typeof comp.then === 'function') {
+              comp.then(resolve, reject);
+            }
+          }
+        }
+      }
+    });
+
+    if (!hasAsync) { next(); }
+  }
+}
+
+function flatMapComponents (
+  matched,
+  fn
+) {
+  return flatten(matched.map(function (m) {
+    return Object.keys(m.components).map(function (key) { return fn(
+      m.components[key],
+      m.instances[key],
+      m, key
+    ); })
+  }))
+}
+
+function flatten (arr) {
+  return Array.prototype.concat.apply([], arr)
+}
+
+// in Webpack 2, require.ensure now also returns a Promise
+// so the resolve/reject functions may get called an extra time
+// if the user uses an arrow function shorthand that happens to
+// return that Promise.
+function once (fn) {
+  var called = false;
+  return function () {
+    var args = [], len = arguments.length;
+    while ( len-- ) args[ len ] = arguments[ len ];
+
+    if (called) { return }
+    called = true;
+    return fn.apply(this, args)
+  }
+}
+
+/*  */
+
 var History = function History (router, base) {
   this.router = router;
   this.base = normalizeBase(base);
@@ -79809,106 +80037,6 @@ function poll (
       poll(cb, instances, key, isValid);
     }, 16);
   }
-}
-
-function resolveAsyncComponents (matched) {
-  return function (to, from, next) {
-    var hasAsync = false;
-    var pending = 0;
-    var error = null;
-
-    flatMapComponents(matched, function (def, _, match, key) {
-      // if it's a function and doesn't have cid attached,
-      // assume it's an async component resolve function.
-      // we are not using Vue's default async resolving mechanism because
-      // we want to halt the navigation until the incoming component has been
-      // resolved.
-      if (typeof def === 'function' && def.cid === undefined) {
-        hasAsync = true;
-        pending++;
-
-        var resolve = once(function (resolvedDef) {
-          // save resolved on async factory in case it's used elsewhere
-          def.resolved = typeof resolvedDef === 'function'
-            ? resolvedDef
-            : _Vue.extend(resolvedDef);
-          match.components[key] = resolvedDef;
-          pending--;
-          if (pending <= 0) {
-            next();
-          }
-        });
-
-        var reject = once(function (reason) {
-          var msg = "Failed to resolve async component " + key + ": " + reason;
-          "development" !== 'production' && warn(false, msg);
-          if (!error) {
-            error = isError(reason)
-              ? reason
-              : new Error(msg);
-            next(error);
-          }
-        });
-
-        var res;
-        try {
-          res = def(resolve, reject);
-        } catch (e) {
-          reject(e);
-        }
-        if (res) {
-          if (typeof res.then === 'function') {
-            res.then(resolve, reject);
-          } else {
-            // new syntax in Vue 2.3
-            var comp = res.component;
-            if (comp && typeof comp.then === 'function') {
-              comp.then(resolve, reject);
-            }
-          }
-        }
-      }
-    });
-
-    if (!hasAsync) { next(); }
-  }
-}
-
-function flatMapComponents (
-  matched,
-  fn
-) {
-  return flatten(matched.map(function (m) {
-    return Object.keys(m.components).map(function (key) { return fn(
-      m.components[key],
-      m.instances[key],
-      m, key
-    ); })
-  }))
-}
-
-function flatten (arr) {
-  return Array.prototype.concat.apply([], arr)
-}
-
-// in Webpack 2, require.ensure now also returns a Promise
-// so the resolve/reject functions may get called an extra time
-// if the user uses an arrow function shorthand that happens to
-// return that Promise.
-function once (fn) {
-  var called = false;
-  return function () {
-    var args = [], len = arguments.length;
-    while ( len-- ) args[ len ] = arguments[ len ];
-
-    if (called) { return }
-    called = true;
-    return fn.apply(this, args)
-  }
-}
-
-function isError (err) {
-  return Object.prototype.toString.call(err).indexOf('Error') > -1
 }
 
 /*  */
@@ -80349,7 +80477,7 @@ function createHref (base, fullPath, mode) {
 }
 
 VueRouter.install = install;
-VueRouter.version = '2.6.0';
+VueRouter.version = '2.7.0';
 
 if (inBrowser && window.Vue) {
   window.Vue.use(VueRouter);
@@ -80811,6 +80939,10 @@ var _mutationTypes = __webpack_require__(1);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
+var _getterTypes = __webpack_require__(10);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
 var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
@@ -80822,34 +80954,6 @@ var _Item2 = _interopRequireDefault(_Item);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 exports.default = {
     props: ['serialNumber'],
@@ -80880,6 +80984,14 @@ exports.default = {
             return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
         },
 
+        depth: function depth() {
+            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
+        },
+
+        height: function height() {
+            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
+        },
+
         parentSerialNumber: function parentSerialNumber() {
             return this.node.parent;
         },
@@ -80897,8 +81009,11 @@ exports.default = {
          * The input's css id
          */
         id: function id() {
-            return this.identifier + '-' + this.serialNumber;
+            if (this.isExam) return this.identifier;
+
+            return this.identifier + "-" + this.height + '-' + this.depth;
         },
+
         /**
          * Injected into the classes of the input
          * */
@@ -80928,7 +81043,33 @@ exports.default = {
     },
 
     methods: {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 576 */

@@ -82,24 +82,27 @@ module.exports = {
      * @param getters
      * @param serialNumber
      */
-    [gTypes.getHeightOfNode]: function ( state, getters,  rootState, serialNumber ) {
-        return 1;
+    [gTypes.getHeightOfNode]: ( state, getters,  rootState, serialNumber ) => (serialNumber) => {
+        // return 1;
     // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
-        let level = 0;
+        return (function ( state, serialNumber ) {
 
-        let node = getNode(state, serialNumber);
-        if(node) {
-            while (node.parent !== node.data) {
-                let parent = node.parent;
-                //get the parent node
-                //set it as node so that we operate on it next time
-                node = getNode( state, parent );
-                //increment level
-                level += 1;
+            let level = 0;
+
+            let node = getNode( state, serialNumber );
+            if ( node ) {
+                while (node.parent !== node.data) {
+                    let parent = node.parent;
+                    //get the parent node
+                    //set it as node so that we operate on it next time
+                    node = getNode( state, parent );
+                    //increment level
+                    level += 1;
+                }
             }
-        }
-        return level;
-        //
+            return level;
+        })(state, serialNumber);
+                //
         //
         // return (function recurse( serialNumber ) {
         //     // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);

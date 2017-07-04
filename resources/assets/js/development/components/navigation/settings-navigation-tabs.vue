@@ -1,7 +1,7 @@
 <template>
 
     <nav class="nav-edit-tabs-component tabs is-centered">
-        <ul>
+        <ul v-bind:id="id">
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToExamDetails">
                     <a>
@@ -124,10 +124,14 @@
      * Created by adam on 2/18/17.
      */
     export default {
-        props: [ 'index', 'is-exam', 'serialNumber' ],
+        props: [ 'serialNumber' ],
 
         data: function () {
             return {
+                identifiers: {
+                    exam: 'exam-nav-tabs',
+                    item: 'item-nav-tabs'
+                },
                 defaults: {
                     types: [ 'question', 'element' ]
                 },
@@ -176,6 +180,56 @@
             routeToTags: function () {
                 return "/panel-tags/" + this.serialNumber;
             },
+
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            isExam: function () {
+                return this.item ? this.item.isExam() : false;
+            },
+
+            node: function () {
+                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+            },
+
+            depth: function () {
+                return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            },
+
+
+            height: function () {
+                return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+            },
+
+
+            parentSerialNumber: function () {
+                return this.node.parent;
+            },
+
+            /**
+             * Gets the appropriate base string for the input
+             * depending on whether it is attached to an exam or
+             * regular item
+             */
+            identifier: function () {
+                return this.isExam ? this.identifiers.exam : this.identifiers.item;
+            },
+
+            /**
+             * The input's css id
+             */
+            id: function () {
+                if ( this.isExam ) return this.identifier;
+                return this.identifier + "-" + this.height + '-' + this.depth;
+            },
+
+            /**
+             * Injected into the classes of the input
+             * */
+            styling: function () {
+                return this.identifier; // + '-' + this.serialNumber;
+            }
 
 
         },

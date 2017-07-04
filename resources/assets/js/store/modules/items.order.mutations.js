@@ -14,7 +14,7 @@ import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
 
-import {getNode} from '../../models/NodeTools'
+import { getNode } from '../../models/NodeTools'
 
 const checkExpectedType = ( toBeSet ) => {
     if ( toBeSet instanceof Node ) return true;
@@ -46,7 +46,7 @@ module.exports = {
             //if an index was specified, splice it in at the index
             if ( !_.isUndefined( index ) ) {
                 parentNode.children.splice( index, 0, objNode );
-            return resolve();
+                return resolve();
             }
 
             //otherwise just push it on the end
@@ -66,44 +66,44 @@ module.exports = {
         parent.children.splice( idx, 1 );
     },
 
-    increasePosition : (state, payload) =>{
-        let {objNode, parentNode} = payload;
+    increasePosition: ( state, payload ) => {
+        let { objNode, parentNode } = payload;
 
-        let currentIndex = parentNode.children.indexOf(objNode)
-        if(currentIndex + 1 === parentNode.children.length) return true;
-
-        //make sure it is not the last item already
-        if (parentNode.children.length !== currentIndex + 1){
-
+        let currentIndex = parentNode.children.indexOf( objNode )
+        // if ( currentIndex + 1 === parentNode.children.length ) return true;
+        //
+        // //make sure it is not the last item already
+        // if ( parentNode.children.length !== currentIndex + 1 ) {
             //We first pop the item out so that its successor
             //slides down and occupies its current index
-            parentNode.children.pop(currentIndex);
+            parentNode.children.splice( currentIndex, 1 );
             //Now we push it in at  its
             //original position + 1
-            parentNode.children.splice( currentIndex + 1, 0, objNode );
-        }
+            parentNode.children.splice( currentIndex - 1, 0, objNode );
+        // }
     },
 
     /**
      * Moves the item down in the order of its siblings
      * So if x was at Q2E3, after this it would be
-     * at Q2E4 and the item previously at E4 would be at E2.
+     * at Q2E4 and the item previously at E4 would be at E3.
      *
      * @param state
      * @param payload
      */
-    decreasePosition : (state, payload) =>{
-        let {objNode, parentNode} = payload;
-        let currentIndex = parentNode.children.indexOf(objNode)
+    decreasePosition: ( state, payload ) => {
+        let { objNode, parentNode } = payload;
+        let currentIndex = parentNode.children.indexOf( objNode )
         //check whether at the end of the children list
         //if so, ignore the call
-        if(currentIndex  === 0) return true;
+     //   if ( currentIndex === 0 ) return true;
 
-            //We first pop the item out so that its successor
-            //slides down and occupies its current index
+        //We first pop the item out so that its successor
+        //slides down and occupies its current index
         //Now we push it in at  its
         //original position -1 1
-        parentNode.children.pop(currentIndex).splice( currentIndex + 1, 0, objNode );;
+        parentNode.children.splice( currentIndex, 1 ); //remove it
+        parentNode.children.splice( currentIndex + 1, 0, objNode ); //push it in
 
     },
 
@@ -112,22 +112,36 @@ module.exports = {
      * @param state
      * @param payload
      */
-    promote : (state, payload )=>{
-        //check that we aren't at the question level
+    promote: ( state, payload ) => {
         //where it makes no sense to promote
-        let {objNode, parentNode} = payload;
+        let { objNode, parentNode } = payload;
         //get parent's parent
-        let grandParent = getNode(parentNode.parent);
-        //add to grandparent
-        grandParent.children.push(objNode);
+        if ( parentNode instanceof Node ) {
+            let grandParent = getNode( state, parentNode.parent );
 
-        //remove from parent's children list
-        parentNode.children.pop(parentNode.children.indexOf(objNode));
+            //check that we aren't at the question level
+            // if ( grandParent ) {
+                //add to grandparent
+                grandParent.children.push( objNode );
+
+                //remove from parent's children list
+                parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
+            // }
+        }
+
 
     },
 
-    demote : (state, payload) =>{},
-
+    demote: ( state, payload ) => {
+        let { objNode, parentNode } = payload;
+        let currentIndex = parentNode.children.indexOf( objNode );
+        //get the node who will become parent
+        let newParent = parentNode.children[currentIndex - 1];
+        //remove from parent
+        parentNode.children.splice( currentIndex, 1 ); //remove it
+        //push it in to its former older sibling's children
+        newParent.children.push( objNode);
+    },
 
 
     setRootNode: ( state, payload ) => {

@@ -33,7 +33,7 @@ let obj = items.default;
 let { getters, actions, mutations } = obj;
 
 
-fdescribe( "store.modules.items | ", function () {
+describe( "store.modules.items | ", function () {
     beforeEach( function () {
         this.state = makeState();
         this.rootState = makeRootState();
@@ -44,7 +44,7 @@ fdescribe( "store.modules.items | ", function () {
         this.item = factories.itemFactory();
     } );
 
-    fdescribe( description( "actions" ), function () {
+    describe( description( "actions" ), function () {
         describe( description( aTypes.createItem ), function () {
             beforeEach( function () {
                 let s = { itemMap: new Node( 0, 0 ) };
@@ -86,7 +86,7 @@ fdescribe( "store.modules.items | ", function () {
         } );
     } );
 
-    fdescribe( "getters | ", function () {
+    describe( "getters | ", function () {
         describe( 'getOrderForSync | ', function () {
             beforeEach( function () {
                 this.parent = new Item();

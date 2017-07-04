@@ -41,62 +41,139 @@ class SetupTest extends DuskTestCase
                 ->assertMissing('.item-card-component')
                 //call
                 ->click('.add-child-to-exam-button')
-                ->waitFor('#item-card')
-                ->assertVisible('.item-card-component');
+                ->waitFor('#item-card-1-0')
+                ->assertVisible('.item-card-component')
+            ->pause(2000);
+
 
             //make sure it persisted
             $examId = $browser->value('#examId');
             $browser->visit(Setup::urlToExam($examId))
                 ->waitFor(Setup::$mainBodyLocator)
-                ->assertVisible('#item-card');
+                ->assertVisible('#item-card-1-0');
         });
 
     }
 
-    public function testEditQuestionName()
+    /**
+     * Alter the exam name and make sure it persists
+     */
+    public function testEditExamName()
     {
+        $testText = Factory::create()->name;
+
         $user = factory(User::class)->create();
-        $this->browse(function ( Browser $browser ) use ( $user ) {
-            $testText = Factory::create()->name;
+        $this->browse(function ( Browser $browser ) use ( $user, $testText ) {
             $browser->loginAs(User::find(1))
                 //prep
                 ->visit(new Setup())
                 ->waitFor(Setup::$mainBodyLocator)
-                ->assertVisible('.add-child-to-exam-button')
-                ->assertMissing('@item-card')
+                ->assertVisible('#exam-name')
                 //call
-                ->click('.add-child-to-exam-button')
-                //check creation
-                ->assertVisible('.item-card-component')
-                ->type('.item-name', $testText);
+                ->type('#exam-name', $testText)
+                ->assertInputValue('#exam-name', $testText)
+                ->pause(2000);
 
             //make sure it persisted
             $examId = $browser->value('#examId');
-            $browser->visit(Setup::urlToExam($examId))
-                ->waitFor(Setup::$mainBodyLocator)
-                ->assertVisible('.item-card-component')
-                ->assertVisible('.item-name')//'@itemName')
-                ->assertInputValue('.item-name', $testText); //'@itemName', $testText);
-
+            Setup::navigateToExam($browser, $examId);
+            $browser->assertVisible('#exam-name')
+                ->assertInputValue('#exam-name', $testText);
         });
 
     }
 
 
-    public function testAddElementToQuestion()
+    public function testEditQuestionName()
     {
+        $testText = Factory::create()->name;
+
+        $user = factory(User::class)->create();
+        $this->browse(function ( Browser $browser ) use ( $user, $testText ) {
+            $browser->loginAs(User::find(1))
+                //prep
+                ->visit(new Setup())
+                ->waitFor(Setup::$mainBodyLocator)
+                //call
+                ->click('.add-child-to-exam-button')
+                //check creation
+                ->assertVisible('.item-card-component')
+                ->assertVisible('#item-card-1-0')
+                ->assertVisible('#item-name-1-0')
+                ->type('#item-name-1-0', $testText)
+                ->pause(2000)
+                ->assertInputValue('#item-name-1-0', $testText);
+
+
+            //make sure it persisted
+
+            $examId = $browser->value('#examId');
+            Setup::navigateToExam($browser, $examId);
+            $browser->waitForText($testText)
+                ->assertVisible('.item-card-component')
+                ->assertVisible('#item-card-1-0')
+                ->assertInputValue('#item-name-1-0', $testText);
+        });
 
     }
 
+//
+//    public function testAddElementToQuestion()
+//    {
+//
+//    }
+//
+//
+//    public function testMoveChildToBeParentsSibling()
+//    {
+//
+//    }
+//
+//
+//    public function testMakeParentsSiblingIntoItsChild()
+//    {
+//
+//    }
 
-    public function testMoveChildToBeParentsSibling()
+//public function testToggleChildrenVisibility(){
+//Exam case
+//item case
+
+
+//}
+
+
+    /**
+     * Checks that the toggle works for exams
+     * @group setup
+     * @group items
+     * @group toggles
+     * @todo Set up test for nested child elements
+     * @todo Check that no other contents are displaying
+     */
+    public function testToggleItemSettingsVisibility()
     {
+        $user = factory(User::class)->create();
+        $this->browse(function ( Browser $browser ) use ( $user ) {
+            $browser->loginAs(User::find(1))
+                //prep
+                ->visit(new Setup())
+                ->waitFor(Setup::$mainBodyLocator)
+                //add item
+                ->click(Setup::$addItemToExamButton)
+                ->waitFor('#item-card-1-0')
+                ->assertVisible(Setup::settingsToggleButton())
+                ->assertMissing('#item-nav-tabs-1-0')
+                //click the show button
+                ->click(Setup::settingsToggleButton())
+//                ->waitFor('#item-nav-tabs-1-0')
+                ->assertVisible('#item-nav-tabs-1-0')
+                //click the hide button
+            ->click(Setup::settingsToggleButton())
+                ->assertMissing('#item-nav-tabs-1-0');
 
+        });
     }
 
 
-    public function testMakeParentsSiblingIntoItsChild()
-    {
-
-    }
 }

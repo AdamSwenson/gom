@@ -29,7 +29,7 @@ export const traverseDF = ( root, callback ) => {
     // this is a recursive and immediately-invoking function
     (function recurse( currentNode ) {
         // step 2
-        for (var i = 0, length = currentNode.children.length; i < length; i++) {
+        for (var i = 0; i < currentNode.children.length;  i++) {
             // step 3
             // iterate through the node's children
             // calling the recursive function on each

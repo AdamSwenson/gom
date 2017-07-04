@@ -49,7 +49,6 @@
 
         props: [ 'serialNumber' ],
 
-        components: {},
 
         data: function () {
             return {
@@ -90,8 +89,12 @@
              * Makes sibling of parent
              */
             moveLeft: function () {
-                window.console.log( 'card-movement-control', 'moveLeft', 72, );
-                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
+
+                let payload = Payload.factory( { objNode: this.node,
+                    parentNode: this.parent } );
+
+                window.console.log( 'card-movement-control', 'moveLeft', 72, payload );
+
                 this.$store.commit('promote', payload)
 
             },
@@ -99,8 +102,9 @@
              * Makes into child of its immediate sibling
              */
             moveRight: function () {
-                window.console.log( 'card-movement-control', 'moveRight', 75, );
                 let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
+                window.console.log( 'card-movement-control', 'moveRight', 75, payload );
+
                 this.$store.commit('demote', payload)
 
             }

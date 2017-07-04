@@ -20,7 +20,9 @@ const state = {
     itemsWithChildrenHidden: [],
 
     //The root item (the exam) is always visible, but it's settings aren't
-    examSettingsVisible: false
+    examSettingsVisible: false,
+
+    examChildrenVisible: true
 };
 
 const mutations = {
@@ -66,6 +68,10 @@ const mutations = {
      */
     [mTypes.toggleExamSettings]: ( state, payload ) => {
         state.examSettingsVisible = !state.examSettingsVisible;
+    },
+
+    toggleExamChildrenVisibility: (state) =>{
+        state.examChildrenVisible = !state.examChildrenVisible;
     }
 };
 
@@ -103,7 +109,12 @@ const getters = {
      */
     [gTypes.isExamSettingsVisible]: ( state ) => {
         return state.examSettingsVisible;
+    },
+
+    isExamChildrenVisible: (state) => {
+        return state.examChildrenVisible;
     }
+
 
 };
 

@@ -52,6 +52,124 @@ describe( "store.modules.item.order mutations  ", function () {
         window.console.log( 'orderings.spec', 'filledState', 34, this.filledState );
 
     } );
+    fdescribe( description( "movement " ), function () {
+        beforeEach( function () {
+            this.rootId = 1;
+            this.parentId = 2;
+            this.root = new Node( this.rootId, this.rootId );
+            this.state = { itemMap: this.root };
+            this.parent = new Node( this.parentId, this.rootId );
+            this.root.children.push( this.parent );
+
+            expect( this.root.children.length ).toBe( 1 );
+
+        } );
+
+        describe( description( "decreasePosition" ), function () {
+            it( "happy path", function () {
+                //prep
+                let c1 = new Node( 4, this.parentId );
+                let c2 = new Node( 5, this.parentId );
+                this.parent.children.push( c1 );
+                this.parent.children.push( c2 );
+
+                //check prep
+                expect( this.parent.children[ 0 ] ).toBe( c1 );
+                expect( this.parent.children[ 1 ] ).toBe( c2 );
+
+                mutations.decreasePosition( this.state, Payload.factory( {
+                    objNode: c1, parentNode: this.parent
+                } ) );
+
+                window.console.log( 'item.order.mutations.spec', 'increasePosition', 71, this.parent );
+                expect( this.parent.children.length ).toBe( 2 );
+                expect( this.parent.children[ 0 ] ).toBe( c2 );
+                expect( this.parent.children[ 1 ] ).toBe( c1 );
+            } );
+        } );
+
+        describe( description( "increasePosition" ), function () {
+            it( "happy path", function () {
+                //prep
+                let c1 = new Node( 4, this.parentId );
+                let c2 = new Node( 5, this.parentId );
+                this.parent.children.push( c1 );
+                this.parent.children.push( c2 );
+
+                //check prep
+                expect( this.parent.children[ 0 ] ).toBe( c1 );
+                expect( this.parent.children[ 1 ] ).toBe( c2 );
+
+                mutations.increasePosition( this.state, Payload.factory(
+                    {
+                        objNode: c2, parentNode: this.parent
+                    } ) );
+
+                window.console.log( 'item.order.mutations.spec', 'increasePosition', 71, this.parent );
+                expect( this.state.itemMap.children[ 0 ].children.length ).toBe( 2 );
+                expect( this.state.itemMap.children[ 0 ].children[ 0 ] ).toBe( c2 );
+                expect( this.state.itemMap.children[ 0 ].children[ 1 ] ).toBe( c1 );
+            } );
+            //problem cases: where would move beyond ends of array
+        } );
+
+
+        describe( description( "promote" ), function () {
+            it( "happy path", function () {
+                //prep
+                let c1 = new Node( 4, this.parentId );
+                let c2 = new Node( 5, this.parentId );
+                this.parent.children.push( c1 );
+                this.parent.children.push( c2 );
+
+                //check prep
+                expect( this.parent.children[ 0 ] ).toBe( c1 );
+                expect( this.parent.children[ 1 ] ).toBe( c2 );
+
+                mutations.promote( this.state, Payload.factory(
+                    {
+                        objNode: c1, parentNode: this.parent
+                    } ) );
+
+                //check that the original parent's children are correct
+                expect( this.parent.children.length ).toBe( 1 );
+                expect( this.parent.children[ 0 ] ).toBe( c2 );
+
+                //check that now sibling of parent
+                expect( this.state.itemMap.children.length ).toBe( 2 );
+                expect( this.state.itemMap.children[ 0 ] ).toBe( this.parent );
+                expect( this.state.itemMap.children[ 1 ] ).toBe( c1 );
+            } );
+            //problem cases: where would move beyond ends of array
+        } );
+
+        describe( description( "demote" ), function () {
+            it( "happy path", function () {
+                //prep
+                let c1 = new Node( 4, this.parentId );
+                let c2 = new Node( 5, this.parentId );
+                this.parent.children.push( c1 );
+                this.parent.children.push( c2 );
+
+                //check prep
+                expect( this.parent.children[ 0 ] ).toBe( c1 );
+                expect( this.parent.children[ 1 ] ).toBe( c2 );
+
+                mutations.demote( this.state, Payload.factory(
+                    {
+                        objNode: c2, parentNode: this.parent
+                    } ) );
+
+                expect( this.parent.children.length ).toBe( 1 );
+                expect( this.parent.children[ 0 ].children.length).toBe( 1 );
+                expect( this.parent.children[ 0 ].children[ 0 ]).toBe( c2 );
+                expect( c1.children[ 0 ]).toBe( c2 );
+
+            } );
+            //problem cases: where would move beyond ends of array
+        } );
+
+    } );
 
     describe( description( mTypes.removeNodeFromOrder ), function () {
 
@@ -148,7 +266,8 @@ describe( "store.modules.item.order mutations  ", function () {
 
     } );
 
-} );
+} )
+;
 
 describe( description( "actions" ), function () {
     describe( description( aTypes.addItemToOrder ), function () {

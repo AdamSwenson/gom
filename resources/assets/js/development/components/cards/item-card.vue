@@ -1,17 +1,19 @@
 <template xmlns="http://www.w3.org/1999/html">
-    <div v-bind:id="divId"
-         class="item-card-component card"
-         v-bind:class="offsetClass"
+    <div class="item-card-component card"
+         v-bind:id="id"
+         v-bind:class="styling"
     >
 
         <div class="card-content">
             <item-main :serial-number="serialNumber" :is-exam="false"></item-main>
         </div>
 
-        <div class="card-content" v-show="paneVisible">
+        <div class="card-content"
+             v-bind:id="contentId"
+             v-show="paneVisible">
             <edit-tabs
-                       :serial-number="serialNumber"
-                       :is-exam="false">
+                    :serial-number="serialNumber"
+                    :is-exam="false">
             </edit-tabs>
             <router-view name="itemPanels"></router-view>
         </div>
@@ -51,13 +53,13 @@
 
                     <p class="control">
                         <public-indicator
-                                          :serial-number="serialNumber">
+                                :serial-number="serialNumber">
                         </public-indicator>
                     </p>
 
                     <p class="control">
                         <remove-item-button
-                                            :serial-number="serialNumber">
+                                :serial-number="serialNumber">
                         </remove-item-button>
                     </p>
                 </div>
@@ -130,11 +132,13 @@
 
     export default{
 
-        props: [  'serialNumber' ],
+        props: [ 'serialNumber' ],
 
         data: function () {
             return {
                 node: this.getNode(),
+                identifier: 'item-card',
+
                 defaults: {
                     depth: null,
                     index: null,
@@ -152,6 +156,15 @@
 
 
         computed: {
+
+            id: function () {
+                return this.identifier + "-" + this.height + '-' + this.depth; // + this.serialNumber;
+            },
+
+            contentId: function(){
+                return "card-content-" + this.height + '-' + this.depth;
+            },
+
             /**
              * The object representing the item's intrinsic properties
              * */
@@ -159,56 +172,31 @@
                 return this.$store.getters[ gTypes.getItemBySerialNumber ]( this.serialNumber );
             },
 
-
-//            /**
-//             * The Node representing the item's assignment
-//             */
-//
-//                this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-//            },
-
             /**
              * Returns an array of serial numbers belonging to
              * this item's children (in order)
              */
             children: function () {
                 let c = [];
-                if(this.node){
-                    for(let i=0; i<this.node.children.length; i++){
-                        c.push(this.node.children[i].data);
-// return this.node.children.filter( function( n ) { return n.data;} );
+                if ( this.node ) {
+                    for (let i = 0; i < this.node.children.length; i++) {
+                        c.push( this.node.children[ i ].data );
                     }
                 }
                 return c;
-//                return this.node ? this.node.children: [];
             },
-////                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-//                let cdrn = [];
-//                if ( this.node ) {
-//                    return this.node.children.filter( ( n ) => {
-//                        return n.data;
-//                    } );
-//                }
-//
-//////                    &&
-//////                } this.node.children.length > 0 ) {
-////
-////                    window.console.log( 'item-card', 'children', 178, this.node);
-////                    _.forEach( this.node.children, function ( d, i ) {
-////                        cdrn.push( d.data );
-////
-////                    } );
-////                }
-//////                if ( this.node && this.node.children.length > 0 ) {
-//////                    for (let i = 0; i < this.node.children.length; i++) {
-//////                        cdrn.push( this.node.children[ i ].data );
-//////                    }
-//////                }
-//                return cdrn;
-//            },
 
             numberChildren: function () {
                 return this.children.length;
+            },
+
+            depth: function () {
+                return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            },
+
+
+            height: function () {
+                return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
             },
 
 
@@ -219,63 +207,11 @@
                 return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.serialNumber )
             },
 
-            divId: function () {
-                return "item-card"; // + this.serialNumber;
+            styling: function () {
+
             },
 
-            /**
-             * Returns the bootstrap class for the depth
-             */
-            offsetClass: function () {
-                if ( this.depth > 0 ) {
-                    let amt = this.defaults.tabOffset * this.depth;
-                    let col = "col-md-offset-" + amt;
-                    return col
-                }
-            },
 
-            ddepth: function () {
-
-                //start with the current instance
-                //that way, if we are at the root,
-                //the while won't run
-                //todo or do I need the other kind?
-                let current = this.$parent;
-                let d = 0;
-                let limit = 5;
-                while (_.isEmpty( current ) && d < limit) {
-                    //we aren't at the root, so
-                    //increment our depth counter
-                    d++;
-                    //and set the parent of the parent as current
-                    current = current.$parent;
-                }
-                return d;
-            },
-
-//            depth: {
-//                get: function () {
-////                    return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-////                    let item = this.$store.getters.getItemById(this.id);
-////                    let item = this.$store.getters.getItemByIndex(this.index);
-////                    if ( typeof item !== 'undefined' ) {
-////                        return item.depth
-////                    }
-////
-//                },
-//                set: function ( v ) {
-////                    let item = this.$store.getters.getItemById(this.id);
-////                    let item = this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-////                    if ( typeof item !== 'undefined' ) {
-////                        this.$store.commit( Payload.factory( {
-//////                            id: this.id,
-////                            index: this.index,
-////                            updateProp: 'depth',
-////                            updateVal: v
-////                        } ) );
-////                    }
-//                }
-//            },
 
             type: {
                 get: function () {
@@ -285,12 +221,14 @@
 
                 }
             }
+
+
         },
 
         methods: {
-getNode: function (  ) {
-return     this.$store.getters.getItemNodeFromOrder( this.serialNumber )
-},
+            getNode: function () {
+                return this.$store.getters.getItemNodeFromOrder( this.serialNumber )
+            },
 //            addSibling: function ( rel="younger" ) {
 //                switch (rel){
 //                    case 'older':
