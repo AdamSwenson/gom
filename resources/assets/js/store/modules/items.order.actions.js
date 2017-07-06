@@ -33,7 +33,6 @@ module.exports = {
         let parentNode = getters.getItemNodeFromOrder( parentSerialNumber );
         // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
 
-
         let pl = Payload.factory( {
             objNode: newNode,
             parentNode: parentNode,

@@ -23,12 +23,15 @@ class Item extends BaseModel
     protected $dates = ['deleted_at'];
 
     protected $guarded = ['user_id', 'id'];
-protected $casts = ['settings' => 'array',
-    'name' =>'string',
-    'displayText' =>'string',
-    'commentText' =>'string',
-    'text' =>'string',
-    'max_score' =>'float'];
+
+    protected $casts = [
+        'settings' => 'array',
+        'name' => 'string',
+        'displayText' => 'string',
+        'commentText' => 'string',
+        'text' => 'string',
+        'max_score' => 'float'];
+
     protected $fillable = [
         'name',
         'displayText',
@@ -53,8 +56,6 @@ protected $casts = ['settings' => 'array',
 //        }
 //
 //    }
-
-
 
 
     #------------ foreign keys

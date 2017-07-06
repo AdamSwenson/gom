@@ -69,65 +69,6 @@ class AssignmentController extends Controller
 
 
     /**
-     * Expects incoming order to have
-     *      Node = {
-     *              data or id: id, //the item id of the question or element
-     *              parent: id //the item id of this item's parent
-     *              children: []
-     *       }
-     * @param Exam $exam
-     * @param Request $request
-     */
-    public function handleStore( Exam $exam, Request $request )
-    {
-        //expected format of incoming is a list of nodes
-        // with the form
-
-//todo add check so don't start if no ordering
-        $requestRoot = $request->has('order') ? $request->input('order') : false;
-
-        if ( $requestRoot ) {
-//        $assignmentTree = isset($exam->assignment->id) ? $exam->assignment : $exam->assignment()->save(Assignment::create());
-
-            //we will want to wrap this in a transaction
-            //in case something goes wrong
-            $exam->resetAssignments();
-            $serverRoot = $exam->assignment;
-
-            if ( sizeof($requestRoot['children']) > 0 ) {
-                //call recursively
-                $this->recursiveStore($requestRoot, $serverRoot);
-            }
-        }
-
-    }
-
-    public function recursiveStore( $requestRoot, $serverRoot )
-    {
-        foreach ( $requestRoot['children'] as $child ) {
-            //make an assignment out of an incoming child
-            $n = Assignment::create(['item_id' => $child['data'], 'parent_id' => $child['parent']]);
-            //add a child to the server root and return the child, renaming it as server root
-            $serverRoot = $serverRoot->addChild($n, null, true);
-            $serverRoot->save();
-            if ( sizeof($child['children']) > 0 ) {
-                //run recursively
-                $this->recursiveStore($child, $serverRoot);
-            }
-        }
-    }
-
-
-    public function getTreeForExam( Exam $exam )
-    {
-        $tree = Assignment::where(['item_id', $exam->id])->get();
-        return $tree->filter(function ( $key, $value ) {
-            if ( $value->isRoot() ) return $value;
-        });
-        return false;
-    }
-
-    /**
      * Creates or updates the stored map from a map
      * sent by the client
      *
@@ -140,20 +81,131 @@ class AssignmentController extends Controller
         try {
             $assignmentDao = app()->make(IAssignmentRepository::class);
             $assignmentDao->processIncoming($exam, $request->input('order'));
-            $assignments = [];
-
-//        $root = $exam->getAssignmentsRoot();
-//        if($root){
-//            $assignments[] = $root;
-//            $assignments[] = $root->hasChildren() ? $root->assignment->getChildren() : [];
-//        }
-//
-//        return $assignments;
             return $this->sendAjaxSuccess();
         } catch (Exception $e) {
             return $this->sendAjaxFailure();
         }
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Exam $exam
+     * @return \Illuminate\Http\Response
+     * @internal param int $id
+     */
+    public
+    function show( Exam $exam )
+    {
+        $out = ['data' => $exam->id, 'children' => [], 'parent' => $exam->id];
+        $assignmentTree = Assignment::where(['item_id', $exam->id])->get();
+        if ( $assignmentTree->hasChildren() ) {
+            $children = $assignmentTree->getChildren();
+            foreach ( $children as $child ) {
+
+            }
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function edit( $id )
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function update( Request $request, $id )
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function destroy( $id )
+    {
+        //
+    }
+
+}
+//
+//    /**
+//     * Expects incoming order to have
+//     *      Node = {
+//     *              data or id: id, //the item id of the question or element
+//     *              parent: id //the item id of this item's parent
+//     *              children: []
+//     *       }
+//     * @param Exam $exam
+//     * @param Request $request
+//     */
+//    public function handleStore( Exam $exam, Request $request )
+//    {
+//        //expected format of incoming is a list of nodes
+//        // with the form
+//
+////todo add check so don't start if no ordering
+//        $requestRoot = $request->has('order') ? $request->input('order') : false;
+//
+//        if ( $requestRoot ) {
+////        $assignmentTree = isset($exam->assignment->id) ? $exam->assignment : $exam->assignment()->save(Assignment::create());
+//
+//            //we will want to wrap this in a transaction
+//            //in case something goes wrong
+//            $exam->resetAssignments();
+//            $serverRoot = $exam->assignment;
+//
+//            if ( sizeof($requestRoot['children']) > 0 ) {
+//                //call recursively
+//                $this->recursiveStore($requestRoot, $serverRoot);
+//            }
+//        }
+//
+//    }
+//
+//    public function recursiveStore( $requestRoot, $serverRoot )
+//    {
+//        foreach ( $requestRoot['children'] as $child ) {
+//            //make an assignment out of an incoming child
+//            $n = Assignment::create(['item_id' => $child['data'], 'parent_id' => $child['parent']]);
+//            //add a child to the server root and return the child, renaming it as server root
+//            $serverRoot = $serverRoot->addChild($n, null, true);
+//            $serverRoot->save();
+//            if ( sizeof($child['children']) > 0 ) {
+//                //run recursively
+//                $this->recursiveStore($child, $serverRoot);
+//            }
+//        }
+//    }
+//
+//
+//    public function getTreeForExam( Exam $exam )
+//    {
+//        $tree = Assignment::where(['item_id', $exam->id])->get();
+//        return $tree->filter(function ( $key, $value ) {
+//            if ( $value->isRoot() ) return $value;
+//        });
+//        return false;
+//    }
+
+
 
     //expected format of incoming is a list of nodes
     // with the form
@@ -279,60 +331,4 @@ class AssignmentController extends Controller
 //                }
 //            }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Exam $exam
-     * @return \Illuminate\Http\Response
-     * @internal param int $id
-     */
-    public
-    function show( Exam $exam )
-    {
-        $out = ['data' => $exam->id, 'children' => [], 'parent' => $exam->id];
-        $assignmentTree = Assignment::where(['item_id', $exam->id])->get();
-        if ( $assignmentTree->hasChildren() ) {
-            $children = $assignmentTree->getChildren();
-            foreach ( $children as $child ) {
 
-            }
-        }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function edit( $id )
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function update( Request $request, $id )
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function destroy( $id )
-    {
-        //
-    }
-}

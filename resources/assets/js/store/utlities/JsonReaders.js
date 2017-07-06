@@ -72,7 +72,7 @@ module.exports = {
                 //and should be added as children of the exam.
                 //if the parent is null, we add the exam instead
                 //todo this must be fixed since an item could have the same id as an exam
-                let parentNode = ( d.parentId === state.items[0].id ) ? state.itemMap : (( state, d ) => {
+                let parentNode = ( d.parentId === state.items[0].id ) ? state.itemMap : (function( state, d ) {
                     let parentItem = getItem( state, d.parentId );
                     return getNode( state, parentItem.serialNumber );
                 })( state, d );

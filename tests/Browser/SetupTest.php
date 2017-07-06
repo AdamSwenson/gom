@@ -8,7 +8,9 @@
 
 namespace Tests\Browser;
 
+use App\Exam;
 use App\User;
+use Auth;
 use Faker\Factory;
 use Tests\Browser\Pages\Setup;
 use Tests\DuskTestCase;
@@ -43,7 +45,7 @@ class SetupTest extends DuskTestCase
                 ->click('.add-child-to-exam-button')
                 ->waitFor('#item-card-1-0')
                 ->assertVisible('.item-card-component')
-            ->pause(2000);
+                ->pause(2000);
 
 
             //make sure it persisted
@@ -101,7 +103,7 @@ class SetupTest extends DuskTestCase
                 ->assertVisible('#item-card-1-0')
                 ->assertVisible('#item-name-1-0')
                 ->type('#item-name-1-0', $testText)
-                ->pause(2000)
+                ->pause(5000)
                 ->assertInputValue('#item-name-1-0', $testText);
 
 
@@ -162,18 +164,42 @@ class SetupTest extends DuskTestCase
                 //add item
                 ->click(Setup::$addItemToExamButton)
                 ->waitFor('#item-card-1-0')
-                ->assertVisible(Setup::settingsToggleButton())
+//                ->assertVisible('#item-settings-button-1-0')  //Setup::settingsToggleButton())
+                ->assertVisible(Setup::settingsToggleButton(1,0))
+
                 ->assertMissing('#item-nav-tabs-1-0')
                 //click the show button
-                ->click(Setup::settingsToggleButton())
+                ->click(Setup::settingsToggleButton(1,0))
 //                ->waitFor('#item-nav-tabs-1-0')
                 ->assertVisible('#item-nav-tabs-1-0')
                 //click the hide button
-            ->click(Setup::settingsToggleButton())
+                ->click(Setup::settingsToggleButton(1,0))
                 ->assertMissing('#item-nav-tabs-1-0');
 
         });
     }
 
+    /**
+     * @group new
+     */
+    public function testMakeExam()
+    {
+//        $user = factory(User::class)->create();
+        Auth::loginUsingId(1);
+        $exam = factory(Exam::class)->create();
+//        $exam->user()->save($user);
+        $order = Setup::makeExamData($exam);
+
+        $this->browse(function ( Browser $browser ) use ( $exam ) {
+            $browser->loginAs(User::find(1))
+                //prep
+                ->visit(Setup::urlToExam($exam->id))
+                ->waitFor(Setup::$mainBodyLocator)
+                ->assertVisible('#item-card-1-0')
+                ->assertVisible('#item-card-2-0');
+
+        });
+
+    }
 
 }

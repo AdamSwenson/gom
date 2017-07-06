@@ -28,31 +28,6 @@ class AssignmentRepository implements IAssignmentRepository
         return $assignment;
     }
 
-    static function makeFake( $numSiblings = 5, $depth = 3 )
-    {
-        $root = new Assignment(['item_id' => factory(Exam::class)->create()->id]);
-        $parent = $root;
-
-        for ( $j = 1; $j < $depth; $j++ ) {
-            self::addChildren($parent, $numSiblings);
-
-
-            foreach ( $parent->getChildren() as $c ) {
-                for ( $k = 0; $k < $numSiblings; $k++ ) {
-//                    //add elements for the questions
-                    $eid = factory(Item::class)->create()->id;
-                    $c->addChild(new Assignment(['item_id' => $eid]));
-                }
-
-            }
-//                //set the element as the new parent for the next level down
-//            $parent = $ec;
-        }
-
-        $root->save();
-        return $root;
-    }
-
     public function canBeSynced($record)
     {
         if ( $record['itemId'] === -1 ) return false;
@@ -144,22 +119,16 @@ class AssignmentRepository implements IAssignmentRepository
 
     /**
      * This is used on page load to order the items
-     * @param $examOrItem
+     * @param Exam $exam
+     * @return array
+     * @internal param $examOrItem
      */
-    public function getItemOrderForClient($examOrItem){
-        //this needs to have a determinate ordering
-        //so that the client can parse it straightforwardly
-//        $tree = Assignment::getTreeWhere('exam_id', '==', $examOrItem->id);
+    public function getItemOrderForClient(Exam $exam){
 
-        //exam or item primary key, depending on request
-        $identifier = $examOrItem instanceof Exam ? 'exam_id' : 'item_id';
+        $itemObjects = [];
+        $itemOrder = [];
 
-        //Get the assignments, ignoring the exam whose item_id is null
-        $assignments = Assignment::where($identifier, $examOrItem->id)
-            ->where('item_id', '!==', null)
-            ->get();
-
-        //Put them all in a format for sending to the client
+        $assignments = Assignment::where('exam_id', $exam->id)->get();
         foreach ( $assignments as $assignment ) {
             $item = Item::where('id', $assignment->item_id)->first();
             if ( $item ) {
@@ -169,12 +138,52 @@ class AssignmentRepository implements IAssignmentRepository
                 $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
 
                 $itemOrder[] = [
-                    'examId' => $assignment->exam_id,
+                    'examId' => $exam->id,
                     'itemId' => $item->id,
                     'parentId' => $parentItemId,
                     'itemOrder' => $assignment->position
                 ];
             }
         }
+
+        return [
+            'exam' => $exam,
+            'itemObjects' => $itemObjects,
+            'itemOrder' => $itemOrder
+        ];
+
+
+
+
+
+//        //this needs to have a determinate ordering
+//        //so that the client can parse it straightforwardly
+////        $tree = Assignment::getTreeWhere('exam_id', '==', $examOrItem->id);
+//
+//        //exam or item primary key, depending on request
+//        $identifier = $examOrItem instanceof Exam ? 'exam_id' : 'item_id';
+//
+//        //Get the assignments, ignoring the exam whose item_id is null
+//        $assignments = Assignment::where($identifier, $examOrItem->id)
+//            ->where('item_id', '!==', null)
+//            ->get();
+//
+//        //Put them all in a format for sending to the client
+//        foreach ( $assignments as $assignment ) {
+//            $item = Item::where('id', $assignment->item_id)->first();
+//            if ( $item ) {
+//                $itemObjects[] = $item;
+//                $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();
+//
+//                $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
+//
+//                $itemOrder[] = [
+//                    'examId' => $assignment->exam_id,
+//                    'itemId' => $item->id,
+//                    'parentId' => $parentItemId,
+//                    'itemOrder' => $assignment->position
+//                ];
+//            }
+//        }
     }
 }

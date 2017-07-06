@@ -30,7 +30,7 @@ import Payload from '../models/Payload'
 import Exam from '../models/Exam'
 import Item from '../models/Item'
 
-import {createItem, updateExam, updateItem, updateItemsOrder} from './requests'
+import { createItem, updateExam, updateItem, updateItemsOrder } from './requests'
 
 /**
  * Returns true if the mutation needs to
@@ -123,7 +123,7 @@ export default function ( store ) {
                 window.console.log( 'apiPlugin', 'updateItem', 263, item, payload );
                 if ( item instanceof Exam ) {
                     updateExam( store, item );
-                } else if (  item instanceof Item ) {
+                } else if ( item instanceof Item ) {
                     updateItem( store, item );
                 }
                 payload.callback();
@@ -140,8 +140,16 @@ export default function ( store ) {
                 break;
 
             case mTypes.demoteItem:
+                updateItemsOrder( store );
                 break;
             case mTypes.promoteItem:
+                updateItemsOrder( store );
+                break;
+            case 'increasePosition':
+                updateItemsOrder( store );
+                break;
+            case 'decreasePosition':
+                updateItemsOrder( store );
                 break;
             default:
 

@@ -83,19 +83,13 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $exam = Exam::create();
-        return redirect()->route('show-exam', $exam);
-//        $v = new Wine();
-//        $v->save();
-//        return $v;
-//        return $this->show($exam);
-//        return view('development.newsetup');
+        return Item::all(); //make sure inherits from base model!
     }
 
 
     /**
      * Store a newly created resource in storage.
-     *
+     * POST
      * That is, create new Exam, Question, or Element depending on the
      * index and depth, associating them with an exam as
      * in the usual models
@@ -105,16 +99,20 @@ class ItemController extends Controller
      */
     public function store( ItemRequest $request )
     {
-
-        //find the item or create a new one
-        $item = Item::where(['id' => $request->input('id')])->first();
-        if ( !$item ) {
-            $item = Item::create();
-            //     $item->user()->save(Auth::user());
+//todo Separate this so that store only handles creation
+        if ( $request->has('id') ) {
+            //find the item
+            $item = Item::find($request->input('id'));
         }
+        //if we don't have an item yet, create one
+        if ( ! isset($item) ) {
+            $item = Item::create();
+        }
+
         //update its properties
         $item->update(
-            ['text' => $request->input('text'),
+            [
+                'text' => $request->input('text'),
                 'name' => $request->input('name'),
                 'max_score' => $request->input('maxScore')
             ]);
@@ -125,70 +123,19 @@ class ItemController extends Controller
 
 
     /**
-     * Display the specified exam.
+     * Display the specified item.
      * We use the show route to dependency inject an exam
      * Thus this route should not be used for question and element items
      *
      * Called on the route:
      *      GET    /items/{exam}    show    items.show
      *
-     * @param Exam $exam
+     * @param ItemRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function show( Exam $exam ) //Item $item, ItemRequest $request )
+    public function show( ItemRequest $request )
     {
-        $itemObjects = [];
-        $itemOrder = [];
-
-        $assignments = Assignment::where('exam_id', $exam->id)->get();
-        foreach ( $assignments as $assignment ) {
-            $item = Item::where('id', $assignment->item_id)->first();
-            if ( $item ) {
-                $itemObjects[] = $item;
-                $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();
-
-                $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
-
-                $itemOrder[] = [
-                    'examId' => $exam->id,
-                    'itemId' => $item->id,
-                    'parentId' => $parentItemId,
-                    'itemOrder' => $assignment->position
-                ];
-            }
-        }
-
-        $out = [
-            'examObjectJsonName' => self::EXAM_JSON_NAME,
-            'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
-            'itemOrderJsonName' => self::ITEM_ORDER_JSON_NAME,
-            'exam' => $exam,
-            'itemObjects' => $itemObjects,
-            'itemOrder' => $itemOrder
-        ];
-        return view('development.newsetup', $out);
-    }
-
-    public function thePreviousVersionOfshow( Exam $exam )
-    {//Item $item, ItemRequest $request )
-
-        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-        foreach ( $questionAssignments as $qAssignment ) {
-            $index = $qAssignment->getQuestionNumber();
-            $question = $qAssignment->getQuestion();
-            $items[$index] = $question;
-            //$allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $index);
-            //['maxScore' => $question->maxScore, 'name' => $question->name, 'id' => $question->id];
-        }
-//        get items
-//         load all current student scores & comments
-        $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
-        $out = [
-            'exam' => $exam,
-        ];
-
-        return view('development.newsetup', $out);
-
+        return $request->has('id') ? Item::find($request->input('id')) : null;
     }
 
     /**
@@ -209,22 +156,87 @@ class ItemController extends Controller
      * Receives PUT
      * Updates the specified resource in storage.
      *
+
+Presently handled by store
+     * @todo Update store so it only handles creation and update handles updates
      * @param Item $item
      * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response
+
      */
     public function update( Item $item, ItemRequest $request )
     {
         //update its properties
-        $item->update(
-            ['text' => $request->input('text'),
-                'name' => $request->input('name'),
-                'max_score' => $request->input('maxScore')
-            ]);
-        return $item;
-
-        //return $this->itemRepository->handleStoreAndUpdate($request);
+//        $item->update(
+//            [
+//                'text' => $request->input('text'),
+//                'name' => $request->input('name'),
+//                'max_score' => $request->input('maxScore')
+//            ]);
+//        $item->save();
+//        return $item;
+//
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param ItemRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy( ItemRequest $request )
+    {
+        $this->determineItemType($request);
+
+        switch ( $this->type ) {
+            case Exam::class:
+                break;
+
+            case Element::class:
+                //make new element
+                break;
+
+            case Question::class;
+                //make new question
+                break;
+        }
+    }
+
+
+    /*
+     *
+     * KEEP THE BELOW FOR THE HYBRID API!!!!!
+     *
+     *
+     *
+     */
+
+
+    /**
+     * //Old version: KEEP FOR HYBRID API
+     * @param Exam $exam
+     * @param ItemRequest $request
+     * @return mixed
+     */
+    public function updateOrder( Exam $exam, ItemRequest $request )
+    {
+//        Separating the item data from the positional/assignment info
+//    * lets this be separated off into a job if we want...
+//     *
+        //this should probably be a job
+        //it can run async. The client doesn't really need to know what's
+        //going on as long as the server catches up.
+
+        if ( $request->has('order') ) {
+            $existingIds = $this->questionAssignmentDao->updateItemOrder($exam, $request->input('order'));
+
+            return $existingIds;
+        }
+//        return $this->handleStoreAndUpdate($request);
+    }
+
+    //OLD UPDATE
+    //return $this->itemRepository->handleStoreAndUpdate($request);
 
 
     /**
@@ -263,54 +275,6 @@ class ItemController extends Controller
         if ( $request->has('itemsList') ) {
             $this->questionAssignmentDao->updateAll($exam, $request);
             return $this->questionAssignmentDao->questions;
-        }
-    }
-
-
-    /**
-     * @param Exam $exam
-     * @param ItemRequest $request
-     * @return mixed
-     */
-    public function updateOrder( Exam $exam, ItemRequest $request )
-    {
-//        Separating the item data from the positional/assignment info
-//    * lets this be separated off into a job if we want...
-//     *
-        //this should probably be a job
-        //it can run async. The client doesn't really need to know what's
-        //going on as long as the server catches up.
-
-        if ( $request->has('order') ) {
-            $existingIds = $this->questionAssignmentDao->updateItemOrder($exam, $request->input('order'));
-
-            return $existingIds;
-        }
-//        return $this->handleStoreAndUpdate($request);
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param ItemRequest $request
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy( ItemRequest $request )
-    {
-        $this->determineItemType($request);
-
-        switch ( $this->type ) {
-            case Exam::class:
-                break;
-
-            case Element::class:
-                //make new element
-                break;
-
-            case Question::class;
-                //make new question
-                break;
         }
     }
 

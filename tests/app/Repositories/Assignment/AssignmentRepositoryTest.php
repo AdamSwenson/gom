@@ -13,6 +13,7 @@ use App\Assignment;
 use App\Exam;
 use App\Http\Requests\ItemRequest;
 use App\Item;
+use Tests\Browser\Pages\Setup;
 
 class AssignmentRepositoryTest extends \TestCase
 {
@@ -40,34 +41,36 @@ class AssignmentRepositoryTest extends \TestCase
 
     public function makeData( $exam, $numLevels = 3, $numAtLevel = 3 )
     {
-        $order = [];
+        return Setup::makeOrderJsonData($exam, $numLevels, $numAtLevel);
 
-        $root = factory(Item::class)->create(); //standin for exam
-
-        for ( $level = 0; $level < $numLevels; $level++ ) {
-
-            for ( $h = 0; $h < $numAtLevel; $h++ ) {
-                $item = factory(Item::class)->create();
-                $order[] = [
-                    'examId' => $exam->id,
-                    'parentId' => $root->id,
-                    'itemId' => $item->id,
-                    'itemOrder' => $h];
-            }
-            //On the last time through, we skip
-            //Otherwise, we make children
-            if ( $level < $numLevels ) {
-                for ( $j = 0; $j < $numAtLevel; $j++ ) {
-                    $child = factory(Item::class)->create();
-                    $order[] = [
-                        'examId' => $exam->id,
-                        'parentId' => $item->id,
-                        'itemId' => $child->id,
-                        'itemOrder' => $j];
-                }
-            }
-        }
-        return $order;
+//        $order = [];
+//
+//        $root = factory(Item::class)->create(); //standin for exam
+//
+//        for ( $level = 0; $level < $numLevels; $level++ ) {
+//
+//            for ( $h = 0; $h < $numAtLevel; $h++ ) {
+//                $item = factory(Item::class)->create();
+//                $order[] = [
+//                    'examId' => $exam->id,
+//                    'parentId' => $root->id,
+//                    'itemId' => $item->id,
+//                    'itemOrder' => $h];
+//            }
+//            //On the last time through, we skip
+//            //Otherwise, we make children
+//            if ( $level < $numLevels ) {
+//                for ( $j = 0; $j < $numAtLevel; $j++ ) {
+//                    $child = factory(Item::class)->create();
+//                    $order[] = [
+//                        'examId' => $exam->id,
+//                        'parentId' => $item->id,
+//                        'itemId' => $child->id,
+//                        'itemOrder' => $j];
+//                }
+//            }
+//        }
+//        return $order;
     }
 //        for ( $h = 0; $h < $numAtLevel; $h++ ) {
 //
@@ -173,6 +176,36 @@ class AssignmentRepositoryTest extends \TestCase
             $this->assertEquals($order[i], $result[$i]);
         }
 
+    }
+
+    public function testThatDoesNotDeleteExistingOrderOnLoad(){
+
+    }
+
+    /** @test */
+    public function making()
+    {
+        $exam = factory(Exam::class)->create();
+        $numLevels = 3;
+        $numChildren = 3;
+        $expectedDescendants = 24;
+
+        //call
+        $result = Setup::makeExamData($exam, $numLevels, $numChildren);
+        //check
+        $this->assertInstanceOf(Assignment::class, $result);
+        $children = $result->getChildren();
+        $this->assertEquals(sizeof($children), $numChildren, "root has expected number of children");
+        $this->assertEquals($expectedDescendants, $result->countDescendants(), "Total number of descendants is correct");
+
+//
+//        for ( $j = 0; $j < $numLevels; $j++ ) {
+//            $child = $children[$j]->getChildren();
+//            for ( $i = 0; $i < $numLevels; $i++ ) {
+//                $c = $child->getChildren();
+//                $this->assertEquals(sizeof($c), $numChildren);
+//            }
+//        }
     }
 
 

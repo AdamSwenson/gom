@@ -142,7 +142,7 @@ module.exports = {
         // if ( holdForIdLoading( item ) ) {
         window.console.log( 'apiPlugin', 'updateItemsOrder NEW', 178, payload );
 
-        let route = 'items/' + exam.id + '/order';
+        let route = 'setup/' + exam.id + '/order';
         window.axios
             .post( route, payload )
             .then( ( response ) => {

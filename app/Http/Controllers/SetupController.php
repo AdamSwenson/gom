@@ -1,0 +1,173 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Assignment;
+use App\Element;
+use App\Exam;
+use App\Http\Requests\ItemRequest;
+use App\Item;
+use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
+use App\Question;
+use App\Repositories\Assignment\IAssignmentRepository;
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Element\IElementRepository;
+use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Item\IItemRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Question\IQuestionRepository;
+use App\Repositories\Student\IStudentRepository;
+use Auth;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+
+/**
+ * Handles the display of the setup page.
+ * Nothing CRUD gets done here.
+ * All of that is the responsibility of
+ * the Item and Assignment controllers
+ * @package App\Http\Controllers
+ */
+class SetupController extends Controller
+{
+    const EXAM_JSON_NAME = 'loadedExam';
+    const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
+    const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+    public $type;
+    public $exam;
+
+    /**@var IExamRepository */
+    protected $examDao;
+    /**@var IQuestionRepository */
+    protected $questionDao;
+    /** @var IQuestionAssignmentRepository */
+    protected $questionAssignmentDao;
+    protected $questions;
+    protected $requestIds;
+    /** @var IStudentRepository */
+    protected $studentDao;
+    /** @var IElementRepository */
+    protected $elementDao;
+    /** @var IElementAssignmentRepository */
+    protected $elementAssignmentDao;
+    /** @var IItemRepository */
+    protected $itemRepository;
+    /**
+     * @var IAssignmentRepository
+     */
+    private $assignmentRepository;
+
+    /**
+     * SetupController constructor.
+     * @param IExamRepository $examDao
+     * @param IItemRepository $itemRepository
+     * @param IAssignmentRepository $assignmentRepository
+     */
+    public function __construct(
+        IExamRepository $examDao,
+        IItemRepository $itemRepository,
+        IAssignmentRepository $assignmentRepository
+    )
+    {
+        //dev
+        Auth::loginUsingId(1);
+
+//        $this->middleware('auth');
+        $this->itemRepository = $itemRepository;
+        $this->examDao = $examDao;
+        $this->assignmentRepository = $assignmentRepository;
+    }
+
+
+
+// -------------------------------- Controller methods
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $exam = Exam::create();
+        return redirect()->route('show-exam', $exam);
+    }
+
+    /**
+     * Display the specified exam.
+     * We use the show route to dependency inject an exam
+     * Thus this route should not be used for question and element items
+     *
+     * Called on the route:
+     *      GET    /items/{exam}    show    items.show
+     *
+     * @param Exam $exam
+     * @return \Illuminate\Http\Response
+     */
+    public function show( Exam $exam ) //Item $item, ItemRequest $request )
+    {
+
+        $out = $this->assignmentRepository->getItemOrderForClient($exam);
+        //This contains
+//         'itemObjects' => $itemObjects,
+//            'itemOrder' => $itemOrder
+        $standard = [
+            'examObjectJsonName' => self::EXAM_JSON_NAME,
+            'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
+            'itemOrderJsonName' => self::ITEM_ORDER_JSON_NAME,
+            'exam' => $exam];
+
+        $out += $standard;
+
+        return view('development.newsetup', $out);
+
+//        $itemObjects = [];
+//        $itemOrder = [];
+//
+//        $assignments = Assignment::where('exam_id', $exam->id)->get();
+//        foreach ( $assignments as $assignment ) {
+//            $item = Item::where('id', $assignment->item_id)->first();
+//            if ( $item ) {
+//                $itemObjects[] = $item;
+//                $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();
+//
+//                $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
+//
+//                $itemOrder[] = [
+//                    'examId' => $exam->id,
+//                    'itemId' => $item->id,
+//                    'parentId' => $parentItemId,
+//                    'itemOrder' => $assignment->position
+//                ];
+//            }
+//        }
+//
+//        ];
+
+    }
+
+    //keep this for the hybrid api!!!!!!!
+    public function thePreviousVersionOfshow( Exam $exam )
+    {//Item $item, ItemRequest $request )
+
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
+        foreach ( $questionAssignments as $qAssignment ) {
+            $index = $qAssignment->getQuestionNumber();
+            $question = $qAssignment->getQuestion();
+            $items[$index] = $question;
+            //$allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $index);
+            //['maxScore' => $question->maxScore, 'name' => $question->name, 'id' => $question->id];
+        }
+//        get items
+//         load all current student scores & comments
+        $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
+        $out = [
+            'exam' => $exam,
+        ];
+
+        return view('development.newsetup', $out);
+
+    }
+
+
+}

@@ -24,4 +24,6 @@ interface IAssignmentRepository
      * @param $incoming
      */
     public function processIncoming( Exam $exam, $incoming );
+
+    public function getItemOrderForClient( Exam $exam );
 }

@@ -157,17 +157,22 @@ Route::get('dev/test', 'TestController@test');
 //before the resource show route below. However, if somehow this route
 //didn't get hit, we may have a problem.
 //When we want those directly, we use the edit route
-Route::get('dev/newsetup', 'ItemController@index');
-Route::get('items/{exam}', 'ItemController@show')->name('show-exam');
-Route::put('items/{item}', 'ItemController@update');
-Route::patch('items/{exam}', 'ItemController@updateAll');
-Route::resource('items', 'ItemController'); //, ['parameters' => [
-Route::post('items/{exam}/order', 'AssignmentController@store');
 
+
+
+/* New setup page */
+//display of page
+Route::get('setup', 'SetupController@index');
+Route::get('setup/{exam}', 'SetupController@show')->name('show-exam');
+
+//intrinsic properties of the item
+//Route::put('items/{item}', 'ItemController@update');
+//Route::patch('items/{exam}', 'ItemController@updateAll');
+Route::resource('items', 'ItemController'); //,
 Route::put('editexam/{exam}', 'ItemController@examUpdate');
 
-//    'item' => 'exam'
-//]]);
+//order of the items on the exam
+Route::post('setup/{exam}/order', 'AssignmentController@store');
 
-//Auth::routes();
+
 

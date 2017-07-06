@@ -17,6 +17,7 @@
                 <div class="column"></div>
 
             </div>
+<p>{{ examId }}</p>
             <p>Can sync {{ canSync}}</p>
             <input type="hidden" id="examId" v-model="examId"/>
         </div>

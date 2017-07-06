@@ -7,11 +7,13 @@
  */
 
 namespace App\Http\Controllers;
+
 use App\ElementScore;
 use App\Exam;
 use App\GradingTime;
 use App\Http\Controllers\ItemController;
 use App\Http\Requests\ItemRequest;
+use App\Item;
 use App\QuestionAssignment;
 use App\QuestionScore;
 use App\Repositories\Item\IItemRepository;
@@ -28,6 +30,7 @@ class ItemControllerTest extends \TestCase
 
     protected $object;
     protected $exam;
+    protected $route = 'items';
 
     public function setUp()
     {
@@ -43,91 +46,146 @@ class ItemControllerTest extends \TestCase
     /** @test */
     public function testIndex()
     {
-        $response = $this->action('GET', 'ItemController@index');
+        //make sure does not retrieve for other users
+        $response = $this->get('items');
         $this->assertNotEmpty($response);
     }
 
 
     /** @test */
-    public function handleExam(  )
+    public function store()
     {
-    }
-
-    /** @test */
-    public function handleQuestion( )
-    {
-    }
-
-
-    /** @test */
-    public function store(){}
-
-
-    /** @test */
-    public function show(){
-
-        //prep
-        $dao = $this->createMock(IQuestionAssignmentRepository::class);
-        $qas = [1,2,3]; //factory(QuestionAssignment::class)->make();
-        $exam = factory(Exam::class)->make();
-        $items = [];
-
-        foreach ( $qas as $qAssignment ) {
-            $index = $qAssignment;
-            $question = $qAssignment;
-            $items[$index] = $question;
-        }
-
-        $dao->shouldReceive('load_all_for_exam')
-            ->with([$exam, ])
-            ->andReturn(['exam' => $exam, 'items'=> $items]);
-
+        $item = factory(Item::class)->make();
+        $testText = Factory::create()->word;
+        $data = [
+            'text' => $testText,
+            'name' => $testText,
+            'maxScore' => Factory::create()->randomNumber(2)
+        ];
         //call
-        $response = $this->call('GET', 'items/' . $exam->id);
-
-    }
-
-
-    /** @test */
-    public function edit( )
-    {
-    }
-
-    /** @test */
-    public function update( )
-    {
-        $dao = $this->createMock(IItemRepository::class);
-        $exam = factory(Exam::class)->make();
-        $data = ['order'=> [1, 3, 4]];
-        $dao->shouldReceive('handleStoreAndUpdate')->with([$exam, $data])->andReturn($data);
-        //call
-        $response = $this->call('PUT', 'items/' . $exam->id );
+        $response = $this->post($this->route . '/' . $item->id, $data);
         //check
-        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('items', [
+            'text' => $testText,
+            'name' => $testText,
+            'max_score' => $data['maxScore']
+        ]);
+
+    }
+
+    /** @test */
+    public function show()
+    {
+        $item = factory(Item::class)->create();
+
+        $r = ['id' => $item->id];
+
+        //call
+        $response = $this->call('GET', $this->route, $r);
+        // $this->assertEquals($item, $response);
+        $response->assertStatus(200);
     }
 
 
+//    /** @test */
+//    public function show_no_id_set()
+//    {
+//        $r = [];
+//
+//        //call
+//        $response = $this->call('GET', $this->route, $r);
+//        $this->assertEquals(null, $response);
+//
+//    }
+
+//    /** @test */
+//    public function edit()
+//    {
+//    }
+
+//    /** @test */
+//    public function update()
+//    {
+//        $item = factory(Item::class)->create();
+//        $testText = Factory::create()->word;
+//        $data = [
+//            'id' => $item->id,
+//            'text' => $testText,
+//            'name' => $testText,
+//            'maxScore' => Factory::create()->randomNumber(2)
+//        ];
+//        //call
+//        $response = $this->call('PUT', $this->route . '/' . $item->id, $data);
+//        //check
+//        $this->assertNotEmpty($response);
+//        $response->assertStatus(200);
+//        $this->assertDatabaseHas('items', [
+//            'id' => $item->id,
+//            'text' => $testText,
+//            'name' => $testText,
+//            'max_score' => $data['maxScore']
+//        ]);
+
+//        $this->assertDatabaseHas('items', $data);
+
+//        $loaded = Item::find($item->id);
+//        $this->assertNotEmpty($loaded);
+//        $this->assertEquals($data['id'], $loaded->id);
+//        $this->assertEquals($data['text'], $loaded->text);
+//        $this->assertEquals($data['name'], $loaded->name);
+//        $this->assertEquals($data['maxScore'], $loaded->max_score);
+
+//        $dao = $this->createMock(IItemRepository::class);
+//        $exam = factory(Exam::class)->make();
+//        $data = ['order' => [1, 3, 4]];
+//        $dao->shouldReceive('handleStoreAndUpdate')->with([$exam, $data])->andReturn($data);
+//        //call
+//        $response = $this->call('PUT', 'items/' . $exam->id);
+//        //check
+//        $this->assertNotEmpty($response);
+//    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     * @test
+     */
+    public function destroy()
+    {
+    }
+
+
+    /*
+ *
+ * KEEP THE BELOW FOR THE HYBRID API!!!!!
+ *
+ *
+ *
+ */
+
+
     /** @test */
-    public function updateAll( )
+    public function updateAll()
     {
         $dao = $this->createMock(IQuestionAssignmentRepository::class);
         $exam = factory(Exam::class)->make();
-        $data = ['order'=> [1, 3, 4]];
+        $data = ['order' => [1, 3, 4]];
         $dao->shouldReceive('updateAll')->with([$exam, $data])->andReturn($data);
         //call
-        $response = $this->call('PATCH', 'items/' . $exam->id );
+        $response = $this->call('PATCH', 'items/' . $exam->id);
         //check
         $this->assertNotEmpty($response);
     }
 
     /** @test */
-    public function updateOrder( )
+    public function updateOrder()
     {
 
         //prep
         $dao = $this->createMock(IQuestionAssignmentRepository::class);
         $exam = factory(Exam::class)->make();
-        $data = ['order'=> [1, 3, 4]];
+        $data = ['order' => [1, 3, 4]];
         $dao->shouldReceive('updateItemOrder')->with([$exam, $data])->andReturn($data);
 
         //call
@@ -136,18 +194,6 @@ class ItemControllerTest extends \TestCase
         //check
         $this->assertNotEmpty($response);
     }
-
-
-
-
-    /**
-     * Remove the specified resource from storage.
-     * @test
-    */
-    public function destroy()
-    {
-    }
-
 
 
 }

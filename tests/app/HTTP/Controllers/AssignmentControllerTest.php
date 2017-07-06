@@ -22,14 +22,24 @@ class AssignmentControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-//        $this->exam = factory(Exam::class)->create();
-//        $this->object = new AssignmentController;
-//        $this->numItems = 5;
-//        $this->depth = 5;
-//        $this->testOrder = '{"examId":9,"requestVersion":1,"order":{"parent":2,"data":2,"dataType":null,"children":[{"parent":2,"data":3,"dataType":null,"children":[]}]}}';
-////$this->request = new ItemRequest(['']);
     }
 
+    /** @test */
+    public function store(){
+        //prep
+        $exam = factory(Exam::class)->make();
+        $data = ['order' => [2,3]];
+
+        $dao = $this->createMock(IAssignmentRepository::class);
+        $dao->shouldReceive('processIncoming')
+            ->with([$exam, $data])
+            ->andReturn(true);
+
+        //call
+        $response = $this->call('POST', 'items/' . $exam->id . '/order', $data);
+        $this->assertNotNull($response);
+
+    }
 
 
 }

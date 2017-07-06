@@ -95,6 +95,19 @@ describe( "store.modules.items | ", function () {
                     itemMap: new Node( this.parent.serialNumber, this.parent.serialNumber)
                 };
                 makeFilledState( this.filledState, 5 );
+
+                // beforeEach( function () {
+                //     this.rootId = 1;
+                //     this.parentId = 2;
+                //     this.root = new Node( this.rootId, this.rootId );
+                //     this.state = { itemMap: this.root };
+                //     this.parent = new Node( this.parentId, this.rootId );
+                //     this.root.children.push( this.parent );
+                //
+                //     expect( this.root.children.length ).toBe( 1 );
+                //
+                // } );
+
             } );
 
             it( "happy path", function () {
