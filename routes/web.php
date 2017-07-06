@@ -174,5 +174,7 @@ Route::put('editexam/{exam}', 'ItemController@examUpdate');
 //order of the items on the exam
 Route::post('setup/{exam}/order', 'AssignmentController@store');
 
+//new exam controller
+Route::get('dev/exams', 'ExamResourceController@index');
 
 

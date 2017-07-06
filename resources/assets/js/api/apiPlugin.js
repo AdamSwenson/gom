@@ -22,6 +22,9 @@
 // Vue.use(VueAxios, axios);
 
 window._ = require( 'lodash' );
+
+import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT} from './apiSettings';
+
 import * as aTypes from '../store/action-types';
 import * as mTypes from '../store/mutation-types';
 import * as gTypes from '../store/getter-types';

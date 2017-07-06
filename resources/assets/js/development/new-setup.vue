@@ -17,8 +17,21 @@
                 <div class="column"></div>
 
             </div>
-<p>{{ examId }}</p>
-            <p>Can sync {{ canSync}}</p>
+
+            <div class="tile">
+            <div class="tile is-vertical is-4">
+
+                <p>{{ examId }}</p>
+                <p>Can sync {{ canSync}}</p>
+
+                <existing-exams-menu></existing-exams-menu>
+            </div>
+            <div class="tile is-vertical is-4">
+                <existing-items-menu></existing-items-menu>
+            </div>
+            </div>
+
+
             <input type="hidden" id="examId" v-model="examId"/>
         </div>
     </div>

@@ -15,6 +15,9 @@ import BootstrapVue from 'bootstrap-vue';
 Vue.use( BootstrapVue );
 // Vue.use( Sortable );
 
+import AsyncComputed from 'vue-async-computed'
+Vue.use(AsyncComputed)
+
 import App from './new-setup.vue'
 
 import listDropdown from './components/field.list-dropdown.component.vue'
@@ -67,6 +70,11 @@ import publicIndicator from './components/input/visibility-control.vue'
 
 import subList from './components/cards/subList.component.vue'
 import examCard from './components/cards/exam-card.vue'
+
+
+//menus
+import examList from './components/menus/existing-exams-list.vue'
+import itemList from './components/menus/existing-items-list.vue'
 
 //Server request handlers
 import api from '../api/old/controller'
@@ -133,6 +141,9 @@ Vue.component('add-sibling-button', siblingAddButton);
 Vue.component('add-child-button', childAddButton);
 Vue.component('card-movement-control', movementControl);
 Vue.component('children-display-control', childrenDisplayButton)
+
+Vue.component('existing-exams-menu', examList)
+Vue.component('existing-items-menu', itemList)
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).

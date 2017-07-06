@@ -710,6 +710,7 @@ var Item = function (_IModel) {
          * @returns {[string,string]}
          */
         get: function get() {
+            'displayText', 'name', 'commentText', 'text';
             return [].concat(_get(Item.__proto__ || Object.getPrototypeOf(Item), 'fillableProps', this));
         }
     }]);
@@ -1004,8 +1005,8 @@ var Item = function (_IModel) {
         key: 'aliasMap',
         get: function get() {
             return {
-                ItemId: 'id',
-                ItemIndex: 'index',
+                // ItemId: 'id',
+                // ItemIndex: 'index',
                 questionName: 'name',
                 questionText: 'text',
                 max_score: 'maxScore'
@@ -1515,7 +1516,7 @@ var Exam = function (_Item) {
             var exam = new Exam();
             // //we will still return an empty exam if there
             //         //were no parameters
-            return this.fillObject(exam, params, Exam.aliasMap);
+            return this.fillObject(exam, params, {}); //Exam.aliasMap);
         }
     }, {
         key: 'fillableProps',
@@ -1530,14 +1531,14 @@ var Exam = function (_Item) {
          * @returns {[string,string]}
          */
         get: function get() {
-            return ['year', 'term'].concat(_get(Exam.__proto__ || Object.getPrototypeOf(Exam), 'fillableProps', this));
+            return ['year', 'term', 'id'].concat(_get(Exam.__proto__ || Object.getPrototypeOf(Exam), 'fillableProps', this));
         }
     }, {
         key: 'aliasMap',
         get: function get() {
             return {
-                examId: 'id',
-                examIndex: 'index'
+                // examId: 'id',
+                // examIndex: 'index'
             };
         }
     }]);
@@ -34479,19 +34480,23 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    * Created by adam on 6/23/17.
                                                                                                                                                                                                                                                                    */
 
+var _apiSettings = __webpack_require__(585);
+
 var _responseHandlers = __webpack_require__(203);
 
 var _apiHelpers = __webpack_require__(113);
 
-var REQUEST_VERSION = 1;
-var ID_WAIT_TIMEOUT = 5000;
-var POLL_TIMEOUT = 100;
+var _examRequests = __webpack_require__(584);
+
+var _examRequests2 = _interopRequireDefault(_examRequests);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var checkItemForId = function checkItemForId(item) {
     return item.id >= 0;
 };
 
-module.exports = {
+module.exports = _extends({}, _examRequests2.default, {
 
     /**
      * Handles the call to the server to update
@@ -34507,7 +34512,7 @@ module.exports = {
             //copy so vuex doesn't yell
             var out = Object.assign({}, item);
             out.examId = store.getters.currentExam.id;
-            out.requestVersion = REQUEST_VERSION;
+            out.requestVersion = _apiSettings.REQUEST_VERSION;
 
             //put/patch
             window.axios.put('items/' + item.id, item).then(function (response) {
@@ -34527,7 +34532,7 @@ module.exports = {
         window.console.log('apiPlugin', 'updateExam', 181, exam);
         var out = _extends({}, exam, {
             examId: store.getters.currentExam.id,
-            requestVersion: REQUEST_VERSION
+            requestVersion: _apiSettings.REQUEST_VERSION
         });
         // }
         //put/patch
@@ -34548,7 +34553,7 @@ module.exports = {
         if (item && item.isNew()) {
             var exam = store.getters.currentExam;
             var toSend = _extends({}, item, {
-                requestVersion: REQUEST_VERSION,
+                requestVersion: _apiSettings.REQUEST_VERSION,
                 examId: exam.id
             });
 
@@ -34599,7 +34604,7 @@ module.exports = {
 
         var payload = {
             examId: exam.id,
-            requestVersion: REQUEST_VERSION,
+            requestVersion: _apiSettings.REQUEST_VERSION,
             order: ord
         };
 
@@ -34615,7 +34620,7 @@ module.exports = {
         });
     }
 
-};
+});
 /**
  //  * Asks the server to update the order of items
  //  * @param store
@@ -47523,6 +47528,10 @@ var _bootstrapVue = __webpack_require__(235);
 
 var _bootstrapVue2 = _interopRequireDefault(_bootstrapVue);
 
+var _vueAsyncComputed = __webpack_require__(587);
+
+var _vueAsyncComputed2 = _interopRequireDefault(_vueAsyncComputed);
+
 var _newSetup = __webpack_require__(500);
 
 var _newSetup2 = _interopRequireDefault(_newSetup);
@@ -47659,6 +47668,14 @@ var _examCard = __webpack_require__(469);
 
 var _examCard2 = _interopRequireDefault(_examCard);
 
+var _existingExamsList = __webpack_require__(578);
+
+var _existingExamsList2 = _interopRequireDefault(_existingExamsList);
+
+var _existingItemsList = __webpack_require__(579);
+
+var _existingItemsList2 = _interopRequireDefault(_existingItemsList);
+
 var _controller = __webpack_require__(78);
 
 var _controller2 = _interopRequireDefault(_controller);
@@ -47698,6 +47715,8 @@ __webpack_require__(107);
 _vue2.default.use(_bootstrapVue2.default);
 // Vue.use( Sortable );
 
+_vue2.default.use(_vueAsyncComputed2.default);
+
 //Panes (main container for edit tools)
 
 
@@ -47714,6 +47733,9 @@ _vue2.default.use(_bootstrapVue2.default);
 
 
 //Other buttons
+
+
+//menus
 
 
 //Server request handlers
@@ -47777,7 +47799,10 @@ _vue2.default.component('list-dropdown', _fieldListDropdownComponent2.default);
 _vue2.default.component('add-sibling-button', _addSiblingButton2.default);
 _vue2.default.component('add-child-button', _addChildButton2.default);
 _vue2.default.component('card-movement-control', _cardMovementControl2.default);
-_vue2.default.component('children-display-control', _childrenDisplayControl2.default
+_vue2.default.component('children-display-control', _childrenDisplayControl2.default);
+
+_vue2.default.component('existing-exams-menu', _existingExamsList2.default);
+_vue2.default.component('existing-items-menu', _existingItemsList2.default
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
@@ -53860,6 +53885,19 @@ var Sortable = __webpack_require__(106); //
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
@@ -54059,6 +54097,8 @@ exports.default = function (store) {
     });
 };
 
+var _apiSettings = __webpack_require__(585);
+
 var _actionTypes = __webpack_require__(3);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
@@ -54113,7 +54153,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // Vue.use(VueAxios, axios);
 
 window._ = __webpack_require__(21);
-
 
 /**
  * Returns true if the mutation needs to
@@ -55516,6 +55555,10 @@ var _escores = __webpack_require__(212);
 
 var _escores2 = _interopRequireDefault(_escores);
 
+var _exams = __webpack_require__(586);
+
+var _exams2 = _interopRequireDefault(_exams);
+
 var _items = __webpack_require__(214);
 
 var _items2 = _interopRequireDefault(_items);
@@ -55565,6 +55608,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
+_vue2.default.use(_vuex2.default);
+
+/**
+ * This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
 /**
  * Created by adam on 1/10/17.
  *
@@ -55601,13 +55651,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 // import Vue from  'vue/dist/vue.js'
-_vue2.default.use(_vuex2.default);
-
-/**
- * This subscribes the api package which
- * handles data exchange with the server
- * to mutations in the store.
- */
 
 
 var debug = "development" !== 'production';
@@ -55634,6 +55677,7 @@ exports.default = new _vuex2.default.Store({
     activestudent: _activestudent2.default,
     comments: _comments2.default,
     escores: _escores2.default,
+    exams: _exams2.default,
     items: _items2.default,
     grades: _grades2.default,
     // orderings,
@@ -77426,7 +77470,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })], 1)]), _vm._v(" "), _c('div', {
     staticClass: "column"
-  })]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.examId))]), _vm._v(" "), _c('p', [_vm._v("Can sync " + _vm._s(_vm.canSync))]), _vm._v(" "), _c('input', {
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "tile"
+  }, [_c('div', {
+    staticClass: "tile is-vertical is-4"
+  }, [_c('p', [_vm._v(_vm._s(_vm.examId))]), _vm._v(" "), _c('p', [_vm._v("Can sync " + _vm._s(_vm.canSync))]), _vm._v(" "), _c('existing-exams-menu')], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile is-vertical is-4"
+  }, [_c('existing-items-menu')], 1)]), _vm._v(" "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -81194,6 +81244,1001 @@ module.exports = function(module) {
 __webpack_require__(107);
 module.exports = __webpack_require__(149);
 
+
+/***/ }),
+/* 574 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(15);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(9);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _examRequests = __webpack_require__(584);
+
+var _examRequests2 = _interopRequireDefault(_examRequests);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            newButtonLabel: "New Exam",
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+        currentExam: function currentExam() {
+            return this.$store.getters.currentExam;
+        }
+    },
+
+    asyncComputed: {
+        exams: function exams() {
+            var e = this.$store.getters.getAllExams;
+            if (e.length > 0) return e;
+
+            return window.axios.get('dev/exams').then(function (response) {
+                window.console.log('examRequests', '', 28, response);
+                var out = [];
+                _.forEach(response.data, function (r) {
+                    var exam = _Exam2.default.factory({ r: r });
+                    exam.id = r.id;
+                    exam.name = r.name;
+                    exam.term = r.term;
+                    out.push(exam);
+                });
+                return out;
+            });
+        }
+    },
+
+    watch: {
+        //Once the api has given us the exams, we add them to store
+        //so that others can use them
+        exams: function exams(newVal, oldVal) {
+            var _this = this;
+
+            _.forEach(newVal, function (exam) {
+                var payload = _Payload2.default.factory({ obj: exam, mutateSilently: true });
+                _this.$store.commit(mTypes.addExam, payload);
+            });
+        }
+    },
+
+    methods: {
+        handleRowClick: function handleRowClick(v) {
+            window.console.log('existing-exams-list', 'handleClick', 110, v);
+        },
+
+        handleNew: function handleNew() {
+            window.console.log('existing-exams-list', 'handleNew', 114, this);
+        },
+
+        addExam: function addExam() {},
+        showExam: function showExam(v) {
+            window.console.log('existing-exams-list', 'showExam', 75, v);
+        },
+
+        getExams: function getExams() {
+            return this.$store.getters.getAllExams;
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 575 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(15);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(9);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            newButtonLabel: "New Item",
+
+            defaults: {}
+        };
+    },
+
+    asyncComputed: {
+        items: function items() {
+            return window.axios.get('items').then(function (response) {
+                window.console.log('itemRequests', '', 28, response);
+                var out = [];
+                _.forEach(response.data, function (r) {
+                    window.console.log('existing-items-list', 'r', 80, r);
+                    var item = _Item2.default.factory({ r: r });
+                    item.id = r.id;
+                    item.name = r.name;
+                    item.maxScore = r.max_score;
+                    out.push(item);
+                });
+                return out;
+            });
+        }
+    },
+
+    watch: {
+        //prob won't need this since there is no reason for the other
+        //parts to access the unused items
+        //            //Once the api has given us the exams, we add them to store
+        //            //so that others can use them
+        //            items: function ( newVal, oldVal ) {
+        //                _.forEach( newVal, ( exam ) => {
+        //                    let payload = Payload.factory( { obj: exam, mutateSilently: true } );
+        //                    this.$store.commit( mTypes.addExam, payload );
+        //                } );
+        //            }
+    },
+
+    computed: {},
+
+    methods: {
+        handleRowClick: function handleRowClick(v) {
+            window.console.log('existing-items-list', 'handleClick', 63, v);
+        },
+
+        handleNew: function handleNew() {
+            window.console.log('existing-items-list', 'handleNew', 106, this);
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 576 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(6)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 577 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(6)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 578 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(583)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(574),
+  /* template */
+  __webpack_require__(581),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/menus/existing-exams-list.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] existing-exams-list.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-27353540", Component.options)
+  } else {
+    hotAPI.reload("data-v-27353540", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 579 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(582)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(575),
+  /* template */
+  __webpack_require__(580),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/menus/existing-items-list.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] existing-items-list.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1366d734", Component.options)
+  } else {
+    hotAPI.reload("data-v-1366d734", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 580 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "items-panel panel"
+  }, [_c('p', {
+    staticClass: "panel-heading"
+  }, [_vm._v("\n        Items\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._l((_vm.items), function(obj) {
+    return _c('a', {
+      key: obj.id,
+      staticClass: "panel-block ",
+      on: {
+        "click": function($event) {
+          _vm.handleRowClick(obj.id)
+        }
+      }
+    }, [_vm._m(2, true), _vm._v("\n        " + _vm._s(obj.name) + "\n    ")])
+  }), _vm._v(" "), _c('div', {
+    staticClass: "panel-block"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined is-fullwidth",
+    on: {
+      "click": _vm.handleNew
+    }
+  }, [_vm._v("\n            " + _vm._s(_vm.newButtonLabel) + "\n        ")])])], 2)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "panel-block"
+  }, [_c('p', {
+    staticClass: "control has-icons-left"
+  }, [_c('input', {
+    staticClass: "input is-small",
+    attrs: {
+      "type": "text",
+      "placeholder": "Search"
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "icon is-small is-left"
+  }, [_c('i', {
+    staticClass: "fa fa-search"
+  })])])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "panel-tabs"
+  }, [_c('a', {
+    staticClass: "is-active"
+  }, [_vm._v("All")]), _vm._v(" "), _c('a', [_vm._v("Ungraded")]), _vm._v(" "), _c('a', [_vm._v("Graded")]), _vm._v(" "), _c('a', [_vm._v("Tags")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "panel-icon"
+  }, [_c('i', {
+    staticClass: "fa fa-book"
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-1366d734", module.exports)
+  }
+}
+
+/***/ }),
+/* 581 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "exams-panel panel"
+  }, [_c('p', {
+    staticClass: "panel-heading"
+  }, [_vm._v("\n        Exams\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._l((_vm.exams), function(exam) {
+    return _c('a', {
+      key: exam.id,
+      staticClass: "panel-block ",
+      on: {
+        "click": function($event) {
+          _vm.handleRowClick(exam.id)
+        }
+      }
+    }, [_vm._m(2, true), _vm._v("\n        " + _vm._s(exam.name) + "\n    ")])
+  }), _vm._v(" "), _c('div', {
+    staticClass: "panel-block"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined is-fullwidth",
+    on: {
+      "click": _vm.handleNew
+    }
+  }, [_vm._v("\n            " + _vm._s(_vm.newButtonLabel) + "\n        ")])])], 2)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "panel-block"
+  }, [_c('p', {
+    staticClass: "control has-icons-left"
+  }, [_c('input', {
+    staticClass: "input is-small",
+    attrs: {
+      "type": "text",
+      "placeholder": "Search"
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "icon is-small is-left"
+  }, [_c('i', {
+    staticClass: "fa fa-search"
+  })])])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "panel-tabs"
+  }, [_c('a', {
+    staticClass: "is-active"
+  }, [_vm._v("All")]), _vm._v(" "), _c('a', [_vm._v("Ungraded")]), _vm._v(" "), _c('a', [_vm._v("Graded")]), _vm._v(" "), _c('a', [_vm._v("Tags")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "panel-icon"
+  }, [_c('i', {
+    staticClass: "fa fa-book"
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-27353540", module.exports)
+  }
+}
+
+/***/ }),
+/* 582 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(576);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(19)("5204b764", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1366d734\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./existing-items-list.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1366d734\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./existing-items-list.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 583 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(577);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(19)("954c87ee", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-27353540\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./existing-exams-list.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-27353540\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./existing-exams-list.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 584 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _apiSettings = __webpack_require__(585);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(9);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = __webpack_require__(15);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = __webpack_require__(5);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+module.exports = {
+
+    loadAllExams: function loadAllExams(store) {
+        window.console.log('apiPlugin-examRequests', 'loadAllExams', 8);
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION
+        };
+
+        window.axios.get('dev/exams/').then(function (response) {
+            window.console.log('examRequests', '', 28, response);
+            // _.forEach( response.data, function ( e ) {
+            _.forEach(response.data, function (r) {
+                // window.console.log( 'examRequests', 'r', 29, r);
+                var exam = _Exam2.default.factory({ r: r });
+                exam.id = r.id;
+                exam.name = r.name;
+                exam.term = r.term;
+                var payload = _Payload2.default.factory({ obj: exam, mutateSilently: true });
+                store.commit(mTypes.addExam, payload);
+            });
+            // });
+        }).catch(function (error) {
+            window.console.log('examRequests', 'ERROR', 39, error);
+            // errorHandling( error );
+        });
+    }
+
+}; /**
+    * Created by adam on 7/6/17.
+    */
+
+/***/ }),
+/* 585 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 7/6/17.
+ */
+
+var REQUEST_VERSION = exports.REQUEST_VERSION = 1;
+var ID_WAIT_TIMEOUT = exports.ID_WAIT_TIMEOUT = 5000;
+var POLL_TIMEOUT = exports.POLL_TIMEOUT = 100;
+
+/***/ }),
+/* 586 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions, _getters;
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(9);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Exam = __webpack_require__(15);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 1/12/17.
+                                                                                                                                                                                                                   */
+
+// import * as api from '../../api/controller'
+
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.exams has the exam's database id as key and an Exam object
+ * as value. That is:
+ *      state.exams[Exam.id] = Exam
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * examIndex to the database id
+ *
+ * @type {{exams: {}, indexMap: {}}}
+ */
+var state = {
+    /**
+     * Object indexed by exam id holding exam objects
+     */
+    exams: {},
+
+    /**
+     * Mapping from older examIndex to new exam id value
+     */
+    indexMap: {}
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addExam, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    if (payload.obj instanceof _Exam2.default) {
+        //push into exams storage
+        state.exams[payload.obj.id] = payload.obj;
+    }
+}), _defineProperty(_mutations, mTypes.addIndexMapping, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    state.indexMap[payload.index] = payload.id;
+}), _defineProperty(_mutations, mTypes.loadExams, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    //add exams
+    state.exams = payload.obj;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.addNewExam, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+    var examId = payload.examId,
+        examIndex = payload.examIndex,
+        obj = payload.obj,
+        examObject = payload.examObject;
+
+
+    obj = typeof examObject != 'undefined' ? examObject : obj;
+    //check and see if an exam object has already been passed in
+    if (!obj instanceof _Exam2.default) {
+        //create a new exam
+        var name = payload.name,
+            year = payload.year,
+            term = payload.term;
+
+        var examJson = { name: name, year: year, term: term, examIndex: examIndex };
+        obj = _Exam2.default.factory(examJson);
+    }
+
+    //assemble the expected payload
+    // let out = { examId: examId, examIndex: examIndex, obj: obj };
+    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
+    //Add to the exams store
+    commit(mTypes.addExam, out);
+
+    //Add to the mapping store
+    commit(mTypes.addIndexMapping, out);
+
+    //request that the server create an exam
+    // api.createModel(Exam);
+}), _defineProperty(_actions, aTypes.loadExams, function (state, rootState, payload) {
+    //check if payload has correct structure
+    //todo
+
+    //push each record from the payload into the store
+    for (var i = 0; i < payload.length; i++) {
+        var record = payload[i];
+        //check if record has correct structure
+        //todo
+
+        //add to exams and add index mapping
+        [aTypes.addNewExam](state, rootState, record);
+    }
+}), _actions);
+
+var getters = (_getters = {}, _defineProperty(_getters, gTypes.getExam, function (state, getters, payload) {
+    //finds the exam and returns it
+    var lookupByExamId = function lookupByExamId(state, examId) {
+        return state.exams[examId];
+    };
+
+    //Try looking up first by exam Id
+    if (typeof payload.examId != 'undefined') {
+        return lookupByExamId(state, payload.examId);
+    }
+
+    //other lookup methods
+}), _defineProperty(_getters, gTypes.getAllExams, function (state, getters, payload) {
+    return function (state) {
+        var out = [];
+        var keys = Object.keys(state.exams);
+        for (var i = 0; i < keys.length; i++) {
+            out.push(state.exams[keys[i]]);
+        }
+        return out;
+    }(state);
+}), _getters);
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 587 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports !== "undefined") {
+    factory(module, exports);
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod, mod.exports);
+    global.AsyncComputed = mod.exports;
+  }
+})(this, function (module, exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var prefix = '_async_computed$';
+
+  var AsyncComputed = {
+    install: function install(Vue, pluginOptions) {
+      pluginOptions = pluginOptions || {};
+
+      Vue.config.optionMergeStrategies.asyncComputed = Vue.config.optionMergeStrategies.computed;
+
+      Vue.mixin({
+        beforeCreate: function beforeCreate() {
+          var optionData = this.$options.data;
+
+          if (!this.$options.computed) this.$options.computed = {};
+
+          for (var key in this.$options.asyncComputed || {}) {
+            this.$options.computed[prefix + key] = getterFor(this.$options.asyncComputed[key]);
+          }
+
+          this.$options.data = function vueAsyncComputedInjectedDataFn() {
+            var data = (typeof optionData === 'function' ? optionData.call(this) : optionData) || {};
+            for (var _key in this.$options.asyncComputed || {}) {
+              data[_key] = null;
+            }
+            return data;
+          };
+        },
+        created: function created() {
+          var _this = this;
+
+          for (var key in this.$options.asyncComputed || {}) {
+            this[key] = defaultFor.call(this, this.$options.asyncComputed[key], pluginOptions);
+          }
+
+          var _loop = function _loop(_key2) {
+            var promiseId = 0;
+            _this.$watch(prefix + _key2, function (newPromise) {
+              var thisPromise = ++promiseId;
+
+              if (!newPromise || !newPromise.then) {
+                newPromise = Promise.resolve(newPromise);
+              }
+
+              newPromise.then(function (value) {
+                if (thisPromise !== promiseId) return;
+                _this[_key2] = value;
+              }).catch(function (err) {
+                if (thisPromise !== promiseId) return;
+
+                if (pluginOptions.errorHandler === false) return;
+
+                var handler = pluginOptions.errorHandler === undefined ? console.error.bind(console, 'Error evaluating async computed property:') : pluginOptions.errorHandler;
+
+                if (pluginOptions.useRawError) {
+                  handler(err);
+                } else {
+                  handler(err.stack);
+                }
+              });
+            }, { immediate: true });
+          };
+
+          for (var _key2 in this.$options.asyncComputed || {}) {
+            _loop(_key2);
+          }
+        }
+      });
+    }
+  };
+
+  function getterFor(fn) {
+    if (typeof fn === 'function') return fn;
+
+    var getter = fn.get;
+
+    if (fn.hasOwnProperty('watch')) {
+      getter = function getter() {
+        fn.watch.call(this);
+        return fn.get.call(this);
+      };
+    }
+    return getter;
+  }
+
+  function defaultFor(fn, pluginOptions) {
+    var defaultValue = null;
+
+    if ('default' in fn) {
+      defaultValue = fn.default;
+    } else if ('default' in pluginOptions) {
+      defaultValue = pluginOptions.default;
+    }
+
+    if (typeof defaultValue === 'function') {
+      return defaultValue.call(this);
+    } else {
+      return defaultValue;
+    }
+  }
+
+  exports.default = AsyncComputed;
+
+
+  /* istanbul ignore if */
+  if (typeof window !== 'undefined' && window.Vue) {
+    // Auto install in dist mode
+    window.Vue.use(AsyncComputed);
+  }
+  module.exports = exports['default'];
+});
 
 /***/ })
 /******/ ]);
