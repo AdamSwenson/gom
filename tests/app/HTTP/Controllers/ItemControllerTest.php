@@ -153,6 +153,20 @@ class ItemControllerTest extends \TestCase
      */
     public function destroy()
     {
+        $item = factory(Item::class)->create();
+        $id = $item->id;
+
+        //call
+        $response = $this->delete($this->route . '/' . $item->id);
+
+        //check
+        //this uses soft deletes so the check is a bit complicated
+        $response->assertStatus(200);
+        $i = Item::onlyTrashed()->where('id', $id)->get();
+
+        $this->assertNotEmpty($i);
+        $this->assertEquals($id, $i->id);
+//        $this->assertDatabaseMissing('items', ['id' => $id]);
     }
 
 

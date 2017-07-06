@@ -92,17 +92,14 @@ class AssignmentController extends Controller
      *
      * @param Exam $exam
      * @return \Illuminate\Http\Response
-     * @internal param int $id
      */
-    public
-    function show( Exam $exam )
+    public function show( Exam $exam )
     {
         $out = ['data' => $exam->id, 'children' => [], 'parent' => $exam->id];
         $assignmentTree = Assignment::where(['item_id', $exam->id])->get();
         if ( $assignmentTree->hasChildren() ) {
             $children = $assignmentTree->getChildren();
             foreach ( $children as $child ) {
-
             }
         }
     }
@@ -206,15 +203,14 @@ class AssignmentController extends Controller
 //    }
 
 
-
-    //expected format of incoming is a list of nodes
-    // with the form
-    /*
-        Node = {
-            id: id, //the item id of the question or element
-            parent: id //the item id of this item's parent
-            children: []
-        }
+//expected format of incoming is a list of nodes
+// with the form
+/*
+    Node = {
+        id: id, //the item id of the question or element
+        parent: id //the item id of this item's parent
+        children: []
+    }
 */
 //        $exam->resetAssignments();
 //
@@ -254,8 +250,8 @@ class AssignmentController extends Controller
 
 //        $assignmentTree = isset($exam->assignment->id) ? $exam->assignment : $exam->assignment()->save(Assignment::create());
 
-    //we will want to wrap this in a transaction
-    //in case something goes wrong
+//we will want to wrap this in a transaction
+//in case something goes wrong
 //    $exam->resetAssignments();
 //    $serverRoot = $exam->assignment;
 //

@@ -45,6 +45,7 @@ class SetupControllerTest extends \TestCase
     {
         $response = $this->get($this->route);
         $this->assertNotEmpty($response);
+        $response->assertStatus(302);
     }
 
 
@@ -58,11 +59,25 @@ class SetupControllerTest extends \TestCase
 
         $dao->shouldReceive('getItemOrderForClient')
             ->with([$exam])
-            ->andReturn(['itemObjects' => [], 'itemOrder' => []]);
+            ->andReturn(['itemObjects' => ['a'], 'itemOrder' => ['b']]);
 
         //call
-        $response = $this->call('GET', $this->route . '/' . $exam->id);
-$this->assertNotEmpty($response);
+        $response = $this->get($this->route . '/' . $exam->id);
+        $this->assertNotEmpty($response);
+
+        $response->assertStatus(302);
+
+        $expected = [
+            'examObjectJsonName' => SetupController::EXAM_JSON_NAME,
+            'itemObjectJsonName' => SetupController::ITEM_OBJECT_JSON_NAME,
+            'itemOrderJsonName' => SetupController::ITEM_ORDER_JSON_NAME,
+            'exam' => $exam,
+            'itemObjects' => ['a'],
+            'itemOrder' => ['b']
+        ];
+
+//        $response->assertViewHasAll($expected);
+
     }
 
 

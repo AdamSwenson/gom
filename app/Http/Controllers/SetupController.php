@@ -108,9 +108,11 @@ class SetupController extends Controller
     {
 
         $out = $this->assignmentRepository->getItemOrderForClient($exam);
-        //This contains
-//         'itemObjects' => $itemObjects,
-//            'itemOrder' => $itemOrder
+        //The returned array  will have the keys
+        //  'itemObjects'
+        //  'itemOrder'
+
+        //So we add some additional elements that the page expects
         $standard = [
             'examObjectJsonName' => self::EXAM_JSON_NAME,
             'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
@@ -120,29 +122,6 @@ class SetupController extends Controller
         $out += $standard;
 
         return view('development.newsetup', $out);
-
-//        $itemObjects = [];
-//        $itemOrder = [];
-//
-//        $assignments = Assignment::where('exam_id', $exam->id)->get();
-//        foreach ( $assignments as $assignment ) {
-//            $item = Item::where('id', $assignment->item_id)->first();
-//            if ( $item ) {
-//                $itemObjects[] = $item;
-//                $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();
-//
-//                $parentItemId = $parentItemAssignment ? $parentItemAssignment->item_id : null;
-//
-//                $itemOrder[] = [
-//                    'examId' => $exam->id,
-//                    'itemId' => $item->id,
-//                    'parentId' => $parentItemId,
-//                    'itemOrder' => $assignment->position
-//                ];
-//            }
-//        }
-//
-//        ];
 
     }
 

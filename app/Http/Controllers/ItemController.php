@@ -105,7 +105,7 @@ class ItemController extends Controller
             $item = Item::find($request->input('id'));
         }
         //if we don't have an item yet, create one
-        if ( ! isset($item) ) {
+        if ( !isset($item) ) {
             $item = Item::create();
         }
 
@@ -156,13 +156,12 @@ class ItemController extends Controller
      * Receives PUT
      * Updates the specified resource in storage.
      *
-
-Presently handled by store
+     *
+     * Presently handled by store
      * @todo Update store so it only handles creation and update handles updates
      * @param Item $item
      * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response
-
      */
     public function update( Item $item, ItemRequest $request )
     {
@@ -181,26 +180,61 @@ Presently handled by store
     /**
      * Remove the specified resource from storage.
      *
-     * @param ItemRequest $request
+     * @param Item $item
+     * @return \Illuminate\Http\Response
+     * @internal param ItemRequest $request
+     */
+    public function destroy( Item $item )
+    {
+        try {
+            $item->delete();
+            return $this->sendAjaxSuccess();
+        } catch (Exception $e) {
+            return $this->sendAjaxFailure();
+        }
+
+        //
+//        $this->determineItemType($request);
+//
+//        switch ( $this->type ) {
+//            case Exam::class:
+//                break;
+//
+//            case Element::class:
+//                //make new element
+//                break;
+//
+//            case Question::class;
+//                //make new question
+//                break;
+//        }
+    }
+
+
+    /**
+     * Receives PUT
+     * Updates the specified resource in storage.
+     *
+     * @param Exam $exam
+     * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy( ItemRequest $request )
+    public function examUpdate( Exam $exam, ItemRequest $request )
     {
-        $this->determineItemType($request);
+        //update its properties
+        $exam->update(
+            [
+//                'text' => $request->input('text'),
+                'name' => $request->input('name'),
+//                'max_score' => $request->input('maxScore')
+            ]);
+        return $exam;
 
-        switch ( $this->type ) {
-            case Exam::class:
-                break;
-
-            case Element::class:
-                //make new element
-                break;
-
-            case Question::class;
-                //make new question
-                break;
-        }
+        //return $this->itemRepository->handleStoreAndUpdate($request);
     }
+
+
+
 
 
     /*
@@ -237,29 +271,6 @@ Presently handled by store
 
     //OLD UPDATE
     //return $this->itemRepository->handleStoreAndUpdate($request);
-
-
-    /**
-     * Receives PUT
-     * Updates the specified resource in storage.
-     *
-     * @param Item $item
-     * @param ItemRequest|Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function examUpdate( Exam $exam, ItemRequest $request )
-    {
-        //update its properties
-        $exam->update(
-            [
-//                'text' => $request->input('text'),
-                'name' => $request->input('name'),
-//                'max_score' => $request->input('maxScore')
-            ]);
-        return $exam;
-
-        //return $this->itemRepository->handleStoreAndUpdate($request);
-    }
 
     /**
      * This handles updating the order etc when passed
