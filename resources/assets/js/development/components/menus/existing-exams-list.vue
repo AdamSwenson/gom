@@ -83,7 +83,7 @@
                 return window.axios
                     .get( 'dev/exams' )
                     .then( ( response ) => {
-                        window.console.log( 'examRequests', '', 28, response );
+                        window.console.log( 'examRequests', 'exams', 28, response );
                         let out = [];
                         _.forEach( response.data, function ( r ) {
                             let exam = Exam.factory( { r } );

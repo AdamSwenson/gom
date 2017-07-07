@@ -81359,7 +81359,7 @@ exports.default = {
             if (e.length > 0) return e;
 
             return window.axios.get('dev/exams').then(function (response) {
-                window.console.log('examRequests', '', 28, response);
+                window.console.log('examRequests', 'exams', 28, response);
                 var out = [];
                 _.forEach(response.data, function (r) {
                     var exam = _Exam2.default.factory({ r: r });
@@ -81467,7 +81467,7 @@ exports.default = {
                 window.console.log('itemRequests', '', 28, response);
                 var out = [];
                 _.forEach(response.data, function (r) {
-                    window.console.log('existing-items-list', 'r', 80, r);
+                    //                            window.console.log( 'existing-items-list', 'r', 80, r);
                     var item = _Item2.default.factory({ r: r });
                     item.id = r.id;
                     item.name = r.name;

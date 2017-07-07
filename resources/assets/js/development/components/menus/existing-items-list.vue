@@ -78,7 +78,7 @@
                         window.console.log( 'itemRequests', '', 28, response );
                         let out = [];
                         _.forEach( response.data, function ( r ) {
-                            window.console.log( 'existing-items-list', 'r', 80, r);
+//                            window.console.log( 'existing-items-list', 'r', 80, r);
                             let item = Item.factory( { r } );
                             item.id = r.id;
                             item.name = r.name;
