@@ -34,6 +34,7 @@ import Exam from '../models/Exam'
 import Item from '../models/Item'
 
 import { createItem, updateExam, updateItem, updateItemsOrder } from './requests'
+import {updateComment} from '../api/requests/commentRequests';
 
 /**
  * Returns true if the mutation needs to
@@ -68,11 +69,15 @@ export default function ( store ) {
     store.subscribe( ( mutation ) => {
         let { type, payload } = mutation;
 
+        window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
+
+
         //Check if mutateSilently has been set
         //If it has, respect its privacy
         // window.console.log( 'apiPlugin', '', 234, mutation );
         if ( !shouldTellServerAboutThis( mutation ) ) return false;
-        window.console.log( 'apiPlugin', '', 236, mutation, payload );
+
+        window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
 
         let item = payload ? payload.getStoredObject( store ) : null;
 
@@ -123,17 +128,20 @@ export default function ( store ) {
                 //on update calls, the object might not have been assembled.
                 //so we need to try to get the item from the index too
                 // let item = _.isObject( payload.obj ) ? payload.obj : store.getters.getItemByIndex( payload.index );
-                window.console.log( 'apiPlugin', 'updateItem', 263, item, payload );
+                window.console.log( 'apiPlugin', 'updateItem', 128, item, payload );
                 if ( item instanceof Exam ) {
                     updateExam( store, item );
-                } else if ( item instanceof Item ) {
+                }
+                else if ( item instanceof Item ) {
                     updateItem( store, item );
                 }
-                payload.callback();
+
+                // payload.callback();
                 break;
 
             case mTypes.updateComment:
-                updateItem(store, item);
+                window.console.log( 'apiPlugin', 'calling update comment', 140, );
+                updateComment(store, item);
                 break;
 
             case mTypes.insertNodeIntoOrder:

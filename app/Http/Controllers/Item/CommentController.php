@@ -95,6 +95,16 @@ class CommentController extends Controller
         }
     }
 
+
+    /**
+     * Updates all comments for an item
+     * @param Item $item
+     * @param Request $request
+     */
+    public function updateItemComments(Item $item, Request $request){
+
+    }
+
     /**
      * Return all comments for a given item.
      *

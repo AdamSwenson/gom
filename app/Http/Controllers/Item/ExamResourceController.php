@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 use App\Exam;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 /**

@@ -6,7 +6,7 @@
  * Time: 6:33 PM
  */
 
-namespace App\Repositories\Element;
+namespace App\Repositories\Item;
 
 
 /**

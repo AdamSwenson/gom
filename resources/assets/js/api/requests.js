@@ -8,7 +8,7 @@ import { errorHandling, handleResponse } from './responseHandlers';
 import { holdForIdLoading } from './apiHelpers';
 
 import examRequests from './requests/examRequests';
-
+import commentRequests from './requests/commentRequests';
 
 
 const checkItemForId = ( item ) => {
@@ -18,6 +18,7 @@ const checkItemForId = ( item ) => {
 
 module.exports = {
     ...examRequests,
+    // ...commentRequests,
 
     /**
      * Handles the call to the server to update
@@ -26,9 +27,6 @@ module.exports = {
      * @param item
      */
     updateItem: ( store, item ) => {
-        // if ( !item instanceof Exam ) {
-
-
         if ( holdForIdLoading( item ) ) {
 //copy so vuex doesn't yell
             let out = Object.assign( {}, item );

@@ -1,5 +1,7 @@
 <template>
-    <div class="comment-setup-panel">
+    <div v-bind:class="styling"
+         v-bind:id="panelId"
+    >
         <div class="field ">
             <label class="label ">{{ label }}</label>
             <p class="control">
@@ -44,22 +46,28 @@
 
         data: function () {
             return {
+
                 serialNumber: _.toInteger( this.$route.params.serialNumber ),
+
 //                active: this.serialNumber,
+
+                identifier: 'comment-setup-panel',
 
                 labels: {
                     exam: "Set up student feedback for the exam as a whole",
                     item: "Set up student feedback for this item"
                 },
 
+                //Which valence is currently displayed
                 displayed: 'stock',
 
-                defaults: {
-                    commentText: ''
-                },
                 placeholders: {
                     exam: "Set up a global comment on the exam as a whole",
                     item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
+                },
+
+                defaults: {
+                    commentText: ''
                 },
             };
         },
@@ -78,6 +86,14 @@
             }
         },
         computed: {
+            panelId: function () {
+                return this.identifier + '-' + this.serialNumber;
+            },
+
+            styling: function () {
+                return this.identifier;
+            },
+
 
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
@@ -117,7 +133,7 @@
                 },
 
                 set: function ( v ) {
-                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this, v );
+                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
                     let pl = Payload.factory( {
                         obj: this.item,
                         //index: this.$route.params.index,

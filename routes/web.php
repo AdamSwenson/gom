@@ -176,6 +176,6 @@ Route::post('setup/{exam}/order', 'Item\AssignmentController@store');
 
 Route::post('comments/{item}', 'Item\CommentController@store');
 //new exam controller
-Route::get('dev/exams', 'ExamResourceController@index');
+Route::get('dev/exams', 'Item\ExamResourceController@index');
 
 
