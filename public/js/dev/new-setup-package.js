@@ -629,11 +629,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } }; /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * This is the model which can be either a question
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * or an element.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Created by adam on 2/17/17.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _Comment = __webpack_require__(60);
 
@@ -649,61 +645,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This is the model which can be either a question
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or an element.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 2/17/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 var separator = '-';
 var REQUEST_VERSION = 1;
 var ID_WAIT_TIMEOUT = 5000;
 var POLL_TIMEOUT = 100;
 
-// const holdForIdLoading = ( item ) => {
-//     if ( ! _.isUndefined(item ) && ! item.isExam() ) {
-//         window.console.log( 'requests', 'holdForIdLoading', 12, item.id );
-//         if ( !holdForIdLoading.timeWaited ) holdForIdLoading.timeWaited = 0;
-//         while (item._id === -1 && holdForIdLoading.timeWaited <= ID_WAIT_TIMEOUT) {
-//             holdForIdLoading.timeWaited += POLL_TIMEOUT;
-//             setTimeout( holdForIdLoading( item ), POLL_TIMEOUT );
-//         }
-//         holdForIdLoading.timeWaited = 0;
-//         return item._id >= 0;
-//     }
-//     return false;
-//
-//
-// }
-
 var Item = function (_IModel) {
     _inherits(Item, _IModel);
-
-    _createClass(Item, null, [{
-        key: 'makeSerialNumber',
-
-
-        /**
-         * Returns the next serial number.
-         * The first time this is called, it will return 1
-         * The actual value doesn't matter, only its uniqueness.
-         * @returns {number}
-         */
-        value: function makeSerialNumber() {
-            if (!Item.makeSerialNumber.count) Item.makeSerialNumber.count = 0;
-            Item.makeSerialNumber.count += 1;
-            return Item.makeSerialNumber.count;
-        }
-    }, {
-        key: 'fillableProps',
-
-
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
-        get: function get() {
-            'displayText', 'name', 'commentText', 'text';
-            return [].concat(_get(Item.__proto__ || Object.getPrototypeOf(Item), 'fillableProps', this));
-        }
-    }]);
 
     function Item() {
         _classCallCheck(this, Item);
@@ -745,16 +699,15 @@ var Item = function (_IModel) {
          */
         _this.publicity = false;
 
-        /** The DB question assignment id or elementAssignmentId if applicable */
-        // this.assignmentId = -1;
-
-        //The id of the exam the item is associated with
-        _this.examId = -1;
-
-        // this.children = [];
-        // this.props = super.fillableProps;
         return _this;
     }
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+
 
     _createClass(Item, [{
         key: 'canSync',
@@ -801,6 +754,27 @@ var Item = function (_IModel) {
         key: 'getComment',
         value: function getComment(valence) {
             return this.comments.get(valence);
+        }
+
+        /**
+         * When loading comments into an item
+         * from ajax or on page load, use this
+         * to do it.
+         *
+         * @param jsonComments
+         */
+
+    }, {
+        key: 'loadCommentsFromJson',
+        value: function loadCommentsFromJson(jsonComments) {
+            if (Object.keys(jsonComments).length > 0) {
+                var me = this;
+                _.forEach(jsonComments, function (row) {
+                    var comment = _Comment2.default.factory(row);
+                    comment.text = row.body;
+                    me.addComment(comment.valence, comment);
+                });
+            }
         }
     }, {
         key: 'promote',
@@ -903,6 +877,21 @@ var Item = function (_IModel) {
          */
 
     }], [{
+        key: 'makeSerialNumber',
+
+
+        /**
+         * Returns the next serial number.
+         * The first time this is called, it will return 1
+         * The actual value doesn't matter, only its uniqueness.
+         * @returns {number}
+         */
+        value: function makeSerialNumber() {
+            if (!Item.makeSerialNumber.count) Item.makeSerialNumber.count = 0;
+            Item.makeSerialNumber.count += 1;
+            return Item.makeSerialNumber.count;
+        }
+    }, {
         key: 'buildKeyFromIdx',
         value: function buildKeyFromIdx(index) {
             //if it is a string of the proper form
@@ -990,6 +979,11 @@ var Item = function (_IModel) {
         value: function factory(params) {
             var obj = new Item();
             return this.fillObject(obj, params, Item.aliasMap);
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['displayText', 'name', 'commentText', 'text'].concat(_get(Item.__proto__ || Object.getPrototypeOf(Item), 'fillableProps', this));
         }
     }, {
         key: 'aliasMap',
@@ -30574,6 +30568,7 @@ var Comment = function (_IModel) {
         key: 'aliasMap',
         get: function get() {
             return {
+                body: 'text',
                 ItemId: 'id',
                 ItemIndex: 'index'
             };
@@ -34914,6 +34909,7 @@ module.exports = {
             //load in the item objects
             _.forEach(objectData, function (d, i) {
                 var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
+                item.loadCommentsFromJson(d.comments);
                 state.items.push(item);
             });
 

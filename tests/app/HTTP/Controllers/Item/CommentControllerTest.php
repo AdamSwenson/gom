@@ -46,11 +46,6 @@ class CommentControllerTest extends \TestCase
     /** @test */
     public function store()
     {
-        /*
-         * Sample incoming
-         * {"text":"","maxScore":100,"depth":0,"serialNumber":5,"id":3,"comments":[["stock",{"text":"ff","maxScore":100,"depth":0,"type":"comment","valence":"stock"}],["absent",{"text":"","maxScore":100,"depth":0,"type":"comment","valence":"absent"}],["poor",{"text":"","maxScore":100,"depth":0,"type":"comment","valence":"poor"}],["good",{"text":"","maxScore":100,"depth":0,"type":"comment","valence":"good"}],["excellent",{"text":"","maxScore":100,"depth":0,"type":"comment","valence":"excellent"}]],"kind":"item","publicity":false,"examId":-1,"name":"dsss","requestVersion":1}
-         */
-
         $testComments = []; //stands in for the comments array in the incoming item
         foreach ( ItemComment::$valenceTexts as $valence ) {
             $testComments[] = [$valence, ["text" => Factory::create()->sentence, "valence" => $valence]];
@@ -71,8 +66,6 @@ class CommentControllerTest extends \TestCase
 
         foreach ( $testComments as $t ) {
             $valence = $t[0];
-//            $valence = ItemComment::numericValenceFromText($t[0]);
-
             $comment = $t[1];
             $this->assertDatabaseHas('item_comments', [
                 'item_id' => $item->id,

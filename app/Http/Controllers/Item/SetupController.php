@@ -88,7 +88,9 @@ class SetupController extends Controller
 // -------------------------------- Controller methods
 
     /**
-     * Display a listing of the resource.
+     * Returns the setup page when no exam is requested
+     * Creates an exam first and redirects to the usual
+     * handler
      *
      * @return \Illuminate\Http\Response
      */
@@ -100,16 +102,14 @@ class SetupController extends Controller
 
     /**
      * Display the specified exam.
-     * We use the show route to dependency inject an exam
-     * Thus this route should not be used for question and element items
      *
      * Called on the route:
-     *      GET    /items/{exam}    show    items.show
+     *      GET    /setup/{exam}    show    items.show
      *
      * @param Exam $exam
      * @return \Illuminate\Http\Response
      */
-    public function show( Exam $exam ) //Item $item, ItemRequest $request )
+    public function show( Exam $exam )
     {
 
         $out = $this->assignmentRepository->getItemOrderForClient($exam);

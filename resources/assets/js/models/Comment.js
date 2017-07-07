@@ -85,6 +85,7 @@ export default class Comment extends IModel {
 
     static get aliasMap() {
         return {
+            body: 'text',
             ItemId: 'id',
             ItemIndex: 'index'
         };

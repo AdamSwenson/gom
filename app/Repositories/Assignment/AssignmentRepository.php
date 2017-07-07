@@ -130,7 +130,10 @@ class AssignmentRepository implements IAssignmentRepository
 
         $assignments = Assignment::where('exam_id', $exam->id)->get();
         foreach ( $assignments as $assignment ) {
-            $item = Item::where('id', $assignment->item_id)->first();
+            $item = Item::with(['comments'])
+                ->where('id', $assignment->item_id)
+                ->first();
+
             if ( $item ) {
                 $itemObjects[] = $item;
                 $parentItemAssignment = $assignment->getParent();//Assignment::where('parent_id', $assignment->parent_id)->first();

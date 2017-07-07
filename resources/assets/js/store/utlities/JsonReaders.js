@@ -56,6 +56,7 @@ module.exports = {
             //load in the item objects
             _.forEach( objectData, function ( d, i ) {
                 let item = Item.factory( d ); //.factory( {id: id, index: index} );
+                item.loadCommentsFromJson(d.comments);
                 state.items.push( item );
             } );
 

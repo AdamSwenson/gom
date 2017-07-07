@@ -13,49 +13,8 @@ const REQUEST_VERSION = 1;
 const ID_WAIT_TIMEOUT = 5000;
 const POLL_TIMEOUT = 100;
 
-// const holdForIdLoading = ( item ) => {
-//     if ( ! _.isUndefined(item ) && ! item.isExam() ) {
-//         window.console.log( 'requests', 'holdForIdLoading', 12, item.id );
-//         if ( !holdForIdLoading.timeWaited ) holdForIdLoading.timeWaited = 0;
-//         while (item._id === -1 && holdForIdLoading.timeWaited <= ID_WAIT_TIMEOUT) {
-//             holdForIdLoading.timeWaited += POLL_TIMEOUT;
-//             setTimeout( holdForIdLoading( item ), POLL_TIMEOUT );
-//         }
-//         holdForIdLoading.timeWaited = 0;
-//         return item._id >= 0;
-//     }
-//     return false;
-//
-//
-// }
 
 export default class Item extends IModel {
-
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        'displayText',
-            'name',
-            'commentText',
-            'text'
-        return [].concat( super.fillableProps );
-    };
-
-
-    /**
-     * Returns the next serial number.
-     * The first time this is called, it will return 1
-     * The actual value doesn't matter, only its uniqueness.
-     * @returns {number}
-     */
-    static makeSerialNumber() {
-        if ( !Item.makeSerialNumber.count ) Item.makeSerialNumber.count = 0;
-        Item.makeSerialNumber.count += 1;
-        return Item.makeSerialNumber.count;
-    }
 
 
     constructor() {
@@ -97,14 +56,34 @@ export default class Item extends IModel {
          */
         this.publicity = false;
 
-        /** The DB question assignment id or elementAssignmentId if applicable */
-        // this.assignmentId = -1;
+    }
 
-        //The id of the exam the item is associated with
-        this.examId = -1;
 
-        // this.children = [];
-        // this.props = super.fillableProps;
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'displayText',
+            'name',
+            'commentText',
+            'text'
+        ].concat( super.fillableProps );
+    };
+
+
+    /**
+     * Returns the next serial number.
+     * The first time this is called, it will return 1
+     * The actual value doesn't matter, only its uniqueness.
+     * @returns {number}
+     */
+    static makeSerialNumber() {
+        if ( !Item.makeSerialNumber.count ) Item.makeSerialNumber.count = 0;
+        Item.makeSerialNumber.count += 1;
+        return Item.makeSerialNumber.count;
     }
 
 
@@ -143,8 +122,8 @@ export default class Item extends IModel {
      * be synced with the server.
      * @returns {boolean}
      */
-    canSync(){
-        if(this.id >= 0) return true;
+    canSync() {
+        if ( this.id >= 0 ) return true;
         return false;
     }
 
@@ -175,6 +154,24 @@ export default class Item extends IModel {
 
     getComment( valence ) {
         return this.comments.get( valence );
+    }
+
+    /**
+     * When loading comments into an item
+     * from ajax or on page load, use this
+     * to do it.
+     *
+     * @param jsonComments
+     */
+    loadCommentsFromJson( jsonComments ) {
+        if(Object.keys(jsonComments).length >0) {
+            var me = this;
+            _.forEach( jsonComments, ( row ) => {
+                let comment = Comment.factory( row );
+                comment.text = row.body;
+                me.addComment( comment.valence, comment );
+            } );
+        }
     }
 
     promote() {
