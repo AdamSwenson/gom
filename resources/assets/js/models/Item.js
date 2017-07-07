@@ -37,6 +37,10 @@ export default class Item extends IModel {
      * @returns {[string,string]}
      */
     static get fillableProps() {
+        'displayText',
+            'name',
+            'commentText',
+            'text'
         return [].concat( super.fillableProps );
     };
 
@@ -310,8 +314,8 @@ export default class Item extends IModel {
 
     static get aliasMap() {
         return {
-            ItemId: 'id',
-            ItemIndex: 'index',
+            // ItemId: 'id',
+            // ItemIndex: 'index',
             questionName: 'name',
             questionText: 'text',
             max_score: 'maxScore'

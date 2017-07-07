@@ -49,7 +49,7 @@ const mutations = {
      * @param rootState
      * @param payload Expecting Exam object to be in payload.obj
      */
-    [mTypes.addExam]: ( state, rootState, payload ) => {
+    [mTypes.addExam]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         if ( payload.obj instanceof Exam ) {
             //push into exams storage
@@ -97,21 +97,21 @@ const actions = {
      * @param commit
      * @param payload Keys: examId, examIndex, obj
      */
-    [aTypes.addNewExam]: ( {state, commit}, payload ) => {
-        let {examId, examIndex, obj, examObject} = payload;
+    [aTypes.addNewExam]: ( { state, commit }, payload ) => {
+        let { examId, examIndex, obj, examObject } = payload;
 
         obj = typeof examObject != 'undefined' ? examObject : obj;
         //check and see if an exam object has already been passed in
         if ( !obj instanceof Exam ) {
             //create a new exam
-            let {name, year, term} = payload;
-            let examJson = {name, year, term, examIndex};
+            let { name, year, term } = payload;
+            let examJson = { name, year, term, examIndex };
             obj = Exam.factory( examJson );
         }
 
         //assemble the expected payload
         // let out = { examId: examId, examIndex: examIndex, obj: obj };
-        let out = Payload.factory( {id: obj.id, index: obj.index, obj: obj} );
+        let out = Payload.factory( { id: obj.id, index: obj.index, obj: obj } );
         //Add to the exams store
         commit( mTypes.addExam, out );
 
@@ -135,7 +135,7 @@ const actions = {
         //todo
 
         //push each record from the payload into the store
-        for ( let i = 0; i < payload.length; i++ ) {
+        for (let i = 0; i < payload.length; i++) {
             let record = payload[ i ];
             //check if record has correct structure
             //todo
@@ -159,7 +159,7 @@ const getters = {
      * @param getters
      * @param payload Object containing exam identifier
      */
-    [gTypes.getExam] : ( state, getters, payload ) => {
+    [gTypes.getExam]: ( state, getters, payload ) => {
         //finds the exam and returns it
         const lookupByExamId = ( state, examId ) => {
             return state.exams[ examId ];
@@ -180,14 +180,17 @@ const getters = {
      * @param payload
      * @returns {{}}
      */
-    [gTypes.getAllExams] : ( state, getters, payload ) => {
-        let out = [];
-        let keys = Object.keys( state.exams );
-        for ( let i = 0; i < keys.length; i++ ) {
-            out.push( state.exams[ keys[ i ] ] );
-        }
+    [gTypes.getAllExams]: ( state, getters, payload ) => {
+        return (function ( state ) {
+            let out = [];
+            let keys = Object.keys( state.exams );
+            for (let i = 0; i < keys.length; i++) {
+                out.push( state.exams[ keys[ i ] ] );
+            }
+            return out;
 
-        return out;
+        })( state );
+
     }
 };
 

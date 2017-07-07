@@ -41,7 +41,8 @@ export default class Exam extends Item {
     static get fillableProps() {
         return [
             'year',
-            'term'
+            'term',
+            'id'
         ].concat(super.fillableProps);
 
     };
@@ -122,8 +123,8 @@ export default class Exam extends Item {
 
     static get aliasMap() {
         return {
-            examId: 'id',
-            examIndex: 'index'
+            // examId: 'id',
+            // examIndex: 'index'
         };
 
     }
@@ -133,7 +134,7 @@ export default class Exam extends Item {
         let exam = new Exam();
 // //we will still return an empty exam if there
 //         //were no parameters
-        return this.fillObject(exam, params, Exam.aliasMap);
+        return this.fillObject(exam, params, {}); //Exam.aliasMap);
     }
 
 

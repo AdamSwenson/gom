@@ -46,6 +46,7 @@ import activestudent from './modules/activestudent.js'
 import activeexam from './modules/activeexam.js'
 import comments from './modules/comments.js'
 import escores from './modules/escores.js'
+import exams from './modules/exams'
 import items from './modules/items.js'
 import grades from './modules/grades.js'
 import qscores from './modules/qscores.js'
@@ -53,6 +54,8 @@ import questions from './modules/questions.js'
 import students from './modules/students.js'
 import settings from './modules/settings'
 import times from './modules/times.js'
+
+
 
 import visibility from './modules/visibility'
 // import orderings from './modules/items.order';
@@ -95,6 +98,7 @@ const debug = process.env.NODE_ENV !== 'production';
         activestudent,
         comments,
         escores,
+        exams,
         items,
         grades,
         // orderings,

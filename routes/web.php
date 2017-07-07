@@ -175,4 +175,7 @@ Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
 Route::post('setup/{exam}/order', 'Item\AssignmentController@store');
 
 Route::post('comments/{item}', 'Item\CommentController@store');
+//new exam controller
+Route::get('dev/exams', 'ExamResourceController@index');
+
 

@@ -61,6 +61,8 @@ class ItemController extends Controller
     )
     {
         $this->middleware('auth');
+        //dev
+        $this->middleware('auth');
         $this->examDao = $examDao;
         $this->questionAssignmentDao = $questionAssignmentDao;
         $this->studentDao = $studentDao;
@@ -172,7 +174,6 @@ class ItemController extends Controller
             ]);
         $item->save();
         return $item;
-
     }
 
     /**

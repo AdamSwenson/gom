@@ -38,13 +38,13 @@ class TestController extends Controller
 
     public function test()
     {
-        return view('development.breadcrumbstest');
+//        return view('development.breadcrumbstest');
 //        return view('development.test');
 
     }
 
 
     public function newSetup(){
-        return view('development.newsetup');
+        return view('development.component-development');
     }
 }

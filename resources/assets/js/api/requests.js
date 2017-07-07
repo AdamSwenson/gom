@@ -2,12 +2,13 @@
  * Created by adam on 6/23/17.
  */
 
+import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT} from './apiSettings';
+
 import { errorHandling, handleResponse } from './responseHandlers';
 import { holdForIdLoading } from './apiHelpers';
 
-const REQUEST_VERSION = 1;
-const ID_WAIT_TIMEOUT = 5000;
-const POLL_TIMEOUT = 100;
+import examRequests from './requests/examRequests';
+
 
 
 const checkItemForId = ( item ) => {
@@ -16,6 +17,7 @@ const checkItemForId = ( item ) => {
 
 
 module.exports = {
+    ...examRequests,
 
     /**
      * Handles the call to the server to update
