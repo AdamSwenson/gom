@@ -85,6 +85,7 @@ class ItemControllerTest extends \TestCase
         $response = $this->call('GET', $this->route, $r);
         // $this->assertEquals($item, $response);
         $response->assertStatus(200);
+
     }
 
 

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Item;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Item\ItemCommentRequest;
 use App\Item;
 use App\ItemComment;
-use App\Repositories\Element\IItemCommentRepository;
+use App\Repositories\Item\IItemCommentRepository;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Student\IStudentRepository;
@@ -73,26 +74,41 @@ class CommentController extends Controller
      *
      * POST
      *
+     * The ItemCommentRequest object handles validation
+     * The controller assumes that all incoming data in the
+     * request is good to go
+     *
      * @param Item $item
-     * @param  \Illuminate\Http\Request $request
+     * @param ItemCommentRequest|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store( Item $item, Request $request )
+    public function store( Item $item, ItemCommentRequest $request )
     {
         try {
-            $valence = $request->has('valence') ? $request->input('valence') : null;
+            foreach ( $request->input('comments') as $row ) {
+                $incomingValence = $row[0];
+                $incomingComment = $row[1];
 
-            //grab or create the comment
-            $comment = ItemComment::firstOrCreate(['item_id' => $item->id, 'valence' => $valence]);
+                //Try loading the comment
+                $comment = $item->comments()->where(['valence' => $incomingValence])->first();
 
-            //update it
-            $comment->update(['body' => $request->input('text')]);
+                if ( !isset($comment) ) {
+                    $i = Item::find($request->input('itemId'));
+                    $comment = new ItemComment();
+                    $comment->valence = $incomingValence;
+                    $comment->item_id = $i->id;
+                    $comment->save();
+                }
 
-            return $this->sendAjaxSuccess();
+                //update it
+                $comment->update(['body' => $incomingComment['text']]);
+            }
 
         } catch (Exception $e) {
             return $this->sendAjaxFailure();
         }
+        return $this->sendAjaxSuccess();
+
     }
 
 
@@ -101,7 +117,8 @@ class CommentController extends Controller
      * @param Item $item
      * @param Request $request
      */
-    public function updateItemComments(Item $item, Request $request){
+    public function updateItemComments( Item $item, Request $request )
+    {
 
     }
 
@@ -111,7 +128,7 @@ class CommentController extends Controller
      * @param Item $item
      * @return \Illuminate\Http\Response
      */
-    public function show( Item $item)
+    public function show( Item $item )
     {
         return $item->comments()->all();
     }

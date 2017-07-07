@@ -12,6 +12,9 @@ import Payload from '../../models/Payload'
 import Exam from '../../models/Exam'
 import Item from '../../models/Item'
 
+import { errorHandling, handleResponse } from '../responseHandlers';
+import { holdForIdLoading } from '../apiHelpers';
+
 const ROUTE_BASE = 'comments';
 
 const makeRoute = (item)=>{return ROUTE_BASE + '/' + item.id};
@@ -26,8 +29,10 @@ module.exports = {
 
         if ( holdForIdLoading( item ) ) {
 //copy so vuex doesn't yell
-            let out = Object.assign( {}, item );
-            out.requestVersion = REQUEST_VERSION;
+//             let out = Object.assign( {}, item );
+            out.item = item;
+            out.itemId = item.id;
+            out.comments = item.comments;
 
             //put/patch
             window.axios

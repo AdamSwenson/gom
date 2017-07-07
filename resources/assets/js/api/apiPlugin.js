@@ -69,7 +69,6 @@ export default function ( store ) {
     store.subscribe( ( mutation ) => {
         let { type, payload } = mutation;
 
-        window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
 
 
         //Check if mutateSilently has been set
@@ -77,7 +76,7 @@ export default function ( store ) {
         // window.console.log( 'apiPlugin', '', 234, mutation );
         if ( !shouldTellServerAboutThis( mutation ) ) return false;
 
-        window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
+        // window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
 
         let item = payload ? payload.getStoredObject( store ) : null;
 
@@ -140,7 +139,7 @@ export default function ( store ) {
                 break;
 
             case mTypes.updateComment:
-                window.console.log( 'apiPlugin', 'calling update comment', 140, );
+                window.console.log( 'apiPlugin', 'calling update comment', 140, item );
                 updateComment(store, item);
                 break;
 

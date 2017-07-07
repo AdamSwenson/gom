@@ -24,7 +24,8 @@ class ItemCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'item' => 'required',
+            'comments' => 'required|array'
         ];
     }
 }

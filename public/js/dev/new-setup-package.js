@@ -34714,6 +34714,10 @@ var _Item = __webpack_require__(4);
 
 var _Item2 = _interopRequireDefault(_Item);
 
+var _responseHandlers = __webpack_require__(208);
+
+var _apiHelpers = __webpack_require__(114);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -34734,16 +34738,18 @@ module.exports = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
 
-        if (holdForIdLoading(item)) {
+        if ((0, _apiHelpers.holdForIdLoading)(item)) {
             //copy so vuex doesn't yell
-            var _out = Object.assign({}, item);
-            _out.requestVersion = _apiSettings.REQUEST_VERSION;
+            //             let out = Object.assign( {}, item );
+            out.item = item;
+            out.itemId = item.id;
+            out.comments = item.comments;
 
             //put/patch
-            window.axios.post(makeRoute(item), _out).then(function (response) {
+            window.axios.post(makeRoute(item), out).then(function (response) {
                 // handleResponse( store, item, response );
             }).catch(function (error) {
-                errorHandling(error);
+                (0, _responseHandlers.errorHandling)(error);
             });
         }
     }
@@ -51058,10 +51064,11 @@ var _Comment2 = _interopRequireDefault(_Comment);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
-    props: ['index', 'valence', 'serialNumber', 'isExam'],
 
     data: function data() {
-        return {};
+        return {
+            valence: 'stock'
+        };
     },
 
     computed: {
@@ -51069,63 +51076,33 @@ exports.default = {
             return _Comment2.default.valences;
         },
 
-        active: function active() {
-            return this.$parent.displayedValence === this.valence;
-        },
-
-        classObject: function classObject() {
-            return {
-                'btn-info': this.active,
-                'btn-primary': !this.active
-            };
+        displayedValence: function displayedValence() {
+            return this.$parent.displayedValence;
         }
-
     },
 
     methods: {
+        buttonId: function buttonId(valence) {
+            return valence + '-button';
+        },
+
+        styling: function styling(valence) {
+            if (valence === this.displayedValence) {
+                return 'is-primary';
+            }
+            return 'is-info  is-outlined';
+        },
+
         /**
          * Called when the valence button is clicked
          */
         setValence: function setValence(valence) {
+            this.valence = valence;
             this.$parent.changeDisplayedValence(valence);
-
-            //            this.$store.commit(mTypes.setElementComment, Payload.factory({
-            //            index : this.index,
-            //                index: this.index,
-            //                updateProp: name,
-            //                updateVal: value
-            //            }))
-            //                return this.sendRequest();
-        },
-
-        /**
-         * This sends the actual request(s)
-         */
-        sendRequest: function sendRequest() {
-            //  return emit('please-change-valence', this.valence);
         }
+
     }
 }; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -54499,15 +54476,13 @@ exports.default = function (store) {
         var type = mutation.type,
             payload = mutation.payload;
 
-
-        window.console.log('apiPlugin', 'subscription detected mutation', 77, mutation, payload);
-
         //Check if mutateSilently has been set
         //If it has, respect its privacy
         // window.console.log( 'apiPlugin', '', 234, mutation );
+
         if (!shouldTellServerAboutThis(mutation)) return false;
 
-        window.console.log('apiPlugin', 'subscription detected mutation', 77, mutation, payload);
+        // window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
 
         var item = payload ? payload.getStoredObject(store) : null;
 
@@ -54568,7 +54543,7 @@ exports.default = function (store) {
                 break;
 
             case mTypes.updateComment:
-                window.console.log('apiPlugin', 'calling update comment', 140);
+                window.console.log('apiPlugin', 'calling update comment', 140, item);
                 (0, _commentRequests.updateComment)(store, item);
                 break;
 
@@ -72186,7 +72161,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -77805,16 +77780,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, _vm._l((_vm.valences), function(valence) {
     return _c('button', {
       key: valence,
-      staticClass: "button is-outlined is-info",
+      staticClass: "button valence-button",
+      class: _vm.styling(valence),
       attrs: {
-        "type": "button"
+        "type": "button",
+        "id": _vm.buttonId(valence)
       },
       on: {
         "click": function($event) {
           _vm.setValence(valence)
         }
       }
-    }, [_vm._v(_vm._s(valence) + "\n          ")])
+    }, [_vm._v(_vm._s(valence) + "\n        ")])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
