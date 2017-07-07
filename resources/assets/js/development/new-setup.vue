@@ -24,7 +24,9 @@
                 <p>{{ examId }}</p>
                 <p>Can sync {{ canSync}}</p>
 
-                <existing-exams-menu></existing-exams-menu>
+                <existing-exams-menu>
+                    <!--<p slot="row-content">taco</p>-->
+                </existing-exams-menu>
             </div>
             <div class="tile is-vertical is-4">
                 <existing-items-menu></existing-items-menu>
@@ -46,7 +48,8 @@
 
     #examCardArea {
         /*<!--background-color: $color-primary-2;-->*/
-
+        padding-left: 2px;
+        padding-right: 2px;
         background-color: $main-background-color-gradient-limit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
     }

@@ -31,6 +31,7 @@
                     <i class="fa fa-book"></i>
                 </span>
             {{obj.name}}
+            <slot></slot>
         </a>
 
 

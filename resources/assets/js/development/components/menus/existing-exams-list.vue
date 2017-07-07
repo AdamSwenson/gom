@@ -27,8 +27,7 @@
            class="panel-block ">
                 <span class="panel-icon">
                     <i class="fa fa-book"></i>
-                </span>
-            {{exam.name}}
+                </span> {{exam.name}} <slot ></slot>
         </a>
 
 
