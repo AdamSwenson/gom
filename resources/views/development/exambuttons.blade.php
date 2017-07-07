@@ -59,6 +59,6 @@
 <script>
     var baseUrl = '{!! url() !!}';
 </script>
-<script type="text/javascript" src="{{ asset('js/dev-exam-buttons.js') }}"></script>
+<script type="text/javascript" src="{{ asset('Item') }}"></script>
 </body>
 </html>

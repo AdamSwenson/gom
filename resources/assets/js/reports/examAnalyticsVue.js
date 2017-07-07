@@ -9,7 +9,7 @@ require( 'bootstrap' );
 var Vue = require( 'vue' );
 var bootbox = require( 'bootbox' );
 
-//dev
+//Item
 Vue.config.debug = true;
 
 module.exports = function () {

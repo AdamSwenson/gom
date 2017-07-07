@@ -6,7 +6,7 @@
  * Time: 9:39 PM
  */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 use App\ElementScore;
 use App\Exam;

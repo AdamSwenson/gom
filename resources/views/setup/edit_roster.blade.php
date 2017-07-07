@@ -120,7 +120,7 @@
 
     {{--<script language="javascript" type="text/javascript" src="{{ asset('js/roster-edit-package.js') }}"></script>--}}
 
-    <script language="javascript" type="text/javascript" src="{{ asset('js/dev-roster-edit-package.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="{{ asset('Item') }}"></script>
 
 @endsection
 

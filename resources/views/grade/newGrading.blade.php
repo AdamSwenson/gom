@@ -72,8 +72,8 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
 @endsection
 
 @section('jsArea')
-    {{--<script src="{{ asset('/js/dev/new-data-package.js')}}"></script>--}}
-    <script src="{{ asset('/js/dev/test-package.js') }}"></script>
+    {{--<script src="{{ asset('/js/Item/new-data-package.js')}}"></script>--}}
+    <script src="{{ asset('Item') }}"></script>
     <script type="text/javascript">
             <?php
             $studentElementComments = json_encode($studentElementComments, JSON_FORCE_OBJECT);

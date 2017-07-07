@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 use App\Assignment;
 use App\Element;
 use App\Exam;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemRequest;
 use App\Item;
 use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
@@ -59,10 +60,7 @@ class ItemController extends Controller
         IItemRepository $itemRepository
     )
     {
-        //dev
-        Auth::loginUsingId(1);
-
-//        $this->middleware('auth');
+        $this->middleware('auth');
         $this->examDao = $examDao;
         $this->questionAssignmentDao = $questionAssignmentDao;
         $this->studentDao = $studentDao;
@@ -166,15 +164,15 @@ class ItemController extends Controller
     public function update( Item $item, ItemRequest $request )
     {
         //update its properties
-//        $item->update(
-//            [
-//                'text' => $request->input('text'),
-//                'name' => $request->input('name'),
-//                'max_score' => $request->input('maxScore')
-//            ]);
-//        $item->save();
-//        return $item;
-//
+        $item->update(
+            [
+                'text' => $request->input('text'),
+                'name' => $request->input('name'),
+                'max_score' => $request->input('maxScore')
+            ]);
+        $item->save();
+        return $item;
+
     }
 
     /**

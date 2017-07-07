@@ -129,6 +129,9 @@ export default function ( store ) {
                 payload.callback();
                 break;
 
+            case mTypes.updateComment:
+                updateItem(store, item);
+                break;
 
             case mTypes.insertNodeIntoOrder:
                 updateItemsOrder( store );

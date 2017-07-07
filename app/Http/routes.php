@@ -145,5 +145,5 @@
 //
 ///* ---------------------------------------------- Testing ----------------------------------------------------------- */
 //Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
-//Route::get('dev/newgrading', 'TestController@newGrading');
-////Route::get('dev/newsetup', 'TestController@newSetup');
+//Route::get('Item/newgrading', 'TestController@newGrading');
+////Route::get('Item/newsetup', 'TestController@newSetup');

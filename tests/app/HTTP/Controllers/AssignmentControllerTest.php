@@ -6,7 +6,7 @@
  * Time: 8:30 PM
  */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 
 use App\Assignment;

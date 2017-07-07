@@ -6,7 +6,7 @@
  * Time: 3:55 PM
  */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 
 use App\Exam;

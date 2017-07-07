@@ -150,7 +150,7 @@ module.exports = {
     [ mTypes.updateComment ]: ( state, payload ) => {
         console.log( mTypes.updateComment, payload, state );
         //get the item
-        let itm = helpers.getItemFromPayload( state, payload );
+        let itm = getItemFromPayload( state, payload );
         window.console.log( 'items', 'updateComment', 145, itm, state.items );
 
         if ( typeof itm !== 'undefined' ) {

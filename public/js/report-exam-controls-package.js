@@ -15884,7 +15884,7 @@ function flushSchedulerQueue () {
     id = watcher.id;
     has[id] = null;
     watcher.run();
-    // in dev build, check and stop circular updates.
+    // in Item build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > config._maxUpdateCount) {
@@ -19725,7 +19725,7 @@ function leave (vnode, rm) {
   }
 }
 
-// only used in dev mode
+// only used in Item mode
 function checkDuration (val, name, vnode) {
   if (typeof val !== 'number') {
     warn(
@@ -20883,7 +20883,7 @@ var common = require('../common.js');
 
 var Vue = require('vue');
 
-//dev
+//Item
 //Vue.config.debug = true;
 
 new Vue({

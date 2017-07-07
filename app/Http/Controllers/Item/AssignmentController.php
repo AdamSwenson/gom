@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 use App\Assignment;
 use App\Exam;
+use App\Http\Controllers\Controller;
 use App\Item;
 use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -54,10 +55,7 @@ class AssignmentController extends Controller
         IItemRepository $itemRepository
     )
     {
-        //dev
-        Auth::loginUsingId(1);
-
-//        $this->middleware('auth');
+        $this->middleware('auth');
         $this->examDao = $examDao;
         $this->questionAssignmentDao = $questionAssignmentDao;
         $this->studentDao = $studentDao;

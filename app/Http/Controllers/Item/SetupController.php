@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Item;
 
 use App\Assignment;
 use App\Element;
 use App\Exam;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemRequest;
 use App\Item;
 use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
@@ -12,6 +13,7 @@ use App\Question;
 use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
+use App\Repositories\Element\IItemCommentRepository;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
@@ -56,26 +58,29 @@ class SetupController extends Controller
      * @var IAssignmentRepository
      */
     private $assignmentRepository;
+    /**
+     * @var IItemCommentRepository
+     */
+    private $commentRepository;
 
     /**
      * SetupController constructor.
      * @param IExamRepository $examDao
      * @param IItemRepository $itemRepository
      * @param IAssignmentRepository $assignmentRepository
+     * @param IItemCommentRepository $commentRepository
      */
     public function __construct(
         IExamRepository $examDao,
         IItemRepository $itemRepository,
-        IAssignmentRepository $assignmentRepository
-    )
+        IAssignmentRepository $assignmentRepository,
+        IItemCommentRepository $commentRepository )
     {
-        //dev
-        Auth::loginUsingId(1);
-
-//        $this->middleware('auth');
+        $this->middleware('auth');
         $this->itemRepository = $itemRepository;
         $this->examDao = $examDao;
         $this->assignmentRepository = $assignmentRepository;
+        $this->commentRepository = $commentRepository;
     }
 
 

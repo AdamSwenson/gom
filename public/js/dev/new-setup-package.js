@@ -1674,7 +1674,7 @@ function addStyle (obj /* StyleObjectPart */) {
       // simply do nothing.
       return noop
     } else {
-      // has SSR styles but in dev mode.
+      // has SSR styles but in Item mode.
       // for some reason Chrome can't handle source map in server-rendered
       // style tags - source maps in <style> only works if the style tag is
       // created and inserted dynamically. So we remove the server rendered
@@ -1916,7 +1916,7 @@ function addStyle (obj /* StyleObjectPart */) {
       // simply do nothing.
       return noop
     } else {
-      // has SSR styles but in dev mode.
+      // has SSR styles but in Item mode.
       // for some reason Chrome can't handle source map in server-rendered
       // style tags - source maps in <style> only works if the style tag is
       // created and inserted dynamically. So we remove the server rendered
@@ -22204,7 +22204,7 @@ function flushSchedulerQueue () {
     id = watcher.id;
     has[id] = null;
     watcher.run();
-    // in dev build, check and stop circular updates.
+    // in Item build, check and stop circular updates.
     if ("development" !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > MAX_UPDATE_COUNT) {
@@ -26511,7 +26511,7 @@ function leave (vnode, rm) {
   }
 }
 
-// only used in dev mode
+// only used in Item mode
 function checkDuration (val, name, vnode) {
   if (typeof val !== 'number') {
     warn(
@@ -32016,7 +32016,7 @@ module.exports = function(){
   // - setTimeout
   } else {
     notify = function(){
-      // strange IE + webpack dev server bug - use .call(global)
+      // strange IE + webpack Item server bug - use .call(global)
       macrotask.call(global, flush);
     };
   }
@@ -52830,9 +52830,15 @@ exports.default = {
             return this.placeholders.item;
         },
 
+        /**
+         * This is the presently visible comment text
+         */
         commentText: {
             get: function get() {
                 if (typeof this.item !== 'undefined') {
+                    //displayed holds the valence as a string
+                    //so we get the comment by passing in the valence to
+                    //the item object
                     var comment = this.item.getComment(this.displayed);
                     if (typeof comment !== 'undefined') {
                         return comment.text;
@@ -54027,6 +54033,10 @@ exports.default = function (store) {
                     (0, _requests.updateItem)(store, item);
                 }
                 payload.callback();
+                break;
+
+            case mTypes.updateComment:
+                (0, _requests.updateItem)(store, item);
                 break;
 
             case mTypes.insertNodeIntoOrder:
@@ -57336,7 +57346,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 }), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
     console.log(mTypes.updateComment, payload, state);
     //get the item
-    var itm = helpers.getItemFromPayload(state, payload);
+    var itm = getItemFromPayload(state, payload);
     window.console.log('items', 'updateComment', 145, itm, state.items);
 
     if (typeof itm !== 'undefined') {

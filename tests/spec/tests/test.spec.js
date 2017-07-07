@@ -9,7 +9,7 @@ window.jQuery = jQuery;
 
 require( 'bootstrap' );
 var Vue = require( 'vue' );
-//dev
+//Item
 
 
 var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.component.js" );

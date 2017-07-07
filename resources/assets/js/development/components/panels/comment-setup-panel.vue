@@ -99,9 +99,16 @@
                 return this.placeholders.item;
             },
 
+
+            /**
+             * This is the presently visible comment text
+             */
             commentText: {
                 get: function () {
                     if ( typeof this.item !== 'undefined' ) {
+                        //displayed holds the valence as a string
+                        //so we get the comment by passing in the valence to
+                        //the item object
                         let comment = this.item.getComment( this.displayed );
                         if ( typeof comment !== 'undefined' ) {
                             return comment.text;

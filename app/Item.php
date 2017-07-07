@@ -60,8 +60,15 @@ class Item extends BaseModel
 
     #------------ foreign keys
 
+
+    public function comments(){
+        return $this->hasMany(ItemComment::class);
+    }
+
     /**
+     *
      * Returns associated exams. Returns exam object collection
+     * @todo Update this to reflect that an exam is a special friend of one item
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function exam()
@@ -78,14 +85,6 @@ class Item extends BaseModel
         return $this->belongsTo('App\User');
     }
 
-    /**
-     * Returns associated exams. Returns exam object collection
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function questionAssignments()
-    {
-        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
-    }
 
     /**
      * Returns associated scores

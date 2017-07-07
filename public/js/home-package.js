@@ -17067,7 +17067,7 @@ function flushBatcherQueue() {
       _again = true;
       continue _function;
     }
-    // dev tool hook
+    // Item tool hook
     /* istanbul ignore if */
     if (devtools && config.devtools) {
       devtools.emit('flush');
@@ -17090,7 +17090,7 @@ function runBatcherQueue(queue) {
     var id = watcher.id;
     has[id] = null;
     watcher.run();
-    // in dev build, check and stop circular updates.
+    // in Item build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > config._maxUpdateCount) {
@@ -22307,7 +22307,7 @@ function Directive(descriptor, vm, el, host, scope, frag) {
   this._host = host;
   this._scope = scope;
   this._frag = frag;
-  // store directives on node in dev mode
+  // store directives on node in Item mode
   if (process.env.NODE_ENV !== 'production' && this.el) {
     this.el._vue_directives = this.el._vue_directives || [];
     this.el._vue_directives.push(this);

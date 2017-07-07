@@ -162,17 +162,17 @@ Route::get('dev/test', 'TestController@test');
 
 /* New setup page */
 //display of page
-Route::get('setup', 'SetupController@index');
-Route::get('setup/{exam}', 'SetupController@show')->name('show-exam');
+Route::get('setup', 'Item\SetupController@index');
+Route::get('setup/{exam}', 'Item\SetupController@show')->name('show-exam');
 
 //intrinsic properties of the item
 //Route::put('items/{item}', 'ItemController@update');
 //Route::patch('items/{exam}', 'ItemController@updateAll');
-Route::resource('items', 'ItemController'); //,
-Route::put('editexam/{exam}', 'ItemController@examUpdate');
+Route::resource('items', 'Item\ItemController'); //,
+Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
 
 //order of the items on the exam
-Route::post('setup/{exam}/order', 'AssignmentController@store');
+Route::post('setup/{exam}/order', 'Item\AssignmentController@store');
 
-
+Route::post('comments/{item}', 'Item\CommentController@store');
 

@@ -23,6 +23,8 @@ use App\Repositories\Element\ElementRepository;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
+use App\Repositories\Element\IItemCommentRepository;
+use App\Repositories\Element\ItemCommentRepository;
 use App\Repositories\Exam\ExamRepository;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Exam\INumberGradedRepository;
@@ -211,5 +213,6 @@ class StorageServiceProvider extends ServiceProvider
         //new setup
         $this->app->bind(IAssignmentRepository::class,
             AssignmentRepository::class);
+        $this->app->bind(IItemCommentRepository::class, ItemCommentRepository::class);
     }
 }

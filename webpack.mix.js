@@ -15,8 +15,8 @@ const { mix } = require('laravel-mix');
  | file for your application, as well as bundling up your JS files.
  |
  */
-//mix.react('resources/assets/js/development/newSetup.js', 'public/js/dev/new-setup-package.js');
-mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js');
+//mix.react('resources/assets/js/development/newSetup.js', 'public/js/Item/new-setup-package.js');
+mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/Item/new-setup-package.js');
 
 mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newSetup.scss'], 'public/css/new-setup-package.css');
 
@@ -38,7 +38,7 @@ mix.webpackConfig({
 // mix.sass(src, output);
 // mix.less(src, output);
 // mix.stylus(src, output);
-// mix.browserSync('my-site.dev');
+// mix.browserSync('my-site.Item');
 // mix.combine(files, destination);
 // mix.babel(files, destination); <-- Identical to mix.combine(), but also includes Babel compilation.
 // mix.copy(from, to);

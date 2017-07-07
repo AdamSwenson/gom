@@ -19,7 +19,7 @@ var colReorder = require('datatables.net-colreorder')(window, $);
 var bootbox = require('bootbox');
 var Vue = require('vue');
 
-//dev
+//Item
 Vue.config.debug = true;
 Vue.config.devtools = true;
 
