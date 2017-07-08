@@ -156,6 +156,14 @@ export default class Item extends IModel {
         return this.comments.get( valence );
     }
 
+    getEmptyComments(){
+        let out = [];
+        for (let [valence, comment] of this.comments.entries()) {
+            if(comment.isEmpty()) out.push(comment);
+        }
+        return out;
+    }
+
     /**
      * When loading comments into an item
      * from ajax or on page load, use this

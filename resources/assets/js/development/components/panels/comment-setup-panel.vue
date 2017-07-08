@@ -69,6 +69,7 @@
                 defaults: {
                     commentText: ''
                 },
+
             };
         },
 
@@ -97,6 +98,10 @@
 
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            comments: function () {
+                return this.item.comments;
             },
 
             //Doing this via computed property so don't have to pass in on route
@@ -133,10 +138,9 @@
                 },
 
                 set: function ( v ) {
-                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
+//                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
                     let pl = Payload.factory( {
                         obj: this.item,
-                        //index: this.$route.params.index,
                         updateValence: this.displayed,
                         updateVal: v
                     } );
@@ -167,6 +171,10 @@
         },
 
         methods: {
+            getComment: function(valence){
+              return this.comments
+            },
+
             /**
              * Alters which valence is displayed.
              * Called by child components
@@ -176,7 +184,23 @@
                 if ( newValence ) {
                     this.displayedValence = newValence;
                 }
-            }
+            },
+
+
+            prePopulateComments: function ( stock ) {
+                var me = this;
+                for(let [comment] of this.item.getEmptyComments()) {
+                    if ( comment.valence === 'stock' ) return true;
+                    let text = Comment.makePrePopulatedContent(comment.valence, stock);
+                            let pl = Payload.factory( {
+                                obj: this.item,
+                                updateValence: valence,
+                                updateVal: text
+                            } );
+
+                }
+
+  }
         },
 
 

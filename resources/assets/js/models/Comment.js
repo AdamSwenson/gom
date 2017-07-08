@@ -12,10 +12,45 @@ export default class Comment extends IModel {
         super();
         this.type = 'comment';
         this.valence = null;
+
+        this.commentIngredients = {
+            absent: {
+                prefix: 'To answer this correctly, you needed to',
+                    postfix: 'Unfortunately, you forgot to do this'
+            },
+            poor: {
+                prefix: 'This required you to',
+                    postfix: 'You attempted to do it, but there were many problems'
+            },
+
+            good: {
+
+                prefix: 'As was evident from your answer, you recognized that you needed to',
+                    postfix: 'Your answer was okay'
+            },
+
+            excellent: {
+                prefix: 'As was evident from your excellent answer, you recognized that you needed to',
+                    postfix: 'You did a great job here'
+            }
+        };
     }
 
     isStock() {
         return this.valence === 'stock';
+    }
+
+    isEmpty(){
+        if(! _.isUndefined(this.text) && this.text.length > 0) return false;
+        return true;
+    }
+
+
+
+   static  makePrePopulatedContent  ( valence, stock ) {
+        let prefix = me.commentIngredients[valence].prefix;
+        let postfix = me.commentIngredients[valence].postfix;
+        return `${prefix} ${stock} ${postfix}`
     }
 
     /**
@@ -39,6 +74,7 @@ export default class Comment extends IModel {
             });
         }
     }
+
 
 
     /**
