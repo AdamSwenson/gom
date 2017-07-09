@@ -15,7 +15,7 @@
 
             <li v-else role="presentation">
                 <router-link v-bind:to="routeToItemDetails">
-                    <a>
+                    <a class="item-details-nav">
                         <span class="icon is-small">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
@@ -26,7 +26,7 @@
 
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToStudents">
-                    <a>
+                    <a class="students-nav">
                         <span class="icon is-small">
                             <i class="fa fa-group" aria-hidden="true"></i>
                         </span>

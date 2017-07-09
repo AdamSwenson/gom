@@ -21,18 +21,35 @@
             <a>Section 3</a>
         </p>
 
-        <a v-for="student in students" class="panel-block ">
-                <span class="panel-icon">
-                    <i class="fa fa-user"></i>
-                </span>
-            {{student}}
-        </a>
+        <student-row v-for="student in students"
+                     :key="student.serialNumber"
+                     :serialNumber="student.serialNumber"
+        ></student-row>
 
 
         <div class="panel-block">
-            <button class="button is-primary is-outlined is-fullwidth">
+            <button id="add-students-button"
+                    class="button is-primary is-outlined is-fullwidth"
+                    v-on:click="toggleFileButtonVisibility">
                 Add students
             </button>
+        </div>
+
+
+        <div class="panel-block"
+             v-show="fileButtonVisible"
+
+        >
+            <!--<p class="control">-->
+            <!--<button class="button is-primary is-outlined is-fullwidth"  >Upload</button>-->
+            <!--</p>-->
+            <p class="control">
+                <input id="file-input"
+                       v-on:change="processFile"
+                       class="input"
+                       type="file"/>
+            </p>
+
         </div>
     </div>
 
@@ -53,14 +70,21 @@
     import * as mTypes from '../../../store/mutation-types';
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
+
+    import FileImporter from '../../../store/utlities/studentFileImporter';
+    import StudentRow from './student-row.vue'
+
     export default{
 
         props: [],
 
-        components: {},
+        components: {
+            'student-row': StudentRow
+        },
 
         data: function () {
             return {
+                fileButtonVisible: false,
                 defaults: {}
             }
         },
@@ -78,11 +102,27 @@
             },
 
             students: function () {
-                return [ 'Jill Smith', 'Jill Chen' ];
+                return this.$store.getters.getStudentsFromRoster;
+
             }
         },
 
-        methods: {},
+        methods: {
+            toggleFileButtonVisibility: function () {
+                this.fileButtonVisible = !this.fileButtonVisible;
+            },
+
+            processFile: function ( evt ) {
+                let f = document.getElementById( 'file-input' );
+                let file = f.files[ 0 ];
+                window.console.log( 'students-panel', 'processFile', 112, f, file );
+                this.$store.dispatch( 'importStudentsFromFile', file );
+
+//                let students = FileImporter.handleRead(file);
+//                window.console.log( 'students-panel', 'processFile', 116, students);
+
+            }
+        },
 
         directives: {},
 

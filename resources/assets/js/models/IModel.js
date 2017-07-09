@@ -7,43 +7,36 @@
 export default class IModel {
 
     constructor() {
-
-        // this.idx;
-
+        /**
+         * Uniquely identifies the token object.
+         * Objects are immediately put into the map when
+         * created. Thus we need a way of identifying them
+         * before the server returns the new object's id.
+         * This property provides that value.
+         *
+         * @type {number}
+         */
+        this.serialNumber = IModel.makeSerialNumber();
 
         /**
          * The stored order of the item overall
          */
         this.index;
 
-        /** The nickname or title by which this item is identified */
-        this.name;
-
-        // this.number = null;
-
-        /**
-         * The full length text of the item.
-         * This could be the question prompt;
-         * a longer description of the element; etc
-         */
-        this.text = '';
-
-        this.publicName;
-
-        /**
-         * The maximum possible value of the item
-         */
-        this.maxScore =100;
-
         this.kind;
 
+    }
 
-        /**
-         * The secondary locator value
-         * Q1 E2 = index 0, depth 3
-         */
-        this.depth = 0;
-
+    /**
+     * Returns the next serial number.
+     * The first time this is called, it will return 1
+     * The actual value doesn't matter, only its uniqueness.
+     * @returns {number}
+     */
+    static makeSerialNumber() {
+        if ( !IModel.makeSerialNumber.count ) IModel.makeSerialNumber.count = 0;
+        IModel.makeSerialNumber.count += 1;
+        return IModel.makeSerialNumber.count;
     }
 
     /**

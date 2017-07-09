@@ -165,7 +165,20 @@ module.exports = {
                 } );
                 resolve();
             } );
-        }
+        },
+
+
+        directLoadStudentsFromJson: (state, payload) =>{
+            return new Promise( ( resolve, reject ) => {
+
+            });}
+    },
+
+
+directLoadScoresFromJson : (state, payload) =>{
+    return new Promise( ( resolve, reject ) => {
+
+    });
     },
 
     actions: {

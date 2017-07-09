@@ -57,6 +57,7 @@ import times from './modules/times.js'
 
 
 
+import roster from './modules/roster'
 import visibility from './modules/visibility'
 // import orderings from './modules/items.order';
 
@@ -107,7 +108,8 @@ const debug = process.env.NODE_ENV !== 'production';
         settings,
         students,
         times,
-        visibility
+        visibility,
+        roster
     }
 
 // }

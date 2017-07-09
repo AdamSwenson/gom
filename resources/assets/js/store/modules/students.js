@@ -10,6 +10,8 @@ import Payload from '../../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
+import StudentImporter from '../utlities/studentFileImporter'
+
 const state = {
     /**
      * Json of students
@@ -46,6 +48,7 @@ const mutations = {
 };
 
 const actions = {
+    ...StudentImporter,
 
     /**
      * Consume a json object and populate state.students

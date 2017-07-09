@@ -8,12 +8,12 @@ import IModel from './IModel';
 export default class Student extends IModel{
     constructor( studentId ) {
         super();
-        this._email = '';
-        this._id = studentId;
+        this.email = '';
+        this.id = studentId;
         this._index = null;
-        this._studentIdentifier = null;
-        this._lastName = '';
-        this._firstName = '';
+        this.studentIdentifier = null;
+        this.lastName = '';
+        this.firstName = '';
     }
 
 
@@ -36,22 +36,22 @@ export default class Student extends IModel{
     // set _id( v ) {
     //     this._id = v;
     // }
-
-    /**
-     * Alias for _id
-     * @returns {*}
-     */
-    get id() {
-        return this._id;
-    }
-
-    /**
-     * Alias setter for _id
-     * @param v
-     */
-    set id( v ) {
-        this._id = v;
-    }
+    //
+    // /**
+    //  * Alias for _id
+    //  * @returns {*}
+    //  */
+    // get id() {
+    //     return this._id;
+    // }
+    //
+    // /**
+    //  * Alias setter for _id
+    //  * @param v
+    //  */
+    // set id( v ) {
+    //     this._id = v;
+    // }
 
     /**
      * Alias for _id
@@ -111,53 +111,53 @@ export default class Student extends IModel{
 
     /* *************************** Names ************* */
 
-
-    get firstName() {
-        return this._firstName
-    };
-
-    set firstName( val ) {
-        this._firstName = val;
-    }
-
-    /**
-     * Getter for last name
-     */
-    get lastName() {
-        return this._lastName;
-    };
-
-    /**
-     * Setter for last name
-     * @param val
-     */
-    set lastName( val ) {
-        this._lastName = val;
-    };
+    //
+    // get firstName() {
+    //     return this._firstName
+    // };
+    //
+    // set firstName( val ) {
+    //     this._firstName = val;
+    // }
+    //
+    // /**
+    //  * Getter for last name
+    //  */
+    // get lastName() {
+    //     return this._lastName;
+    // };
+    //
+    // /**
+    //  * Setter for last name
+    //  * @param val
+    //  */
+    // set lastName( val ) {
+    //     this._lastName = val;
+    // };
 
 
     /* *************************** Identifier *********** */
-    /**
-     * Returns the identifier set by the user.
-     * This is not the database id of the student
-     * */
-    get studentIdentifier() {
-        return this._studentIdentifier
-    };
-
-    set studentIdentifier( val ) {
-        this._studentIdentifier = val;
-    }
-
+    // /**
+    //  * Returns the identifier set by the user.
+    //  * This is not the database id of the student
+    //  * */
+    // get studentIdentifier() {
+    //     return this._studentIdentifier
+    // };
+    //
+    // set studentIdentifier( val ) {
+    //     this._studentIdentifier = val;
+    // }
+    //
 
     /* *************************** Email ****************** */
-    get email() {
-        return this._email;
-    }
-
-    set email( address ) {
-        this._email = address;
-    }
+    // get email() {
+    //     return this._email;
+    // }
+    //
+    // set email( address ) {
+    //     this._email = address;
+    // }
 
 
     /**
@@ -171,14 +171,19 @@ export default class Student extends IModel{
             'index',
             'firstName',
             'lastName',
-            'studentIdentifier'
+            'studentIdentifier',
+            'identifier',
+            'email'
         ];
     }
 
     static get aliasMap() {
         return {
             studentId: 'id',
-            studentIndex: 'index'
+            studentIndex: 'index',
+            last_name: 'lastName',
+            first_name: 'firstName',
+            student_id: 'id',
         };
 
     }
@@ -186,30 +191,7 @@ export default class Student extends IModel{
 
     static factory( params ) {
         let student = new Student();
-
-// //we will still return an empty student if there
-//         //were no parameters
-
         return this.fillObject(student, params);
-
-        //         if ( typeof params != 'undefined' ) {
-//             //fill any fillable values
-//             this.fillableProps.forEach( function ( v ) {
-//                 // console.log( 'params', params, v );
-//                 if ( typeof params[ v ] != 'undefined' ) {
-//                     student[ v ] = params[ v ];
-//                 }
-//             } );
-//
-//             //fill any aliased values
-//             for ( let v in this.aliasMap ) {
-//                 if ( typeof params[ v ] != 'undefined' ) {
-//                     // console.log( 'alias', v, map[v] );
-//                     student[ this.aliasMap[ v ] ] = params[ v ];
-//                 }
-//             }
-//         }
-//         return student;
     }
 
     //

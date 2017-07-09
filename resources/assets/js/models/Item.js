@@ -16,21 +16,8 @@ const POLL_TIMEOUT = 100;
 
 export default class Item extends IModel {
 
-
     constructor() {
-
         super();
-
-        /**
-         * Uniquely identifies the token object.
-         * Objects are immediately put into the map when
-         * created. Thus we need a way of identifying them
-         * before the server returns the new object's id.
-         * This property provides that value.
-         *
-         * @type {number}
-         */
-        this.serialNumber = Item.makeSerialNumber();
 
         /**
          * The db identifier of the model
@@ -55,6 +42,32 @@ export default class Item extends IModel {
          * @private
          */
         this.publicity = false;
+        /**
+         * The maximum possible value of the item
+         */
+        this.maxScore;
+        /** The nickname or title by which this item is identified */
+        this.name;
+
+
+        /**
+         * The secondary locator value
+         * Q1 E2 = index 0, depth 3
+         */
+        this.depth = 0;
+
+        // this.number = null;
+
+        /**
+         * The full length text of the item.
+         * This could be the question prompt;
+         * a longer description of the element; etc
+         */
+        this.text = '';
+
+        this.publicName;
+
+
 
     }
 
@@ -74,17 +87,17 @@ export default class Item extends IModel {
     };
 
 
-    /**
-     * Returns the next serial number.
-     * The first time this is called, it will return 1
-     * The actual value doesn't matter, only its uniqueness.
-     * @returns {number}
-     */
-    static makeSerialNumber() {
-        if ( !Item.makeSerialNumber.count ) Item.makeSerialNumber.count = 0;
-        Item.makeSerialNumber.count += 1;
-        return Item.makeSerialNumber.count;
-    }
+    // /**
+    //  * Returns the next serial number.
+    //  * The first time this is called, it will return 1
+    //  * The actual value doesn't matter, only its uniqueness.
+    //  * @returns {number}
+    //  */
+    // static makeSerialNumber() {
+    //     if ( !Item.makeSerialNumber.count ) Item.makeSerialNumber.count = 0;
+    //     Item.makeSerialNumber.count += 1;
+    //     return Item.makeSerialNumber.count;
+    // }
 
 
     get idx() {

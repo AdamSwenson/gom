@@ -177,5 +177,9 @@ Route::post('setup/{exam}/order', 'Item\AssignmentController@store');
 Route::post('comments/{item}', 'Item\CommentController@store');
 //new exam controller
 Route::get('dev/exams', 'Item\ExamResourceController@index');
-
-
+//new student controller
+Route::resource('dev/students', 'Item\StudentResourceController');
+Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
+Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
+Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
+Route::post('dev/scores', 'Item\ItemScoreController@store');

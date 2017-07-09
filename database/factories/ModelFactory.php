@@ -348,3 +348,13 @@ $factory->define(App\Item::class, function ( Faker\Generator $faker ) {
     ];
 });
 
+
+$factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator $faker ) {
+    $userId = 1;
+    Auth::logInUsingId($userId);
+
+    return [
+        'comment_text' => $faker->word,
+        'score' => $faker->randomNumber()
+    ];
+});

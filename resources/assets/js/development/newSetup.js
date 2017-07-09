@@ -199,7 +199,7 @@ const routes = [
     //students
     {
         path: '/panel-students/:serialNumber',
-        components: { itemPanels: panelStudents },
+        components: { examPanels: panelStudents },
         props: true
     },
     //tags
