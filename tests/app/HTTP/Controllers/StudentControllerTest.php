@@ -58,7 +58,7 @@ class StudentControllerTest extends \TestCase
     public function testIndex()
     {
         $data = ['examId' => factory(Exam::class)->create()->id];
-        $response = $this->action('GET', 'StudentController@index', $data);
+        $response = $this->get('StudentController@index', $data);
         $this->assertNotNull($response);
     }
 
@@ -95,7 +95,7 @@ class StudentControllerTest extends \TestCase
             'email' => $this->faker->email()
         ];
 
-        $response = $this->action('POST', 'StudentController@store', $data);
+        $response = $this->post('StudentController@store', $data);
         $this->assertNotNull($response);
     }
 
@@ -105,7 +105,7 @@ class StudentControllerTest extends \TestCase
         $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
 
         $dao->shouldReceive('load_student_by_id')->with($this->student)->andReturn($this->student);
-        $response = $this->action('GET', 'StudentController@show', [$this->exam, $this->student]);
+        $response = $this->get('StudentController@show', [$this->exam, $this->student]);
         $this->assertNotNull($response);
     }
 
@@ -130,7 +130,7 @@ class StudentControllerTest extends \TestCase
 //
 //        $data = ['examId' => $exam->id, 'studentId' => $student->id];
 //
-//        $response = $this->action('POST', 'StudentController@edit', $data);
+//        $response = $this->post('StudentController@edit', $data);
 //        $this->assertNotNull($response);
 //
 //    }
@@ -145,7 +145,7 @@ class StudentControllerTest extends \TestCase
     {
         $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
         $dao->shouldReceive('delete_student_by_object')->with($this->student)->andReturn(true);
-        $response = $this->action('DELETE', 'StudentController@destroy', [$this->exam, $this->student]);
+        $response = $this->delete('StudentController@destroy', [$this->exam, $this->student]);
         $this->assertNotNull($response);
     }
 
@@ -426,7 +426,7 @@ class StudentControllerTest extends \TestCase
 //        //call
 //        $this->object->validateStudents($request);
 //
-////        $this->action('POST', 'StudentController@validateStudents', $data);
+////        $this->post('StudentController@validateStudents', $data);
 //
 //        //check
 //        $this->assertAttributeContains(200, 'validRecords', $this->object, 'Id 200 in validRecords');

@@ -37,6 +37,7 @@ module.exports = {
          */
         /** This is what gets run when the root instance is mounted for the setup page */
         loadInitialData: ( state, payload  ) => {
+            // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
             let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
 
             let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );

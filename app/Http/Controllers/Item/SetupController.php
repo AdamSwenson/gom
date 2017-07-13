@@ -57,7 +57,7 @@ class SetupController extends Controller
     /**
      * @var IAssignmentRepository
      */
-    private $assignmentRepository;
+    protected $assignmentRepository;
     /**
      * @var IItemCommentRepository
      */
@@ -111,7 +111,6 @@ class SetupController extends Controller
      */
     public function show( Exam $exam )
     {
-
         $out = $this->assignmentRepository->getItemOrderForClient($exam);
         //The returned array  will have the keys
         //  'itemObjects'

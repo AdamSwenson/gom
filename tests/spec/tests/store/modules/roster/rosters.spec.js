@@ -3,19 +3,19 @@ require( 'jasmine-jquery' );
 require( 'sinon' );
 let faker = require( 'faker' );
 
-import { testAction, description, factories } from '../../../helpers/vuex.spec.helpers';
+import { testAction, description, factories } from '../../../../helpers/vuex.spec.helpers';
 
 //Dependencies
 //import * as items from '../../../../../resources/assets/js/store/modules/items';
 
-import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
-import * as aTypes from '../../../../../resources/assets/js/store/action-types'
-import * as gTypes from '../../../../../resources/assets/js/store/getter-types'
-import Item from '../../../../../resources/assets/js/models/Item'
-import Payload from '../../../../../resources/assets/js/models/Payload'
-import Student from '../../../../../resources/assets/js/models/Student'
+import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
+import * as aTypes from '../../../../../../resources/assets/js/store/action-types'
+import * as gTypes from '../../../../../../resources/assets/js/store/getter-types'
+import Item from '../../../../../../resources/assets/js/models/Item'
+import Payload from '../../../../../../resources/assets/js/models/Payload'
+import Student from '../../../../../../resources/assets/js/models/Student'
 
-import * as Roster from '../../../../../resources/assets/js/store/modules/roster';
+import * as Roster from '../../../../../../resources/assets/js/store/modules/roster/roster';
 
 let { state, getters, actions, mutations } = Roster;
 

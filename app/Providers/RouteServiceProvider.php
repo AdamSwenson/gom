@@ -4,6 +4,7 @@ namespace App\Providers;
 use App\Element;
 use App\Exam;
 use App\Item;
+use App\Kumi;
 use App\Question;
 use App\Student;
 use Illuminate\Support\Facades\Route;
@@ -33,10 +34,10 @@ class RouteServiceProvider extends ServiceProvider
 //        //binds route requests for model objects to the models
         Route::model('element', Element::class);
         Route::model('exam', Exam::class);
+        Route::model('item', Item::class);
+        Route::model('kumi', Kumi::class);
         Route::model('question', Question::class);
         Route::model('student', Student::class);
-
-        Route::model('item', Item::class);
     }
 
     /**

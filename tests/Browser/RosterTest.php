@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use App\Exam;
 use App\User;
+use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Auth;
 use Tests\Browser\Pages\Setup;
 use Tests\Browser\Pages\StudentPane;
@@ -29,7 +30,7 @@ class RosterTest extends DuskTestCase
             new StudentPane();
             $exam = factory(Exam::class)->create();
             $this->browse(function ( Browser $browser ) use ( $user, $exam ) {
-                $browser->loginAs(User::find(1))
+                $browser->loginAs($user)
                     ->visit(new Setup())
                     ->click('#exam-settings-button')
                     ->assertVisible('#exam-nav-tabs')
@@ -73,17 +74,27 @@ class RosterTest extends DuskTestCase
 //            $rosterFile = $parentDir . '/_data/acceptance_test_roster.csv';
             $rowsInRosterFile = 5;
             $origRows = 2;
+            $expectedRows = $origRows+ $rowsInRosterFile;
 
             $browser->loginAs($user)
-                ->visit(new StudentPane())
+                ->visit(new Setup())
+                ->on(new StudentPane())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($origRows)
                 ->click('#add-students-button')
                 ->assertVisible('#file-input')
                 ->attach('#file-input', $rosterFile)
-                ->pause(5000)
-                ->assertStudentRowCountIs($origRows+ $rowsInRosterFile);
+                ->pause(3000)
+                ->assertStudentRowCountIs($expectedRows);
+
+            //now lets reload the page and make sure we see
+            //the new students
+            $browser->loginAs($user)
+                ->visit(new StudentPane())
+                ->navigateToStudentsPane()
+                ->assertVisible('.add-students-panel')
+                ->assertStudentRowCountIs($expectedRows);
         });
 
     }

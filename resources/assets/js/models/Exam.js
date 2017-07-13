@@ -13,11 +13,11 @@ export default class Exam extends Item {
      */
     constructor( ...params ) {
         super();
-        Comment.initializeComments(this);
+       Comment.initializeComments(this);
         /**
          * The db identifier of the model
          */
-        this.id = -1;
+     //   this.id = -1;
 
         // this._name; // = name;
         this.year; // = year;
@@ -31,8 +31,6 @@ export default class Exam extends Item {
     // get idx (){return  [ 0,  0];}
 
 
-
-
     /**
      * Returns a list of strings which are property
      * names. These fields can be filled from the input
@@ -44,7 +42,6 @@ export default class Exam extends Item {
             'term',
             'id'
         ].concat(super.fillableProps);
-
     };
 
 
@@ -134,7 +131,7 @@ export default class Exam extends Item {
         let exam = new Exam();
 // //we will still return an empty exam if there
 //         //were no parameters
-        return this.fillObject(exam, params, {}); //Exam.aliasMap);
+        return this.fillObject(exam, params); //, Exam.aliasMap);
     }
 
 

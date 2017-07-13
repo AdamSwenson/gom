@@ -71,7 +71,7 @@ class ElementControllerTest extends \TestCase
 //        $response = $object->index($request);
 //        $this->assertNotNull($response);
 //
-////        $response = $this->action('GET', 'ElementController@index', $data);
+////        $response = $this->get('ElementController@index', $data);
 //
 //    }
 
@@ -128,10 +128,10 @@ class ElementControllerTest extends \TestCase
 //        $response = $object->index($request);
 ////        $this->assertNotNull($response);
 ////
-//////        $response = $this->action('GET', 'ElementController@index', $data);
+//////        $response = $this->get('ElementController@index', $data);
 //
 //
-//        $response = $this->action('POST', 'ElementController@create', $data);
+//        $response = $this->post('ElementController@create', $data);
 //        $this->assertNotNull($response);
 //    }
 
@@ -217,7 +217,7 @@ class ElementControllerTest extends \TestCase
 
         $this->assignmentDaoMock->shouldReceive('record')->with($examId, $questionId, $elementId, 1);
 
-        $response = $this->action('POST', 'ElementController@updateAll', $data);
+        $response = $this->post('ElementController@updateAll', $data);
         $this->assertNotNull($response);
 
 
@@ -233,7 +233,7 @@ class ElementControllerTest extends \TestCase
 //    {
 //        $this->elementDaoMock->shouldReceive('deleteElement')->with($this->element);
 //
-//        $response = $this->action('POST', 'ElementController@destroy', $this->element);
+//        $response = $this->post('ElementController@destroy', $this->element);
 //        $this->assertNotNull($response);
 //    }
 

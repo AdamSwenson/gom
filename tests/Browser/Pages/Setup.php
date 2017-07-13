@@ -22,7 +22,7 @@ class Setup extends BasePage
     public function url()
     {
 //        $exam = Exam::all()->random();
-        return '/setup';// . $exam->id;
+        return 'dev/setup';// . $exam->id;
     }
 
     static public function urlToExam( $examId )

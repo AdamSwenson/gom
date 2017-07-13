@@ -10,7 +10,7 @@ import Payload from '../../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
-import StudentImporter from '../utlities/studentFileImporter'
+import StudentImporter from './roster/studentFileImporter'
 
 const state = {
     /**

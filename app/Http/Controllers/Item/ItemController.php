@@ -181,9 +181,10 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param ItemRequest $request
      */
-    public function destroy( Item $item )
+    public function destroy( $id )
     {
         try {
+            $item = Item::find($id);
             $item->delete();
             return $this->sendAjaxSuccess();
         } catch (Exception $e) {

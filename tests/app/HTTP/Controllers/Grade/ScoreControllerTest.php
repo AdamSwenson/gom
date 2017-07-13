@@ -83,7 +83,7 @@ class ScoreControllerTest extends \TestCase
         $data = ['examId' => 1, 'question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
 
         $this->expectsJobs(RecordScoresAndComments::class);
-        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+        $response = $this->post('Grade\ScoreController@recordScore', $data);
         $this->assertNotNull($response);
     }
 
@@ -93,7 +93,7 @@ class ScoreControllerTest extends \TestCase
         $data = ['examId' => 1, 'element_id' => $element->id, 'student_id' => 2, 'score' => 3.4];
         $this->expectsJobs(RecordScoresAndComments::class);
 
-        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+        $response = $this->post('Grade\ScoreController@recordScore', $data);
         $this->assertNotNull($response);
 //        $mock = $this->createMock('App\Repositories\Score\IElementScoreRepository');
 //        $mock->shouldReceive('load_element_assignment_by_element')
@@ -115,7 +115,7 @@ class ScoreControllerTest extends \TestCase
         $element = factory(Element::class)->create();
         $data = ['examId' => 1, 'element_id' => $element->id, 'student_id' => 2, 'score' => 3.4, 'comment_text' => $this->faker->text(5)];
         $this->expectsJobs(RecordScoresAndComments::class);
-        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+        $response = $this->post('Grade\ScoreController@recordScore', $data);
         $this->assertNotNull($response);
 
 //        $mock = $this->createMock('App\Repositories\Score\IElementScoreRepository');
@@ -133,7 +133,7 @@ class ScoreControllerTest extends \TestCase
 //            ->once()
 //            ->with([$data['element_id'], $data['student_id'], $data['comment_text']]);
 //
-//        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+//        $response = $this->post('Grade\ScoreController@recordScore', $data);
 //        $this->assertNotNull($response);
     }
 
@@ -150,7 +150,7 @@ class ScoreControllerTest extends \TestCase
 //        $this->mock->shouldReceive('deleteScore')
 //            ->once();
 //            ->with([$this->exam, $data['question_assignment_id'], $data['student_id']]
-        $response = $this->action('POST', 'Grade\ScoreController@removeScore', $data);
+        $response = $this->post('Grade\ScoreController@removeScore', $data);
 //        $this->assertResponseOk();
         $this->assertNotNull($response);
     }
@@ -163,7 +163,7 @@ class ScoreControllerTest extends \TestCase
         $data = ['examId' => 1, 'question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
 
         $this->expectsJobs(RecordGradingTime::class);
-        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+        $response = $this->post('Grade\ScoreController@recordScore', $data);
         $this->assertNotNull($response);
     }
 
@@ -184,7 +184,7 @@ class ScoreControllerTest extends \TestCase
                  'student_id' => 2,
                  'score' => 3.4];
 
-        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+        $response = $this->post('Grade\ScoreController@recordScore', $data);
         $this->assertNotNull($response);
 
 //        $mock = $this->createMock('App\Repositories\Score\IQuestionScoreRepository');
@@ -192,7 +192,7 @@ class ScoreControllerTest extends \TestCase
 //            ->once()
 //            //->with([$data['question_assignment_id'], $data['student_id'], $data['score']])
 //            ->andReturn($questionScore);
-//        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
+//        $response = $this->post('Grade\ScoreController@recordScore', $data);
 //        $this->assertNotNull($response);
     }
 

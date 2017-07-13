@@ -12,6 +12,8 @@
 */
 
 /* ---------------------------- Authentication and registration ------------------------------------------------------*/
+use App\Http\Controllers\Item\KumiController;
+
 Route::auth();
 //temp until convert everything to use the post
 Route::get('/logout', 'Auth\LoginController@logout');
@@ -160,10 +162,10 @@ Route::get('dev/test', 'TestController@test');
 
 
 
-/* New setup page */
+/* ******************** New setup page ***************** */
 //display of page
-Route::get('setup', 'Item\SetupController@index');
-Route::get('setup/{exam}', 'Item\SetupController@show')->name('show-exam');
+Route::get('dev/setup/{exam}', 'Item\SetupController@show')->name('show-exam');
+Route::get('dev/setup', 'Item\SetupController@index');
 
 //intrinsic properties of the item
 //Route::put('items/{item}', 'ItemController@update');
@@ -172,14 +174,27 @@ Route::resource('items', 'Item\ItemController'); //,
 Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
 
 //order of the items on the exam
-Route::post('setup/{exam}/order', 'Item\AssignmentController@store');
+Route::post('dev/setup/{exam}/order', 'Item\AssignmentController@store');
 
 Route::post('comments/{item}', 'Item\CommentController@store');
 //new exam controller
 Route::get('dev/exams', 'Item\ExamResourceController@index');
-//new student controller
+
+//new student controller for intrinsic props of student objects
 Route::resource('dev/students', 'Item\StudentResourceController');
+
+//associations between student and exam
+Route::post('dev/roster/{student}/assoc/{kumi}', 'Item\RosterController@associateStudent');
+Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassociateStudent');
+
+Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
+Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
+
+//new scores
 Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
 Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
 Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
 Route::post('dev/scores', 'Item\ItemScoreController@store');
+
+Route::get('dev/kumi/exam/{exam}', 'Item\KumiController@loadExamKumi');
+Route::resource('dev/kumi', 'Item\KumiController');

@@ -46,11 +46,6 @@ class Kumi extends BaseModel
         'year'
     ];
 
-//    public function __construct()
-//    {
-//        parent::boot();
-//    }
-
     /**
      * Sets the name of the class (kumi)
      * @param string $name
@@ -76,7 +71,8 @@ class Kumi extends BaseModel
      */
     public function students()
     {
-        return $this->belongsToMany('App\Student', 'kumi_student')->withTimestamps();
+        return $this->belongsToMany(Student::class, 'kumi_student')
+            ->withTimestamps();
     }
 
     /**
@@ -85,7 +81,7 @@ class Kumi extends BaseModel
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -94,7 +90,7 @@ class Kumi extends BaseModel
      */
     public function exams()
     {
-        return $this->belongsToMany('App\Exam', 'exam_kumi')->withTimestamps();
+        return $this->belongsToMany(Exam::class, 'exam_kumi')->withTimestamps();
     }
 
 

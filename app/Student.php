@@ -133,18 +133,18 @@ class Student extends BaseModel
 //        return $this->getAttribute('email');
     }
 
-    /**
-     * Sets student_identifier attribute.
-     * Uses laravel convention for setter so will be called if
-     * someone tries to set directly with $student->student_identifier
-     * @param string $studentId
-     */
-    public function setStudentIdentifierAttribute($studentId)
-    {
-        $studentId = trim($studentId);
-        $this->attributes['student_identifier'] = $studentId;
-//        $this->setAttribute('student_identifier', $studentId);
-    }
+//    /**
+//     * Sets student_identifier attribute.
+//     * Uses laravel convention for setter so will be called if
+//     * someone tries to set directly with $student->student_identifier
+//     * @param string $studentId
+//     */
+//    public function setStudentIdentifierAttribute($studentId)
+//    {
+//        $studentId = trim($studentId);
+//        $this->attributes['student_identifier'] = $studentId;
+////        $this->setAttribute('student_identifier', $studentId);
+//    }
 
     /**
      * Sets the first_name attribute
@@ -387,7 +387,8 @@ MYSQL;
      */
     public function kumis()
     {
-        return $this->belongsToMany('App\Kumi', 'kumi_student'); //removed belongsToMany
+        return $this->belongsToMany(Kumi::class, 'kumi_student')
+            ->withTimestamps();
     }
 
 //    public function exams()

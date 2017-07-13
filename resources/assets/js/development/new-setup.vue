@@ -166,6 +166,7 @@
         events: {},
 
         created: function () {
+            window.console.log( 'new-setup', 'created', 169);
             this.$store.commit( 'loadInitialData' );
 
             //            this.$store.dispatch( 'setupOnMount' );

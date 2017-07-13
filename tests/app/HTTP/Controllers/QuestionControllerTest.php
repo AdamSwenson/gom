@@ -56,7 +56,7 @@ class QuestionControllerTest extends \TestCase
         $exam = Exam::all()->random();
         $assignmentDao = $this->createMock('App\Repositories\Question\IQuestionAssignmentRepository');
         $assignmentDao->shouldReceive('load_all_for_exam')->andReturn(Question::all());
-        $response = $this->action('GET', 'QuestionController@index', ['examId' => $exam->id]);
+        $response = $this->get('QuestionController@index', ['examId' => $exam->id]);
         $this->assertNotNull($response);
     }
 
@@ -65,7 +65,7 @@ class QuestionControllerTest extends \TestCase
         $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
         $questionDao->shouldReceive('loadQuestionsByClassId')
             ->andReturn(Question::all());
-        $response = $this->action('GET', 'QuestionController@index', ['classId' => 3]);
+        $response = $this->get('QuestionController@index', ['classId' => 3]);
         $this->assertNotNull($response);
     }
 
@@ -75,7 +75,7 @@ class QuestionControllerTest extends \TestCase
         $questionDao->shouldReceive('loadAll')
             ->andReturn(Question::all());
         $data = ['examId' => $this->examId];
-        $response = $this->action('GET', 'QuestionController@index', $data);
+        $response = $this->get('QuestionController@index', $data);
         $this->assertNotNull($response);
     }
 
@@ -106,21 +106,21 @@ class QuestionControllerTest extends \TestCase
             ->shouldReceive('record')
             ->with($this->examId, $return->id, $questionNumber);
 
-        $response = $this->action('POST', 'QuestionController@store', $this->incoming);
+        $response = $this->post('QuestionController@store', $this->incoming);
         $this->assertNotNull($response);
     }
 
 
 //    public function testShow()
 //    {
-//        $response = $this->action('POST', 'QuestionController@show', $this->question);
+//        $response = $this->post('QuestionController@show', $this->question);
 //        $this->assertNotNull($response);
 //    }
 
 
 //    public function testEdit()
 //    {
-//        $response = $this->action('POST', 'QuestionController@edit', ['questionId' => 1, 'examId' => $this->examId]);
+//        $response = $this->post('QuestionController@edit', ['questionId' => 1, 'examId' => $this->examId]);
 //        $this->assertNotNull($response);
 //
 //    }
@@ -134,7 +134,7 @@ class QuestionControllerTest extends \TestCase
         $questionDao->shouldReceive('updateQuestionObject')
             ->with($this->question, $this->incoming['questionName'], $this->incoming['questionDesc']);
 
-        $response = $this->action('POST', 'QuestionController@update', $this->incoming);
+        $response = $this->post('QuestionController@update', $this->incoming);
         $this->assertNotNull($response);
     }
 
@@ -156,7 +156,7 @@ class QuestionControllerTest extends \TestCase
 
         $questionDao->shouldReceive('loadQuestionById')->with($qAssignment->getQuestionId());
 
-        $response = $this->action('POST', 'QuestionController@updateAll', $this->incoming);
+        $response = $this->post('QuestionController@updateAll', $this->incoming);
         $this->assertNotNull($response);
 
         //TODO figure out why not picking this up
@@ -169,7 +169,7 @@ class QuestionControllerTest extends \TestCase
         $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
         $questionDao->shouldReceive('deleteQuestionObject')->with($this->question);
         $data = ['questionId' => $this->question->getId(), 'examId' => $this->examId];
-        $response = $this->action('POST', 'QuestionController@destroy', $data);
+        $response = $this->post('QuestionController@destroy', $data);
         $this->assertNotNull($response);
     }
 

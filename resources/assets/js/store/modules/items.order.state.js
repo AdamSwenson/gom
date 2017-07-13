@@ -16,7 +16,6 @@ import Exam from '../../models/Exam'
 import Node from '../../models/Node'
 
 let initialExam = new Exam();
-window.console.log( 'items.order.state', 'initialExam', 19, initialExam );
 
 module.exports = {
     itemMap: new Node( initialExam.serialNumber, initialExam.serialNumber ),

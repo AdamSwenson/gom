@@ -37,7 +37,7 @@ class TimeControllerTest extends \TestCase
         $mock->shouldReceive('record')
             ->with([$data['examId'], $data['studentId'], $data['time']])
             ->andReturn(GradingTime::all()->random());
-        $result = $this->action('POST', 'Grade\TimeController@recordTime', $data);
+        $result = $this->post('Grade\TimeController@recordTime', $data);
         $this->assertNotNull($result);
     }
 

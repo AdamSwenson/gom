@@ -38,16 +38,16 @@
 
         <div class="panel-block"
              v-show="fileButtonVisible"
-
         >
             <!--<p class="control">-->
             <!--<button class="button is-primary is-outlined is-fullwidth"  >Upload</button>-->
             <!--</p>-->
             <p class="control">
                 <input id="file-input"
-                       v-on:change="processFile"
                        class="input"
-                       type="file"/>
+                       type="file"
+                       v-on:change="processFile"
+                />
             </p>
 
         </div>
@@ -71,7 +71,7 @@
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
 
-    import FileImporter from '../../../store/utlities/studentFileImporter';
+    import FileImporter from '../../../store/modules/roster/studentFileImporter';
     import StudentRow from './student-row.vue'
 
     export default{
@@ -103,7 +103,6 @@
 
             students: function () {
                 return this.$store.getters.getStudentsFromRoster;
-
             }
         },
 
@@ -112,16 +111,14 @@
                 this.fileButtonVisible = !this.fileButtonVisible;
             },
 
-            processFile: function ( evt ) {
-                let f = document.getElementById( 'file-input' );
+            processFile: _.debounce(function( evt ){
+
+                    let f = document.getElementById( 'file-input' );
                 let file = f.files[ 0 ];
-                window.console.log( 'students-panel', 'processFile', 112, f, file );
+                window.console.log( 'students-panel', 'processFile', 112, evt,  f, file );
+
                 this.$store.dispatch( 'importStudentsFromFile', file );
-
-//                let students = FileImporter.handleRead(file);
-//                window.console.log( 'students-panel', 'processFile', 116, students);
-
-            }
+            }, 300)
         },
 
         directives: {},

@@ -1,0 +1,143 @@
+/**
+ * Created by adam on 7/6/17.
+ */
+
+import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT } from '../apiSettings';
+
+import * as aTypes from '../../store/action-types';
+import * as mTypes from '../../store/mutation-types';
+import * as gTypes from '../../store/getter-types';
+
+import Payload from '../../models/Payload'
+import Exam from '../../models/Exam'
+import Item from '../../models/Item'
+import Kumi from '../../models/Kumi'
+
+const BASE_ROUTE = 'dev/kumi';
+
+/**
+ * Process the result of a response where we need to
+ * insert new students into store
+ * @param store
+ * @param response
+ */
+const handleLoadKumiResponse = ( store, response ) => {
+    _.forEach( response.data, function ( r ) {
+        // // window.console.log( 'examRequests', 'r', 29, r);
+        // let student = Student.factory( { r } );
+        // student.id = r.id;
+        // student.firstName = r.firstName;
+        // student.lastName = r.lastName;
+        // student.identifier = r.identifier;
+        // let payload = Payload.factory( { obj: student, mutateSilently: true } );
+        // store.commit( 'addStudentToRoster', payload );
+    } );
+};
+
+/**
+ * We will want to update our object with info from
+ * the server upon creation. This handles that.
+ * @param store
+ * @param item
+ * @param response
+ * @returns {Promise}
+ */
+const handleCreateKumiResponse = ( store, kumi, response ) => {
+    return new Promise( ( resolve, reject ) => {
+        Kumi.fillableProps.forEach( function ( p ) {
+            if ( p !== 'index' ) {
+                if ( Object.keys( response ).includes( p ) ) {
+                    store.commit( mTypes.updateKumi, Payload.factory( {
+                        obj: kumi,
+                        updateProp: p,
+                        updateVal: response[ p ],
+                        mutateSilently: true
+                    } ) );
+                }
+            }
+        } );
+        resolve( item );
+    } );
+
+};
+
+module.exports = {
+
+    loadExamKumi: ( store, exam ) => {
+        window.console.log( 'apiPlugin-studentRequests', 'loadAllStudents', 8 );
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
+        let route = '';
+        window.axios
+            .put( route )
+            .then( ( response ) => {
+                window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
+            } )
+            .catch( function ( error ) {
+                //todo add response handling
+                window.console.log( 'kumiRequests', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
+
+    },
+
+    loadAllKumi: ( store ) => {
+        let route = 'dev/kumi';
+        window.axios
+            .get( route )
+            .then( ( response ) => {
+                window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
+            } )
+            .catch( function ( error ) {
+                //todo add response handling
+                window.console.log( 'kumiRequests', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
+
+    },
+
+    createKumi: ( store, kumi ) => {
+        let route = '';
+        window.axios
+            .post( route )
+            .then( ( response ) => {
+                window.console.log( 'kumiRequests', 'createKumi', 28, response );
+                handleCreateKumiResponse(store, kumi);
+            } )
+            .catch( function ( error ) {
+                //todo add response handling
+                window.console.log( 'kumiRequests--createKumi', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
+
+    },
+    updateKumi: ( store, kumi ) => {
+        let route = '';
+        window.axios
+            .put( route )
+            .then( ( response ) => {
+                window.console.log( 'kumiRequests', 'updateKumi', 28, response );
+            } )
+            .catch( function ( error ) {
+                //todo add response handling
+                window.console.log( 'kumiRequests--updateKumi', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
+
+    },
+
+    destroyKumi: ( store, kumi ) => {
+        let route = '';
+        window.axios
+            .delete( route )
+            .then( ( response ) => {
+                window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
+            } )
+            .catch( function ( error ) {
+                //todo add response handling
+                window.console.log( 'kumiRequests', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
+    }
+}

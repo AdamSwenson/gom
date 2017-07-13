@@ -366,6 +366,16 @@ MYSQL;
     }
 
     /**
+     * Classes (kumis) taking the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function kumis()
+    {
+        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
+    }
+
+
+    /**
      * Associated elements and their subtask numbers
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

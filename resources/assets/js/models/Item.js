@@ -5,6 +5,7 @@
  */
 
 import Comment from './Comment';
+
 import IModel from './IModel';
 
 
@@ -42,6 +43,7 @@ export default class Item extends IModel {
          * @private
          */
         this.publicity = false;
+
         /**
          * The maximum possible value of the item
          */

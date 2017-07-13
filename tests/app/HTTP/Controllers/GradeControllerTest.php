@@ -40,7 +40,7 @@ class GradeControllerTest extends \TestCase
         $examDao = $this->createMock('App\Repositories\Exam\IExamRepository');
         $examDao->shouldReceive('load_all_exams')
             ->andReturn(Exam::all());
-        $response = $this->action('GET', 'GradeController@index');
+        $response = $this->get('GradeController@index');
         $this->assertNotEmpty($response);
     }
 
@@ -67,7 +67,7 @@ class GradeControllerTest extends \TestCase
 //        $mock->shouldReceive('record')
 //            ->with([$data['question_assignment_id'], $data['student_id'], $data['score']])
 //            ->andReturn(QuestionScore::all()->random());
-//        $response = $this->action('POST', 'GradeController@recordScore', $data);
+//        $response = $this->post('GradeController@recordScore', $data);
 //        $this->assertNotNull($response);
 //    }
 
@@ -78,7 +78,7 @@ class GradeControllerTest extends \TestCase
         $mock->shouldReceive('record')
             ->with([$data['element_assignment_id'], $data['student_id'], $data['score']])
             ->andReturn(ElementScore::all()->random());
-        $response = $this->action('POST', 'GradeController@recordScore', $data);
+        $response = $this->post('GradeController@recordScore', $data);
         $this->assertNotNull($response);
     }*/
 
@@ -96,7 +96,7 @@ class GradeControllerTest extends \TestCase
 //        $mock->shouldReceive('record')
 //            ->with([$data['examId'], $data['studentId'], $data['time']])
 //            ->andReturn(GradingTime::all()->random());
-//        $result = $this->action('POST', 'GradeController@recordScore', $data);
+//        $result = $this->post('GradeController@recordScore', $data);
 //        $this->assertNotNull($result);
 //    }
 
@@ -107,7 +107,7 @@ class GradeControllerTest extends \TestCase
 //        $mock->shouldReceive('load')
 //            ->with([$data['examId'], $data['studentId']])
 //            ->andReturn(GradingTime::all()->random());
-//        $result = $this->action('GET', 'GradeController@loadTime', $data);
+//        $result = $this->get('GradeController@loadTime', $data);
 //        $this->assertNotNull($result);
 //    }
 //
@@ -118,7 +118,7 @@ class GradeControllerTest extends \TestCase
 //        $mock->shouldReceive('get_grading_time_stats')
 //            ->with($data['examId'])
 //            ->andReturn(array('stats', 'stats'));
-//        $result = $this->action('GET', 'GradeController@loadStats', $data);
+//        $result = $this->get('GradeController@loadStats', $data);
 //        $this->assertNotNull($result);
 //    }
 

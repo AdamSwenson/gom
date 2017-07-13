@@ -10,8 +10,6 @@
  */
 
 
-
-
 //active exam
 export const setActiveExam = 'setActiveExam';
 export const clearActiveExam = 'clearActiveExam'
@@ -31,25 +29,27 @@ export const loadStockComments = 'loadStockComments'
 
 //exams
 export const addExam = 'addExam';
-;
+
 export const addIndexMapping = 'addIndexMapping';
 export const loadExams = 'loadExams';
-;
-;
-//escores                                                            ;
+
+//escores
 export const loadElementScores = 'loadElementScores';
 export const setElementScore = 'setElementScore';
-;
-;
-//grades                                                             ;
+
+
+//kumi
+export const  updateKumi = 'updateKumi';
+
+//grades
 export const loadExamGrades = 'loadExamGrades';
 export const loadStandardGrades = 'loadStandardGrades';
 export const setGrade = 'setGrade';
-;
+
 //qscores                                                            ;
 export const setQuestionScore = 'setQuestionScore';
 export const removeQuestionScore = 'removeQuestionScore';
-;
+
 //questions                                                          ;
 export const setMaxQuestionScore = 'setMaxQuestionScore';
 export const removeMaxQuestionScore = 'removeMaxQuestionScore';
@@ -61,6 +61,9 @@ export const setNumberQuestions = 'setNumberQuestions';
 //students
 export const setStudent = 'setStudent';
 export const removeStudent = 'removeStudent';
+//dev
+export const updateStudent = 'updateStudent';
+export const addStudentToRoster = 'addStudentToRoster';
 
 //times
 export const incrementGradingTime = 'incrementGradingTime';
@@ -100,3 +103,4 @@ export const toggleSampleFeedback = 'toggleSampleFeedback';
 export const showItemSettings = 'showItemSettings';
 export const hideItemSettings = 'hideItemSettings';
 export const toggleExamSettings = 'toggleExamSettings';
+

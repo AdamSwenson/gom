@@ -166,7 +166,7 @@ class ItemControllerTest extends \TestCase
         $i = Item::onlyTrashed()->where('id', $id)->get();
 
         $this->assertNotEmpty($i);
-        $this->assertEquals($id, $i->id);
+        $this->assertEquals($id, $i[0]->id);
 //        $this->assertDatabaseMissing('items', ['id' => $id]);
     }
 

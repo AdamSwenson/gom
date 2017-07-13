@@ -6,12 +6,14 @@
 const _ = window._ = require( 'lodash' );
 // const Vue = require( 'vue' );
 
-import * as mTypes from '../../store/mutation-types'
-import * as aTypes from '../../store/action-types'
-import * as gTypes from '../../store/getter-types'
+import * as mTypes from '../../mutation-types'
+import * as aTypes from '../../action-types'
+import * as gTypes from '../../getter-types'
 
-import Payload from '../../models/Payload'
-import Student from '../../models/Student'
+import Payload from '../../../models/Payload'
+import Student from '../../../models/Student'
+
+import Kumi from '../../../models/Kumi'
 
 
 /**
@@ -203,9 +205,11 @@ const separatorChar = ',';
  */
 
 module.exports = {
+
 //actions
     importStudentsFromFile: ( { state, dispatch, commit, getters }, inputFile ) => {
-        return new Promise( ( resolve, reject ) => {
+        // return new Promise( ( resolve, reject ) => {
+        //todo Temporarily commented out the promise while working on this since the below log gets called twice
             console.log( 'students actions', 'startRead called: reading file', 'inputFile', inputFile );
 
             /*
@@ -224,7 +228,6 @@ module.exports = {
             }
 
             var reader = new FileReader();
-            reader.readAsText( inputFile );
 
             /**
              * Run the processing
@@ -254,6 +257,7 @@ module.exports = {
                 //dev todo re-enable filter header rows instead of just dropping them
                 students.splice( 0, 1 );
 
+                //Send the student to storage and the server
                 _.forEach( students, ( student ) => {
                     window.console.log( 'studentFileImporter', 'student', 249, student );
 
@@ -264,61 +268,25 @@ module.exports = {
                     let email = student[ 3 ];
 
                     //create a student object
-                    let s = Student.factory( { lastName: last, firstName: first, identifier: ident, email: email } );
+                    let s = Student.factory( { lastName: last, firstName: first, studentIdentifier: ident, email: email } );
+// let k = new Kumi(); //todo retrieve the correct one
+//                     k.name = 's1';
+//                     let pl = Payload.factory( { student: s , kumi: k} );
 
-                    let pl = Payload.factory( { obj: s } );
-
-                    commit( 'addStudentToRoster', pl );
-                } )
-                resolve();
-            }
-            reader.onerror = function () {
-                alert( 'Unable to read ' + file.fileName ) ;
-                reject();
+                    commit( 'addStudentToRoster', Payload.factory({obj: s}));
+                } );
+                // resolve();
             };
 
-        } );
+            reader.onerror = function () {
+                alert( 'Unable to read ' + file.fileName ) ;
+                // reject();
+            };
+
+            reader.readAsText( inputFile );
+
+        // } );
 
     }
 
 };
-    //
-    //     function ( event ) {
-    //     // convert line endings
-    //     var rows = event.target.result.toString().replace( /[\r\n]+/g, "\n" ).split( "\n" );
-    //     var students = [];
-    //
-    //     // break each row into its elements
-    //     for ( var i = 0; i < rows.length; i ++ ) {
-    //         students[ i ] = rows[ i ].toString().split( me.separatorChar );
-    //     }
-    //
-    //     window.console.log('initialRead', students);
-    //
-    //     // remove any resulting lines with 1 or fewer elements
-    //     for ( i = students.length - 1; i >= 0; i -- ) {
-    //         // since this looks for rows with 2 or more consecutive commas, rows that import with a few empty columns
-    //         // at the beginning (eg:  [,,,data,data,data] ) will be spliced. IT should remove lines with only commas.
-    //         if ( students[ i ].length <= 1 || (rows[ i ].search( /,,+/ ) >= 0 ) ) {
-    //             students.splice( i, 1 );
-    //             rows.splice( i, 1 );
-    //         }
-    //     }
-    //
-    //     // analyze the file and look for column headers
-    //     var firstLine = students[ 0 ];
-    //     var startRow = 0;
-    //     if ( me.firstRowContainsTitles( firstLine ) ) {
-    //         me.guessColumnDataByTitles( firstLine );
-    //         // remove the header line as we don't need it any longer
-    //         rows.splice( 0, 1 );
-    //         students.splice( 0, 1 );
-    //     } else {
-    //         me.guessColumnDataByContent( students );
-    //     }
-    //
-    //     console.log( 'lnameCol:' + me.lastNameCol + ' fnameCol:' + me.firstNameCol + ' idCol:' + me.idCol + ' emailCol:' + me.emailCol );
-    //
-    //     return students;
-    // };
-

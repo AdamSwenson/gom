@@ -35,7 +35,7 @@ import Item from '../models/Item'
 
 import { createItem, updateExam, updateItem, updateItemsOrder } from './requests'
 import {updateComment} from '../api/requests/commentRequests';
-
+import {createStudent, associateStudent} from '../api/requests/studentRequests';
 /**
  * Returns true if the mutation needs to
  * be synced with the server.
@@ -163,6 +163,14 @@ export default function ( store ) {
                 break;
             case 'decreasePosition':
                 updateItemsOrder( store );
+                break;
+
+            case 'addStudentToRoster':
+                window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
+                let student = payload.obj;
+                // let kumi = payload.kumi
+                createStudent(store, student );
+                //associateStudent(store, payload.obj);
                 break;
             default:
 

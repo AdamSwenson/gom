@@ -104,11 +104,13 @@ export default class Payload {
     static get fillableProps() {
         return [
             'callback',
+            'exam',
+            'kumi',
             'id', 'index', 'num',
             'mutateSilently',
             'obj', 'parent',
             'objNode', 'parentNode',
-            'serialNumber', 'str', 'stamp',
+            'serialNumber', 'str', 'stamp', 'student',
             'updateProp', 'updateVal',
             'updateValence',
         ];

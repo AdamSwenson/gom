@@ -75,7 +75,7 @@ class ExamControllerTest extends \TestCase
         $storedExamStatsDaoMock->shouldReceive('getNumberQuestions')->times(count($exams));
 
         $response = $this->call('GET', '/exam');
-//        $response = $this->action('GET', 'ExamController@index');
+//        $response = $this->get('ExamController@index');
         $this->assertNotNull($response);
     }
 
@@ -96,7 +96,7 @@ class ExamControllerTest extends \TestCase
 
     public function testCreate()
     {
-        $response = $this->action('POST', 'ExamController@create');
+        $response = $this->post('ExamController@create');
         $this->assertNotNull($response);
 //        $this->assertResponseOk();
         //create new exam
@@ -117,7 +117,7 @@ class ExamControllerTest extends \TestCase
             ->once()
             ->andReturn($this->exam);
 
-        $response = $this->action('POST', 'ExamController@store', $data);
+        $response = $this->post('ExamController@store', $data);
         $this->assertNotNull($response);
 
         //Todo Add test for view returned
@@ -134,7 +134,7 @@ class ExamControllerTest extends \TestCase
     public function testEdit()
     {
 //        $response = $this->call('Get', "exam/{$this->exam->id}/edit");
-        $response = $this->action('GET', 'ExamController@edit', $this->exam);
+        $response = $this->get('ExamController@edit', $this->exam);
         $this->assertNotEmpty($response);
 //TODO This isn't actually working
 //        $this->assertViewHas('exam', $this->exam);
@@ -179,7 +179,7 @@ class ExamControllerTest extends \TestCase
 //
 ////        $object = new ExamController();
 ////        $response = $object->destroy($this->exam);
-//        $response = $this->action('DELETE', 'ExamController@destroy', ['exam_id' => $this->exam->id]);
+//        $response = $this->delete('ExamController@destroy', ['exam_id' => $this->exam->id]);
 ////        $response = $this->call('DELETE', "/exam", ['exam' => $this->exam]);
 ////        $response = $this->call('DELETE', "/exam/{$this->exam->id}");
 //        $this->assertNotNull($response);

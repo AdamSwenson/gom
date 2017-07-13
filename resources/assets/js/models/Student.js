@@ -6,7 +6,7 @@ import IModel from './IModel';
 
 
 export default class Student extends IModel{
-    constructor( studentId ) {
+    constructor( studentId = -1 ) {
         super();
         this.email = '';
         this.id = studentId;
@@ -16,6 +16,62 @@ export default class Student extends IModel{
         this.firstName = '';
     }
 
+    /* ************************* Server stuff ****************** */
+    /**
+     * Tells whether the item has a valid id and thus can
+     * be synced with the server.
+     * @returns {boolean}
+     */
+    canSync() {
+        if ( this.id >= 0 ) return true;
+        return false;
+    }
+
+    /**
+     * New student objects have a default id of -1
+     * until an id is retrieved from the server.
+     * This is a boolean check of whether that happened
+     *
+     * @returns {boolean}
+     */
+    isNew() {
+        return this.id === -1;
+    }
+
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'id',
+            'index',
+            'firstName',
+            'lastName',
+            'studentIdentifier',
+            'email'
+        ];
+    }
+
+    static get aliasMap() {
+        return {
+            studentId: 'id',
+            studentIndex: 'index',
+            student_identifier: 'studentIdentifier',
+            last_name: 'lastName',
+            first_name: 'firstName',
+            student_id: 'id',
+        };
+
+    }
+
+
+    static factory( params ) {
+        let student = new Student();
+        return this.fillObject(student, params);
+    }
 
     /* *************************** Id *************** */
     // /**
@@ -70,24 +126,6 @@ export default class Student extends IModel{
 
 
     /* *************************** Index ************* */
-    // /**
-    //  * Master getter for index
-    //  * Any checks or transformations should be done here
-    //  * since everything else will call this.
-    //  * @returns {*}
-    //  */
-    // get _index() {
-    //     return this._index;
-    // }
-    //
-    // /**
-    //  * Master setter for index
-    //  * Any checks or transformations should be done here
-    //  * since everything else will call this.
-    //  */
-    // set _index( v ) {
-    //     this._index = v;
-    // }
 
     /** Alias getter for _index  */
     get index() {
@@ -159,40 +197,6 @@ export default class Student extends IModel{
     //     this._email = address;
     // }
 
-
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        return [
-            'id',
-            'index',
-            'firstName',
-            'lastName',
-            'studentIdentifier',
-            'identifier',
-            'email'
-        ];
-    }
-
-    static get aliasMap() {
-        return {
-            studentId: 'id',
-            studentIndex: 'index',
-            last_name: 'lastName',
-            first_name: 'firstName',
-            student_id: 'id',
-        };
-
-    }
-
-
-    static factory( params ) {
-        let student = new Student();
-        return this.fillObject(student, params);
-    }
 
     //
     // static get fillable(){

@@ -57,7 +57,7 @@ import times from './modules/times.js'
 
 
 
-import roster from './modules/roster'
+import roster from './modules/roster/roster'
 import visibility from './modules/visibility'
 // import orderings from './modules/items.order';
 
