@@ -2,7 +2,7 @@
  * Created by adam on 7/6/17.
  */
 
-import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT} from '../apiSettings';
+import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes} from '../apiSettings';
 
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
@@ -23,9 +23,8 @@ module.exports = {
         };
 
         window.axios
-            .get( 'dev/exams/' )
+            .get( Routes.loadAllExams() )
             .then( ( response ) => {
-                window.console.log( 'examRequests', '', 28, response);
                 // _.forEach( response.data, function ( e ) {
                     _.forEach( response.data, function ( r ) {
                         // window.console.log( 'examRequests', 'r', 29, r);

@@ -40,7 +40,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.removeStudent]: ( state, rootState, payload ) => {
+    [mTypes.toggleRemoveControls]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
         delete state.students[ payload.index ];
     }

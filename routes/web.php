@@ -162,19 +162,27 @@ Route::get('dev/test', 'TestController@test');
 
 
 
+
+
+
+
+
+
+
+
+
 /* ******************** New setup page ***************** */
 //display of page
 Route::get('dev/setup/{exam}', 'Item\SetupController@show')->name('show-exam');
 Route::get('dev/setup', 'Item\SetupController@index');
+//order of the items on the exam
+Route::post('dev/setup/{exam}/order', 'Item\AssignmentController@store');
 
 //intrinsic properties of the item
 //Route::put('items/{item}', 'ItemController@update');
 //Route::patch('items/{exam}', 'ItemController@updateAll');
 Route::resource('items', 'Item\ItemController'); //,
 Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
-
-//order of the items on the exam
-Route::post('dev/setup/{exam}/order', 'Item\AssignmentController@store');
 
 Route::post('comments/{item}', 'Item\CommentController@store');
 //new exam controller
@@ -196,5 +204,6 @@ Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
 Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
 Route::post('dev/scores', 'Item\ItemScoreController@store');
 
-Route::get('dev/kumi/exam/{exam}', 'Item\KumiController@loadExamKumi');
-Route::resource('dev/kumi', 'Item\KumiController');
+Route::resource('dev/kumis', 'Item\KumiController');
+Route::get('dev/kumis/exam/{exam}', 'Item\KumiController@loadExamKumi');
+Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKumi');

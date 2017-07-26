@@ -175,18 +175,18 @@ export default class Student extends IModel{
 
 
     /* *************************** Identifier *********** */
-    // /**
-    //  * Returns the identifier set by the user.
-    //  * This is not the database id of the student
-    //  * */
-    // get studentIdentifier() {
-    //     return this._studentIdentifier
-    // };
-    //
-    // set studentIdentifier( val ) {
-    //     this._studentIdentifier = val;
-    // }
-    //
+    /**
+     * Returns the identifier set by the user.
+     * This is not the database id of the student
+     * */
+    get identifier() {
+        return this.studentIdentifier;
+    };
+
+    set identifier( val ) {
+        this.studentIdentifier = val;
+    }
+
 
     /* *************************** Email ****************** */
     // get email() {

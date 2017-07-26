@@ -23,7 +23,7 @@
 
 window._ = require( 'lodash' );
 
-import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT} from './apiSettings';
+import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT } from './apiSettings';
 
 import * as aTypes from '../store/action-types';
 import * as mTypes from '../store/mutation-types';
@@ -34,8 +34,10 @@ import Exam from '../models/Exam'
 import Item from '../models/Item'
 
 import { createItem, updateExam, updateItem, updateItemsOrder } from './requests'
-import {updateComment} from '../api/requests/commentRequests';
-import {createStudent, associateStudent} from '../api/requests/studentRequests';
+import { updateComment } from '../api/requests/commentRequests';
+import { createStudent, destroyStudent, updateStudent, associateStudent, disassociateStudent } from '../api/requests/studentRequests';
+import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
+
 /**
  * Returns true if the mutation needs to
  * be synced with the server.
@@ -68,7 +70,6 @@ export default function ( store ) {
     // it.
     store.subscribe( ( mutation ) => {
         let { type, payload } = mutation;
-
 
 
         //Check if mutateSilently has been set
@@ -138,39 +139,81 @@ export default function ( store ) {
                 // payload.callback();
                 break;
 
-            case mTypes.updateComment:
-                window.console.log( 'apiPlugin', 'calling update comment', 140, item );
-                updateComment(store, item);
-                break;
-
             case mTypes.insertNodeIntoOrder:
                 updateItemsOrder( store );
                 break;
 
             case mTypes.updateOrder:
-                window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );
+                // window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );
                 updateItemsOrder( store );
                 break;
 
             case mTypes.demoteItem:
                 updateItemsOrder( store );
                 break;
+
             case mTypes.promoteItem:
                 updateItemsOrder( store );
                 break;
+
             case 'increasePosition':
                 updateItemsOrder( store );
                 break;
+
             case 'decreasePosition':
                 updateItemsOrder( store );
                 break;
 
+
+            // ******************** Comments
+            case mTypes.updateComment:
+                window.console.log( 'apiPlugin', 'calling update comment', 140, item );
+                updateComment( store, item );
+                break;
+
+
+            // ******************** Students
             case 'addStudentToRoster':
-                window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                let student = payload.obj;
+                // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
+                createStudent( store, payload.obj );
+                associateStudent( store, payload.obj );
+                break;
+
+            case 'removeStudentFromRoster':
+                window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
+                disassociateStudent( store, payload.obj );
+                break;
+
+            case 'deleteStudent':
+                window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
+                destroyStudent( store, payload.obj );
+                break;
+
+            case 'updateStudentInRoster':
+                // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
                 // let kumi = payload.kumi
-                createStudent(store, student );
-                //associateStudent(store, payload.obj);
+                updateStudent( store, payload.obj );
+                break;
+
+
+            // ******************** Kumi
+            case 'addKumi':
+                // window.console.log( 'apiPlugin', 'addKumi', 177, payload );
+                //if an exam is set as current,
+                //this will create an association, otherwise
+                //it will just create a kumi
+                let exam = store.getters.currentExam;
+                createKumi( store, payload, exam );
+                break;
+
+            case 'updateKumi':
+                // window.console.log( 'apiPlugin', 'updateKumi', 184, payload );
+                updateKumi( store, payload );
+
+                // let exam = store.getters.currentExam;
+                // if(exam){
+                //     associateKumi(store, payload, exam);
+                // }
                 break;
             default:
 

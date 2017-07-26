@@ -53,13 +53,13 @@ $factory->define(App\Exam::class, function ( Faker\Generator $faker ) {
 $factory->define(App\Kumi::class, function ( Faker\Generator $faker ) {
     return [
         'year' => $faker->year,
-        'nickname' => $faker->text(30),
+        'name' => $faker->text(30),
     ];
 });
 $factory->defineAs(App\Kumi::class, 'with_exam', function ( Faker\Generator $faker ) use ( $factory ) {
     return [
         'year' => $faker->year,
-        'nickname' => $faker->text(30),
+        'name' => $faker->text(30),
     ];
 });
 

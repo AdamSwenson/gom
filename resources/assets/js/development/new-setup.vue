@@ -24,6 +24,8 @@
                 <p>{{ examId }}</p>
                 <p>Can sync {{ canSync}}</p>
 
+                <sync-indicator></sync-indicator>
+
                 <existing-exams-menu>
                     <!--<p slot="row-content">taco</p>-->
                 </existing-exams-menu>
@@ -90,6 +92,8 @@
     import * as gTypes from '../store/getter-types'
 
     import { updateItemsOrder } from '../api/requests'
+    import { loadExamKumi } from '../api/requests/kumiRequests';
+    import { loadAllStudents } from '../api/requests/studentRequests';
 
     var Sortable = require( 'sortablejs' );
 
@@ -168,13 +172,19 @@
         created: function () {
             window.console.log( 'new-setup', 'created', 169);
             this.$store.commit( 'loadInitialData' );
+            loadExamKumi( this.$store, this.exam );
+            let me = this;
+            setTimeout( function () {
+                //set the first kumi as the one to display
+                //this needs to happen before associate exam is called
+                me.$store.commit( 'updateSelectedKumi' );
 
-            //            this.$store.dispatch( 'setupOnMount' );
+                loadAllStudents( me.$store, me.exam );
 
+            }, 3000 );
         },
 
 
-        components: {},
 
     }
 </script>

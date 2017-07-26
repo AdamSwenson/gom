@@ -1,7 +1,7 @@
 /**
  * Created by adam on 7/7/17.
  */
-import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT } from '../apiSettings';
+import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes } from '../apiSettings';
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
 import * as gTypes from '../../store/getter-types';
@@ -44,13 +44,13 @@ module.exports = {
     },
 
     getExamScoreRequest: ( exam ) => {
-        let to = route + '/exam/' + exam.id;
+        // let to = route + '/exam/' + exam.id;
         let out = {
             requestVersion: REQUEST_VERSION
         };
 
         window.axios
-            .get( to )
+            .get( Routes.getExamScoreRequest(exam) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getExamScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {
@@ -72,10 +72,9 @@ module.exports = {
 
 
     getStudentScoreRequest: ( student ) => {
-        let to = route + '/student/' + student.id;
 
         window.axios
-            .get( to )
+            .get( Routes.getStudentScoreRequest(student) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getStudentScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {
@@ -96,10 +95,9 @@ module.exports = {
     },
 
     getItemScoreRequest: ( item ) => {
-        let to = route + '/item/' + item.id;
 
         window.axios
-            .get( to )
+            .get( Routes.getItemScoreRequest(item))
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getItemScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {

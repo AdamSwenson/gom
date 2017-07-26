@@ -2,7 +2,7 @@
  * Created by adam on 7/6/17.
  */
 
-import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT} from '../apiSettings';
+import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes} from '../apiSettings';
 
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
@@ -15,9 +15,9 @@ import Item from '../../models/Item'
 import { errorHandling, handleResponse } from '../responseHandlers';
 import { holdForIdLoading } from '../apiHelpers';
 
-const ROUTE_BASE = 'comments';
+// const ROUTE_BASE = 'comments';
 
-const makeRoute = (item)=>{return ROUTE_BASE + '/' + item.id};
+// const makeRoute = (item)=>{return ROUTE_BASE + '/' + item.id};
 
 module.exports = {
 
@@ -36,7 +36,7 @@ module.exports = {
 
             //put/patch
             window.axios
-                .post( makeRoute(item), out )
+                .post( Routes.updateComment(item), out )
                 .then( ( response ) => {
                     // handleResponse( store, item, response );
                 } )

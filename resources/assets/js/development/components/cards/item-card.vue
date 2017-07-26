@@ -10,7 +10,7 @@
 
         <div class="card-content"
              v-bind:id="contentId"
-             v-show="paneVisible">
+             v-show="isPaneVisible">
             <edit-tabs
                     :serial-number="serialNumber"
                     :is-exam="false">
@@ -203,7 +203,7 @@
             /**
              * Returns true if the settings pane for this item should be displayed
              */
-            paneVisible: function () {
+            isPaneVisible: function () {
                 return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.serialNumber )
             },
 

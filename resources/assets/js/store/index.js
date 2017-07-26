@@ -59,6 +59,7 @@ import times from './modules/times.js'
 
 import roster from './modules/roster/roster'
 import visibility from './modules/visibility'
+import kumi from './modules/roster/kumis'
 // import orderings from './modules/items.order';
 
 // import gradeStateDefault from './modules/grade.defaultstate'
@@ -109,7 +110,8 @@ const debug = process.env.NODE_ENV !== 'production';
         students,
         times,
         visibility,
-        roster
+        roster,
+        kumi
     }
 
 // }

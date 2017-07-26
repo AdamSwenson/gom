@@ -12,10 +12,9 @@ class ItemScore extends BaseModel
 {
     protected $fillable = ['score', 'commentText'];
 
-protected $casts =[
-  'score' => 'float'
-];
-
+    protected $casts = [
+        'score' => 'float'
+    ];
 
 
 #---- foreign keys

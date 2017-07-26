@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div class="exam-edit-pane row" v-show="paneVisible">
+        <div class="exam-edit-pane row" v-show="isPaneVisible">
             <div class="col-md-12">
 
                 <edit-tabs :index="index" :is-exam="true"></edit-tabs>
@@ -26,7 +26,7 @@
         </div>
 
 
-        <div class="row" v-show="paneVisible">
+        <div class="row" v-show="isPaneVisible">
             <div class="col-md-12 text-left ">
                 <div class="btn-group"
                      role="group"
@@ -87,7 +87,7 @@
             /**
              * Returns true if the settings pane for this item should be displayed
              */
-            paneVisible: function () {
+            isPaneVisible: function () {
                 return this.$store.getters[ gTypes.isExamSettingsVisible ];
             },
         },

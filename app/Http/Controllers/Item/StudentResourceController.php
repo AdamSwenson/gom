@@ -58,8 +58,8 @@ class StudentResourceController extends Controller
     public static function convertOutgoing(Student $student){
         $out = [];
         foreach (self::$fields as $f){ //$f is the camel cased version used by the client
-          //  $s = snake_case($f);
-            $out[ $f ] = $student->$f; //so we get the snake cased property
+            $s = snake_case($f);
+            $out[ $f ] = $student->$s; //so we get the snake cased property
         }
         return $out;
     }
@@ -179,8 +179,7 @@ class StudentResourceController extends Controller
     public function destroy( $id )
     {
         try{
-            $student = Student::find($id);
-            $student->delete();
+            Student::destroy($id);
             $this->sendAjaxSuccess();
         } catch (Exception $e) {
             $this->sendAjaxFailure();

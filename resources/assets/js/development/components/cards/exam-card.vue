@@ -6,14 +6,20 @@
     >
 
         <div class="card-content">
-            <item-main :serial-number="serialNumber" :is-exam="true"></item-main>
+            <item-main
+                    :serial-number="serialNumber"
+                    :is-exam="true"
+            ></item-main>
         </div>
 
-        <div class="card-content" v-show="paneVisible">
-            <edit-tabs :serial-number="serialNumber"
-                       :is-exam="true">
-            </edit-tabs>
+        <div class="card-content" v-show="isPaneVisible">
+            <edit-tabs
+                    :serial-number="serialNumber"
+                    :is-exam="true"
+            ></edit-tabs>
+
             <router-view name="examPanels"></router-view>
+
         </div>
 
         <div class="card-footer">
@@ -22,8 +28,8 @@
                 <div class="field is-grouped">
                     <p class="control">
                         <add-child-button
-                                :serial-number="serialNumber">
-                        </add-child-button>
+                                :serial-number="serialNumber"
+                        ></add-child-button>
                     </p>
 
                     <p class="control">
@@ -107,17 +113,16 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
-    export default{
+    export default {
 
         //NB, the decisive consideration in favor of making this
         //a prop was that we may want to use the exam card on a page
         //with other exams. It thus won't do to assume that it is
         //the only exam and have it look up its serial number on its own
-        props: ['serialNumber'],
+        props: [ 'serialNumber' ],
 
         data: function () {
             return {
-
                 defaults: {},
                 isCommented: false,
                 /**
@@ -129,34 +134,6 @@
 
 
         computed: {
-
-            /**
-             * The object representing the exam's intrinsic properties
-             */
-            exam: function () {
-                return this.$store.getters.getItemBySerialNumber(this.serialNumber);
-            },
-
-            /**
-             * The Node representing the item's assignment
-             */
-            node: function(){
-                this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-            },
-
-
-//            serialNumber: function () {
-//                return this.exam.serialNumber;
-//                //$store.getters.currentExam.serialNumber
-////                return this.$store.getters.currentExam ? this.$store.getters.currentExam.serialNumber : null;
-//            },
-
-            index: function () {
-                return this.serialNumber;
-},
-
-
-
             /**
              * Returns an array of serial numbers belonging to
              * this item's children (in order)
@@ -172,24 +149,39 @@
                 return cdrn;
             },
 
-            numberChildren: function () {
-                return this.children.length;
-//                return node ? node.children.length : 0;
-            },
-
-
-            /**
-             * Returns true if the settings pane for this item should be displayed
-             */
-            paneVisible: function () {
-
-                return this.$store.getters[ gTypes.isExamSettingsVisible ]
-            },
-
             divId: function () {
                 return "exam-card-" + this.serialNumber
             },
 
+            /**
+             * The object representing the exam's intrinsic properties
+             */
+            exam: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+
+            index: function () {
+                return this.serialNumber;
+            },
+
+            /**
+             * Returns true if the settings pane for this item should be displayed
+             */
+            isPaneVisible: function () {
+                return this.$store.getters[ gTypes.isExamSettingsVisible ]
+            },
+
+            /**
+             * The Node representing the item's assignment
+             */
+            node: function () {
+                this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
+            },
+
+            numberChildren: function () {
+                return this.children.length;
+            },
 
         },
 
@@ -201,7 +193,7 @@
              * comments.
              */
             toggleCommentsOn: function () {
-                console.log( 'CALLED', 'toggleCommentsOn' );
+//                console.log( 'CALLED', 'toggleCommentsOn' );
                 this.isCommented = !this.isCommented;
             },
 
@@ -211,7 +203,7 @@
              * comments.
              */
             toggleNameVisibility: function () {
-                console.log( 'CALLED', 'toggleNameVisibility' );
+//                console.log( 'CALLED', 'toggleNameVisibility' );
                 this.isNamePublic = !this.isNamePublic;
             },
 
@@ -232,6 +224,5 @@
             },
         },
 
-        mounted: function () {},
     }
 </script>

@@ -19,11 +19,17 @@ use Laravel\Dusk\Browser;
 class SetupTest extends DuskTestCase
 
 {
+// ------------------------------ Intact
+    /**
+     * @group aa
+     * @group setup
+     * @group editExam
+     */
     public function testNavigationToPage()
     {
         $user = factory(User::class)->create();
         $this->browse(function ( Browser $browser ) use ( $user ) {
-            $browser->loginAs(User::find(1))
+            $browser->loginAs($user)
                 ->visit(new Setup())
                 ->waitFor(Setup::$mainBodyLocator)
                 ->assertVisible(Setup::$mainBodyLocator);
@@ -31,33 +37,49 @@ class SetupTest extends DuskTestCase
 
     }
 
+    // ----------------------------------- Editing, adding items
+
+    /**
+     * @group b
+     * @group setup
+     * @group exam
+     * @group items
+     * @group addItem
+     */
     public function testAddQuestionToExam()
     {
         $user = factory(User::class)->create();
         $this->browse(function ( Browser $browser ) use ( $user ) {
-            $browser->loginAs(User::find(1))
+            $browser->loginAs($user)
                 //prep
                 ->visit(new Setup())
                 ->waitFor(Setup::$mainBodyLocator)
                 ->assertVisible('.add-child-to-exam-button')
+                ->assertVisible('@addChildButton')
                 ->assertMissing('.item-card-component')
                 //call
-                ->click('.add-child-to-exam-button')
+                ->click("[id^='add-child-to-exam-button-']")
                 ->waitFor('#item-card-1-0')
                 ->assertVisible('.item-card-component')
-                ->pause(2000);
-
+                ->pause(10000);
 
             //make sure it persisted
             $examId = $browser->value('#examId');
-            $browser->visit(Setup::urlToExam($examId))
+            $browser->navigateToExam($examId, $user->id)
                 ->waitFor(Setup::$mainBodyLocator)
+                ->pause(10000)
+                ->waitFor('#item-card-1-0')
+                ->assertVisible('.item-card-component')
                 ->assertVisible('#item-card-1-0');
         });
 
     }
 
     /**
+     * @group aa
+     * @group setup
+     * @group exam
+     * @group editExam
      * Alter the exam name and make sure it persists
      */
     public function testEditExamName()
@@ -78,14 +100,20 @@ class SetupTest extends DuskTestCase
 
             //make sure it persisted
             $examId = $browser->value('#examId');
-            Setup::navigateToExam($browser, $examId);
-            $browser->assertVisible('#exam-name')
+            $browser->navigateToExam($examId, $user)
+                ->assertVisible('#exam-name')
                 ->assertInputValue('#exam-name', $testText);
         });
 
     }
 
 
+    /**
+     * @group aa
+     * @group setup
+     * @group items
+     * @group editItem
+     */
     public function testEditQuestionName()
     {
         $testText = Factory::create()->name;
@@ -110,8 +138,8 @@ class SetupTest extends DuskTestCase
             //make sure it persisted
 
             $examId = $browser->value('#examId');
-            Setup::navigateToExam($browser, $examId);
-            $browser->waitForText($testText)
+            $browser->navigateToExam($examId, $user)
+                ->waitForText($testText)
                 ->assertVisible('.item-card-component')
                 ->assertVisible('#item-card-1-0')
                 ->assertInputValue('#item-name-1-0', $testText);
@@ -165,22 +193,24 @@ class SetupTest extends DuskTestCase
                 ->click(Setup::$addItemToExamButton)
                 ->waitFor('#item-card-1-0')
 //                ->assertVisible('#item-settings-button-1-0')  //Setup::settingsToggleButton())
-                ->assertVisible(Setup::settingsToggleButton(1,0))
-
+                ->assertVisible(Setup::settingsToggleButton(1, 0))
                 ->assertMissing('#item-nav-tabs-1-0')
                 //click the show button
-                ->click(Setup::settingsToggleButton(1,0))
+                ->click(Setup::settingsToggleButton(1, 0))
 //                ->waitFor('#item-nav-tabs-1-0')
                 ->assertVisible('#item-nav-tabs-1-0')
                 //click the hide button
-                ->click(Setup::settingsToggleButton(1,0))
+                ->click(Setup::settingsToggleButton(1, 0))
                 ->assertMissing('#item-nav-tabs-1-0');
 
         });
     }
 
     /**
-     * @group new
+     * @group aa
+     * @group setup
+     * @group exam
+     * @group createExam
      */
     public function testMakeExam()
     {

@@ -2,7 +2,7 @@
  * Created by adam on 7/6/17.
  */
 
-import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT } from '../apiSettings';
+import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes } from '../apiSettings';
 
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
@@ -14,8 +14,7 @@ import Exam from '../../models/Exam'
 import Item from '../../models/Item'
 import Kumi from '../../models/Kumi'
 
-const STUDENT_BASE_ROUTE = 'dev/students';
-const ROSTER_BASE_ROUTE = 'dev/roster';
+const ID_WAIT_DELAY = 3000;
 
 /**
  * Process the result of a response where we need to
@@ -25,12 +24,14 @@ const ROSTER_BASE_ROUTE = 'dev/roster';
  */
 const handleLoadResponse = ( store, response ) => {
     _.forEach( response.data, function ( r ) {
-        // window.console.log( 'examRequests', 'r', 29, r);
+        // window.console.log( 'examRequests', 'r', 29, r );
         let student = Student.factory( { r } );
-        student.id = r.id;
+        student.email = r.email;
         student.firstName = r.firstName;
+        student.id = r.id;
+        student.identifier = ! _.isUndefined(r.identifier) ? r.identifier : r.studentIdentifier;
         student.lastName = r.lastName;
-        student.identifier = r.identifier;
+
         let payload = Payload.factory( { obj: student, mutateSilently: true } );
         store.commit( 'addStudentToRoster', payload );
     } );
@@ -44,40 +45,36 @@ const handleLoadResponse = ( store, response ) => {
  * @param response
  * @returns {Promise}
  */
-const handleCreateStudentResponse = ( store, student, response ) => {
+const handleCreateStudentResponse = ( store, student, data ) => {
     return new Promise( ( resolve, reject ) => {
         let pl = Payload.factory( {
             obj: student,
             updateProp: 'id',
-            updateVal: response.data.id,
+            updateVal: data.id,
             mutateSilently: true
         } );
 
-        window.console.log( 'studentRequests', 'handleCreateStudentResponse', 49, pl, response, response['id'] );
+        // window.console.log( 'studentRequests', 'handleCreateStudentResponse', 49, pl, response, response['id'] );
 
-        store.commit( 'updateStudentInRoster',  pl);
+        store.commit( 'updateStudentInRoster', pl );
 
-        //
-        //
-        // Student.fillableProps.forEach( function ( p ) {
-        //     if ( Object.keys( response ).includes( p ) ) {
-        //         store.commit( 'updateStudentInRoster', Payload.factory( {
-        //             obj: student,
-        //             updateProp: p,
-        //             updateVal: response[ p ],
-        //             mutateSilently: true
-        //         } ) );
-        // }
-        // } );
         resolve();
-    }    );
+    } );
 
 };
 
 module.exports = {
 
+    /**
+     * Sends request for all students associated with the exam
+     * or all students belonging to the user, depending on
+     * whether the exam is included.
+     *
+     * @param store
+     * @param exam
+     */
     loadAllStudents: ( store, exam ) => {
-        window.console.log( 'apiPlugin-studentRequests', 'loadAllStudents', 8 );
+        // window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8 );
         let out = {
             requestVersion: REQUEST_VERSION
         };
@@ -85,9 +82,9 @@ module.exports = {
         //Request is for every student belonging to the user
         if ( _.isUndefined( exam ) ) {
             window.axios
-                .get( STUDENT_BASE_ROUTE )
+                .get( Routes.loadAllStudents() )
                 .then( ( response ) => {
-                    window.console.log( 'studentRequests', '', 28, response );
+                    // window.console.log( 'studentRequests', '', 28, response );
                     handleLoadResponse( store, response );
                 } )
                 .catch( function ( error ) {
@@ -95,12 +92,13 @@ module.exports = {
                     // errorHandling( error );
                 } );
         }
+
         else {
             //Get students for a particular exam
             window.axios
                 .get( ROSTER_BASE_ROUTE + '/exam/' + exam.id )
                 .then( ( response ) => {
-                    window.console.log( 'examRequests', '', 28, response );
+                    // window.console.log( 'examRequests', '', 28, response );
                     handleLoadResponse( store, response );
                 } )
                 .catch( function ( error ) {
@@ -111,6 +109,7 @@ module.exports = {
     },
 
     loadStudent: ( store, student ) => {
+
     },
 
     /**
@@ -121,9 +120,9 @@ module.exports = {
      */
     updateStudent: ( store, student ) => {
         window.axios
-            .post( BASE_ROUTE )
+            .patch( Routes.updateStudent(student), student )
             .then( ( response ) => {
-                window.console.log( 'studentRequests', 'updateStudent', 28, response );
+                // window.console.log( 'studentRequests', 'updateStudent', 28, response );
             } )
             .catch( function ( error ) {
                 window.console.log( 'studentRequests', 'ERROR', 39, error );
@@ -139,22 +138,21 @@ module.exports = {
      */
     createStudent: ( store, student ) => {
         // if ( student && student.isNew() ) {
-            let toSend = {
-                ...student,
-                requestVersion: REQUEST_VERSION,
-            };
+        let toSend = {
+            ...student,
+            requestVersion: REQUEST_VERSION,
+        };
 
-            window.axios
-                .post( STUDENT_BASE_ROUTE, toSend )
-                .then( ( response ) => {
-                    // window.console.log( 'studentRequests', 'createStudent', 28, response );
-                    handleCreateStudentResponse( store, student, response );
-                } )
-                .catch( function ( error ) {
-                    window.console.log( 'studentRequests', 'ERROR', 39, error );
-                    // errorHandling( error );
-                } );
-        // }
+        window.axios
+            .post( Routes.createStudent(), toSend )
+            .then( ( response ) => {
+                // window.console.log( 'studentRequests', 'createStudent', 28, response );
+                handleCreateStudentResponse( store, student, response.data );
+            } )
+            .catch( function ( error ) {
+                window.console.log( 'studentRequests', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
     },
 
     /**
@@ -165,21 +163,41 @@ module.exports = {
      * @param exam
      * @param kumi
      */
-    associateStudent: ( store, student, kumi ) => {
-        let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
-        let out = {
-            kumiId: 1
+    associateStudent: ( store, student ) => {
+        let kumi = store.getters.getSelectedKumi;
+        //handles the actual request so that we can deal
+        //with the need to wait for an id
+        let makeRequest = ( route, out ) => {
+            window.axios
+                .post( route, out )
+                .then( ( response ) => {
+                    // window.console.log( 'studentRequests', 'associateStudent', 28, response );
+                    store.commit( 'associateStudentWithKumi', Payload.factory( { student: student, kumi: kumi } ) );
+                } )
+                .catch( function ( error ) {
+                    //todo add response handling
+                    window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
+                    // errorHandling( error );
+                } );
         };
-        window.axios
-            .post( route, $out )
-            .then( ( response ) => {
-                window.console.log( 'studentRequests', 'createStudent', 28, response );
-            } )
-            .catch( function ( error ) {
-                //todo add response handling
-                window.console.log( 'studentRequests', 'ERROR', 39, error );
-                // errorHandling( error );
-            } );
+        let out = {
+            requestVersion: REQUEST_VERSION,
+        };
+
+        //Check whether both the kumi and student have their ids
+        if ( kumi.id === -1 || student.id === -1 ) {
+
+            setTimeout( function () {
+//                let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
+
+                makeRequest( Routes.associateStudent(student, kumi), out );
+            }, ID_WAIT_DELAY );
+        } else {
+         //   let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
+            makeRequest( Routes.associateStudent(student, kumi), out );
+        }
+        // window.console.log( 'studentRequests', 'associateStudent', 162, student );
+
     },
 
     /**
@@ -197,16 +215,17 @@ module.exports = {
      * @param student
      */
     disassociateStudent: ( store, student ) => {
-        let route = `${ROSTER_BASE_ROUTE}/${student.id}/diss/{exam.id}`;
+        let kumi = store.getters.getCurrentlySelectedKumi;
+        // let route = `${ROSTER_BASE_ROUTE}/${student.id}/diss/${kumi.id}`;
 
         window.axios
-            .post( route )
+            .post( Routes.disassociateStudent(student, kumi) )
             .then( ( response ) => {
-                window.console.log( 'examRequests', 'createStudent', 28, response );
+                window.console.log( 'studentRequests', 'disassociateStudent', 214, response );
             } )
             .catch( function ( error ) {
                 //todo add response handling
-                window.console.log( 'examRequests', 'ERROR', 39, error );
+                window.console.log( 'studentRequests', 'ERROR', 39, error );
                 // errorHandling( error );
             } );
     },
@@ -222,10 +241,10 @@ module.exports = {
      * @param student
      */
     anonymizeStudents: ( store, exam ) => {
-        let route = `${ROSTER_BASE_ROUTE}/anon/{exam.id}`;
+        // let route = `${ROSTER_BASE_ROUTE}/anon/{exam.id}`;
 
         window.axios
-            .post( route )
+            .post( Routes.anonymizeStudents(exam) )
             .then( ( response ) => {
                 window.console.log( 'examRequests', 'anonymize students', 28, response );
             } )
@@ -243,10 +262,10 @@ module.exports = {
      * @param student
      */
     destroyStudent: ( store, student ) => {
-        let route = `${STUDENT_BASE_ROUTE}/${student.id}`;
+        // let route = `${STUDENT_BASE_ROUTE}/${student.id}`;
 
         window.axios
-            .delete( route )
+            .delete( Routes.destroyStudent(student) )
             .then( ( response ) => {
                 window.console.log( 'examRequests', 'anonymize students', 28, response );
             } )
@@ -256,4 +275,4 @@ module.exports = {
                 // errorHandling( error );
             } );
     }
-}
+};

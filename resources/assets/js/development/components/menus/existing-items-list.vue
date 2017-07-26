@@ -55,6 +55,7 @@
     import Payload from '../../../models/Payload'
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
+    import {Routes} from '../../../api/apiSettings';
 
 
     export default{
@@ -74,7 +75,7 @@
         asyncComputed: {
             items: function () {
                 return window.axios
-                    .get( 'items' )
+                    .get( Routes.loadAllItems() )
                     .then( ( response ) => {
                         window.console.log( 'itemRequests', '', 28, response );
                         let out = [];

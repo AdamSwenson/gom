@@ -2,7 +2,7 @@
  * Created by adam on 6/23/17.
  */
 
-import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT} from './apiSettings';
+import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes} from './apiSettings';
 
 import { errorHandling, handleResponse } from './responseHandlers';
 import { holdForIdLoading } from './apiHelpers';
@@ -35,7 +35,7 @@ module.exports = {
 
             //put/patch
             window.axios
-                .put( 'items/' + item.id, item )
+                .put( Routes.updateItem(item), item )
                 .then( ( response ) => {
                     handleResponse( store, item, response );
                 } )
@@ -57,10 +57,9 @@ module.exports = {
             examId: store.getters.currentExam.id,
             requestVersion: REQUEST_VERSION
         };
-        // }
-        //put/patch
+
         window.axios
-            .put( 'editexam/' + exam.id, exam )
+            .put( Routes.updateExam(exam), exam )
             .then( ( response ) => {
                 handleResponse( store, exam, response );
             } )
@@ -92,7 +91,7 @@ module.exports = {
             //Thus, this request is to create the item.
             //When the server has done this, it will send back an id
             window.axios
-                .post( 'items', toSend )
+                .post( Routes.createItem(), toSend )
                 .then( ( response ) => {
                     handleResponse( store, item, response );
                 } )
@@ -102,6 +101,7 @@ module.exports = {
         }
 
     },
+
     /**
      * Asks the server to update the order of items
      * @param store
@@ -142,7 +142,7 @@ module.exports = {
         // if ( holdForIdLoading( item ) ) {
         window.console.log( 'apiPlugin', 'updateItemsOrder NEW', 178, payload );
 
-        let route = 'setup/' + exam.id + '/order';
+        let route = Routes.updateItemsOrder(exam); //commonBaseRoute + '/' + exam.id + '/order';
         window.axios
             .post( route, payload )
             .then( ( response ) => {

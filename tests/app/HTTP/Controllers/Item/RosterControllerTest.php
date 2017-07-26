@@ -12,13 +12,16 @@ namespace App\Http\Controllers\Item;
 use App\Exam;
 use App\Kumi;
 use App\Student;
+use App\User;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Support\Facades\Auth;
 
 class RosterControllerTest extends \TestCase
 {
 
     use WithoutMiddleware;
 
+    public $student;
     protected $object;
     protected $exam;
     protected $route = 'dev/roster';
@@ -26,6 +29,12 @@ class RosterControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
+        $user = factory(User::class)->create();
+        Auth::login($user);
+        $this->exam = factory(Exam::class)->create();
+        $this->student = factory(Student::class)->create();
+        $this->kumi = factory(Kumi::class)->create();
+
     }
 
 
@@ -37,13 +46,10 @@ class RosterControllerTest extends \TestCase
     /** @test */
     public function associateStudent()
     {
-        $exam = factory(Exam::class)->create();
-        $student = factory(Student::class)->create();
-        $kumi = factory(Kumi::class)->create();
-        $kumi->exams()->attach($exam->id);
-        $kumi->save();
-        $studentId = $student->id;
-        $kumiId = $kumi->id;
+        $this->kumi->exams()->attach($this->exam->id);
+        $this->kumi->save();
+        $studentId = $this->student->id;
+        $kumiId = $this->kumi->id;
 
         $route = "dev/roster/{$studentId}/assoc/{$kumiId}";
 
@@ -52,6 +58,11 @@ class RosterControllerTest extends \TestCase
 
         //check
         $response->assertStatus(200);
+
+//        $e = $this->kumi->students()->first();
+
+//        $this->assertNotEmpty($e);
+//        $this->assertEquals($studentId, $e->id);
 
         $this->assertDatabaseHas('kumi_student',
             ['kumi_id' => $kumiId, 'student_id' => $studentId]
@@ -71,27 +82,24 @@ class RosterControllerTest extends \TestCase
     /** @test */
     public function disassociateStudent()
     {
-        $exam = factory(Exam::class)->create();
-        $student = factory(Student::class)->create();
-        $kumi = factory(Kumi::class)->create();
-        $kumi->exams()->attach($exam->id);
-        $student->kumis()->attach($kumi->id);
-        $student->save();
-        $studentId = $student->id;
-        $kumiId = $kumi->id;
+        $this->kumi->exams()->attach($this->exam->id);
+        $this->student->kumis()->attach($this->kumi->id);
+        $this->student->save();
+        $studentId = $this->student->id;
+        $kumiId = $this->kumi->id;
         $this->assertDatabaseHas('kumi_student',
             ['kumi_id' => $kumiId, 'student_id' => $studentId]
         );
 
         $route = "dev/roster/{$studentId}/diss/{$kumiId}";
-echo($route);
+
         //call
         $response = $this->post($route);
 
         //check
         $response->assertStatus(200);
         $this->assertDatabaseMissing('kumi_student',
-            ['kumi_id' => $kumi->id, 'student_id' => $student->id]
+            ['kumi_id' => $this->kumi->id, 'student_id' => $this->student->id]
         );
 
     }
@@ -100,16 +108,14 @@ echo($route);
     /** @test */
     public function getStudentsForExam()
     {
-        $exam = factory(Exam::class)->create();
         $students = factory(Student::class, 5)->create();
-        $kumi = factory(Kumi::class)->create();
-        $kumi->exams()->attach($exam);
+        $this->kumi->exams()->attach($this->exam);
         foreach ( $students as $student ) {
-            $student->kumis()->attach($kumi);
+            $student->kumis()->attach($this->kumi);
         }
-        $this->assertEquals(5, sizeof($kumi->students));
+        $this->assertEquals(5, sizeof($this->kumi->students));
 
-        $route = "dev/roster/{$exam->id}";
+        $route = "dev/roster/exam/{$this->exam->id}";
 
         //call
         $response = $this->get($route);
@@ -118,7 +124,14 @@ echo($route);
         $response->assertStatus(200);
 
         foreach ( $students as $student ) {
-            $response->assertJsonFragment($student->toArray());
+            $expect = [
+                'firstName' => $student->first_name,
+                'lastName' => $student->last_name,
+               // 'studentIdentifier' => `{$student->student_identifier}`,
+                'id' => $student->id,
+                'email' => $student->email];
+
+            $response->assertJsonFragment($expect);
         };
     }
 

@@ -23,7 +23,7 @@ class KumiControllerTest extends \TestCase
 
     protected $object;
     protected $exam;
-    protected $route = 'dev/kumi';
+    protected $route = 'dev/kumis';
 
     public function setUp()
     {
@@ -52,42 +52,46 @@ class KumiControllerTest extends \TestCase
 
         //check
         $response->assertStatus(200);
-        foreach($kumis as $kumi){
+        foreach ( $kumis as $kumi ) {
             $response->assertJsonFragment($kumi->toArray(), "Returned json contains the object");
 
         }
     }
 
     /** @test */
-    public function loadExamKumi( )
+    public function loadExamKumi()
     {
         //prep
+        $route = 'dev/kumis/exam/' . $this->exam->id;
+
+        $user = $user = factory(User::class)->create();
+        Auth::login($user);
         $numKumis = Factory::create()->numberBetween(1, 10);
-        $kumis = factory(Kumi::class,$numKumis)->create();
-        foreach($kumis as $kumi) {
-        $this->exam->kumis()->attach($kumi->id);
+        $kumis = factory(Kumi::class, $numKumis)->create();
+        foreach ( $kumis as $kumi ) {
+            $this->exam->kumis()->attach($kumi->id);
         }
         $this->exam->save();
 
         //call
-        $route = 'dev/kumi/exam/' . $this->exam->id;
         $response = $this->get($route);
 
         //check
         $response->assertStatus(200);
-        foreach($kumis as $kumi){
-            $response->assertJsonFragment($kumi->toArray()); //['nickname' => $kumi->nickname, 'year' => $kumi->year], "Returned json contains the object");
+        foreach ( $kumis as $kumi ) {
+//            $response->assertJsonFragment($kumi->toArray()); //
+            $response->assertJsonFragment(['name' => $kumi->name, 'year' => $kumi->year], "Returned json contains the object");
         }
     }
 
 
     /** @test */
-    public function store_no_exam(  )
+    public function store_no_exam()
     {
         $k = factory(Kumi::class)->make();
-            $d = ['nickname' => $k->nickname, 'year' => $k->year];
+        $d = ['name' => $k->name, 'year' => $k->year];
 
-            //call
+        //call
         $response = $this->post($this->route, $d);
 
         //check
@@ -97,21 +101,21 @@ class KumiControllerTest extends \TestCase
 
 
     /** @test */
-    public function store_w_exam(  )
+    public function store_w_exam()
     {
         $k = factory(Kumi::class)->make();
-        $dd = ['nickname' => $k->nickname,
+        $dd = ['name' => $k->name,
             'year' => $k->year
         ];
         $d = $dd + [
-            'examId' => $this->exam->id];
+                'examId' => $this->exam->id];
 
         //call
         $response = $this->post($this->route, $d);
 
         //check
         $response->assertStatus(200);
-        $kk = Kumi::where('nickname', $k->nickname)
+        $kk = Kumi::where('name', $k->name)
             ->where('year', $k->year)
             ->first();
         $this->assertNotEmpty($kk);
@@ -125,9 +129,9 @@ class KumiControllerTest extends \TestCase
     }
 
     /** @test */
-    public function show( )
+    public function show()
     {
-        $response = $this->get($this->route . '/'.$this->kumi->id);
+        $response = $this->get($this->route . '/' . $this->kumi->id);
         $response->assertStatus(200);
         $response->assertJsonFragment($this->kumi->toArray());
 
@@ -137,7 +141,7 @@ class KumiControllerTest extends \TestCase
     public function update()
     {
         $k = factory(Kumi::class)->make();
-        $d = ['nickname' => $k->nickname, 'year' => $k->year];
+        $d = ['name' => $k->name, 'year' => $k->year];
         $id = $this->kumi->id;
 
         //call

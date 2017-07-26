@@ -24,7 +24,7 @@ class KumiTableSeeder extends Seeder
         {
             $s = new \App\Kumi();
             $s->year = $this->faker->year();
-            $s->nickname = $this->faker->text(8);
+            $s->name = $this->faker->text(8);
             $s->save();
         }
     }

@@ -59,7 +59,7 @@ class SetupControllerTest extends \TestCase
 
         $route = $this->route . '/' . $exam->id;
         $dao->shouldReceive('getItemOrderForClient')->once()
-            ->with($exam)
+            ->with([$exam])
             ->andReturn(['itemObjects' => ['a'], 'itemOrder' => ['b']]);
 
         //call

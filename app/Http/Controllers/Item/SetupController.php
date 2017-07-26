@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemRequest;
 use App\Item;
 use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
+use App\Kumi;
 use App\Question;
 use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -35,6 +36,8 @@ class SetupController extends Controller
     const EXAM_JSON_NAME = 'loadedExam';
     const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
     const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+    const KUMIS_JSON_NAME = 'loadedKumis';
+
     public $type;
     public $exam;
 
@@ -97,6 +100,13 @@ class SetupController extends Controller
     public function index()
     {
         $exam = Exam::create();
+        //this is a brand new exam, so there are no
+        //kumis associated with it. So we create
+        //and empty one to be the default kumi
+        $kumi = Kumi::create(['name' => 1]);
+        $exam->kumis()->attach($kumi->id);
+        $kumi->save();
+
         return redirect()->route('show-exam', $exam);
     }
 
@@ -115,13 +125,22 @@ class SetupController extends Controller
         //The returned array  will have the keys
         //  'itemObjects'
         //  'itemOrder'
+        $kumis = $exam->kumis()->get();
+        if($kumis->count() === 0){
+            //if there isn't one, we need it
+            $kumi = Kumi::create();
+            $exam->kumis()->attach($kumi->id);
+            $kumis = $exam->kumis()->get();
+        }
 
         //So we add some additional elements that the page expects
         $standard = [
             'examObjectJsonName' => self::EXAM_JSON_NAME,
             'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
             'itemOrderJsonName' => self::ITEM_ORDER_JSON_NAME,
-            'exam' => $exam];
+            'kumisJsonName' => self::KUMIS_JSON_NAME,
+            'exam' => $exam,
+            'kumis' => $kumis];
 
         $out += $standard;
 

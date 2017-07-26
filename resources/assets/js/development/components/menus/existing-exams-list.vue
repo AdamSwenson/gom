@@ -52,7 +52,8 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
-    import api from '../../../api/requests/examRequests'
+    import {Routes} from '../../../api/apiSettings';
+    import api from '../../../api/requests/examRequests';
 
     export default{
 
@@ -80,7 +81,7 @@
                 if ( e.length > 0 ) return e;
 
                 return window.axios
-                    .get( 'dev/exams' )
+                    .get( Routes.loadAllExams() )
                     .then( ( response ) => {
                         window.console.log( 'examRequests', 'exams', 28, response );
                         let out = [];

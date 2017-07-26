@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Item;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemScoreRequest;
 use App\Item;
+use App\Exam;
+use App\Student;
 use App\Models\NewGom\ItemScore;
-use Illuminate\Http\Request;
 
 /**
  */
@@ -17,11 +18,17 @@ class ItemScoreController extends Controller
     public $exam;
     public $item;
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+
     public function loadIdentifiers( ItemScoreRequest $request )
     {
         $this->exam = Exam::find($request->examId);
         $this->item = Item::find($request->itemId);
-        $this->student = Student($request->studentId);
+        $this->student = Student::find($request->studentId);
 //todo add error handling here so this kills it if there's a missing value
     }
 
@@ -62,17 +69,26 @@ class ItemScoreController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Gets all scores for an item, regardless of which exam the item
+     * was used on.
+     *
+     * Route:
+     *          GET
+     *          dev/scores/item/{item}'
      *
      * @param Item $item
      * @return \Illuminate\Http\Response
-     * @internal param int $id
      */
     public function itemScores( Item $item )
     {
         return ItemScore::where('item_id', $item->id)->get();
     }
 
+    /**
+     * Get all item scores for all students on the exam
+     * @param Exam $exam
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function examScores( Exam $exam )
     {
         return ItemScore::where('exam_id', $exam->id)->get();

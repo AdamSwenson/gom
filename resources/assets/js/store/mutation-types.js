@@ -60,7 +60,7 @@ export const setNumberQuestions = 'setNumberQuestions';
 
 //students
 export const setStudent = 'setStudent';
-export const removeStudent = 'removeStudent';
+export const removeStudent = 'toggleRemoveControls';
 //dev
 export const updateStudent = 'updateStudent';
 export const addStudentToRoster = 'addStudentToRoster';

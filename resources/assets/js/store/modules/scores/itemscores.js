@@ -2,8 +2,8 @@
  * Created by adam on 7/7/17.
  */
 
-import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
+import * as mTypes from '../../mutation-types'
+import * as aTypes from '../../action-types'
 
 class Score {
     constructor( examId, itemId, studentId ) {
@@ -17,6 +17,8 @@ class Score {
 
 
 const state = {
+
+    //Array of Score objects
     scores: []
 };
 
@@ -27,7 +29,7 @@ const actions = {};
 const getters = {
 
     getExamScores: ( state, getters, rootState, examId ) => ( examId ) => {
-        return (function ( state, studentId ) {
+        return (function ( state, examId ) {
             var r = state.scores.filter( function ( i ) {
                 if ( i.examId === examId ) {
                     return i;

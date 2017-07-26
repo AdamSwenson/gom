@@ -12,6 +12,7 @@ use Laravel\Dusk\Page as BasePage;
 
 class Setup extends BasePage
 {
+    const URL_BASE = '/dev/setup';
     static public $mainBodyLocator = '#examEditor';
 
     /**
@@ -21,15 +22,12 @@ class Setup extends BasePage
      */
     public function url()
     {
-//        $exam = Exam::all()->random();
-        return 'dev/setup';// . $exam->id;
+        return self::URL_BASE;
     }
 
     static public function urlToExam( $examId )
     {
-        return '/setup/' . $examId;
-        // . $exam->id;
-//        $browser->assertPathIs($this->url());
+        return self::URL_BASE . '/' . $examId;
     }
 
     static public function settingsToggleButton( $height = 0, $depth = 0 )
@@ -39,15 +37,13 @@ class Setup extends BasePage
 
     static public $addItemToExamButton = '.add-child-to-exam-button';
 
-    static public function navigateToExam( Browser $browser, $examId, $userId = 1 )
+    public function navigateToExam( Browser $browser, $examId, $userId = 1 )
     {
-
-        $browser
+        return $browser
             ->loginAs(User::find($userId))
             ->visit(self::urlToExam($examId))
             ->assertPathIs(self::urlToExam($examId))
             ->waitFor(self::$mainBodyLocator);
-
     }
 
     static public function addChild( Assignment $assignment, Exam $exam )
@@ -83,6 +79,7 @@ class Setup extends BasePage
                 }
             }
         }
+
         r($parentAssignment, $exam, $numChildren, $numLevels, 0);
         return $parentAssignment;
     }
@@ -142,10 +139,12 @@ class Setup extends BasePage
     public function elements()
     {
         return [
+            '@mainBodyLocator' => self::$mainBodyLocator,
             '@element' => '#selector',
             '@addSibling' => '.add-sibling-button',
             '@addQuestion' => 'button.add-child-to-exam-button',
             '@addChild' => '.add-child-button',
+            '@addChildButton' => "[id^='add-child-to-exam-button-']",
             '@item-card' => 'div .item-card-component',
             '@item-name' => 'item-name'
         ];

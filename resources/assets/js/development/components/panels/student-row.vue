@@ -1,24 +1,98 @@
 <template>
-    <a class="panel-block student-row">
+    <a class="panel-block student-row"
+       v-on:toggle-checkbox-delete="handleToggleCheckboxDelete"
+    >
+        <!--v-show="isStudentInSelectedKumi"-->
         <span class="panel-icon"><i class="fa fa-user"></i></span>
-        <input type="text" class="input" v-model="firstName"/>
-        <input type="text" class="input" v-model="lastName"/>
-        <input type="text" class="input" v-model="identifier"/>
-        <input type="text" class="input" v-model="email" />
+
+        <input type="text"
+               class="input"
+               v-model="firstName"
+               v-bind:id="getInputId('firstName')"
+        />
+
+        <input type="text"
+               class="input"
+               v-model="lastName"
+               v-bind:id="getInputId('lastName')"
+        />
+
+        <input type="text"
+               class="input"
+               v-model="identifier"
+               v-bind:id="getInputId('identifier')"
+        />
+
+        <input type="text"
+               class="input"
+               v-model="email"
+               v-bind:id="getInputId('email')"
+        />
 
         <div v-show="showGradeInfo">
-            <input type="text" class="input" v-model="score" />
-            <input type="text" class="input" v-model="grade" />
+            <input type="text" class="input" v-model="score" v-bind:id="getInputId('score')"
+            />
+            <input type="text" class="input" v-model="grade" v-bind:id="getInputId('grade')"
+            />
+        </div>
+
+        <div class='delete-operation-area'
+             v-show="showDeleteOperationArea"
+        >
+            <label class="checkbox">
+                <input class="checkbox student-operation-checkbox"
+                       type="checkbox"
+                       v-model="isSelected"
+                       v-bind:value="getCheckboxValue">
+                Delete
+            </label>
+
+        </div>
+        <div class='remove-operation-area'
+             v-show="showRemoveOperationArea"
+        >
+            <label class="checkbox">
+                <input class="checkbox student-operation-checkbox"
+                       type="checkbox"
+                       v-model="isSelected">
+                Remove
+            </label>
+        </div>
+
+
+        <div class='move-operation-area'
+             v-show="showMoveOperationArea"
+        >
+            <label class="checkbox">
+                <input class="checkbox student-operation-checkbox"
+                       type="checkbox"
+                       v-bind:id="checkboxId"
+                       v-model="isSelected">
+                Move
+            </label>
+
         </div>
     </a>
 
 </template>
 
 <style lang="scss">
-
+    .student-row {
+        input {
+            border: none;
+        }
+    }
 </style>
 
 <script>
+    import Payload from '../../../models/Payload';
+    import Student from '../../../models/Student';
+    import Kumi from '../../../models/Kumi';
+    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as gTypes from '../../../store/getter-types';
+
+
     export default{
 
         props: [ 'serialNumber' ],
@@ -27,6 +101,21 @@
 
         data: function () {
             return {
+
+                /**
+                 * Whether to display the checkbox by which
+                 * the student is selected for being moved,
+                 * removed, or deleted
+                 */
+//                showOperationCheckbox: false,
+
+                /**
+                 * Gets the label to display with the checkbox
+                 * i.e., Delete, Move, Remove
+                 */
+                operationCheckboxLabel: 'Delete | Move | Remove',
+
+
                 defaults: {
                     firstName: '-',
                     lastName: '-',
@@ -35,32 +124,88 @@
                 }
             }
         },
-        computed: {
 
+        computed: {
 //        asyncComputed: {
             student: function () {
                 return this.$store.getters.getStudentFromRosterBySerialNumber( this.serialNumber );
             },
-            firstName: function () {
-                return this.student.firstName;
-//                return !_.isUndefined( this.student ) ? this.student.firstName : this.defaults.firstName;
+
+            firstName: {
+                get: function () {
+                    return this.student.firstName;
+                },
+                set: function ( v ) {
+                    let pl = Payload.factory( {
+                        obj: this.student,
+                        updateProp: 'firstName',
+                        updateVal: _.capitalize( v )
+                    } );
+                    this.$store.commit( 'updateStudentInRoster', pl );
+                }
             },
-            lastName: function () {
-                 if( this.student )
+
+            lastName: {
+                get: function () {
+                    //todo capitalize?
                     return this.student.lastName;
+                },
+                set: function ( v ) {
+                    this.$store.commit( 'updateStudentInRoster', Payload.factory( {
+                        obj: this.student,
+                        updateProp: 'lastName',
+                        updateVal: _.capitalize( v )
+                    } ) );
+                }
             },
-            identifier: function () {
-                return this.student.identifier;
-//                return !_.isUndefined( this.student ) ? this.student.identifier : this.defaults.identifier;
-            },
-            email: function () {
-               return this.student.email;
-//                return !_.isUndefined( this.student ) ? this.student.email : this.defaults.email;
-            },
-//        },
 
-//        computed: {
+            identifier: {
+                get: function () {
+                    return this.student.identifier;
+                },
+                set: function ( v ) {
+                    let pl = Payload.factory( {
+                        obj: this.student,
+                        updateProp: 'studentIdentifier',
+                        updateVal: v
+                    } );
+                    this.$store.commit( 'updateStudentInRoster', pl );
+                }
+            },
 
+            email: {
+                get: function () {
+                    return this.student.email;
+                },
+                set: function ( v ) {
+                    this.$store.commit( 'updateStudentInRoster', Payload.factory( {
+                        obj: this.student,
+                        updateProp: 'email',
+                        updateVal: v
+                    } ) );
+                }
+            },
+
+            isStudentInSelectedKumi: function () {
+                return this.$store.getters.isStudentInSelectedKumi( this.student );
+            },
+
+            /**
+             * Whether this row is selected
+             */
+            isSelected: {
+                get: function () {
+                    return this.$parent.selectedStudents.indexOf( this.student ) > -1;
+                },
+                set: function ( v ) {
+                    let idx = this.$parent.selectedStudents.indexOf( this.student );
+                    if ( idx > -1 ) {
+                        //already selected, so remove
+                        return this.$parent.selectedStudents.splice( idx, 1 );
+                    }
+                    this.$parent.selectedStudents.push( this.student );
+                }
+            },
             /**
              * Whether to display score and other
              * info about how the student has done.
@@ -71,20 +216,129 @@
             showGradeInfo: function () {
                 return false;
             },
-            grade: function () {
 
+
+            /**
+             * Whether to display the checkbox by which
+             * the student is selected for being moved,
+             * removed, or deleted
+             */
+            showOperationCheckbox: function () {
+                return this.$parent.showDeleteOperationArea;
             },
+
+            /**
+             * Gets the label to display with the checkbox
+             * i.e., Delete, Move, Remove
+             */
+//            operationCheckboxLabel: 'Delete | Move | Remove',
+
+
+            /**
+             * Whether to display the checkbox by which
+             * the student is selected for being moved,
+             * removed, or deleted
+             */
+            showDeleteOperationArea: function () {
+                return this.$parent.showDeleteOperationArea;
+            },
+
+            /**
+             * Whether to display the checkbox by which
+             * the student is selected for being moved,
+             * removed, or deleted
+             */
+            showMoveOperationArea: function () {
+                return this.$parent.showMoveOperationArea;
+            },
+
+            /**
+             * Whether to display the checkbox by which
+             * the student is selected for being moved,
+             * removed, or deleted
+             */
+            showRemoveOperationArea: function () {
+                return this.$parent.showRemoveOperationArea;
+            },
+
+            //            /**
+            //             * Gets the label to display with the checkbox
+            //             * i.e., Delete, Move, Remove
+            //             */
+            //            operationCheckboxLabel: function () {
+            //                return 'Delete | Move | Remove';
+            //            },
+
+            /**
+             * Getter for the students grade, if displayed
+             */
+            grade: function () {
+            },
+
+            /**
+             * Getter for the student's score, if displayed
+             */
             score: function () {
+            },
+
+            checkboxId: function (  ) {
+                return 'student-operation-checkbox-' + this.serialNumber;
             }
+        }
+        ,
+
+        methods: {
+            getInputId: function ( name ) {
+                return _.kebabCase( name ) + '-' + this.serialNumber;
+            }
+            ,
+
+            getCheckboxValue: function () {
+                return this.student.serialNumber;
+            },
+
+            handleToggleCheckboxDelete: function ( evt ) {
+                window.console.log( 'student-row', 'toggle-checkbox-delete', 203, 'caught', evt );
+                this.operationCheckboxLabel = 'Delete';
+                this.showOperationCheckbox = !this.showOperationCheckbox;
+            }
+            ,
+//
+//            handleRowSelection: function () {
+//                let idx = this.$parent.selectedStudents.indexOf( this.student );
+//                if ( idx > -1 ) {
+//                    //already selected, so remove
+//                    return this.$parent.selectedStudents.splice( idx, 1 );
+//                }
+//                this.$parent.selectedStudents.push( this.student );
+
+//            }
+
         },
 
-        methods: {},
+        events: {
+//            'toggle-checkbox-delete': function (evt) {
+//
+////                'toggle-checkbox-delete': function (evt) {
+//                window.console.log( 'student-row', 'toggle-checkbox-delete', 203, 'caught' , evt);
+//                this.operationCheckboxLabel = 'Delete';
+//                this.showOperationCheckbox = !this.showOperationCheckbox;
+//            },
 
-        directives: {},
+            'toggle-checkbox-move': function () {
+                window.console.log( 'student-row', 'toggle-checkbox-move', 207, 'caught' );
+                this.operationCheckboxLabel = 'Move';
+                this.showOperationCheckbox = !this.showOperationCheckbox;
+            }
 
-        events: {},
+            ,
 
-        mounted: function () {
+            'toggle-checkbox-remove': function () {
+                window.console.log( 'student-row', 'toggle-checkbox-remove', 211, 'caught' );
+                this.operationCheckboxLabel = 'Remove';
+                this.showOperationCheckbox = !this.showOperationCheckbox;
+            }
         }
     }
+    ;
 </script>

@@ -16,7 +16,7 @@
                         </div>
                     </div>
 
-                    <div class="row" v-show="paneVisible">
+                    <div class="row" v-show="isPaneVisible">
                         <div class="col-md-12 text-left">
                             <edit-tabs :index="index" :is-exam="false"></edit-tabs>
 
@@ -28,7 +28,7 @@
                         </div>
                     </div>
 
-                    <div class="row" v-show="paneVisible">
+                    <div class="row" v-show="isPaneVisible">
                         <div class="button-row col-md-12 text-left">
                             <div class="btn-group "
                                  role="group"
@@ -151,7 +151,7 @@
             /**
              * Returns true if the settings pane for this item should be displayed
              */
-            paneVisible: function () {
+            isPaneVisible: function () {
                 return this.$store.getters[ gTypes.isItemSettingsVisible ]( this.index )
             },
 

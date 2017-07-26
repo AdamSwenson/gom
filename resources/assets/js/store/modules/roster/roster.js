@@ -1,7 +1,9 @@
 /**
  * This is the new version of students.
+ *
  * More precisely it is a list of students for a
  * given exam or item.
+ *
  * We may decide to keep the students store around
  * for things which require access to students outside
  * of an exam or item
@@ -19,7 +21,6 @@ import * as aTypes from '../../action-types'
 
 import StudentImporter from './studentFileImporter'
 
-const k = Kumi.factory({'name' : 'k1'});
 
 module.exports = {
 
@@ -29,9 +30,10 @@ module.exports = {
          * List of student objects
          * */
         roster: [
-            Student.factory( { lastName: 'Smith', firstName: 'Jill' } ),
-            Student.factory( { lastName: 'Jillson', firstName: 'Smithy' } )
+            // Student.factory( { lastName: 'Smith', firstName: 'Jill' } ),
+            // Student.factory( { lastName: 'Jillson', firstName: 'Smithy' } )
         ],
+
     },
 
     mutations: {
@@ -39,7 +41,6 @@ module.exports = {
         /**
          * Adds or updates a student record in state.students
          * @param state
-         * @param rootState
          * @param payload
          */
         addStudentToRoster: ( state, payload ) => {
@@ -48,24 +49,45 @@ module.exports = {
             state.roster.push( student );
         },
 
+        /**
+         * Disassociates a student from the roster
+         * Does not delete the student object
+         * (the difference is handled by apiPlugins detecting the different
+         * mutation)
+         *
+         * @param state
+         * @param payload
+         */
         removeStudentFromRoster: ( state, payload ) => {
             Payload.checkIfPayload( payload );
             let student = payload.obj;
+            let idx = state.roster.indexOf( student );
             state.roster.splice( idx, 1 );
         },
+
+        /**
+         * Deletes a student from the database completely!!!
+         * @param state
+         * @param payload
+         */
+        deleteStudent: ( state, payload ) => {
+            Payload.checkIfPayload( payload );
+            let student = payload.obj;
+            let idx = state.roster.indexOf( student );
+            state.roster.splice( idx, 1 );
+        },
+
 
         //This is to avoid confusion with updateStudent which
         //the old version uses
         updateStudentInRoster: (state, payload)=>{
-            window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
+            // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
             Payload.checkIfPayload( payload );
             let student = payload.obj;
             let idx = state.roster.indexOf( student );
 
             Vue.set( state.roster[idx], payload.updateProp, payload.updateVal );
-
-        }
-
+        },
     },
 
     actions: {
@@ -82,8 +104,11 @@ module.exports = {
         /**
          * Returns a student object by the model serial number.
          * Can be used at any time.
-         * @param studentIndex
          * @returns {*}
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param serialNumber
          */
         getStudentFromRosterBySerialNumber: ( state, getters, rootState, serialNumber ) => (serialNumber) => {
             return (function ( state, serialNumber ) {
@@ -134,7 +159,9 @@ module.exports = {
 
         getStudentCount: ( state, getters, rootState ) => {
             return state.roster.length;
-        }
+        },
+
+
     }
-}
+};
 

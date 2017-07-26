@@ -85,53 +85,53 @@ class Student extends BaseModel
     }
 
 
-    /**
-     * Returns the student_identifier attribute
-     * Uses laravel convention for getter so will be called if
-     * someone tries to get directly with $student->student_identifier
-     * @return string
-     */
-    public function getStudentIdentifierAttribute()
-    {
-        return $this->attributes['student_identifier'];
-//        return $this->getAttribute('student_identifier');
-    }
+//    /**
+//     * Returns the student_identifier attribute
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->student_identifier
+//     * @return string
+//     */
+//    public function getStudentIdentifierAttribute()
+//    {
+//        return $this->attributes['student_identifier'];
+////        return $this->getAttribute('student_identifier');
+//    }
+//
+//    /**
+//     * Returns the first_name attribute
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->first_name
+//     * @return string
+//     */
+//    public function getFirstNameAttribute()
+//    {
+//        return $this->attributes['first_name'];
+////        return $this->getAttribute('first_name');
+//    }
+//
+//    /**
+//     * Returns the last_name attribute
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->
+//     * @return string
+//     */
+//    public function getLastNameAttribute()
+//    {
+//        return $this->attributes['last_name'];
+////        return $this->getAttribute('last_name');
+//    }
 
-    /**
-     * Returns the first_name attribute
-     * Uses laravel convention for getter so will be called if
-     * someone tries to get directly with $student->first_name
-     * @return string
-     */
-    public function getFirstNameAttribute()
-    {
-        return $this->attributes['first_name'];
-//        return $this->getAttribute('first_name');
-    }
-
-    /**
-     * Returns the last_name attribute
-     * Uses laravel convention for getter so will be called if
-     * someone tries to get directly with $student->
-     * @return string
-     */
-    public function getLastNameAttribute()
-    {
-        return $this->attributes['last_name'];
-//        return $this->getAttribute('last_name');
-    }
-
-    /**
-     * Returns the decrypted student email address
-     * Uses laravel convention for getter so will be called if
-     * someone tries to get directly with $student->email
-     * @return string
-     */
-    public function getEmailAttribute()
-    {
-        return $this->attributes['email'];
-//        return $this->getAttribute('email');
-    }
+//    /**
+//     * Returns the decrypted student email address
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->email
+//     * @return string
+//     */
+//    public function getEmailAttribute()
+//    {
+//        return $this->attributes['email'];
+////        return $this->getAttribute('email');
+//    }
 
 //    /**
 //     * Sets student_identifier attribute.

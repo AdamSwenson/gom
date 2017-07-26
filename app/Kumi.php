@@ -37,12 +37,12 @@ class Kumi extends BaseModel
     const MAX_YEAR_LENGTH = 4;
 
     protected $casts = [
-        'nickname' => 'string',
+        'name' => 'string',
         'year' => 'integer'
     ];
 
     protected $fillable = [
-        'nickname',
+        'name',
         'year'
     ];
 
@@ -52,7 +52,7 @@ class Kumi extends BaseModel
      */
     public function setName($name)
     {
-        $this->attributes['nickname'] = $name;
+        $this->attributes['name'] = $name;
     }
 
     /**
