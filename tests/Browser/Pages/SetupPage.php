@@ -7,7 +7,6 @@ use App\Exam;
 use App\Item;
 use App\User;
 use Laravel\Dusk\Browser;
-use Laravel\Dusk\Page as BasePage;
 use PHPUnit\Framework\Assert as PHPUnit;
 
 class SetupPage extends Page
@@ -39,8 +38,10 @@ class SetupPage extends Page
 
     public function navigateToExam( Browser $browser, $examOrExamId, $userOrUserId )
     {
-        $exam = $examOrExamId instanceof Exam ? $examOrExamId : Exam::find($examOrExamId);
         $user = $userOrUserId instanceof User ? $userOrUserId : User::find($userOrUserId);
+        Auth::login($user);
+        $exam = $examOrExamId instanceof Exam ? $examOrExamId : Exam::find($examOrExamId);
+        Auth::logout();
         return $browser
             ->loginAs($user)
             ->visit(self::urlToExam($exam->id))

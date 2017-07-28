@@ -6,7 +6,7 @@ use App\User;
 use Tests\Browser\Pages\CommentSetupPage;
 use Tests\Browser\Pages\ItemCardPage;
 use Tests\Browser\Pages\KumiPage;
-use Tests\Browser\Pages\Page;
+use Tests\Browser\Pages\SetupPage;
 use Tests\Browser\Pages\StudentPanePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -23,9 +23,9 @@ class CommentSetupTest extends DuskTestCase
         $user = factory(User::class)->create();
         $this->browse(function ( Browser $browser ) use ( $user ) {
             $browser->loginAs($user)
-                ->visit(new Page())
-                ->waitFor(Page::$mainBodyLocator)
-                ->assertVisible(Page::$mainBodyLocator)
+                ->visit(new SetupPage())
+                ->waitFor(SetupPage::$mainBodyLocator)
+                ->assertVisible(SetupPage::$mainBodyLocator)
                 //add item
                 ->assertVisible('@addChildButton')
                 ->click('@addChildButton')
@@ -54,9 +54,9 @@ class CommentSetupTest extends DuskTestCase
         $user = factory(User::class)->create();
         $this->browse(function ( Browser $browser ) use ( $user ) {
             $browser->loginAs($user)
-                ->visit(new Page())
-                ->waitFor(Page::$mainBodyLocator)
-                ->assertVisible(Page::$mainBodyLocator)
+                ->visit(new SetupPage())
+                ->waitFor(SetupPage::$mainBodyLocator)
+                ->assertVisible(SetupPage::$mainBodyLocator)
                 //open pane
                 ->assertVisible('@examSettingsButton')
                 ->click('@examSettingsButton')

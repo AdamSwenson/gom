@@ -5,7 +5,7 @@ namespace Tests\Browser;
 use App\User;
 use Faker\Factory;
 use Tests\Browser\Pages\KumiPage;
-use Tests\Browser\Pages\Page;
+use Tests\Browser\Pages\SetupPage;
 use Tests\Browser\Pages\StudentPanePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -27,8 +27,8 @@ class KumiTest extends DuskTestCase
 
             $browser->loginAs($user)
                 //prep
-                ->visit(new Page())
-                ->waitFor(Page::$mainBodyLocator)
+                ->visit(new SetupPage())
+                ->waitFor(SetupPage::$mainBodyLocator)
                 ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
@@ -63,8 +63,8 @@ class KumiTest extends DuskTestCase
             $testName = Factory::create()->word;
             $browser->loginAs($user)
                 //prep
-                ->visit(new Page())
-                ->waitFor(Page::$mainBodyLocator)
+                ->visit(new SetupPage())
+                ->waitFor(SetupPage::$mainBodyLocator)
                 ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
@@ -106,8 +106,8 @@ class KumiTest extends DuskTestCase
 
             $browser->loginAs($user)
                 //prep
-                ->visit(new Page())
-                ->waitFor(Page::$mainBodyLocator)
+                ->visit(new SetupPage())
+                ->waitFor(SetupPage::$mainBodyLocator)
                 ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')

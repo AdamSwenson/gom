@@ -56046,32 +56046,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 exports.default = {
 
@@ -56128,6 +56102,13 @@ exports.default = {
             if (this.item instanceof _Exam2.default) return true;
             return false;
         },
+        //
+        //            isActive: function ( ksn ) {
+        //                return ((ksn, showKumi)=>{
+        //                    return ksn === showKumi;
+        //                })(ksn, this.showKumi);
+        //            },
+        //
 
         isAllTabVisible: function isAllTabVisible() {
             if (_.isUndefined(this.kumis) || _.isNull(this.kumis)) return false;
@@ -56179,6 +56160,10 @@ exports.default = {
             if (this.isEditable) return true;
 
             this.showKumi = serialNumber;
+        },
+
+        isActive: function isActive(ksn) {
+            return ksn === this.showKumi;
         },
 
         // ----------------------- Operations on students or kumis
@@ -80696,14 +80681,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "add-students-panel panel"
   }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('p', {
-    staticClass: "panel-tabs kumi-tabs"
+    staticClass: "panel-tabs kumi-tabs is-boxed"
   }, [(_vm.isAllTabVisible) ? _c('a', {
+    class: [_vm.isActive(-1) ? 'is-active' : ''],
     on: {
       "click": _vm.showAllKumi
     }
   }, [_vm._v("All")]) : _vm._e(), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
     return _c('a', {
       key: kumi.serialNumber,
+      class: [_vm.isActive(kumi.serialNumber) ? 'is-active' : ''],
       on: {
         "click": function($event) {
           _vm.handleKumiFilterSelection(kumi.serialNumber)
@@ -80714,7 +80701,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "serialNumber": kumi.serialNumber
       }
     })], 1) : _c('span', [_vm._v("\n                " + _vm._s(kumi.name) + "\n            ")])])
-  }), _vm._v(" "), _c('a', [_c('button', {
+  }), _vm._v(" "), _c('a', {
+    staticClass: "button-tab"
+  }, [_c('button', {
     staticClass: "button is-outlined is-small",
     attrs: {
       "id": "new-kumi-button"
@@ -80722,17 +80711,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.newKumi
     }
-  }, [_c('i', {
-    staticClass: "fa fa-plus",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  }), _vm._v(" "), _c('i', {
-    staticClass: "fa fa-users",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  }), _vm._v(" New\n            ")])]), _vm._v(" "), _c('a', [_c('button', {
+  }, [_vm._m(2), _vm._v(" "), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("New")])])]), _vm._v(" "), _c('a', {
+    staticClass: "button-tab"
+  }, [_c('button', {
     staticClass: "button is-outlined is-small",
     attrs: {
       "id": "edit-kumi-button"
@@ -80740,17 +80723,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.editKumi
     }
-  }, [(_vm.isEditable) ? _c('span', [_c('i', {
-    staticClass: "fa fa-check-circle-o ",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  }), _vm._v(" Done\n                ")]) : _c('span', [_c('i', {
+  }, [(_vm.isEditable) ? _c('span', [_vm._m(3), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("Done")])]) : _c('span', [_c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
     staticClass: "fa fa-pencil",
     attrs: {
       "aria-hidden": "true"
     }
-  }), _vm._v(" Edit\n                ")])])])], 2), _vm._v(" "), _vm._l((_vm.students), function(student) {
+  })]), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("Edit")])])])])], 2), _vm._v(" "), _vm._l((_vm.students), function(student) {
     return _c('student-row', {
       key: student.serialNumber,
       attrs: {
@@ -80911,6 +80895,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('i', {
     staticClass: "fa fa-search"
   })])])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-plus",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-check-circle-o ",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
 }]}
 module.exports.render._withStripped = true
 if (false) {

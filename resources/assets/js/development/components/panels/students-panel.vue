@@ -15,80 +15,54 @@
             </p>
         </div>
 
-        <p class="panel-tabs kumi-tabs">
+        <p class="panel-tabs kumi-tabs is-boxed">
 
             <a v-if="isAllTabVisible"
                v-on:click="showAllKumi"
+               v-bind:class="[isActive(-1) ? 'is-active' : '' ]"
             >All</a>
 
             <a v-for="kumi in kumis"
                v-bind:key="kumi.serialNumber"
                v-on:click="handleKumiFilterSelection(kumi.serialNumber)"
+               v-bind:class="[isActive(kumi.serialNumber) ? 'is-active' : '' ]"
             >
                 <span v-if="isEditable">
                     <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
                 </span>
+
                 <span v-else>
                     {{ kumi.name }}
                 </span>
             </a>
 
 
-            <a>
+            <a class="button-tab">
                 <button id="new-kumi-button"
                         class="button is-outlined is-small"
                         v-on:click="newKumi"
-                >
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                     <i class="fa fa-users" aria-hidden="true"></i> New
+                ><span class="icon"><i class="fa fa-plus" aria-hidden="true"></i></span> <span
+                        class="sr-only">New</span>
                 </button>
             </a>
-            <a>
+            <a class="button-tab">
                 <button id="edit-kumi-button"
                         class="button is-outlined is-small"
                         v-on:click="editKumi"
                 >
                     <span v-if="isEditable">
-                        <i class="fa fa-check-circle-o " aria-hidden="true"></i> Done
-                    </span>
+                    <span class="icon"><i class="fa fa-check-circle-o " aria-hidden="true"></i></span><span
+                            class="sr-only">Done</span></span>
+
 
                     <span v-else>
-                        <i class="fa fa-pencil" aria-hidden="true"></i> Edit
+                          <span class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></span><span
+                            class="sr-only">Edit</span>
                     </span>
 
                 </button>
             </a>
         </p>
-
-        <!--<p class="panel-tabs kumi-tabs"-->
-        <!--v-else-->
-        <!--&gt;-->
-        <!--<a class="is-active">All</a>-->
-        <!--<a v-for="kumi in kumis"-->
-        <!--v-bind:key="kumi.serialNumber"-->
-        <!--v-on:click="handleKumiFilterSelection(kumi.serialNumber)"> {{ kumi.name }}-->
-        <!--</a>-->
-
-        <!--<a class="control">-->
-        <!--<button id="new-kumi-button"-->
-        <!--class="button is-outlined is-small"-->
-        <!--v-on:click="newKumi"-->
-        <!--&gt;-->
-        <!--<i class="fa fa-users"-->
-        <!--aria-hidden="true"></i> New-->
-        <!--</button>-->
-        <!--</a>-->
-        <!--<a class="control">-->
-        <!--<button id="edit-kumi-button"-->
-        <!--class="button is-outlined is-small"-->
-        <!--v-on:click="editKumi"-->
-        <!--&gt;-->
-        <!--<i class="fa fa-pencil"-->
-        <!--aria-hidden="true"></i> Edit-->
-        <!--</button>-->
-        <!--</a>-->
-
-        <!--</p>-->
 
 
         <student-row v-for="student in students"
@@ -281,6 +255,13 @@
                 if ( this.item instanceof Exam ) return true;
                 return false;
             },
+//
+//            isActive: function ( ksn ) {
+//                return ((ksn, showKumi)=>{
+//                    return ksn === showKumi;
+//                })(ksn, this.showKumi);
+//            },
+//
 
             isAllTabVisible: function () {
                 if ( _.isUndefined( this.kumis ) || _.isNull( this.kumis ) ) return false;
@@ -333,8 +314,12 @@
                 if ( this.isEditable ) return true;
 
                 this.showKumi = serialNumber;
-
             },
+
+            isActive: function ( ksn ) {
+                    return ksn === this.showKumi;
+            },
+
 
 // ----------------------- Operations on students or kumis
             addStudent: function () {
