@@ -6,7 +6,7 @@
                 Selector with existing Kumi here
             </p>
 
-            <a v-for="kumi in kumis" v-on:click="filterByKumi(kumi.serialNumber)">
+            <a v-for="kumi in kumis" v-on:click="handleKumiFilterSelection(kumi.serialNumber)">
                 <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
             </a>
 

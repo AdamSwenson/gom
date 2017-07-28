@@ -35,7 +35,13 @@ import Item from '../models/Item'
 
 import { createItem, updateExam, updateItem, updateItemsOrder } from './requests'
 import { updateComment } from '../api/requests/commentRequests';
-import { createStudent, destroyStudent, updateStudent, associateStudent, disassociateStudent } from '../api/requests/studentRequests';
+import {
+    createStudent,
+    destroyStudent,
+    updateStudent,
+    associateStudent,
+    disassociateStudent
+} from '../api/requests/studentRequests';
 import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
 
 /**
@@ -173,15 +179,25 @@ export default function ( store ) {
 
 
             // ******************** Students
-            case 'addStudentToRoster':
+            case mTypes.addStudentToRoster:
                 // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                createStudent( store, payload.obj );
-                associateStudent( store, payload.obj );
+                var student = payload.obj;
+                //Requests the creation of a new student
+                createStudent( store, student );
+                //Assigns them to a particular kumi
+                var kumi = store.getters.getSelectedKumi;
+                let p = associateStudent( store, student, kumi );
+                p.then(()=>{
+
+                })
+
                 break;
 
             case 'removeStudentFromRoster':
                 window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
-                disassociateStudent( store, payload.obj );
+                var kumi = store.getters.getSelectedKumi;
+                var student = payload.obj;
+                disassociateStudent( store, student, kumi );
                 break;
 
             case 'deleteStudent':
@@ -197,7 +213,7 @@ export default function ( store ) {
 
 
             // ******************** Kumi
-            case 'addKumi':
+            case mTypes.addKumi:
                 // window.console.log( 'apiPlugin', 'addKumi', 177, payload );
                 //if an exam is set as current,
                 //this will create an association, otherwise
@@ -206,7 +222,7 @@ export default function ( store ) {
                 createKumi( store, payload, exam );
                 break;
 
-            case 'updateKumi':
+            case mTypes.updateKumi:
                 // window.console.log( 'apiPlugin', 'updateKumi', 184, payload );
                 updateKumi( store, payload );
 
@@ -215,6 +231,19 @@ export default function ( store ) {
                 //     associateKumi(store, payload, exam);
                 // }
                 break;
+
+            /**
+             * NB This is used for an existing student, whereas
+             addStudentToRoster is for a newly created student.
+             This thus is used for the move operation
+             */
+            case mTypes.associateStudentWithKumi:
+                //We use the currently selected kumi if one wasn't set
+                //in the payload
+                var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
+                associateStudent( store, payload.student, kumi );
+                break;
+
             default:
 
         }

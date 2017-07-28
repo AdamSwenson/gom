@@ -24,16 +24,35 @@ const ID_WAIT_DELAY = 3000;
  */
 const handleLoadResponse = ( store, response ) => {
     _.forEach( response.data, function ( r ) {
-        // window.console.log( 'examRequests', 'r', 29, r );
+        // window.console.log( 'studentRequests', 'r', 29, r );
         let student = Student.factory( { r } );
         student.email = r.email;
         student.firstName = r.firstName;
         student.id = r.id;
-        student.identifier = ! _.isUndefined(r.identifier) ? r.identifier : r.studentIdentifier;
+        student.identifier = !_.isUndefined( r.identifier ) ? r.identifier : r.studentIdentifier;
         student.lastName = r.lastName;
 
         let payload = Payload.factory( { obj: student, mutateSilently: true } );
         store.commit( 'addStudentToRoster', payload );
+
+        if ( r.kumiId ) {
+            //if the server sent us the id of the associated kumi
+            //we are going to look up the client side representation
+            //and then store it in the student object
+            let kumi = store.getters.getKumiById( r.kumiId );
+            if ( _.isUndefined( kumi ) ) {
+                //if a kumi object doesn't exist yet with this id
+                //figure out what the fuck to do.....
+                //todo add promises to help with this
+            }
+
+            //Otherwise we are good, so call the mutation
+            // this will both add the kumi to the student
+            //and store the relationship centrally
+            payload.student = student;
+            payload.kumi = kumi;
+            store.commit( mTypes.associateStudentWithKumi, payload)
+        }
     } );
 };
 
@@ -96,7 +115,7 @@ module.exports = {
         else {
             //Get students for a particular exam
             window.axios
-                .get( ROSTER_BASE_ROUTE + '/exam/' + exam.id )
+                .get( Routes.loadStudentsForExam( exam ) )
                 .then( ( response ) => {
                     // window.console.log( 'examRequests', '', 28, response );
                     handleLoadResponse( store, response );
@@ -120,7 +139,7 @@ module.exports = {
      */
     updateStudent: ( store, student ) => {
         window.axios
-            .patch( Routes.updateStudent(student), student )
+            .patch( Routes.updateStudent( student ), student )
             .then( ( response ) => {
                 // window.console.log( 'studentRequests', 'updateStudent', 28, response );
             } )
@@ -163,41 +182,38 @@ module.exports = {
      * @param exam
      * @param kumi
      */
-    associateStudent: ( store, student ) => {
-        let kumi = store.getters.getSelectedKumi;
-        //handles the actual request so that we can deal
-        //with the need to wait for an id
-        let makeRequest = ( route, out ) => {
-            window.axios
-                .post( route, out )
-                .then( ( response ) => {
-                    // window.console.log( 'studentRequests', 'associateStudent', 28, response );
-                    store.commit( 'associateStudentWithKumi', Payload.factory( { student: student, kumi: kumi } ) );
-                } )
-                .catch( function ( error ) {
-                    //todo add response handling
-                    window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
-                    // errorHandling( error );
-                } );
-        };
-        let out = {
-            requestVersion: REQUEST_VERSION,
-        };
+    associateStudent: ( store, student, kumi ) => {
+        return new Promise( ( resolve, reject ) => {
 
-        //Check whether both the kumi and student have their ids
-        if ( kumi.id === -1 || student.id === -1 ) {
 
-            setTimeout( function () {
-//                let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
+            //handles the actual request so that we can deal
+            //with the need to wait for an id
+            let makeRequest = ( route ) => {
+                let out = out == { requestVersion: REQUEST_VERSION, };
+                window.axios
+                    .post( route, out )
+                    .then( ( response ) => {
+                        resolve();
+                    } )
+                    .catch( function ( error ) {
+                        //todo add response handling
+                        window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
+                        // errorHandling( error );
+                    } );
+            };
 
-                makeRequest( Routes.associateStudent(student, kumi), out );
-            }, ID_WAIT_DELAY );
-        } else {
-         //   let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
-            makeRequest( Routes.associateStudent(student, kumi), out );
-        }
-        // window.console.log( 'studentRequests', 'associateStudent', 162, student );
-
+            //Check whether both the kumi and student have their ids
+            if ( kumi.id === -1 || student.id === -1 ) {
+                //if either of them are not yet set, wait for a bit
+                //todo Rewrite this to use promises
+                setTimeout( function () {
+                    makeRequest( Routes.associateStudent( student, kumi ) );
+                }, ID_WAIT_DELAY );
+            } else {
+                //The ids are good to go, so we can just send it
+                makeRequest( Routes.associateStudent( student, kumi ) );
+            }
+        } );
     },
 
     /**
@@ -214,12 +230,10 @@ module.exports = {
      * @param store
      * @param student
      */
-    disassociateStudent: ( store, student ) => {
-        let kumi = store.getters.getCurrentlySelectedKumi;
-        // let route = `${ROSTER_BASE_ROUTE}/${student.id}/diss/${kumi.id}`;
+    disassociateStudent: ( store, student, kumi ) => {
 
         window.axios
-            .post( Routes.disassociateStudent(student, kumi) )
+            .post( Routes.disassociateStudent( student, kumi ) )
             .then( ( response ) => {
                 window.console.log( 'studentRequests', 'disassociateStudent', 214, response );
             } )
@@ -244,7 +258,7 @@ module.exports = {
         // let route = `${ROSTER_BASE_ROUTE}/anon/{exam.id}`;
 
         window.axios
-            .post( Routes.anonymizeStudents(exam) )
+            .post( Routes.anonymizeStudents( exam ) )
             .then( ( response ) => {
                 window.console.log( 'examRequests', 'anonymize students', 28, response );
             } )
@@ -265,7 +279,7 @@ module.exports = {
         // let route = `${STUDENT_BASE_ROUTE}/${student.id}`;
 
         window.axios
-            .delete( Routes.destroyStudent(student) )
+            .delete( Routes.destroyStudent( student ) )
             .then( ( response ) => {
                 window.console.log( 'examRequests', 'anonymize students', 28, response );
             } )

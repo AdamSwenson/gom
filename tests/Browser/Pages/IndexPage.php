@@ -5,16 +5,8 @@ namespace Tests\Browser\Pages;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\Page as BasePage;
 
-class CommentSetup extends BasePage
+class IndexPage extends Page
 {
-
-    public static function openCommentPane(Browser $browser, $serialNumber){
-        $path = "#/panel-comments/" + $serialNumber;
-        $browser->visit($path);
-        return $browser;
-    }
-
-
     /**
      * Get the URL for the page.
      *

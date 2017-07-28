@@ -14,6 +14,8 @@ export default class Student extends IModel{
         this.studentIdentifier = null;
         this.lastName = '';
         this.firstName = '';
+
+        this.associatedKumis = [];
     }
 
     /* ************************* Server stuff ****************** */

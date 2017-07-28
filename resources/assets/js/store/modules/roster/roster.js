@@ -39,11 +39,12 @@ module.exports = {
     mutations: {
 
         /**
-         * Adds or updates a student record in state.students
+         * Adds or updates a student record in state.students.
+         * NB, this does not add it to the associated class
          * @param state
          * @param payload
          */
-        addStudentToRoster: ( state, payload ) => {
+        [mTypes.addStudentToRoster]: ( state, payload ) => {
             Payload.checkIfPayload( payload );
             let student = payload.obj;
             state.roster.push( student );

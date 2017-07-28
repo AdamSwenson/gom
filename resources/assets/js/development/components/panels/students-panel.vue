@@ -18,32 +18,32 @@
         <p class="panel-tabs kumi-tabs">
 
             <a v-if="isAllTabVisible"
-               class="is-active"
+               v-on:click="showAllKumi"
             >All</a>
 
-            <a v-if="isEditable"
-               v-for="kumi in kumis"
+            <a v-for="kumi in kumis"
                v-bind:key="kumi.serialNumber"
+               v-on:click="handleKumiFilterSelection(kumi.serialNumber)"
             >
-                <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
+                <span v-if="isEditable">
+                    <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
+                </span>
+                <span v-else>
+                    {{ kumi.name }}
+                </span>
             </a>
 
-            <a v-else
-               v-for="kumi in kumis"
-               v-bind:key="kumi.serialNumber"
-               v-on:click="filterByKumi(kumi.serialNumber)"
-            >
-                {{ kumi.name }}
-            </a>
 
             <a>
                 <button id="new-kumi-button"
                         class="button is-outlined is-small"
                         v-on:click="newKumi"
                 >
-                    <i class="fa fa-users" aria-hidden="true"></i> New
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                     <i class="fa fa-users" aria-hidden="true"></i> New
                 </button>
-
+            </a>
+            <a>
                 <button id="edit-kumi-button"
                         class="button is-outlined is-small"
                         v-on:click="editKumi"
@@ -66,7 +66,7 @@
         <!--<a class="is-active">All</a>-->
         <!--<a v-for="kumi in kumis"-->
         <!--v-bind:key="kumi.serialNumber"-->
-        <!--v-on:click="filterByKumi(kumi.serialNumber)"> {{ kumi.name }}-->
+        <!--v-on:click="handleKumiFilterSelection(kumi.serialNumber)"> {{ kumi.name }}-->
         <!--</a>-->
 
         <!--<a class="control">-->
@@ -97,7 +97,10 @@
         ></student-row>
 
 
-        <div class="panel-block">
+        <div id="addition-buttons-area"
+             class="panel-block"
+             v-show="additionButtonsVisible"
+        >
             <button id="new-student-button"
                     class="button is-primary is-outlined is-fullwidth"
                     v-on:click="addStudent"
@@ -111,7 +114,8 @@
         </div>
 
 
-        <div class="panel-block"
+        <div id="kumi-selection-area"
+             class="panel-block"
              v-show="kumiSelectorVisible"
         >
             <kumi-selector></kumi-selector>
@@ -138,7 +142,9 @@
             </p>
         </div>
 
-        <div class="panel-block">
+        <div id="student-editing-controls-area"
+             class="panel-block"
+        >
             <p class="control">
                 <button id="student-move-button"
                         class="button student-move-button is-outlined is-primary is-fullwidth"
@@ -164,7 +170,8 @@
         </div>
 
 
-        <div class="panel-block"
+        <div id="file-input-area"
+             class="panel-block"
              v-show="fileButtonVisible"
         >
             <p class="control">
@@ -231,6 +238,7 @@
 
         data: function () {
             return {
+                /** Which kumi, if any to filter the displayed rows by*/
                 showKumi: -1, //i.e, all
                 isEditable: false,
                 fileButtonVisible: false,
@@ -239,7 +247,17 @@
                 showMoveOperationArea: false,
                 showRemoveOperationArea: false,
                 showConfirmationButtons: false,
+                /** whether to show the add and import buttons */
+                additionButtonsVisible: true,
+                /** This gets populated with objects by the student operation checkboxes */
                 selectedStudents: [],
+                //holds kumis serial numbers from selector
+                //NB, the selector could be easily altered to
+                //allow multiple selection. However, the central
+                //store only holds one selected kumi.
+                //So when we update the central store, we will
+                //only add the most recently pushed kumi from this list.
+                selectedKumis: [],
                 pendingOperation: false, //what operation we are to perform
                 defaults: {}
             }
@@ -265,18 +283,20 @@
             },
 
             isAllTabVisible: function () {
-                if ( _.isUndefined( this.kumis ) || _.isNull(this.kumis) ) return false;
+                if ( _.isUndefined( this.kumis ) || _.isNull( this.kumis ) ) return false;
                 if ( this.kumis.length > 1 ) return true;
                 return false;
             },
 
             students: function () {
                 let s = this.$store.getters.getStudentsFromRoster;
-                //if no kumi filter, return them all
-                if ( this.showKumi === -1 ) return s;
-
-                //otherwise filter the results
-                return this.$store.getters.getStudentsForKumi( this.showKumi );
+                return s;
+                //for now, the rows handle their visibility
+//                //if no kumi filter, return them all
+//                if ( this.showKumi === -1 ) return s;
+//
+//                //otherwise filter the results
+//                return this.$store.getters.getStudentsForKumi( this.showKumi );
 
             },
 
@@ -286,26 +306,48 @@
             kumis: function () {
                 return this.$store.getters.getKumis;
             },
+        },
 
-
+        watch: {
+            //The child selector will set the selected Kumis here
+            // Thus we will watch for that and then
+            // update the central store
+            selectedKumis: function () {
+                window.console.log( 'students-panel', 'watch---selectedKumis', 294, this.selectedKumis );
+                let pl = Payload.factory( { obj: this.selectedKumis[ this.selectedKumis.length - 1 ] } );
+                this.$store.commit( mTypes.updateSelectedKumi, pl );
+            }
         },
 
         methods: {
+// ---------------------------- Control which student rows display
+            showAllKumi: function () {
+                this.showKumi = -1;
+            },
+
+            handleKumiFilterSelection: function ( serialNumber ) {
+                window.console.log( 'students-panel', 'handleKumiFilterSelection', 151, serialNumber );
+                //This could be accidentally called when the area
+                //is open for editing.
+                //Thus we filter any such calls out
+                if ( this.isEditable ) return true;
+
+                this.showKumi = serialNumber;
+
+            },
+
+// ----------------------- Operations on students or kumis
             addStudent: function () {
                 window.console.log( 'students-panel', 'addStudent', 190, );
                 //create a new student, which will add an empty row
                 let s = new Student();
-                this.$store.commit( 'addStudentToRoster', Payload.factory( { obj: s } ) );
-            },
-
-            filterByKumi: function ( serialNumber ) {
-                window.console.log( 'students-panel', 'filterByKumi', 151, serialNumber );
-                let kumi = this.$store.getters.getKumiBySerialNumber( serialNumber );
-//                this.$store.commit( 'updateSelectedKumi', Payload.factory( { obj: kumi } ) );
-            },
-
-            toggleFileButtonVisibility: function () {
-                this.fileButtonVisible = !this.fileButtonVisible;
+                this.$store.commit( mTypes.addStudentToRoster, Payload.factory( { obj: s } ) );
+                //That just added the student to the list of those who exist.
+                // Now we need to associate the student with a class/group
+                // window.console.log( 'studentRequests', 'associateStudent', 28, response );
+                this.$store.commit( mTypes.associateStudentWithKumi, Payload.factory( {
+                    student: student
+                } ) );
             },
 
             processFile: function ( evt ) {
@@ -333,6 +375,7 @@
                 this.isEditable = !this.isEditable;
             },
 
+// ------------------------ Control display of tools
             //BUTTONS
             //when these get clicked
             //the rows get told to display a checkbox for being
@@ -344,6 +387,8 @@
                 this.showDeleteOperationArea = !this.showDeleteOperationArea;
                 this.showConfirmationButtons = !this.showConfirmationbuttons;
                 this.pendingOperation = 'delete';
+                //get the addition buttons out of the way
+                this.additionButtonsVisible = !this.additionButtonsVisible;
             },
 
             toggleRemoveControls: function () {
@@ -353,6 +398,8 @@
                 this.showRemoveOperationArea = !this.showRemoveOperationArea;
                 this.showConfirmationButtons = !this.showConfirmationbuttons;
                 this.pendingOperation = 'remove';
+                //get the addition buttons out of the way
+                this.additionButtonsVisible = !this.additionButtonsVisible;
             },
 
             toggleMoveControls: function () {
@@ -364,10 +411,16 @@
                 //show kumi selector
                 this.kumiSelectorVisible = !this.kumiSelectorVisible;
                 this.pendingOperation = 'move';
+                //get the addition buttons out of the way
+                this.additionButtonsVisible = !this.additionButtonsVisible;
+            },
+            toggleFileButtonVisibility: function () {
+                this.fileButtonVisible = !this.fileButtonVisible;
             },
 
             /**
-             * Clears and closes all operations areas
+             * Clears and closes all operations areas.
+             * Reopens any areas that are open by default
              */
             closeAllOperationAreas: function () {
                 //clear previous selections
@@ -379,7 +432,12 @@
                 this.showConfirmationButtons = false;
                 this.pendingOperation = false;
                 this.kumiSelectorVisible = false;
+                //open stuff that is visible by default
+                this.additionButtonsVisible = true;
             },
+
+
+// ----------------------------------- Events
 
             /**
              * Called when confirm is clicked
@@ -389,11 +447,21 @@
                 //display any warnings
 
                 _.forEach( this.selectedStudents, ( student ) => {
-
-
                     //dispatch action
                     switch ( this.pendingOperation ) {
                         case 'move':
+                            var me = this;
+                            let ksn = this.selectedKumis[ 0 ];
+                            let kumi = me.$store.getters.getSelectedKumi;
+
+//                            _.forEach( this.selectedKumis, ( ksn ) => {
+//                                let kumi = me.$store.getters.getKumiBySerialNumber( ksn );
+                            window.console.log( 'students-panel', 'kumi', 401, kumi, this.selectedKumi );
+                            if ( _.isUndefined( kumi ) ) return false;
+                            let pl = Payload.factory( { kumi: kumi, student: student } );
+                            window.console.log( 'students-panel', 'pl', 403, pl );
+                            me.$store.commit( mTypes.associateStudentWithKumi, pl );
+//                            } );
                             break;
                         case 'remove':
                             this.$store.commit( 'removeStudentFromRoster', Payload.factory( { obj: student } ) );
@@ -410,7 +478,6 @@
                 this.closeAllOperationAreas();
             },
 
-
             /**
              * Called when cancel is clicked
              */
@@ -420,7 +487,16 @@
             },
 
 
-            //Creates the id of the element
+            handleKumiSelectionEvent: function ( payload ) {
+                window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
+
+                this.selectedKumis.push( payload.serialNumber );
+                window.console.log( 'students-panel', 'handleKumiSelectionEvent', 427, this.selectedKumis );
+            },
+
+// ----------------------------------- Styling
+
+            /** Creates the id of the element */
             getInputId: function ( name ) {
                 return _.kebabCase( name ) + '-' + this.serialNumber;
             }
@@ -429,6 +505,11 @@
         events: {
             'please-close-student-operations': function () {
                 this.closeAllOperationAreas();
+            },
+
+
+            'kumi-selected': function ( payload ) {
+                window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
             }
         }
 

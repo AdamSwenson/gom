@@ -13,7 +13,7 @@ use App\Assignment;
 use App\Exam;
 use App\Http\Requests\ItemRequest;
 use App\Item;
-use Tests\Browser\Pages\Setup;
+use Tests\Browser\Pages\Page;
 
 class AssignmentRepositoryTest extends \TestCase
 {
@@ -41,7 +41,7 @@ class AssignmentRepositoryTest extends \TestCase
 
     public function makeData( $exam, $numLevels = 3, $numAtLevel = 3 )
     {
-        return Setup::makeOrderJsonData($exam, $numLevels, $numAtLevel);
+        return Page::makeOrderJsonData($exam, $numLevels, $numAtLevel);
 
 //        $order = [];
 //
@@ -191,7 +191,7 @@ class AssignmentRepositoryTest extends \TestCase
         $expectedDescendants = 24;
 
         //call
-        $result = Setup::makeExamData($exam, $numLevels, $numChildren);
+        $result = Page::makeExamData($exam, $numLevels, $numChildren);
         //check
         $this->assertInstanceOf(Assignment::class, $result);
         $children = $result->getChildren();

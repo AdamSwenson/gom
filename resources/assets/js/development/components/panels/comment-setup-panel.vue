@@ -42,7 +42,7 @@
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
-        props: [],
+        props: ['forExam'],
 
         data: function () {
             return {
@@ -107,6 +107,7 @@
             //Doing this via computed property so don't have to pass in on route
             isExam: function () {
                 if ( this.item instanceof Exam ) return true;
+                if(this.forExam) return true;
                 return false;
             },
 

@@ -34,8 +34,17 @@ export const routes = [
         path: '/panel-comments/:serialNumber',
         components: { itemPanels: panelComments },
         props: true, //{default: true}
-    }
-    , //props: (route) => {return route.index;}},
+    }, //props: (route) => {return route.index;}},
+
+    {
+        name: 'exam-comments',
+        path: '/exam-panel-comments/:serialNumber',
+        components: { examPanels: panelComments},
+        props: {
+            isExam: true
+        }
+    },
+
     {
         name: 'exam-detail',
         path: '/panel-exam-detail/:serialNumber',

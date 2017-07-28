@@ -4,7 +4,7 @@
         <ul v-bind:id="id">
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToExamDetails">
-                    <a>
+                    <a class="exam-details-nav">
                         <span class="icon is-small">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
@@ -37,7 +37,7 @@
 
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToGrades">
-                    <a>
+                    <a class="grades-nav">
                         <span class="icon is-small">
                             <i class="fa fa-graduation-cap" aria-hidden="true"></i>
                         </span>
@@ -47,8 +47,10 @@
             </li>
 
             <li role="presentation">
-                <router-link v-bind:to="routeToComments">
-                    <a>
+                <router-link v-bind:to="routeToComments"
+                             v-bind:id="getId('feedback')"
+                >
+                    <a class="feedback-nav">
                         <span class="icon is-small">
                             <i class="fa fa-comments-o" aria-hidden="true"></i>
                         </span>
@@ -59,7 +61,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToStats">
-                    <a>
+                    <a class="stats-nav">
                         <span class="icon is-small">
                             <i class="fa fa-bar-chart" aria-hidden="true"></i>
                         </span>
@@ -70,7 +72,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToHistory">
-                    <a>
+                    <a class="history-nav">
                         <span class="icon is-small">
                             <i class="fa fa-book" aria-hidden="true"></i>
                         </span>
@@ -81,7 +83,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToNotes">
-                    <a>
+                    <a class="notes-nav">
                         <span class="icon is-small">
                             <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
                         </span>
@@ -93,7 +95,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToTags">
-                    <a>
+                    <a class="tags-nav">
                         <span class="icon is-small">
                             <i class="fa fa-tags" aria-hidden="true"></i>
                         </span>
@@ -146,6 +148,7 @@
 
         computed: {
             routeToComments: function () {
+                if(this.isExam) return "/exam-panel-comments/" + this.serialNumber;
                 return "/panel-comments/" + this.serialNumber;
             },
 
@@ -224,6 +227,7 @@
                 return this.identifier + "-" + this.height + '-' + this.depth;
             },
 
+
             /**
              * Injected into the classes of the input
              * */
@@ -235,6 +239,12 @@
         },
 
         methods: {
+            getId: function ( name ) {
+                if(this.isExam) return 'exam-' + name + '-nav-' + this.serialNumber;
+                return 'item-' + name + '-nav-' + this.serialNumber;
+            }
+
+
 //            show: function () {
 //                console.log('itemSetting', 'CALLED', 'show');
 //                this.$store.commit( mTypes.showItemSettings( Payload.factory( { index: this.index } ) ) );

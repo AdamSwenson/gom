@@ -3,7 +3,7 @@
  */
 
 //Not exported!
-    const KUMI_BASE_ROUTE = 'dev/kumis/';
+    const KUMI_BASE_ROUTE = 'dev/kumis';
 const ROSTER_BASE_ROUTE = 'dev/roster';
 const SCORE_BASE_ROUTE = 'dev/scores';
 const STUDENT_BASE_ROUTE = 'dev/students';
@@ -119,6 +119,10 @@ export const Routes = {
 
     loadStudent: ( student ) => {
         return STUDENT_BASE_ROUTE + '/' + student.id;
+    },
+
+    loadStudentsForExam: ( exam ) => {
+        return ROSTER_BASE_ROUTE + '/exam/' + exam.id;
     },
 
     updateStudent: ( student ) => {

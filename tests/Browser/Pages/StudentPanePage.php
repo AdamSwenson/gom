@@ -2,13 +2,16 @@
 
 namespace Tests\Browser\Pages;
 
+use App\Exam;
+use App\Kumi;
 use App\Student;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\Page as BasePage;
+use PHPUnit\Framework\Assert as PHPUnit;
 
-class StudentPane extends BasePage
+class StudentPanePage extends Page
 {
 
     const navButton = '#exam-nav-tabs li a .students-nav';
@@ -145,6 +148,26 @@ class StudentPane extends BasePage
             ->assertVisible('@studentOperationsCancellationButton');
     }
 
+
+    public static function createExamPopulatedWithStudentsAndReturnExam( $user, $totalStudents = 10, $totalKumi = 2 )
+    {
+        Auth::login($user);
+        $studentsPerKumi = ceil($totalStudents / $totalKumi);
+        $exam = factory(Exam::class)->create();
+        $kumis = factory(Kumi::class, $totalKumi)->create();
+        foreach ( $kumis as $kumi ) {
+            $exam->kumis()->attach($kumi);
+            $exam->save();
+
+            //populate with students
+            $students = factory(Student::class, $studentsPerKumi)->create();
+            foreach ( $students as $student ) {
+                $kumi->students()->attach($student);
+            }
+        }
+        return $exam;
+    }
+
     /**
      * Get the element shortcuts for the page.
      *
@@ -172,8 +195,8 @@ class StudentPane extends BasePage
             '@lastNameFields' => "[id^='last-name-']",
             '@emailFields' => "[id^='email-']",
             '@identifierFields' => "[id^='identifier-']",
-        //move operations
+            //move operations
             '@kumiSelector' => "#kumi-selector"
-            ];
+        ];
     }
 }

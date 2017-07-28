@@ -30,7 +30,7 @@ const state = {
 
 const filterExamAssociations = ( state, prop, val ) => {
     return state.examKumiAssociations.filter( ( i ) => {
-        if ( i[ key ] === val ) {
+        if ( i[ prop ] === val ) {
             return i;
         }
     } );
@@ -39,7 +39,7 @@ const filterExamAssociations = ( state, prop, val ) => {
 
 const filterStudentAssociations = ( state, prop, val ) => {
     return state.studentKumiAssociations.filter( ( i ) => {
-        if ( i[ key ] === val ) {
+        if ( i[ prop ] === val ) {
             return i;
         }
     } );
@@ -142,7 +142,13 @@ const mutations = {
     associateStudentWithKumi: ( state, payload ) => {
         let student = payload.student;
         let kumi = payload.kumi;
-//todo Should check that not duplicating?
+
+        //store on the student object
+        student.associatedKumis.push( kumi );
+        //Now, redundantly store it centrally
+        //Why? No idea.... Not even sure if anything uses
+        //the central store
+        // todo Should check that not duplicating?
         state.studentKumiAssociations.push( {
             studentSerialNumber: student.serialNumber,
             kumiSerialNumber: kumi.serialNumber
@@ -154,18 +160,19 @@ const mutations = {
      * @param studentId
      */
     disassociateStudentFromKumi: ( state, payload ) => {
-        let studentId = payload.studentId;
-        let kumiId = payload.kumiId;
-        let r = filterStudentAssociations( state, kumiId, studentId );
+        let student = payload.student;
+        let kumi = payload.kumi;
         let index = state.studentKumiAssociations.indexOf( r[ 0 ] );
         state.studentKumiAssociations.splice( index, 1 );
+        //remove kumi from array stored in student
+        student.associatedKumis.splice( student.associatedKumis.indexOf( kumi ) );
     },
 
-    updateSelectedKumi: ( state, payload ) => {
+    [mTypes.updateSelectedKumi]: ( state, payload ) => {
         //if no payload arrived, use the 0th kumi
         //this is so we don't have to look up the 0th kumi and do
         //it from another module
-        let kumi = ! _.isUndefined(payload) && ! _.isUndefined(payload.obj) ? payload.obj : state.kumis[ 0 ];
+        let kumi = !_.isUndefined( payload ) && !_.isUndefined( payload.obj ) ? payload.obj : state.kumis[ 0 ];
         state.selectedKumi = kumi;
     }
 
@@ -173,7 +180,7 @@ const mutations = {
 };
 
 const actions = {
-    processKumiFromJson( { state, dispatch, commit, getters } ){
+    processKumiFromJson( { state, dispatch, commit, getters } ) {
         let exam = getters.getCurrentExam;
         let kumiData = JSON.parse( document.getElementById( KUMIS_JSON_NAME ).getAttribute( 'data' ) );
 
@@ -204,6 +211,18 @@ const getters = {
         return getKumiBySerialNumber( state, serialNumber );
     },
 
+
+    /**
+     * Looks up the client side representation of a Kumi object
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param serialNumber
+     */
+    getKumiById: ( state, getters, rootState, kumiId ) => ( kumiId ) => {
+        return getKumiById( state, kumiId );
+    },
+
     getKumis: function ( state ) {
         return state.kumis;
     },
@@ -215,7 +234,7 @@ const getters = {
     getExamKumis: ( state, getters, rootState, examOrExamId ) => ( examOrExamId ) => {
         // return new Promise((resolve, reject)=>{
 
-        let exam = _.isUndefined(examOrExamId) ? this.$store.getters.currentExam : examOrExamId;
+        let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.currentExam : examOrExamId;
 
         // let objId = examOrExamId;
         let objId = exam.id;
@@ -242,6 +261,7 @@ const getters = {
         //todo return objects
     },
 
+    //Remember students can belong to more than one kumi
     getStudentsForKumi: ( state, getters, rootState, kumiOrKumiId ) => ( kumiOrKumiId ) => {
         let kumi = kumiOrKumiId;
         let studentSerialNumbers = filterStudentAssociations( state, 'serialNumber', kumi.serialNumber );
@@ -255,13 +275,16 @@ const getters = {
 
     /**
      * Returns the currently selected kumi object or null if
-     * no kumi is set
+     * no kumi is set.
+     * Always returns a Kumi object, even if selectedKumi is a serial number
      * @param state
      * @param getters
      * @param rootState
+     * @returns Kumi
      */
     getSelectedKumi: ( state, getters, rootState ) => {
-        return state.selectedKumi;
+        let kumi = (state.selectedKumi instanceof Kumi) ? state.selectedKumi : getters.getKumiBySerialNumber( state.selectedKumi );
+        return kumi;
     },
 
 
@@ -272,23 +295,29 @@ const getters = {
      * @param state
      * @param getters
      * @param rootState
-     * @param studentOrStudentId
+     * @param studentOrStudentSN
      * @returns {boolean}
      */
-    isStudentInSelectedKumi: ( state, getters, rootState, studentOrStudentId ) => ( studentOrStudentId ) => {
+    isStudentInSelectedKumi: ( state, getters, rootState, studentOrStudentSN ) => ( studentOrStudentSN ) => {
         try {
             let kumi = getters.getSelectedKumi;
-
             //if the selected kumi is null, then we are to
             //display all kumi associated with the exam
             if ( _.isNull( kumi ) ) return true;
 
-            //todo add support for student id
-            let student = studentOrStudentId;
-            let students = getters.getStudentsForKumi( kumi );
-            window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
-            if ( students.indexOf( student ) >= 0 ) return true;
-            return false;
+            let student = studentOrStudentSN instanceof Student ? studentOrStudentId : getters.getStudentFromRosterBySerialNumber( studentOrStudentSN )
+
+            return student.associatedKumis.indexOf( kumi ) > -1;
+            //     //if the selected kumi is null, then we are to
+            //     //display all kumi associated with the exam
+            //     if ( _.isNull( kumi ) ) return true;
+            //
+            //     //todo add support for student id
+            //     let student = studentOrStudentId;
+            //     let students = getters.getStudentsForKumi( kumi );
+            //     window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
+            //     if ( students.indexOf( student ) >= 0 ) return true;
+            //     return false;
 
         } catch (Error) {
             window.console.log( 'kumis', 'isStudentInSelectedKumi', 209, Error );

@@ -4,7 +4,6 @@ namespace Tests\Browser\Pages;
 
 use Illuminate\Support\Facades\Auth;
 use Laravel\Dusk\Browser;
-use Laravel\Dusk\Page as BasePage;
 
 use PHPUnit\Framework\Assert as PHPUnit;
 /**
@@ -14,7 +13,7 @@ use PHPUnit\Framework\Assert as PHPUnit;
  *
  * @package Tests\Browser\Pages
  */
-class Kumi extends BasePage
+class KumiPage extends Page
 {
     /**
      * Get the URL for the page.

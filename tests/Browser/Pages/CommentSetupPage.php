@@ -3,10 +3,17 @@
 namespace Tests\Browser\Pages;
 
 use Laravel\Dusk\Browser;
-use Laravel\Dusk\Page as BasePage;
 
-class Index extends BasePage
+class CommentSetupPage extends Page
 {
+
+    public static function openCommentPane(Browser $browser, $serialNumber){
+        $path = "#/panel-comments/" + $serialNumber;
+        $browser->visit($path);
+        return $browser;
+    }
+
+
     /**
      * Get the URL for the page.
      *
@@ -14,7 +21,6 @@ class Index extends BasePage
      */
     public function url()
     {
-        return '/';
     }
 
     /**
@@ -25,7 +31,6 @@ class Index extends BasePage
      */
     public function assert(Browser $browser)
     {
-        $browser->assertPathIs($this->url());
     }
 
     /**
@@ -36,7 +41,7 @@ class Index extends BasePage
     public function elements()
     {
         return [
-            '@element' => '#selector',
+            '@commentSetupPanels' => "[id^='comment-setup-panel']",
         ];
     }
 }

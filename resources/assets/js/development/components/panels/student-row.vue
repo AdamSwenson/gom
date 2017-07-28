@@ -1,6 +1,7 @@
 <template>
     <a class="panel-block student-row"
        v-on:toggle-checkbox-delete="handleToggleCheckboxDelete"
+       v-show="showRow"
     >
         <!--v-show="isStudentInSelectedKumi"-->
         <span class="panel-icon"><i class="fa fa-user"></i></span>
@@ -42,9 +43,9 @@
             <label class="checkbox">
                 <input class="checkbox student-operation-checkbox"
                        type="checkbox"
+                       v-bind:id="checkboxId"
                        v-model="isSelected"
-                       v-bind:value="getCheckboxValue">
-                Delete
+                >Delete
             </label>
 
         </div>
@@ -54,8 +55,9 @@
             <label class="checkbox">
                 <input class="checkbox student-operation-checkbox"
                        type="checkbox"
-                       v-model="isSelected">
-                Remove
+                       v-bind:id="checkboxId"
+                       v-model="isSelected"
+                >Remove
             </label>
         </div>
 
@@ -67,8 +69,8 @@
                 <input class="checkbox student-operation-checkbox"
                        type="checkbox"
                        v-bind:id="checkboxId"
-                       v-model="isSelected">
-                Move
+                       v-model="isSelected"
+                >Move
             </label>
 
         </div>
@@ -93,7 +95,7 @@
     import * as gTypes from '../../../store/getter-types';
 
 
-    export default{
+    export default {
 
         props: [ 'serialNumber' ],
 
@@ -270,6 +272,17 @@
             //            },
 
             /**
+             * Whether the row is visible
+             */
+            showRow: function (  ) {
+                if(this.$parent.showKumi === -1) return true;
+
+                let kumi  = this.$store.getters.getKumiBySerialNumber(this.$parent.showKumi);
+
+                return this.student.associatedKumis.indexOf(kumi) > -1;
+            },
+
+            /**
              * Getter for the students grade, if displayed
              */
             grade: function () {
@@ -281,7 +294,7 @@
             score: function () {
             },
 
-            checkboxId: function (  ) {
+            checkboxId: function () {
                 return 'student-operation-checkbox-' + this.serialNumber;
             }
         }

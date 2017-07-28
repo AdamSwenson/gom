@@ -119,8 +119,12 @@ class RosterController extends Controller
         foreach ( $kumis as $kumi ) {
             $students = $kumi->students()->get();
             foreach ( $students as $student ) {
-                $out[] = StudentResourceController::convertOutgoing($student);
+                $s = StudentResourceController::convertOutgoing($student);
+                $s['kumiId'] = $kumi->id;
+                $out[] = $s;
+
             }
+
         }
         //        $students = $this->dao->load_students_by_exam($exam->id);
         return $out;

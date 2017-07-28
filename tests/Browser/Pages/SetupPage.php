@@ -5,12 +5,12 @@ namespace Tests\Browser\Pages;
 use App\Assignment;
 use App\Exam;
 use App\Item;
-use App\Repositories\Assignment\AssignmentRepositoryTest;
 use App\User;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\Page as BasePage;
+use PHPUnit\Framework\Assert as PHPUnit;
 
-class Setup extends BasePage
+class SetupPage extends Page
 {
     const URL_BASE = '/dev/setup';
     static public $mainBodyLocator = '#examEditor';
@@ -37,12 +37,14 @@ class Setup extends BasePage
 
     static public $addItemToExamButton = '.add-child-to-exam-button';
 
-    public function navigateToExam( Browser $browser, $examId, $userId = 1 )
+    public function navigateToExam( Browser $browser, $examOrExamId, $userOrUserId )
     {
+        $exam = $examOrExamId instanceof Exam ? $examOrExamId : Exam::find($examOrExamId);
+        $user = $userOrUserId instanceof User ? $userOrUserId : User::find($userOrUserId);
         return $browser
-            ->loginAs(User::find($userId))
-            ->visit(self::urlToExam($examId))
-            ->assertPathIs(self::urlToExam($examId))
+            ->loginAs($user)
+            ->visit(self::urlToExam($exam->id))
+            ->assertPathIs(self::urlToExam($exam->id))
             ->waitFor(self::$mainBodyLocator);
     }
 
@@ -69,7 +71,7 @@ class Setup extends BasePage
         function r( $assignment, $exam, $numChildren, $numLevels, $level )
         {
             for ( $h = 0; $h < $numChildren; $h++ ) {
-                $child = Setup::addChild($assignment, $exam);
+                $child = Page::addChild($assignment, $exam);
                 //if we aren't as deep as we need to go,
                 //repeat everything for the child
 
@@ -140,7 +142,7 @@ class Setup extends BasePage
     {
         return [
             '@mainBodyLocator' => self::$mainBodyLocator,
-            '@element' => '#selector',
+            '@examSettingsButton' => "[id^='exam-settings-button']",
             '@addSibling' => '.add-sibling-button',
             '@addQuestion' => 'button.add-child-to-exam-button',
             '@addChild' => '.add-child-button',

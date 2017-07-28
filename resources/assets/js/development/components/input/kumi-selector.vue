@@ -1,15 +1,18 @@
 <template>
     <div class="control ">
         <label for="kumi-selector">{{ selectorLabel }}</label>
-<br />
+        <br/>
         <select
                 id="kumi-selector"
                 class="select"
                 v-bind:class="styling"
+                v-model="selected"
+                v-on:change="handleSelect"
         >
+            <option disabled value="">Please select a group / class </option>
             <option v-for="kumi in kumis"
                     :key="kumi.serialNumber"
-                    v-on:select="handleSelect(kumi.serialNumber)"
+                    v-bind:value="kumi.serialNumber"
             >{{ kumi.name }}
             </option>
         </select>
@@ -43,6 +46,7 @@
 
         data: function () {
             return {
+//                selected: [],
                 selected: '',
 //                isSelected: false,
                 identifier: 'kumi-selector',
@@ -52,10 +56,7 @@
             }
         },
 
-        asyncComputed: {
-
-
-        },
+        asyncComputed: {},
 
         computed: {
             kumis: function () {
@@ -70,16 +71,25 @@
                 return this.identifier;
             },
 
+            selectedKumi :function (  ) {
+                if(this.selected > 0){
+                    return this.$store.getters.getKumiBySerialNumber(this.selected);
+                }
+                return false;
+            }
+
         },
 
         methods: {
-            handleSelect: function ( serialNumber ) {
+            handleSelect: function () {
+                let serialNumber = this.selected;
                 window.console.log( 'kumi-selector', 'handleSelect', 71, serialNumber );
-                this.$vm.emit( 'kumi-selected', { serialNumber: serialNumber } );
-//                this.$store.commit( 'updateSelectedKumi',
-//                    Payload.factory( { obj: this.kumi } )
-//                );
-//                this.isSelected = ! this.isSelected;
+                this.$parent.$emit( 'kumi-selected', { serialNumber: serialNumber } );
+               if(this.selectedKumi){
+                   this.$parent.selectedKumis.push( this.selectedKumi );
+               }
+
+                this.$parent.selectedKumis.push( serialNumber );
             }
         },
 

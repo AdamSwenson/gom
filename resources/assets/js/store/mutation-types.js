@@ -39,7 +39,10 @@ export const setElementScore = 'setElementScore';
 
 
 //kumi
-export const  updateKumi = 'updateKumi';
+export const addKumi = 'addKumi';
+export const associateStudentWithKumi = 'associateStudentWithKumi';
+export const updateKumi = 'updateKumi';
+export const updateSelectedKumi = 'updateSelectedKumi';
 
 //grades
 export const loadExamGrades = 'loadExamGrades';
@@ -103,4 +106,3 @@ export const toggleSampleFeedback = 'toggleSampleFeedback';
 export const showItemSettings = 'showItemSettings';
 export const hideItemSettings = 'hideItemSettings';
 export const toggleExamSettings = 'toggleExamSettings';
-

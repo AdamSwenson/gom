@@ -161,7 +161,10 @@ var loadElementScores = exports.loadElementScores = 'loadElementScores';
 var setElementScore = exports.setElementScore = 'setElementScore';
 
 //kumi
+var addKumi = exports.addKumi = 'addKumi';
+var associateStudentWithKumi = exports.associateStudentWithKumi = 'associateStudentWithKumi';
 var updateKumi = exports.updateKumi = 'updateKumi';
+var updateSelectedKumi = exports.updateSelectedKumi = 'updateSelectedKumi';
 
 //grades
 var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
@@ -29608,6 +29611,8 @@ var Student = function (_IModel) {
         _this.studentIdentifier = null;
         _this.lastName = '';
         _this.firstName = '';
+
+        _this.associatedKumis = [];
         return _this;
     }
 
@@ -30761,7 +30766,7 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 //Not exported!
-var KUMI_BASE_ROUTE = 'dev/kumis/';
+var KUMI_BASE_ROUTE = 'dev/kumis';
 var ROSTER_BASE_ROUTE = 'dev/roster';
 var SCORE_BASE_ROUTE = 'dev/scores';
 var STUDENT_BASE_ROUTE = 'dev/students';
@@ -30874,6 +30879,10 @@ var Routes = exports.Routes = {
 
     loadStudent: function loadStudent(student) {
         return STUDENT_BASE_ROUTE + '/' + student.id;
+    },
+
+    loadStudentsForExam: function loadStudentsForExam(exam) {
+        return ROSTER_BASE_ROUTE + '/exam/' + exam.id;
     },
 
     updateStudent: function updateStudent(student) {
@@ -35694,7 +35703,7 @@ var ID_WAIT_DELAY = 3000;
  */
 var handleLoadResponse = function handleLoadResponse(store, response) {
     _.forEach(response.data, function (r) {
-        // window.console.log( 'examRequests', 'r', 29, r );
+        // window.console.log( 'studentRequests', 'r', 29, r );
         var student = _Student2.default.factory({ r: r });
         student.email = r.email;
         student.firstName = r.firstName;
@@ -35704,6 +35713,25 @@ var handleLoadResponse = function handleLoadResponse(store, response) {
 
         var payload = _Payload2.default.factory({ obj: student, mutateSilently: true });
         store.commit('addStudentToRoster', payload);
+
+        if (r.kumiId) {
+            //if the server sent us the id of the associated kumi
+            //we are going to look up the client side representation
+            //and then store it in the student object
+            var kumi = store.getters.getKumiById(r.kumiId);
+            if (_.isUndefined(kumi)) {}
+            //if a kumi object doesn't exist yet with this id
+            //figure out what the fuck to do.....
+            //todo add promises to help with this
+
+
+            //Otherwise we are good, so call the mutation
+            // this will both add the kumi to the student
+            //and store the relationship centrally
+            payload.student = student;
+            payload.kumi = kumi;
+            store.commit(mTypes.associateStudentWithKumi, payload);
+        }
     });
 };
 
@@ -35759,7 +35787,7 @@ module.exports = {
             });
         } else {
             //Get students for a particular exam
-            window.axios.get(ROSTER_BASE_ROUTE + '/exam/' + exam.id).then(function (response) {
+            window.axios.get(_apiSettings.Routes.loadStudentsForExam(exam)).then(function (response) {
                 // window.console.log( 'examRequests', '', 28, response );
                 handleLoadResponse(store, response);
             }).catch(function (error) {
@@ -35815,37 +35843,34 @@ module.exports = {
      * @param exam
      * @param kumi
      */
-    associateStudent: function associateStudent(store, student) {
-        var kumi = store.getters.getSelectedKumi;
-        //handles the actual request so that we can deal
-        //with the need to wait for an id
-        var makeRequest = function makeRequest(route, out) {
-            window.axios.post(route, out).then(function (response) {
-                // window.console.log( 'studentRequests', 'associateStudent', 28, response );
-                store.commit('associateStudentWithKumi', _Payload2.default.factory({ student: student, kumi: kumi }));
-            }).catch(function (error) {
-                //todo add response handling
-                window.console.log('studentRequests -- associateStudent', 'ERROR', 39, error);
-                // errorHandling( error );
-            });
-        };
-        var out = {
-            requestVersion: _apiSettings.REQUEST_VERSION
-        };
+    associateStudent: function associateStudent(store, student, kumi) {
+        return new Promise(function (resolve, reject) {
 
-        //Check whether both the kumi and student have their ids
-        if (kumi.id === -1 || student.id === -1) {
+            //handles the actual request so that we can deal
+            //with the need to wait for an id
+            var makeRequest = function makeRequest(route) {
+                var out = out == { requestVersion: _apiSettings.REQUEST_VERSION };
+                window.axios.post(route, out).then(function (response) {
+                    resolve();
+                }).catch(function (error) {
+                    //todo add response handling
+                    window.console.log('studentRequests -- associateStudent', 'ERROR', 39, error);
+                    // errorHandling( error );
+                });
+            };
 
-            setTimeout(function () {
-                //                let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
-
-                makeRequest(_apiSettings.Routes.associateStudent(student, kumi), out);
-            }, ID_WAIT_DELAY);
-        } else {
-            //   let route = `${ROSTER_BASE_ROUTE}/${student.id}/assoc/${kumi.id}`;
-            makeRequest(_apiSettings.Routes.associateStudent(student, kumi), out);
-        }
-        // window.console.log( 'studentRequests', 'associateStudent', 162, student );
+            //Check whether both the kumi and student have their ids
+            if (kumi.id === -1 || student.id === -1) {
+                //if either of them are not yet set, wait for a bit
+                //todo Rewrite this to use promises
+                setTimeout(function () {
+                    makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
+                }, ID_WAIT_DELAY);
+            } else {
+                //The ids are good to go, so we can just send it
+                makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
+            }
+        });
     },
 
     /**
@@ -35862,9 +35887,7 @@ module.exports = {
      * @param store
      * @param student
      */
-    disassociateStudent: function disassociateStudent(store, student) {
-        var kumi = store.getters.getCurrentlySelectedKumi;
-        // let route = `${ROSTER_BASE_ROUTE}/${student.id}/diss/${kumi.id}`;
+    disassociateStudent: function disassociateStudent(store, student, kumi) {
 
         window.axios.post(_apiSettings.Routes.disassociateStudent(student, kumi)).then(function (response) {
             window.console.log('studentRequests', 'disassociateStudent', 214, response);
@@ -54207,6 +54230,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
 
 
 exports.default = {
@@ -54230,6 +54255,7 @@ exports.default = {
 
     computed: {
         routeToComments: function routeToComments() {
+            if (this.isExam) return "/exam-panel-comments/" + this.serialNumber;
             return "/panel-comments/" + this.serialNumber;
         },
 
@@ -54316,6 +54342,11 @@ exports.default = {
     },
 
     methods: {
+        getId: function getId(name) {
+            if (this.isExam) return 'exam-' + name + '-nav-' + this.serialNumber;
+            return 'item-' + name + '-nav-' + this.serialNumber;
+        }
+
         //            show: function () {
         //                console.log('itemSetting', 'CALLED', 'show');
         //                this.$store.commit( mTypes.showItemSettings( Payload.factory( { index: this.index } ) ) );
@@ -54561,7 +54592,7 @@ exports.default = {
         valenceButtons: _buttonsValenceComponent2.default // 'valence-buttons': valenceButtons,
     },
 
-    props: [],
+    props: ['forExam'],
 
     data: function data() {
         return {
@@ -54624,6 +54655,7 @@ exports.default = {
         //Doing this via computed property so don't have to pass in on route
         isExam: function isExam() {
             if (this.item instanceof _Exam2.default) return true;
+            if (this.forExam) return true;
             return false;
         },
 
@@ -55513,6 +55545,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
 
 exports.default = {
 
@@ -55687,6 +55721,17 @@ exports.default = {
         //            operationCheckboxLabel: function () {
         //                return 'Delete | Move | Remove';
         //            },
+
+        /**
+         * Whether the row is visible
+         */
+        showRow: function showRow() {
+            if (this.$parent.showKumi === -1) return true;
+
+            var kumi = this.$store.getters.getKumiBySerialNumber(this.$parent.showKumi);
+
+            return this.student.associatedKumis.indexOf(kumi) > -1;
+        },
 
         /**
          * Getter for the students grade, if displayed
@@ -56020,6 +56065,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 
@@ -56033,6 +56085,7 @@ exports.default = {
 
     data: function data() {
         return {
+            /** Which kumi, if any to filter the displayed rows by*/
             showKumi: -1, //i.e, all
             isEditable: false,
             fileButtonVisible: false,
@@ -56041,7 +56094,17 @@ exports.default = {
             showMoveOperationArea: false,
             showRemoveOperationArea: false,
             showConfirmationButtons: false,
+            /** whether to show the add and import buttons */
+            additionButtonsVisible: true,
+            /** This gets populated with objects by the student operation checkboxes */
             selectedStudents: [],
+            //holds kumis serial numbers from selector
+            //NB, the selector could be easily altered to
+            //allow multiple selection. However, the central
+            //store only holds one selected kumi.
+            //So when we update the central store, we will
+            //only add the most recently pushed kumi from this list.
+            selectedKumis: [],
             pendingOperation: false, //what operation we are to perform
             defaults: {}
         };
@@ -56074,11 +56137,13 @@ exports.default = {
 
         students: function students() {
             var s = this.$store.getters.getStudentsFromRoster;
-            //if no kumi filter, return them all
-            if (this.showKumi === -1) return s;
-
-            //otherwise filter the results
-            return this.$store.getters.getStudentsForKumi(this.showKumi);
+            return s;
+            //for now, the rows handle their visibility
+            //                //if no kumi filter, return them all
+            //                if ( this.showKumi === -1 ) return s;
+            //
+            //                //otherwise filter the results
+            //                return this.$store.getters.getStudentsForKumi( this.showKumi );
         }
 
     },
@@ -56087,25 +56152,47 @@ exports.default = {
         kumis: function kumis() {
             return this.$store.getters.getKumis;
         }
+    },
 
+    watch: {
+        //The child selector will set the selected Kumis here
+        // Thus we will watch for that and then
+        // update the central store
+        selectedKumis: function selectedKumis() {
+            window.console.log('students-panel', 'watch---selectedKumis', 294, this.selectedKumis);
+            var pl = _Payload2.default.factory({ obj: this.selectedKumis[this.selectedKumis.length - 1] });
+            this.$store.commit(mTypes.updateSelectedKumi, pl);
+        }
     },
 
     methods: {
+        // ---------------------------- Control which student rows display
+        showAllKumi: function showAllKumi() {
+            this.showKumi = -1;
+        },
+
+        handleKumiFilterSelection: function handleKumiFilterSelection(serialNumber) {
+            window.console.log('students-panel', 'handleKumiFilterSelection', 151, serialNumber);
+            //This could be accidentally called when the area
+            //is open for editing.
+            //Thus we filter any such calls out
+            if (this.isEditable) return true;
+
+            this.showKumi = serialNumber;
+        },
+
+        // ----------------------- Operations on students or kumis
         addStudent: function addStudent() {
             window.console.log('students-panel', 'addStudent', 190);
             //create a new student, which will add an empty row
             var s = new _Student2.default();
-            this.$store.commit('addStudentToRoster', _Payload2.default.factory({ obj: s }));
-        },
-
-        filterByKumi: function filterByKumi(serialNumber) {
-            window.console.log('students-panel', 'filterByKumi', 151, serialNumber);
-            var kumi = this.$store.getters.getKumiBySerialNumber(serialNumber);
-            //                this.$store.commit( 'updateSelectedKumi', Payload.factory( { obj: kumi } ) );
-        },
-
-        toggleFileButtonVisibility: function toggleFileButtonVisibility() {
-            this.fileButtonVisible = !this.fileButtonVisible;
+            this.$store.commit(mTypes.addStudentToRoster, _Payload2.default.factory({ obj: s }));
+            //That just added the student to the list of those who exist.
+            // Now we need to associate the student with a class/group
+            // window.console.log( 'studentRequests', 'associateStudent', 28, response );
+            this.$store.commit(mTypes.associateStudentWithKumi, _Payload2.default.factory({
+                student: student
+            }));
         },
 
         processFile: function processFile(evt) {
@@ -56132,6 +56219,7 @@ exports.default = {
             this.isEditable = !this.isEditable;
         },
 
+        // ------------------------ Control display of tools
         //BUTTONS
         //when these get clicked
         //the rows get told to display a checkbox for being
@@ -56143,6 +56231,8 @@ exports.default = {
             this.showDeleteOperationArea = !this.showDeleteOperationArea;
             this.showConfirmationButtons = !this.showConfirmationbuttons;
             this.pendingOperation = 'delete';
+            //get the addition buttons out of the way
+            this.additionButtonsVisible = !this.additionButtonsVisible;
         },
 
         toggleRemoveControls: function toggleRemoveControls() {
@@ -56152,6 +56242,8 @@ exports.default = {
             this.showRemoveOperationArea = !this.showRemoveOperationArea;
             this.showConfirmationButtons = !this.showConfirmationbuttons;
             this.pendingOperation = 'remove';
+            //get the addition buttons out of the way
+            this.additionButtonsVisible = !this.additionButtonsVisible;
         },
 
         toggleMoveControls: function toggleMoveControls() {
@@ -56163,10 +56255,16 @@ exports.default = {
             //show kumi selector
             this.kumiSelectorVisible = !this.kumiSelectorVisible;
             this.pendingOperation = 'move';
+            //get the addition buttons out of the way
+            this.additionButtonsVisible = !this.additionButtonsVisible;
+        },
+        toggleFileButtonVisibility: function toggleFileButtonVisibility() {
+            this.fileButtonVisible = !this.fileButtonVisible;
         },
 
         /**
-         * Clears and closes all operations areas
+         * Clears and closes all operations areas.
+         * Reopens any areas that are open by default
          */
         closeAllOperationAreas: function closeAllOperationAreas() {
             //clear previous selections
@@ -56178,7 +56276,11 @@ exports.default = {
             this.showConfirmationButtons = false;
             this.pendingOperation = false;
             this.kumiSelectorVisible = false;
+            //open stuff that is visible by default
+            this.additionButtonsVisible = true;
         },
+
+        // ----------------------------------- Events
 
         /**
          * Called when confirm is clicked
@@ -56190,10 +56292,21 @@ exports.default = {
             //display any warnings
 
             _.forEach(this.selectedStudents, function (student) {
-
                 //dispatch action
                 switch (_this.pendingOperation) {
                     case 'move':
+                        var me = _this;
+                        var ksn = _this.selectedKumis[0];
+                        var kumi = me.$store.getters.getSelectedKumi;
+
+                        //                            _.forEach( this.selectedKumis, ( ksn ) => {
+                        //                                let kumi = me.$store.getters.getKumiBySerialNumber( ksn );
+                        window.console.log('students-panel', 'kumi', 401, kumi, _this.selectedKumi);
+                        if (_.isUndefined(kumi)) return false;
+                        var pl = _Payload2.default.factory({ kumi: kumi, student: student });
+                        window.console.log('students-panel', 'pl', 403, pl);
+                        me.$store.commit(mTypes.associateStudentWithKumi, pl);
+                        //                            } );
                         break;
                     case 'remove':
                         _this.$store.commit('removeStudentFromRoster', _Payload2.default.factory({ obj: student }));
@@ -56218,7 +56331,16 @@ exports.default = {
             this.closeAllOperationAreas();
         },
 
-        //Creates the id of the element
+        handleKumiSelectionEvent: function handleKumiSelectionEvent(payload) {
+            window.console.log('students-panel', 'caught: kumi-selected', 433, payload);
+
+            this.selectedKumis.push(payload.serialNumber);
+            window.console.log('students-panel', 'handleKumiSelectionEvent', 427, this.selectedKumis);
+        },
+
+        // ----------------------------------- Styling
+
+        /** Creates the id of the element */
         getInputId: function getInputId(name) {
             return _.kebabCase(name) + '-' + this.serialNumber;
         }
@@ -56227,6 +56349,10 @@ exports.default = {
     events: {
         'please-close-student-operations': function pleaseCloseStudentOperations() {
             this.closeAllOperationAreas();
+        },
+
+        'kumi-selected': function kumiSelected(payload) {
+            window.console.log('students-panel', 'caught: kumi-selected', 433, payload);
         }
     }
 
@@ -56640,15 +56766,23 @@ exports.default = function (store) {
                 break;
 
             // ******************** Students
-            case 'addStudentToRoster':
+            case mTypes.addStudentToRoster:
                 // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                (0, _studentRequests.createStudent)(store, payload.obj);
-                (0, _studentRequests.associateStudent)(store, payload.obj);
+                var student = payload.obj;
+                //Requests the creation of a new student
+                (0, _studentRequests.createStudent)(store, student);
+                //Assigns them to a particular kumi
+                var kumi = store.getters.getSelectedKumi;
+                var p = (0, _studentRequests.associateStudent)(store, student, kumi);
+                p.then(function () {});
+
                 break;
 
             case 'removeStudentFromRoster':
                 window.console.log('apiPlugin', 'removeStudentFromRoster', 182, payload);
-                (0, _studentRequests.disassociateStudent)(store, payload.obj);
+                var kumi = store.getters.getSelectedKumi;
+                var student = payload.obj;
+                (0, _studentRequests.disassociateStudent)(store, student, kumi);
                 break;
 
             case 'deleteStudent':
@@ -56663,7 +56797,7 @@ exports.default = function (store) {
                 break;
 
             // ******************** Kumi
-            case 'addKumi':
+            case mTypes.addKumi:
                 // window.console.log( 'apiPlugin', 'addKumi', 177, payload );
                 //if an exam is set as current,
                 //this will create an association, otherwise
@@ -56672,7 +56806,7 @@ exports.default = function (store) {
                 (0, _kumiRequests.createKumi)(store, payload, exam);
                 break;
 
-            case 'updateKumi':
+            case mTypes.updateKumi:
                 // window.console.log( 'apiPlugin', 'updateKumi', 184, payload );
                 (0, _kumiRequests.updateKumi)(store, payload);
 
@@ -56681,6 +56815,19 @@ exports.default = function (store) {
                 //     associateKumi(store, payload, exam);
                 // }
                 break;
+
+            /**
+             * NB This is used for an existing student, whereas
+             addStudentToRoster is for a newly created student.
+             This thus is used for the move operation
+             */
+            case mTypes.associateStudentWithKumi:
+                //We use the currently selected kumi if one wasn't set
+                //in the payload
+                var kumi = !_.isUndefined(payload.kumi) ? payload.kumi : store.getters.getSelectedKumi;
+                (0, _studentRequests.associateStudent)(store, payload.student, kumi);
+                break;
+
             default:
 
         }
@@ -56952,7 +57099,15 @@ var routes = exports.routes = [{
     components: { itemPanels: _commentSetupPanel2.default },
     props: true //{default: true}
 }, //props: (route) => {return route.index;}},
+
 {
+    name: 'exam-comments',
+    path: '/exam-panel-comments/:serialNumber',
+    components: { examPanels: _commentSetupPanel2.default },
+    props: {
+        isExam: true
+    }
+}, {
     name: 'exam-detail',
     path: '/panel-exam-detail/:serialNumber',
     components: { examPanels: _examDetailPanel2.default },
@@ -61656,10 +61811,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var KUMIS_JSON_NAME = 'loadedKumis'; /**
-                                      * Created by adam on 7/11/17.
-                                      */
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 7/11/17.
+                                                                                                                                                                                                                   */
 
+
+var KUMIS_JSON_NAME = 'loadedKumis';
 
 var state = {
     kumis: [],
@@ -61680,7 +61837,7 @@ var state = {
 
 var filterExamAssociations = function filterExamAssociations(state, prop, val) {
     return state.examKumiAssociations.filter(function (i) {
-        if (i[key] === val) {
+        if (i[prop] === val) {
             return i;
         }
     });
@@ -61688,7 +61845,7 @@ var filterExamAssociations = function filterExamAssociations(state, prop, val) {
 
 var filterStudentAssociations = function filterStudentAssociations(state, prop, val) {
     return state.studentKumiAssociations.filter(function (i) {
-        if (i[key] === val) {
+        if (i[prop] === val) {
             return i;
         }
     });
@@ -61702,7 +61859,7 @@ var filterKumis = function filterKumis(state, prop, val) {
     });
 };
 
-var getKumiById = function getKumiById(state, kumiId) {
+var _getKumiById = function _getKumiById(state, kumiId) {
     var r = filterKumis(state, 'id', kumiId);
     return r[0];
 };
@@ -61738,7 +61895,7 @@ var processKumiFromJson = function processKumiFromJson(state, kumiData, exam) {
     });
 };
 
-var mutations = {
+var mutations = _defineProperty({
 
     addKumi: function addKumi(state, payload) {
         state.kumis.push(payload.obj);
@@ -61788,7 +61945,13 @@ var mutations = {
     associateStudentWithKumi: function associateStudentWithKumi(state, payload) {
         var student = payload.student;
         var kumi = payload.kumi;
-        //todo Should check that not duplicating?
+
+        //store on the student object
+        student.associatedKumis.push(kumi);
+        //Now, redundantly store it centrally
+        //Why? No idea.... Not even sure if anything uses
+        //the central store
+        // todo Should check that not duplicating?
         state.studentKumiAssociations.push({
             studentSerialNumber: student.serialNumber,
             kumiSerialNumber: kumi.serialNumber
@@ -61800,22 +61963,21 @@ var mutations = {
      * @param studentId
      */
     disassociateStudentFromKumi: function disassociateStudentFromKumi(state, payload) {
-        var studentId = payload.studentId;
-        var kumiId = payload.kumiId;
-        var r = filterStudentAssociations(state, kumiId, studentId);
+        var student = payload.student;
+        var kumi = payload.kumi;
         var index = state.studentKumiAssociations.indexOf(r[0]);
         state.studentKumiAssociations.splice(index, 1);
-    },
-
-    updateSelectedKumi: function updateSelectedKumi(state, payload) {
-        //if no payload arrived, use the 0th kumi
-        //this is so we don't have to look up the 0th kumi and do
-        //it from another module
-        var kumi = !_.isUndefined(payload) && !_.isUndefined(payload.obj) ? payload.obj : state.kumis[0];
-        state.selectedKumi = kumi;
+        //remove kumi from array stored in student
+        student.associatedKumis.splice(student.associatedKumis.indexOf(kumi));
     }
 
-};
+}, mTypes.updateSelectedKumi, function (state, payload) {
+    //if no payload arrived, use the 0th kumi
+    //this is so we don't have to look up the 0th kumi and do
+    //it from another module
+    var kumi = !_.isUndefined(payload) && !_.isUndefined(payload.obj) ? payload.obj : state.kumis[0];
+    state.selectedKumi = kumi;
+});
 
 var actions = {
     processKumiFromJson: function processKumiFromJson(_ref) {
@@ -61854,6 +62016,19 @@ var getters = {
         };
     },
 
+    /**
+     * Looks up the client side representation of a Kumi object
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param serialNumber
+     */
+    getKumiById: function getKumiById(state, getters, rootState, kumiId) {
+        return function (kumiId) {
+            return _getKumiById(state, kumiId);
+        };
+    },
+
     getKumis: function getKumis(state) {
         return state.kumis;
     },
@@ -61875,7 +62050,7 @@ var getters = {
 
             var out = [];
             _.forEach(kumiIds, function (i) {
-                var kumi = getKumiById(state, i);
+                var kumi = _getKumiById(state, i);
                 out.push(kumi);
             });
             // resolve(out);
@@ -61896,6 +62071,7 @@ var getters = {
         //todo return objects
     },
 
+    //Remember students can belong to more than one kumi
     getStudentsForKumi: function getStudentsForKumi(state, getters, rootState, kumiOrKumiId) {
         return function (kumiOrKumiId) {
             var kumi = kumiOrKumiId;
@@ -61910,13 +62086,16 @@ var getters = {
 
     /**
      * Returns the currently selected kumi object or null if
-     * no kumi is set
+     * no kumi is set.
+     * Always returns a Kumi object, even if selectedKumi is a serial number
      * @param state
      * @param getters
      * @param rootState
+     * @returns Kumi
      */
     getSelectedKumi: function getSelectedKumi(state, getters, rootState) {
-        return state.selectedKumi;
+        var kumi = state.selectedKumi instanceof _Kumi2.default ? state.selectedKumi : getters.getKumiBySerialNumber(state.selectedKumi);
+        return kumi;
     },
 
     /**
@@ -61926,24 +62105,30 @@ var getters = {
      * @param state
      * @param getters
      * @param rootState
-     * @param studentOrStudentId
+     * @param studentOrStudentSN
      * @returns {boolean}
      */
-    isStudentInSelectedKumi: function isStudentInSelectedKumi(state, getters, rootState, studentOrStudentId) {
-        return function (studentOrStudentId) {
+    isStudentInSelectedKumi: function isStudentInSelectedKumi(state, getters, rootState, studentOrStudentSN) {
+        return function (studentOrStudentSN) {
             try {
                 var kumi = getters.getSelectedKumi;
-
                 //if the selected kumi is null, then we are to
                 //display all kumi associated with the exam
                 if (_.isNull(kumi)) return true;
 
-                //todo add support for student id
-                var student = studentOrStudentId;
-                var students = getters.getStudentsForKumi(kumi);
-                window.console.log('kumis', 'isStudentInSelectedKumi', 222, student, kumi, students);
-                if (students.indexOf(student) >= 0) return true;
-                return false;
+                var student = studentOrStudentSN instanceof Student ? studentOrStudentId : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
+
+                return student.associatedKumis.indexOf(kumi) > -1;
+                //     //if the selected kumi is null, then we are to
+                //     //display all kumi associated with the exam
+                //     if ( _.isNull( kumi ) ) return true;
+                //
+                //     //todo add support for student id
+                //     let student = studentOrStudentId;
+                //     let students = getters.getStudentsForKumi( kumi );
+                //     window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
+                //     if ( students.indexOf( student ) >= 0 ) return true;
+                //     return false;
             } catch (Error) {
                 window.console.log('kumis', 'isStudentInSelectedKumi', 209, Error);
                 //       return false;
@@ -61967,19 +62152,9 @@ exports.default = {
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
-                                                                                                                                                                                                                                                                   * This is the new version of students.
-                                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                                   * More precisely it is a list of students for a
-                                                                                                                                                                                                                                                                   * given exam or item.
-                                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                                   * We may decide to keep the students store around
-                                                                                                                                                                                                                                                                   * for things which require access to students outside
-                                                                                                                                                                                                                                                                   * of an exam or item
-                                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                                   * Created by adam on 7/8/17.
-                                                                                                                                                                                                                                                                   */
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _mutations;
 
 var _vue = __webpack_require__(22);
 
@@ -62013,6 +62188,20 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This is the new version of students.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * More precisely it is a list of students for a
+                                                                                                                                                                                                                   * given exam or item.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * We may decide to keep the students store around
+                                                                                                                                                                                                                   * for things which require access to students outside
+                                                                                                                                                                                                                   * of an exam or item
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 7/8/17.
+                                                                                                                                                                                                                   */
+
+
 module.exports = {
 
     state: {
@@ -62026,58 +62215,28 @@ module.exports = {
 
     },
 
-    mutations: {
+    mutations: (_mutations = {}, _defineProperty(_mutations, mTypes.addStudentToRoster, function (state, payload) {
+        _Payload2.default.checkIfPayload(payload);
+        var student = payload.obj;
+        state.roster.push(student);
+    }), _defineProperty(_mutations, 'removeStudentFromRoster', function removeStudentFromRoster(state, payload) {
+        _Payload2.default.checkIfPayload(payload);
+        var student = payload.obj;
+        var idx = state.roster.indexOf(student);
+        state.roster.splice(idx, 1);
+    }), _defineProperty(_mutations, 'deleteStudent', function deleteStudent(state, payload) {
+        _Payload2.default.checkIfPayload(payload);
+        var student = payload.obj;
+        var idx = state.roster.indexOf(student);
+        state.roster.splice(idx, 1);
+    }), _defineProperty(_mutations, 'updateStudentInRoster', function updateStudentInRoster(state, payload) {
+        // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
+        _Payload2.default.checkIfPayload(payload);
+        var student = payload.obj;
+        var idx = state.roster.indexOf(student);
 
-        /**
-         * Adds or updates a student record in state.students
-         * @param state
-         * @param payload
-         */
-        addStudentToRoster: function addStudentToRoster(state, payload) {
-            _Payload2.default.checkIfPayload(payload);
-            var student = payload.obj;
-            state.roster.push(student);
-        },
-
-        /**
-         * Disassociates a student from the roster
-         * Does not delete the student object
-         * (the difference is handled by apiPlugins detecting the different
-         * mutation)
-         *
-         * @param state
-         * @param payload
-         */
-        removeStudentFromRoster: function removeStudentFromRoster(state, payload) {
-            _Payload2.default.checkIfPayload(payload);
-            var student = payload.obj;
-            var idx = state.roster.indexOf(student);
-            state.roster.splice(idx, 1);
-        },
-
-        /**
-         * Deletes a student from the database completely!!!
-         * @param state
-         * @param payload
-         */
-        deleteStudent: function deleteStudent(state, payload) {
-            _Payload2.default.checkIfPayload(payload);
-            var student = payload.obj;
-            var idx = state.roster.indexOf(student);
-            state.roster.splice(idx, 1);
-        },
-
-        //This is to avoid confusion with updateStudent which
-        //the old version uses
-        updateStudentInRoster: function updateStudentInRoster(state, payload) {
-            // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
-            _Payload2.default.checkIfPayload(payload);
-            var student = payload.obj;
-            var idx = state.roster.indexOf(student);
-
-            _vue2.default.set(state.roster[idx], payload.updateProp, payload.updateVal);
-        }
-    },
+        _vue2.default.set(state.roster[idx], payload.updateProp, payload.updateVal);
+    }), _mutations),
 
     actions: _extends({}, _studentFileImporter2.default),
 
@@ -74977,7 +75136,7 @@ exports = module.exports = __webpack_require__(6)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -80539,24 +80698,22 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('p', {
     staticClass: "panel-tabs kumi-tabs"
   }, [(_vm.isAllTabVisible) ? _c('a', {
-    staticClass: "is-active"
+    on: {
+      "click": _vm.showAllKumi
+    }
   }, [_vm._v("All")]) : _vm._e(), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
-    return (_vm.isEditable) ? _c('a', {
-      key: kumi.serialNumber
-    }, [_c('kumi-name', {
+    return _c('a', {
+      key: kumi.serialNumber,
+      on: {
+        "click": function($event) {
+          _vm.handleKumiFilterSelection(kumi.serialNumber)
+        }
+      }
+    }, [(_vm.isEditable) ? _c('span', [_c('kumi-name', {
       attrs: {
         "serialNumber": kumi.serialNumber
       }
-    })], 1) : _vm._l((_vm.kumis), function(kumi) {
-      return _c('a', {
-        key: kumi.serialNumber,
-        on: {
-          "click": function($event) {
-            _vm.filterByKumi(kumi.serialNumber)
-          }
-        }
-      }, [_vm._v("\n            " + _vm._s(kumi.name) + "\n        ")])
-    })
+    })], 1) : _c('span', [_vm._v("\n                " + _vm._s(kumi.name) + "\n            ")])])
   }), _vm._v(" "), _c('a', [_c('button', {
     staticClass: "button is-outlined is-small",
     attrs: {
@@ -80566,11 +80723,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.newKumi
     }
   }, [_c('i', {
+    staticClass: "fa fa-plus",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }), _vm._v(" "), _c('i', {
     staticClass: "fa fa-users",
     attrs: {
       "aria-hidden": "true"
     }
-  }), _vm._v(" New\n            ")]), _vm._v(" "), _c('button', {
+  }), _vm._v(" New\n            ")])]), _vm._v(" "), _c('a', [_c('button', {
     staticClass: "button is-outlined is-small",
     attrs: {
       "id": "edit-kumi-button"
@@ -80596,7 +80758,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     })
   }), _vm._v(" "), _c('div', {
-    staticClass: "panel-block"
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.additionButtonsVisible),
+      expression: "additionButtonsVisible"
+    }],
+    staticClass: "panel-block",
+    attrs: {
+      "id": "addition-buttons-area"
+    }
   }, [_c('button', {
     staticClass: "button is-primary is-outlined is-fullwidth",
     attrs: {
@@ -80620,7 +80791,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.kumiSelectorVisible),
       expression: "kumiSelectorVisible"
     }],
-    staticClass: "panel-block"
+    staticClass: "panel-block",
+    attrs: {
+      "id": "kumi-selection-area"
+    }
   }, [_c('kumi-selector')], 1), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
@@ -80653,7 +80827,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.handleConfirmation
     }
   }, [_vm._v("Confirm\n            ")])])]), _vm._v(" "), _c('div', {
-    staticClass: "panel-block"
+    staticClass: "panel-block",
+    attrs: {
+      "id": "student-editing-controls-area"
+    }
   }, [_c('p', {
     staticClass: "control"
   }, [_c('button', {
@@ -80691,7 +80868,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.fileButtonVisible),
       expression: "fileButtonVisible"
     }],
-    staticClass: "panel-block"
+    staticClass: "panel-block",
+    attrs: {
+      "id": "file-input-area"
+    }
   }, [_c('p', {
     staticClass: "control"
   }, [_c('input', {
@@ -81194,7 +81374,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to": _vm.routeToExamDetails
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "exam-details-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-pencil",
@@ -81243,7 +81425,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to": _vm.routeToGrades
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "grades-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-graduation-cap",
@@ -81256,9 +81440,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('router-link', {
     attrs: {
-      "to": _vm.routeToComments
+      "to": _vm.routeToComments,
+      "id": _vm.getId('feedback')
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "feedback-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-comments-o",
@@ -81273,7 +81460,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to": _vm.routeToStats
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "stats-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-bar-chart",
@@ -81288,7 +81477,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to": _vm.routeToHistory
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "history-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-book",
@@ -81303,7 +81494,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to": _vm.routeToNotes
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "notes-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-sticky-note-o",
@@ -81318,7 +81511,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to": _vm.routeToTags
     }
-  }, [_c('a', [_c('span', {
+  }, [_c('a', {
+    staticClass: "tags-nav"
+  }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     staticClass: "fa fa-tags",
@@ -81757,6 +81952,12 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('a', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showRow),
+      expression: "showRow"
+    }],
     staticClass: "panel-block student-row",
     on: {
       "toggle-checkbox-delete": _vm.handleToggleCheckboxDelete
@@ -81913,50 +82114,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     staticClass: "checkbox student-operation-checkbox",
     attrs: {
-      "type": "checkbox"
-    },
-    domProps: {
-      "value": _vm.getCheckboxValue,
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, _vm.getCheckboxValue) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "__c": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = _vm.getCheckboxValue,
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("\n            Delete\n        ")])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showRemoveOperationArea),
-      expression: "showRemoveOperationArea"
-    }],
-    staticClass: "remove-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox student-operation-checkbox",
-    attrs: {
-      "type": "checkbox"
+      "type": "checkbox",
+      "id": _vm.checkboxId
     },
     domProps: {
       "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
@@ -81979,7 +82138,50 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }
     }
-  }), _vm._v("\n            Remove\n        ")])]), _vm._v(" "), _c('div', {
+  }), _vm._v("Delete\n        ")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showRemoveOperationArea),
+      expression: "showRemoveOperationArea"
+    }],
+    staticClass: "remove-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox student-operation-checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Remove\n        ")])]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -82022,7 +82224,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }
     }
-  }), _vm._v("\n            Move\n        ")])])])
+  }), _vm._v("Move\n        ")])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('span', {
     staticClass: "panel-icon"
@@ -85683,6 +85885,7 @@ exports.default = {
 
     data: function data() {
         return {
+            //                selected: [],
             selected: '',
             //                isSelected: false,
             identifier: 'kumi-selector',
@@ -85705,18 +85908,27 @@ exports.default = {
 
         styling: function styling() {
             return this.identifier;
+        },
+
+        selectedKumi: function selectedKumi() {
+            if (this.selected > 0) {
+                return this.$store.getters.getKumiBySerialNumber(this.selected);
+            }
+            return false;
         }
 
     },
 
     methods: {
-        handleSelect: function handleSelect(serialNumber) {
+        handleSelect: function handleSelect() {
+            var serialNumber = this.selected;
             window.console.log('kumi-selector', 'handleSelect', 71, serialNumber);
-            this.$vm.emit('kumi-selected', { serialNumber: serialNumber });
-            //                this.$store.commit( 'updateSelectedKumi',
-            //                    Payload.factory( { obj: this.kumi } )
-            //                );
-            //                this.isSelected = ! this.isSelected;
+            this.$parent.$emit('kumi-selected', { serialNumber: serialNumber });
+            if (this.selectedKumi) {
+                this.$parent.selectedKumis.push(this.selectedKumi);
+            }
+
+            this.$parent.selectedKumis.push(serialNumber);
         }
     },
 
@@ -85726,6 +85938,9 @@ exports.default = {
 
     mounted: function mounted() {}
 }; //
+//
+//
+//
 //
 //
 //
@@ -85826,21 +86041,41 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "for": "kumi-selector"
     }
   }, [_vm._v(_vm._s(_vm.selectorLabel))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('select', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.selected),
+      expression: "selected"
+    }],
     staticClass: "select",
     class: _vm.styling,
     attrs: {
       "id": "kumi-selector"
+    },
+    on: {
+      "change": [function($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function(o) {
+          return o.selected
+        }).map(function(o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val
+        });
+        _vm.selected = $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+      }, _vm.handleSelect]
     }
-  }, _vm._l((_vm.kumis), function(kumi) {
+  }, [_c('option', {
+    attrs: {
+      "disabled": "",
+      "value": ""
+    }
+  }, [_vm._v("Please select a group / class ")]), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
     return _c('option', {
       key: kumi.serialNumber,
-      on: {
-        "select": function($event) {
-          _vm.handleSelect(kumi.serialNumber)
-        }
+      domProps: {
+        "value": kumi.serialNumber
       }
-    }, [_vm._v(_vm._s(kumi.name) + "\n            ")])
-  }))])
+    }, [_vm._v(_vm._s(kumi.name) + "\n        ")])
+  })], 2)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

@@ -8,8 +8,8 @@ use App\User;
 use Faker\Factory;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Auth;
-use Tests\Browser\Pages\Setup;
-use Tests\Browser\Pages\StudentPane;
+use Tests\Browser\Pages\SetupPage;
+use Tests\Browser\Pages\StudentPanePage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -23,6 +23,29 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
  */
 class RosterTest extends DuskTestCase
 {
+
+    /* ----------------------------- Tool proving -------------------- */
+    /**
+     * @group z
+     * @group setup
+     * @group roster
+     * @group students
+     */
+    public function testCreateExamPopulatedWithStudentsAndReturnExam(){
+        $user = factory(User::class)->create();
+        $totalStudents = Factory::create()->numberBetween(10, 100);
+        $totalKumi = Factory::create()->numberBetween(0, 10);
+        $expectedStudentsPerKumi = ceil($totalStudents/$totalKumi);
+
+        $exam = StudentPanePage::createExamPopulatedWithStudentsAndReturnExam($user, $totalStudents, $totalKumi);
+
+        //check
+        PHPUnit::assertEquals($totalKumi, $exam->kumis()->get()->count());
+        foreach ($exam->kumis as $kumi){
+            PHPUnit::assertEquals($expectedStudentsPerKumi, $kumi->students()->get()->count());
+        }
+    }
+
 
     /* ----------------------------- Intact, Toggling ---------------- */
     /**
@@ -39,13 +62,13 @@ class RosterTest extends DuskTestCase
             $exam = factory(Exam::class)->create();
             $this->browse(function ( Browser $browser ) use ( $user, $exam ) {
                 $browser->loginAs($user)
-                    ->visit(new Setup())
-                    ->on(new StudentPane())
+                    ->visit(new SetupPage())
+                    ->on(new StudentPanePage())
                     ->click('#exam-settings-button')
                     ->assertVisible('#exam-nav-tabs')
                     ->assertVisible('#exam-nav-tabs li a .students-nav')
-                    ->assertVisible(StudentPane::navButton)
-                    ->click(StudentPane::navButton)
+                    ->assertVisible(StudentPanePage::navButton)
+                    ->click(StudentPanePage::navButton)
                     ->assertVisible('.add-students-panel')
                     ->assertStudentPaneIntact();
 
@@ -67,8 +90,8 @@ class RosterTest extends DuskTestCase
             $user = factory(User::class)->create();
             $this->browse(function ( Browser $browser ) use ( $user ) {
                 $browser->loginAs($user)
-                    ->visit(new Setup())
-                    ->on(new StudentPane())
+                    ->visit(new SetupPage())
+                    ->on(new StudentPanePage())
                     ->navigateToStudentsPane()
                     ->assertVisible('.add-students-panel')
                     ->assertVisible('#add-students-button')
@@ -104,8 +127,8 @@ class RosterTest extends DuskTestCase
             $expectedRows = $origRows + $rowsInRosterFile;
 
             $browser->loginAs($user)
-                ->visit(new Setup())
-                ->on(new StudentPane())
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($origRows)
@@ -118,7 +141,7 @@ class RosterTest extends DuskTestCase
             //now lets reload the page and make sure we see
             //the new students
             $browser->loginAs($user)
-                ->visit(new StudentPane())
+                ->visit(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($expectedRows);
@@ -150,8 +173,8 @@ class RosterTest extends DuskTestCase
             $expectedRows = $origRows + $rowsInRosterFile;
 
             $browser->loginAs($user)
-                ->visit(new Setup())
-                ->on(new StudentPane())
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($origRows)
@@ -164,7 +187,7 @@ class RosterTest extends DuskTestCase
             //now lets reload the page and make sure we see
             //the new students
             $browser->loginAs($user)
-                ->visit(new StudentPane())
+                ->visit(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($expectedRows);
@@ -196,8 +219,8 @@ class RosterTest extends DuskTestCase
             $expectedRows = $origRows + $rowsInRosterFile;
 
             $browser->loginAs($user)
-                ->visit(new Setup())
-                ->on(new StudentPane())
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($origRows)
@@ -210,7 +233,7 @@ class RosterTest extends DuskTestCase
             //now lets reload the page and make sure we see
             //the new students
             $browser->loginAs($user)
-                ->visit(new StudentPane())
+                ->visit(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->assertVisible('.add-students-panel')
                 ->assertStudentRowCountIs($expectedRows);
@@ -220,7 +243,7 @@ class RosterTest extends DuskTestCase
 
 
     /**
-     * @group nnn
+     * @group z
      *
      * @group setup
      * @group roster
@@ -242,8 +265,8 @@ class RosterTest extends DuskTestCase
                 $identifier = $student->student_identifier;
 
                 $browser->loginAs($user)
-                    ->visit(new Setup())
-                    ->on(new StudentPane())
+                    ->visit(new SetupPage())
+                    ->on(new StudentPanePage())
                     ->navigateToStudentsPane()
                     ->assertVisible('.add-students-panel')
                     ->assertSeeNewStudentFields(true)
@@ -323,8 +346,8 @@ class RosterTest extends DuskTestCase
                 $divClass = ".{$operation}-operation-area";
                 $buttonId = "#student-{$operation}-button";
                 $browser->loginAs($user)
-                    ->visit(new Setup())
-                    ->on(new StudentPane())
+                    ->visit(new SetupPage())
+                    ->on(new StudentPanePage())
                     ->navigateToStudentsPane()
                     ->clickNewStudentButton()//we need to do this to ensure there is at least one row visible
                     ->toggleStudentEditingCheckboxes($operation)
@@ -342,7 +365,7 @@ class RosterTest extends DuskTestCase
 
 
     /**
-     * @group nnnn
+     * @group zz
      *
      * @group setup
      * @group roster
@@ -363,10 +386,9 @@ class RosterTest extends DuskTestCase
 
         $this->browse(function ( Browser $browser ) use ( $user, $numStudents ) {
             $divClass = ".delete-operation-area";
-            $buttonId = "#student-delete-button";
             $browser->loginAs($user)
-                ->visit(new Setup())
-                ->on(new StudentPane())
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->clickNewStudentButton()
                 //we need to do this to ensure there is
@@ -406,8 +428,7 @@ class RosterTest extends DuskTestCase
     }
 
     /**
-     * @group nnnn
-     *
+     * @group zz
      * @group setup
      * @group roster
      * @group students
@@ -418,23 +439,30 @@ class RosterTest extends DuskTestCase
     {
         $user = factory(User::class)->create();
         Auth::login($user);
-        $numStudents = Student::all()->count();
+        $numStudents = 20;
+
+        $exam = StudentPanePage::createExamPopulatedWithStudentsAndReturnExam($user, 20);
+//        $numStudents = Student::all()->count();
         Auth::logout();
 
-        $this->browse(function ( Browser $browser ) use ( $user, $numStudents ) {
-            $divClass = ".remove-operation-area";
+        $this->browse(function ( Browser $browser ) use ( $user, $numStudents, $exam ) {
+            $divClass = "div[class='remove-operation-area']";
             $browser->loginAs($user)
-                ->visit(new Setup())
-                ->on(new StudentPane())
+                ->visit(new SetupPage())
+//                ->on(new SetupPage())
+//                ->navigateToExam($exam, $user)
+                ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
+
                 ->clickNewStudentButton()
                 //we need to do this to ensure there is
                 //at least one row visible, which we now
                 //check
                 ->assertSeeNewStudentFields()
                 //check that the db has caught up
-                ->pause(10000)
-                ->assertStudentDbCountChanged($user, $numStudents, 1)
+                ->pause(5000)
+//                ->assertStudentDbCountChanged($user, $numStudents, 1)
+
                 //Everything is good, so now we start the
                 //removal operation
                 ->toggleStudentEditingCheckboxes('remove')
@@ -442,8 +470,14 @@ class RosterTest extends DuskTestCase
                 //make sure anything distinctive about
                 //the delete operation is properly displayed
                 ->assertSee('Remove')
-                //select the one existing student
-                ->check("[id^='student-operation-checkbox-']")
+                //                //select the one existing student
+
+//                ->click("input[label='Remove']")
+                    ->assertVisible('.student-operation-checkbox')
+                ->check('.student-operation-checkbox')
+
+ //                ->waitFor("input[id^='student-operation-checkbox']")
+//                ->check("input[id^='student-operation-checkbox']")
                 //confirm the operation
                 ->click('@studentOperationsConfirmationButton')
                 //make sure the delete boxes disappear
@@ -459,7 +493,7 @@ class RosterTest extends DuskTestCase
                 //have  removed the student completely from the db
                 //So let's check that the increased count is
                 //still the same (after giving it time to run)
-                ->pause(10000)
+                ->pause(5000)
                 ->assertStudentDbCountChanged($user, $numStudents, 1);
         });
     }
@@ -484,8 +518,8 @@ class RosterTest extends DuskTestCase
             $divClass = ".move-operation-area";
 
             $browser->loginAs($user)
-                ->visit(new Setup())
-                ->on(new StudentPane())
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->clickNewStudentButton()
                 //we need to do this to ensure there is
@@ -493,7 +527,7 @@ class RosterTest extends DuskTestCase
                 //check
                 ->assertSeeNewStudentFields()
                 //check that the db has caught up
-                ->pause(10000)
+                ->pause(5000)
                 ->assertStudentDbCountChanged($user, $numStudents, 1)
                 //Everything is good, so now we start the
                 //removal operation
@@ -504,7 +538,7 @@ class RosterTest extends DuskTestCase
                 ->assertSee('Select group to move student to')
                 ->assertVisible('@kumiSelector')
                 //select the one existing student
-                ->check("[id^='student-operation-checkbox-']")
+                ->check("[id^='student-operation-checkbox']")
                 //select destination group
                 //todo
 
@@ -523,7 +557,7 @@ class RosterTest extends DuskTestCase
                 //have  removed the student completely from the db
                 //So let's check that the increased count is
                 //still the same (after giving it time to run)
-                ->pause(10000)
+                ->pause(5000)
                 ->assertStudentDbCountChanged($user, $numStudents, 1);
         });
     }

@@ -2,7 +2,7 @@
 
 namespace Tests\Browser;
 
-use Tests\Browser\Pages\Index;
+use Tests\Browser\Pages\IndexPage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
@@ -16,7 +16,7 @@ class IndexTest extends DuskTestCase
     public function testNavigation()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit(new Index())
+            $browser->visit(new IndexPage())
                     ->assertSee('gradeomatic');
         });
     }
