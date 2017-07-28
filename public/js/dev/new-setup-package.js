@@ -54447,6 +54447,15 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
@@ -55674,6 +55683,39 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//    import studentOpArea from './student-row-ops-area.vue'
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -55767,7 +55809,9 @@ exports.default = {
 
     props: ['serialNumber'],
 
-    components: {},
+    components: {
+        //            'student-op-area': studentOpArea
+    },
 
     data: function data() {
         return {
@@ -55886,6 +55930,7 @@ exports.default = {
             return false;
         },
 
+        //these need to be here for the op area to read
         /**
          * Whether to display the checkbox by which
          * the student is selected for being moved,
@@ -56082,6 +56127,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 
 //components
+//
+//
+//
+//
 //
 //
 //
@@ -75385,20 +75434,7 @@ exports.push([module.i, "\n.exam-detail-panel {\n.public-name-input {\nlabel {\n
 
 
 /***/ }),
-/* 475 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(6)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 475 */,
 /* 476 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -79600,7 +79636,7 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(585)
+  __webpack_require__(622)
 }
 var Component = __webpack_require__(7)(
   /* script */
@@ -81195,7 +81231,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "student-editing-controls-area"
     }
-  }, [_c('p', {
+  }, [_c('div', {
     staticClass: "control"
   }, [_c('button', {
     staticClass: "button student-move-button is-outlined is-primary is-fullwidth",
@@ -81205,7 +81241,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleMoveControls
     }
-  }, [_vm._v("Move\n            ")])]), _vm._v(" "), _c('p', {
+  }, [_vm._v("Add to group\n            ")])]), _vm._v(" "), _c('div', {
     staticClass: "control"
   }, [_c('button', {
     staticClass: "button student-remove-button is-outlined is-warning is-fullwidth",
@@ -81215,7 +81251,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleRemoveControls
     }
-  }, [_vm._v("Remove\n            ")])]), _vm._v(" "), _c('p', {
+  }, [_vm._v("Remove from group\n            ")])]), _vm._v(" "), _c('div', {
     staticClass: "control"
   }, [_c('button', {
     staticClass: "button student-delete-button is-outlined is-danger is-fullwidth",
@@ -81225,7 +81261,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleDeleteControls
     }
-  }, [_vm._v("Delete\n            ")])])]), _vm._v(" "), _c('div', {
+  }, [_vm._v("Delete student\n            ")])])]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -81813,7 +81849,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToExamDetails
     }
   }, [_c('a', {
-    staticClass: "exam-details-nav"
+    staticClass: "exam-details-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81830,7 +81869,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToItemDetails
     }
   }, [_c('a', {
-    staticClass: "item-details-nav"
+    staticClass: "item-details-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81847,7 +81889,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToStudents
     }
   }, [_c('a', {
-    staticClass: "students-nav"
+    staticClass: "students-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81864,7 +81909,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToGrades
     }
   }, [_c('a', {
-    staticClass: "grades-nav"
+    staticClass: "grades-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81882,7 +81930,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": _vm.getId('feedback')
     }
   }, [_c('a', {
-    staticClass: "feedback-nav"
+    staticClass: "feedback-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81899,7 +81950,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToStats
     }
   }, [_c('a', {
-    staticClass: "stats-nav"
+    staticClass: "stats-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81916,7 +81970,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToHistory
     }
   }, [_c('a', {
-    staticClass: "history-nav"
+    staticClass: "history-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81933,7 +81990,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToNotes
     }
   }, [_c('a', {
-    staticClass: "notes-nav"
+    staticClass: "notes-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -81950,7 +82010,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "to": _vm.routeToTags
     }
   }, [_c('a', {
-    staticClass: "tags-nav"
+    staticClass: "tags-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -82436,7 +82499,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "toggle-checkbox-delete": _vm.handleToggleCheckboxDelete
     }
-  }, [_vm._m(0), _vm._v(" "), _c('input', {
+  }, [_vm._m(0), _vm._v(" "), _c('div', {
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    staticClass: "field"
+  }, [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -82446,6 +82515,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "input",
     attrs: {
       "type": "text",
+      "placeholder": "First name",
       "id": _vm.getInputId('firstName')
     },
     domProps: {
@@ -82457,7 +82527,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.firstName = $event.target.value
       }
     }
-  }), _vm._v(" "), _c('input', {
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -82467,6 +82539,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "input",
     attrs: {
       "type": "text",
+      "placeholder": "Last name",
       "id": _vm.getInputId('lastName')
     },
     domProps: {
@@ -82478,7 +82551,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.lastName = $event.target.value
       }
     }
-  }), _vm._v(" "), _c('input', {
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -82488,6 +82563,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "input",
     attrs: {
       "type": "text",
+      "placeholder": "Student id",
       "id": _vm.getInputId('identifier')
     },
     domProps: {
@@ -82499,7 +82575,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.identifier = $event.target.value
       }
     }
-  }), _vm._v(" "), _c('input', {
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -82509,6 +82587,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "input",
     attrs: {
       "type": "text",
+      "placeholder": "Email address",
       "id": _vm.getInputId('email')
     },
     domProps: {
@@ -82520,13 +82599,151 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.email = $event.target.value
       }
     }
-  }), _vm._v(" "), _c('div', {
+  })])])]), _vm._v(" "), _c('div', {
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showDeleteOperationArea),
+      expression: "showDeleteOperationArea"
+    }],
+    staticClass: "control delete-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox student-operation-checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Delete")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showRemoveOperationArea),
+      expression: "showRemoveOperationArea"
+    }],
+    staticClass: "control remove-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox student-operation-checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Remove")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showMoveOperationArea),
+      expression: "showMoveOperationArea"
+    }],
+    staticClass: "control move-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox student-operation-checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Add")])])])]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
       value: (_vm.showGradeInfo),
       expression: "showGradeInfo"
-    }]
+    }],
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    staticClass: "control"
   }, [_c('input', {
     directives: [{
       name: "model",
@@ -82548,7 +82765,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.score = $event.target.value
       }
     }
-  }), _vm._v(" "), _c('input', {
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -82569,136 +82788,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.grade = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showDeleteOperationArea),
-      expression: "showDeleteOperationArea"
-    }],
-    staticClass: "delete-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox student-operation-checkbox",
-    attrs: {
-      "type": "checkbox",
-      "id": _vm.checkboxId
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "__c": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("Delete\n        ")])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showRemoveOperationArea),
-      expression: "showRemoveOperationArea"
-    }],
-    staticClass: "remove-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox student-operation-checkbox",
-    attrs: {
-      "type": "checkbox",
-      "id": _vm.checkboxId
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "__c": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("Remove\n        ")])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showMoveOperationArea),
-      expression: "showMoveOperationArea"
-    }],
-    staticClass: "move-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox student-operation-checkbox",
-    attrs: {
-      "type": "checkbox",
-      "id": _vm.checkboxId
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "__c": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.isSelected = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("Move\n        ")])])])
+  })])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('span', {
     staticClass: "panel-icon"
@@ -83079,32 +83169,7 @@ if(false) {
 }
 
 /***/ }),
-/* 585 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(475);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(17)("692c396a", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77e440ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-navigation-tabs.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77e440ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-navigation-tabs.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 585 */,
 /* 586 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -86368,6 +86433,51 @@ module.exports = function(module) {
 __webpack_require__(110);
 module.exports = __webpack_require__(157);
 
+
+/***/ }),
+/* 616 */,
+/* 617 */,
+/* 618 */,
+/* 619 */,
+/* 620 */,
+/* 621 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(6)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.nav-edit-tabs-component .exam-nav {\n  color: #DDDDDD;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 622 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(621);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(16)("00772329", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77e440ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-navigation-tabs.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77e440ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./settings-navigation-tabs.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

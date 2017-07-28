@@ -3,77 +3,108 @@
        v-on:toggle-checkbox-delete="handleToggleCheckboxDelete"
        v-show="showRow"
     >
-        <!--v-show="isStudentInSelectedKumi"-->
         <span class="panel-icon"><i class="fa fa-user"></i></span>
 
-        <input type="text"
-               class="input"
-               v-model="firstName"
-               v-bind:id="getInputId('firstName')"
-        />
+        <div class="field is-horizontal">
+            <div class="field-body">
 
-        <input type="text"
-               class="input"
-               v-model="lastName"
-               v-bind:id="getInputId('lastName')"
-        />
+                <!--<span class="student-properties">-->
 
-        <input type="text"
-               class="input"
-               v-model="identifier"
-               v-bind:id="getInputId('identifier')"
-        />
+                <div class="field">
 
-        <input type="text"
-               class="input"
-               v-model="email"
-               v-bind:id="getInputId('email')"
-        />
+                    <input type="text"
+                           class="input"
+                           placeholder="First name"
+                           v-model="firstName"
+                           v-bind:id="getInputId('firstName')"
+                    />
+                </div>
+                <div class="field">
+                    <input type="text"
+                           class="input"
+                           placeholder="Last name"
+                           v-model="lastName"
+                           v-bind:id="getInputId('lastName')"
+                    />
+                </div>
+                <div class="field">
+                    <input type="text"
+                           class="input"
+                           placeholder="Student id"
+                           v-model="identifier"
+                           v-bind:id="getInputId('identifier')"
+                    />
+                </div>
+                <div class="field">
+                    <input type="text"
+                           class="input"
+                           placeholder="Email address"
+                           v-model="email"
+                           v-bind:id="getInputId('email')"
+                    />
+                </div>
+            </div>
+        </div>
+        <!--</span>-->
 
-        <div v-show="showGradeInfo">
-            <input type="text" class="input" v-model="score" v-bind:id="getInputId('score')"
-            />
-            <input type="text" class="input" v-model="grade" v-bind:id="getInputId('grade')"
-            />
+
+        <!--<student-op-area></student-op-area>-->
+        <div class="field is-horizontal">
+            <div class="field-body">
+
+                <div class="control delete-operation-area"
+                     v-show="showDeleteOperationArea">
+                    <label class="checkbox">
+                        <input class="checkbox student-operation-checkbox"
+                               type="checkbox"
+                               v-bind:id="checkboxId"
+                               v-model="isSelected">Delete</label>
+                </div>
+
+                <div class="control remove-operation-area"
+                     v-show="showRemoveOperationArea">
+                    <label class="checkbox">
+                        <input class="checkbox student-operation-checkbox"
+                               type="checkbox"
+                               v-bind:id="checkboxId"
+                               v-model="isSelected"
+                        />Remove</label>
+                </div>
+
+                <div class="control move-operation-area"
+                     v-show="showMoveOperationArea"
+                >
+                    <label class="checkbox student-operation-checkbox">
+                        <input type="checkbox"
+                               class="checkbox"
+                               v-bind:id="checkboxId"
+                               v-model="isSelected"
+                        >Add</label>
+                </div>
+
+            </div>
         </div>
 
-        <div class='delete-operation-area'
-             v-show="showDeleteOperationArea"
+
+        <div class="field is-horizontal"
+             v-show="showGradeInfo"
         >
-            <label class="checkbox">
-                <input class="checkbox student-operation-checkbox"
-                       type="checkbox"
-                       v-bind:id="checkboxId"
-                       v-model="isSelected"
-                >Delete
-            </label>
-
-        </div>
-        <div class='remove-operation-area'
-             v-show="showRemoveOperationArea"
-        >
-            <label class="checkbox">
-                <input class="checkbox student-operation-checkbox"
-                       type="checkbox"
-                       v-bind:id="checkboxId"
-                       v-model="isSelected"
-                >Remove
-            </label>
+            <div class="field-body">
+                <div class="control">
+                    <input type="text"
+                           class="input"
+                           v-model="score"
+                           v-bind:id="getInputId('score')">
+                </div>
+                <div class="control">
+                    <input type="text"
+                           class="input"
+                           v-model="grade"
+                           v-bind:id="getInputId('grade')">
+                </div>
+            </div>
         </div>
 
-
-        <div class='move-operation-area'
-             v-show="showMoveOperationArea"
-        >
-            <label class="checkbox">
-                <input class="checkbox student-operation-checkbox"
-                       type="checkbox"
-                       v-bind:id="checkboxId"
-                       v-model="isSelected"
-                >Move
-            </label>
-
-        </div>
     </a>
 
 </template>
@@ -94,12 +125,15 @@
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
 
+//    import studentOpArea from './student-row-ops-area.vue'
 
     export default {
 
         props: [ 'serialNumber' ],
 
-        components: {},
+        components: {
+//            'student-op-area': studentOpArea
+        },
 
         data: function () {
             return {
@@ -219,7 +253,7 @@
                 return false;
             },
 
-
+//these need to be here for the op area to read
             /**
              * Whether to display the checkbox by which
              * the student is selected for being moved,
@@ -274,12 +308,12 @@
             /**
              * Whether the row is visible
              */
-            showRow: function (  ) {
-                if(this.$parent.showKumi === -1) return true;
+            showRow: function () {
+                if ( this.$parent.showKumi === -1 ) return true;
 
-                let kumi  = this.$store.getters.getKumiBySerialNumber(this.$parent.showKumi);
+                let kumi = this.$store.getters.getKumiBySerialNumber( this.$parent.showKumi );
 
-                return this.student.associatedKumis.indexOf(kumi) > -1;
+                return this.student.associatedKumis.indexOf( kumi ) > -1;
             },
 
             /**

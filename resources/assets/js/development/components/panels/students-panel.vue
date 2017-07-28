@@ -45,6 +45,7 @@
                         class="sr-only">New</span>
                 </button>
             </a>
+
             <a class="button-tab">
                 <button id="edit-kumi-button"
                         class="button is-outlined is-small"
@@ -80,6 +81,7 @@
                     v-on:click="addStudent"
             >Add student
             </button>
+
             <button id="add-students-button"
                     class="button is-primary is-outlined is-fullwidth"
                     v-on:click="toggleFileButtonVisibility">
@@ -120,28 +122,30 @@
              class="panel-block"
              v-show="operationsButtonsVisible"
         >
-            <p class="control">
+            <div class="control">
                 <button id="student-move-button"
                         class="button student-move-button is-outlined is-primary is-fullwidth"
                         v-on:click="toggleMoveControls"
-                >Move
+                >Add to group
                 </button>
-            </p>
-            <p class="control">
+            </div>
+
+            <div class="control">
                 <button id="student-remove-button"
                         class="button student-remove-button is-outlined is-warning is-fullwidth"
                         v-on:click="toggleRemoveControls"
-                >Remove
+                >Remove from group
                 </button>
-            </p>
-            <p class="control">
+            </div>
+
+            <div class="control">
                 <button id="student-delete-button"
                         class="button student-delete-button is-outlined is-danger is-fullwidth"
                         v-on:click="toggleDeleteControls"
-                >Delete
+                >Delete student
                 </button>
-            </p>
 
+            </div>
         </div>
 
 
@@ -305,7 +309,7 @@
             },
 
             isActive: function ( ksn ) {
-                    return ksn === this.showKumi;
+                return ksn === this.showKumi;
             },
 
 
@@ -319,7 +323,7 @@
                 //This also will associate with the currently selected
                 //kumi
                 let pl = Payload.factory( { obj: s, student: s } );
-                this.$store.dispatch(aTypes.handleNewStudentStorageAndAssociation, pl );
+                this.$store.dispatch( aTypes.handleNewStudentStorageAndAssociation, pl );
             },
 
             processFile: function ( evt ) {
@@ -335,7 +339,7 @@
                 //display twice
                 this.$store.dispatch( 'importStudentsFromFile', file );
 
-                window.console.log( 'students-panel', 'processFile', 332, 'after the dispatch has weirdly fired twice');
+                window.console.log( 'students-panel', 'processFile', 332, 'after the dispatch has weirdly fired twice' );
                 //finally, reset the attached file
                 f.value = '';
                 this.toggleFileButtonVisibility();
@@ -366,7 +370,7 @@
                 this.closeAllOperationAreas();
                 //if delete was already showing, then clicking delete is effectively
                 //the same as clicking cancel. So we can just stop.
-                if(this.showDeleteOperationArea) return true;
+                if ( this.showDeleteOperationArea ) return true;
                 //If no operation was selected or another operation  was open,
                 //we show the delete area
                 this.showDeleteOperationArea = !this.showDeleteOperationArea;
@@ -383,7 +387,7 @@
                 this.closeAllOperationAreas();
                 //if remove was already showing, then clicking remove is effectively
                 //the same as clicking cancel. So we can just stop.
-                if(this.showRemoveOperationArea) return true;
+                if ( this.showRemoveOperationArea ) return true;
                 //If no operation was selected or another operation  was open,
                 //we show the remove area
                 this.showRemoveOperationArea = !this.showRemoveOperationArea;
@@ -400,7 +404,7 @@
                 this.closeAllOperationAreas();
                 //if move was already showing, then clicking move is effectively
                 //the same as clicking cancel. So we can just stop.
-                if(this.showMoveOperationArea) return true;
+                if ( this.showMoveOperationArea ) return true;
                 //If no operation was selected or another operation  was open,
                 //we show the move area
                 this.showMoveOperationArea = !this.showMoveOperationArea;
@@ -414,7 +418,7 @@
 
             toggleFileButtonVisibility: function () {
                 this.fileButtonVisible = !this.fileButtonVisible;
-                this.operationsButtonsVisible = ! this.operationsButtonsVisible;
+                this.operationsButtonsVisible = !this.operationsButtonsVisible;
             },
 
             /**
@@ -433,7 +437,7 @@
                 this.kumiSelectorVisible = false;
                 //open stuff that is visible by default
                 this.additionButtonsVisible = true;
-                this.operationsButtonsVisible=true;
+                this.operationsButtonsVisible = true;
             },
 
 

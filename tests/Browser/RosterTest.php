@@ -328,6 +328,7 @@ class RosterTest extends DuskTestCase
     /* ----------------- Editing students ----------------------- */
 
     /**
+     * @group zzz
      * @group setup
      * @group roster
      * @group students
@@ -335,6 +336,42 @@ class RosterTest extends DuskTestCase
      */
     public function testEditExistingStudentAndSeeChangesPersist()
     {
+        $user = factory(User::class)->create();
+
+            $this->browse(function ( Browser $browser ) use ( $user) {
+                $exam = StudentPanePage::createExamPopulatedWithStudentsAndReturnExam($user);
+                $testStudent = factory(Student::class)->make();
+
+                $browser->loginAs($user)
+                    ->on(new SetupPage())
+                    ->navigateToExam($exam, $user)
+                    ->on(new StudentPanePage())
+                    ->navigateToStudentsPane()
+                    ->waitFor("input[id^='first-name']")
+                    //fill them in
+                    ->type("input[id^='first-name']", $testStudent->first_name)
+                    ->type("input[id^='last-name']", $testStudent->last_name)
+                    ->type("input[id^='identifier']", $testStudent->student_identifier)
+                    ->type("input[id^='email']", $testStudent->email)
+                    //let the client side do its processing
+                    //before refreshing the page
+                    ->pause(10000);
+
+                Auth::login($user);
+                $s = Student::where('first_name', $testStudent->first_name)
+                    ->where('last_name', $testStudent->last_name)
+                    ->where('email', $testStudent->email)
+                    ->where('student_identifier', $testStudent->student_identifier)
+                    ->first();
+
+                PHPUnit::assertTrue(isset($s));
+                PHPUnit::assertEquals($testStudent->first_name, $s->first_name);
+                PHPUnit::assertEquals( $testStudent->last_name, $s->last_name);
+                PHPUnit::assertEquals($testStudent->email, $s->email);
+                PHPUnit::assertEquals($testStudent->student_identifier, $s->student_identifier);
+
+
+            });
 
     }
 
@@ -461,7 +498,7 @@ class RosterTest extends DuskTestCase
         Auth::logout();
 
         $this->browse(function ( Browser $browser ) use ( $user, $numStudents, $exam ) {
-            $divClass = "div[class='remove-operation-area']";
+            $divClass = ".remove-operation-area"; //div[class='remove-operation-area']";
             $browser->loginAs($user)
                 ->visit(new SetupPage())
 //                ->on(new SetupPage())
@@ -482,18 +519,13 @@ class RosterTest extends DuskTestCase
                 ->toggleStudentEditingCheckboxes('remove')
                 ->assertVisible($divClass)
                 //make sure anything distinctive about
-                //the delete operation is properly displayed
-                ->assertSee('Remove')
-                //                //select the one existing student
-
-//                ->click("input[label='Remove']")
-                ->assertVisible("input[id^='student-operation-checkbox']")
-                ->check("input[id^='student-operation-checkbox']")
-                //                ->waitFor("input[id^='student-operation-checkbox']")
-//                ->check("input[id^='student-operation-checkbox']")
+                //the remove operation is properly displayed
+                ->assertSee('Remove from group')
+                //select the one existing student
+                ->check('.student-operation-checkbox')
                 //confirm the operation
                 ->click('@studentOperationsConfirmationButton')
-                //make sure the delete boxes disappear
+                //make sure the checkboxes disappear
                 ->waitUntilMissing($divClass)
                 ->assertMissing($divClass)
                 ->assertMissing('@studentOperationsConfirmationButton')

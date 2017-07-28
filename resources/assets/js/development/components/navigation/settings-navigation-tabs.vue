@@ -1,10 +1,12 @@
 <template>
 
-    <nav class="nav-edit-tabs-component tabs is-centered">
+    <nav class="nav-edit-tabs-component tabs is-centered"
+    >
         <ul v-bind:id="id">
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToExamDetails">
-                    <a class="exam-details-nav">
+                    <a class="exam-details-nav"
+                       v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
@@ -15,7 +17,7 @@
 
             <li v-else role="presentation">
                 <router-link v-bind:to="routeToItemDetails">
-                    <a class="item-details-nav">
+                    <a class="item-details-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
@@ -26,7 +28,7 @@
 
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToStudents">
-                    <a class="students-nav">
+                    <a class="students-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-group" aria-hidden="true"></i>
                         </span>
@@ -37,7 +39,7 @@
 
             <li v-if="isExam" role="presentation">
                 <router-link v-bind:to="routeToGrades">
-                    <a class="grades-nav">
+                    <a class="grades-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-graduation-cap" aria-hidden="true"></i>
                         </span>
@@ -50,7 +52,7 @@
                 <router-link v-bind:to="routeToComments"
                              v-bind:id="getId('feedback')"
                 >
-                    <a class="feedback-nav">
+                    <a class="feedback-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-comments-o" aria-hidden="true"></i>
                         </span>
@@ -61,7 +63,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToStats">
-                    <a class="stats-nav">
+                    <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-bar-chart" aria-hidden="true"></i>
                         </span>
@@ -72,7 +74,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToHistory">
-                    <a class="history-nav">
+                    <a class="history-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-book" aria-hidden="true"></i>
                         </span>
@@ -83,7 +85,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToNotes">
-                    <a class="notes-nav">
+                    <a class="notes-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
                         </span>
@@ -95,7 +97,7 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToTags">
-                    <a class="tags-nav">
+                    <a class="tags-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
                             <i class="fa fa-tags" aria-hidden="true"></i>
                         </span>
@@ -108,7 +110,14 @@
 
 
 </template>
-<style>
+<style lang="scss">
+    .nav-edit-tabs-component {
+        .exam-nav {
+            color: #DDDDDD;
+        }
+
+    }
+
 
 </style>
 <script>
@@ -148,7 +157,7 @@
 
         computed: {
             routeToComments: function () {
-                if(this.isExam) return "/exam-panel-comments/" + this.serialNumber;
+                if ( this.isExam ) return "/exam-panel-comments/" + this.serialNumber;
                 return "/panel-comments/" + this.serialNumber;
             },
 
@@ -240,7 +249,7 @@
 
         methods: {
             getId: function ( name ) {
-                if(this.isExam) return 'exam-' + name + '-nav-' + this.serialNumber;
+                if ( this.isExam ) return 'exam-' + name + '-nav-' + this.serialNumber;
                 return 'item-' + name + '-nav-' + this.serialNumber;
             }
 
