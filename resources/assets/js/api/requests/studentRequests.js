@@ -33,7 +33,7 @@ const handleLoadResponse = ( store, response ) => {
         student.lastName = r.lastName;
 
         let payload = Payload.factory( { obj: student, mutateSilently: true } );
-        store.commit( 'addStudentToRoster', payload );
+        store.commit( mTypes.addStudentToRoster, payload );
 
         if ( r.kumiId ) {
             //if the server sent us the id of the associated kumi

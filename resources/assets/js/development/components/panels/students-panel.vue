@@ -118,6 +118,7 @@
 
         <div id="student-editing-controls-area"
              class="panel-block"
+             v-show="operationsButtonsVisible"
         >
             <p class="control">
                 <button id="student-move-button"
@@ -223,6 +224,7 @@
                 showConfirmationButtons: false,
                 /** whether to show the add and import buttons */
                 additionButtonsVisible: true,
+                operationsButtonsVisible: true,
                 /** This gets populated with objects by the student operation checkboxes */
                 selectedStudents: [],
                 //holds kumis serial numbers from selector
@@ -255,13 +257,6 @@
                 if ( this.item instanceof Exam ) return true;
                 return false;
             },
-//
-//            isActive: function ( ksn ) {
-//                return ((ksn, showKumi)=>{
-//                    return ksn === showKumi;
-//                })(ksn, this.showKumi);
-//            },
-//
 
             isAllTabVisible: function () {
                 if ( _.isUndefined( this.kumis ) || _.isNull( this.kumis ) ) return false;
@@ -272,13 +267,6 @@
             students: function () {
                 let s = this.$store.getters.getStudentsFromRoster;
                 return s;
-                //for now, the rows handle their visibility
-//                //if no kumi filter, return them all
-//                if ( this.showKumi === -1 ) return s;
-//
-//                //otherwise filter the results
-//                return this.$store.getters.getStudentsForKumi( this.showKumi );
-
             },
 
         },
@@ -326,22 +314,28 @@
                 window.console.log( 'students-panel', 'addStudent', 190, );
                 //create a new student, which will add an empty row
                 let s = new Student();
-                this.$store.commit( mTypes.addStudentToRoster, Payload.factory( { obj: s } ) );
-                //That just added the student to the list of those who exist.
-                // Now we need to associate the student with a class/group
-                // window.console.log( 'studentRequests', 'associateStudent', 28, response );
-                this.$store.commit( mTypes.associateStudentWithKumi, Payload.factory( {
-                    student: student
-                } ) );
+                //Push the student into local storage and create
+                //a new student on the server.
+                //This also will associate with the currently selected
+                //kumi
+                let pl = Payload.factory( { obj: s, student: s } );
+                this.$store.dispatch(aTypes.handleNewStudentStorageAndAssociation, pl );
             },
 
             processFile: function ( evt ) {
                 let f = document.getElementById( 'file-input' );
                 let file = f.files[ 0 ];
-                window.console.log( 'students-panel', 'processFile', 112, evt, f, file );
+
                 //processFile gets called once
-                //but it seems the dispatch gets called twice....
+                //as indicated by this line only printing once
+                window.console.log( 'students-panel', 'processFile', 112, evt, f, file );
+
+                //but then it seems this line gets called twice....
+                //since all the messages for importStudentsFromFile
+                //display twice
                 this.$store.dispatch( 'importStudentsFromFile', file );
+
+                window.console.log( 'students-panel', 'processFile', 332, 'after the dispatch has weirdly fired twice');
                 //finally, reset the attached file
                 f.value = '';
                 this.toggleFileButtonVisibility();
@@ -368,7 +362,13 @@
             toggleDeleteControls: function () {
                 window.console.log( 'student-row', 'deleteStudent', 187, this );
                 this.$emit( 'toggle-checkbox-delete' );
+                //clear everything and reset display
                 this.closeAllOperationAreas();
+                //if delete was already showing, then clicking delete is effectively
+                //the same as clicking cancel. So we can just stop.
+                if(this.showDeleteOperationArea) return true;
+                //If no operation was selected or another operation  was open,
+                //we show the delete area
                 this.showDeleteOperationArea = !this.showDeleteOperationArea;
                 this.showConfirmationButtons = !this.showConfirmationbuttons;
                 this.pendingOperation = 'delete';
@@ -379,7 +379,13 @@
             toggleRemoveControls: function () {
                 window.console.log( 'student-row', 'toggleRemoveControls', 191 );
                 this.$emit( 'toggle-checkbox-remove' );
+                //clear everything and reset display
                 this.closeAllOperationAreas();
+                //if remove was already showing, then clicking remove is effectively
+                //the same as clicking cancel. So we can just stop.
+                if(this.showRemoveOperationArea) return true;
+                //If no operation was selected or another operation  was open,
+                //we show the remove area
                 this.showRemoveOperationArea = !this.showRemoveOperationArea;
                 this.showConfirmationButtons = !this.showConfirmationbuttons;
                 this.pendingOperation = 'remove';
@@ -390,7 +396,13 @@
             toggleMoveControls: function () {
                 window.console.log( 'student-row', 'toggleMoveControls', 195 );
                 this.$emit( 'toggle-checkbox-move' );
+                //clear everything and reset display
                 this.closeAllOperationAreas();
+                //if move was already showing, then clicking move is effectively
+                //the same as clicking cancel. So we can just stop.
+                if(this.showMoveOperationArea) return true;
+                //If no operation was selected or another operation  was open,
+                //we show the move area
                 this.showMoveOperationArea = !this.showMoveOperationArea;
                 this.showConfirmationButtons = !this.showConfirmationbuttons;
                 //show kumi selector
@@ -399,8 +411,10 @@
                 //get the addition buttons out of the way
                 this.additionButtonsVisible = !this.additionButtonsVisible;
             },
+
             toggleFileButtonVisibility: function () {
                 this.fileButtonVisible = !this.fileButtonVisible;
+                this.operationsButtonsVisible = ! this.operationsButtonsVisible;
             },
 
             /**
@@ -419,6 +433,7 @@
                 this.kumiSelectorVisible = false;
                 //open stuff that is visible by default
                 this.additionButtonsVisible = true;
+                this.operationsButtonsVisible=true;
             },
 
 
@@ -471,7 +486,6 @@
                 this.closeAllOperationAreas();
             },
 
-
             handleKumiSelectionEvent: function ( payload ) {
                 window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
 
@@ -479,7 +493,7 @@
                 window.console.log( 'students-panel', 'handleKumiSelectionEvent', 427, this.selectedKumis );
             },
 
-// ----------------------------------- Styling
+// ----------------------------------- Styling and attributes
 
             /** Creates the id of the element */
             getInputId: function ( name ) {

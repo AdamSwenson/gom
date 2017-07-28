@@ -84,3 +84,6 @@ export const addYoungerSibling = 'addYoungerSibling';
 export const onUpdate = 'onUpdate';
 export const addItemToOrder = 'addItemToOrder';
 export const removeItemFromOrder = 'removeItemFromOrder';
+
+//roster and kumi
+export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';

@@ -140,7 +140,7 @@ const guessColumnDataByContent = function ( students, columns = {
                 }
             }
             // look for common names and set firstNameCol if any are found
-            if ( students[ j ][ i ].has( commonNames ) ) {
+            if ( students[ j ][ i ].search( commonNames ) ) {
                 columns.firstNameCol = i;
                 if ( columns.lastNameCol == columns.firstNameCol ) {
                     columns.lastNameCol = -1;
@@ -174,15 +174,16 @@ module.exports = {
         // return new Promise( ( resolve, reject ) => {
         //todo Temporarily commented out the promise while working on this since the below log gets called twice
         //todo The doubling of students on read happens because this action gets called twice. So in looking for the cause, don't focus here.... Are you listening Adam?
-        console.log( 'students actions', 'startRead called: reading file', 'inputFile', inputFile );
+
+        window.console.log( 'studentFileImporter', 'importStudentsFromFile called', 'inputFile', inputFile );
 
 
         if ( !browserSupportFileUpload() ) {
             alert( 'The file upload function is not fully supported in this browser!' );
             return;
         }
-        var reader = new FileReader();
 
+        var reader = new FileReader();
 
         /**
          * Run the processing
@@ -245,7 +246,7 @@ module.exports = {
             }
 
             /* Test point: The data should be in students and columns should have correct order values */
-            window.console.log( 'studentFileImporter---initialRead', 'students', students, 'columns', columns );
+            window.console.log( 'studentFileImporter---initialRead TP', 'students', students, 'columns', columns );
 
 
             /*
@@ -272,11 +273,11 @@ module.exports = {
                     studentIdentifier: ident,
                     email: email
                 } );
-
-                commit( 'addStudentToRoster', Payload.factory( { obj: s } ) );
+                //Push the student into local storage and create
+                //a new student on the server
+                let pl = Payload.factory( { obj: s, student: s } )
+                dispatch(aTypes.handleNewStudentStorageAndAssociation, pl );
             } );
-
-            // resolve();
 
         };
 

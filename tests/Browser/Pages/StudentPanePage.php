@@ -135,20 +135,32 @@ class StudentPanePage extends Page
     /**
      * @param Browser $browser
      * @param $operation String Either delete , move , or remove
+     * @param bool $close If true, the expected toggle is from shown -> hidden
      * @return $this
      */
-    public function toggleStudentEditingCheckboxes( Browser $browser, $operation )
+    public function toggleStudentEditingCheckboxes( Browser $browser, $operation, $close=false )
     {
         $divClass = ".{$operation}-operation-area";
         $buttonId = "#student-{$operation}-button";
-        return $browser->assertVisible($buttonId)
-            ->click($buttonId)
-            ->assertVisible($divClass)
-            ->assertVisible('@studentOperationsConfirmationButton')
-            ->assertVisible('@studentOperationsCancellationButton');
+        if ( $close ) {
+            //if the expected toggle is from shown -> hidden
+            return $browser->assertVisible($buttonId)
+                ->click($buttonId)
+                ->waitUntilMissing($divClass)
+                ->assertMissing($divClass)
+                ->assertMissing('@studentOperationsConfirmationButton')
+                ->assertMissing('@studentOperationsCancellationButton');
+        } else {
+            //Default case of going from hidden -> shown
+            return $browser->assertVisible($buttonId)
+                ->click($buttonId)
+                ->waitFor($divClass)
+                ->assertVisible($divClass)
+                ->assertVisible('@studentOperationsConfirmationButton')
+                ->assertVisible('@studentOperationsCancellationButton');
+        }
+
     }
-
-
     public static function createExamPopulatedWithStudentsAndReturnExam( $user, $totalStudents = 10, $totalKumi = 2 )
     {
         Auth::login($user);

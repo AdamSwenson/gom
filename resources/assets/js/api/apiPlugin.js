@@ -180,16 +180,22 @@ export default function ( store ) {
 
             // ******************** Students
             case mTypes.addStudentToRoster:
+                //Remember this now ONLY handles pushing a student into
+                //the roster. So it only sends the request to create a new
+                //student. This does nothing to create an association with a kumi
+                //either on the server or locally.
+
                 // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
                 var student = payload.obj;
                 //Requests the creation of a new student
                 createStudent( store, student );
-                //Assigns them to a particular kumi
-                var kumi = store.getters.getSelectedKumi;
-                let p = associateStudent( store, student, kumi );
-                p.then(()=>{
 
-                })
+                //Assigns them to a particular kumi
+                // var kumi = store.getters.getSelectedKumi;
+                // let p = associateStudent( store, student, kumi );
+                // p.then(()=>{
+                //
+                // })
 
                 break;
 
@@ -233,9 +239,8 @@ export default function ( store ) {
                 break;
 
             /**
-             * NB This is used for an existing student, whereas
-             addStudentToRoster is for a newly created student.
-             This thus is used for the move operation
+             * NB This only associates. Thus the student
+             * must have already been created on the server.
              */
             case mTypes.associateStudentWithKumi:
                 //We use the currently selected kumi if one wasn't set

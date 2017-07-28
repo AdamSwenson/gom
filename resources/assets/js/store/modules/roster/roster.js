@@ -81,18 +81,77 @@ module.exports = {
 
         //This is to avoid confusion with updateStudent which
         //the old version uses
-        updateStudentInRoster: (state, payload)=>{
+        updateStudentInRoster: ( state, payload ) => {
             // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
             Payload.checkIfPayload( payload );
             let student = payload.obj;
             let idx = state.roster.indexOf( student );
 
-            Vue.set( state.roster[idx], payload.updateProp, payload.updateVal );
+            Vue.set( state.roster[ idx ], payload.updateProp, payload.updateVal );
         },
     },
 
     actions: {
-        ...StudentImporter
+        ...StudentImporter,
+        /**
+         * One stop shop for everything which happens when a new student
+         * object is created
+         *
+         * @param state
+         * @param dispatch
+         * @param commit
+         * @param getters
+         * @param payload
+         */
+        [aTypes.handleNewStudentStorageAndAssociation] : ( { state, dispatch, commit, getters }, payload ) => {
+            let p = new Promise( ( resolve, reject ) => {
+                commit( mTypes.addStudentToRoster, payload );
+                resolve();
+            } );
+
+            payload.kumi = getters.getSelectedKumi
+            return p.then( () => {
+                return new Promise( ( resolve, reject ) => {
+                    //Create an association between the newly created
+                    //student and the currently selected kumi, both
+                    //locally and on server
+                    commit( mTypes.associateStudentWithKumi, payload );
+                    resolve();
+                } );
+            } );
+        },
+
+        // /**
+        //  * Adds a student record to state.roster.
+        //  * NB, this does not create any associations
+        //  * @param state
+        //  * @param payload
+        //  */
+        // storeNewlyCreatedStudent: ( { state, dispatch, commit, getters }, payload ) => {
+        //     return new Promise( ( resolve, reject ) => {
+        //         commit( mTypes.addStudentToRoster, payload );
+        //         resolve()
+        //     } );
+        // },
+
+        // /**
+        //  * Creates association with kumi for an existing student
+        //  * @param state
+        //  * @param dispatch
+        //  * @param commit
+        //  * @param getters
+        //  * @param payload
+        //  * @returns {Promise}
+        //  */
+        // addStudentToKumi: ( { state, dispatch, commit, getters }, payload ) => {
+        //     return new Promise( ( resolve, reject ) => {
+        //         if ( _.isUndefined( payload.student ) && !_.isUndefined( payload.obj ) ) payload.student = payload.obj;
+        //
+        //         commit( mTypes.associateStudentWithKumi, payload );
+        //         resolve()
+        //     } );
+        // },
+
     },
 
     getters: {
@@ -111,7 +170,7 @@ module.exports = {
          * @param rootState
          * @param serialNumber
          */
-        getStudentFromRosterBySerialNumber: ( state, getters, rootState, serialNumber ) => (serialNumber) => {
+        getStudentFromRosterBySerialNumber: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
             return (function ( state, serialNumber ) {
                 var r = state.roster.filter( function ( i ) {
                     if ( i.serialNumber === serialNumber ) {

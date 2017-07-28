@@ -1,4 +1,9 @@
 /**
+ * This is the older student storage
+ * system, still used in grading etc
+ *
+ * For setup, use roster.js
+ *
  * Created by adam on 10/7/16.
  */
 
@@ -10,7 +15,6 @@ import Payload from '../../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
-import StudentImporter from './roster/studentFileImporter'
 
 const state = {
     /**
@@ -48,7 +52,7 @@ const mutations = {
 };
 
 const actions = {
-    ...StudentImporter,
+    // ...StudentImporter,
 
     /**
      * Consume a json object and populate state.students

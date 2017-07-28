@@ -26,22 +26,22 @@ class RosterTest extends DuskTestCase
 
     /* ----------------------------- Tool proving -------------------- */
     /**
-     * @group z
      * @group setup
      * @group roster
      * @group students
      */
-    public function testCreateExamPopulatedWithStudentsAndReturnExam(){
+    public function testCreateExamPopulatedWithStudentsAndReturnExam()
+    {
         $user = factory(User::class)->create();
         $totalStudents = Factory::create()->numberBetween(10, 100);
         $totalKumi = Factory::create()->numberBetween(0, 10);
-        $expectedStudentsPerKumi = ceil($totalStudents/$totalKumi);
+        $expectedStudentsPerKumi = ceil($totalStudents / $totalKumi);
 
         $exam = StudentPanePage::createExamPopulatedWithStudentsAndReturnExam($user, $totalStudents, $totalKumi);
 
         //check
         PHPUnit::assertEquals($totalKumi, $exam->kumis()->get()->count());
-        foreach ($exam->kumis as $kumi){
+        foreach ( $exam->kumis as $kumi ) {
             PHPUnit::assertEquals($expectedStudentsPerKumi, $kumi->students()->get()->count());
         }
     }
@@ -104,146 +104,8 @@ class RosterTest extends DuskTestCase
 
 
     /* ------------------------------- Uploading and adding students --------------- */
-    /**
-     * todo Add test that input value clears and file input disappears
-     * @group setup
-     * @group importStudents
-     * @group roster
-     * @group students
-     * @group csvStudentImport
-     */
-    public function testUploadIdealFile()
-    {
-        $user = factory(User::class)->create();
-        $this->browse(function ( Browser $browser ) use ( $user ) {
-            $parentDir = dirname(dirname(__FILE__));
-
-            //This has all fields in the right order and values in each
-            $rosterFile = $parentDir . '/_data/acceptance_test_roster_simple.csv';
-
-//            $rosterFile = $parentDir . '/_data/acceptance_test_roster.csv';
-            $rowsInRosterFile = 5;
-            $origRows = 0;
-            $expectedRows = $origRows + $rowsInRosterFile;
-
-            $browser->loginAs($user)
-                ->visit(new SetupPage())
-                ->on(new StudentPanePage())
-                ->navigateToStudentsPane()
-                ->assertVisible('.add-students-panel')
-                ->assertStudentRowCountIs($origRows)
-                ->click('#add-students-button')
-                ->assertVisible('#file-input')
-                ->attach('#file-input', $rosterFile)
-                ->pause(6000)
-                ->assertStudentRowCountIs($expectedRows);
-
-            //now lets reload the page and make sure we see
-            //the new students
-            $browser->loginAs($user)
-                ->visit(new StudentPanePage())
-                ->navigateToStudentsPane()
-                ->assertVisible('.add-students-panel')
-                ->assertStudentRowCountIs($expectedRows);
-        });
-
-    }
 
     /**
-     * @group nnn
-     *
-     * @group setup
-     * @group roster
-     * @group importStudents
-     * @group students
-     * @group csvStudentImport
-     */
-    public function testUploadFileRequiringHeaderGuess()
-    {
-        $user = factory(User::class)->create();
-        $this->browse(function ( Browser $browser ) use ( $user ) {
-            $parentDir = dirname(dirname(__FILE__));
-
-            //This has all fields in the right order and values in each, but
-            //no header row
-            $rosterFile = $parentDir . '/_data/acceptance_test_roster_no_headers.csv';
-
-            $rowsInRosterFile = 5;
-            $origRows = 0;
-            $expectedRows = $origRows + $rowsInRosterFile;
-
-            $browser->loginAs($user)
-                ->visit(new SetupPage())
-                ->on(new StudentPanePage())
-                ->navigateToStudentsPane()
-                ->assertVisible('.add-students-panel')
-                ->assertStudentRowCountIs($origRows)
-                ->click('#add-students-button')
-                ->assertVisible('#file-input')
-                ->attach('#file-input', $rosterFile)
-                ->pause(6000)
-                ->assertStudentRowCountIs($expectedRows);
-
-            //now lets reload the page and make sure we see
-            //the new students
-            $browser->loginAs($user)
-                ->visit(new StudentPanePage())
-                ->navigateToStudentsPane()
-                ->assertVisible('.add-students-panel')
-                ->assertStudentRowCountIs($expectedRows);
-        });
-
-    }
-
-    /**
-     * @group nnn
-     *
-     * @group setup
-     * @group roster
-     * @group importStudents
-     * @group students
-     * @group csvStudentImport
-     */
-    public function testUploadFileRequiringContentGuess()
-    {
-        $user = factory(User::class)->create();
-        $this->browse(function ( Browser $browser ) use ( $user ) {
-            $parentDir = dirname(dirname(__FILE__));
-
-            //This has all fields in the right order and values in each
-            //But the header fields are misnamed
-            $rosterFile = $parentDir . '/_data/acceptance_test_roster_requires_content_guess.csv';
-
-            $rowsInRosterFile = 5;
-            $origRows = 0;
-            $expectedRows = $origRows + $rowsInRosterFile;
-
-            $browser->loginAs($user)
-                ->visit(new SetupPage())
-                ->on(new StudentPanePage())
-                ->navigateToStudentsPane()
-                ->assertVisible('.add-students-panel')
-                ->assertStudentRowCountIs($origRows)
-                ->click('#add-students-button')
-                ->assertVisible('#file-input')
-                ->attach('#file-input', $rosterFile)
-                ->pause(6000)
-                ->assertStudentRowCountIs($expectedRows);
-
-            //now lets reload the page and make sure we see
-            //the new students
-            $browser->loginAs($user)
-                ->visit(new StudentPanePage())
-                ->navigateToStudentsPane()
-                ->assertVisible('.add-students-panel')
-                ->assertStudentRowCountIs($expectedRows);
-        });
-
-    }
-
-
-    /**
-     * @group z
      *
      * @group setup
      * @group roster
@@ -282,7 +144,7 @@ class RosterTest extends DuskTestCase
                     ->type("[id^='identifier-']", $identifier)
                     //let the client side do its processing
                     //before refreshing the page
-                    ->pause(20000);
+                    ->pause(10000);
 
                 Auth::login($user);
                 $s = Student::where('first_name', $firstName)
@@ -315,6 +177,154 @@ class RosterTest extends DuskTestCase
             });
     }
 
+
+    /**
+     * todo Add test that input value clears and file input disappears
+     *
+     * @group setup
+     * @group importStudents
+     * @group roster
+     * @group students
+     * @group csvStudentImport
+     */
+    public function testUploadIdealFile()
+    {
+        $user = factory(User::class)->create();
+        $this->browse(function ( Browser $browser ) use ( $user ) {
+            $parentDir = dirname(dirname(__FILE__));
+
+            //This has all fields in the right order and values in each
+            $rosterFile = $parentDir . '/_data/acceptance_test_roster_simple.csv';
+
+//            $rosterFile = $parentDir . '/_data/acceptance_test_roster.csv';
+            $rowsInRosterFile = 5;
+            $origRows = 0;
+            $expectedRows = $origRows + $rowsInRosterFile;
+
+            $browser->loginAs($user)
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
+                ->navigateToStudentsPane()
+                ->assertVisible('.add-students-panel')
+                ->assertStudentRowCountIs($origRows)
+                ->click('#add-students-button')
+                ->assertVisible('#file-input')
+                ->attach('#file-input', $rosterFile)
+                ->pause(6000)
+                //check
+                ->assertStudentRowCountIs($expectedRows)
+                ->assertStudentDbCountChanged($user, 0, $expectedRows);
+
+            //todo reenable check display, will require navigating to the same exam
+//                ->assertStudentRowCountIs($expectedRows);
+//
+//            //now lets reload the page and make sure we see
+//            //the new students
+//            $browser->loginAs($user)
+//                ->visit(new SetupPage())
+//                ->on(new StudentPanePage())
+//                ->navigateToStudentsPane()
+//                ->assertVisible('.add-students-panel')
+//                ->pause(6000)
+//                ->assertStudentRowCountIs($expectedRows);
+        });
+
+    }
+
+    /**
+     *
+     * @group setup
+     * @group roster
+     * @group importStudents
+     * @group students
+     * @group csvStudentImport
+     */
+    public function testUploadFileRequiringHeaderGuess()
+    {
+        $user = factory(User::class)->create();
+        $this->browse(function ( Browser $browser ) use ( $user ) {
+            $parentDir = dirname(dirname(__FILE__));
+
+            //This has all fields in the right order and values in each, but
+            //no header row
+            $rosterFile = $parentDir . '/_data/acceptance_test_roster_no_headers.csv';
+
+            $rowsInRosterFile = 5;
+            $origRows = 0;
+            $expectedRows = $origRows + $rowsInRosterFile;
+
+            $browser->loginAs($user)
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
+                ->navigateToStudentsPane()
+                ->assertVisible('.add-students-panel')
+                ->assertStudentRowCountIs($origRows)
+                ->click('#add-students-button')
+                ->assertVisible('#file-input')
+                ->attach('#file-input', $rosterFile)
+                ->pause(6000)
+                ->assertStudentRowCountIs($expectedRows)
+                ->assertStudentDbCountChanged($user, 0, $expectedRows);
+//
+//
+//            //now lets reload the page and make sure we see
+//            //the new students
+//            $browser->loginAs($user)
+//                ->visit(new StudentPanePage())
+//                ->navigateToStudentsPane()
+//                ->assertVisible('.add-students-panel')
+//                ->assertStudentRowCountIs($expectedRows);
+        });
+
+    }
+
+    /**
+     *
+     * @group setup
+     * @group roster
+     * @group importStudents
+     * @group students
+     * @group csvStudentImport
+     */
+    public function testUploadFileRequiringContentGuess()
+    {
+        $user = factory(User::class)->create();
+        $this->browse(function ( Browser $browser ) use ( $user ) {
+            $parentDir = dirname(dirname(__FILE__));
+
+            //This has all fields in the right order and values in each
+            //But the header fields are misnamed
+            $rosterFile = $parentDir . '/_data/acceptance_test_roster_requires_content_guess.csv';
+
+            $rowsInRosterFile = 5;
+            $origRows = 0;
+            $expectedRows = $origRows + $rowsInRosterFile;
+
+            $browser->loginAs($user)
+                ->visit(new SetupPage())
+                ->on(new StudentPanePage())
+                ->navigateToStudentsPane()
+                ->assertVisible('.add-students-panel')
+                ->assertStudentRowCountIs($origRows)
+                ->click('#add-students-button')
+                ->assertVisible('#file-input')
+                ->attach('#file-input', $rosterFile)
+                ->pause(6000)
+                ->assertStudentRowCountIs($expectedRows)
+                ->assertStudentDbCountChanged($user, 0, $expectedRows);
+//
+//            //now lets reload the page and make sure we see
+//            //the new students
+//            $browser->loginAs($user)
+//                ->visit(new StudentPanePage())
+//                ->navigateToStudentsPane()
+//                ->assertVisible('.add-students-panel')
+//                ->assertStudentRowCountIs($expectedRows);
+        });
+
+    }
+
+
     /* ----------------- Editing students ----------------------- */
 
     /**
@@ -338,24 +348,30 @@ class RosterTest extends DuskTestCase
      */
     public function testOperationButtonsDisplayCorrectly()
     {
+        $user = factory(User::class)->create();
+        $exam = StudentPanePage::createExamPopulatedWithStudentsAndReturnExam($user);
+
         $operations = ['delete', 'move', 'remove'];
         foreach ( $operations as $operation ) {
-            $user = factory(User::class)->create();
-
-            $this->browse(function ( Browser $browser ) use ( $user, $operation ) {
+            $this->browse(function ( Browser $browser ) use ( $user, $exam, $operation ) {
                 $divClass = ".{$operation}-operation-area";
                 $buttonId = "#student-{$operation}-button";
                 $browser->loginAs($user)
-                    ->visit(new SetupPage())
+                    ->on(new SetupPage())
+                    ->navigateToExam($exam, $user)
                     ->on(new StudentPanePage())
                     ->navigateToStudentsPane()
                     ->clickNewStudentButton()//we need to do this to ensure there is at least one row visible
                     ->toggleStudentEditingCheckboxes($operation)
-                    ->assertVisible($divClass)
+                    ->waitFor($divClass)
+                    //these duplicate assertions made by toggleStudentEditingCheckboxes
+                    //Doing them explicitly here so easier for future selves to see that
+                    //the behavior has been checked
                     ->assertVisible('@studentOperationsConfirmationButton')
                     ->assertVisible('@studentOperationsCancellationButton')
                     //toggle it back
-                    ->toggleStudentEditingCheckboxes($operation)
+                    ->click('@studentOperationsCancellationButton')
+                    ->waitUntilMissing($divClass)
                     ->assertMissing($divClass)
                     ->assertMissing('@studentOperationsConfirmationButton')
                     ->assertMissing('@studentOperationsCancellationButton');
@@ -365,7 +381,6 @@ class RosterTest extends DuskTestCase
 
 
     /**
-     * @group zz
      *
      * @group setup
      * @group roster
@@ -428,7 +443,7 @@ class RosterTest extends DuskTestCase
     }
 
     /**
-     * @group zz
+     * @group zzzz
      * @group setup
      * @group roster
      * @group students
@@ -453,7 +468,6 @@ class RosterTest extends DuskTestCase
 //                ->navigateToExam($exam, $user)
                 ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
-
                 ->clickNewStudentButton()
                 //we need to do this to ensure there is
                 //at least one row visible, which we now
@@ -473,10 +487,9 @@ class RosterTest extends DuskTestCase
                 //                //select the one existing student
 
 //                ->click("input[label='Remove']")
-                    ->assertVisible('.student-operation-checkbox')
-                ->check('.student-operation-checkbox')
-
- //                ->waitFor("input[id^='student-operation-checkbox']")
+                ->assertVisible("input[id^='student-operation-checkbox']")
+                ->check("input[id^='student-operation-checkbox']")
+                //                ->waitFor("input[id^='student-operation-checkbox']")
 //                ->check("input[id^='student-operation-checkbox']")
                 //confirm the operation
                 ->click('@studentOperationsConfirmationButton')
@@ -499,7 +512,6 @@ class RosterTest extends DuskTestCase
     }
 
     /**
-     * @group nnnn
      *
      * @group setup
      * @group roster

@@ -6,6 +6,7 @@ use App\Assignment;
 use App\Exam;
 use App\Item;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert as PHPUnit;
 
@@ -13,6 +14,7 @@ class SetupPage extends Page
 {
     const URL_BASE = '/dev/setup';
     static public $mainBodyLocator = '#examEditor';
+    static public $addItemToExamButton = '.add-child-to-exam-button';
 
     /**
      * Get the URL for the page.
@@ -24,6 +26,11 @@ class SetupPage extends Page
         return self::URL_BASE;
     }
 
+    /**
+     * Returns the url to visit setup for a particular preexisting exam
+     * @param $examId
+     * @return string
+     */
     static public function urlToExam( $examId )
     {
         return self::URL_BASE . '/' . $examId;
@@ -34,8 +41,16 @@ class SetupPage extends Page
         return `#item-settings-button-{$height}-{$depth}`;
     }
 
-    static public $addItemToExamButton = '.add-child-to-exam-button';
 
+    /**
+     * Visit a setup page for a particular exam
+     * Performs assertions on path and waits for mainBodyLocator
+     *
+     * @param Browser $browser
+     * @param $examOrExamId
+     * @param $userOrUserId
+     * @return $this
+     */
     public function navigateToExam( Browser $browser, $examOrExamId, $userOrUserId )
     {
         $user = $userOrUserId instanceof User ? $userOrUserId : User::find($userOrUserId);
@@ -143,6 +158,7 @@ class SetupPage extends Page
     {
         return [
             '@mainBodyLocator' => self::$mainBodyLocator,
+            '@addItemToExamButton' => self::$addItemToExamButton,
             '@examSettingsButton' => "[id^='exam-settings-button']",
             '@addSibling' => '.add-sibling-button',
             '@addQuestion' => 'button.add-child-to-exam-button',
