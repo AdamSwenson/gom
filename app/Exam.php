@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\NewGom\Note;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -313,12 +314,13 @@ MYSQL;
      * with this exam's id as item_id and exam_id
      * @return bool
      */
-    public function initializeAssignmentRoot(){
-        if($this->getAssignmentsRoot()) return true;
+    public function initializeAssignmentRoot()
+    {
+        if ( $this->getAssignmentsRoot() ) return true;
         $assignment = Assignment::create([
-                'item_id' => $this->id,
-                'exam_id' => $this->id
-            ]);
+            'item_id' => $this->id,
+            'exam_id' => $this->id
+        ]);
 
         $this->assignments()->save($assignment);
     }
@@ -448,6 +450,12 @@ MYSQL;
 //    public function students(){
 //         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
 //    }
+
+
+    public function notes()
+    {
+        return $this->belongsToMany(Note::class, 'exam_note')->withTimestamps();
+    }
 
     /**
      * Associated user

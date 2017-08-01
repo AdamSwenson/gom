@@ -5,10 +5,16 @@
         <div class="field">
             <label class="label">Add a new note to your future self</label>
             <p class="control">
+                <input class="text"
+                       v-bind:placeholder="placeholders.noteText"
+                       v-model="name">
+            </p>
+
+            <p class="control">
                         <textarea class="textarea"
                                   rows="3"
                                   v-bind:placeholder="placeholders.noteText"
-                                  v-model="noteText">
+                                  v-model="text">
                         </textarea>
             </p>
         </div>
@@ -27,7 +33,15 @@
 
         <div class="container">
             <h3 class="title is-3">Things your past self wanted you to remember</h3>
+
+            <note-area
+                 v-for="note in notes"
+                 v-bind:key="note.serialNumber"
+            ></note-area>
+
+
         </div>
+
 
     </div>
 </template>
@@ -35,7 +49,7 @@
 <style lang="scss">
 
     .panel-notes-component {
-        label{
+        label {
             text-align: left;
         }
     }
@@ -43,37 +57,53 @@
 <script>
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
+    import * as gTypes from '../../../store/getter-types';
 
-    import Payload from '../../../models/Payload'
+    import Payload from '../../../models/Payload';
+    import noteArea from './note-area.vue';
 
     export default {
-//        props: ['index'],
+//        props: ['serialNumber'], //the serial number of the note
+
+        components: {
+            'note-area': noteArea
+        },
 
         data: function () {
             return {
-                serialNumber: _.toInteger(this.$route.params.serialNumber),
-//                active: this.serialNumber,
+                //The serial number of the item the notes belong to
+                itemSerialNumber: _.toInteger( this.$route.params.serialNumber ),
 
                 placeholders: {
-
                     noteText: "Write something you want to remember about this item here"
                 },
             };
         },
 
         computed: {
-            noteText: {
-                get: function () {
-                },
-                set: function ( v ) {
-                }
-            }
+            /**
+             * The exam or item the note is associated with
+             *
+             */
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.itemSerialNumber );
+            },
+
+            isExam: function () {
+                return this.item ? this.item.isExam() : false;
+            },
+
+
+            notes: function () {
+                return this.$store[ gTypes.getNotesForItem ]( this.itemSerialNumber );
+            },
 
         },
 
         methods: {
             saveNote: function () {
                 window.console.log( 'panel.notes.component', 'saveNote', 65, );
+                //switch the dialog back
             }
         }
     }

@@ -7,13 +7,17 @@ import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes} from './apiSetti
 import { errorHandling, handleResponse } from './responseHandlers';
 import { holdForIdLoading } from './apiHelpers';
 
+
 import examRequests from './requests/examRequests';
 import commentRequests from './requests/commentRequests';
+
 
 
 const checkItemForId = ( item ) => {
     return item.id >= 0;
 };
+
+
 
 
 module.exports = {

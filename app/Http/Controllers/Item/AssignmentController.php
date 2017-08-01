@@ -139,7 +139,14 @@ class AssignmentController extends Controller
         //
     }
 
+    public function getItemHistory( Item $item )
+    {
+        $assignments = Assignment::where('item_id', $item->id)->all();
+        return $assignments->exam()->all();
+    }
+
 }
+
 //
 //    /**
 //     * Expects incoming order to have

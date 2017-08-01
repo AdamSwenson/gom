@@ -24,6 +24,9 @@
 
 
 </div>
+<div class="footer">
+
+</div>
 <input type="hidden"
        id="{{ $examObjectJsonName }}"
        data='{!! isset($exam) ? json_encode($exam, JSON_FORCE_OBJECT) : '' !!}'/>

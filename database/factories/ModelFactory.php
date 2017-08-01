@@ -10,9 +10,11 @@
 | database. Just tell the factory how a default model should look.
 |
 */
+
 use App\AccessKey;
 use App\Exam;
 use App\Grade;
+use App\Models\NewGom\Note;
 use App\Question;
 use App\Repositories\Grade\GradeFactory;
 use App\Scopes\UserOnlyScope;
@@ -333,7 +335,6 @@ $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
 });
 
 
-
 $factory->define(App\Item::class, function ( Faker\Generator $faker ) {
     $userId = 1;
     Auth::logInUsingId($userId);
@@ -357,4 +358,18 @@ $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator 
         'comment_text' => $faker->word,
         'score' => $faker->randomNumber()
     ];
+});
+
+
+$factory->define(Note::class, function ( Faker\Generator $faker ) {
+    $userId = 1;
+    Auth::logInUsingId($userId);
+
+    return [
+        'name' =>'',
+        'text' => $faker->text(),
+        'priority' => $faker->randomElement(Note::PRIORITY_LEVELS),
+        'props' => []
+    ];
+
 });

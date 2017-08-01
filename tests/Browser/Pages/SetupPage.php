@@ -137,6 +137,10 @@ class SetupPage extends Page
         return $order;
     }
 
+    public function waitForServerSyncToFinish(Browser $browser)
+    {
+        $browser->waitUntil("document.getElementById('isSyncing' ).value === 'false'");
+    }
 
     /**
      * Assert that the browser is on the page.

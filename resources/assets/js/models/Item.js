@@ -70,7 +70,6 @@ export default class Item extends IModel {
         this.publicName;
 
 
-
     }
 
 
@@ -171,10 +170,10 @@ export default class Item extends IModel {
         return this.comments.get( valence );
     }
 
-    getEmptyComments(){
+    getEmptyComments() {
         let out = [];
-        for (let [valence, comment] of this.comments.entries()) {
-            if(comment.isEmpty()) out.push(comment);
+        for (let [ valence, comment ] of this.comments.entries()) {
+            if ( comment.isEmpty() ) out.push( comment );
         }
         return out;
     }
@@ -187,7 +186,7 @@ export default class Item extends IModel {
      * @param jsonComments
      */
     loadCommentsFromJson( jsonComments ) {
-        if(Object.keys(jsonComments).length >0) {
+        if ( Object.keys( jsonComments ).length > 0 ) {
             var me = this;
             _.forEach( jsonComments, ( row ) => {
                 let comment = Comment.factory( row );

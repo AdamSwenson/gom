@@ -1,7 +1,7 @@
 <template>
     <input type="text"
            class="input is-large"
-           v-bind:placeholder="placeHolders.privateName"
+           v-bind:placeholder="placeholder"
            v-bind:id="id"
            v-model="name"
            v-bind:class="styling"
@@ -34,7 +34,7 @@
     import Item from '../../../models/Item'
 
     export default {
-        props: [  'serialNumber' ],
+        props: [ 'serialNumber' ],
 
 
         data: function () {
@@ -44,8 +44,9 @@
                     item: 'item-name'
                 },
 
-                placeHolders: {
-                    privateName: "Give this item a name"
+                placeholders: {
+                    item: "Give this item a name",
+                    exam: "Give this exam a name"
                 },
             };
         },
@@ -55,7 +56,7 @@
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
-            isExam: function(){
+            isExam: function () {
                 return this.item ? this.item.isExam() : false;
             },
 
@@ -72,7 +73,12 @@
                 return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
             },
 
-
+            placeholder: function () {
+                if ( this.isExam ) {
+                    return this.placeholders.exam;
+                }
+                return this.placeholders.item;
+            },
             parentSerialNumber: function () {
                 return this.node.parent;
             },
@@ -82,15 +88,15 @@
              * depending on whether it is attached to an exam or
              * regular item
              */
-            identifier : function(){
+            identifier: function () {
                 return this.isExam ? this.identifiers.exam : this.identifiers.item;
             },
 
             /**
              * The input's css id
              */
-            id : function(){
-                if(this.isExam) return this.identifier;
+            id: function () {
+                if ( this.isExam ) return this.identifier;
 
                 return this.identifier + "-" + this.height + '-' + this.depth;
             },

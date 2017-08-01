@@ -56,10 +56,15 @@ import settings from './modules/settings'
 import times from './modules/times.js'
 
 
-
+//Newer
 import roster from './modules/roster/roster'
 import visibility from './modules/visibility'
 import kumi from './modules/roster/kumis'
+
+//api
+import requests from './modules/api/requests';
+
+
 // import orderings from './modules/items.order';
 
 // import gradeStateDefault from './modules/grade.defaultstate'
@@ -111,7 +116,8 @@ const debug = process.env.NODE_ENV !== 'production';
         times,
         visibility,
         roster,
-        kumi
+        kumi,
+        requests
     }
 
 // }

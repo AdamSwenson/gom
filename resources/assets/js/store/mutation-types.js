@@ -106,3 +106,12 @@ export const toggleSampleFeedback = 'toggleSampleFeedback';
 export const showItemSettings = 'showItemSettings';
 export const hideItemSettings = 'hideItemSettings';
 export const toggleExamSettings = 'toggleExamSettings';
+
+
+//requests
+export const startRequest = 'startRequest';
+export const stopRequestSuccess = 'stopRequestSuccess';
+export const stopRequestError = 'stopRequestError';
+
+//notes
+export const updateNote = 'updateNote';

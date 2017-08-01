@@ -328,7 +328,7 @@ class RosterTest extends DuskTestCase
     /* ----------------- Editing students ----------------------- */
 
     /**
-     * @group zzz
+     * @group zzzzz
      * @group setup
      * @group roster
      * @group students
@@ -355,7 +355,12 @@ class RosterTest extends DuskTestCase
                     ->type("input[id^='email']", $testStudent->email)
                     //let the client side do its processing
                     //before refreshing the page
-                    ->pause(10000);
+//                        ->assertVisible('#sync-indicator .fa-spinner')
+//                    ->waitFor('#sync-indicator .fa-circle-o');
+//                        ->waitUntil("document.getElementById('isSyncing' ).value === 'false'")
+                    ->on(new SetupPage())
+                        ->waitForServerSyncToFinish()
+                    ->pause(1000);
 
                 Auth::login($user);
                 $s = Student::where('first_name', $testStudent->first_name)

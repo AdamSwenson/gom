@@ -140,6 +140,28 @@ const getters = {
         })( map );
         // }
         return out;
+    },
+
+    /**
+     * Whether all items have had their ids updated from
+     * the default -1 to a value from the db
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {boolean}
+     */
+    canSync : ( state, getters, rootState )=> {
+        if(state.items.length === 0) return false;
+
+        return (function ( state) {
+            var r = state.items.filter( function ( item ) {
+                if ( item.id === -1 ) {
+                    return item;
+                }
+            } );
+            return r.length === 0;
+            document.getElementById('isSyncing' )
+        })(state);
     }
 };
 

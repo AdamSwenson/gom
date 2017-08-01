@@ -109,4 +109,8 @@ export const getItemMapCopy = 'getItemMapCopy'
 
 //Visibility settings
 export const isItemSettingsVisible = 'isItemSettingsVisible'
-export const isExamSettingsVisible = 'isExamSettingsVisible'
+export const isExamSettingsVisible = 'isExamSettingsVisible';
+
+//Notes
+export const getNotesForItem = 'getNotesForItem';
+export const getNoteBySerialNumber = 'getNoteBySerialNumber';

@@ -1,14 +1,22 @@
 <template>
-    <div id="sync-indicator" class="box">
-        <p id="is-syncing-indicator" v-if="isSyncing">
-            <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+    <div id="sync-indicator"
+         class="box"
+         v-bind:class="{ 'is-primary' : isSyncing}"
+    >
+        <p id="is-syncing-indicator"
+           v-if="isSyncing">
+            <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+
+            <!--<i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>-->
             <span class="sr-only">Syncing...</span>
         </p>
         <p id="no-syncing-indicator" v-else>
             <i class="fa fa-circle-o "></i>
             <span class="sr-only">No sync in progress</span>
         </p>
-
+        <input type="hidden"
+               id="isSyncing"
+               v-model="isSyncing">
     </div>
 </template>
 
@@ -19,6 +27,14 @@
 </style>
 
 <script>
+
+    import Item from '../../../models/Item'
+    import Exam from '../../../models/Exam'
+    import Payload from '../../../models/Payload'
+    import * as mTypes from '../../../store/mutation-types'
+    import * as gTypes from '../../../store/getter-types'
+
+
     //This tells the user when there is a sync w
     //server in progress, and indicates user-fixable
     //errors
@@ -32,13 +48,19 @@
 
         data: function () {
             return {
-                isSyncing: false,
-                isError: false,
                 defaults: {}
             }
         },
 
-        computed: {},
+        computed: {
+            isSyncing: function () {
+                return this.$store.getters.isRequestInProgress;
+            },
+
+            isError: function () {
+                return this.$store.getters.isResponseError;
+            }
+        },
 
         methods: {
             setIsSyncing: function () {
@@ -68,7 +90,9 @@
             }
         },
 
-        mounted: function () {
+        created: function () {
+            var me = this;
+
         }
     }
 </script>

@@ -26,12 +26,10 @@
 
                 <sync-indicator></sync-indicator>
 
-                <existing-exams-menu>
-                    <!--<p slot="row-content">taco</p>-->
-                </existing-exams-menu>
+                <!--<existing-exams-menu>&lt;!&ndash;<p slot="row-content">taco</p>&ndash;&gt;</existing-exams-menu>-->
             </div>
             <div class="tile is-vertical is-4">
-                <existing-items-menu></existing-items-menu>
+                <!--<existing-items-menu></existing-items-menu>-->
             </div>
             </div>
 

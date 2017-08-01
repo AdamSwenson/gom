@@ -4,6 +4,7 @@
 
 //Not exported!
     const KUMI_BASE_ROUTE = 'dev/kumis';
+    const NOTES_BASE_ROUTE = 'dev/notes';
 const ROSTER_BASE_ROUTE = 'dev/roster';
 const SCORE_BASE_ROUTE = 'dev/scores';
 const STUDENT_BASE_ROUTE = 'dev/students';
@@ -129,4 +130,52 @@ export const Routes = {
         return STUDENT_BASE_ROUTE + '/' + student.id
     },
 
+
+    //History
+    getItemHistory: (item) => {
+        return 'dev/history/item/' + item.id ;
+    },
+
+    getStudentHistory: (student)=>{
+        
+    },
+
+    //Notes
+    createItemNote: (item)=>{ return NOTES_BASE_ROUTE + '/item/' + item.id},
+    createExamNote: (exam)=>{ return NOTES_BASE_ROUTE + '/exam/' + exam.id},
+    updateNote: (note)=>{return NOTES_BASE_ROUTE  + '/' + note.id},
+    destroyNote: (note)=>{return NOTES_BASE_ROUTE + '/' + note.id},
+    getNotesForItem: (item)=>{return NOTES_BASE_ROUTE + '/item/' + item.id},
+    getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/item/' + exam.id }
 };
+
+
+// `transformRequest` allows changes to the request data before it is sent to the server
+// This is only applicable for request methods 'PUT', 'POST', and 'PATCH'
+// The last function in the array must return a string, an ArrayBuffer, FormData, or a Stream
+// window.axios.defaults.transformRequest = function ( data ) {
+//     // Do whatever you want to transform the data
+//     window.console.log( 'axiosConfig', 'transformRequest', 56 );
+//     return data;
+// };
+//
+// // `transformResponse` allows changes to the response data to be made before
+// // it is passed to then/catch
+// window.axios.defaults.transformResponse = function ( data ) {
+//     // Do whatever you want to transform the data
+//     window.console.log( 'axiosConfig', 'transformResponse', 26 );
+//     return data;
+// };
+
+// window.axios.defaults.onUploadProgress = function ( progressEvent ) {
+//     // Do whatever you want with the native progress event
+//     window.console.log( 'axiosConfig', 'onUploadProgress', 90, );
+// };
+//
+// // `onDownloadProgress` allows handling of progress events for downloads
+// window.axios.defaults.onDownloadProgress = function ( progressEvent ) {
+//     // Do whatever you want with the native progress event
+//     window.console.log( 'axiosConfig', 'onDownloadProgress', 95, );
+// };
+//
+

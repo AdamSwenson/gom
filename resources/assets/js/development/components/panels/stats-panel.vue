@@ -1,13 +1,12 @@
 <template>
     <div class="panel-stats-component">
-    <!--<div class="panel-stats-component tab-pane"-->
-         <!--role="tabpanel"-->
-    <!--&gt;-->
-        <div class="row">
-            <div class="col-md-12">
-                "Stats go here"
-            </div>
+
+        <h3 class="title is-3">Item scores for this exam</h3>
+
+        <div class="box">
+            <p>No scores have been recorded for this item on this exam.</p>
         </div>
+
 
     </div>
 </template>
@@ -25,17 +24,14 @@
 
         data: function () {
             return {
-                serialNumber: _.toInteger(this.$route.params.serialNumber),
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
                 active: this.serialNumber,
 
-                placeholders: {
-                },
+                placeholders: {},
             };
         },
 
-        computed: {
-
-        },
+        computed: {},
 
         methods: {}
     }

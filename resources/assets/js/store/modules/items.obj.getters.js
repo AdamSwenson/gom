@@ -33,18 +33,6 @@ const isItemsEmpty = ( state ) => {
 
 module.exports = {
 
-canSync : ( state, getters, rootState )=> {
-    if(state.items.length === 0) return false;
-
-    return (function ( state) {
-        var r = state.items.filter( function ( item ) {
-            if ( item.id === -1 ) {
-                return item;
-            }
-        } );
-        return r.length === 0;
-    })(state);
-},
 
     /**
      * Returns all stored item objects in whatever

@@ -44,6 +44,18 @@ import {
 } from '../api/requests/studentRequests';
 import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
 
+
+const setSyncDone = (store)=>{
+    window.console.log( 'apiPlugin', 'setSyncDone', 49, );
+    store.commit(mTypes.stopRequestSuccess);
+};
+
+const setSyncStarting = (store)=>{
+    window.console.log( 'apiPlugin', 'setSyncStarting', 53, );
+    store.commit(mTypes.startRequest);
+};
+
+
 /**
  * Returns true if the mutation needs to
  * be synced with the server.
@@ -184,12 +196,12 @@ export default function ( store ) {
                 //the roster. So it only sends the request to create a new
                 //student. This does nothing to create an association with a kumi
                 //either on the server or locally.
-
+setSyncStarting(store);
                 // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
                 var student = payload.obj;
                 //Requests the creation of a new student
                 createStudent( store, student );
-
+setSyncDone(store);
                 //Assigns them to a particular kumi
                 // var kumi = store.getters.getSelectedKumi;
                 // let p = associateStudent( store, student, kumi );

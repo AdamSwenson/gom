@@ -27,6 +27,7 @@ class CreateItemsTable extends Migration
 
             $table->softDeletes();
 $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+
 //            $table->foreign('user_id')
 //                ->references('id')
 //                ->on('users')

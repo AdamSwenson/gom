@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Http\Requests\Request;
+use App\Models\NewGom\Note;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -85,6 +86,11 @@ class Item extends BaseModel
         return $this->belongsTo('App\User');
     }
 
+
+    public function notes()
+    {
+        return $this->belongsToMany(Note::class, 'item_note' )->withTimestamps();
+    }
 
     /**
      * Returns associated scores
