@@ -31,12 +31,19 @@ import { holdForIdLoading } from '../apiHelpers';
  */
 const handleCreateResponse = ( store, note, data ) => {
     // window.console.log( 'noteRequests', 'r', 29, r );
-    note.id = data.id;
-    note.updatedAt = data.updated_at;
-    note.createdAt = data.created_at;
-
     let payload = Payload.factory( { obj: note, mutateSilently: true } );
-    store.commit( 'createNote', payload );
+    payload.updateProp = 'id';
+    payload.updateVal = data.id;
+    store.commit( 'updateNote', payload );
+
+    payload.updateProp = 'createdAt';
+    payload.updateVal = data.created_at;
+    store.commit( 'updateNote', payload );
+
+    payload.updateProp = 'updated_at';
+    payload.updateVal = data.updated_at;
+    store.commit( 'updateNote', payload );
+
 };
 
 /**
@@ -69,20 +76,21 @@ module.exports = {
     createNoteRequest: ( store, note ) => {
         window.console.log( 'apiPlugin---noteRequests', 'createNoteRequest', note );
         let out = {
-            requestVersion: REQUEST_VERSION
+            requestVersion: REQUEST_VERSION,
+            ...note
         };
 
         let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
 
         if ( associatedItemOrExam ) {
-            let route = associatedItemOrExam instanceof Exam ? Route.createExamNote( associatedItemOrExam ) : Route.createItemNote( associatedItemOrExam );
+            let route = associatedItemOrExam instanceof Exam ? Routes.createExamNote( associatedItemOrExam ) : Routes.createItemNote( associatedItemOrExam );
 
             window.axios
                 .post( route, out )
                 .then( ( response ) => {
-                    if ( response.data.length > 0 ) {
-                        handleCreateResponse( response );
-                    }
+                    // if ( response.data.length > 0 ) {
+                        handleCreateResponse(store, note, response.data );
+                    // }
                 } )
                 .catch( function ( error ) {
                     errorHandling( error );
@@ -91,17 +99,17 @@ module.exports = {
     },
 
     updateNoteRequest: ( store, note ) => {
-        let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
+        // let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
 
         let out = {
             requestVersion: REQUEST_VERSION,
-            isExam: associatedItemOrExam.isExam,
-            associatedItemId: associatedItemOrExam.id,
+            // isExam: associatedItemOrExam.isExam,
+            // associatedItemId: associatedItemOrExam.id,
             ...note
         };
 
         window.axios
-            .post( Route.updateNoteRequest( associatedItemOrExam ), out )
+            .patch( Routes.updateNote( note ), out )
             .then( ( response ) => {
                 if ( response.data.length > 0 ) {
                     // handleUpdateResponse( response );
@@ -120,7 +128,7 @@ module.exports = {
             };
 
             window.axios
-                .post( Route.destroyNote( associatedItemOrExam ), out )
+                .post( Routes.destroyNote( associatedItemOrExam ), out )
                 .then( ( response ) => {
                     if ( response.data.length > 0 ) {
                         // handleUpdateResponse( response );

@@ -5,28 +5,35 @@
     >
 
         <div class="field"
-        v-if="isEditable">
+             v-if="isEditable">
             <label class="label">Add a new note to your future self</label>
-            <p class="control">
-                <input class="text"
-                       v-bind:placeholder="placeholders.noteText"
-                       v-model="name">
-            </p>
 
             <p class="control">
             <textarea class="textarea"
                       rows="3"
                       v-bind:placeholder="placeholders.noteText"
                       v-model="text">
-
             </textarea>
             </p>
+
+            <div class="field">
+                <p class="control">
+                    <button class="button is-outlined"
+                            v-on:click="handleSave">Save
+                    </button>
+                </p>
+                <p class="control">
+                    <button v-on:click="handleClear"
+                            class="button is-outlined">Clear
+                    </button>
+                </p>
+            </div>
         </div>
 
 
         <div class="notification "
              v-else
-        v-bind:class="priorityClass">
+             v-bind:class="priorityClass">
             <button class="delete"></button>
             {{ text }}
         </div>
@@ -57,15 +64,19 @@
         data: function () {
             return {
                 priorityStyles: {
-                  0: 'is-primary',
-                  1: 'is-info',
-                  2: 'is-warning',
-                  3: 'is-danger'
+                    0: 'is-primary',
+                    1: 'is-info',
+                    2: 'is-warning',
+                    3: 'is-danger'
                 },
 
                 isEditable: false,
 
-                defaults: {}
+                defaults: {},
+                placeholders: {
+                    noteText: "Add a note to your future self here"
+
+                }
             }
         },
 
@@ -107,9 +118,9 @@
                 }
             },
 
-            priorityClass: function(){
-                if(this.note.priority){
-                    return this.priorityStyles[this.note.priority];
+            priorityClass: function () {
+                if ( this.note.priority ) {
+                    return this.priorityStyles[ this.note.priority ];
                 }
             },
 
@@ -150,6 +161,14 @@
             },
 
             handleDeleteClick: function () {
+
+            },
+
+            handleClear: function () {
+
+            },
+
+            handleSave: function () {
 
             },
 

@@ -44,15 +44,16 @@ import {
 } from '../api/requests/studentRequests';
 import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
 
+import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests'
 
-const setSyncDone = (store)=>{
+const setSyncDone = ( store ) => {
     window.console.log( 'apiPlugin', 'setSyncDone', 49, );
-    store.commit(mTypes.stopRequestSuccess);
+    store.commit( mTypes.stopRequestSuccess );
 };
 
-const setSyncStarting = (store)=>{
+const setSyncStarting = ( store ) => {
     window.console.log( 'apiPlugin', 'setSyncStarting', 53, );
-    store.commit(mTypes.startRequest);
+    store.commit( mTypes.startRequest );
 };
 
 
@@ -196,12 +197,12 @@ export default function ( store ) {
                 //the roster. So it only sends the request to create a new
                 //student. This does nothing to create an association with a kumi
                 //either on the server or locally.
-setSyncStarting(store);
+                setSyncStarting( store );
                 // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
                 var student = payload.obj;
                 //Requests the creation of a new student
                 createStudent( store, student );
-setSyncDone(store);
+                setSyncDone( store );
                 //Assigns them to a particular kumi
                 // var kumi = store.getters.getSelectedKumi;
                 // let p = associateStudent( store, student, kumi );
@@ -259,6 +260,28 @@ setSyncDone(store);
                 //in the payload
                 var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
                 associateStudent( store, payload.student, kumi );
+                break;
+
+
+            // ******************** Notes
+            case 'createNote':
+                createNoteRequest( store, payload.obj );
+                break;
+
+
+            case 'updateNote':
+                window.console.log( 'apiPlugin', 'payload', 271,payload );
+                //make a copy so vuex won't be mad
+                //that we are altering the properties
+                // of a watched object outside
+                //of a mutation
+                let note = Object.assign({}, payload.obj);
+                note[payload.updateProp] = payload.updateVal;
+                updateNoteRequest( store, note );
+                break;
+
+            case 'destroyNote':
+                destroyNoteRequest( store, payload.obj );
                 break;
 
             default:

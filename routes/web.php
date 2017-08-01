@@ -210,3 +210,8 @@ Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKum
 
 //History
 Route::get('dev/history/item/{item}', 'Item\AssignmentController@getItemHistory');
+
+//Notes
+Route::resource('dev/notes', 'Item\NotesController');
+Route::post('dev/notes/item/{item}', 'Item\NotesController@store');
+Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');

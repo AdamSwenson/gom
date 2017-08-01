@@ -38,14 +38,14 @@ class StudentPanePage extends Page
     {
 //        $browser->assertPathIs($this->url());
     }
-
-    public function navigateToStudentsPane( Browser $browser )
-    {
-        return $browser->click('#exam-settings-button')
-            ->click(' .students-nav')
-            ->assertVisible('.add-students-panel');
-
-    }
+//
+//    public function navigateToStudentsPane( Browser $browser )
+//    {
+//        return $browser->click('#exam-settings-button')
+//            ->click(' .students-nav')
+//            ->assertVisible('.add-students-panel');
+//
+//    }
 
     /**
      * Make sure that all expected fields and controls are visible

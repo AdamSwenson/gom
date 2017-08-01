@@ -66,8 +66,13 @@ export const routes = [
     },
     //notes
     {
-        path: '/panel-notes/:serialNumber',
+        path: '/panel-item-notes/:serialNumber',
         components: { itemPanels: panelNotes },
+        props: true
+    },
+    {
+        path: '/panel-exam-notes/:serialNumber',
+        components: { examPanels: panelNotes },
         props: true
     },
     //stats

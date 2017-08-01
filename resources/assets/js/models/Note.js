@@ -1,6 +1,4 @@
-
 import IModel from './IModel';
-
 
 
 export default class Note extends IModel {
@@ -17,7 +15,7 @@ export default class Note extends IModel {
 
         this.text = '';
 
-        this.priority='';
+        this.priority = '';
 
         this.props = [];
 
@@ -28,6 +26,24 @@ export default class Note extends IModel {
         this.associatedItemSerialNumber = null;
     }
 
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'associatedItemSerialNumber',
+            'createdAt',
+            'id',
+            'name',
+            'priority',
+            'props',
+            'text',
+            'updatedAt',
+        ];
+
+    }
 
 
     /**

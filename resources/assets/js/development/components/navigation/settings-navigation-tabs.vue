@@ -177,8 +177,10 @@
                 return "/panel-history/" + this.serialNumber;
             },
 
+            //Notes
             routeToNotes: function () {
-                return "/panel-notes/" + this.serialNumber;
+                if(this.isExam) return "/panel-exam-notes/" + this.serialNumber;
+                return "/panel-item-notes/" + this.serialNumber;
             },
 
             routeToStats: function () {

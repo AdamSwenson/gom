@@ -64,6 +64,15 @@ class SetupPage extends Page
             ->waitFor(self::$mainBodyLocator);
     }
 
+
+    public function navigateToStudentsPane( Browser $browser )
+    {
+        return $browser->click('#exam-settings-button')
+            ->click(' .students-nav')
+            ->assertVisible('.add-students-panel');
+    }
+
+
     static public function addChild( Assignment $assignment, Exam $exam )
     {
         $item = factory(Item::class)->create();
@@ -153,6 +162,12 @@ class SetupPage extends Page
 //        $browser->assertPathIs($this->url());
     }
 
+    public function addItemToExam(Browser $browser  )
+    {
+        return $browser->assertVisible('@addChildButton')
+            ->click('@addChildButton');
+    }
+
     /**
      * Get the element shortcuts for the page.
      *
@@ -169,7 +184,10 @@ class SetupPage extends Page
             '@addChild' => '.add-child-button',
             '@addChildButton' => "[id^='add-child-to-exam-button-']",
             '@item-card' => 'div .item-card-component',
-            '@item-name' => 'item-name'
+            '@item-name' => 'item-name',
+            //navigation tabs --- exam
+            '@studentNavTab' => '.students-nav',
+            '@notesNavTab' => '.notes-nav'
         ];
     }
 }

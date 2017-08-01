@@ -12,8 +12,12 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 
+import Note from '../../models/Note'
+
 const state = {
-    notes: []
+    notes: [],
+    newNoteSerialNumber: -1,
+
 };
 
 const mutations = {
@@ -28,6 +32,7 @@ const mutations = {
     },
 
     updateNote: ( state, payload ) => {
+        window.console.log( 'notes', 'updateNote', 35, payload);
         let note = payload.obj;
 
         if ( typeof note !== 'undefined' ) {
@@ -39,6 +44,11 @@ const mutations = {
     destroyNote: ( state, payload ) => {
         let idx = state.notes.indexOf( payload.obj );
         if ( idx ) state.notes.splice( idx, 1 );
+    },
+
+    setNewNote: (state, payload)=>{
+        let note = payload.obj;
+        state.newNoteSerialNumber = note.serialNumber;
     }
 
 };
@@ -49,7 +59,9 @@ const actions = {
         if ( typeof itm !== 'undefined' ) {
             if ( itm instanceof Item || itm instanceof Exam ) {
                 let note = Note.factory( { associatedItemSerialNumber: itm.serialNumber } );
-                commit( 'createNote', Payload.factory( { obj: note } ) );
+                let pl =  Payload.factory( { obj: note } );
+                commit( 'createNote',pl );
+                commit("setNewNote", pl);
             }
         }
     }
@@ -59,45 +71,54 @@ const actions = {
 
 const getters = {
 
-    /**
-     * Returns a list of notes associated with the
-     * specified exam or item
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param examOrItem
-     */
-    [gTypes.getNotesForItem] : ( state, getters, rootState, examOrItem ) =>
-        ( examOrItem ) => {
-            return (function ( state, serialNumber ) {
-                var r = state.notes.filter( function ( i ) {
-                    if ( i.associatedItemSerialNumber === serialNumber ) {
-                        return i;
-                    }
-                } );
-                return r;
-            })( state, examOrItem.serialNumber )
-        },
+        /**
+         * Returns a list of notes associated with the
+         * specified exam or item
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param examOrItem
+         */
+        [gTypes.getNotesForItem]: ( state, getters, rootState, examOrItem ) =>
+            ( examOrItem ) => {
+                return (function ( state, serialNumber ) {
+                    var r = state.notes.filter( function ( i ) {
+                        if ( i.associatedItemSerialNumber === serialNumber ) {
+                            return i;
+                        }
+                    } );
+                    return r;
+                })( state, examOrItem.serialNumber )
+            },
 
-    /**
-     * Returns a note object based on its serial number
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param serialNumber
-     */
-    [gTypes.getNoteBySerialNumber] : ( state, getters, rootState, serialNumber ) =>
-        ( serialNumber ) => {
-            return (function ( state, serialNumber ) {
-                var r = state.notes.filter( function ( i ) {
-                    if ( i.serialNumber === serialNumber ) {
-                        return i;
-                    }
-                } );
-                return r[ 0 ];
-            })( state, serialNumber )
-        },
-};
+        /**
+         * Returns a note object based on its serial number
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param serialNumber
+         */
+        [gTypes.getNoteBySerialNumber]: ( state, getters, rootState, serialNumber ) =>
+            ( serialNumber ) => {
+                return (function ( state, serialNumber ) {
+                    var r = state.notes.filter( function ( i ) {
+                        if ( i.serialNumber === serialNumber ) {
+                            return i;
+                        }
+                    } );
+                    return r[ 0 ];
+                })( state, serialNumber )
+            },
+
+        getNewNote: ( state, getters, rootState ) => {
+            // if ( state.newNote === -1 ) return false;
+
+            //get the note object
+            let note = getters.getNoteBySerialNumber( state.newNoteSerialNumber );
+            return note;
+        }
+    }
+;
 
 
 export default {
