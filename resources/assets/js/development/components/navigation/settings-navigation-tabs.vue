@@ -179,7 +179,9 @@
 
             //Notes
             routeToNotes: function () {
+
                 if(this.isExam) return "/panel-exam-notes/" + this.serialNumber;
+
                 return "/panel-item-notes/" + this.serialNumber;
             },
 

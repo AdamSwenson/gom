@@ -3,55 +3,69 @@
 <template>
     <div class="panel-notes-component">
 
-        <div id="new-note-area">
+        <div class="box"
+             id="new-note-area">
+
             <div class="field new-note-input-area"
                  v-show="isNewNoteVisible">
-                <label class="label">New note</label>
-                <div class="control">
+                <h5 class="title">Remind your future self...</h5>
+
+                <div class="columns">
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label">Title</label>
+                            <div class="control">
+                                <input type="text"
+                                       v-bind:id="getId('new-note-title')"
+                                       v-model="name">
+                            </div>
+                            <p class="help"></p>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <priority-selector :serial-number="this.newNote.serialNumber"
+                        ></priority-selector>
+                    </div>
+                </div>
+
+
+                <div class="field">
+                    <div class="control">
                         <textarea id="new-note-text"
                                   class="textarea"
                                   rows="3"
                                   v-bind:placeholder="placeholders.noteText"
                                   v-model="text">
                         </textarea>
+                    </div>
+                    <p class="help"></p>
+                </div>
+
+
+            </div>
+
+            <div id="new-note-button-area">
+                <div class="field">
+                    <div class="control">
+                        <button class="button new-note-button is-fullwidth"
+                                v-bind:class="newNoteStyling"
+                                v-on:click="toggleNewNote"
+                        >{{ newNoteLabel }}
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <div id="new-note-button-area"
-                 class="field"
-            >
-                <p class="control">
-
-                    <button class="button new-note-button is-fullwidth"
-                            v-bind:class="newNoteStyling"
-                            v-on:click="toggleNewNote"
-                    >{{ newNoteLabel }}
-                    </button>
-                </p>
-            </div>
-
         </div>
 
-        <!--<div class="field">-->
-        <!--<p class="control">-->
+        <div id="existing-notes-area"
+             class="box">
+            <h5 class="title">Your past self wanted you to remember....</h5>
 
-        <!--<button class="button is-success is-outlined"-->
-        <!--v-on:click="addNewNote">-->
-        <!--<span class="icon">-->
-        <!--<i class="fa fa-plus" aria-hidden="true"></i>-->
-        <!--</span>-->
-        <!--<span>Add Note</span>-->
-        <!--</button>-->
-        <!--</p>-->
-        <!--</div>-->
-
-        <div id="existing-notes-area" class="container">
-            <h3 class="title is-3">Things your past self wanted you to remember</h3>
-
-            <!--<note-area-->
-            <!--v-for="note in notes"-->
-            <!--v-bind:key="note.serialNumber"-->
-            <!--&gt;</note-area>-->
+            <note-area
+                    v-for="note in notes"
+                    v-bind:key="note.serialNumber"
+                    :serial-number="note.serialNumber"
+            ></note-area>
         </div>
 
 
@@ -73,17 +87,24 @@
 
     import Note from '../../../models/Note';
     import Payload from '../../../models/Payload';
-    import noteArea from './note-area.vue';
+
+    import noteArea from './note/note-area.vue';
+
+    import { loadNotesForItemRequest } from '../../../api/requests/noteRequests';
+
+    import prioritySelector from './note/priority-selector';
 
     export default {
 //        props: ['serialNumber'], //the serial number of the note
 
         components: {
-            'note-area': noteArea
+            'note-area': noteArea,
+            'priority-selector': prioritySelector
         },
 
         data: function () {
             return {
+
                 isNewNoteVisible: false,
 //                note: new Note(),
                 //The serial number of the item the notes belong to
@@ -121,6 +142,34 @@
         },
 
         computed: {
+
+            /**
+             * The exam or item the note is associated with
+             *
+             */
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.itemSerialNumber );
+            },
+
+            isExam: function () {
+                return this.item ? this.item.isExam() : false;
+            },
+
+            name: {
+                get: function () {
+                    return this.newNote ? this.newNote.name : '';
+
+                },
+                set: function ( v ) {
+                    let pl = Payload.factory( {
+                        obj: this.newNote,
+                        updateProp: 'name',
+                        updateVal: v
+                    } );
+                    this.$store.commit( mTypes.updateNote, pl );
+                }
+            },
+
             newNoteLabel: function () {
                 if ( this.isNewNoteVisible ) return "Done";
                 return this.labels.buttons.newNote;
@@ -135,16 +184,22 @@
             newNote: function () {
                 return this.$store.getters.getNewNote;
             },
-            /**
-             * The exam or item the note is associated with
-             *
-             */
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.itemSerialNumber );
-            },
 
-            isExam: function () {
-                return this.item ? this.item.isExam() : false;
+            notes: function () {
+                let n = this.$store.getters[ gTypes.getNotesForItem ]( this.item );
+                if ( n.length === 0 ) return n;
+
+                return n;
+                //filter out the note being created, since
+                //that looks weird. When we hit done, that will
+                //unset it as the newNote, and the text will display
+                if ( this.newNote ) {
+                    let sn = this.newNote.serialNumber;
+                    return n.filter( ( r ) => {
+                        if ( r.serialNumber !== sn ) return r;
+                    } );
+                }
+                return [];
             },
 
             text: {
@@ -152,7 +207,6 @@
                     return this.newNote ? this.newNote.text : '';
                 },
                 set: function ( v ) {
-                    window.console.log( 'notes-panel', 'set', 155, this.newNote);
                     let pl = Payload.factory( {
                         obj: this.newNote,
                         updateProp: 'text',
@@ -160,22 +214,7 @@
                     } );
                     this.$store.commit( mTypes.updateNote, pl );
                 }
-            },
-
-            name: {
-                get: function () {
-                },
-                set: function ( v ) {
-
-                }
-            },
-
-
-            notes: function () {
-                if ( this.item.id === -1 ) return [];
-
-                return this.$store[ gTypes.getNotesForItem ]( this.itemSerialNumber );
-            },
+            }
 
         },
 
@@ -184,13 +223,19 @@
                 window.console.log( 'panel.notes.component', 'addNewNote', 65, );
                 this.$store.dispatch( "createNewNote", Payload.factory( { obj: this.item } ) );
                 //switch the dialog back
-            },
+            }
+            ,
 
             initializeNote: function () {
 
                 if ( this.isNoteVisible ) {
                     this.addNewNote();
                 }
+            }
+            ,
+
+            getId: function (identifier){
+                return identifier + '-' + this.serialNumber;
             },
 
             toggleNewNote: function () {
@@ -202,6 +247,11 @@
                 }
                 this.addNewNote();
             }
+        }
+        ,
+
+        created: function () {
+            loadNotesForItemRequest( this.$store, this.item );
         }
     }
 </script>

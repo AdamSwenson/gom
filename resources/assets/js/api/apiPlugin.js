@@ -264,12 +264,11 @@ export default function ( store ) {
 
 
             // ******************** Notes
-            case 'createNote':
+            case mTypes.createNote :
                 createNoteRequest( store, payload.obj );
                 break;
 
-
-            case 'updateNote':
+            case mTypes.updateNote:
                 window.console.log( 'apiPlugin', 'payload', 271,payload );
                 //make a copy so vuex won't be mad
                 //that we are altering the properties
@@ -280,7 +279,7 @@ export default function ( store ) {
                 updateNoteRequest( store, note );
                 break;
 
-            case 'destroyNote':
+            case mTypes.destroyNote:
                 destroyNoteRequest( store, payload.obj );
                 break;
 

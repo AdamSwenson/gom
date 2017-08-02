@@ -26,13 +26,15 @@ class NotesPage extends BasePage
 //        $browser->assertVisible('@notesPanelArea');
     }
 
-    public function navigateToItemNotesPane(   Browser $browser)
+    public function navigateToItemNotesPanel(   Browser $browser)
     {
-        return $browser->click("[id^='item-settings-button']")
+        return $browser
+            ->click("[id^='item-settings-button']")
+            ->pause(10000)
             ->assertSee('Notes')
             ->clickLink('Notes')
-            ->waitFor('@notesPanelArea')
-            ->assertVisible('@notesPanelArea');
+            ->waitFor('.panel-notes-component') //@notesPanelArea')
+            ->assertVisible('.panel-notes-component'); //@notesPanelArea');
     }
 
     /**
@@ -43,8 +45,8 @@ class NotesPage extends BasePage
     public function assertNotesPaneIntact( Browser $browser )
     {
         return $browser
-            ->assertVisible('@notesPanelArea')
-            ->assertVisible('@existingNotesArea');
+            ->assertVisible('@notesPanelArea');
+//            ->assertVisible('@existingNotesArea');
     }
 
     public function assertNewNoteAreaVisible(Browser $browser  )
@@ -76,7 +78,8 @@ class NotesPage extends BasePage
 
             //things on the page
             '@newNoteButton' => '.new-note-button',
-            '@newNoteText' => "textarea[id^='new-note-text']"
+            '@newNoteText' => "textarea[id^='new-note-text']",
+            '@newNoteTitle' => "input[id^='new-note-title']"
         ];
     }
 }

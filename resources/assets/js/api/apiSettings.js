@@ -146,7 +146,7 @@ export const Routes = {
     updateNote: (note)=>{return NOTES_BASE_ROUTE  + '/' + note.id},
     destroyNote: (note)=>{return NOTES_BASE_ROUTE + '/' + note.id},
     getNotesForItem: (item)=>{return NOTES_BASE_ROUTE + '/item/' + item.id},
-    getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/item/' + exam.id }
+    getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/exam/' + exam.id }
 };
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Item;
 
+use App\Exam;
 use App\Http\Requests\NoteRequest;
 use App\Item;
 use App\Models\NewGom\Note;
@@ -39,13 +40,27 @@ class NotesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Note $note
      */
-    public function show( $id )
+    public function show(  $id )
     {
         return Note::find($id);
+
+    //    return $note;
     }
+
+    public function showForExam(Exam $exam)
+    {
+        return $exam->notes()->get();
+    }
+
+    public function showForItem(Item $item)
+    {
+        return $item->notes()->get();
+    }
+
 
 
     /**
@@ -59,6 +74,7 @@ class NotesController extends Controller
     {
         $note->update([
             'text' => $request->input('text'),
+            'name' => $request->input('name'),
             'priority' => $request->input('priority'),
             'props' => $request->input('props')
         ]);

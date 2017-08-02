@@ -214,4 +214,7 @@ Route::get('dev/history/item/{item}', 'Item\AssignmentController@getItemHistory'
 //Notes
 Route::resource('dev/notes', 'Item\NotesController');
 Route::post('dev/notes/item/{item}', 'Item\NotesController@store');
+Route::get('dev/notes/item/{item}', 'Item\NotesController@showForItem');
 Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
+
+Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');

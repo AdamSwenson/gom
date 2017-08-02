@@ -21,7 +21,7 @@ const state = {
 };
 
 const mutations = {
-    createNote: ( state, payload ) => {
+    [mTypes.createNote] : ( state, payload ) => {
         if ( Payload.checkIfPayload( payload ) ) {
             let { obj, callback } = payload;
 
@@ -31,7 +31,7 @@ const mutations = {
         }
     },
 
-    updateNote: ( state, payload ) => {
+    [mTypes.updateNote] : ( state, payload ) => {
         window.console.log( 'notes', 'updateNote', 35, payload);
         let note = payload.obj;
 
@@ -41,7 +41,7 @@ const mutations = {
         }
     },
 
-    destroyNote: ( state, payload ) => {
+    [mTypes.destroyNote] : ( state, payload ) => {
         let idx = state.notes.indexOf( payload.obj );
         if ( idx ) state.notes.splice( idx, 1 );
     },
@@ -79,7 +79,7 @@ const getters = {
          * @param rootState
          * @param examOrItem
          */
-        [gTypes.getNotesForItem]: ( state, getters, rootState, examOrItem ) =>
+        getNotesForItem : ( state, getters, rootState, examOrItem ) =>
             ( examOrItem ) => {
                 return (function ( state, serialNumber ) {
                     var r = state.notes.filter( function ( i ) {
@@ -111,7 +111,7 @@ const getters = {
             },
 
         getNewNote: ( state, getters, rootState ) => {
-            // if ( state.newNote === -1 ) return false;
+            if ( state.newNoteSerialNumber === -1 ) return false;
 
             //get the note object
             let note = getters.getNoteBySerialNumber( state.newNoteSerialNumber );

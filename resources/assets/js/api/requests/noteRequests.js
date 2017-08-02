@@ -16,6 +16,7 @@ import * as gTypes from '../../store/getter-types';
 import Payload from '../../models/Payload'
 import Exam from '../../models/Exam'
 import Item from '../../models/Item'
+import Note from '../../models/Note'
 
 import { errorHandling, handleResponse } from '../responseHandlers';
 import { holdForIdLoading } from '../apiHelpers';
@@ -52,8 +53,8 @@ const handleCreateResponse = ( store, note, data ) => {
  * @param store
  * @param response
  */
-const handleLoadResponse = ( store, itemOrExam, response ) => {
-    _.forEach( response.data, function ( r ) {
+const handleLoadResponse = ( store, itemOrExam, data ) => {
+    _.forEach( data, function ( r ) {
         // window.console.log( 'noteRequests', 'r', 29, r );
         let note = Note.factory( { r } );
         note.id = r.id;
@@ -98,13 +99,54 @@ module.exports = {
         }
     },
 
+    destroyNoteRequest:
+        ( store, note ) => {
+            let out = {
+                requestVersion: REQUEST_VERSION,
+                ...note
+            };
+
+            window.axios
+                .delete( Routes.destroyNote( note ), out )
+                .then( ( response ) => {
+                    if ( response.data.length > 0 ) {
+                        // handleUpdateResponse( response );
+                    }
+                } )
+                .catch( function ( error ) {
+                    errorHandling( error );
+                } );
+
+        },
+
+    loadNotesForItemRequest: (store, item)=>{
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
+
+        //Request is for every student belonging to the user
+            window.axios
+                .get( Routes.getNotesForItem(item) )
+                .then( ( response ) => {
+                    // window.console.log( 'studentRequests', '', 28, response );
+                    handleLoadResponse( store, item, response.data );
+                } )
+                .catch( function ( error ) {
+                    window.console.log( 'examRequests', 'ERROR', 39, error );
+                    errorHandling( error );
+                } );
+        },
+
+    /**
+     * Asks server to update stored intrinsic properties of
+     * a note to match those of the object passed in as a param
+     * @param store
+     * @param note
+     */
     updateNoteRequest: ( store, note ) => {
-        // let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
 
         let out = {
             requestVersion: REQUEST_VERSION,
-            // isExam: associatedItemOrExam.isExam,
-            // associatedItemId: associatedItemOrExam.id,
             ...note
         };
 
@@ -120,23 +162,5 @@ module.exports = {
             } );
     },
 
-    destroyNoteRequest:
-        ( store, note ) => {
-            let out = {
-                requestVersion: REQUEST_VERSION,
-                ...note
-            };
 
-            window.axios
-                .post( Routes.destroyNote( associatedItemOrExam ), out )
-                .then( ( response ) => {
-                    if ( response.data.length > 0 ) {
-                        // handleUpdateResponse( response );
-                    }
-                } )
-                .catch( function ( error ) {
-                    errorHandling( error );
-                } );
-
-        }
 };

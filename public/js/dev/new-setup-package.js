@@ -234,6 +234,8 @@ var stopRequestError = exports.stopRequestError = 'stopRequestError';
 
 //notes
 var updateNote = exports.updateNote = 'updateNote';
+var destroyNote = exports.destroyNote = 'destroyNote';
+var createNote = exports.createNote = 'createNote';
 
 /***/ }),
 /* 2 */
@@ -30997,7 +30999,7 @@ var Routes = exports.Routes = {
         return NOTES_BASE_ROUTE + '/item/' + item.id;
     },
     getNotesForExam: function getNotesForExam(exam) {
-        return NOTES_BASE_ROUTE + '/item/' + exam.id;
+        return NOTES_BASE_ROUTE + '/exam/' + exam.id;
     }
 };
 
@@ -55040,7 +55042,9 @@ exports.default = {
 
         //Notes
         routeToNotes: function routeToNotes() {
+
             if (this.isExam) return "/panel-exam-notes/" + this.serialNumber;
+
             return "/panel-item-notes/" + this.serialNumber;
         },
 
@@ -56088,9 +56092,15 @@ var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _noteArea = __webpack_require__(627);
+var _noteArea = __webpack_require__(640);
 
 var _noteArea2 = _interopRequireDefault(_noteArea);
+
+var _noteRequests = __webpack_require__(632);
+
+var _prioritySelector = __webpack_require__(635);
+
+var _prioritySelector2 = _interopRequireDefault(_prioritySelector);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56164,16 +56174,32 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     //        props: ['serialNumber'], //the serial number of the note
 
     components: {
-        'note-area': _noteArea2.default
+        'note-area': _noteArea2.default,
+        'priority-selector': _prioritySelector2.default
     },
 
     data: function data() {
         return {
+
             isNewNoteVisible: false,
             //                note: new Note(),
             //The serial number of the item the notes belong to
@@ -56211,6 +56237,33 @@ exports.default = {
     },
 
     computed: {
+
+        /**
+         * The exam or item the note is associated with
+         *
+         */
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.itemSerialNumber);
+        },
+
+        isExam: function isExam() {
+            return this.item ? this.item.isExam() : false;
+        },
+
+        name: {
+            get: function get() {
+                return this.newNote ? this.newNote.name : '';
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.newNote,
+                    updateProp: 'name',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        },
+
         newNoteLabel: function newNoteLabel() {
             if (this.isNewNoteVisible) return "Done";
             return this.labels.buttons.newNote;
@@ -56224,16 +56277,22 @@ exports.default = {
         newNote: function newNote() {
             return this.$store.getters.getNewNote;
         },
-        /**
-         * The exam or item the note is associated with
-         *
-         */
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.itemSerialNumber);
-        },
 
-        isExam: function isExam() {
-            return this.item ? this.item.isExam() : false;
+        notes: function notes() {
+            var n = this.$store.getters[gTypes.getNotesForItem](this.item);
+            if (n.length === 0) return n;
+
+            return n;
+            //filter out the note being created, since
+            //that looks weird. When we hit done, that will
+            //unset it as the newNote, and the text will display
+            if (this.newNote) {
+                var sn = this.newNote.serialNumber;
+                return n.filter(function (r) {
+                    if (r.serialNumber !== sn) return r;
+                });
+            }
+            return [];
         },
 
         text: {
@@ -56241,7 +56300,6 @@ exports.default = {
                 return this.newNote ? this.newNote.text : '';
             },
             set: function set(v) {
-                window.console.log('notes-panel', 'set', 155, this.newNote);
                 var pl = _Payload2.default.factory({
                     obj: this.newNote,
                     updateProp: 'text',
@@ -56249,17 +56307,6 @@ exports.default = {
                 });
                 this.$store.commit(mTypes.updateNote, pl);
             }
-        },
-
-        name: {
-            get: function get() {},
-            set: function set(v) {}
-        },
-
-        notes: function notes() {
-            if (this.item.id === -1) return [];
-
-            return this.$store[gTypes.getNotesForItem](this.itemSerialNumber);
         }
 
     },
@@ -56278,6 +56325,10 @@ exports.default = {
             }
         },
 
+        getId: function getId(identifier) {
+            return identifier + '-' + this.serialNumber;
+        },
+
         toggleNewNote: function toggleNewNote() {
             this.isNewNoteVisible = !this.isNewNoteVisible;
             if (this.isNoteVisible) {
@@ -56287,6 +56338,10 @@ exports.default = {
             }
             this.addNewNote();
         }
+    },
+
+    created: function created() {
+        (0, _noteRequests.loadNotesForItemRequest)(this.$store, this.item);
     }
 };
 
@@ -57803,11 +57858,11 @@ exports.default = function (store) {
                 break;
 
             // ******************** Notes
-            case 'createNote':
+            case mTypes.createNote:
                 (0, _noteRequests.createNoteRequest)(store, payload.obj);
                 break;
 
-            case 'updateNote':
+            case mTypes.updateNote:
                 window.console.log('apiPlugin', 'payload', 271, payload);
                 //make a copy so vuex won't be mad
                 //that we are altering the properties
@@ -57818,7 +57873,7 @@ exports.default = function (store) {
                 (0, _noteRequests.updateNoteRequest)(store, note);
                 break;
 
-            case 'destroyNote':
+            case mTypes.destroyNote:
                 (0, _noteRequests.destroyNoteRequest)(store, payload.obj);
                 break;
 
@@ -82792,6 +82847,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "panel-notes-component"
   }, [_c('div', {
+    staticClass: "box",
     attrs: {
       "id": "new-note-area"
     }
@@ -82803,9 +82859,49 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "isNewNoteVisible"
     }],
     staticClass: "field new-note-input-area"
+  }, [_c('h5', {
+    staticClass: "title"
+  }, [_vm._v("Remind your future self...")]), _vm._v(" "), _c('div', {
+    staticClass: "columns"
+  }, [_c('div', {
+    staticClass: "column is-half"
+  }, [_c('div', {
+    staticClass: "field"
   }, [_c('label', {
     staticClass: "label"
-  }, [_vm._v("New note")]), _vm._v(" "), _c('div', {
+  }, [_vm._v("Title")]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.name),
+      expression: "name"
+    }],
+    attrs: {
+      "type": "text",
+      "id": _vm.getId('new-note-title')
+    },
+    domProps: {
+      "value": (_vm.name)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.name = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  })])]), _vm._v(" "), _c('div', {
+    staticClass: "column is-half"
+  }, [_c('priority-selector', {
+    attrs: {
+      "serial-number": this.newNote.serialNumber
+    }
+  })], 1)]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('div', {
     staticClass: "control"
   }, [_c('textarea', {
     directives: [{
@@ -82829,12 +82925,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.text = $event.target.value
       }
     }
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help"
   })])]), _vm._v(" "), _c('div', {
-    staticClass: "field",
     attrs: {
       "id": "new-note-button-area"
     }
-  }, [_c('p', {
+  }, [_c('div', {
+    staticClass: "field"
+  }, [_c('div', {
     staticClass: "control"
   }, [_c('button', {
     staticClass: "button new-note-button is-fullwidth",
@@ -82842,17 +82941,22 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleNewNote
     }
-  }, [_vm._v(_vm._s(_vm.newNoteLabel) + "\n                ")])])])]), _vm._v(" "), _vm._m(0)])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "container",
+  }, [_vm._v(_vm._s(_vm.newNoteLabel) + "\n                    ")])])])])]), _vm._v(" "), _c('div', {
+    staticClass: "box",
     attrs: {
       "id": "existing-notes-area"
     }
-  }, [_c('h3', {
-    staticClass: "title is-3"
-  }, [_vm._v("Things your past self wanted you to remember")])])
-}]}
+  }, [_c('h5', {
+    staticClass: "title"
+  }, [_vm._v("Your past self wanted you to remember....")]), _vm._v(" "), _vm._l((_vm.notes), function(note) {
+    return _c('note-area', {
+      key: note.serialNumber,
+      attrs: {
+        "serial-number": note.serialNumber
+      }
+    })
+  })], 2)])
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -87442,355 +87546,11 @@ module.exports = {
 };
 
 /***/ }),
-/* 625 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = __webpack_require__(3);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(1);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = __webpack_require__(4);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.default = {
-
-    props: ['serialNumber'],
-
-    components: {},
-
-    data: function data() {
-        return {
-            priorityStyles: {
-                0: 'is-primary',
-                1: 'is-info',
-                2: 'is-warning',
-                3: 'is-danger'
-            },
-
-            isEditable: false,
-
-            defaults: {},
-            placeholders: {
-                noteText: "Add a note to your future self here"
-
-            }
-        };
-    },
-
-    computed: {
-        /**
-         * The actual note object
-         */
-        note: function note() {
-            return this.$store[gTypes.getNoteBySerialNumber](this.serialNumber);
-        },
-
-        creationTimestamp: function creationTimestamp() {
-            return this.note.createdAt;
-        },
-
-        updatedTimestamp: function updatedTimestamp() {
-            return this.note.updatedAt;
-        },
-
-        name: {
-            get: function get() {},
-            set: function set(v) {}
-        },
-
-        text: {
-            get: function get() {
-                return this.note.text;
-            },
-            set: function set(v) {
-                var pl = Payload.factory({
-                    obj: this.note,
-                    updateProp: 'text',
-                    updateVal: v
-                });
-                this.$store.commit(mTypes.updateNote, pl);
-            }
-        },
-
-        priorityClass: function priorityClass() {
-            if (this.note.priority) {
-                return this.priorityStyles[this.note.priority];
-            }
-        },
-
-        priority: {
-            get: function get() {
-                return this.note.priority;
-            },
-            set: function set(v) {
-                var pl = Payload.factory({
-                    obj: this.note,
-                    updateProp: 'priority',
-                    updateVal: v
-                });
-                this.$store.commit(mTypes.updateNote, pl);
-            }
-        },
-
-        props: {
-            get: function get() {
-                return this.note.props;
-            },
-            set: function set(v) {
-                var pl = Payload.factory({
-                    obj: this.note,
-                    updateProp: 'props',
-                    updateVal: v
-                });
-                this.$store.commit(mTypes.updateNote, pl);
-            }
-        }
-
-    },
-
-    methods: {
-        getId: function getId() {
-            return 'note-area-' + this.serialNumber;
-        },
-
-        handleDeleteClick: function handleDeleteClick() {},
-
-        handleClear: function handleClear() {},
-
-        handleSave: function handleSave() {},
-
-        handleEditClick: function handleEditClick() {}
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
-/* 626 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(6)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 627 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(629)
-}
-var Component = __webpack_require__(7)(
-  /* script */
-  __webpack_require__(625),
-  /* template */
-  __webpack_require__(628),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/note-area.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] note-area.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1aab1496", Component.options)
-  } else {
-    hotAPI.reload("data-v-1aab1496", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 628 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "note-area",
-    attrs: {
-      "id": _vm.getId
-    }
-  }, [(_vm.isEditable) ? _c('div', {
-    staticClass: "field"
-  }, [_c('label', {
-    staticClass: "label"
-  }, [_vm._v("Add a new note to your future self")]), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('textarea', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.text),
-      expression: "text"
-    }],
-    staticClass: "textarea",
-    attrs: {
-      "rows": "3",
-      "placeholder": _vm.placeholders.noteText
-    },
-    domProps: {
-      "value": (_vm.text)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.text = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('button', {
-    staticClass: "button is-outlined",
-    on: {
-      "click": _vm.handleSave
-    }
-  }, [_vm._v("Save\n                ")])]), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('button', {
-    staticClass: "button is-outlined",
-    on: {
-      "click": _vm.handleClear
-    }
-  }, [_vm._v("Clear\n                ")])])])]) : _c('div', {
-    staticClass: "notification ",
-    class: _vm.priorityClass
-  }, [_c('button', {
-    staticClass: "delete"
-  }), _vm._v("\n        " + _vm._s(_vm.text) + "\n    ")]), _vm._v(" "), _c('div', {
-    staticClass: "timestampArea"
-  }, [_c('p', {
-    staticClass: "is-size-6"
-  }, [_vm._v("Created: " + _vm._s(_vm.creationTimestamp) + "  |  Updated: " + _vm._s(_vm.updatedTimestamp))])])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-1aab1496", module.exports)
-  }
-}
-
-/***/ }),
-/* 629 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(626);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(16)("1bed4b4e", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1aab1496\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./note-area.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1aab1496\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./note-area.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 625 */,
+/* 626 */,
+/* 627 */,
+/* 628 */,
+/* 629 */,
 /* 630 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -87801,7 +87561,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _getters;
+var _mutations, _getters;
 
 var _vue = __webpack_require__(22);
 
@@ -87849,40 +87609,31 @@ var state = {
 
 };
 
-var mutations = {
-    createNote: function createNote(state, payload) {
-        if (_Payload2.default.checkIfPayload(payload)) {
-            var obj = payload.obj,
-                callback = payload.callback;
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.createNote, function (state, payload) {
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var obj = payload.obj,
+            callback = payload.callback;
 
 
-            state.notes.push(payload.obj);
+        state.notes.push(payload.obj);
 
-            if (!_.isUndefined(callback)) callback(payload);
-        }
-    },
-
-    updateNote: function updateNote(state, payload) {
-        window.console.log('notes', 'updateNote', 35, payload);
-        var note = payload.obj;
-
-        if (typeof note !== 'undefined') {
-            //Set the value so vue can see it
-            _vue2.default.set(note, payload.updateProp, payload.updateVal);
-        }
-    },
-
-    destroyNote: function destroyNote(state, payload) {
-        var idx = state.notes.indexOf(payload.obj);
-        if (idx) state.notes.splice(idx, 1);
-    },
-
-    setNewNote: function setNewNote(state, payload) {
-        var note = payload.obj;
-        state.newNoteSerialNumber = note.serialNumber;
+        if (!_.isUndefined(callback)) callback(payload);
     }
+}), _defineProperty(_mutations, mTypes.updateNote, function (state, payload) {
+    window.console.log('notes', 'updateNote', 35, payload);
+    var note = payload.obj;
 
-};
+    if (typeof note !== 'undefined') {
+        //Set the value so vue can see it
+        _vue2.default.set(note, payload.updateProp, payload.updateVal);
+    }
+}), _defineProperty(_mutations, mTypes.destroyNote, function (state, payload) {
+    var idx = state.notes.indexOf(payload.obj);
+    if (idx) state.notes.splice(idx, 1);
+}), _defineProperty(_mutations, 'setNewNote', function setNewNote(state, payload) {
+    var note = payload.obj;
+    state.newNoteSerialNumber = note.serialNumber;
+}), _mutations);
 
 var actions = {
     createNewNote: function createNewNote(_ref, payload) {
@@ -87904,18 +87655,30 @@ var actions = {
 
 };
 
-var getters = (_getters = {}, _defineProperty(_getters, gTypes.getNotesForItem, function (state, getters, rootState, examOrItem) {
-    return function (examOrItem) {
-        return function (state, serialNumber) {
-            var r = state.notes.filter(function (i) {
-                if (i.associatedItemSerialNumber === serialNumber) {
-                    return i;
-                }
-            });
-            return r;
-        }(state, examOrItem.serialNumber);
-    };
-}), _defineProperty(_getters, gTypes.getNoteBySerialNumber, function (state, getters, rootState, serialNumber) {
+var getters = (_getters = {
+
+    /**
+     * Returns a list of notes associated with the
+     * specified exam or item
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param examOrItem
+     */
+    getNotesForItem: function getNotesForItem(state, getters, rootState, examOrItem) {
+        return function (examOrItem) {
+            return function (state, serialNumber) {
+                var r = state.notes.filter(function (i) {
+                    if (i.associatedItemSerialNumber === serialNumber) {
+                        return i;
+                    }
+                });
+                return r;
+            }(state, examOrItem.serialNumber);
+        };
+    }
+
+}, _defineProperty(_getters, gTypes.getNoteBySerialNumber, function (state, getters, rootState, serialNumber) {
     return function (serialNumber) {
         return function (state, serialNumber) {
             var r = state.notes.filter(function (i) {
@@ -87927,7 +87690,7 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.getNotesForItem, 
         }(state, serialNumber);
     };
 }), _defineProperty(_getters, 'getNewNote', function getNewNote(state, getters, rootState) {
-    // if ( state.newNote === -1 ) return false;
+    if (state.newNoteSerialNumber === -1) return false;
 
     //get the note object
     var note = getters.getNoteBySerialNumber(state.newNoteSerialNumber);
@@ -88003,14 +87766,25 @@ var Note = function (_IModel) {
 
 
     _createClass(Note, null, [{
-        key: 'className',
-
+        key: 'priorityStyles',
+        value: function priorityStyles() {
+            return {
+                0: 'is-dark',
+                1: 'is-primary',
+                2: 'is-info',
+                3: 'is-warning',
+                4: 'is-danger'
+            };
+        }
 
         /**
          * This is used by the api module to determine what
          * requests to send to the server
          * @returns {string}
          */
+
+    }, {
+        key: 'className',
         value: function className() {
             return 'note';
         }
@@ -88081,6 +87855,10 @@ var _Item = __webpack_require__(5);
 
 var _Item2 = _interopRequireDefault(_Item);
 
+var _Note = __webpack_require__(631);
+
+var _Note2 = _interopRequireDefault(_Note);
+
 var _responseHandlers = __webpack_require__(122);
 
 var _apiHelpers = __webpack_require__(81);
@@ -88119,10 +87897,10 @@ var handleCreateResponse = function handleCreateResponse(store, note, data) {
  * @param store
  * @param response
  */
-var handleLoadResponse = function handleLoadResponse(store, itemOrExam, response) {
-    _.forEach(response.data, function (r) {
+var handleLoadResponse = function handleLoadResponse(store, itemOrExam, data) {
+    _.forEach(data, function (r) {
         // window.console.log( 'noteRequests', 'r', 29, r );
-        var note = Note.factory({ r: r });
+        var note = _Note2.default.factory({ r: r });
         note.id = r.id;
         note.text = r.text;
         note.priority = r.priority;
@@ -88159,8 +87937,42 @@ module.exports = {
         }
     },
 
+    destroyNoteRequest: function destroyNoteRequest(store, note) {
+        var out = _extends({
+            requestVersion: _apiSettings.REQUEST_VERSION
+        }, note);
+
+        window.axios.delete(_apiSettings.Routes.destroyNote(note), out).then(function (response) {
+            if (response.data.length > 0) {
+                // handleUpdateResponse( response );
+            }
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    loadNotesForItemRequest: function loadNotesForItemRequest(store, item) {
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION
+        };
+
+        //Request is for every student belonging to the user
+        window.axios.get(_apiSettings.Routes.getNotesForItem(item)).then(function (response) {
+            // window.console.log( 'studentRequests', '', 28, response );
+            handleLoadResponse(store, item, response.data);
+        }).catch(function (error) {
+            window.console.log('examRequests', 'ERROR', 39, error);
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    /**
+     * Asks server to update stored intrinsic properties of
+     * a note to match those of the object passed in as a param
+     * @param store
+     * @param note
+     */
     updateNoteRequest: function updateNoteRequest(store, note) {
-        // let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
 
         var out = _extends({
             requestVersion: _apiSettings.REQUEST_VERSION
@@ -88173,22 +87985,678 @@ module.exports = {
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
+    }
+
+};
+
+/***/ }),
+/* 633 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Note = __webpack_require__(631);
+
+var _Note2 = _interopRequireDefault(_Note);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+
+    props: ['serialNumber'],
+
+    components: {},
+
+    data: function data() {
+        return {
+
+            defaults: {}
+        };
     },
 
-    destroyNoteRequest: function destroyNoteRequest(store, note) {
-        var out = _extends({
-            requestVersion: _apiSettings.REQUEST_VERSION
-        }, note);
+    computed: {
+        priorities: function priorities() {
+            return Object.keys(_Note2.default.priorityStyles());
+        },
 
-        window.axios.post(_apiSettings.Routes.destroyNote(associatedItemOrExam), out).then(function (response) {
-            if (response.data.length > 0) {
-                // handleUpdateResponse( response );
+        priority: {
+            get: function get() {
+                return this.$parent.newNote ? this.$parent.newNote.priority : '';
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.$parent.newNote,
+                    updateProp: 'priority',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
             }
-        }).catch(function (error) {
-            (0, _responseHandlers.errorHandling)(error);
-        });
+        }
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 634 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(6)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 635 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(637)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(633),
+  /* template */
+  __webpack_require__(636),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/note/priority-selector.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] priority-selector.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-19f8196d", Component.options)
+  } else {
+    hotAPI.reload("data-v-19f8196d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 636 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "field"
+  }, [_c('label', {
+    staticClass: "label"
+  }, [_vm._v("Priority")]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, _vm._l((_vm.priorities), function(priorityLevel) {
+    return _c('label', {
+      staticClass: "radio"
+    }, [_vm._v("\n            " + _vm._s(priorityLevel) + "\n            "), _c('input', {
+      directives: [{
+        name: "model",
+        rawName: "v-model",
+        value: (_vm.priority),
+        expression: "priority"
+      }],
+      attrs: {
+        "type": "radio",
+        "name": "priority-radio"
+      },
+      domProps: {
+        "value": priorityLevel,
+        "checked": _vm._q(_vm.priority, priorityLevel)
+      },
+      on: {
+        "__c": function($event) {
+          _vm.priority = priorityLevel
+        }
+      }
+    })])
+  }))])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-19f8196d", module.exports)
+  }
+}
+
+/***/ }),
+/* 637 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(634);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(16)("f9ae820a", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-19f8196d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./priority-selector.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-19f8196d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./priority-selector.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 638 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Note = __webpack_require__(631);
+
+var _Note2 = _interopRequireDefault(_Note);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+
+    props: ['serialNumber'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            priorityStyles: _Note2.default.priorityStyles(),
+            //                    {
+            //                    0: 'is-dark',
+            //                    1: 'is-primary',
+            //                    2: 'is-info',
+            //                    3: 'is-warning',
+            //                    4: 'is-danger'
+            //                },
+
+            isEditable: false,
+
+            defaults: {},
+            noteNameLabel: "Title",
+            placeholders: {
+                noteText: "Dear Future Self....",
+                nameText: ""
+
+            }
+        };
+    },
+
+    computed: {
+        /**
+         * The actual note object
+         */
+        note: function note() {
+            return this.$store.getters[gTypes.getNoteBySerialNumber](this.serialNumber);
+        },
+
+        creationTimestamp: function creationTimestamp() {
+            return this.note.createdAt;
+        },
+
+        updatedTimestamp: function updatedTimestamp() {
+            return this.note.updatedAt;
+        },
+
+        name: {
+            get: function get() {
+                return this.note.name;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'name',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        },
+
+        text: {
+            get: function get() {
+                return this.note.text;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'text',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        },
+
+        priorityClass: function priorityClass() {
+            if (this.note.priority) {
+                return this.priorityStyles[this.note.priority];
+            }
+        },
+
+        priority: {
+            get: function get() {
+                return this.note.priority;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'priority',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        },
+
+        props: {
+            get: function get() {
+                return this.note.props;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'props',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        }
+
+    },
+
+    methods: {
+        getId: function getId(identifier) {
+            return identifier + '-' + this.serialNumber;
+        },
+
+        handleDeleteClick: function handleDeleteClick() {
+            window.console.log('note-area', 'handleDeleteClick', 190, this.note);
+            this.$store.commit(mTypes.destroyNote, _Payload2.default.factory({ obj: this.note }));
+        },
+
+        handleClear: function handleClear() {},
+
+        handleSave: function handleSave() {},
+
+        handleEditClick: function handleEditClick() {}
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 639 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(6)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.note-area .message {\n  margin-bottom: 0.5em;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 640 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(642)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(638),
+  /* template */
+  __webpack_require__(641),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/note/note-area.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] note-area.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-cc1f4be6", Component.options)
+  } else {
+    hotAPI.reload("data-v-cc1f4be6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 641 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "note-area",
+    attrs: {
+      "id": _vm.getId('note-area')
     }
-};
+  }, [(_vm.isEditable) ? _c('div', {
+    staticClass: "note-editing field"
+  }, [_c('h5', {
+    staticClass: "title"
+  }, [_vm._v("Add a new note to your future self")]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('label', {
+    staticClass: "label"
+  }, [_vm._v(_vm._s(_vm.noteNameLabel))]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.name),
+      expression: "name"
+    }],
+    staticClass: "text note-name",
+    attrs: {
+      "id": _vm.getId('note-name'),
+      "placeholder": _vm.placeholders.nameText
+    },
+    domProps: {
+      "value": (_vm.name)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.name = $event.target.value
+      }
+    }
+  }), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  }, [_vm._v("This is a help text")])])]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('label', {
+    staticClass: "label"
+  }, [_vm._v("Note")]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.text),
+      expression: "text"
+    }],
+    staticClass: "textarea",
+    attrs: {
+      "rows": "3",
+      "placeholder": _vm.placeholders.noteText
+    },
+    domProps: {
+      "value": (_vm.text)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.text = $event.target.value
+      }
+    }
+  })])])]) : _c('div', {
+    staticClass: "message ",
+    class: _vm.priorityClass
+  }, [_c('div', {
+    staticClass: "message-header"
+  }, [_c('p', [_vm._v(_vm._s(_vm.name))]), _vm._v(" "), _c('button', {
+    staticClass: "delete",
+    on: {
+      "click": _vm.handleDeleteClick
+    }
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "message-body"
+  }, [_c('div', {
+    staticClass: "note-text-display"
+  }, [_vm._v("\n                " + _vm._s(_vm.text) + "\n            ")]), _vm._v(" "), _c('div', {
+    staticClass: "level timestampArea"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }, [_c('div', {
+    staticClass: "level-item has-text-centered"
+  }, [_c('div', [_c('p', {
+    staticClass: "heading"
+  }, [_vm._v("Created: " + _vm._s(_vm.creationTimestamp) + "  |  Updated: " + _vm._s(_vm.updatedTimestamp))])])])])])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-cc1f4be6", module.exports)
+  }
+}
+
+/***/ }),
+/* 642 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(639);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(16)("339e14d7", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-cc1f4be6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./note-area.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-cc1f4be6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./note-area.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

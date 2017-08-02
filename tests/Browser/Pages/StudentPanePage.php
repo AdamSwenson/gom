@@ -94,12 +94,6 @@ class StudentPanePage extends Page
         }
     }
 
-    public function getStudentRowCount( Browser $browser )
-    {
-        return sizeof($browser->elements('@studentRow'));
-    }
-
-
     public function clickNewStudentButton( Browser $browser )
     {
 
@@ -111,6 +105,11 @@ class StudentPanePage extends Page
             ->assertVisible('@newStudentButton')
             ->click('@newStudentButton')
             ->assertStudentRowCountIs($expectedCount);
+    }
+
+    public function getStudentRowCount( Browser $browser )
+    {
+        return sizeof($browser->elements('@studentRow'));
     }
 
     /**
@@ -161,6 +160,7 @@ class StudentPanePage extends Page
         }
 
     }
+
     public static function createExamPopulatedWithStudentsAndReturnExam( $user, $totalStudents = 10, $totalKumi = 2 )
     {
         Auth::login($user);

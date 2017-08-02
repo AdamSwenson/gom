@@ -115,3 +115,5 @@ export const stopRequestError = 'stopRequestError';
 
 //notes
 export const updateNote = 'updateNote';
+export const destroyNote = 'destroyNote';
+export const createNote = 'createNote';
