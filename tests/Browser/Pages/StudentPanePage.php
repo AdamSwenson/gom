@@ -14,7 +14,7 @@ use PHPUnit\Framework\Assert as PHPUnit;
 class StudentPanePage extends Page
 {
 
-    const navButton = '#exam-nav-tabs li a .students-nav';
+    const navButton = '#exams-nav-tabs li a .students-nav';
 
     /**
      * Get the URL for the page.
@@ -41,7 +41,7 @@ class StudentPanePage extends Page
 //
 //    public function navigateToStudentsPane( Browser $browser )
 //    {
-//        return $browser->click('#exam-settings-button')
+//        return $browser->click('#exams-settings-button')
 //            ->click(' .students-nav')
 //            ->assertVisible('.add-students-panel');
 //
@@ -190,7 +190,7 @@ class StudentPanePage extends Page
         return [
             '@addStudentsPanel' => '.add-students-panel',
             '@studentRow' => '.student-row',
-            '@studentNavTab' => '#exam-nav-tabs li a .students-nav',
+            '@studentNavTab' => '#exams-nav-tabs li a .students-nav',
             //add and import
             '@newStudentButton' => '#new-student-button', //the create new student button
             '@importStudentsButton' => '#add-students-button',

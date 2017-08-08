@@ -69,7 +69,7 @@
             @include('help.partials.picture_container',
             ['imageFile' => 'report_release/report_confirm_lock.jpg',
             'altText' =>"Warning message confirming that you want to remove access to feedback from students.",
-            'caption' => 'Lock exam confirmation'])
+            'caption' => 'exams'])
         </div>
     </div>
 </section>

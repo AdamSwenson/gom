@@ -11,6 +11,13 @@ use App\Http\Controllers\Controller;
 
 class NotesController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -32,7 +39,8 @@ class NotesController extends Controller
     public function store( Item $item, NoteRequest $request )
     {
         $note = Note::create($request->all());
-        $item->notes()->attach($note);
+        $note->save();
+        $item->notes()->attach($note->id);
         $item->save();
         return $note;
     }
@@ -78,6 +86,7 @@ class NotesController extends Controller
             'priority' => $request->input('priority'),
             'props' => $request->input('props')
         ]);
+
         $this->sendAjaxSuccess();
     }
 

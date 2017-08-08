@@ -49,6 +49,8 @@ export default class Payload {
 
         this.serialNumber = null;
 
+        this.tag;
+
         /** The name of the property to update */
         this.updateProp;
         /** The new value to set the property in updateProp */
@@ -111,6 +113,7 @@ export default class Payload {
             'obj', 'parent',
             'objNode', 'parentNode',
             'serialNumber', 'str', 'stamp', 'student',
+            'tag',
             'updateProp', 'updateVal',
             'updateValence',
         ];

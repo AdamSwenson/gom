@@ -15,6 +15,7 @@ use App\AccessKey;
 use App\Exam;
 use App\Grade;
 use App\Models\NewGom\Note;
+use App\Models\NewGom\Tag;
 use App\Question;
 use App\Repositories\Grade\GradeFactory;
 use App\Scopes\UserOnlyScope;
@@ -362,14 +363,27 @@ $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator 
 
 
 $factory->define(Note::class, function ( Faker\Generator $faker ) {
+//    $userId = 1;
+//    Auth::logInUsingId($userId);
+
+    return [
+        'name' =>$faker->word(),
+        'text' => $faker->text(),
+        'priority' => $faker->randomElement(Note::PRIORITY_LEVELS),
+        'props' =>  ['testProp' => 'testVal']
+    ];
+
+});
+
+
+$factory->define(Tag::class, function ( Faker\Generator $faker ) {
     $userId = 1;
     Auth::logInUsingId($userId);
 
     return [
-        'name' =>'',
+        'name' =>$faker->word(),
         'text' => $faker->text(),
-        'priority' => $faker->randomElement(Note::PRIORITY_LEVELS),
-        'props' => []
+        'props' => ['testProp' => 'testVal']
     ];
 
 });

@@ -17,6 +17,8 @@ class NoteTableSeeder extends Seeder
 
         $this->faker = \Faker\Factory::create();
 
+        Auth::loginUsingId(1);
+
         DB::table('notes')->delete();
         $items = Item::all();
         $exams = Exam::all();

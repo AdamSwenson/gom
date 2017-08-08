@@ -83,13 +83,13 @@ class AnalyticsController extends Controller
     }
 
     /**
-     * Display the analytics page for the exam
+     * Display the analytics page for the exams
      * @param Exam $exam
      * @return $this
      */
     public function index(Exam $exam)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
@@ -125,7 +125,7 @@ class AnalyticsController extends Controller
 
         return view('reports.exam_analytics')
             ->with([
-                       'exam'                    => $exam,
+                       'exams'                    => $exam,
                        'students'                => $students,
                        'questionScores'          => json_encode($questionScores),
                        'questionScoresByQNumber' => json_encode($questionScoresByQNumber),

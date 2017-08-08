@@ -103,8 +103,8 @@ foreach($routes_requiring_exam_ownership as $act)
 
 /*
 Now we need to check that the authorization also is working on
-owned objects in addition to the exam. So we will change the owner
-of the exam but not the other objects, and should get the same errors.
+owned objects in addition to the exams. So we will change the owner
+of the exams but not the other objects, and should get the same errors.
 */
 $exam = Exam::findOrFail($exam_owned_by_user);
 $exam->user_id = $stranger->id;

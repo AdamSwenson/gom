@@ -180,6 +180,11 @@
                 loadAllStudents( me.$store, me.exam );
 
             }, 3000 );
+            //Tags for the items loaded
+            //Does not load tags that aren't yet used on the
+            //exam. That is done on the tags-panel creation
+            this.$store.dispatch('processTagsOutOfLoadedItems');
+
         },
 
 

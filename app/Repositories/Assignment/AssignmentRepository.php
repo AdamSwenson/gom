@@ -28,7 +28,7 @@ class AssignmentRepository implements IAssignmentRepository
         return $assignment;
     }
 
-    public function canBeSynced($record)
+    public function canBeSynced( $record )
     {
         if ( $record['itemId'] === -1 ) return false;
 
@@ -65,7 +65,7 @@ class AssignmentRepository implements IAssignmentRepository
                 //find the item
                 $item = Item::where('id', $record['itemId'])->first();
 
-                if($item) {
+                if ( $item ) {
                     $depth = $record['itemOrder'];
 
                     //we need the assignment id of the parent
@@ -74,7 +74,7 @@ class AssignmentRepository implements IAssignmentRepository
                     //if we haven't processed the parent
                     //yet, it will be updated when we get to it.
 //                    $parentAssign = $record['itemOrder'] === 0 ? $exam->getAssignmentsRoot() :
-                        $parentAssign = Assignment::firstOrCreate(
+                    $parentAssign = Assignment::firstOrCreate(
                         [
                             'exam_id' => $exam->id,
                             'item_id' => $record['parentId']
@@ -123,14 +123,16 @@ class AssignmentRepository implements IAssignmentRepository
      * @return array
      * @internal param $examOrItem
      */
-    public function getItemOrderForClient(Exam $exam){
+    public function getItemOrderForClient( Exam $exam )
+    {
+        $toEagerLoad = ['comments', 'tags'];
 
         $itemObjects = [];
         $itemOrder = [];
 
         $assignments = Assignment::where('exam_id', $exam->id)->get();
         foreach ( $assignments as $assignment ) {
-            $item = Item::with(['comments'])
+            $item = Item::with($toEagerLoad)
                 ->where('id', $assignment->item_id)
                 ->first();
 
@@ -154,9 +156,6 @@ class AssignmentRepository implements IAssignmentRepository
             'itemObjects' => $itemObjects,
             'itemOrder' => $itemOrder
         ];
-
-
-
 
 
 //        //this needs to have a determinate ordering

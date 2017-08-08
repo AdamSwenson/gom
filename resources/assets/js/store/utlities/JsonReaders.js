@@ -7,6 +7,9 @@ window._ = require( 'lodash' );
 
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
+
+import * as gTypes from '../getter-types';
+
 import Student from '../../models/Student'
 import Exam from '../../models/Exam'
 import Item from '../../models/Item'
@@ -131,6 +134,9 @@ module.exports = {
                         obj: item,
                         mutateSilently: true
                     } ) );
+
+                    //handle any tags
+                    state.dispatch('processItemTags', item);
                 } );
                 resolve();
                 // }
@@ -293,7 +299,27 @@ module.exports = {
             // } );
         },
 
-    }
+        /**
+         * The earlier processing of items should have left
+         * each item with a tags object from the db.
+         * We need to extract those and match them with the
+         * rest of the client tab management
+         * @param state
+         * @param commit
+         * @param dispatch
+         * @param getters
+         */
+        processTagsOutOfLoadedItems: ( { state, commit, dispatch, getters } ) => {
+
+            let items = getters[gTypes.getAllItems];
+            window.console.log( 'JsonReaders', 'processTagsOutOfLoadedItems', 317, items);
+            _.forEach(items, function(item){
+                dispatch( 'processItemTags', item );
+            });
+
+        }
+
+}
 };
 
 

@@ -349,28 +349,28 @@ class FeedbackBuilderTest extends \TestCase
     public function setExamGetsId(){
         #prep
         $exam = factory(Exam::class)->create();
-        $this->assertAttributeEmpty('exam', $this->object, "no exam present");
+        $this->assertAttributeEmpty('exams', $this->object, "no exams present");
 
         #call
         $this->object->setExam($exam->id);
 
         #check
-        $this->assertAttributeInstanceOf(Exam::class, 'exam', $this->object, "exam present");
-        $this->assertEquals($exam->id, $this->object->exam->id, "loaded exam has correct id");
+        $this->assertAttributeInstanceOf(Exam::class, 'exams', $this->object, "exams present");
+        $this->assertEquals($exam->id, $this->object->exam->id, "loaded exams has correct id");
     }
 
     /** @test */
     public function setExamGetsObject(){
         #prep
         $exam = factory(Exam::class)->create();
-        $this->assertAttributeEmpty('exam', $this->object, "no exam present");
+        $this->assertAttributeEmpty('exams', $this->object, "no exams present");
 
         #call
         $this->object->setExam($exam);
 
         #check
-        $this->assertAttributeInstanceOf(Exam::class, 'exam', $this->object, "exam present");
-        $this->assertEquals($exam->id, $this->object->exam->id, "loaded exam has correct id");
+        $this->assertAttributeInstanceOf(Exam::class, 'exams', $this->object, "exams present");
+        $this->assertEquals($exam->id, $this->object->exam->id, "loaded exams has correct id");
     }
 
     /** @test */

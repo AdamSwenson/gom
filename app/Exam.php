@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\NewGom\Note;
+use App\Models\NewGom\Tag;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -455,6 +456,11 @@ MYSQL;
     public function notes()
     {
         return $this->belongsToMany(Note::class, 'exam_note')->withTimestamps();
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'exam_tag')->withTimestamps();
     }
 
     /**

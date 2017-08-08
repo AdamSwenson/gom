@@ -8,24 +8,21 @@ require( 'jasmine-jquery' );
 jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
 
-//helpers
-var Helper = require( '../helpers/vueTesting.helper.js' );
-
-//for fixture
-require( 'bootstrap' );
-var Vue = require( 'vue' );
-Vue.config.debug = true;
-
-//tested stuff
-var testedComponent = require( "../../resources/assets/js/" );
-var fixture = '.fixture.html';
-
-
-//Dependencies
-require( '../../../resources/assets/js/grade/components/Data.js' );
+// //helpers
+// var Helper = require( '../../../../helpers/vueTesting.helper.js' );
+//
+// //for fixture
+// require( 'bootstrap' );
+// var Vue = require( 'vue' );
+// Vue.config.debug = true;
+//
+// //tested stuff
+// var testedComponent = require( "../../resources/assets/js/" );
+// var fixture = '.fixture.html';
+//
 
 
-describe( " tests | ", function () {
+describe( " item-card | ", function () {
     beforeAll( function () {
 //runs once before all tests
     } );

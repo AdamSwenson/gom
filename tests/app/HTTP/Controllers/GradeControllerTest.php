@@ -27,7 +27,7 @@ class GradeControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-    //    $this->exam = Exam::all()->random();
+    //    $this->exams = Exam::all()->random();
     }
 
     public function tearDown()
@@ -54,7 +54,7 @@ class GradeControllerTest extends \TestCase
             ->andReturn(Student::all()->random(5));
 
         //call
-        $response = $this->call('GET', '/grade/exam/' . $this->exam->id);
+        $response = $this->call('GET', '/grade/exams/' . $this->exam->id);
 
         //check
         $this->assertNotEmpty($response);
@@ -126,10 +126,10 @@ class GradeControllerTest extends \TestCase
     public function testGetAutoSID()
     {
         $this->markTestIncomplete();
-//        $studentDao->lookup_autocomplete($this->exam, $request);
+//        $studentDao->lookup_autocomplete($this->exams, $request);
 //        $autocomplete_handler = new AutocompleteService();
 //        $autocomplete_handler->set_response_handler($this->response_handler);
-//        $autocomplete_handler->process($this->exam, $request);
+//        $autocomplete_handler->process($this->exams, $request);
     }
 */
 

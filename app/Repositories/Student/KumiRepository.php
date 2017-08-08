@@ -79,7 +79,7 @@ class KumiRepository implements IKumiRepository
         $kumi = $exam->classes()->first();
 
         //If we already have a kumi for the exam, load it. Otherwise make one.
-        //$kumi = $this->load($exam->getName(), $exam->getYear());
+        //$kumi = $this->load($exams->getName(), $exams->getYear());
         if (!$kumi)
         {
             $kumi = $this->create($exam->getName(), $exam->getYear(), $exam);

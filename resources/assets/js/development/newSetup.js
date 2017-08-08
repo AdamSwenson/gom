@@ -80,6 +80,9 @@ import itemList from './components/menus/existing-items-list.vue'
 import api from '../api/old/controller'
 import syncIndicator from './components/helpers/server-sync-indicator.vue';
 
+//tags
+import tagDisplay from './components/panels/tag/tag-display.vue';
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 import VueAxios from 'vue-axios'
@@ -146,6 +149,9 @@ Vue.component( 'children-display-control', childrenDisplayButton )
 
 Vue.component( 'existing-exams-menu', examList )
 Vue.component( 'existing-items-menu', itemList )
+
+//Tags
+Vue.component('tag-display', tagDisplay);
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).

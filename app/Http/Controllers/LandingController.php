@@ -17,7 +17,7 @@ class LandingController extends Controller
     public function showLanding()
     {
         if (Auth::check()) {
-            return redirect('exam');
+            return redirect('exams');
         }
         return view('index');
     }

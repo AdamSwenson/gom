@@ -117,3 +117,10 @@ export const stopRequestError = 'stopRequestError';
 export const updateNote = 'updateNote';
 export const destroyNote = 'destroyNote';
 export const createNote = 'createNote';
+
+//tags
+export const updateTag = 'updateTag';
+export const destroyTag = 'destroyTag';
+export const createTag = 'createTag';
+export const associateTag = 'associateTag';
+export const disassociateTag = 'disassociateTag';

@@ -83,7 +83,7 @@ class QuestionControllerTest extends \TestCase
     /*
         public function testCreate(QuestionRequest $request)
         {
-            // $exam from URL: questions must know which exam to be associated with(?)
+            // $exams from URL: questions must know which exams to be associated with(?)
         }*/
 
     public function testStore()

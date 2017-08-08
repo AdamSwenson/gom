@@ -122,7 +122,7 @@ class ReportController extends Controller
      */
     public function showStudentControls(Exam $exam)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
         // compile feedback for all students
@@ -134,7 +134,7 @@ class ReportController extends Controller
         //Check to make sure students are present
         if ( ! is_null($students) && count($students) > 0 )
         {
-            //If the exam has not ben released, generate them all
+            //If the exams has not ben released, generate them all
             if ( ! $exam->isReleased() )
             {
                 $this->feedbackBuilder->buildFeedback($examId);
@@ -150,14 +150,14 @@ class ReportController extends Controller
             //Set an error message
         }
 
-        return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
+        return view('reports.student_controls')->with(['exams' => $exam, 'students' => $students]);
     }
 
 
     /**
      * Re-compiles the feedback for a particular student.
      *
-     * This is mainly used if the exam has already been released and the teacher goes back and edits
+     * This is mainly used if the exams has already been released and the teacher goes back and edits
      * the comment field for a particular student.
      *
      * @param Exam $exam
@@ -165,7 +165,7 @@ class ReportController extends Controller
      */
     public function updateFeedbackForStudent(Exam $exam, $studentId)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
         $student = Student::findOrFail($studentId);
@@ -174,14 +174,14 @@ class ReportController extends Controller
     }
 
     /**
-     * Receives the command to create feedback for the exam and dispatches the
+     * Receives the command to create feedback for the exams and dispatches the
      * events to take care of it
      *
      * @param Exam $exam
      */
     public function createFeedback(Exam $exam)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
         $job = (new BuildFeedbackAllStudents($exam))->onQueue('default');
@@ -191,13 +191,13 @@ class ReportController extends Controller
 
     /**
      * Sends an email notification to the student that their
-     * exam has been graded with a link to access their feedback
+     * exams has been graded with a link to access their feedback
      * @param Exam $exam
      * @param Student $student
      */
     public function notifyStudent(Exam $exam, Student $student)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
         $this->authorize('access-object', $student);
 
@@ -211,13 +211,13 @@ class ReportController extends Controller
 
 
     /**
-     * Will release the exam, update stats and email all students who haven't been emailed to date.
-     * Re-releasing an exam can send a different emailing letting all students know that scores have been changed
+     * Will release the exams, update stats and email all students who haven't been emailed to date.
+     * Re-releasing an exams can send a different emailing letting all students know that scores have been changed
      * @param Exam $exam
      */
     public function releaseExam(Exam $exam)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
         $this->createFeedback($exam);
@@ -230,17 +230,17 @@ class ReportController extends Controller
     }
 
     /**
-     * Deletes access keys for the exam and sets released flag to false.
+     * Deletes access keys for the exams and sets released flag to false.
      * Deleting keys will remove flags for student emails as well
      * @param Exam $exam
      */
     public function unreleaseExam(Exam $exam)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
-//        $exam->setReleased(false);
-//        $exam->save();
+//        $exams->setReleased(false);
+//        $exams->save();
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
         if ( ! empty($keys) )
         {
@@ -263,7 +263,7 @@ class ReportController extends Controller
      */
     public function showStudentFeedback(Exam $exam, Student $student)
     {
-        //Check that user is authorized to access student and exam
+        //Check that user is authorized to access student and exams
         $this->authorize('access-object', $exam);
         $this->authorize('access-object', $student);
 
@@ -283,7 +283,7 @@ class ReportController extends Controller
 
         return view('feedback.feedback')
             ->with([
-                       'exam'    => $exam,
+                       'exams'    => $exam,
                        'student' => $student,
                        'data'    => $data,
                        'showNav' => $showNav,
@@ -291,7 +291,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Displays all feedback for all students on an exam.
+     * Displays all feedback for all students on an exams.
      * This is mainly for someone who wants to print out the feedback and provide it to
      * the students.
      *
@@ -302,7 +302,7 @@ class ReportController extends Controller
      */
     public function showFeedbackForAllStudentsOnExam(Exam $exam)
     {
-        //Check that user owns the exam
+        //Check that user owns the exams
         $this->authorize('access-object', $exam);
 
         $dataAll = [];
@@ -322,7 +322,7 @@ class ReportController extends Controller
             $data['grade'] = $fb->grade();
 
 
-//            $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
+//            $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exams->getId(), $student->getId());
 //
 //            $data = $this->accessKeyDao->retrieveFeedback($accessKey);
 //
@@ -336,6 +336,6 @@ class ReportController extends Controller
         }
         $showNav = true;
 
-        return view('feedback.feedback')->with(['exam' => $exam, 'student' => $student, 'dataAll' => $dataAll]);
+        return view('feedback.feedback')->with(['exams' => $exam, 'student' => $student, 'dataAll' => $dataAll]);
     }
 }

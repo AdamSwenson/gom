@@ -81,7 +81,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        return Item::all(); //make sure inherits from base model!
+        return Item::with(['tags'])->get(); //make sure inherits from base model!
     }
 
 
@@ -133,7 +133,11 @@ class ItemController extends Controller
      */
     public function show( ItemRequest $request )
     {
-        return $request->has('id') ? Item::find($request->input('id')) : null;
+        $item = $request->has('id') ? Item::find($request->input('id')) : null;
+
+        if(isset($item)) $item->load('tags');
+
+        return $item;
     }
 
     /**

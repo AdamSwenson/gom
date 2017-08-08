@@ -40,7 +40,7 @@
         var forwardNavTarget = 'editQuestions';
         var backNavTarget = '';
     </script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/exam-setup-package.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="{{ asset('exams') }}"></script>
 @endsection
 
 

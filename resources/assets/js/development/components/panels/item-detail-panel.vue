@@ -18,6 +18,10 @@
                         </textarea>
             </p>
         </div>
+
+        <tag-display :serial-number="serialNumber" :object-type="'item'"></tag-display>
+
+
     </div>
 
 </template>
@@ -52,12 +56,23 @@
     import Payload from '../../../models/Payload'
     import Item from '../../../models/Item'
 
+   // import { loadTagsForItemRequest } from '../../../api/requests/tagRequests';
+    import { loadAllUserTagsRequest, loadTagsForItemRequest } from '../../../api/requests/tagRequests';
+
+//    import tagMenu from '../menus/tags-menu.vue';
+
+
     export default {
+        components :{
+//          'tag-menu' : tagMenu
+        },
 
         data: function () {
             return {
                 serialNumber: _.toInteger(this.$route.params.serialNumber),
 //                active: this.serialNumber,
+
+                showTagMenu: false,
 
                 labels: {
                    questionText: 'Long name or full text'
@@ -113,7 +128,9 @@
 
         events: {},
 
-        mounted: function () {
+        created: function () {
+
+//            loadTagsForItemRequest(this.$store, this.item);
         },
     };
 

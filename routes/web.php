@@ -212,9 +212,24 @@ Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKum
 Route::get('dev/history/item/{item}', 'Item\AssignmentController@getItemHistory');
 
 //Notes
-Route::resource('dev/notes', 'Item\NotesController');
 Route::post('dev/notes/item/{item}', 'Item\NotesController@store');
 Route::get('dev/notes/item/{item}', 'Item\NotesController@showForItem');
 Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
-
 Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');
+Route::resource('dev/notes', 'Item\NotesController');
+//Tags
+//-- tag-item
+Route::post('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@associateTagWithItem');
+Route::delete('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@disassociateTagFromItem');
+Route::get('dev/tags/item/{item}', 'Item\TagsController@showForItem');
+
+//-- tag-exam
+Route::post('dev/tags/exam/{exam}/tag/{tag}', 'Item\TagsController@associateTagWithExam');
+Route::delete('dev/tags/exam/{exam}/tag/{tag}', 'Item\TagsController@disassociateTagFromExam');
+Route::get('dev/tags/exam/{exam}', 'Item\TagsController@showForExam');
+//-- tag-student
+Route::post('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@associateTagWithStudent');
+Route::delete('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@disassociateTagFromStudent');
+Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
+
+Route::resource('dev/tags', 'Item\TagsController');

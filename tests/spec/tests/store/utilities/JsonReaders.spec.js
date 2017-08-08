@@ -42,7 +42,7 @@ const makeObjectTestJson = ( numObjects = 5 ) => {
     return testJson;
 };
 
-fdescribe( " JsonReaders | ", function () {
+describe( " JsonReaders | ", function () {
 
 
     describe( description( "directLoadObjectsFromJson" ), function () {

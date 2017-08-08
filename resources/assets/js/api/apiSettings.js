@@ -8,6 +8,7 @@
 const ROSTER_BASE_ROUTE = 'dev/roster';
 const SCORE_BASE_ROUTE = 'dev/scores';
 const STUDENT_BASE_ROUTE = 'dev/students';
+const TAGS_BASE_ROUTE = 'dev/tags';
 
 
 export const REQUEST_VERSION = 1;
@@ -146,7 +147,22 @@ export const Routes = {
     updateNote: (note)=>{return NOTES_BASE_ROUTE  + '/' + note.id},
     destroyNote: (note)=>{return NOTES_BASE_ROUTE + '/' + note.id},
     getNotesForItem: (item)=>{return NOTES_BASE_ROUTE + '/item/' + item.id},
-    getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/exam/' + exam.id }
+    getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/exam/' + exam.id },
+    
+    //Tags
+    createTag: ()=>{ return TAGS_BASE_ROUTE},
+    updateTag: (tag)=>{return TAGS_BASE_ROUTE  + '/' + tag.id},
+    destroyTag: (tag)=>{return TAGS_BASE_ROUTE + '/' + tag.id},
+    getAllUserTags: ()=>{ return TAGS_BASE_ROUTE},
+    getTagsForItem: (item)=>{return TAGS_BASE_ROUTE + '/item/' + item.id},
+    getTagsForExam: (exam) =>{return TAGS_BASE_ROUTE+ '/exam/' + exam.id },
+    getTagsForStudent: (student) =>{return TAGS_BASE_ROUTE+ '/student/' + exam.id },
+    //associate and disassociate
+    //depending on whether send post or delete
+    tagExam: (exam, tag)=>{ return TAGS_BASE_ROUTE + '/exam/' + exam.id + '/tag/' + tag.id},
+    tagItem: (item, tag)=>{ return TAGS_BASE_ROUTE + '/item/' + item.id + '/tag/' + tag.id},
+    tagStudent: (student, tag)=>{ return TAGS_BASE_ROUTE + '/student/' + student.id + '/tag/' + tag.id},
+
 };
 
 

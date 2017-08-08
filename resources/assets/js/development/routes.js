@@ -91,7 +91,9 @@ export const routes = [
     {
         path: '/panel-tags/:serialNumber',
         components: { itemPanels: panelTags},
-        props: true
+        props :{
+            objectType: 'item'
+        }
     },
     //grades
     {

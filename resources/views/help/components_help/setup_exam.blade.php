@@ -56,9 +56,9 @@
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
-                        ['imageFile' => 'exam/exam_setup_name_entered_in_box.jpg',
-                        'altText' =>"Create exam with the new exam name entered in the exam name field",
-                        'caption' => 'Give the exam a name'])
+                        ['imageFile' => 'exams',
+                        'altText' =>"exams",
+                        'caption' => 'exams'])
 
         </div>
     </div>

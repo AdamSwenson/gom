@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\NewGom\Tag;
 use App\QuestionAssignment;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,7 @@ class DevDatabaseSeeder extends BaseSeeder
         $this->call(AssignmentsTableSeeder::class);
         $this->call(NoteTableSeeder::class);
         $this->call(ItemScoreSeeder::class);
+        $this->call(TagTableSeeder::class);
         Model::reguard();
     }
 }

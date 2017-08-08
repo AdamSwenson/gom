@@ -69,6 +69,8 @@ export default class Item extends IModel {
 
         this.publicName;
 
+        this.tags = [];
+
 
     }
 
@@ -83,7 +85,8 @@ export default class Item extends IModel {
             'displayText',
             'name',
             'commentText',
-            'text'
+            'text',
+            'tags'
         ].concat( super.fillableProps );
     };
 

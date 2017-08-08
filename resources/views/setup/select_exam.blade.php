@@ -16,7 +16,7 @@
             <ul class="pager">
                 <li class="next">
                     <a id="forwardNavButton"
-                       href="{{ url('exam/create') }}"
+                       href="{{ url('exams') }}"
                        title="Create new exam">Create New Exam
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                 </li>

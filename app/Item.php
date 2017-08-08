@@ -4,6 +4,7 @@ namespace App;
 
 use App\Http\Requests\Request;
 use App\Models\NewGom\Note;
+use App\Models\NewGom\Tag;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -100,6 +101,12 @@ class Item extends BaseModel
     {
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment', 'question_id',
             'question_assignment_id');
+    }
+
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'item_tag' )->withTimestamps();
     }
 
 

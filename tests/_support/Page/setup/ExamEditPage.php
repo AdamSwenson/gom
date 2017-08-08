@@ -4,7 +4,7 @@ namespace Page\setup;
 class ExamEditPage
 {
     // include url of current page
-    public static $URL = '/exam/create';
+    public static $URL = '/exams/create';
 
     /**
      * Declare UI map for this page here. CSS or XPath allowed.

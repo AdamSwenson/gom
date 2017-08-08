@@ -19,7 +19,7 @@ import * as Roster from '../../../../../../resources/assets/js/store/modules/ros
 
 let { state, getters, actions, mutations } = Roster;
 
-fdescribe( "rosters  ", function () {
+describe( "rosters  ", function () {
     beforeEach( function () {
     } );
 

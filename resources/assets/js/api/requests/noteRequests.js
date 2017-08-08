@@ -1,10 +1,10 @@
 //
 // createItemNote: (item)=>{ return NOTES_BASE_ROUTE + '/item/' + item.id},
-//     createExamNote: (exam)=>{ return NOTES_BASE_ROUTE + '/exam/' + exam.id},
+//     createExamNote: (exams)=>{ return NOTES_BASE_ROUTE + '/exams/' + exams.id},
 //     updateNote: (note)=>{return NOTES_BASE_ROUTE  + '/' + note.id},
 //     destroyNote: (note)=>{return NOTES_BASE_ROUTE + '/' + note.id},
 //     getNotesForItem: (item)=>{return NOTES_BASE_ROUTE + '/item/' + item.id},
-//     getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/item/' + exam.id }
+//     getNotesForExam: (exams) =>{return NOTES_BASE_ROUTE+ '/item/' + exams.id }
 //    
 //
 import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes } from '../apiSettings';

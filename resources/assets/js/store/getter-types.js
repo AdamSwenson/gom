@@ -114,3 +114,9 @@ export const isExamSettingsVisible = 'isExamSettingsVisible';
 //Notes
 export const getNotesForItem = 'getNotesForItem';
 export const getNoteBySerialNumber = 'getNoteBySerialNumber';
+
+//Tags
+export const getTagBySerialNumber = 'getTagBySerialNumber';
+export const getAllTags = 'getAllTags';
+export const getTagsForObject = 'getTagsForObject';
+export const getTagById = 'getTagById';

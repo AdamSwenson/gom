@@ -21,7 +21,7 @@
             <h4 style="text-align: center;">Maximum possible score: {{ $examMaxScore or '--' }}</h4>
 
             <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
-                  action="{{ url('grade/exam/'.$exam->getId().'/assign') }}">
+                  action="{{ url('exams'.$exam->getId().'/assign') }}">
                 <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <!-- Grade Assignment fields. These will form into 2 columns of up to 7 items each -->
                 <div class="row">

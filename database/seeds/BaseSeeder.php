@@ -20,8 +20,8 @@ class BaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->user = User::find($this->userId);
-        Auth::login($this->user);
+//        $this->user = User::find($this->userId);
+//        Auth::login($this->user);
         $this->faker = \Faker\Factory::create();
 
     }

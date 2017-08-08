@@ -44,7 +44,16 @@ import {
 } from '../api/requests/studentRequests';
 import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
 
-import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests'
+import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
+
+import {
+    createTagRequest,
+    updateTagRequest,
+    destroyTagRequest,
+    associateTagRequest,
+    disassociateTagRequest
+} from '../api/requests/tagRequests'
+
 
 const setSyncDone = ( store ) => {
     window.console.log( 'apiPlugin', 'setSyncDone', 49, );
@@ -269,19 +278,53 @@ export default function ( store ) {
                 break;
 
             case mTypes.updateNote:
-                window.console.log( 'apiPlugin', 'payload', 271,payload );
+                window.console.log( 'apiPlugin', 'payload', 271, payload );
                 //make a copy so vuex won't be mad
                 //that we are altering the properties
                 // of a watched object outside
                 //of a mutation
-                let note = Object.assign({}, payload.obj);
-                note[payload.updateProp] = payload.updateVal;
+                let note = Object.assign( {}, payload.obj );
+                note[ payload.updateProp ] = payload.updateVal;
                 updateNoteRequest( store, note );
                 break;
 
             case mTypes.destroyNote:
                 destroyNoteRequest( store, payload.obj );
                 break;
+
+
+
+            // ******************** Tags
+            case mTypes.createTag :
+                window.console.log( 'apiPlugin', mTypes.createTag, 299, );
+                createTagRequest( store, payload.obj );
+                break;
+
+            case mTypes.updateTag:
+                window.console.log( 'apiPlugin', mTypes.updateTag, 'payload', 271, payload );
+                //make a copy so vuex won't be mad
+                //that we are altering the properties
+                // of a watched object outside
+                //of a mutation
+                let tag = Object.assign( {}, payload.obj );
+                tag[ payload.updateProp ] = payload.updateVal;
+                updateTagRequest( store, tag );
+                break;
+
+            case mTypes.destroyTag:
+                destroyTagRequest( store, payload.obj );
+                break;
+
+            case mTypes.associateTag:
+                window.console.log( 'apiPlugin', mTypes.associateTag, 323, payload );
+                associateTagRequest( store, payload.tag, payload.obj );
+                break;
+
+            case mTypes.disassociateTag:
+                window.console.log( 'apiPlugin', mTypes.disassociateTag, 323, );
+                disassociateTagRequest( store, payload.tag, payload.obj );
+                break;
+
 
             default:
 

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\NewGom\Tag;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -9,9 +10,9 @@ use Illuminate\Support\Facades\DB;
 /**
  * Class Student
  * 
- * A student who will take an exam.
+ * A student who will take an exams.
  * 
- * Each student can take an exam exactly once.
+ * Each student can take an exams exactly once.
  * 
  * The sid property is a unique string (usually, but not necessarily, an integer provided by the user, it is not the
  * same as the id.
@@ -308,7 +309,7 @@ class Student extends BaseModel
 
     /**
      * Returns true if the student has been sent an email in order to access their feedback
-     * for the specified exam.
+     * for the specified exams.
      *
      * @param integer $examId
      * @return boolean
@@ -321,7 +322,7 @@ class Student extends BaseModel
     }
 
     /**
-     * Returns true if their exam has been graded (viz., if there is
+     * Returns true if their exams has been graded (viz., if there is
      * at least one question score recorded).
      *
      * @param integer $examId
@@ -395,6 +396,13 @@ MYSQL;
 //    {
 //        return $this->hasManyThrough('App\Exam', 'App\Kumi');
 //    }
+
+
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'student_tag' )->withTimestamps();
+    }
 
     /**
      * Junction with user

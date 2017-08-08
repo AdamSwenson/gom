@@ -11,13 +11,13 @@ namespace App\Repositories\Student;
 use App\Exam;
 
 /**
- * Returns a generator for all students associated with an exam.
+ * Returns a generator for all students associated with an exams.
  *
  * Remember, because PHP is sometimes stupid and needs to remind you
  * that it is not awesome like Python, you need to do this:
  *
  * $sg = new StudentsForExamGenerator();
- * foreach($sg($exam) as $s){}
+ * foreach($sg($exams) as $s){}
 
  */
 class StudentsForExamGenerator

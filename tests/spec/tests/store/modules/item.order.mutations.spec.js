@@ -52,7 +52,8 @@ describe( "store.modules.item.order mutations  ", function () {
         window.console.log( 'orderings.spec', 'filledState', 34, this.filledState );
 
     } );
-    fdescribe( description( "movement " ), function () {
+
+    describe( description( "movement " ), function () {
         beforeEach( function () {
             this.rootId = 1;
             this.parentId = 2;

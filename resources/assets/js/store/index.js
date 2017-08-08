@@ -61,6 +61,7 @@ import roster from './modules/roster/roster'
 import visibility from './modules/visibility'
 import kumi from './modules/roster/kumis'
 import notes from './modules/notes'
+import tags from './modules/tags'
 
 //api
 import requests from './modules/api/requests';
@@ -119,7 +120,8 @@ const debug = process.env.NODE_ENV !== 'production';
         roster,
         kumi,
         requests,
-        notes
+        notes,
+        tags
     }
 
 // }

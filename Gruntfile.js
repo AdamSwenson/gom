@@ -4,8 +4,8 @@ module.exports = function (grunt) {
 
         qunit: {
             options: {
-                'phantomPath': "/usr/local/lib/node_modules/phantomjs/lib/phantom/bin/phantomjs",
-                timeout: 10000//,
+                // 'phantomPath': "/usr/local/lib/node_modules/phantomjs/lib/phantom/bin/phantomjs",
+                // timeout: 10000//,
                 //coverage: {
                 //    src: ['src/www/inc/js/*.js'],
                 //    instrumentedFiles: 'build/temp/',
