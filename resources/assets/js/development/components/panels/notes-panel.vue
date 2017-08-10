@@ -228,27 +228,25 @@
 
             initializeNote: function () {
 
-                if ( this.isNoteVisible ) {
+                if ( this.isNewNoteVisible ) {
                     this.addNewNote();
                 }
             }
             ,
 
-            getId: function (identifier){
+            getId: function ( identifier ) {
                 return identifier + '-' + this.serialNumber;
             },
 
             toggleNewNote: function () {
                 this.isNewNoteVisible = !this.isNewNoteVisible;
-                if ( this.isNoteVisible ) {
+                if ( this.isNewNoteVisible ) {
                     //if the note is now open,
-                    //initialize it
+                    //initialize the fields
                     this.initializeNote();
                 }
-                this.addNewNote();
             }
-        }
-        ,
+        },
 
         created: function () {
             loadNotesForItemRequest( this.$store, this.item );

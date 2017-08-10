@@ -20,6 +20,17 @@ export default class Tag extends IModel {
 
     }
 
+    get priority(){
+        if(this.props.priority){
+            return this.props.priority;
+        }
+        return false;
+    }
+
+    set priority(v){
+        this.props['priority'] = v;
+    }
+
     /**
      * Returns a list of strings which are property
      * names. These fields can be filled from the input
@@ -31,6 +42,7 @@ export default class Tag extends IModel {
             'name',
             'props',
             'text',
+            'priority'
         ];
 
     }

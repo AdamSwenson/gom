@@ -5,6 +5,8 @@ use App\Element;
 use App\Exam;
 use App\Item;
 use App\Kumi;
+use App\Models\NewGom\Note;
+use App\Models\NewGom\Tag;
 use App\Question;
 use App\Student;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +40,8 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('kumi', Kumi::class);
         Route::model('question', Question::class);
         Route::model('student', Student::class);
+        Route::model('tag', Tag::class);
+        Route::model('note', Note::class);
     }
 
     /**

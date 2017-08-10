@@ -24,8 +24,7 @@ class Tag extends BaseModel
         //using many in case want to have options for
         //applying a note to ranges of items / exams
         //maybe like "don't use"
-        return $this->belongsToMany(Exam::class, 'exam_tag')
-            ->withTimestamps();
+        return $this->belongsToMany(Exam::class, 'exam_tag')->withTimestamps();
     }
 
     /**

@@ -217,12 +217,12 @@ Route::get('dev/notes/item/{item}', 'Item\NotesController@showForItem');
 Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
 Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');
 Route::resource('dev/notes', 'Item\NotesController');
+
 //Tags
 //-- tag-item
 Route::post('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@associateTagWithItem');
 Route::delete('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@disassociateTagFromItem');
 Route::get('dev/tags/item/{item}', 'Item\TagsController@showForItem');
-
 //-- tag-exam
 Route::post('dev/tags/exam/{exam}/tag/{tag}', 'Item\TagsController@associateTagWithExam');
 Route::delete('dev/tags/exam/{exam}/tag/{tag}', 'Item\TagsController@disassociateTagFromExam');

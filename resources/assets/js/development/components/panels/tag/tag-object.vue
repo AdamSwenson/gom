@@ -59,9 +59,12 @@
             },
 
             priority: function () {
-                if ( Object.keys( this.object.props ).indexOf( 'priority' ) > -1 ) {
-                    return this.object.props.priority;
+                if(! _.isUndefined(this.object.priority) && this.object.priority){
+                    return this.object.priority;
                 }
+//                if ( Object.keys( this.object.props ).indexOf( 'priority' ) > -1 ) {
+//                    return this.object.props.priority;
+//                }
                 return 'is-primary';
             }
         },

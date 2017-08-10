@@ -27,8 +27,10 @@ class AssignmentControllerTest extends \TestCase
     /** @test */
     public function store(){
         //prep
-        $exam = factory(Exam::class)->make();
+        $exam = factory(Exam::class)->create();
         $data = ['order' => [2,3]];
+
+$route = "dev/setup/{$exam->id}/order";
 
         $dao = $this->createMock(IAssignmentRepository::class);
         $dao->shouldReceive('processIncoming')
@@ -36,9 +38,9 @@ class AssignmentControllerTest extends \TestCase
             ->andReturn(true);
 
         //call
-        $response = $this->call('POST', 'items/' . $exam->id . '/order', $data);
+        $response = $this->post($route, $data);
         $this->assertNotNull($response);
-
+$response->assertStatus(200);
     }
 
 

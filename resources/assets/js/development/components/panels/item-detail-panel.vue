@@ -19,7 +19,8 @@
             </p>
         </div>
 
-        <tag-display :serial-number="serialNumber" :object-type="'item'"></tag-display>
+        <tag-display
+                :serial-number="serialNumber" :object-type="'item'"></tag-display>
 
 
     </div>

@@ -57,7 +57,7 @@ fdescribe( "store.modules.tags | ", function () {
                 mutations[ mTypes.updateTag ]( state, pl );
 
                 //check
-                window.console.log( 'tags.spec', 'state.tags', 58, state.tags);
+                window.console.log( 'tags.spec', 'state.tags', 58, state.tags );
                 expect( state.tags[ 0 ][ 'name' ] ).toBe( 'fish' );
             } );
         } );
@@ -70,8 +70,6 @@ fdescribe( "store.modules.tags | ", function () {
             beforeEach( function () {
                 this.object = new Item();
                 this.tag = new Tag();
-
-
             } );
             it( "happy path", function () {
                 let pl = Payload.factory( { obj: this.object, tag: this.tag } );
@@ -79,25 +77,28 @@ fdescribe( "store.modules.tags | ", function () {
                 mutations[ mTypes.associateTag ]( state, pl );
 
                 //check
-              expect(state.associations[this.object.serialNumber][0]).toBe(this.tag.serialNumber);
+                expect( state.associations[ this.object.serialNumber ][ 0 ] ).toBe( this.tag.serialNumber );
             } );
 
             it( "tag already present (no duplicates allowed)", function () {
-                state.associations[this.object.serialNumber] = [];
-                state.associations[this.object.serialNumber].push(this.tag.serialNumber);
+                state.associations[ this.object.serialNumber ] = [];
+                state.associations[ this.object.serialNumber ].push( this.tag.serialNumber );
                 let pl = Payload.factory( { obj: this.object, tag: this.tag } );
                 //call
                 mutations[ mTypes.associateTag ]( state, pl );
 
                 //check
-                window.console.log( 'tags.spec', '', 93, state.associations);
-                expect(state.associations[this.object.serialNumber].length).toBe(1);
-                expect(state.associations[this.object.serialNumber][0]).toBe(this.tag.serialNumber);
+                window.console.log( 'tags.spec', '', 93, state.associations );
+                expect( state.associations[ this.object.serialNumber ].length ).toBe( 1 );
+                expect( state.associations[ this.object.serialNumber ][ 0 ] ).toBe( this.tag.serialNumber );
             } );
 
         } );
 
         describe( description( mTypes.disassociateTag ), function () {
+            xit( "happy path ", function () {
+                //todo
+            } );
         } );
 
     } );
@@ -132,7 +133,7 @@ fdescribe( "store.modules.tags | ", function () {
                     ];
                     let payload = {}
 
-                    testAction( actions.processItemTags , payload, state, expectedMutations, { getters: getters } );
+                    testAction( actions.processItemTags, payload, state, expectedMutations, { getters: getters } );
                 } );
 
             } );
@@ -147,15 +148,20 @@ fdescribe( "store.modules.tags | ", function () {
             } );
 
             it( "happy path", function () {
+                let state = {};
                 state.tags = [];
                 let numItems = 3;
                 for (let i = 0; i < numItems; i++) {
-                    state.tags[ i ] = new Tag();
+                    state.tags.push( new Tag() );
                 }
+                window.console.log( 'tags.spec', 'state.tags', 155, state.tags );
                 //pick a random object to use for the text
                 let testObj = faker.random.arrayElement( state.tags );
+                window.console.log( 'tags.spec', 'testObj', 159, testObj );
                 //call
+                window.console.log( 'tags.spec', 'getters', 161, getters );
                 let result = getters[ gTypes.getTagBySerialNumber ]( state, {}, {}, testObj.serialNumber );
+                window.console.log( 'tags.spec', '', 162, result );
                 //check
                 expect( result ).toBe( testObj );
                 expect( result.serialNumber ).toBe( testObj.serialNumber );
@@ -173,6 +179,20 @@ fdescribe( "store.modules.tags | ", function () {
             } );
         } );
 
+        describe( 'getTagById' + ' | ', function () {
+            it( "happy path | ", function () {
+                let state = {};
+                state.tags = [];
+                let tag = Tag.factory({id: 4});
+                state.tags.push(tag);
+
+                //call
+                let result = getters.getTagById(state, {}, {}, tag.id);
+
+                //check
+                expect(result).toBe(tag);
+            } );
+        } );
 
         describe( gTypes.getAllTags + ' | ', function () {
             beforeEach( function () {
@@ -180,6 +200,19 @@ fdescribe( "store.modules.tags | ", function () {
 
             it( "happy path ", function () {
                 window.console.log( 'tags.spec', 'state', state );
+                let numTags = 4;
+                for (let i = 0; i < numTags; i++) {
+                    state.tags.push( new Tag() );
+                }
+
+                //call
+                let result = getters.getAllTags( state, {}, {} );
+                window.console.log( 'tags.spec', '', 202, result );
+                //check
+                expect( result.length ).toBe( numTags );
+                _.forEach( result, function ( tag ) {
+                    expect( tag instanceof Tag ).toBe( true );
+                } );
 
             } );
         } );
@@ -192,7 +225,8 @@ fdescribe( "store.modules.tags | ", function () {
         } );
 
         describe( description( 'isObjectTagged' ), function () {
-            it( "happy path | ", function () {
+            xit( "happy path | ", function () {
+                //todo
             } );
 
         } );

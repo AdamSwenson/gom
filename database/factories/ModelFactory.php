@@ -337,8 +337,8 @@ $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
 
 
 $factory->define(App\Item::class, function ( Faker\Generator $faker ) {
-    $userId = 1;
-    Auth::logInUsingId($userId);
+//    $userId = 1;
+//    Auth::logInUsingId($userId);
 
     return [
         'name' => $faker->word,
@@ -377,8 +377,8 @@ $factory->define(Note::class, function ( Faker\Generator $faker ) {
 
 
 $factory->define(Tag::class, function ( Faker\Generator $faker ) {
-    $userId = 1;
-    Auth::logInUsingId($userId);
+//    $userId = 1;
+//    Auth::logInUsingId($userId);
 
     return [
         'name' =>$faker->word(),

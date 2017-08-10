@@ -40,6 +40,7 @@ class NotesController extends Controller
     {
         $note = Note::create($request->all());
         $note->save();
+        $item->save();
         $item->notes()->attach($note->id);
         $item->save();
         return $note;
@@ -50,7 +51,6 @@ class NotesController extends Controller
      *
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param Note $note
      */
     public function show(  $id )
     {
@@ -61,12 +61,12 @@ class NotesController extends Controller
 
     public function showForExam(Exam $exam)
     {
-        return $exam->notes()->get();
+        return $exam->notes;
     }
 
     public function showForItem(Item $item)
     {
-        return $item->notes()->get();
+        return $item->notes;
     }
 
 
@@ -96,9 +96,9 @@ class NotesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $id )
+    public function destroy( $id)
     {
-        Note::delete($id);
+        Note::destroy($id);
         $this->sendAjaxSuccess();
     }
 }

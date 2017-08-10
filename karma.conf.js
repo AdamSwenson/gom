@@ -56,7 +56,9 @@ module.exports = function ( config ) {
         //
         preprocessors: {
             // add webpack as preprocessor
-            'tests/spec/tests/**/*.spec.js': [ 'webpack' ]
+            'tests/spec/tests/**/*.spec.js': [ 'webpack' , 'sourcemap'],
+            'resources/assets/js/**/*.js': [ 'webpack', 'sourcemap' ]
+
         },
         webpack: {
             // karma watches the test entry points

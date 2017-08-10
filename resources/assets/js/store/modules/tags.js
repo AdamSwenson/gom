@@ -40,15 +40,15 @@ const getObjectBySerialNumber = ( getters, objectSerialNumber ) => {
 };
 
 
-const getTagBySerialNumber = ( state, serialNumber ) => (state, serialNumber) => {
-    return (( state, serialNumber )=> {
+const getTagBySerialNumber = ( state, serialNumber ) => {
+    return ( state, serialNumber ) => {
         var r = state.tags.filter( function ( i ) {
             if ( i.serialNumber === serialNumber ) {
                 return i;
             }
         } );
         return r[ 0 ];
-    })( state, serialNumber );
+    }
 };
 
 
@@ -213,9 +213,22 @@ const actions = {
 };
 
 const getters = {
-    [gTypes.getTagBySerialNumber]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
-        return getTagBySerialNumber( state, serialNumber );
-    },
+
+    [gTypes.getTagBySerialNumber]: ( state, getters, rootState, serialNumber ) =>
+        ( serialNumber ) =>
+        {
+            // [gTypes.getTagBySerialNumber]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
+            window.console.log( 'tags', 'gtsn', 217, serialNumber, state );
+            //return getTagBySerialNumber( state, serialNumber );
+            return (function ( state, serialNumber ) {
+                var r = state.tags.filter( function ( i ) {
+                    if ( i.serialNumber === serialNumber ) {
+                        return i;
+                    }
+                } );
+                return r[ 0 ];
+            })( state, serialNumber )
+        },
 
     getTagById: ( state, getters, rootState, id ) => ( id ) => {
         let serialNumber = (function ( state, id ) {

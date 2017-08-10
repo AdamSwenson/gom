@@ -195,7 +195,7 @@
             },
 
             newTagButtonLabel: function () {
-                return this.newTagInputVisible ? 'Save' : 'New'
+                return this.isNewTagInputVisible ? 'Save' : 'New'
             },
 
 
@@ -250,7 +250,7 @@
             saveNewTag: function () {
                 let tag = Tag.factory( {
                     name: this.newTagName,
-                    text: this.newTagText,
+//                    text: this.newTagText,
                     props: {
                         priority: this.priority
                     }

@@ -39,12 +39,23 @@ class NotesControllerTest extends \TestCase
             'id' => $note->id,
             'name' => $note->name,
             'text' => $note->text,
-            'props' => $note->props,
+//            'props' => $note->props,
             'priority' => $note->priority
             //associations
 //                'exams' => $exams,
 //                'items' => $items
         ]);
+    }
+
+    public static function makeNoteRequestData()
+    {
+        $note = factory(Note::class)->make();
+        return [
+            'name' => $note->name,
+            'text' => $note->text,
+            'props' => $note->props,
+            'priority' => $note->priority
+        ];
     }
 
     /** @test */
@@ -60,7 +71,7 @@ class NotesControllerTest extends \TestCase
 
         //check
         $response->assertStatus(200);
-        foreach($notes as $note){
+        foreach ( $notes as $note ) {
             self::assertNoteInResponse($note, $response);
         }
     }
@@ -69,41 +80,119 @@ class NotesControllerTest extends \TestCase
     public function store()
     {
         $item = factory(Item::class)->create();
-
-        $note = factory(Note::class)->make();
-
-        $out = ['id' => $note->id,
-            'name' => $note->name,
-            'text' => $note->text,
-            'props' => $note->props,
-            'priority' => $note->priority
-      ];      //associations
+        $data = self::makeNoteRequestData();
         $route = $this->route . "/item/" . $item->id;
-        $response = $this->post($this->route, $out);
+
+        //call
+        $response = $this->post($route, $data);
+
+        //check
         $response->assertStatus(200);
+//        $this->assertDatabaseHas('notes', $data);
+        $n = Note::where('name', $data['name'])
+            ->where('text', $data['text'])
+//            ->where('props', $data['props'])
+            ->where('priority', $data['priority'])
+            ->first();
 
-        self::assertNoteInResponse($note, $response);
-     }
+        PHPUnit::assertTrue(isset($n));
+        self::assertNoteInResponse($n, $response);
+    }
 
+    /** @test */
     public function show()
     {
+        $note = factory(Note::class)->create();
+
+        $route = $this->route . "/" . $note->id;
+
+        //call
+        $response = $this->get($route);
+
+        //check
+        $response->assertStatus(200);
+        self::assertNoteInResponse($note, $response);
     }
 
+    /** @test */
     public function showForExam()
     {
+        $numNotes = 5;
+        $exam = factory(Exam::class)->create();
+        $notes = \factory(Note::class, $numNotes )->create();
+        foreach($notes as $note){
+            $exam->notes()->attach($note->id);
+            $exam->save();
+        }
+        $route = $this->route . '/exam/' . $exam->id;
+        
+        //call
+        $response = $this->get($route);
+        
+        //check
+        $response->assertStatus(200);
+        foreach($notes as $note){
+            self::assertNoteInResponse($note, $response);
+        }
+        
     }
 
+    /** @test */
     public function showForItem()
     {
+
+        $numNotes = 5;
+        $item = factory(Item::class)->create();
+        $notes = \factory(Note::class, $numNotes )->create();
+        foreach($notes as $note){
+            $item->notes()->attach($note->id);
+            $item->save();
+        }
+        $route = $this->route . '/item/' . $item->id;
+
+        //call
+        $response = $this->get($route);
+
+        //check
+        $response->assertStatus(200);
+        foreach($notes as $note){
+            var_dump($note);
+            $response->assertJsonFragment(['id' => $note->id]);
+//            self::assertNoteInResponse($note, $response);
+        }
     }
 
+    /** @test */
     public function update()
     {
+        $note = factory(Note::class)->create();
+        $data = self::makeNoteRequestData();
+
+        //call
+        $response = $this->put($this->route . '/' . $note->id, $data);
+
+        //check
+        $response->assertStatus(200);
+
+        $o = Note::find($note->id);
+        PHPUnit::assertTrue(isset($o));
+        PHPUnit::assertEquals($note->name, $o->name);
+        PHPUnit::assertEquals($note->text, $o->text);
+        PHPUnit::assertEquals($note->props, $o->props);
+
     }
 
     /** @test */
     public function destroy()
     {
+        $note = factory(Note::class)->create();
+
+        //call
+        $response = $this->delete($this->route . '/' . $note->id);
+
+        //check
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('notes', $note->toArray());
     }
 
 }

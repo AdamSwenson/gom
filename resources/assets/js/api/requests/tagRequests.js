@@ -47,9 +47,9 @@ const handleCreateResponse = ( store, tag, data ) => {
  * @param response
  */
 const handleLoadResponse = ( store, data, itemOrExam ) => {
-    window.console.log( 'tagRequests', 'handleLoadResponse', 48, store );
+    // window.console.log( 'tagRequests', 'handleLoadResponse', 48, store );
     _.forEach( data, function ( r ) {
-        window.console.log( 'tagRequests', 'r', 29, r );
+        // window.console.log( 'tagRequests', 'r', 29, r );
 
         //make sure we don't already have a tag
         //object
@@ -69,7 +69,7 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
         if ( ! _.isUndefined( r.items ) ) {
             for(let i=0; i<r.items.length; i++){
                 let item = store.getters.getItemById( r.items[i].id );
-                if ( item ) store.commit( mTypes.associateTag, Payload.factory( { obj: item, tag: tag } ) );
+                if ( item ) store.commit( mTypes.associateTag, Payload.factory( { obj: item, tag: tag, mutateSilently: true } ) );
             }
 
         }
@@ -83,7 +83,7 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
         //if we were given an object to query,
         // we will associate it with the tag
         else if ( itemOrExam ) {
-            store.commit( mTypes.associateTag, Payload.factory( { obj: itemOrExam, tag: tag } ) );
+            store.commit( mTypes.associateTag, Payload.factory( { obj: itemOrExam, tag: tag ,mutateSilently: true} ) );
         }
 
     } );

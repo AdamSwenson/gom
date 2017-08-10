@@ -1,8 +1,8 @@
 <template>
 
-    <div class="panel-notes-component">
+    <div class="panel-tags-component">
 
-        <tag-menu></tag-menu>
+        <tag-menu :object-serial-number="serialNumber" object-type="objectType"></tag-menu>
 
     </div>
 

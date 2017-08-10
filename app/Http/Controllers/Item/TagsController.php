@@ -86,8 +86,6 @@ class TagsController extends Controller
     public function associateTagWithItem( Item $item, Tag $tag )
     {
         try {
-
-
             $item->tags()->attach($tag->id);
             $item->save();
 
@@ -159,17 +157,29 @@ class TagsController extends Controller
 
     public function showForExam( Exam $exam )
     {
-        return $exam->tags()->get();
+//        $e = Exam::with('tags')->where('exam_id', $exam->id)->get();
+        $out = [];
+        $tags = $exam->tags;
+        var_dump($exam);
+        foreach($tags as $tag){
+            var_dump($tag->id);
+            $out[] = $tag;
+        }
+        return $out;
+//        return $exam->tags;
+//        fo
+//        var_dump($tags);
+//  return $tags;
     }
 
     public function showForItem( Item $item )
     {
-        return $item->tags()->get();
+        return $item->tags;
     }
 
     public function showForStudent( Student $student )
     {
-        return $student->tags()->get();
+        return $student->tags;
     }
 
     /**
