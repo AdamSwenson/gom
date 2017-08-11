@@ -230,4 +230,15 @@ export default class Student extends IModel{
     //     console.log( 'student', student );
     //     return student;
     // }
+
+
+    static checkIfStudent( obj ) {
+        if ( obj instanceof Student) return true;
+
+        if ( obj.kind === 'student' ) return true;
+
+        return false;
+    }
+
+
 }

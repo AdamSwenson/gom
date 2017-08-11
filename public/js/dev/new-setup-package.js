@@ -1190,6 +1190,16 @@ var Item = function (_IModel) {
             return this.fillObject(obj, params, Item.aliasMap);
         }
     }, {
+        key: 'checkIfItem',
+        value: function checkIfItem(obj) {
+            //received payload object case
+            if (obj instanceof Item) return true;
+
+            if (obj.kind === 'item') return true;
+
+            return false;
+        }
+    }, {
         key: 'fillableProps',
         get: function get() {
             return ['displayText', 'name', 'commentText', 'text', 'tags'].concat(_get(Item.__proto__ || Object.getPrototypeOf(Item), 'fillableProps', this));
@@ -30213,11 +30223,21 @@ var Student = function (_IModel) {
         //     return student;
         // }
 
+
     }], [{
         key: 'factory',
         value: function factory(params) {
             var student = new Student();
             return this.fillObject(student, params);
+        }
+    }, {
+        key: 'checkIfStudent',
+        value: function checkIfStudent(obj) {
+            if (obj instanceof Student) return true;
+
+            if (obj.kind === 'student') return true;
+
+            return false;
         }
     }, {
         key: 'fillableProps',
@@ -31920,30 +31940,47 @@ var handleLoadResponse = function handleLoadResponse(store, data, itemOrExam) {
 
 module.exports = {
 
-    associateTagRequest: function associateTagRequest(store, tag, object) {
+    associateTagRequest: function associateTagRequest() {
+        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var tag = arguments[1];
+        var object = arguments[2];
+
         var out = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
         window.console.log('tagRequests', 'associateTagRequest', 100, object);
 
         if (object.kind === 'item') {
-            window.axios.post(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {}).catch(function (error) {
+            return window.axios.post(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {
+                //Push the object's id into the
+                //list on the tag. This way it will show up and filter
+                //as expected
+                tag.items.push(object.id);
+            }).catch(function (error) {
                 (0, _responseHandlers.errorHandling)(error);
             });
-            return true;
         }
 
+        //todo The above conditional should be part of this switch which decides what request to make
         switch (object) {
-            case object.kind === 'item':
-                window.axios.post(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {}).catch(function (error) {
-                    (0, _responseHandlers.errorHandling)(error);
-                });
-                break;
-            case object instanceof _Item2.default:
-                window.axios.post(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {}).catch(function (error) {
-                    (0, _responseHandlers.errorHandling)(error);
-                });
-                break;
+            // case object.kind === 'item':
+            //     window.axios
+            //         .post( Routes.tagItem( object, tag ), out )
+            //         .then( ( response ) => {
+            //         } )
+            //         .catch( function ( error ) {
+            //             errorHandling( error );
+            //         } );
+            //     break;
+            // case object instanceof Item:
+            //     window.axios
+            //         .post( Routes.tagItem( object, tag ), out )
+            //         .then( ( response ) => {
+            //         } )
+            //         .catch( function ( error ) {
+            //             errorHandling( error );
+            //         } );
+            //     break;
 
             case object instanceof _Exam2.default:
                 window.axios.post(_apiSettings.Routes.tagExam(object, tag), out).then(function (response) {}).catch(function (error) {
@@ -31959,22 +31996,48 @@ module.exports = {
         }
     },
 
-    disassociateTagRequest: function disassociateTagRequest(store, tag, object) {
+    disassociateTagRequest: function disassociateTagRequest() {
+        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var tag = arguments[1];
+        var object = arguments[2];
+
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION
+        };
+        window.console.log('tagRequests', 'disassociateTagRequest', 161, tag, object);
+
+        if (object.kind === 'item') {
+            window.console.log('tagRequests', 'disassociateTagRequest', 174, 'is item');
+            return window.axios.delete(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {
+                //Remove from the internally stored set of ids
+                tag.items.splice(tag.items.indexOf(object.id));
+            }).catch(function (error) {
+                (0, _responseHandlers.errorHandling)(error);
+            });
+        }
+
         switch (object) {
+
+            case object.kind === 'item':
+                window.console.log('tagRequests', 'disassociateTagRequest', 174, 'is item');
+                return window.axios.delete(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {}).catch(function (error) {
+                    (0, _responseHandlers.errorHandling)(error);
+                });
+                break;
             case object instanceof _Item2.default:
-            case object instanceof _Item2.default:
-                window.axios.delete(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {}).catch(function (error) {
+                window.console.log('tagRequests', 'disassociateTagRequest', 164, 'is item');
+                return window.axios.delete(_apiSettings.Routes.tagItem(object, tag), out).then(function (response) {}).catch(function (error) {
                     (0, _responseHandlers.errorHandling)(error);
                 });
                 break;
 
             case object instanceof _Exam2.default:
-                window.axios.delete(_apiSettings.Routes.tagExam(object, tag), out).then(function (response) {}).catch(function (error) {
+                return window.axios.delete(_apiSettings.Routes.tagExam(object, tag), out).then(function (response) {}).catch(function (error) {
                     (0, _responseHandlers.errorHandling)(error);
                 });
                 break;
             case object instanceof _Student2.default:
-                window.axios.delete(_apiSettings.Routes.tagStudent(object, tag), out).then(function (response) {}).catch(function (error) {
+                return window.axios.delete(_apiSettings.Routes.tagStudent(object, tag), out).then(function (response) {}).catch(function (error) {
                     (0, _responseHandlers.errorHandling)(error);
                 });
                 break;
@@ -31982,15 +32045,25 @@ module.exports = {
         }
     },
 
-    createTagRequest: function createTagRequest(store, tag) {
-        window.console.log('apiPlugin---tagRequests', 'createTagRequest', tag);
+    createTagRequest: function createTagRequest() {
+        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var tag = arguments[1];
+
+        window.console.log('tagRequests', 'createTagRequest', tag);
         var out = _extends({
             requestVersion: _apiSettings.REQUEST_VERSION
         }, tag);
 
-        window.axios.post(_apiSettings.Routes.createTag(), out).then(function (response) {
+        return window.axios.post(_apiSettings.Routes.createTag(), out).then(function (response) {
             // if ( response.data.length > 0 ) {
-            handleCreateResponse(store, tag, response.data);
+            if (!_.isNull(store)) {
+                handleCreateResponse(store, tag, response.data);
+            } else {
+                if (response.data.id) {
+                    tag.id = response.data.id;
+                }
+            }
+
             // }
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
@@ -32026,7 +32099,7 @@ module.exports = {
         var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
         return window.axios.get(_apiSettings.Routes.getAllUserTags()).then(function (response) {
-            window.console.log('loadAllUserTagsRequest', '', 195, response);
+            // window.console.log( 'loadAllUserTagsRequest', '', 195, response );
             if (!_.isNull(store)) {
                 handleLoadResponse(store, response.data);
             } else {
@@ -32062,7 +32135,7 @@ module.exports = {
         };
 
         return window.axios.get(_apiSettings.Routes.getTagsForItem(item)).then(function (response) {
-            window.console.log('loadTagsForItemRequest', '', 213, response);
+            // window.console.log( 'loadTagsForItemRequest', '', 213, response );
             if (!_.isNull(store)) {
                 handleLoadResponse(store, response.data, item);
             } else {
@@ -32090,7 +32163,7 @@ module.exports = {
             requestVersion: _apiSettings.REQUEST_VERSION
         }, tag);
 
-        window.axios.patch(_apiSettings.Routes.updateTag(tag), out).then(function (response) {
+        return window.axios.patch(_apiSettings.Routes.updateTag(tag), out).then(function (response) {
             if (response.data.length > 0) {
                 // handleUpdateResponse( response );
             }
@@ -55930,17 +56003,28 @@ exports.default = {
             newTagName: '',
             newTagText: '',
             priority: 0,
+            //if true, uses values stored in store.tags
+            //if false, handles and stores all tag related
+            //data internally.
+            useCentralStore: false,
             defaults: {}
         };
     },
 
     asyncComputed: {
-        tags: function tags() {
-            //                return this.$store.getters[ gTypes.getAllTags ];
+        tags: {
+            get: function get() {
+                //if we are supposed to be using the central store, do that
+                if (this.useCentralStore) return this.$store.getters[gTypes.getAllTags];
 
-            var result = (0, _tagRequests.loadAllUserTagsRequest)();
-            if (_.isUndefined(result)) return [];
-            return result;
+                //otherwise, and by default, load from the server
+                var result = (0, _tagRequests.loadAllUserTagsRequest)();
+                if (_.isUndefined(result)) return [];
+                return result;
+            },
+            watch: function watch() {
+                this.$parent.clickCounter;
+            }
         }
     },
 
@@ -56033,10 +56117,14 @@ exports.default = {
         },
 
         handleRowClick: function handleRowClick(tag) {
+            //                if(this.isHighlighted(tag)){
+            //                    this.$emit( 'tag-row-deselected', tag )
+            //                }
             this.$emit('tag-row-selected', tag);
         },
 
         saveNewTag: function saveNewTag() {
+
             var tag = _Tag2.default.factory({
                 name: this.newTagName,
                 //                    text: this.newTagText,
@@ -56045,7 +56133,27 @@ exports.default = {
                 }
             });
 
-            this.$store.dispatch('createAndAssociateTag', _Payload2.default.factory({ obj: this.object, tag: tag }));
+            if (this.useCentralStore) {
+                window.console.log('tags-menu', 'saveNewTag', 323, 'using central store');
+                this.$store.dispatch('createAndAssociateTag', _Payload2.default.factory({ obj: this.object, tag: tag }));
+                //This will tell parent to reload from dv
+                this.$emit('new-tag-saved', tag);
+            } else {
+                //this is the default option
+                var me = this;
+                var obj = this.object;
+                //sends request to create a new tag
+                var p = (0, _tagRequests.createTagRequest)(null, tag);
+                p.then(function () {
+                    //once that has been successful, sends
+                    //request to associate the tag with the object
+                    var p2 = (0, _tagRequests.associateTagRequest)(null, tag, obj);
+                    p2.then(function () {
+                        //This will tell parent to reload from dv
+                        me.$emit('new-tag-saved', tag);
+                    });
+                });
+            }
         },
 
         handleEditClick: function handleEditClick() {
@@ -56089,11 +56197,25 @@ exports.default = {
          * @param tagSerialNumber
          */
         isHighlighted: function isHighlighted(tag) {
-            //if the menu isn't attached to an object
-            //nothing should highlight
-            if (_.isUndefined(this.serialNumber)) return false;
+            var _this = this;
 
-            return this.$store.getters.isTagged(this.object, tag);
+            var isHighlighted = false;
+            switch (this.objectType) {
+                case 'item':
+                    if (tag.items.length === 0) isHighlighted = false;
+                    _.forEach(tag.items, function (i) {
+                        if (i.id === _this.object.id) isHighlighted = true;
+                    });
+                    break;
+                default:
+            }
+            return isHighlighted;
+            //
+            //                //if the menu isn't attached to an object
+            //                //nothing should highlight
+            //                if ( _.isUndefined( this.serialNumber ) ) return false;
+            //
+            //                return this.$store.getters.isTagged( this.object, tag );
         }
     },
 
@@ -59095,9 +59217,7 @@ exports.default = {
         tags: {
             get: function get() {
                 var result = (0, _tagRequests.loadTagsForItemRequest)(null, this.object);
-
                 //                let result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
-                window.console.log('tag-display', 'tags', 53, this.serialNumber, result);
                 if (_.isUndefined(result)) return [];
                 return result;
             },
@@ -59116,18 +59236,18 @@ exports.default = {
          */
         object: function object() {
             if (this.objectType instanceof _Item2.default) {
-                window.console.log('tag-display', 'object', 92);
+                //                    window.console.log( 'tag-display', 'object', 92, );
                 return this.$store.getters.getItemBySerialNumber(this.serialNumber);
             }
 
             if (this.serialNumber) {
-                window.console.log('tag-display', 'object', 86, this);
+                //                    window.console.log( 'tag-display', 'object', 86, this );
                 switch (this.objectType) {
                     case 'item':
                         return this.$store.getters.getItemBySerialNumber(this.serialNumber);
                         break;
                     case this.objectType instanceof _Item2.default:
-                        window.console.log('tag-display', 'object', 92);
+                        //                            window.console.log( 'tag-display', 'object', 92, );
                         return this.$store.getters.getItemBySerialNumber(this.serialNumber);
                         break;
                     //todo exam
@@ -59166,6 +59286,8 @@ exports.default = {
          * @param tag
          */
         handleTagToggle: function handleTagToggle(tag) {
+            var _this = this;
+
             window.console.log('tag-display', 'handleTagToggle', 96, tag, this, this.object);
 
             //make sure there's an object to act upon
@@ -59176,23 +59298,51 @@ exports.default = {
                 //At the end, we'll increment the click counter which
                 //will reload tags from the db
 
+                var isTagged = false;
+
                 //find out if already tagged
-                if (this.$store.getters.isObjectTagged(this.object, tag)) {
-                    //remove the tag
-                    this.$store.commit(mTypes.disassociateTag, _Payload2.default.factory({
-                        obj: this.object,
-                        tag: tag
-                    }));
+                switch (this.objectType) {
+                    case 'item':
+                        if (tag.items.length === 0) return false;
+                        tag.items.filter(function (i) {
+                            if (i.id === _this.object.id) isTagged = true;
+                        });
+                        break;
+                    default:
+                }
+
+                if (isTagged) {
+                    (0, _tagRequests.disassociateTagRequest)(null, tag, this.object);
+                    //if ( this.$store.getters.isObjectTagged( this.object, tag ) ) {
+                    //                        //remove the tag
+                    //                        this.$store.commit( mTypes.disassociateTag, Payload.factory( {
+                    //                            obj: this.object,
+                    //                            tag: tag
+                    //                        } ) );
                 } else {
-                    //add the tag
-                    this.$store.commit(mTypes.associateTag, _Payload2.default.factory({
-                        obj: this.object,
-                        tag: tag
-                    }));
+                    (0, _tagRequests.associateTagRequest)(null, tag, this.object);
+                    //                        //add the tag
+                    //                        this.$store.commit( mTypes.associateTag, Payload.factory( {
+                    //                            obj: this.object,
+                    //                            tag: tag
+                    //                        } ) );
                 }
                 //incrementing this triggers the reload
-                this.clickCounter += 1;
+                this.refreshTags();
             }
+        },
+
+        handleNewTagSavedEvent: function handleNewTagSavedEvent(tag) {
+            window.console.log('tag-display', 'handleNewTagSavedEvent', 221, tag);
+            this.refreshTags();
+        },
+
+        /**
+         * Triggers the reload of scores from db
+         */
+        refreshTags: function refreshTags() {
+            //incrementing this triggers the reload
+            this.clickCounter += 1;
         }
     },
 
@@ -59206,6 +59356,7 @@ exports.default = {
 
     mounted: function mounted() {}
 }; //
+//
 //
 //
 //
@@ -84373,7 +84524,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "tag-display-area"
   }, [_vm._m(0), _vm._v(" "), _c('div', {
-    staticClass: "field is-grouped is-grouped-multiline"
+    staticClass: "object-tag-list field is-grouped is-grouped-multiline"
   }, [_vm._l((_vm.tags), function(tag) {
     return _c('tag-object', {
       key: tag.serialNumber,
@@ -84401,7 +84552,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "object-type": _vm.objectType
     },
     on: {
-      "tag-row-selected": _vm.handleTagToggle
+      "tag-row-selected": _vm.handleTagToggle,
+      "new-tag-saved": _vm.handleNewTagSavedEvent
     }
   })], 1)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -85227,7 +85379,7 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "tags-panel panel"
+    staticClass: "tags-menu panel"
   }, [_c('div', {
     staticClass: "panel-heading"
   }, [_vm._v("\n        Tags\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _c('div', {
@@ -85244,7 +85396,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   })), _vm._v(" "), _vm._l((_vm.tags), function(tag) {
     return (_vm.isDisplayed(tag)) ? _c('a', {
       key: tag.serialNumber,
-      staticClass: "panel-block ",
+      staticClass: "panel-block tag-menu-row",
       class: _vm.styling(tag),
       on: {
         "click": function($event) {

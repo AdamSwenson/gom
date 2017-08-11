@@ -350,4 +350,15 @@ export default class Item extends IModel {
         let obj = new Item();
         return this.fillObject( obj, params, Item.aliasMap );
     }
+
+
+    static checkIfItem( obj ) {
+        //received payload object case
+        if ( obj instanceof Item ) return true;
+
+        if ( obj.kind === 'item' ) return true;
+
+        return false;
+    }
+
 }

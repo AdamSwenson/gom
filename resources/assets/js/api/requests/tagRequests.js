@@ -97,43 +97,46 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
 
 module.exports = {
 
-    associateTagRequest: ( store, tag, object ) => {
+    associateTagRequest: ( store = null, tag, object ) => {
         let out = {
             requestVersion: REQUEST_VERSION
         };
         window.console.log( 'tagRequests', 'associateTagRequest', 100, object );
 
         if ( object.kind === 'item' ) {
-            window.axios
+            return window.axios
                 .post( Routes.tagItem( object, tag ), out )
                 .then( ( response ) => {
+                    //Push the object's id into the
+                    //list on the tag. This way it will show up and filter
+                    //as expected
+                    tag.items.push(object.id);
                 } )
                 .catch( function ( error ) {
                     errorHandling( error );
                 } );
-            return true;
         }
 
-
+//todo The above conditional should be part of this switch which decides what request to make
         switch ( object ) {
-            case object.kind === 'item':
-                window.axios
-                    .post( Routes.tagItem( object, tag ), out )
-                    .then( ( response ) => {
-                    } )
-                    .catch( function ( error ) {
-                        errorHandling( error );
-                    } );
-                break;
-            case object instanceof Item:
-                window.axios
-                    .post( Routes.tagItem( object, tag ), out )
-                    .then( ( response ) => {
-                    } )
-                    .catch( function ( error ) {
-                        errorHandling( error );
-                    } );
-                break;
+            // case object.kind === 'item':
+            //     window.axios
+            //         .post( Routes.tagItem( object, tag ), out )
+            //         .then( ( response ) => {
+            //         } )
+            //         .catch( function ( error ) {
+            //             errorHandling( error );
+            //         } );
+            //     break;
+            // case object instanceof Item:
+            //     window.axios
+            //         .post( Routes.tagItem( object, tag ), out )
+            //         .then( ( response ) => {
+            //         } )
+            //         .catch( function ( error ) {
+            //             errorHandling( error );
+            //         } );
+            //     break;
 
             case object instanceof Exam:
                 window.axios
@@ -157,11 +160,40 @@ module.exports = {
         }
     },
 
-    disassociateTagRequest: ( store, tag, object ) => {
+    disassociateTagRequest: ( store = null, tag, object ) => {
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
+        window.console.log( 'tagRequests', 'disassociateTagRequest', 161, tag, object );
+
+        if ( object.kind === 'item' ) {
+            window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
+            return window.axios
+                .delete( Routes.tagItem( object, tag ), out )
+                .then( ( response ) => {
+                    //Remove from the internally stored set of ids
+                    tag.items.splice(tag.items.indexOf(object.id));
+                } )
+                .catch( function ( error ) {
+                    errorHandling( error );
+                } );
+        }
+
         switch ( object ) {
+
+            case object.kind === 'item':
+                window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
+                return window.axios
+                    .delete( Routes.tagItem( object, tag ), out )
+                    .then( ( response ) => {
+                    } )
+                    .catch( function ( error ) {
+                        errorHandling( error );
+                    } );
+                break;
             case object instanceof Item:
-            case object instanceof Item:
-                window.axios
+                window.console.log( 'tagRequests', 'disassociateTagRequest', 164, 'is item' );
+                return window.axios
                     .delete( Routes.tagItem( object, tag ), out )
                     .then( ( response ) => {
                     } )
@@ -171,7 +203,7 @@ module.exports = {
                 break;
 
             case object instanceof Exam:
-                window.axios
+                return window.axios
                     .delete( Routes.tagExam( object, tag ), out )
                     .then( ( response ) => {
                     } )
@@ -180,7 +212,7 @@ module.exports = {
                     } );
                 break;
             case object instanceof Student:
-                window.axios
+                return window.axios
                     .delete( Routes.tagStudent( object, tag ), out )
                     .then( ( response ) => {
                     } )
@@ -192,18 +224,25 @@ module.exports = {
         }
     },
 
-    createTagRequest: ( store, tag ) => {
-        window.console.log( 'apiPlugin---tagRequests', 'createTagRequest', tag );
+    createTagRequest: ( store=null, tag ) => {
+        window.console.log( 'tagRequests', 'createTagRequest', tag );
         let out = {
             requestVersion: REQUEST_VERSION,
             ...tag
         };
 
-        window.axios
+        return window.axios
             .post( Routes.createTag(), out )
             .then( ( response ) => {
                 // if ( response.data.length > 0 ) {
-                handleCreateResponse( store, tag, response.data );
+                if(! _.isNull(store)){
+                    handleCreateResponse( store, tag, response.data );
+                }else{
+                    if(response.data.id){
+                        tag.id = response.data.id;
+                    }
+                }
+
                 // }
             } )
             .catch( function ( error ) {
@@ -245,7 +284,7 @@ module.exports = {
         return window.axios
             .get( Routes.getAllUserTags() )
             .then( ( response ) => {
-                window.console.log( 'loadAllUserTagsRequest', '', 195, response );
+                // window.console.log( 'loadAllUserTagsRequest', '', 195, response );
                 if ( !_.isNull( store ) ) {
                     handleLoadResponse( store, response.data );
                 }
@@ -256,7 +295,7 @@ module.exports = {
                     } );
                     return tags;
                 }
-            })
+            } )
             .catch( function ( error ) {
                 window.console.log( 'examRequests', 'ERROR', 39, error );
                 errorHandling( error );
@@ -282,7 +321,7 @@ module.exports = {
         return window.axios
             .get( Routes.getTagsForItem( item ) )
             .then( ( response ) => {
-                window.console.log( 'loadTagsForItemRequest', '', 213, response );
+                // window.console.log( 'loadTagsForItemRequest', '', 213, response );
                 if ( !_.isNull( store ) ) {
                     handleLoadResponse( store, response.data, item );
                 } else {
@@ -306,15 +345,14 @@ module.exports = {
      * @param store
      * @param tag
      */
-    updateTagRequest:
-        ( store, tag ) => {
+    updateTagRequest: ( store, tag ) => {
 
             let out = {
                 requestVersion: REQUEST_VERSION,
                 ...tag
             };
 
-            window.axios
+            return window.axios
                 .patch( Routes.updateTag( tag ), out )
                 .then( ( response ) => {
                     if ( response.data.length > 0 ) {
@@ -327,5 +365,4 @@ module.exports = {
         },
 
 
-}
-;
+};

@@ -10,5 +10,14 @@ export default class Exam{
         this.examId = examId;
     }
 
+    static checkIfExam( obj ) {
+        //received payload object case
+        if ( obj instanceof Exam ) return true;
+
+        if ( obj.kind === 'exam' ) return true;
+
+        return false;
+    }
+
 
 }

@@ -193,14 +193,14 @@ class SetupTest extends DuskTestCase
                 ->click(SetupPage::$addItemToExamButton)
                 ->waitFor('#item-card-1-0')
 //                ->assertVisible('#item-settings-button-1-0')  //Setup::settingsToggleButton())
-                ->assertVisible(Page::settingsToggleButton(1, 0))
+                ->assertVisible(SetupPage::settingsToggleButton(1, 0))
                 ->assertMissing('#item-nav-tabs-1-0')
                 //click the show button
-                ->click(Page::settingsToggleButton(1, 0))
+                ->click(SetupPage::settingsToggleButton(1, 0))
 //                ->waitFor('#item-nav-tabs-1-0')
                 ->assertVisible('#item-nav-tabs-1-0')
                 //click the hide button
-                ->click(Page::settingsToggleButton(1, 0))
+                ->click(SetupPage::settingsToggleButton(1, 0))
                 ->assertMissing('#item-nav-tabs-1-0');
 
         });
@@ -218,12 +218,12 @@ class SetupTest extends DuskTestCase
         Auth::loginUsingId(1);
         $exam = factory(Exam::class)->create();
 //        $exam->user()->save($user);
-        $order = Page::makeExamData($exam);
+        $order = SetupPage::makeExamData($exam);
 
         $this->browse(function ( Browser $browser ) use ( $exam ) {
             $browser->loginAs(User::find(1))
                 //prep
-                ->visit(Page::urlToExam($exam->id))
+                ->visit(SetupPage::urlToExam($exam->id))
                 ->waitFor(SetupPage::$mainBodyLocator)
                 ->assertVisible('#item-card-1-0')
                 ->assertVisible('#item-card-2-0');

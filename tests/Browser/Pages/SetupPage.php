@@ -64,6 +64,30 @@ class SetupPage extends Page
             ->waitFor(self::$mainBodyLocator);
     }
 
+    /**
+     * Opens the item detail panel
+     * Assumes that no first item exists
+     * @param Browser $browser
+     * @return $this
+     */
+    public function navigateToItemDetail( Browser $browser )
+    {
+        return $browser
+            ->click(SetupPage::$addItemToExamButton)
+            ->waitFor('#item-card-1-0')
+            ->assertVisible(SetupPage::settingsToggleButton(1, 0))
+            ->assertMissing('#item-nav-tabs-1-0')
+            //click the show button
+            ->click(SetupPage::settingsToggleButton(1, 0))
+//            ->waitFor('#item-nav-tabs-1-0')
+//            ->assertVisible('#item-nav-tabs-1-0')
+            ->click("[id^='item-settings-button']")->pause(10000)
+            ->assertSee('Details')
+            ->clickLink('Details');
+//            ->waitFor("div[class='item-settings-detail-component']")//@notesPanelArea')
+//            ->assertVisible("div[class='item-settings-detail-component']"); //@notesPanelArea');
+
+    }
 
     public function navigateToStudentsPane( Browser $browser )
     {
@@ -146,7 +170,7 @@ class SetupPage extends Page
         return $order;
     }
 
-    public function waitForServerSyncToFinish(Browser $browser)
+    public function waitForServerSyncToFinish( Browser $browser )
     {
         $browser->waitUntil("document.getElementById('isSyncing' ).value === 'false'");
     }
@@ -162,7 +186,7 @@ class SetupPage extends Page
 //        $browser->assertPathIs($this->url());
     }
 
-    public function addItemToExam(Browser $browser  )
+    public function addItemToExam( Browser $browser )
     {
         return $browser->assertVisible('@addChildButton')
             ->click('@addChildButton');

@@ -8,7 +8,7 @@
             <span>Tags</span>
         </h5>
 
-        <div class="field is-grouped is-grouped-multiline">
+        <div class="object-tag-list field is-grouped is-grouped-multiline">
             <tag-object v-for="tag in tags"
                         v-bind:key="tag.serialNumber"
                         :object="tag"
@@ -40,6 +40,7 @@
             <tag-menu :object-serial-number="serialNumber"
                       :object-type="objectType"
                       v-on:tag-row-selected="handleTagToggle"
+                      v-on:new-tag-saved="handleNewTagSavedEvent"
             ></tag-menu>
         </div>
 
@@ -63,7 +64,11 @@
 
     import { Routes } from '../../../../api/apiSettings';
 
-    import { loadTagsForItemRequest } from '../../../../api/requests/tagRequests';
+    import {
+        loadTagsForItemRequest,
+        associateTagRequest,
+        disassociateTagRequest
+    } from '../../../../api/requests/tagRequests';
 
     import tagMenu from '../../menus/tags-menu.vue';
     import tagObject from './tag-object.vue';
@@ -96,9 +101,7 @@
             tags: {
                 get () {
                     let result = loadTagsForItemRequest( null, this.object );
-
 //                let result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
-                    window.console.log( 'tag-display', 'tags', 53, this.serialNumber, result );
                     if ( _.isUndefined( result ) ) return [];
                     return result;
                 },
@@ -117,18 +120,18 @@
              */
             object: function () {
                 if ( this.objectType instanceof Item ) {
-                    window.console.log( 'tag-display', 'object', 92, );
+//                    window.console.log( 'tag-display', 'object', 92, );
                     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
                 }
 
                 if ( this.serialNumber ) {
-                    window.console.log( 'tag-display', 'object', 86, this );
+//                    window.console.log( 'tag-display', 'object', 86, this );
                     switch ( this.objectType ) {
                         case 'item':
                             return this.$store.getters.getItemBySerialNumber( this.serialNumber );
                             break;
                         case this.objectType instanceof Item:
-                            window.console.log( 'tag-display', 'object', 92, );
+//                            window.console.log( 'tag-display', 'object', 92, );
                             return this.$store.getters.getItemBySerialNumber( this.serialNumber );
                             break;
                         //todo exam
@@ -178,24 +181,53 @@
                     //At the end, we'll increment the click counter which
                     //will reload tags from the db
 
+                    let isTagged = false;
+
                     //find out if already tagged
-                    if ( this.$store.getters.isObjectTagged( this.object, tag ) ) {
-                        //remove the tag
-                        this.$store.commit( mTypes.disassociateTag, Payload.factory( {
-                            obj: this.object,
-                            tag: tag
-                        } ) );
+                    switch ( this.objectType ) {
+                        case 'item':
+                            if ( tag.items.length === 0 ) return false;
+                            tag.items.filter( ( i ) => {
+                                if ( i.id === this.object.id )
+                                    isTagged = true;
+                            } );
+                            break;
+                        default:
+                    }
+
+                    if ( isTagged ) {
+                        disassociateTagRequest( null, tag, this.object );
+                        //if ( this.$store.getters.isObjectTagged( this.object, tag ) ) {
+//                        //remove the tag
+//                        this.$store.commit( mTypes.disassociateTag, Payload.factory( {
+//                            obj: this.object,
+//                            tag: tag
+//                        } ) );
                     }
                     else {
-                        //add the tag
-                        this.$store.commit( mTypes.associateTag, Payload.factory( {
-                            obj: this.object,
-                            tag: tag
-                        } ) );
+                        associateTagRequest( null, tag, this.object );
+//                        //add the tag
+//                        this.$store.commit( mTypes.associateTag, Payload.factory( {
+//                            obj: this.object,
+//                            tag: tag
+//                        } ) );
                     }
                     //incrementing this triggers the reload
-                    this.clickCounter += 1;
+                    this.refreshTags();
                 }
+            },
+
+            handleNewTagSavedEvent: function ( tag ) {
+                window.console.log( 'tag-display', 'handleNewTagSavedEvent', 221, tag );
+                this.refreshTags();
+            },
+
+            /**
+             * Triggers the reload of scores from db
+             */
+            refreshTags: function () {
+                //incrementing this triggers the reload
+                this.clickCounter += 1;
             }
         },
 

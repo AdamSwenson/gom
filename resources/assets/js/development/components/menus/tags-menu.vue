@@ -1,5 +1,5 @@
 <template>
-    <div class="tags-panel panel">
+    <div class="tags-menu panel">
 
         <div class="panel-heading">
             Tags
@@ -31,7 +31,7 @@
         </div>
 
 
-        <a class="panel-block "
+        <a class="panel-block tag-menu-row"
            v-for="tag in tags"
            v-on:click="handleRowClick(tag)"
            v-bind:key="tag.serialNumber"
@@ -149,7 +149,7 @@
     import * as gTypes from '../../../store/getter-types'
 
     import { Routes } from '../../../api/apiSettings';
-    import { loadAllUserTagsRequest } from '../../../api/requests/tagRequests';
+    import { loadAllUserTagsRequest, createTagRequest, associateTagRequest } from '../../../api/requests/tagRequests';
 
 
     /**
@@ -192,20 +192,31 @@
                 newTagName: '',
                 newTagText: '',
                 priority: 0,
+                //if true, uses values stored in store.tags
+                //if false, handles and stores all tag related
+                //data internally.
+                useCentralStore: false,
                 defaults: {}
             }
         },
 
         asyncComputed: {
-            tags: function () {
-//                return this.$store.getters[ gTypes.getAllTags ];
+            tags: {
+                get () {
+                    //if we are supposed to be using the central store, do that
+                    if ( this.useCentralStore ) return this.$store.getters[ gTypes.getAllTags ];
 
-                let result = loadAllUserTagsRequest();
-                if ( _.isUndefined( result ) ) return [];
-                return result;
-
-            },
+                    //otherwise, and by default, load from the server
+                    let result = loadAllUserTagsRequest();
+                    if ( _.isUndefined( result ) ) return [];
+                    return result;
+                },
+                watch() {
+                    this.$parent.clickCounter;
+                }
+            }
         },
+
 
         computed: {
             editTagButtonStyling: function () {
@@ -214,11 +225,13 @@
                     return 'is-warning '
                 }
                 return 'is-primary is-outlined'
-            },
+            }
+            ,
 
             editTagButtonLabel: function () {
                 return this.isEditable ? 'Done' : 'Edit'
-            },
+            }
+            ,
 
 
             newTagButtonStyling: function () {
@@ -227,11 +240,13 @@
                     return 'is-warning '
                 }
                 return 'is-primary is-outlined'
-            },
+            }
+            ,
 
             newTagButtonLabel: function () {
                 return this.isNewTagInputVisible ? 'Save' : 'New'
-            },
+            }
+            ,
 
 
             /**
@@ -287,7 +302,8 @@
                         this.filterTo = 'all';
                 }
 
-            },
+            }
+            ,
 
             styling: function ( tag ) {
                 let styles = "is-default ";
@@ -296,14 +312,20 @@
                 }
                 //this handles tag props having to do w style
                 return styles;
-            },
+            }
+            ,
 
             handleRowClick: function ( tag ) {
+//                if(this.isHighlighted(tag)){
+//                    this.$emit( 'tag-row-deselected', tag )
+//                }
                 this.$emit( 'tag-row-selected', tag )
-            },
+            }
+            ,
 
 
             saveNewTag: function () {
+
                 let tag = Tag.factory( {
                     name: this.newTagName,
 //                    text: this.newTagText,
@@ -312,13 +334,34 @@
                     }
                 } );
 
-                this.$store.dispatch( 'createAndAssociateTag', Payload.factory( { obj: this.object, tag: tag } ) );
-
+                if ( this.useCentralStore ) {
+                    window.console.log( 'tags-menu', 'saveNewTag', 323, 'using central store' );
+                    this.$store.dispatch( 'createAndAssociateTag', Payload.factory( { obj: this.object, tag: tag } ) );
+                    //This will tell parent to reload from dv
+                    this.$emit( 'new-tag-saved', tag );
+                }
+                else {
+                    //this is the default option
+                    let me = this;
+                    let obj = this.object;
+                    //sends request to create a new tag
+                    let p = createTagRequest( null, tag );
+                    p.then( function () {
+                        //once that has been successful, sends
+                        //request to associate the tag with the object
+                        let p2 = associateTagRequest( null, tag, obj );
+                        p2.then( function () {
+                            //This will tell parent to reload from dv
+                            me.$emit( 'new-tag-saved', tag );
+                        } );
+                    } );
+                }
             },
 
             handleEditClick: function () {
                 this.isEditable = !this.isEditable;
-            },
+            }
+            ,
 
             handleNewClick: function () {
                 if ( this.isNewTagInputVisible ) {
@@ -334,7 +377,8 @@
 
                 //toggle state
                 this.isNewTagInputVisible = !this.isNewTagInputVisible;
-            },
+            }
+            ,
 
             /**
              * Returns a boolean of whether to display
@@ -346,7 +390,8 @@
                 if ( tag[ this.filterTo ].length > 0 ) return true;
 
                 return false;
-            },
+            }
+            ,
 
             /**
              * Whether the row should be highlighted.
@@ -357,17 +402,32 @@
              * @param tagSerialNumber
              */
             isHighlighted: function ( tag ) {
-                //if the menu isn't attached to an object
-                //nothing should highlight
-                if ( _.isUndefined( this.serialNumber ) ) return false;
-
-                return this.$store.getters.isTagged( this.object, tag );
+                let isHighlighted = false;
+                switch ( this.objectType ) {
+                    case 'item':
+                        if ( tag.items.length === 0 ) isHighlighted = false;
+                        _.forEach( tag.items, ( i ) => {
+                            if ( i.id === this.object.id ) isHighlighted = true;
+                        } );
+                        break;
+                    default:
+                }
+                return isHighlighted;
+//
+//                //if the menu isn't attached to an object
+//                //nothing should highlight
+//                if ( _.isUndefined( this.serialNumber ) ) return false;
+//
+//                return this.$store.getters.isTagged( this.object, tag );
             }
-        },
+        }
+        ,
 
-        directives: {},
+        directives: {}
+        ,
 
-        events: {},
+        events: {}
+        ,
 
         mounted: function () {
         }
