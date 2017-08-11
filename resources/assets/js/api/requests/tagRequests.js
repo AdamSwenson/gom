@@ -66,15 +66,19 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
             store.commit( mTypes.createTag, payload );
         }
 
-        if ( ! _.isUndefined( r.items ) ) {
-            for(let i=0; i<r.items.length; i++){
-                let item = store.getters.getItemById( r.items[i].id );
-                if ( item ) store.commit( mTypes.associateTag, Payload.factory( { obj: item, tag: tag, mutateSilently: true } ) );
+        if ( !_.isUndefined( r.items ) ) {
+            for (let i = 0; i < r.items.length; i++) {
+                let item = store.getters.getItemById( r.items[ i ].id );
+                if ( item ) store.commit( mTypes.associateTag, Payload.factory( {
+                    obj: item,
+                    tag: tag,
+                    mutateSilently: true
+                } ) );
             }
 
         }
 
-        if ( !_.isUndefined( r.exams) ) {
+        if ( !_.isUndefined( r.exams ) ) {
             // let item = store.getters.getExamById( r.pivot.exam_id );
             // if ( item ) store.commit( mTypes.associateTag, Payload.factory( { obj: item, tag: tag } ) );
         }
@@ -83,7 +87,7 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
         //if we were given an object to query,
         // we will associate it with the tag
         else if ( itemOrExam ) {
-            store.commit( mTypes.associateTag, Payload.factory( { obj: itemOrExam, tag: tag ,mutateSilently: true} ) );
+            store.commit( mTypes.associateTag, Payload.factory( { obj: itemOrExam, tag: tag, mutateSilently: true } ) );
         }
 
     } );
@@ -97,9 +101,9 @@ module.exports = {
         let out = {
             requestVersion: REQUEST_VERSION
         };
-        window.console.log( 'tagRequests', 'associateTagRequest', 100, object);
+        window.console.log( 'tagRequests', 'associateTagRequest', 100, object );
 
-        if (object.kind === 'item'){
+        if ( object.kind === 'item' ) {
             window.axios
                 .post( Routes.tagItem( object, tag ), out )
                 .then( ( response ) => {
@@ -107,7 +111,7 @@ module.exports = {
                 .catch( function ( error ) {
                     errorHandling( error );
                 } );
-        return true;
+            return true;
         }
 
 
@@ -226,35 +230,69 @@ module.exports = {
 
     },
 
-    loadAllUserTagsRequest: ( store ) => {
-        //todo Consider memoizing this so only runs once?
-
-        //Request is for every student belonging to the user
-        window.axios
+    /**
+     * Gets all tags belonging to the user from the
+     * server
+     *
+     * If store is null, it will return an
+     * array of tag objects once the promise has
+     * resolved.
+     * If store is filled with a store object, it
+     * will load them into storage.
+     * @param store
+     */
+    loadAllUserTagsRequest: ( store = null ) => {
+        return window.axios
             .get( Routes.getAllUserTags() )
             .then( ( response ) => {
                 window.console.log( 'loadAllUserTagsRequest', '', 195, response );
-
-                // window.console.log( 'studentRequests', '', 28, response );
-                handleLoadResponse( store, response.data );
-            } )
+                if ( !_.isNull( store ) ) {
+                    handleLoadResponse( store, response.data );
+                }
+                else {
+                    let tags = [];
+                    _.forEach( response.data, ( t ) => {
+                        tags.push( Tag.factory( t ) );
+                    } );
+                    return tags;
+                }
+            })
             .catch( function ( error ) {
                 window.console.log( 'examRequests', 'ERROR', 39, error );
                 errorHandling( error );
             } );
     },
 
-    loadTagsForItemRequest: ( store, item ) => {
+    /**
+     * Gets the tags for the item.
+     * If store is null, it will return an
+     * array of tag objects once the promise has
+     * resolved.
+     * If store is filled with a store object, it
+     * will load them into storage.
+     * @param store
+     * @param item
+     * @returns {Promise.<T>|*}
+     */
+    loadTagsForItemRequest: ( store = null, item ) => {
         let out = {
             requestVersion: REQUEST_VERSION
         };
 
-        //Request is for every student belonging to the user
-        window.axios
+        return window.axios
             .get( Routes.getTagsForItem( item ) )
             .then( ( response ) => {
                 window.console.log( 'loadTagsForItemRequest', '', 213, response );
-                handleLoadResponse( store, response.data, item );
+                if ( !_.isNull( store ) ) {
+                    handleLoadResponse( store, response.data, item );
+                } else {
+                    let tags = [];
+                    _.forEach( response.data, ( t ) => {
+                        tags.push( Tag.factory( t ) );
+                    } );
+                    return tags;
+                }
+
             } )
             .catch( function ( error ) {
                 window.console.log( 'examRequests', 'ERROR', 39, error );

@@ -57,9 +57,6 @@
     import Payload from '../../../models/Payload'
     import Item from '../../../models/Item'
 
-   // import { loadTagsForItemRequest } from '../../../api/requests/tagRequests';
-    import { loadAllUserTagsRequest, loadTagsForItemRequest } from '../../../api/requests/tagRequests';
-
 //    import tagMenu from '../menus/tags-menu.vue';
 
 
@@ -130,8 +127,6 @@
         events: {},
 
         created: function () {
-
-//            loadTagsForItemRequest(this.$store, this.item);
         },
     };
 

@@ -17,18 +17,51 @@ export default class Tag extends IModel {
 
         this.props = [];
 
+        /**
+         * Holds arbitrary representations
+         * of the exams this is associated with.
+         *
+         * NB:
+         *      Make sure to type check when using!
+         *
+         *      Only used in limited places. Don't count on things being here
+         */
+        this.exams = [];
+
+        /**
+         * Holds arbitrary representations
+         * of the items this is associated with.
+         *
+         * NB:
+         *      Make sure to type check when using!
+         *
+         *      Only used in limited places. Don't count on things being here
+         */
+        this.items = [];
+
+
+        /**
+         * Holds arbitrary representations
+         * of the students this is associated with.
+         *
+         * NB:
+         *      Make sure to type check when using!
+         *
+         *      Only used in limited places. Don't count on things being here
+         */
+        this.students = [];
 
     }
 
-    get priority(){
-        if(this.props.priority){
+    get priority() {
+        if ( this.props.priority ) {
             return this.props.priority;
         }
         return false;
     }
 
-    set priority(v){
-        this.props['priority'] = v;
+    set priority( v ) {
+        this.props[ 'priority' ] = v;
     }
 
     /**
@@ -42,7 +75,11 @@ export default class Tag extends IModel {
             'name',
             'props',
             'text',
-            'priority'
+            'priority',
+            //associated objects
+            'items',
+            'exams',
+            'students'
         ];
 
     }

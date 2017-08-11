@@ -209,7 +209,7 @@ Route::get('dev/kumis/exam/{exam}', 'Item\KumiController@loadExamKumi');
 Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKumi');
 
 //History
-Route::get('dev/history/item/{item}', 'Item\AssignmentController@getItemHistory');
+Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
 
 //Notes
 Route::post('dev/notes/item/{item}', 'Item\NotesController@store');

@@ -63,6 +63,8 @@
 
     import { Routes } from '../../../../api/apiSettings';
 
+    import { loadTagsForItemRequest } from '../../../../api/requests/tagRequests';
+
     import tagMenu from '../../menus/tags-menu.vue';
     import tagObject from './tag-object.vue';
 
@@ -83,18 +85,31 @@
         data: function () {
             return {
                 showTagMenu: false,
-
+                //this gives us something to watch and thereby trigger a reload from the db
+                //it is intrinsically meaningless
+                clickCounter: 0,
                 defaults: {}
             }
         },
 
+        asyncComputed: {
+            tags: {
+                get () {
+                    let result = loadTagsForItemRequest( null, this.object );
+
+//                let result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
+                    window.console.log( 'tag-display', 'tags', 53, this.serialNumber, result );
+                    if ( _.isUndefined( result ) ) return [];
+                    return result;
+                },
+                watch() {
+                    this.clickCounter
+                }
+            }
+        },
+
         computed: {
-            tags: function () {
-                let result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
-//                window.console.log( 'tag-display', 'tags', 53, this.serialNumber, result );
-                if ( _.isUndefined( result ) ) return [];
-                return result;
-            },
+
             /**
              * If the menu is attached to an object (item,
              * exam, etc), this will return that object.
@@ -128,8 +143,8 @@
 
         methods: {
             handleEditClick: function () {
-                window.console.log( 'tag-display', 'handleEditClick', 77, );
                 this.showTagMenu = !this.showTagMenu;
+//                window.console.log( 'tag-display', 'handleEditClick', 77, this.showTagMenu);
             },
 
             handleDeleteClick: function ( tag ) {
@@ -145,20 +160,41 @@
 
             },
 
+            /**
+             * when someone clicks a tag row in the menu,
+             * it emits an event handled by this function.
+             * This function thus can be responsible for associating
+             * and disassociating tags
+             * @param tag
+             */
             handleTagToggle: function ( tag ) {
                 window.console.log( 'tag-display', 'handleTagToggle', 96, tag, this, this.object );
 
                 //make sure there's an object to act upon
                 if ( this.object ) {
+                    //The fact that we aren't using the central store
+                    //of tags doesn't matter. The mutations trigger the
+                    //api plugin to send the change to the server.
+                    //At the end, we'll increment the click counter which
+                    //will reload tags from the db
+
                     //find out if already tagged
                     if ( this.$store.getters.isObjectTagged( this.object, tag ) ) {
                         //remove the tag
-                        this.$store.commit( mTypes.disassociateTag, Payload.factory( { obj: this.object, tag: tag } ) );
+                        this.$store.commit( mTypes.disassociateTag, Payload.factory( {
+                            obj: this.object,
+                            tag: tag
+                        } ) );
                     }
                     else {
                         //add the tag
-                        this.$store.commit( mTypes.associateTag, Payload.factory( { obj: this.object, tag: tag } ) );
+                        this.$store.commit( mTypes.associateTag, Payload.factory( {
+                            obj: this.object,
+                            tag: tag
+                        } ) );
                     }
+                    //incrementing this triggers the reload
+                    this.clickCounter += 1;
                 }
             }
         },

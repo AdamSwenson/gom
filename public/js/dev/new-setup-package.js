@@ -31897,7 +31897,11 @@ var handleLoadResponse = function handleLoadResponse(store, data, itemOrExam) {
         if (!_.isUndefined(r.items)) {
             for (var i = 0; i < r.items.length; i++) {
                 var item = store.getters.getItemById(r.items[i].id);
-                if (item) store.commit(mTypes.associateTag, _Payload2.default.factory({ obj: item, tag: tag, mutateSilently: true }));
+                if (item) store.commit(mTypes.associateTag, _Payload2.default.factory({
+                    obj: item,
+                    tag: tag,
+                    mutateSilently: true
+                }));
             }
         }
 
@@ -32007,30 +32011,67 @@ module.exports = {
         });
     },
 
-    loadAllUserTagsRequest: function loadAllUserTagsRequest(store) {
-        //todo Consider memoizing this so only runs once?
+    /**
+     * Gets all tags belonging to the user from the
+     * server
+     *
+     * If store is null, it will return an
+     * array of tag objects once the promise has
+     * resolved.
+     * If store is filled with a store object, it
+     * will load them into storage.
+     * @param store
+     */
+    loadAllUserTagsRequest: function loadAllUserTagsRequest() {
+        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-        //Request is for every student belonging to the user
-        window.axios.get(_apiSettings.Routes.getAllUserTags()).then(function (response) {
+        return window.axios.get(_apiSettings.Routes.getAllUserTags()).then(function (response) {
             window.console.log('loadAllUserTagsRequest', '', 195, response);
-
-            // window.console.log( 'studentRequests', '', 28, response );
-            handleLoadResponse(store, response.data);
+            if (!_.isNull(store)) {
+                handleLoadResponse(store, response.data);
+            } else {
+                var tags = [];
+                _.forEach(response.data, function (t) {
+                    tags.push(_Tag2.default.factory(t));
+                });
+                return tags;
+            }
         }).catch(function (error) {
             window.console.log('examRequests', 'ERROR', 39, error);
             (0, _responseHandlers.errorHandling)(error);
         });
     },
 
-    loadTagsForItemRequest: function loadTagsForItemRequest(store, item) {
+    /**
+     * Gets the tags for the item.
+     * If store is null, it will return an
+     * array of tag objects once the promise has
+     * resolved.
+     * If store is filled with a store object, it
+     * will load them into storage.
+     * @param store
+     * @param item
+     * @returns {Promise.<T>|*}
+     */
+    loadTagsForItemRequest: function loadTagsForItemRequest() {
+        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var item = arguments[1];
+
         var out = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
 
-        //Request is for every student belonging to the user
-        window.axios.get(_apiSettings.Routes.getTagsForItem(item)).then(function (response) {
+        return window.axios.get(_apiSettings.Routes.getTagsForItem(item)).then(function (response) {
             window.console.log('loadTagsForItemRequest', '', 213, response);
-            handleLoadResponse(store, response.data, item);
+            if (!_.isNull(store)) {
+                handleLoadResponse(store, response.data, item);
+            } else {
+                var tags = [];
+                _.forEach(response.data, function (t) {
+                    tags.push(_Tag2.default.factory(t));
+                });
+                return tags;
+            }
         }).catch(function (error) {
             window.console.log('examRequests', 'ERROR', 39, error);
             (0, _responseHandlers.errorHandling)(error);
@@ -32972,6 +33013,39 @@ var Tag = function (_IModel) {
 
         _this.props = [];
 
+        /**
+         * Holds arbitrary representations
+         * of the exams this is associated with.
+         *
+         * NB:
+         *      Make sure to type check when using!
+         *
+         *      Only used in limited places. Don't count on things being here
+         */
+        _this.exams = [];
+
+        /**
+         * Holds arbitrary representations
+         * of the items this is associated with.
+         *
+         * NB:
+         *      Make sure to type check when using!
+         *
+         *      Only used in limited places. Don't count on things being here
+         */
+        _this.items = [];
+
+        /**
+         * Holds arbitrary representations
+         * of the students this is associated with.
+         *
+         * NB:
+         *      Make sure to type check when using!
+         *
+         *      Only used in limited places. Don't count on things being here
+         */
+        _this.students = [];
+
         return _this;
     }
 
@@ -33014,7 +33088,9 @@ var Tag = function (_IModel) {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'name', 'props', 'text', 'priority'];
+            return ['id', 'name', 'props', 'text', 'priority',
+            //associated objects
+            'items', 'exams', 'students'];
         }
     }, {
         key: 'aliasMap',
@@ -55807,6 +55883,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
@@ -55822,6 +55911,17 @@ exports.default = {
 
     data: function data() {
         return {
+            /**
+             * The type of tagged object to display
+             * Usual values:
+             *      false
+             *      items
+             *      students
+             *      exams
+             */
+            filterTo: 'all',
+
+            filterVals: ['all', 'exams', 'items', 'students'],
 
             isEditable: false,
             isNewTagInputVisible: false,
@@ -55832,6 +55932,16 @@ exports.default = {
             priority: 0,
             defaults: {}
         };
+    },
+
+    asyncComputed: {
+        tags: function tags() {
+            //                return this.$store.getters[ gTypes.getAllTags ];
+
+            var result = (0, _tagRequests.loadAllUserTagsRequest)();
+            if (_.isUndefined(result)) return [];
+            return result;
+        }
     },
 
     computed: {
@@ -55857,10 +55967,6 @@ exports.default = {
 
         newTagButtonLabel: function newTagButtonLabel() {
             return this.isNewTagInputVisible ? 'Save' : 'New';
-        },
-
-        tags: function tags() {
-            return this.$store.getters[gTypes.getAllTags];
         },
 
         /**
@@ -55892,6 +55998,30 @@ exports.default = {
     },
 
     methods: {
+        filterTabStyling: function filterTabStyling(taggedObjectType) {
+            if (this.filterTo === taggedObjectType) return 'is-active';
+        },
+
+        /**
+         * Handle a click on the filtration tabs
+         */
+        filterDisplayedTagsBy: function filterDisplayedTagsBy(taggedObjectType) {
+            switch (taggedObjectType) {
+                case 'exams':
+                    this.filterTo = taggedObjectType;
+                    break;
+                case 'items':
+                    this.filterTo = taggedObjectType;
+                    break;
+
+                case 'students':
+                    this.filterTo = taggedObjectType;
+                    break;
+                default:
+
+                    this.filterTo = 'all';
+            }
+        },
 
         styling: function styling(tag) {
             var styles = "is-default ";
@@ -55936,6 +56066,18 @@ exports.default = {
 
             //toggle state
             this.isNewTagInputVisible = !this.isNewTagInputVisible;
+        },
+
+        /**
+         * Returns a boolean of whether to display
+         * the row containing the tag
+         */
+        isDisplayed: function isDisplayed(tag) {
+            if (this.filterTo === 'all') return true;
+
+            if (tag[this.filterTo].length > 0) return true;
+
+            return false;
         },
 
         /**
@@ -57003,8 +57145,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
-//
-//
 
 
 exports.default = {
@@ -57022,9 +57162,10 @@ exports.default = {
     asyncComputed: {
 
         exams: function exams() {
-            if (this.item && this.item.id !== -1) {
-                return (0, _historyRequests.getItemHistory)(this.item);
+            if (!_.isUndefined(this.item) && this.item.id !== -1) {
+                return (0, _historyRequests.getItemHistory)(this.$store, this.item);
             }
+            return [];
         }
 
     },
@@ -57041,7 +57182,12 @@ exports.default = {
 
     },
 
-    methods: {}
+    methods: {
+        handleClick: function handleClick(examId) {
+            window.console.log('history-panel', 'handleClick', 70, examId);
+            //todo redirect to new exam
+        }
+    }
 };
 
 /***/ }),
@@ -57075,66 +57221,12 @@ var _Item = __webpack_require__(5);
 
 var _Item2 = _interopRequireDefault(_Item);
 
-var _tagRequests = __webpack_require__(65);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 //    import tagMenu from '../menus/tags-menu.vue';
 
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/**
- * This is the settings component which contains
- * the more lengthy item text (like the prompt question)
- * as well as other settings, depending on which role it
- * is playing.
- *
- * todo Add an 'other uses of this quetion' area
- * Created by adam on 2/19/17.
- */
 
 exports.default = {
     components: {
@@ -57199,13 +57291,58 @@ exports.default = {
 
     events: {},
 
-    created: function created() {
+    created: function created() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
-        //            loadTagsForItemRequest(this.$store, this.item);
-    }
-};
-
-// import { loadTagsForItemRequest } from '../../../api/requests/tagRequests';
+/**
+ * This is the settings component which contains
+ * the more lengthy item text (like the prompt question)
+ * as well as other settings, depending on which role it
+ * is playing.
+ *
+ * todo Add an 'other uses of this quetion' area
+ * Created by adam on 2/19/17.
+ */
 
 /***/ }),
 /* 216 */
@@ -58916,6 +59053,8 @@ var gTypes = _interopRequireWildcard(_getterTypes);
 
 var _apiSettings = __webpack_require__(23);
 
+var _tagRequests = __webpack_require__(65);
+
 var _tagsMenu = __webpack_require__(160);
 
 var _tagsMenu2 = _interopRequireDefault(_tagsMenu);
@@ -58933,63 +59072,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Other dialogs will handle searches by tag
  * or tag creation
  */
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
 exports.default = {
 
     props: ['serialNumber', 'objectType'],
@@ -59002,18 +59084,31 @@ exports.default = {
     data: function data() {
         return {
             showTagMenu: false,
-
+            //this gives us something to watch and thereby trigger a reload from the db
+            //it is intrinsically meaningless
+            clickCounter: 0,
             defaults: {}
         };
     },
 
+    asyncComputed: {
+        tags: {
+            get: function get() {
+                var result = (0, _tagRequests.loadTagsForItemRequest)(null, this.object);
+
+                //                let result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
+                window.console.log('tag-display', 'tags', 53, this.serialNumber, result);
+                if (_.isUndefined(result)) return [];
+                return result;
+            },
+            watch: function watch() {
+                this.clickCounter;
+            }
+        }
+    },
+
     computed: {
-        tags: function tags() {
-            var result = this.$store.getters[gTypes.getTagsForObject](this.serialNumber);
-            //                window.console.log( 'tag-display', 'tags', 53, this.serialNumber, result );
-            if (_.isUndefined(result)) return [];
-            return result;
-        },
+
         /**
          * If the menu is attached to an object (item,
          * exam, etc), this will return that object.
@@ -59047,8 +59142,8 @@ exports.default = {
 
     methods: {
         handleEditClick: function handleEditClick() {
-            window.console.log('tag-display', 'handleEditClick', 77);
             this.showTagMenu = !this.showTagMenu;
+            //                window.console.log( 'tag-display', 'handleEditClick', 77, this.showTagMenu);
         },
 
         handleDeleteClick: function handleDeleteClick(tag) {
@@ -59063,19 +59158,40 @@ exports.default = {
             }
         },
 
+        /**
+         * when someone clicks a tag row in the menu,
+         * it emits an event handled by this function.
+         * This function thus can be responsible for associating
+         * and disassociating tags
+         * @param tag
+         */
         handleTagToggle: function handleTagToggle(tag) {
             window.console.log('tag-display', 'handleTagToggle', 96, tag, this, this.object);
 
             //make sure there's an object to act upon
             if (this.object) {
+                //The fact that we aren't using the central store
+                //of tags doesn't matter. The mutations trigger the
+                //api plugin to send the change to the server.
+                //At the end, we'll increment the click counter which
+                //will reload tags from the db
+
                 //find out if already tagged
                 if (this.$store.getters.isObjectTagged(this.object, tag)) {
                     //remove the tag
-                    this.$store.commit(mTypes.disassociateTag, _Payload2.default.factory({ obj: this.object, tag: tag }));
+                    this.$store.commit(mTypes.disassociateTag, _Payload2.default.factory({
+                        obj: this.object,
+                        tag: tag
+                    }));
                 } else {
                     //add the tag
-                    this.$store.commit(mTypes.associateTag, _Payload2.default.factory({ obj: this.object, tag: tag }));
+                    this.$store.commit(mTypes.associateTag, _Payload2.default.factory({
+                        obj: this.object,
+                        tag: tag
+                    }));
                 }
+                //incrementing this triggers the reload
+                this.clickCounter += 1;
             }
         }
     },
@@ -59089,7 +59205,61 @@ exports.default = {
     },
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 223 */
@@ -59283,7 +59453,7 @@ exports.default = {
     created: function created() {
 
         //Get all tags, not just those used on this
-        (0, _tagRequests.loadAllUserTagsRequest)(this.$store);
+        //            loadAllUserTagsRequest(this.$store);
 
         //            switch ( this.objectType ) {
         //                case 'item':
@@ -59981,12 +60151,13 @@ module.exports = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
 
-        window.axios.get(_apiSettings.Routes.getItemHistory(item), out).then(function (response) {
+        return window.axios.get(_apiSettings.Routes.getItemHistory(item), out).then(function (response) {
             //The response will contain exams
             //if we want scores, we can go back again with those
             var exams = [];
             if (response.data.length > 0) {
                 _.forEach(response.data, function (exam) {
+                    // window.console.log( 'historyRequests', 'get item history', 38, exam );
                     exams.push(_Exam2.default.factory(exam));
                 });
             }
@@ -65958,6 +66129,8 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.createTag, 
     var objSn = payload.obj.serialNumber;
     var tagSn = payload.tag.serialNumber;
 
+    if (_.isUndefined(tagSn)) return false;
+
     // /create an entry if one doesn't already exist
     if (_.isUndefined(state.associations[objSn])) {
         _vue2.default.set(state.associations, objSn, []);
@@ -66001,7 +66174,7 @@ var actions = {
             //make sure we don't already have a tag
             //object
             var tag = getters.getTagById(r.id);
-            // window.console.log( 'tagRequests', 'tag', 55, tag);
+            window.console.log('tagRequests', 'tag', 55, tag);
 
             //if the tag doesn't already exist
             //we create it
@@ -66088,15 +66261,16 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.getTagBySerialNum
     };
 }), _defineProperty(_getters, 'getTagById', function getTagById(state, getters, rootState, id) {
     return function (id) {
-        var serialNumber = function (state, id) {
-            var r = state.tags.filter(function (i) {
-                if (i.id === id) {
-                    return i;
-                }
-            });
-            return r[0];
-        }(state, id);
-
+        // let serialNumber = (function ( state, id ) {
+        var r = state.tags.filter(function (i) {
+            if (i.id === id) {
+                return i;
+            }
+        });
+        // return r[ 0 ];
+        // })( state, id );
+        var serialNumber = r[0];
+        // window.console.log( 'tags', 'getTagById', 244, r, serialNumber);
         return getTagBySerialNumber(state, serialNumber);
     };
 }), _defineProperty(_getters, gTypes.getAllTags, function (state, getters, rootState) {
@@ -78564,7 +78738,7 @@ exports = module.exports = __webpack_require__(6)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -78648,7 +78822,7 @@ exports = module.exports = __webpack_require__(6)();
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "\n.tags-panel .filter-tabs {\n  text-transform: capitalize;\n}\n", ""]);
 
 // exports
 
@@ -84577,14 +84751,20 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "panel-history-component "
-  }, [_vm._v("\n    >\n    "), _c('h3', {
+  }, [_c('h3', {
     staticClass: "title is-3"
-  }, [_vm._v("Past scores for this item")]), _vm._v(" "), _c('div', {
+  }, [_vm._v("Exams using this item")]), _vm._v(" "), _c('div', {
     staticClass: "tile is-ancestor"
   }, _vm._l((_vm.exams), function(exam) {
     return (_vm.exams.length > 0) ? _c('div', {
       staticClass: "tile"
-    }, [_vm._v("\n            " + _vm._s(exam.name) + "\n        ")]) : _vm._e()
+    }, [_vm._v("j\n            "), _c('a', {
+      on: {
+        "click": function($event) {
+          _vm.handleClick(exam.id)
+        }
+      }
+    }, [_vm._v(_vm._s(exam.name))])]) : _vm._e()
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -85050,8 +85230,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "tags-panel panel"
   }, [_c('div', {
     staticClass: "panel-heading"
-  }, [_vm._v("\n        Tags\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._l((_vm.tags), function(tag) {
+  }, [_vm._v("\n        Tags\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _c('div', {
+    staticClass: "panel-tabs filter-tabs"
+  }, _vm._l((_vm.filterVals), function(v) {
     return _c('a', {
+      class: _vm.filterTabStyling(v),
+      on: {
+        "click": function($event) {
+          _vm.filterDisplayedTagsBy(v)
+        }
+      }
+    }, [_vm._v(_vm._s(v))])
+  })), _vm._v(" "), _vm._l((_vm.tags), function(tag) {
+    return (_vm.isDisplayed(tag)) ? _c('a', {
       key: tag.serialNumber,
       staticClass: "panel-block ",
       class: _vm.styling(tag),
@@ -85060,7 +85251,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           _vm.handleRowClick(tag)
         }
       }
-    }, [_vm._m(2, true), _vm._v(" "), _c('span', [_vm._v("\n            " + _vm._s(tag.name) + "\n        ")]), _vm._v(" "), _vm._t("default")], 2)
+    }, [_vm._m(1, true), _vm._v(" "), _c('span', [_vm._v("\n            " + _vm._s(tag.name) + "\n        ")]), _vm._v(" "), _vm._t("default")], 2) : _vm._e()
   }), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
@@ -85103,7 +85294,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "help"
   }, [_vm._v("The text you want to see in the tag")])]), _vm._v(" "), _c('div', {
     staticClass: "field is-horizontal"
-  }, [_vm._m(3), _vm._v(" "), _c('div', {
+  }, [_vm._m(2), _vm._v(" "), _c('div', {
     staticClass: "field-body"
   }, [_c('div', {
     staticClass: "field is-narrow"
@@ -85185,7 +85376,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.handleNewClick
     }
-  }, [_vm._v(_vm._s(_vm.newTagButtonLabel) + "\n    ")])])], 2)
+  }, [_vm._v(_vm._s(_vm.newTagButtonLabel) + "\n        ")])])], 2)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "panel-block tag-search-area"
@@ -85202,12 +85393,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('i', {
     staticClass: "fa fa-search"
   })])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "panel-tabs"
-  }, [_c('a', {
-    staticClass: "is-active"
-  }, [_vm._v("All")]), _vm._v(" "), _c('a', [_vm._v("Items")]), _vm._v(" "), _c('a', [_vm._v("Students")]), _vm._v(" "), _c('a', [_vm._v("Exams")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('span', {
     staticClass: "panel-icon"

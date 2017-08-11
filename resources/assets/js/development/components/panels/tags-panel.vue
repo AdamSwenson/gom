@@ -68,7 +68,7 @@
         created: function () {
 
             //Get all tags, not just those used on this
-            loadAllUserTagsRequest(this.$store);
+//            loadAllUserTagsRequest(this.$store);
 
 //            switch ( this.objectType ) {
 //                case 'item':

@@ -1,17 +1,15 @@
 <template>
     <div class="panel-history-component ">
-        <!--tab-pane"-->
-        <!--role="tabpanel"-->
-        >
-        <h3 class="title is-3">Past scores for this item</h3>
+
+        <h3 class="title is-3">Exams using this item</h3>
 
         <div class="tile is-ancestor">
 
             <div class="tile"
                  v-if="exams.length > 0"
                  v-for="exam in exams"
-            >
-                {{exam.name}}
+            >j
+                <a v-on:click="handleClick(exam.id)">{{exam.name}}</a>
             </div>
         </div>
     </div>
@@ -43,9 +41,10 @@
         asyncComputed: {
 
             exams: function () {
-                if(this.item && this.item.id !== -1){
-                    return getItemHistory( this.item );
+                if ( !_.isUndefined( this.item ) && this.item.id !== -1 ) {
+                    return getItemHistory( this.$store, this.item );
                 }
+                return [];
             }
 
         },
@@ -62,10 +61,15 @@
             },
 
 
-
         },
 
-        methods: {}
+        methods: {
+            handleClick: function ( examId ) {
+                window.console.log( 'history-panel', 'handleClick', 70, examId );
+                //todo redirect to new exam
+
+            }
+        }
     }
 
 </script>

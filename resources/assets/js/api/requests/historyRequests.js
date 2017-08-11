@@ -27,7 +27,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION
         };
 
-        window.axios
+        return window.axios
             .get( Routes.getItemHistory( item ), out )
             .then( ( response ) => {
                 //The response will contain exams
@@ -35,6 +35,7 @@ module.exports = {
                 let exams = [];
                 if(response.data.length > 0){
                     _.forEach(response.data, (exam)=>{
+                        // window.console.log( 'historyRequests', 'get item history', 38, exam );
                         exams.push(Exam.factory(exam));
                     });
                 }

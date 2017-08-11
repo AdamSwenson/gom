@@ -15,19 +15,28 @@
         </div>
 
 
-        <div class="panel-tabs">
-            <a class="is-active">All</a>
-            <a>Items</a>
-            <a>Students</a>
-            <a>Exams</a>
+        <div class="panel-tabs filter-tabs">
+            <a v-for="v in filterVals"
+               v-bind:class="filterTabStyling(v)"
+               v-on:click="filterDisplayedTagsBy(v)"
+            >{{v}}</a>
+            <!--v-bind:class="filterTabStyling('all')">{{}}All</a>-->
+
+            <!--<a v-bind:class="filterTabStyling('items')"-->
+            <!--v-on:click="filterDisplayedTagsBy('items')">Items</a>-->
+            <!--<a v-bind:class="filterTabStyling('students')"-->
+            <!--v-on:click="filterDisplayedTagsBy('students')">Students</a>-->
+            <!--<a v-bind:class="filterTabStyling('exams')"-->
+            <!--v-on:click="filterDisplayedTagsBy('exams')">Exams</a>-->
         </div>
 
 
         <a class="panel-block "
            v-for="tag in tags"
            v-on:click="handleRowClick(tag)"
-           :key="tag.serialNumber"
+           v-bind:key="tag.serialNumber"
            v-bind:class="styling(tag)"
+           v-if="isDisplayed(tag)"
         >
             <span class="panel-icon">
                 <i class="fa fa-tag"></i>
@@ -68,11 +77,11 @@
                                 0
                             </label>
                             <label class="radio">
-                                <input type="radio" name="priority" value="1"  v-model="priority">
+                                <input type="radio" name="priority" value="1" v-model="priority">
                                 1
                             </label>
                             <label class="radio">
-                                <input type="radio" name="priority"  value="3" v-model="priority">
+                                <input type="radio" name="priority" value="3" v-model="priority">
                                 3
                             </label>
                         </div>
@@ -83,46 +92,50 @@
             </div>
 
 
-        <!--<div class="field">-->
-        <!--<label for="new-tag-text">(optional) Brief reminder of what this tag means</label>-->
-        <!--<div class="control">-->
-        <!--<textarea id="new-tag-text"-->
-        <!--rows="3"-->
-        <!--class="textarea"-->
-        <!--v-model="newTagText"-->
-        <!--&gt;</textarea>-->
+            <!--<div class="field">-->
+            <!--<label for="new-tag-text">(optional) Brief reminder of what this tag means</label>-->
+            <!--<div class="control">-->
+            <!--<textarea id="new-tag-text"-->
+            <!--rows="3"-->
+            <!--class="textarea"-->
+            <!--v-model="newTagText"-->
+            <!--&gt;</textarea>-->
+            <!--</div>-->
+            <!--<p class="help">This won't usually be visible. To see it, click the tag.</p>-->
+
+            <!--</div>-->
+
+        </div>
+
+
+        <div class="panel-block new-tag-button-area">
+            <a class="button new-tag-button  is-fullwidth"
+               v-bind:class="newTagButtonStyling"
+               v-on:click="handleNewClick"
+            >{{ newTagButtonLabel }}
+            </a>
+        </div>
+
+
+        <!--<div class="panel-block edit-tag-button-area"-->
+        <!--v-if="isEditButtonVisible">-->
+        <!--<a class="button edit-tag-button  is-fullwidth"-->
+        <!--v-bind:class="editTagButtonStyling"-->
+        <!--v-on:click="handleEditClick"-->
+        <!--&gt;{{ editTagButtonLabel }}-->
+        <!--</a>-->
         <!--</div>-->
-        <!--<p class="help">This won't usually be visible. To see it, click the tag.</p>-->
-
-        <!--</div>-->
-
-    </div>
-
-
-    <div class="panel-block new-tag-button-area">
-        <a class="button new-tag-button  is-fullwidth"
-           v-bind:class="newTagButtonStyling"
-           v-on:click="handleNewClick"
-        >{{ newTagButtonLabel }}
-        </a>
-    </div>
-
-
-    <!--<div class="panel-block edit-tag-button-area"-->
-    <!--v-if="isEditButtonVisible">-->
-    <!--<a class="button edit-tag-button  is-fullwidth"-->
-    <!--v-bind:class="editTagButtonStyling"-->
-    <!--v-on:click="handleEditClick"-->
-    <!--&gt;{{ editTagButtonLabel }}-->
-    <!--</a>-->
-    <!--</div>-->
 
     </div>
 
 </template>
 
 <style lang="scss">
-
+    .tags-panel {
+        .filter-tabs {
+            text-transform: capitalize;
+        }
+    }
 </style>
 
 <script>
@@ -160,6 +173,17 @@
 
         data: function () {
             return {
+                /**
+                 * The type of tagged object to display
+                 * Usual values:
+                 *      false
+                 *      items
+                 *      students
+                 *      exams
+                 */
+                filterTo: 'all',
+
+                filterVals: [ 'all', 'exams', 'items', 'students' ],
 
                 isEditable: false,
                 isNewTagInputVisible: false,
@@ -170,6 +194,17 @@
                 priority: 0,
                 defaults: {}
             }
+        },
+
+        asyncComputed: {
+            tags: function () {
+//                return this.$store.getters[ gTypes.getAllTags ];
+
+                let result = loadAllUserTagsRequest();
+                if ( _.isUndefined( result ) ) return [];
+                return result;
+
+            },
         },
 
         computed: {
@@ -198,10 +233,6 @@
                 return this.isNewTagInputVisible ? 'Save' : 'New'
             },
 
-
-            tags: function () {
-                return this.$store.getters[ gTypes.getAllTags ];
-            },
 
             /**
              * If the menu is attached to an object (item,
@@ -232,6 +263,31 @@
         },
 
         methods: {
+            filterTabStyling: function ( taggedObjectType ) {
+                if ( this.filterTo === taggedObjectType ) return 'is-active'
+            },
+
+            /**
+             * Handle a click on the filtration tabs
+             */
+            filterDisplayedTagsBy: function ( taggedObjectType ) {
+                switch ( taggedObjectType ) {
+                    case 'exams':
+                        this.filterTo = taggedObjectType;
+                        break;
+                    case 'items':
+                        this.filterTo = taggedObjectType;
+                        break;
+
+                    case 'students':
+                        this.filterTo = taggedObjectType;
+                        break;
+                    default:
+
+                        this.filterTo = 'all';
+                }
+
+            },
 
             styling: function ( tag ) {
                 let styles = "is-default ";
@@ -278,6 +334,18 @@
 
                 //toggle state
                 this.isNewTagInputVisible = !this.isNewTagInputVisible;
+            },
+
+            /**
+             * Returns a boolean of whether to display
+             * the row containing the tag
+             */
+            isDisplayed: function ( tag ) {
+                if ( this.filterTo === 'all' ) return true;
+
+                if ( tag[ this.filterTo ].length > 0 ) return true;
+
+                return false;
             },
 
             /**

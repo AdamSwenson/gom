@@ -14,6 +14,7 @@ use Mockery\Exception;
 class TagsController extends Controller
 {
 
+    public $loadWithList = ['exams', 'items', 'students'];
 
     public function __construct()
     {
@@ -27,7 +28,7 @@ class TagsController extends Controller
      */
     public function index()
     {
-        return Tag::with(['exams', 'items'])->get();
+        return Tag::with($this->loadWithList)->get();
     }
 
     /**
@@ -152,21 +153,23 @@ class TagsController extends Controller
      */
     public function show( $id )
     {
-        return Tag::find($id);
+        return Tag::find($id)->with($this->loadWithList);
     }
 
     public function showForExam( Exam $exam )
     {
-//        $e = Exam::with('tags')->where('exam_id', $exam->id)->get();
-        $out = [];
-        $tags = $exam->tags;
-        var_dump($exam);
-        foreach($tags as $tag){
-            var_dump($tag->id);
-            $out[] = $tag;
-        }
-        return $out;
-//        return $exam->tags;
+
+
+////        $e = Exam::with('tags')->where('exam_id', $exam->id)->get();
+//        $out = [];
+//        $tags = $exam->tags;
+//        var_dump($exam);
+//        foreach($tags as $tag){
+//            var_dump($tag->id);
+//            $out[] = $tag;
+//        }
+//        return $out;
+        return $exam->tags()->with($this->loadWithList)->get();
 //        fo
 //        var_dump($tags);
 //  return $tags;
@@ -174,12 +177,12 @@ class TagsController extends Controller
 
     public function showForItem( Item $item )
     {
-        return $item->tags;
+        return $item->tags()->with($this->loadWithList)->get();
     }
 
     public function showForStudent( Student $student )
     {
-        return $student->tags;
+        return $student->tags()->with($this->loadWithList)->get();
     }
 
     /**

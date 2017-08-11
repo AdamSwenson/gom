@@ -38,7 +38,7 @@ class Tag extends BaseModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function student(){
+    public function students(){
         return $this->belongsToMany(Student::class, 'student_tag')
             ->withTimestamps();
     }

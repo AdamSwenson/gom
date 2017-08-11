@@ -99,6 +99,8 @@ const mutations = {
         let objSn = payload.obj.serialNumber;
         let tagSn = payload.tag.serialNumber;
 
+        if(_.isUndefined(tagSn)) return false;
+
         // /create an entry if one doesn't already exist
         if ( _.isUndefined( state.associations[ objSn ] ) ) {
             Vue.set( state.associations, objSn, [] );
@@ -143,7 +145,7 @@ const actions = {
             //make sure we don't already have a tag
             //object
             let tag = getters.getTagById( r.id );
-            // window.console.log( 'tagRequests', 'tag', 55, tag);
+            window.console.log( 'tagRequests', 'tag', 55, tag);
 
             //if the tag doesn't already exist
             //we create it
@@ -231,15 +233,16 @@ const getters = {
         },
 
     getTagById: ( state, getters, rootState, id ) => ( id ) => {
-        let serialNumber = (function ( state, id ) {
+        // let serialNumber = (function ( state, id ) {
             var r = state.tags.filter( function ( i ) {
                 if ( i.id === id ) {
                     return i;
                 }
             } );
-            return r[ 0 ];
-        })( state, id );
-
+            // return r[ 0 ];
+        // })( state, id );
+      let serialNumber = r[0];
+        // window.console.log( 'tags', 'getTagById', 244, r, serialNumber);
         return getTagBySerialNumber( state, serialNumber );
     },
 
