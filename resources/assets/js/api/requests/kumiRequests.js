@@ -80,7 +80,7 @@ module.exports = {
         let out = {
             requestVersion: REQUEST_VERSION
         };
-        window.axios
+        return window.axios
             .get( Routes.loadExamKumi(exam) )
             .then( ( response ) => {
                 window.console.log( 'kumiRequests', 'loadExamKumi', 28, response );

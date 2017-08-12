@@ -19,18 +19,18 @@
             </div>
 
             <div class="tile">
-            <div class="tile is-vertical is-4">
+                <div class="tile is-vertical is-4">
 
-                <p>{{ examId }}</p>
-                <p>Can sync {{ canSync}}</p>
+                    <p>{{ examId }}</p>
+                    <p>Can sync {{ canSync}}</p>
 
-                <sync-indicator></sync-indicator>
+                    <sync-indicator></sync-indicator>
 
-                <!--<existing-exams-menu>&lt;!&ndash;<p slot="row-content">taco</p>&ndash;&gt;</existing-exams-menu>-->
-            </div>
-            <div class="tile is-vertical is-4">
-                <!--<existing-items-menu></existing-items-menu>-->
-            </div>
+                    <!--<existing-exams-menu>&lt;!&ndash;<p slot="row-content">taco</p>&ndash;&gt;</existing-exams-menu>-->
+                </div>
+                <div class="tile is-vertical is-4">
+                    <!--<existing-items-menu></existing-items-menu>-->
+                </div>
             </div>
 
 
@@ -152,8 +152,8 @@
                 return this.$store.getters.currentExam;
             },
 
-            examId: function(){
-              return this.exam.id;
+            examId: function () {
+                return this.exam.id;
             },
 
             examSerialNumber: function () {
@@ -168,25 +168,29 @@
         events: {},
 
         created: function () {
-            window.console.log( 'new-setup', 'created', 169);
+            window.console.log( 'new-setup', 'created', 169 );
             this.$store.commit( 'loadInitialData' );
-            loadExamKumi( this.$store, this.exam );
+            let p = loadExamKumi( this.$store, this.exam );
             let me = this;
-            setTimeout( function () {
+//            setTimeout( function () {
+            p.then( function () {
+
+
                 //set the first kumi as the one to display
                 //this needs to happen before associate exam is called
                 me.$store.commit( 'updateSelectedKumi' );
 
                 loadAllStudents( me.$store, me.exam );
+            } );
 
-            }, 3000 );
+//            }, 3000 );
             //Tags for the items loaded
             //Does not load tags that aren't yet used on the
             //exam. That is done on the tags-panel creation
-            this.$store.dispatch('processTagsOutOfLoadedItems');
+            //todo this is probably unnecessary
+            this.$store.dispatch( 'processTagsOutOfLoadedItems' );
 
         },
-
 
 
     }

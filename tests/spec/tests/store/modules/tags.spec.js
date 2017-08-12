@@ -23,7 +23,7 @@ let obj = tags.default;
 let { getters, actions, mutations, state } = obj;
 
 
-fdescribe( "store.modules.tags | ", function () {
+describe( "store.modules.tags | ", function () {
     beforeEach( function () {
         state.tags = [];
         state.associations = [];

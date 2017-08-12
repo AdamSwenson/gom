@@ -101,7 +101,7 @@ module.exports = {
         let out = {
             requestVersion: REQUEST_VERSION
         };
-        window.console.log( 'tagRequests', 'associateTagRequest', 100, object );
+        // window.console.log( 'tagRequests', 'associateTagRequest', 100, tag, object );
 
         if ( object.kind === 'item' ) {
             return window.axios

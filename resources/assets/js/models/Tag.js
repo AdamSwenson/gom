@@ -6,6 +6,8 @@ export default class Tag extends IModel {
     constructor() {
         super();
 
+        this.kind = 'tag';
+
         /**
          * The db identifier of the model
          */
@@ -15,7 +17,9 @@ export default class Tag extends IModel {
 
         this.text = '';
 
-        this.props = [];
+        this.props = {
+            priority: 1
+        };
 
         /**
          * Holds arbitrary representations
@@ -51,17 +55,59 @@ export default class Tag extends IModel {
          */
         this.students = [];
 
+
+    }
+
+    static get styleMap() {
+        //making this 1-indexed because
+        //some problem arises when trying to
+        //retrieve a key of 0
+        return {
+            1: 'is-primary',
+            2: 'is-info',
+            3: 'is-warning',
+            4: 'is-danger',
+            5: 'is-black',
+            6: 'is-light',
+            7: 'is-success',
+            8: 'is-white',
+            9: 'is-dark',
+
+        }
+    }
+
+    /**
+     * Given the string style returns the numeric key
+     * which is the thing stored in the db
+     * @param styleString
+     * @returns {*}
+     */
+    static getStyleKey( styleString ) {
+        let key = _.findKey( Tag.styleMap, function ( t ) {
+            return t === styleString;
+        } );
+        if ( _.isUndefined( key ) ) return null;
+
+        return _.toNumber( key );
+    }
+
+
+    styleString() {
+        let map = Tag.styleMap;
+        let style = map[ this.priority ];
+        // window.console.log( 'Tag', 'styleString', 88, this.priority, style, map);
+        return style;
     }
 
     get priority() {
         if ( this.props.priority ) {
             return this.props.priority;
         }
-        return false;
+        // return false;
     }
 
     set priority( v ) {
-        this.props[ 'priority' ] = v;
+        this.props.priority = _.toNumber( v );
     }
 
     /**

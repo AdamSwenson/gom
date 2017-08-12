@@ -17,7 +17,7 @@ export default class Note extends IModel {
 
         this.priority = '';
 
-        this.props = [];
+        this.props = {};
 
         this.createdAt = '';
 

@@ -20,14 +20,6 @@
                v-bind:class="filterTabStyling(v)"
                v-on:click="filterDisplayedTagsBy(v)"
             >{{v}}</a>
-            <!--v-bind:class="filterTabStyling('all')">{{}}All</a>-->
-
-            <!--<a v-bind:class="filterTabStyling('items')"-->
-            <!--v-on:click="filterDisplayedTagsBy('items')">Items</a>-->
-            <!--<a v-bind:class="filterTabStyling('students')"-->
-            <!--v-on:click="filterDisplayedTagsBy('students')">Students</a>-->
-            <!--<a v-bind:class="filterTabStyling('exams')"-->
-            <!--v-on:click="filterDisplayedTagsBy('exams')">Exams</a>-->
         </div>
 
 
@@ -49,9 +41,10 @@
             <slot></slot>
         </a>
 
-        <div id="new-tag-input-area is-fullwidth"
+
+        <div id="new-tag-input-area"
+             class="panel-block is-fullwidth"
              v-show="isNewTagInputVisible"
-             class="panel-block "
         >
             <div class="field">
                 <label class="label">Tag</label>
@@ -64,46 +57,15 @@
                 <p class="help">The text you want to see in the tag</p>
             </div>
 
-
-            <div class="field is-horizontal">
-                <div class="field-label">
-                    <label class="label">Color</label>
+            <div class="field">
+                <label class="label">Color</label>
+                <div class="control">
+                    <color-selector
+                            v-on:color-selected="handleColorSelection"
+                    ></color-selector>
                 </div>
-                <div class="field-body">
-                    <div class="field is-narrow">
-                        <div class="control">
-                            <label class="radio">
-                                <input type="radio" name="priority" value="0" v-model="priority">
-                                0
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="priority" value="1" v-model="priority">
-                                1
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="priority" value="3" v-model="priority">
-                                3
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
                 <p class="help"></p>
             </div>
-
-
-            <!--<div class="field">-->
-            <!--<label for="new-tag-text">(optional) Brief reminder of what this tag means</label>-->
-            <!--<div class="control">-->
-            <!--<textarea id="new-tag-text"-->
-            <!--rows="3"-->
-            <!--class="textarea"-->
-            <!--v-model="newTagText"-->
-            <!--&gt;</textarea>-->
-            <!--</div>-->
-            <!--<p class="help">This won't usually be visible. To see it, click the tag.</p>-->
-
-            <!--</div>-->
 
         </div>
 
@@ -116,15 +78,6 @@
             </a>
         </div>
 
-
-        <!--<div class="panel-block edit-tag-button-area"-->
-        <!--v-if="isEditButtonVisible">-->
-        <!--<a class="button edit-tag-button  is-fullwidth"-->
-        <!--v-bind:class="editTagButtonStyling"-->
-        <!--v-on:click="handleEditClick"-->
-        <!--&gt;{{ editTagButtonLabel }}-->
-        <!--</a>-->
-        <!--</div>-->
 
     </div>
 
@@ -151,6 +104,7 @@
     import { Routes } from '../../../api/apiSettings';
     import { loadAllUserTagsRequest, createTagRequest, associateTagRequest } from '../../../api/requests/tagRequests';
 
+    import colorSelector from '../panels/tag/color-selector.vue';
 
     /**
      * This is a menu of all tags existing for the user.
@@ -169,7 +123,9 @@
          */
         props: [ 'objectSerialNumber', 'objectType' ],
 
-        components: {},
+        components: {
+            'color-selector': colorSelector
+        },
 
         data: function () {
             return {
@@ -189,9 +145,11 @@
                 isNewTagInputVisible: false,
                 isEditButtonVisible: true,
 
+                //these are the values of the new tag
                 newTagName: '',
                 newTagText: '',
-                priority: 0,
+                priority: 1,
+
                 //if true, uses values stored in store.tags
                 //if false, handles and stores all tag related
                 //data internally.
@@ -225,14 +183,11 @@
                     return 'is-warning '
                 }
                 return 'is-primary is-outlined'
-            }
-            ,
+            },
 
             editTagButtonLabel: function () {
                 return this.isEditable ? 'Done' : 'Edit'
-            }
-            ,
-
+            },
 
             newTagButtonStyling: function () {
                 if ( this.isNewTagInputVisible ) {
@@ -240,13 +195,11 @@
                     return 'is-warning '
                 }
                 return 'is-primary is-outlined'
-            }
-            ,
+            },
 
             newTagButtonLabel: function () {
                 return this.isNewTagInputVisible ? 'Save' : 'New'
-            }
-            ,
+            },
 
 
             /**
@@ -302,27 +255,32 @@
                         this.filterTo = 'all';
                 }
 
-            }
-            ,
+            },
 
             styling: function ( tag ) {
-                let styles = "is-default ";
+                let styles = tag.styleString();
                 if ( this.isHighlighted( tag ) ) {
-                    styles += 'is-active';
+                    styles += ' is-active';
                 }
                 //this handles tag props having to do w style
                 return styles;
-            }
-            ,
+            },
+
+            handleColorSelection: function ( styleKey ) {
+//                window.console.log( 'tags-menu', 'handleColorSelection', 275, styleKey);
+                this.priority = styleKey;
+            },
 
             handleRowClick: function ( tag ) {
 //                if(this.isHighlighted(tag)){
 //                    this.$emit( 'tag-row-deselected', tag )
 //                }
                 this.$emit( 'tag-row-selected', tag )
-            }
-            ,
+            },
 
+            handleSearch: function(v){
+                let showKeys = _.findKey(this.tags, function(t) { return _.startsWith(t.name, v); });
+            },
 
             saveNewTag: function () {
 
@@ -360,8 +318,7 @@
 
             handleEditClick: function () {
                 this.isEditable = !this.isEditable;
-            }
-            ,
+            },
 
             handleNewClick: function () {
                 if ( this.isNewTagInputVisible ) {
@@ -371,14 +328,11 @@
                     this.saveNewTag();
                 }
                 //Clean up
-                this.newTagText = '';
-                this.newTagName = '';
-                this.priority = 0;
+                this.clearNewTag();
 
                 //toggle state
                 this.isNewTagInputVisible = !this.isNewTagInputVisible;
-            }
-            ,
+            },
 
             /**
              * Returns a boolean of whether to display
@@ -390,8 +344,7 @@
                 if ( tag[ this.filterTo ].length > 0 ) return true;
 
                 return false;
-            }
-            ,
+            },
 
             /**
              * Whether the row should be highlighted.
@@ -419,9 +372,19 @@
 //                if ( _.isUndefined( this.serialNumber ) ) return false;
 //
 //                return this.$store.getters.isTagged( this.object, tag );
+            },
+
+            /**
+             * Resets (or sets) the fields which hold
+             * the new tag data to their default state.
+             */
+            clearNewTag : function (  ) {
+                //Clean up
+                this.newTagText = '';
+                this.newTagName = '';
+                this.priority = 1;
             }
-        }
-        ,
+        },
 
         directives: {}
         ,

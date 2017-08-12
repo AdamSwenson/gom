@@ -24,18 +24,6 @@
 
         </div>
 
-        <!--<div class="tags">-->
-        <!--<span v-for="tag in tags"-->
-        <!--class="tag is-rounded"-->
-        <!--&gt;{{ tag.name}} <button class="delete is-small" v-on:click="handleDeleteClick(tag)"></button>-->
-        <!--</span>-->
-
-        <!--<span class="tag is-primary is-small new-tag-button"-->
-        <!--v-on:click="handleEditClick"-->
-        <!--&gt;Edit Tags-->
-        <!--</span>-->
-        <!--</div>-->
-
         <div v-show="showTagMenu">
             <tag-menu :object-serial-number="serialNumber"
                       :object-type="objectType"
@@ -93,6 +81,7 @@
                 //this gives us something to watch and thereby trigger a reload from the db
                 //it is intrinsically meaningless
                 clickCounter: 0,
+                useCentralStore: false,
                 defaults: {}
             }
         },
@@ -100,9 +89,13 @@
         asyncComputed: {
             tags: {
                 get () {
-                    let result = loadTagsForItemRequest( null, this.object );
-//                let result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
-                    if ( _.isUndefined( result ) ) return [];
+                    let result = [];
+                    if ( this.useCentralStore ) {
+                        result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
+                    } else {
+                        result = loadTagsForItemRequest( null, this.object );
+                    }
+
                     return result;
                 },
                 watch() {
@@ -119,7 +112,7 @@
              * If it is free-floating, it will return false
              */
             object: function () {
-                if ( this.objectType instanceof Item ) {
+                if ( this.objectType === 'item' || this.objectType instanceof Item ) {
 //                    window.console.log( 'tag-display', 'object', 92, );
                     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
                 }
@@ -196,21 +189,29 @@
                     }
 
                     if ( isTagged ) {
-                        disassociateTagRequest( null, tag, this.object );
-                        //if ( this.$store.getters.isObjectTagged( this.object, tag ) ) {
-//                        //remove the tag
-//                        this.$store.commit( mTypes.disassociateTag, Payload.factory( {
-//                            obj: this.object,
-//                            tag: tag
-//                        } ) );
+                        if ( !this.useCentralStore ) {
+                            disassociateTagRequest( null, tag, this.object );
+                        }
+                        else {
+                            if ( this.$store.getters.isObjectTagged( this.object, tag ) ) {
+                                //remove the tag
+                                this.$store.commit( mTypes.disassociateTag, Payload.factory( {
+                                    obj: this.object,
+                                    tag: tag
+                                } ) );
+                            }
+                        }
                     }
                     else {
-                        associateTagRequest( null, tag, this.object );
-//                        //add the tag
-//                        this.$store.commit( mTypes.associateTag, Payload.factory( {
-//                            obj: this.object,
-//                            tag: tag
-//                        } ) );
+                        //add the tag
+                        if ( !this.useCentralStore ) {
+                            associateTagRequest( null, tag, this.object );
+                        } else {
+                            this.$store.commit( mTypes.associateTag, Payload.factory( {
+                                obj: this.object,
+                                tag: tag
+                            } ) );
+                        }
                     }
                     //incrementing this triggers the reload
                     this.refreshTags();
@@ -220,7 +221,8 @@
             handleNewTagSavedEvent: function ( tag ) {
                 window.console.log( 'tag-display', 'handleNewTagSavedEvent', 221, tag );
                 this.refreshTags();
-            },
+            }
+            ,
 
             /**
              * Triggers the reload of scores from db
@@ -229,15 +231,20 @@
                 //incrementing this triggers the reload
                 this.clickCounter += 1;
             }
-        },
+        }
+        ,
 
-        directives: {},
+        directives: {}
+        ,
 
         events: {
-            'tag-row-selection': function ( tag ) {
-                this.handleTagToggle( tag )
-            }
-        },
+            'tag-row-selection':
+
+                function ( tag ) {
+                    this.handleTagToggle( tag )
+                }
+        }
+        ,
 
         mounted: function () {
         }

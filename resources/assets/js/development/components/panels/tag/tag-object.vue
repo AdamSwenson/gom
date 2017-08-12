@@ -60,7 +60,7 @@
 
             priority: function () {
                 if(! _.isUndefined(this.object.priority) && this.object.priority){
-                    return this.object.priority;
+               return this.object.styleString();
                 }
 //                if ( Object.keys( this.object.props ).indexOf( 'priority' ) > -1 ) {
 //                    return this.object.props.priority;

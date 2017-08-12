@@ -158,21 +158,8 @@ class TagsController extends Controller
 
     public function showForExam( Exam $exam )
     {
-
-
-////        $e = Exam::with('tags')->where('exam_id', $exam->id)->get();
-//        $out = [];
-//        $tags = $exam->tags;
-//        var_dump($exam);
-//        foreach($tags as $tag){
-//            var_dump($tag->id);
-//            $out[] = $tag;
-//        }
-//        return $out;
         return $exam->tags()->with($this->loadWithList)->get();
-//        fo
-//        var_dump($tags);
-//  return $tags;
+
     }
 
     public function showForItem( Item $item )
