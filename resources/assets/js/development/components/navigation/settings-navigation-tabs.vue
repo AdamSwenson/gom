@@ -95,16 +95,16 @@
             </li>
 
 
-            <li role="presentation">
-                <router-link v-bind:to="routeToTags">
-                    <a class="tags-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-tags" aria-hidden="true"></i>
-                        </span>
-                        <span>Tags</span>
-                    </a>
-                </router-link>
-            </li>
+            <!--<li role="presentation">-->
+                <!--<router-link v-bind:to="routeToTags">-->
+                    <!--<a class="tags-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
+                        <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-tags" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                        <!--<span>Tags</span>-->
+                    <!--</a>-->
+                <!--</router-link>-->
+            <!--</li>-->
         </ul>
     </nav>
 

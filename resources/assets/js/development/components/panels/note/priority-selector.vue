@@ -1,5 +1,5 @@
 <template>
-    <div class="field">
+    <div class="field priority-selector">
         <label class="label">Priority</label>
         <div class="control">
             <label v-for="priorityLevel in priorities"
@@ -40,6 +40,8 @@
         data: function () {
             return {
 
+                priority: 0,
+
                 defaults: {}
             }
         },
@@ -48,25 +50,29 @@
             priorities: function () {
                 return Object.keys( Note.priorityStyles() );
             },
-
-            priority: {
-                get: function () {
-                    return this.$parent.newNote ? this.$parent.newNote.priority : '';
-
-                },
-                set: function ( v ) {
-                    let pl = Payload.factory( {
-                        obj: this.$parent.newNote,
-                        updateProp: 'priority',
-                        updateVal: v
-                    } );
-                    this.$store.commit( mTypes.updateNote, pl );
-
-                }
-            }
+//
+//            priority: {
+//                get: function () {
+//                    return this.$parent.newNote ? this.$parent.newNote.priority : '';
+//
+//                },
+//                set: function ( v ) {
+//                    let pl = Payload.factory( {
+//                        obj: this.$parent.newNote,
+//                        updateProp: 'priority',
+//                        updateVal: v
+//                    } );
+//                    this.$store.commit( mTypes.updateNote, pl );
+//
+//                }
+//            }
         },
 
-        methods: {},
+        methods: {
+            handlePrioritySelection: function (  ) {
+                this.$emit('priority-selected', this.priority);
+            }
+        },
 
         directives: {},
 

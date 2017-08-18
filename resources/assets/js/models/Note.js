@@ -34,6 +34,7 @@ export default class Note extends IModel {
     static get fillableProps() {
         return [
             'associatedItemSerialNumber',
+            'associatedObject',
             'createdAt',
             'id',
             'name',
@@ -41,6 +42,7 @@ export default class Note extends IModel {
             'props',
             'text',
             'updatedAt',
+
         ];
 
     }

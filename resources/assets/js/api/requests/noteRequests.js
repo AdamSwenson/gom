@@ -74,24 +74,37 @@ const handleLoadResponse = ( store, itemOrExam, data ) => {
 
 module.exports = {
 
-    createNoteRequest: ( store, note ) => {
+    createNoteRequest: ( store = null, note ) => {
         window.console.log( 'apiPlugin---noteRequests', 'createNoteRequest', note );
         let out = {
             requestVersion: REQUEST_VERSION,
             ...note
         };
 
-        let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
+        if ( !_.isNull( store ) ) {
+            let associatedItemOrExam = store.getters.getItemBySerialNumber( note.associatedItemSerialNumber );
 
-        if ( associatedItemOrExam ) {
-            let route = associatedItemOrExam instanceof Exam ? Routes.createExamNote( associatedItemOrExam ) : Routes.createItemNote( associatedItemOrExam );
+            if ( associatedItemOrExam ) {
+                let route = associatedItemOrExam instanceof Exam ? Routes.createExamNote( associatedItemOrExam ) : Routes.createItemNote( associatedItemOrExam );
 
-            window.axios
+                window.axios
+                    .post( route, out )
+                    .then( ( response ) => {
+                        // if ( response.data.length > 0 ) {
+                        handleCreateResponse( store, note, response.data );
+                        // }
+                    } )
+                    .catch( function ( error ) {
+                        errorHandling( error );
+                    } );
+            }
+        } else {
+            let route = note.associatedObject instanceof Exam ? Routes.createExamNote( note.associatedObject ) : Routes.createItemNote( note.associatedObject );
+
+            return window.axios
                 .post( route, out )
                 .then( ( response ) => {
-                    // if ( response.data.length > 0 ) {
-                        handleCreateResponse(store, note, response.data );
-                    // }
+                    return response.data;
                 } )
                 .catch( function ( error ) {
                     errorHandling( error );
@@ -99,17 +112,17 @@ module.exports = {
         }
     },
 
-    destroyNoteRequest:
-        ( store, note ) => {
+    destroyNoteRequest: (store=null, note ) => {
             let out = {
                 requestVersion: REQUEST_VERSION,
                 ...note
             };
 
-            window.axios
+            return window.axios
                 .delete( Routes.destroyNote( note ), out )
                 .then( ( response ) => {
                     if ( response.data.length > 0 ) {
+                        // this.$store.commit(mTypes.destroyNote, Payload.factory({obj: note}));
                         // handleUpdateResponse( response );
                     }
                 } )
@@ -119,23 +132,26 @@ module.exports = {
 
         },
 
-    loadNotesForItemRequest: (store, item)=>{
+    loadNotesForItemRequest: ( store = null, item ) => {
         let out = {
             requestVersion: REQUEST_VERSION
         };
 
         //Request is for every student belonging to the user
-            window.axios
-                .get( Routes.getNotesForItem(item) )
-                .then( ( response ) => {
-                    // window.console.log( 'studentRequests', '', 28, response );
-                    handleLoadResponse( store, item, response.data );
-                } )
-                .catch( function ( error ) {
-                    window.console.log( 'examRequests', 'ERROR', 39, error );
-                    errorHandling( error );
-                } );
-        },
+        return window.axios
+            .get( Routes.getNotesForItem( item ) )
+            .then( ( response ) => {
+                // window.console.log( 'studentRequests', '', 28, response );
+                if ( _.isNull( store ) ) return response.data;
+
+                handleLoadResponse( store, item, response.data );
+
+            } )
+            .catch( function ( error ) {
+                window.console.log( 'examRequests', 'ERROR', 39, error );
+                errorHandling( error );
+            } );
+    },
 
     /**
      * Asks server to update stored intrinsic properties of
@@ -150,7 +166,7 @@ module.exports = {
             ...note
         };
 
-        window.axios
+        return window.axios
             .patch( Routes.updateNote( note ), out )
             .then( ( response ) => {
                 if ( response.data.length > 0 ) {

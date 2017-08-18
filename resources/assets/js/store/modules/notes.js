@@ -42,6 +42,7 @@ const mutations = {
     },
 
     [mTypes.destroyNote] : ( state, payload ) => {
+        window.console.log( 'notes', 'destroyNote', 45, payload );
         let idx = state.notes.indexOf( payload.obj );
         if ( idx ) state.notes.splice( idx, 1 );
     },

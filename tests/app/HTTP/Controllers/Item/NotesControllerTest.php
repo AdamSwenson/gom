@@ -119,22 +119,22 @@ class NotesControllerTest extends \TestCase
     {
         $numNotes = 5;
         $exam = factory(Exam::class)->create();
-        $notes = \factory(Note::class, $numNotes )->create();
-        foreach($notes as $note){
+        $notes = \factory(Note::class, $numNotes)->create();
+        foreach ( $notes as $note ) {
             $exam->notes()->attach($note->id);
             $exam->save();
         }
         $route = $this->route . '/exam/' . $exam->id;
-        
+
         //call
         $response = $this->get($route);
-        
+
         //check
         $response->assertStatus(200);
-        foreach($notes as $note){
+        foreach ( $notes as $note ) {
             self::assertNoteInResponse($note, $response);
         }
-        
+
     }
 
     /** @test */
@@ -143,8 +143,8 @@ class NotesControllerTest extends \TestCase
 
         $numNotes = 5;
         $item = factory(Item::class)->create();
-        $notes = \factory(Note::class, $numNotes )->create();
-        foreach($notes as $note){
+        $notes = \factory(Note::class, $numNotes)->create();
+        foreach ( $notes as $note ) {
             $item->notes()->attach($note->id);
             $item->save();
         }
@@ -155,7 +155,7 @@ class NotesControllerTest extends \TestCase
 
         //check
         $response->assertStatus(200);
-        foreach($notes as $note){
+        foreach ( $notes as $note ) {
             var_dump($note);
             $response->assertJsonFragment(['id' => $note->id]);
 //            self::assertNoteInResponse($note, $response);
@@ -186,6 +186,14 @@ class NotesControllerTest extends \TestCase
     public function destroy()
     {
         $note = factory(Note::class)->create();
+        $note->save();
+        $id = $note->id;
+        $n = Note::find($id);
+        echo $id;
+        PHPUnit::assertTrue(isset($n));
+        PHPUnit::assertEquals($id, $n->id);
+
+//$this->assertDatabaseHas('notes', $n->toArray());
 
         //call
         $response = $this->delete($this->route . '/' . $note->id);
@@ -193,6 +201,9 @@ class NotesControllerTest extends \TestCase
         //check
         $response->assertStatus(200);
         $this->assertDatabaseMissing('notes', $note->toArray());
+
+        $j = Note::find($id);
+        PHPUnit::assertFalse(isset($j));
     }
 
 }

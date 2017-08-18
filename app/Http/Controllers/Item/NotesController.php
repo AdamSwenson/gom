@@ -8,6 +8,7 @@ use App\Item;
 use App\Models\NewGom\Note;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Mockery\Exception;
 
 class NotesController extends Controller
 {
@@ -52,23 +53,22 @@ class NotesController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function show(  $id )
+    public function show( $id )
     {
         return Note::find($id);
 
-    //    return $note;
+        //    return $note;
     }
 
-    public function showForExam(Exam $exam)
+    public function showForExam( Exam $exam )
     {
         return $exam->notes;
     }
 
-    public function showForItem(Item $item)
+    public function showForItem( Item $item )
     {
         return $item->notes;
     }
-
 
 
     /**
@@ -96,10 +96,19 @@ class NotesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $id)
+    public function destroy( $id )
     {
-        Note::destroy($id);
-        $this->sendAjaxSuccess();
+        try {
+            if ( $id instanceof Note){
+                $id->delete();
+            }else {
+                Note::destroy($id);
+
+            }
+            $this->sendAjaxSuccess();
+        } catch (Exception $e) {
+            $this->sendAjaxFailure();
+        }
     }
 }
 /**
