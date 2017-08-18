@@ -5,7 +5,6 @@
             <div class="tags has-addons">
                 <span class="tag is-rounded"
                       v-bind:class="styling"
-
                 >{{name}}</span>
                 <!--<a class="tag is-delete  is-small" v-on:click="handleDeleteClick(tag)"></a>-->
             </div>

@@ -40,7 +40,7 @@ class TagsControllerTest extends TestCase
 
         $this->exam = factory(Exam::class)->create();
         $this->exam->save();
-        $this->tag = factory(Tag::class)->create();
+        $this->tag = \factory(Tag::class)->create();
         $this->item = \factory(Item::class)->create();
         $this->student = \factory(Student::class)->create();
     }
@@ -374,7 +374,8 @@ class TagsControllerTest extends TestCase
     public function destroy()
     {
         $tag = factory(Tag::class)->create();
-        $this->assertDatabaseHas('tags', $tag->toArray());
+        $id= $tag->id;
+//        $this->assertDatabaseHas('tags', $tag->toArray());
 //            [
 //                'id' => $tag->id,
 //                'name' => $tag->name,
@@ -387,13 +388,16 @@ class TagsControllerTest extends TestCase
 
         //check
         $response->assertStatus(200);
-        $this->assertDatabaseMissing('tags',
-            [
-                'id' => $tag->id,
-                'name' => $tag->name,
-                'text' => $tag->text,
-                'props' => $tag->props,
-            ]);
+
+        $r = Tag::find($id);
+        PHPUnit::assertEmpty($r);
+//        $this->assertDatabaseMissing('tags',
+//            [
+//                'id' => $tag->id,
+//                'name' => $tag->name,
+//                'text' => $tag->text,
+//                'props' => $tag->props,
+//            ]);
 
     }
 }

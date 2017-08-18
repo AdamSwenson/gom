@@ -85,7 +85,10 @@
 
             <li role="presentation">
                 <router-link v-bind:to="routeToNotes">
-                    <a class="notes-nav" v-bind:class="{ 'exam-nav' : isExam  }">
+                    <a id="notes-nav"
+                       class="notes-nav"
+                       v-bind:class="{ 'exam-nav' : isExam  }"
+                    >
                         <span class="icon is-small">
                             <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
                         </span>

@@ -58,23 +58,23 @@ export default class Tag extends IModel {
 
     }
 
-    static get styleMap() {
-        //making this 1-indexed because
-        //some problem arises when trying to
-        //retrieve a key of 0
-        return {
-            1: 'is-primary',
-            2: 'is-info',
-            3: 'is-warning',
-            4: 'is-danger',
-            5: 'is-black',
-            6: 'is-light',
-            7: 'is-success',
-            8: 'is-white',
-            9: 'is-dark',
-
-        }
-    }
+    // static get styleMap() {
+    //     //making this 1-indexed because
+    //     //some problem arises when trying to
+    //     //retrieve a key of 0
+    //     return {
+    //         1: 'is-primary',
+    //         2: 'is-info',
+    //         3: 'is-warning',
+    //         4: 'is-danger',
+    //         5: 'is-black',
+    //         6: 'is-light',
+    //         7: 'is-success',
+    //         8: 'is-white',
+    //         9: 'is-dark',
+    //
+    //     }
+    // }
 
     /**
      * Given the string style returns the numeric key

@@ -47,15 +47,23 @@ export default class Note extends IModel {
 
     }
 
-    static priorityStyles() {
-        return {
-            0: 'is-dark',
-            1: 'is-primary',
-            2: 'is-info',
-            3: 'is-warning',
-            4: 'is-danger'
-        };
+    styleString() {
+        let map = Note.styleMap;
+        let style = map[ this.priority ];
+        // window.console.log( 'Tag', 'styleString', 88, this.priority, style, map);
+        return style;
     }
+
+    //
+    // static priorityStyles() {
+    //     return {
+    //         0: 'is-dark',
+    //         1: 'is-primary',
+    //         2: 'is-info',
+    //         3: 'is-warning',
+    //         4: 'is-danger'
+    //     };
+    // }
 
     /**
      * This is used by the api module to determine what

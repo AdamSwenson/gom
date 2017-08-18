@@ -30,10 +30,12 @@ class NotesPage extends BasePage
     {
         return $browser
             ->click("[id^='item-settings-button']")
-            ->pause(10000)
+//            ->pause(10000)
+//                ->waitFor('.notes-nav')
+            ->waitForText('Notes')
             ->assertSee('Notes')
-            ->clickLink('Notes')
-            ->waitFor('.panel-notes-component') //@notesPanelArea')
+            ->click('#notes-nav')
+//            ->waitFor('.panel-notes-component') //@notesPanelArea')
             ->assertVisible('.panel-notes-component'); //@notesPanelArea');
     }
 

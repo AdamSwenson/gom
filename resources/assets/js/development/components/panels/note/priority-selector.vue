@@ -10,6 +10,7 @@
                        name="priority-radio"
                        v-model="priority"
                        v-bind:value="priorityLevel"
+                       v-on:change="handlePrioritySelection"
                 >
             </label>
         </div>

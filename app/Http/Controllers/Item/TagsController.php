@@ -90,8 +90,8 @@ class TagsController extends Controller
             $item->tags()->attach($tag->id);
             $item->save();
 
-        return $this->sendAjaxSuccess();
-        }catch (Exception $e) {
+            return $this->sendAjaxSuccess();
+        } catch (Exception $e) {
             return $this->sendAjaxFailure();
         }
 
@@ -153,7 +153,9 @@ class TagsController extends Controller
      */
     public function show( $id )
     {
-        return Tag::find($id)->with($this->loadWithList);
+        if ( $id instanceof Tag ) $id = $id->id;
+        $t = Tag::find($id)->with($this->loadWithList)->get();
+        return $t;
     }
 
     public function showForExam( Exam $exam )

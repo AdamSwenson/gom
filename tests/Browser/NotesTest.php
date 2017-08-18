@@ -64,9 +64,19 @@ class NotesTest extends DuskTestCase
                 ->waitFor(SetupPage::$mainBodyLocator)
                 ->assertVisible(SetupPage::$mainBodyLocator)
                 ->addItemToExam()
-                ->on(new NotesPage())
-                ->navigateToItemNotesPanel()
-                ->assertNotesPaneIntact();
+                ->click("[id^='item-settings-button']")
+                ->waitForText('Notes')
+                ->assertSee('Notes')
+                ->clickLink('Notes')
+                ->assertMissing('@newNotesArea')
+                ->assertVisible('@newNoteButton')
+                ->click('@newNoteButton')
+            ->pause(5000);
+//                ->assertVisible('#new-note-area');
+//                ->on(new NotesPage())
+//                ->assertNotesPaneIntact();
+//                ->navigateToItemNotesPanel()
+//                ->assertNotesPaneIntact();
         });
 
     }

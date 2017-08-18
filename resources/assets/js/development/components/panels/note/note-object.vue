@@ -62,9 +62,12 @@
                     <!-- Left side -->
                     <div class="level-left">
                         <div class="level-item has-text-centered">
+
                             <div>
-                                <p class="heading">Created: {{ creationTimestamp }}  |  Updated: {{ updatedTimestamp
-                                    }}</p>
+                                <p class="heading">Created: {{ creationTimestamp }}</p>
+
+                                <!--<p class="heading">Created: {{ creationTimestamp }}  |  Updated: {{ updatedTimestamp-->
+                                    <!--}}</p>-->
 
                             </div>
                         </div>
@@ -104,7 +107,7 @@
 
         data: function () {
             return {
-                priorityStyles: Note.priorityStyles(),
+//                priorityStyles: Note.priorityStyles(),
 //                    {
 //                    0: 'is-dark',
 //                    1: 'is-primary',
@@ -114,6 +117,8 @@
 //                },
 
                 isEditable: false,
+
+                noteObject: false,
 
                 defaults: {},
                 noteNameLabel: "Title",
@@ -127,6 +132,7 @@
         computed: {
 
             creationTimestamp: function () {
+                if(this.note.created_at) return this.note.created_at;
                 return this.note.createdAt;
             },
 
@@ -160,8 +166,16 @@
              * The actual note object
              */
             note: function () {
+                //if its in the noteObject spot, it is an instance of Note
+                //so we can just return it
+                if(this.noteObject) return this.noteObject;
+
+                //However, if we loaded the notes directly, it may just be a json returned from the
+                //server. So we take the object and make a Note which gets stored in noteObject
                 if ( this.object ) {
-                    return this.object;
+                    if(_.isUndefined(this.object.kind)) this.noteObject = Note.factory(this.object);
+//                    if(! this.object instanceof Note) this.object = Note.factory(this.object);
+                    return this.noteObject;
                 } else {
                     return this.$store.getters[ gTypes.getNoteBySerialNumber ]( this.serialNumber );
                 }
@@ -169,9 +183,10 @@
             },
 
             priorityClass: function () {
-                if ( this.note.priority ) {
-                    return this.priorityStyles[ this.note.priority ];
-                }
+                return this.note.styleString();
+//                if ( this.note.priority ) {
+//                    return this.styleMap[ this.note.priority ];
+//                }
             },
 
             priority: {
@@ -251,6 +266,7 @@
             },
 
             updatedTimestamp: function () {
+                if(this.note.updated_at) return this.note.updated_at;
                 return this.note.updatedAt;
             },
 
