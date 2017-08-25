@@ -6,10 +6,23 @@
         <div class="box"
              id="new-note-area">
 
+            <div id="existing-notes-area">
+                <h5 class="title is-5">Reminders from your past self</h5>
+
+                <note-object
+                        v-for="note in notes"
+                        v-bind:key="note.serialNumber"
+                        :object="note"
+                        :serial-number="note.serialNumber"
+                        v-on:note-deleted="refreshNotes"
+                        v-on:note-updated="refreshNotes"
+                ></note-object>
+            </div>
+
             <div class="new-note-input-area "
                  v-show="isNewNoteVisible"
             >
-                <h5 class="title">Remind your future self...</h5>
+                <h5 class="title is-5">Remind your future self...</h5>
 
                 <div class="field">
                     <label class="label">Title</label>
@@ -69,20 +82,6 @@
             </div>
         </div>
 
-
-        <div id="existing-notes-area"
-             class="box">
-            <h5 class="title">Your past self wanted you to remember....</h5>
-
-            <note-object
-                    v-for="note in notes"
-                    v-bind:key="note.serialNumber"
-                    :object="note"
-                    :serial-number="note.serialNumber"
-                    v-on:note-deleted="refreshNotes"
-                    v-on:note-updated="refreshNotes"
-            ></note-object>
-        </div>
 
 
     </div>

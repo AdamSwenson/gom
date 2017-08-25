@@ -13,7 +13,20 @@
             </p>
         </div>
 
-        <valence-buttons :serial-number="serialNumber" :is-exam="isExam"></valence-buttons>
+        <valence-buttons
+                :serial-number="serialNumber"
+                :is-exam="isExam"
+        ></valence-buttons>
+
+        <div class="field">
+            <p class="control">
+                <label class="checkbox">
+                    <input type="checkbox" v-model="shouldPrePopulate">
+                    Sync with stock             <info-button :help-text="helpText"></info-button>
+                </label>
+
+            </p>
+        </div>
 
     </div>
 
@@ -42,7 +55,7 @@
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
-        props: ['forExam'],
+        props: [ 'forExam' ],
 
         data: function () {
             return {
@@ -61,10 +74,18 @@
                 //Which valence is currently displayed
                 displayed: 'stock',
 
+                helpText : 'This is a thing which does stuff',
+
+
+                //Whether to prepopulate the comments
+                shouldPrePopulate: true,
+
+
                 placeholders: {
                     exam: "Set up a global comment on the exam as a whole",
                     item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
                 },
+
 
                 defaults: {
                     commentText: ''
@@ -82,7 +103,7 @@
          To react to params changes in the same component, you can simply watch the $route object:
          */
         watch: {
-            '$route' ( to, from ) {
+            '$route'( to, from ) {
                 // react to route changes...
             }
         },
@@ -107,7 +128,7 @@
             //Doing this via computed property so don't have to pass in on route
             isExam: function () {
                 if ( this.item instanceof Exam ) return true;
-                if(this.forExam) return true;
+                if ( this.forExam ) return true;
                 return false;
             },
 
@@ -146,6 +167,11 @@
                         updateVal: v
                     } );
                     this.$store.commit( mTypes.updateComment, pl );
+
+                    //now set the other comments if the valence was stock
+                    if ( this.displayed === 'stock' && this.shouldPrePopulate === true ) {
+                        this.prePopulateComments( v );
+                    }
                 }
             },
 
@@ -172,8 +198,8 @@
         },
 
         methods: {
-            getComment: function(valence){
-              return this.comments
+            getComment: function ( valence ) {
+                return this.comments
             },
 
             /**
@@ -190,32 +216,60 @@
 
             prePopulateComments: function ( stock ) {
                 var me = this;
-                for(let [comment] of this.item.getEmptyComments()) {
-                    if ( comment.valence === 'stock' ) return true;
-                    let text = Comment.makePrePopulatedContent(comment.valence, stock);
-                            let pl = Payload.factory( {
-                                obj: this.item,
-                                updateValence: valence,
-                                updateVal: text
-                            } );
+                window.console.log( 'comment-setup-panel', 'prePopulateComments', 201, this.item.getEmptyComments() );
 
-                }
+                //todo this is no good, because if fires on the initial keystroke into stock, it will only show the first letter.
 
-  }
-        },
+                _.forEach( this.valences, function ( v ) {
+                    if (v !== 'stock' ) {
+                        let comment = this.item.getComment( v );
+                        // let comment of this.item.getComment()
+//                    for (let comment of this.item.getEmptyComments()) {
+                        if ( comment.valence === 'stock' ) return true;
+                        let text = Comment.makePrePopulatedContent( comment.valence, stock );
+                        window.console.log( 'comment-setup-panel', 'prePopulateComments', 206, text );
+                        let pl = Payload.factory( {
+                            obj: this.item,
+                            updateValence: comment.valence,
+                            updateVal: text
+                        } );
+                        this.$store.commit( mTypes.updateComment, pl );
+                    }
+                } );
+            }
+
+//
+//            /**
+//             * Returns true if the non-stock values are
+//             * all empty
+//             */
+//            testIfCanPopulate: function (){
+//                let empty = this.item.getEmptyComments();
+//                for (let [ comment ] of this.item.getEmptyComments()) {
+//                    if ( comment.valence === 'stock' ) return false;
+//                }
+//            }
+        }
+        ,
 
 
-        directives: {},
+        directives: {}
+        ,
 
         events: {
-            'please-change-valence': function ( evt ) {
-                console.log( 'caught please-change-valence', evt );
-                this.displayedValence = evt;
-            }
-        },
+            'please-change-valence':
+
+                function ( evt ) {
+                    console.log( 'caught please-change-valence', evt );
+                    this.displayedValence = evt;
+                }
+        }
+        ,
 
         mounted: function () {
 //            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
-        },
-    };
+        }
+        ,
+    }
+    ;
 </script>

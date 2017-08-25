@@ -32367,28 +32367,28 @@ var Comment = function (_IModel) {
 
         _this.type = 'comment';
         _this.valence = null;
-
-        _this.commentIngredients = {
-            absent: {
-                prefix: 'To answer this correctly, you needed to',
-                postfix: 'Unfortunately, you forgot to do this'
-            },
-            poor: {
-                prefix: 'This required you to',
-                postfix: 'You attempted to do it, but there were many problems'
-            },
-
-            good: {
-
-                prefix: 'As was evident from your answer, you recognized that you needed to',
-                postfix: 'Your answer was okay'
-            },
-
-            excellent: {
-                prefix: 'As was evident from your excellent answer, you recognized that you needed to',
-                postfix: 'You did a great job here'
-            }
-        };
+        //
+        // this.commentIngredients = {
+        //     absent: {
+        //         prefix: 'To answer this correctly, you needed to',
+        //         postfix: 'Unfortunately, you forgot to do this'
+        //     },
+        //     poor: {
+        //         prefix: 'This required you to',
+        //         postfix: 'You attempted to do it, but there were many problems'
+        //     },
+        //
+        //     good: {
+        //
+        //         prefix: 'As was evident from your answer, you recognized that you needed to',
+        //         postfix: 'Your answer was okay'
+        //     },
+        //
+        //     excellent: {
+        //         prefix: 'As was evident from your excellent answer, you recognized that you needed to',
+        //         postfix: 'You did a great job here'
+        //     }
+        // };
         return _this;
     }
 
@@ -32400,20 +32400,61 @@ var Comment = function (_IModel) {
     }, {
         key: 'isEmpty',
         value: function isEmpty() {
-            if (!_.isUndefined(this.text) && this.text.length > 0) return false;
+            if (_.isUndefined(this.text) || _.isNull(this.text)) return true;
+            if (this.text.length > 0) return false;
+            // if ( !_.isUndefined( this.text ) && this.text.length > 0 ) return false;
             return true;
         }
     }], [{
+        key: 'commentIngredients',
+        value: function commentIngredients() {
+            return {
+                absent: {
+                    prefix: 'To answer this correctly, you needed to',
+                    postfix: 'Unfortunately, you forgot to do this'
+                },
+                poor: {
+                    prefix: 'This required you to',
+                    postfix: 'You attempted to do it, but there were many problems'
+                },
+
+                good: {
+
+                    prefix: 'As was evident from your answer, you recognized that you needed to',
+                    postfix: 'Your answer was okay'
+                },
+
+                excellent: {
+                    prefix: 'As was evident from your excellent answer, you recognized that you needed to',
+                    postfix: 'You did a great job here'
+                }
+            };
+        }
+    }, {
         key: 'makePrePopulatedContent',
         value: function makePrePopulatedContent(valence, stock) {
-            var prefix = me.commentIngredients[valence].prefix;
-            var postfix = me.commentIngredients[valence].postfix;
+            var ingredients = Comment.commentIngredients()[valence];
+            var prefix = _.trim(ingredients.prefix);
+            var postfix = _.trim(ingredients.postfix);
+            stock = _.trim(stock);
+
+            //check punctuation
+            //if the prefix is not a full sentence, make the
+            //stock text lower case to start.
+
+            //if the postfix is a full sentence, make sure the stock part ends
+            //with a period.
+
+            // if(! _.endsWith(prefix, '.')) prefix = _.padEnd(prefix, '.');
+            // if(! _.endsWith(postfix, '.')) postfix = _.padEnd(postfix, '.');
+            // if(! _.endsWith(stock, '.')) stock = _.padEnd(stock, '.');
+
             return prefix + ' ' + stock + ' ' + postfix;
         }
 
         /**
          * Creates the expected empty comments in the comments array
-          on the iModel object passed in
+         on the iModel object passed in
          */
 
     }, {
@@ -50606,6 +50647,10 @@ var _tagDisplay = __webpack_require__(553);
 
 var _tagDisplay2 = _interopRequireDefault(_tagDisplay);
 
+var _infoButton = __webpack_require__(656);
+
+var _infoButton2 = _interopRequireDefault(_infoButton);
+
 var _vueAxios = __webpack_require__(512);
 
 var _vueAxios2 = _interopRequireDefault(_vueAxios);
@@ -50680,6 +50725,9 @@ _vue2.default.use(_vueAsyncComputed2.default);
 //tags
 
 
+//helpers
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 window.axios.defaults.baseURL = routeRoot;
@@ -50747,6 +50795,9 @@ _vue2.default.component('existing-items-menu', _existingItemsList2.default);
 
 //Tags
 _vue2.default.component('tag-display', _tagDisplay2.default);
+
+//Helpers
+_vue2.default.component('info-button', _infoButton2.default);
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
@@ -56759,33 +56810,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
 var _Comment = __webpack_require__(67);
 
 var _Comment2 = _interopRequireDefault(_Comment);
@@ -56845,6 +56869,11 @@ exports.default = {
 
             //Which valence is currently displayed
             displayed: 'stock',
+
+            helpText: 'This is a thing which does stuff',
+
+            //Whether to prepopulate the comments
+            shouldPrePopulate: true,
 
             placeholders: {
                 exam: "Set up a global comment on the exam as a whole",
@@ -56928,6 +56957,11 @@ exports.default = {
                     updateVal: v
                 });
                 this.$store.commit(mTypes.updateComment, pl);
+
+                //now set the other comments if the valence was stock
+                if (this.displayed === 'stock' && this.shouldPrePopulate === true) {
+                    this.prePopulateComments(v);
+                }
             }
         },
 
@@ -56970,38 +57004,39 @@ exports.default = {
 
         prePopulateComments: function prePopulateComments(stock) {
             var me = this;
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
+            window.console.log('comment-setup-panel', 'prePopulateComments', 201, this.item.getEmptyComments());
 
-            try {
-                for (var _iterator = this.item.getEmptyComments()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var _step$value = _slicedToArray(_step.value, 1),
-                        comment = _step$value[0];
+            //todo this is no good, because if fires on the initial keystroke into stock, it will only show the first letter.
 
+            _.forEach(this.valences, function (v) {
+                if (v !== 'stock') {
+                    var comment = this.item.getComment(v);
+                    // let comment of this.item.getComment()
+                    //                    for (let comment of this.item.getEmptyComments()) {
                     if (comment.valence === 'stock') return true;
                     var text = _Comment2.default.makePrePopulatedContent(comment.valence, stock);
+                    window.console.log('comment-setup-panel', 'prePopulateComments', 206, text);
                     var pl = _Payload2.default.factory({
                         obj: this.item,
-                        updateValence: valence,
+                        updateValence: comment.valence,
                         updateVal: text
                     });
+                    this.$store.commit(mTypes.updateComment, pl);
                 }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
+            });
         }
+
+        //
+        //            /**
+        //             * Returns true if the non-stock values are
+        //             * all empty
+        //             */
+        //            testIfCanPopulate: function (){
+        //                let empty = this.item.getEmptyComments();
+        //                for (let [ comment ] of this.item.getEmptyComments()) {
+        //                    if ( comment.valence === 'stock' ) return false;
+        //                }
+        //            }
     },
 
     directives: {},
@@ -57016,7 +57051,45 @@ exports.default = {
     mounted: function mounted() {
         //            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
     }
-};
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 212 */
@@ -58024,7 +58097,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
-//
 //
 //
 //
@@ -84525,7 +84597,48 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "serial-number": _vm.serialNumber,
       "is-exam": _vm.isExam
     }
-  })], 1)
+  }), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.shouldPrePopulate),
+      expression: "shouldPrePopulate"
+    }],
+    attrs: {
+      "type": "checkbox"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.shouldPrePopulate) ? _vm._i(_vm.shouldPrePopulate, null) > -1 : (_vm.shouldPrePopulate)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.shouldPrePopulate,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$el.checked) {
+            $$i < 0 && (_vm.shouldPrePopulate = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.shouldPrePopulate = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.shouldPrePopulate = $$c
+        }
+      }
+    }
+  }), _vm._v("\n                Sync with stock             "), _c('info-button', {
+    attrs: {
+      "help-text": _vm.helpText
+    }
+  })], 1)])])], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -86687,6 +86800,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": "new-note-area"
     }
   }, [_c('div', {
+    attrs: {
+      "id": "existing-notes-area"
+    }
+  }, [_c('h5', {
+    staticClass: "title is-5"
+  }, [_vm._v("Reminders from your past self")]), _vm._v(" "), _vm._l((_vm.notes), function(note) {
+    return _c('note-object', {
+      key: note.serialNumber,
+      attrs: {
+        "object": note,
+        "serial-number": note.serialNumber
+      },
+      on: {
+        "note-deleted": _vm.refreshNotes,
+        "note-updated": _vm.refreshNotes
+      }
+    })
+  })], 2), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -86695,7 +86826,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     staticClass: "new-note-input-area "
   }, [_c('h5', {
-    staticClass: "title"
+    staticClass: "title is-5"
   }, [_vm._v("Remind your future self...")]), _vm._v(" "), _c('div', {
     staticClass: "field"
   }, [_c('label', {
@@ -86788,26 +86919,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleNewNote
     }
-  }, [_vm._v(_vm._s(_vm.newNoteButtonLabel) + "\n                ")])])])]), _vm._v(" "), _c('div', {
-    staticClass: "box",
-    attrs: {
-      "id": "existing-notes-area"
-    }
-  }, [_c('h5', {
-    staticClass: "title"
-  }, [_vm._v("Your past self wanted you to remember....")]), _vm._v(" "), _vm._l((_vm.notes), function(note) {
-    return _c('note-object', {
-      key: note.serialNumber,
-      attrs: {
-        "object": note,
-        "serial-number": note.serialNumber
-      },
-      on: {
-        "note-deleted": _vm.refreshNotes,
-        "note-updated": _vm.refreshNotes
-      }
-    })
-  })], 2)])
+  }, [_vm._v(_vm._s(_vm.newNoteButtonLabel) + "\n                ")])])])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -91388,6 +91500,209 @@ module.exports = function(module) {
 __webpack_require__(114);
 module.exports = __webpack_require__(162);
 
+
+/***/ }),
+/* 654 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['helpText'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            showHelp: false,
+            defaults: {}
+        };
+    },
+
+    computed: {
+        //Separated off in case we later
+        //want to apply some standard transformation or styling
+        //to help text
+        displayText: function displayText() {
+            return this.helpText;
+        },
+
+        isActive: function isActive() {
+            if (this.showHelp) return 'is-active';
+            return '';
+        }
+    },
+
+    methods: {
+        toggleHelp: function toggleHelp() {
+            window.console.log('info-button', 'toggleHelp', 43, this.showHelp);
+            this.showHelp = !this.showHelp;
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 655 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(6)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 656 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(658)
+}
+var Component = __webpack_require__(7)(
+  /* script */
+  __webpack_require__(654),
+  /* template */
+  __webpack_require__(657),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/helpers/info-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] info-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0ce2cf2e", Component.options)
+  } else {
+    hotAPI.reload("data-v-0ce2cf2e", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 657 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "info-button"
+  }, [_c('span', {
+    staticClass: "icon",
+    on: {
+      "click": _vm.toggleHelp
+    }
+  }, [_c('i', {
+    staticClass: "fa fa-question-circle"
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "modal",
+    class: _vm.isActive
+  }, [_c('div', {
+    staticClass: "modal-background",
+    on: {
+      "click": _vm.toggleHelp
+    }
+  }), _vm._v(" "), _c('div', {
+    staticClass: "modal-content"
+  }, [_vm._v("\n            " + _vm._s(_vm.displayText) + "\n        ")]), _vm._v(" "), _c('button', {
+    staticClass: "modal-close is-large",
+    attrs: {
+      "aria-label": "close"
+    },
+    on: {
+      "click": _vm.toggleHelp
+    }
+  })])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-0ce2cf2e", module.exports)
+  }
+}
+
+/***/ }),
+/* 658 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(655);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(12)("8bb795c0", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0ce2cf2e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./info-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0ce2cf2e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./info-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

@@ -101,7 +101,10 @@ class CommentController extends Controller
                 }
 
                 //update it
-                $comment->update(['body' => $incomingComment['text']]);
+                if(isset($incomingComment['text'])){
+                    $comment->update(['body' => $incomingComment['text']]);
+                }
+
             }
 
         } catch (Exception $e) {

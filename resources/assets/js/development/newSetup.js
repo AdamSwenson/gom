@@ -83,6 +83,9 @@ import syncIndicator from './components/helpers/server-sync-indicator.vue';
 //tags
 import tagDisplay from './components/panels/tag/tag-display.vue';
 
+//helpers
+import infoButton from './components/helpers/info-button.vue';
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 import VueAxios from 'vue-axios'
@@ -152,6 +155,9 @@ Vue.component( 'existing-items-menu', itemList )
 
 //Tags
 Vue.component('tag-display', tagDisplay);
+
+//Helpers
+Vue.component('info-button', infoButton);
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).

@@ -12,69 +12,106 @@ export default class Comment extends IModel {
         super();
         this.type = 'comment';
         this.valence = null;
-
-        this.commentIngredients = {
-            absent: {
-                prefix: 'To answer this correctly, you needed to',
-                    postfix: 'Unfortunately, you forgot to do this'
-            },
-            poor: {
-                prefix: 'This required you to',
-                    postfix: 'You attempted to do it, but there were many problems'
-            },
-
-            good: {
-
-                prefix: 'As was evident from your answer, you recognized that you needed to',
-                    postfix: 'Your answer was okay'
-            },
-
-            excellent: {
-                prefix: 'As was evident from your excellent answer, you recognized that you needed to',
-                    postfix: 'You did a great job here'
-            }
-        };
+        //
+        // this.commentIngredients = {
+        //     absent: {
+        //         prefix: 'To answer this correctly, you needed to',
+        //         postfix: 'Unfortunately, you forgot to do this'
+        //     },
+        //     poor: {
+        //         prefix: 'This required you to',
+        //         postfix: 'You attempted to do it, but there were many problems'
+        //     },
+        //
+        //     good: {
+        //
+        //         prefix: 'As was evident from your answer, you recognized that you needed to',
+        //         postfix: 'Your answer was okay'
+        //     },
+        //
+        //     excellent: {
+        //         prefix: 'As was evident from your excellent answer, you recognized that you needed to',
+        //         postfix: 'You did a great job here'
+        //     }
+        // };
     }
 
     isStock() {
         return this.valence === 'stock';
     }
 
-    isEmpty(){
-        if(! _.isUndefined(this.text) && this.text.length > 0) return false;
+    isEmpty() {
+        if(_.isUndefined( this.text ) || _.isNull(this.text)) return true;
+        if(this.text.length > 0) return false;
+        // if ( !_.isUndefined( this.text ) && this.text.length > 0 ) return false;
         return true;
     }
 
+    static commentIngredients() {
+        return {
+            absent: {
+                prefix: 'To answer this correctly, you needed to',
+                postfix: 'Unfortunately, you forgot to do this'
+            },
+            poor: {
+                prefix: 'This required you to',
+                postfix: 'You attempted to do it, but there were many problems'
+            },
 
+            good: {
 
-   static  makePrePopulatedContent  ( valence, stock ) {
-        let prefix = me.commentIngredients[valence].prefix;
-        let postfix = me.commentIngredients[valence].postfix;
+                prefix: 'As was evident from your answer, you recognized that you needed to',
+                postfix: 'Your answer was okay'
+            },
+
+            excellent: {
+                prefix: 'As was evident from your excellent answer, you recognized that you needed to',
+                postfix: 'You did a great job here'
+            }
+        };
+    }
+
+    static makePrePopulatedContent( valence, stock ) {
+        let ingredients = Comment.commentIngredients()[ valence ]
+        let prefix = _.trim(ingredients.prefix);
+        let postfix = _.trim(ingredients.postfix);
+        stock = _.trim(stock);
+
+        //check punctuation
+        //if the prefix is not a full sentence, make the
+        //stock text lower case to start.
+
+        //if the postfix is a full sentence, make sure the stock part ends
+        //with a period.
+
+        // if(! _.endsWith(prefix, '.')) prefix = _.padEnd(prefix, '.');
+        // if(! _.endsWith(postfix, '.')) postfix = _.padEnd(postfix, '.');
+        // if(! _.endsWith(stock, '.')) stock = _.padEnd(stock, '.');
+
         return `${prefix} ${stock} ${postfix}`
     }
 
     /**
      * Creates the expected empty comments in the comments array
-      on the iModel object passed in
+     on the iModel object passed in
      */
-    static initializeComments(iModel) {
+    static initializeComments( iModel ) {
         //create the comments map if it doesn't exist
-        if (typeof iModel.comments === 'undefined') {
+        if ( typeof iModel.comments === 'undefined' ) {
             iModel.comments = new Map();
-        // iModel.comments = {};
+            // iModel.comments = {};
         }
         //Set the expected structure
         // if (Object.keys(iModel.comments).length === 0) {
         //     Comment.valences.forEach(function (c) {
         //         iModel.addComment(c, Comment.factory({valence: c}));
         //     });
-        if (iModel.comments.size === 0) {
-            Comment.valences.forEach(function (c) {
-                iModel.addComment(c, Comment.factory({valence: c}));
-            });
+        if ( iModel.comments.size === 0 ) {
+            Comment.valences.forEach( function ( c ) {
+                iModel.addComment( c, Comment.factory( { valence: c } ) );
+            } );
         }
     }
-
 
 
     /**
@@ -129,8 +166,8 @@ export default class Comment extends IModel {
     }
 
 
-    static factory(params) {
+    static factory( params ) {
         let obj = new Comment();
-        return this.fillObject(obj, params);
+        return this.fillObject( obj, params );
     }
 }
