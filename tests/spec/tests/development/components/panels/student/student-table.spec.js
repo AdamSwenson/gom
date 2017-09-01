@@ -9,7 +9,7 @@ jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
 
 //helpers
-var Helper = require( '../helpers/vueTesting.helper.js' );
+var Helper = require( '../../../../../helpers/vueTesting.helper.js' );
 
 //for fixture
 require( 'bootstrap' );
