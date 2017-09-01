@@ -17,12 +17,8 @@ var Vue = require( 'vue' );
 Vue.config.debug = true;
 
 //tested stuff
-var testedComponent = require( "../../../resources/assets/js/development/components/panels/student" );
-var fixture = '.fixture.html';
-
-
-//Dependencies
-require( '../../../resources/assets/js/grade/components/Data.js' );
+var testedComponent = require( "../../../../../../../resources/assets/js/development/components/panels/student/student-table.vue" );
+var fixture = 'generic.fixture.html';
 
 
 describe( " tests | ", function () {
