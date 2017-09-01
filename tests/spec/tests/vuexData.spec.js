@@ -5,7 +5,6 @@ window.jQuery = jQuery;
 
 //test libraries
 require( 'jasmine-jquery' );
-jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
 var faker = require( 'faker' );
 
