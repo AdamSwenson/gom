@@ -65,11 +65,14 @@
             </a>
         </p>
 
+        <div class="panel-block">
+            <student-table :students="students"></student-table>
+        </div>
 
-        <student-row v-for="student in students"
-                     :key="student.serialNumber"
-                     :serialNumber="student.serialNumber"
-        ></student-row>
+        <!--<student-row v-for="student in students"-->
+                     <!--:key="student.serialNumber"-->
+                     <!--:serialNumber="student.serialNumber"-->
+        <!--&gt;</student-row>-->
 
 
         <div id="addition-buttons-area"
@@ -197,6 +200,8 @@
     import KumiNameField from '../input/kumi-name-field.vue';
     import KumiSelector from '../input/kumi-selector.vue';
 
+    import StudentTable from '../panels/student/student-table.vue';
+
     //File importing stuff
     import FileImporter from '../../../store/modules/roster/studentFileImporter';
 
@@ -212,7 +217,8 @@
         components: {
             'student-row': StudentRow,
             'kumi-name': KumiNameField,
-            'kumi-selector': KumiSelector
+            'kumi-selector': KumiSelector,
+            'student-table': StudentTable
         },
 
         data: function () {
