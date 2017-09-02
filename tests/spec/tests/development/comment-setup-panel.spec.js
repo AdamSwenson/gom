@@ -5,7 +5,7 @@ window.jQuery = jQuery;
 
 //test libraries
 require( 'jasmine-jquery' );
-jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
+// jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
 
 //helpers
@@ -15,8 +15,13 @@ var Helper = require( '../../helpers/vueTesting.helper.js' );
 require( 'bootstrap' );
 var Vue = require( 'vue' );
 
-var fixture = 'development/generic.fixture.html';
+import vuexStore from '../../../../resources/assets/js/store';
 
+
+// var fixture = 'development/generic.fixture.html';
+var fixture = `<div id="app">
+    <component v-ref:test-object></component>
+</div>`;
 
 //tested stuff
 var testedComponent = require( "../../../../resources/assets/js/development/components/panels/comment-setup-panel.vue" );
@@ -32,8 +37,10 @@ fdescribe( "comment-setup-panel | ", function () {
 
     beforeEach( function () {
 //runs before each test
+
+        this.$fixture = setFixtures( fixture );
         //prep the page
-        this.$fixture = loadFixtures( fixture );
+        // this.$fixture = loadFixtures( fixture );
         this.vm = Helper.loadVueComponent( testedComponent, 'component' );
     } );
 
