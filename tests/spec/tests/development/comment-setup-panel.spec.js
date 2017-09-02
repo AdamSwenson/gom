@@ -22,7 +22,7 @@ var fixture = 'development/generic.fixture.html';
 var testedComponent = require( "../../../../resources/assets/js/development/components/panels/comment-setup-panel.vue" );
 
 
-describe( "comment-setup-panel | ", function () {
+fdescribe( "comment-setup-panel | ", function () {
     var $fixture;
     var vm;
 
@@ -41,7 +41,7 @@ describe( "comment-setup-panel | ", function () {
 //runs after each test
     } );
 
-    fdescribe( "computed properties | ", function () {
+    describe( "computed properties | ", function () {
         beforeEach( function () {
             let component = Helper.getComponent( this );
         } );

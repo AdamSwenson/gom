@@ -22,9 +22,7 @@ var fixture = 'generic.fixture.html';
 
 
 describe( " tests | ", function () {
-    beforeAll( function () {
-//runs once before all tests
-    } );
+
 
     beforeEach( function () {
 //runs before each test
