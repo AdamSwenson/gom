@@ -9,7 +9,6 @@ window.jQuery = jQuery;
 
 //test libraries
 require( 'jasmine-jquery' );
-jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 
 //helpers
 var Helper = require('../helpers/vueTesting.helper.js');
