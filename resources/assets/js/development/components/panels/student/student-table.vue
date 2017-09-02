@@ -9,26 +9,6 @@
                               v-on:sort-roster-by="sortRosterBy(evt)"
                 ></header-field>
 
-                <!--<div class="columns">-->
-                <!--<div class="column has-text-left">-->
-                <!--<a v-on:click="sortRosterBy(c.shortText)">-->
-                <!--<abbr v-bind:title="c.longText">-->
-                <!--{{c.shortText}}-->
-                <!--</abbr>-->
-                <!--</a>-->
-                <!--</div>-->
-
-                <!--<div class="column has-text-right">-->
-                <!--<a v-on:click="toggleSortAscending">-->
-                <!--<span class="icon is-small">-->
-                <!--<i v-bind:class="getSortIcon(c.studentProperty)"-->
-                <!--aria-hidden="true"-->
-                <!--&gt;</i>-->
-                <!--</span>-->
-                <!--</a>-->
-                <!--</div>-->
-                <!--</div>-->
-
             </th>
         </tr>
 

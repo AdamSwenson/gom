@@ -20,10 +20,10 @@ module.exports = function ( config ) {
         // list of files / patterns to load in the browser
         files: [
 
-            { pattern: 'tests/spec/tests/**/*.spec.js', watched: true },
-            { pattern: 'tests/spec/helpers/*.helper.js', watched: true, include:true },
-            { pattern: 'tests/spec/fixtures/*.fixture.html', watched: true, included: true },
-            { pattern: 'tests/spec/fixtures/**/*.fixture.html', watched: true, included: true },
+            { pattern: 'tests/spec/tests/**/*.spec.js' },
+            { pattern: 'tests/spec/helpers/*.helper.js'},
+            { pattern: 'tests/spec/fixtures/*.fixture.html' },
+            { pattern: 'tests/spec/fixtures/**/*.fixture.html' },
             { pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css' },
             { pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js' },
             { pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/adapter.js' },
@@ -79,7 +79,8 @@ module.exports = function ( config ) {
 
 
         // enable / disable watching file and executing tests whenever any file changes
-        autoWatch: true,
+        //dev disabling to try to work with karma and php storm at same time see GOM-265
+        autoWatch: false,
 
 
         // start these browsers
