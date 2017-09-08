@@ -21,38 +21,52 @@ const ID_WAIT_DELAY = 3000;
  * insert new students into store
  * @param store
  * @param response
+ * @returns {Promise}
  */
 const handleLoadResponse = ( store, response ) => {
-    _.forEach( response.data, function ( r ) {
-        // window.console.log( 'studentRequests', 'r', 29, r );
-        let student = Student.factory( { r } );
-        student.email = r.email;
-        student.firstName = r.firstName;
-        student.id = r.id;
-        student.identifier = !_.isUndefined( r.identifier ) ? r.identifier : r.studentIdentifier;
-        student.lastName = r.lastName;
+    return new Promise( function ( resolve, reject ) {
 
-        let payload = Payload.factory( { obj: student, mutateSilently: true } );
-        store.commit( mTypes.addStudentToRoster, payload );
+        _.forEach( response.data, function ( r ) {
+            // window.console.log( 'studentRequests', 'r', 29, r );
+            let student = Student.factory( { r } );
+            student.email = r.email;
+            student.firstName = r.firstName;
+            student.id = r.id;
+            student.identifier = !_.isUndefined( r.identifier ) ? r.identifier : r.studentIdentifier;
+            student.lastName = r.lastName;
 
-        if ( r.kumiId ) {
-            //if the server sent us the id of the associated kumi
-            //we are going to look up the client side representation
-            //and then store it in the student object
-            let kumi = store.getters.getKumiById( r.kumiId );
-            if ( _.isUndefined( kumi ) ) {
-                //if a kumi object doesn't exist yet with this id
-                //figure out what the fuck to do.....
-                //todo add promises to help with this
+            let payload = Payload.factory( { obj: student, mutateSilently: true } );
+            store.commit( mTypes.addStudentToRoster, payload );
+
+            if ( r.kumiId ) {
+                //if the server sent us the id of the associated kumi
+                //we are going to look up the client side representation
+                //and then store it in the student object.
+                //NB, there might not be a kumi id for any number of reasons,
+                //including that an existing student is being newly associated with
+                //a kumi.
+                //Remember also that kumis are just groups now
+                let kumi = store.getters.getKumiById( r.kumiId );
+                if ( _.isUndefined( kumi ) ) {
+                    //if a kumi object doesn't exist yet with this id
+                    //figure out what the fuck to do.....
+                    //the best thing will probably involve
+                    //having the kumi loader update the kumi id's of
+                    //existing students when it loads. Thus if each
+                    //of them (kumi and student loaders) check and update ids
+                    // when they are done, we should be okay
+                    //todo add promises to help with this
+                }
+
+                //Otherwise we are good, so call the mutation
+                // this will both add the kumi to the student
+                //and store the relationship centrally
+                payload.student = student;
+                payload.kumi = kumi;
+                store.commit( mTypes.associateStudentWithKumi, payload )
             }
-
-            //Otherwise we are good, so call the mutation
-            // this will both add the kumi to the student
-            //and store the relationship centrally
-            payload.student = student;
-            payload.kumi = kumi;
-            store.commit( mTypes.associateStudentWithKumi, payload)
-        }
+        } );
+        resolve();
     } );
 };
 
@@ -65,9 +79,10 @@ const handleLoadResponse = ( store, response ) => {
  * @returns {Promise}
  */
 const handleCreateStudentResponse = ( store, student, data ) => {
-    return new Promise( ( resolve, reject ) => {
+    return new Promise( function ( resolve, reject ) {
         let pl = Payload.factory( {
             obj: student,
+            //we are just adding the id
             updateProp: 'id',
             updateVal: data.id,
             mutateSilently: true
@@ -77,9 +92,44 @@ const handleCreateStudentResponse = ( store, student, data ) => {
 
         store.commit( 'updateStudentInRoster', pl );
 
-        resolve();
+        resolve( student );
     } );
 
+};
+
+/**
+ * Checks whether both student and kumi have ids
+ * and resolves when they do
+ * Used when the promises in loading student and kumi
+ * can't be chained.
+ * @param student
+ * @param kumi
+ * @param tries
+ * @returns {Promise}
+ */
+const readinessTester = ( student, kumi, tries = 10 ) => {
+    return new Promise( function ( resolve, reject ) {
+        var check = function ( kumi, student ) {
+            // while( kumi.id === -1 || student.id === -1 ) {
+            //     setTimeout( function () {
+            //         window.console.log( 'studentRequests', 'waiting inside timeout', 115, );
+            //     }, ID_WAIT_DELAY );
+            //     window.console.log( 'studentRequests', 'waiting outside timeout', 115, );
+            // }
+            return resolve();
+        };
+
+        for (let i = 0; i < tries; i++) {
+            //check immediately
+            if ( check( student, kumi ) ) i = tries;
+
+            // //set timeout and check again
+            // setTimeout( function () {
+            //     if ( check( student, kumi ) ) i = tries;
+            // }, ID_WAIT_DELAY );
+        }
+        reject(Error("Failed to load student or kumi id"));
+    } );
 };
 
 module.exports = {
@@ -100,11 +150,11 @@ module.exports = {
 
         //Request is for every student belonging to the user
         if ( _.isUndefined( exam ) ) {
-            window.axios
+            return window.axios
                 .get( Routes.loadAllStudents() )
                 .then( ( response ) => {
                     // window.console.log( 'studentRequests', '', 28, response );
-                    handleLoadResponse( store, response );
+                    return handleLoadResponse( store, response );
                 } )
                 .catch( function ( error ) {
                     window.console.log( 'examRequests', 'ERROR', 39, error );
@@ -114,7 +164,7 @@ module.exports = {
 
         else {
             //Get students for a particular exam
-            window.axios
+            return window.axios
                 .get( Routes.loadStudentsForExam( exam ) )
                 .then( ( response ) => {
                     // window.console.log( 'examRequests', '', 28, response );
@@ -136,9 +186,10 @@ module.exports = {
      * This does not affect their associations with a class or exam.
      * @param store
      * @param student
+     * @returns {Promise}
      */
     updateStudent: ( store, student ) => {
-        window.axios
+        return window.axios
             .patch( Routes.updateStudent( student ), student )
             .then( ( response ) => {
                 // window.console.log( 'studentRequests', 'updateStudent', 28, response );
@@ -154,6 +205,7 @@ module.exports = {
      * Does not associate the student with a class or exam.
      * @param store
      * @param student
+     * @returns {Promise}
      */
     createStudent: ( store, student ) => {
         // if ( student && student.isNew() ) {
@@ -162,7 +214,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION,
         };
 
-        window.axios
+        return window.axios
             .post( Routes.createStudent(), toSend )
             .then( ( response ) => {
                 // window.console.log( 'studentRequests', 'createStudent', 28, response );
@@ -181,39 +233,50 @@ module.exports = {
      * @param student
      * @param exam
      * @param kumi
+     * @returns {Promise}
      */
     associateStudent: ( store, student, kumi ) => {
         return new Promise( ( resolve, reject ) => {
 
 
-            //handles the actual request so that we can deal
-            //with the need to wait for an id
-            let makeRequest = ( route ) => {
-                let out = out == { requestVersion: REQUEST_VERSION, };
-                window.axios
-                    .post( route, out )
-                    .then( ( response ) => {
-                        resolve();
-                    } )
-                    .catch( function ( error ) {
-                        //todo add response handling
-                        window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
-                        // errorHandling( error );
-                    } );
-            };
+                //handles the actual request so that we can deal
+                //with the need to wait for an id
+                let makeRequest = ( route ) => {
+                    let out = out == { requestVersion: REQUEST_VERSION, };
+                    return window.axios
+                        .post( route, out )
+                        .then( ( response ) => {
+                            resolve();
+                        } )
+                        .catch( function ( error ) {
+                            //todo add response handling
+                            window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
+                            // errorHandling( error );
+                        } );
+                };
+
+                //dev This is the part I was working on for GOM-266
+            // return readinessTester(student, kumi)
+            //     .then( function(student, kumi){
+            //         window.console.log( 'studentRequests', 'ready', 256,student, kumi );
+            //     return makeRequest( Routes.associateStudent( student, kumi ) );
+            // });
+
 
             //Check whether both the kumi and student have their ids
-            if ( kumi.id === -1 || student.id === -1 ) {
-                //if either of them are not yet set, wait for a bit
-                //todo Rewrite this to use promises
-                setTimeout( function () {
-                    makeRequest( Routes.associateStudent( student, kumi ) );
-                }, ID_WAIT_DELAY );
-            } else {
-                //The ids are good to go, so we can just send it
-                makeRequest( Routes.associateStudent( student, kumi ) );
+                if ( kumi.id === -1 || student.id === -1 ) {
+                    //if either of them are not yet set, wait for a bit
+                    //todo Rewrite this to use promises
+                    setTimeout( function () {
+                        return makeRequest( Routes.associateStudent( student, kumi ) );
+                    }, ID_WAIT_DELAY );
+                } else {
+                    //The ids are good to go, so we can just send it
+                    return makeRequest( Routes.associateStudent( student, kumi ) );
+                }
             }
-        } );
+        );
+    // });
     },
 
     /**
@@ -232,7 +295,7 @@ module.exports = {
      */
     disassociateStudent: ( store, student, kumi ) => {
 
-        window.axios
+        return window.axios
             .post( Routes.disassociateStudent( student, kumi ) )
             .then( ( response ) => {
                 window.console.log( 'studentRequests', 'disassociateStudent', 214, response );
@@ -257,7 +320,7 @@ module.exports = {
     anonymizeStudents: ( store, exam ) => {
         // let route = `${ROSTER_BASE_ROUTE}/anon/{exam.id}`;
 
-        window.axios
+        return window.axios
             .post( Routes.anonymizeStudents( exam ) )
             .then( ( response ) => {
                 window.console.log( 'examRequests', 'anonymize students', 28, response );
@@ -269,7 +332,6 @@ module.exports = {
             } );
     },
 
-
     /**
      * Requests the permanent removal of all data about the student
      * @param store
@@ -278,7 +340,7 @@ module.exports = {
     destroyStudent: ( store, student ) => {
         // let route = `${STUDENT_BASE_ROUTE}/${student.id}`;
 
-        window.axios
+        return window.axios
             .delete( Routes.destroyStudent( student ) )
             .then( ( response ) => {
                 window.console.log( 'examRequests', 'anonymize students', 28, response );

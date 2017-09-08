@@ -2,7 +2,7 @@
  * Created by adam on 6/23/17.
  */
 
-import {REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes} from './apiSettings';
+import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes } from './apiSettings';
 
 import { errorHandling, handleResponse } from './responseHandlers';
 import { holdForIdLoading } from './apiHelpers';
@@ -12,12 +12,9 @@ import examRequests from './requests/examRequests';
 import commentRequests from './requests/commentRequests';
 
 
-
 const checkItemForId = ( item ) => {
     return item.id >= 0;
 };
-
-
 
 
 module.exports = {
@@ -26,33 +23,44 @@ module.exports = {
 
     /**
      * Handles the call to the server to update
-     * properties of an item which already has an id
+     * properties of an item which already has an id.
+     * Uses PUT
+     *
      * @param store
      * @param item
+     * @returns {Promise}
      */
     updateItem: ( store, item ) => {
         if ( holdForIdLoading( item ) ) {
-//copy so vuex doesn't yell
+            //copy so vuex doesn't yell
             let out = Object.assign( {}, item );
             out.examId = store.getters.currentExam.id;
             out.requestVersion = REQUEST_VERSION;
 
             //put/patch
-            window.axios
-                .put( Routes.updateItem(item), item )
+            return window.axios
+                .put( Routes.updateItem( item ), item )
                 .then( ( response ) => {
-                    handleResponse( store, item, response );
+                    handleResponse( store, item, response )
+                        .then( function () {
+                            window.console.log( 'requests', 'handleResponse promise resolved', 46 );
+                        } )
+                        .catch( function ( error ) {
+                            throw error;
+                        } );
                 } )
                 .catch( function ( error ) {
                     errorHandling( error );
                 } );
         }
     },
+
     /**
      * Handles the call to the server to update
      * properties of an item which already has an id
      * @param store
      * @param item
+     * @returns {Promise}
      */
     updateExam: ( store, exam ) => {
         window.console.log( 'apiPlugin', 'updateExam', 181, exam );
@@ -62,10 +70,16 @@ module.exports = {
             requestVersion: REQUEST_VERSION
         };
 
-        window.axios
-            .put( Routes.updateExam(exam), exam )
+        return window.axios
+            .put( Routes.updateExam( exam ), exam )
             .then( ( response ) => {
-                handleResponse( store, exam, response );
+                handleResponse( store, exam, response )
+                    .then( function () {
+                        window.console.log( 'requests', 'handleResponse promise resolved', 46 );
+                    } )
+                    .catch( function ( error ) {
+                        throw error;
+                    } );
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -77,38 +91,53 @@ module.exports = {
      * item which doesn't have an id yet.
      * @param store
      * @param item
+     * @returns {Promise}
      */
     createItem: ( store, item ) => {
-        if ( item && item.isNew() ) {
-            let exam = store.getters.currentExam;
-            let toSend = {
-                ...item,
-                requestVersion: REQUEST_VERSION,
-                examId: exam.id
-            };
-
-            // }
-
-            //id === 'undefined' || payload.obj.id === -1)
-            //All IModels have an id of -1 when they are initially created.
-            //This is replaced with the real id once one is returned from the server.
-            //Thus, this request is to create the item.
-            //When the server has done this, it will send back an id
-            window.axios
-                .post( Routes.createItem(), toSend )
-                .then( ( response ) => {
-                    handleResponse( store, item, response );
-                } )
-                .catch( function ( error ) {
-                    errorHandling( error );
-                } );
+        //Make sure the item is kosher
+        //If not, something might be expecting a promise
+        //so we make one and immediately reject it
+        if ( !item && !item.isNew() ) {
+            return new Promise( ( resolve, reject ) => {
+                reject( Error( "createItem: No item or old item passed to create" ) )
+            } );
         }
+
+        let exam = store.getters.currentExam;
+        let toSend = {
+            ...item,
+            requestVersion: REQUEST_VERSION,
+            examId: exam.id
+        };
+
+        //id === 'undefined' || payload.obj.id === -1)
+        //All IModels have an id of -1 when they are initially created.
+        //This is replaced with the real id once one is returned from the server.
+        //Thus, this request is to create the item.
+        //When the server has done this, it will send back an id
+        return window.axios
+            .post( Routes.createItem(), toSend )
+            .then( ( response ) => {
+                handleResponse( store, item, response )
+                    .then( function () {
+                        window.console.log( 'requests', 'createItem', 'handleResponse promise resolved', 46 );
+                    } )
+                    .catch( function ( error ) {
+                        throw error;
+                    } );
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
 
     },
 
     /**
-     * Asks the server to update the order of items
+     * Asks the server to update the order of items.
+     * Uses route commonBaseRoute + '/' + exam.id + '/order'
      * @param store
+     * @returns {Promise}
      */
     updateItemsOrder: ( store ) => {
         //This getter will also check to make sure we have ids
@@ -117,41 +146,20 @@ module.exports = {
 
         let exam = store.getters.currentExam;
 
-        window.console.log( 'requests', 'updateItemsOrder can sync', 112, store.getters.canSync );
-        let i = 0;
-
-//         while (! store.getters.canSync || i < 100) {
-//             window.console.log( 'requests', 'updateItemsOrder', 116, i );
-//             // for (let i = 0; i < 100; i++) {
-//             //     if ( ! store.getters.canSync ) {
-//             setTimeout( ( i ) => {
-//                 window.console.log( 'requests', 'waiting', 119, i, store.getters.canSync );
-//             }, 100 );
-//
-//             i++;
-//             // }
-//             // }else{
-//             //     return true;
-//             // }
-//         }
-// //
-        // let sortedIds = store.getters.getSortedIds;
-
         let payload = {
             examId: exam.id,
             requestVersion: REQUEST_VERSION,
             order: ord
         };
 
-        // if ( holdForIdLoading( item ) ) {
-        window.console.log( 'apiPlugin', 'updateItemsOrder NEW', 178, payload );
+        let route = Routes.updateItemsOrder( exam );
 
-        let route = Routes.updateItemsOrder(exam); //commonBaseRoute + '/' + exam.id + '/order';
-        window.axios
+        return window.axios
             .post( route, payload )
             .then( ( response ) => {
                 window.console.log( 'apiPlugin', '#### SERVER SAYS ####', 169, response );
-                //  handleResponse(store, items, response);
+                //No need to update our internally stored objects
+                //on the basis of the result
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -159,6 +167,9 @@ module.exports = {
     }
 
 };
+
+
+
 /**
  //  * Asks the server to update the order of items
  //  * @param store

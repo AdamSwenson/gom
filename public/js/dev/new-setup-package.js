@@ -32235,6 +32235,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 window._ = __webpack_require__(21);
 
 
+/**
+ * Calls a silent mutation on the item to update it
+ * after the server has updated
+ * @param store
+ * @param item
+ * @param response
+ * @returns {Promise}
+ */
 var handleItemResponse = function handleItemResponse(store, item, response) {
     return new Promise(function (resolve, reject) {
         _Item2.default.fillableProps.forEach(function (p) {
@@ -32277,37 +32285,50 @@ var handleExamResponse = function handleExamResponse(store, item, response) {
 
 module.exports = {
 
+    /**
+     * Handles exam and item requests.
+     * Will call silent mutation to update the relevant object
+     * on success.
+     * @param store
+     * @param item
+     * @param response
+     * @returns {Promise}
+     */
     handleResponse: function handleResponse(store, item, response) {
-        // return new Promise( ( resolve, reject ) => {
-        // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
+        return new Promise(function (resolve, reject) {
+            // window.console.log('apiPlugin', 'handleResponse', 43, response, item, store);
 
-        //check if there was a data field wrapping the response data.
-        //if there was, set the json object as response
-        if (typeof response.data !== 'undefined') response = response.data;
+            //check if there was a data field wrapping the response data.
+            //if there was, set the json object as response
+            if (typeof response.data !== 'undefined') response = response.data;
 
-        //return Item with the new id or other data loaded
-        switch (item.kind) {
-            case 'exam':
-                handleExamResponse(store, item, response);
-                // resolve( item );
-                // .then( ( resolve ) => {
-                //     resolve();
-                // } );
-                break;
+            //return Item with the new id or other data loaded
+            switch (item.kind) {
+                case 'exam':
+                    var p = handleExamResponse(store, item, response);
+                    p.then(function (resolve) {
+                        window.console.log('responseHandlers', 'exam response resolved', 73);
+                        resolve();
+                    });
 
-            case 'item':
-                handleItemResponse(store, item, response);
-                // resolve( item );
-                // .then( ( resolve ) => {
-                //     resolve();
-                // } );
+                    break;
 
-                break;
-            default:
-            // reject()
-        }
-
-        // } );
+                case 'item':
+                    //this returns a promise
+                    handleItemResponse(store, item, response)
+                    //this is what we do when it succeeds
+                    .then(function () {
+                        window.console.log('responseHandlers', 'item response resolved', 81);
+                        //we resolve our outer promise
+                        resolve();
+                    }).catch(function () {
+                        reject(Error("Error in handling item response"));
+                    });
+                    break;
+                default:
+                    reject(Error("Invalid item kind"));
+            }
+        });
     },
 
     errorHandling: function errorHandling(error) {
@@ -36399,9 +36420,12 @@ module.exports = _extends({}, _examRequests2.default, {
 
     /**
      * Handles the call to the server to update
-     * properties of an item which already has an id
+     * properties of an item which already has an id.
+     * Uses PUT
+     *
      * @param store
      * @param item
+     * @returns {Promise}
      */
     updateItem: function updateItem(store, item) {
         if ((0, _apiHelpers.holdForIdLoading)(item)) {
@@ -36411,18 +36435,24 @@ module.exports = _extends({}, _examRequests2.default, {
             out.requestVersion = _apiSettings.REQUEST_VERSION;
 
             //put/patch
-            window.axios.put(_apiSettings.Routes.updateItem(item), item).then(function (response) {
-                (0, _responseHandlers.handleResponse)(store, item, response);
+            return window.axios.put(_apiSettings.Routes.updateItem(item), item).then(function (response) {
+                (0, _responseHandlers.handleResponse)(store, item, response).then(function () {
+                    window.console.log('requests', 'handleResponse promise resolved', 46);
+                }).catch(function (error) {
+                    throw error;
+                });
             }).catch(function (error) {
                 (0, _responseHandlers.errorHandling)(error);
             });
         }
     },
+
     /**
      * Handles the call to the server to update
      * properties of an item which already has an id
      * @param store
      * @param item
+     * @returns {Promise}
      */
     updateExam: function updateExam(store, exam) {
         window.console.log('apiPlugin', 'updateExam', 181, exam);
@@ -36431,8 +36461,12 @@ module.exports = _extends({}, _examRequests2.default, {
             requestVersion: _apiSettings.REQUEST_VERSION
         });
 
-        window.axios.put(_apiSettings.Routes.updateExam(exam), exam).then(function (response) {
-            (0, _responseHandlers.handleResponse)(store, exam, response);
+        return window.axios.put(_apiSettings.Routes.updateExam(exam), exam).then(function (response) {
+            (0, _responseHandlers.handleResponse)(store, exam, response).then(function () {
+                window.console.log('requests', 'handleResponse promise resolved', 46);
+            }).catch(function (error) {
+                throw error;
+            });
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
@@ -36443,33 +36477,45 @@ module.exports = _extends({}, _examRequests2.default, {
      * item which doesn't have an id yet.
      * @param store
      * @param item
+     * @returns {Promise}
      */
     createItem: function createItem(store, item) {
-        if (item && item.isNew()) {
-            var exam = store.getters.currentExam;
-            var toSend = _extends({}, item, {
-                requestVersion: _apiSettings.REQUEST_VERSION,
-                examId: exam.id
-            });
-
-            // }
-
-            //id === 'undefined' || payload.obj.id === -1)
-            //All IModels have an id of -1 when they are initially created.
-            //This is replaced with the real id once one is returned from the server.
-            //Thus, this request is to create the item.
-            //When the server has done this, it will send back an id
-            window.axios.post(_apiSettings.Routes.createItem(), toSend).then(function (response) {
-                (0, _responseHandlers.handleResponse)(store, item, response);
-            }).catch(function (error) {
-                (0, _responseHandlers.errorHandling)(error);
+        //Make sure the item is kosher
+        //If not, something might be expecting a promise
+        //so we make one and immediately reject it
+        if (!item && !item.isNew()) {
+            return new Promise(function (resolve, reject) {
+                reject(Error("createItem: No item or old item passed to create"));
             });
         }
+
+        var exam = store.getters.currentExam;
+        var toSend = _extends({}, item, {
+            requestVersion: _apiSettings.REQUEST_VERSION,
+            examId: exam.id
+        });
+
+        //id === 'undefined' || payload.obj.id === -1)
+        //All IModels have an id of -1 when they are initially created.
+        //This is replaced with the real id once one is returned from the server.
+        //Thus, this request is to create the item.
+        //When the server has done this, it will send back an id
+        return window.axios.post(_apiSettings.Routes.createItem(), toSend).then(function (response) {
+            (0, _responseHandlers.handleResponse)(store, item, response).then(function () {
+                window.console.log('requests', 'createItem', 'handleResponse promise resolved', 46);
+            }).catch(function (error) {
+                throw error;
+            });
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
     },
 
     /**
-     * Asks the server to update the order of items
+     * Asks the server to update the order of items.
+     * Uses route commonBaseRoute + '/' + exam.id + '/order'
      * @param store
+     * @returns {Promise}
      */
     updateItemsOrder: function updateItemsOrder(store) {
         //This getter will also check to make sure we have ids
@@ -36478,45 +36524,25 @@ module.exports = _extends({}, _examRequests2.default, {
 
         var exam = store.getters.currentExam;
 
-        window.console.log('requests', 'updateItemsOrder can sync', 112, store.getters.canSync);
-        var i = 0;
-
-        //         while (! store.getters.canSync || i < 100) {
-        //             window.console.log( 'requests', 'updateItemsOrder', 116, i );
-        //             // for (let i = 0; i < 100; i++) {
-        //             //     if ( ! store.getters.canSync ) {
-        //             setTimeout( ( i ) => {
-        //                 window.console.log( 'requests', 'waiting', 119, i, store.getters.canSync );
-        //             }, 100 );
-        //
-        //             i++;
-        //             // }
-        //             // }else{
-        //             //     return true;
-        //             // }
-        //         }
-        // //
-        // let sortedIds = store.getters.getSortedIds;
-
         var payload = {
             examId: exam.id,
             requestVersion: _apiSettings.REQUEST_VERSION,
             order: ord
         };
 
-        // if ( holdForIdLoading( item ) ) {
-        window.console.log('apiPlugin', 'updateItemsOrder NEW', 178, payload);
+        var route = _apiSettings.Routes.updateItemsOrder(exam);
 
-        var route = _apiSettings.Routes.updateItemsOrder(exam); //commonBaseRoute + '/' + exam.id + '/order';
-        window.axios.post(route, payload).then(function (response) {
+        return window.axios.post(route, payload).then(function (response) {
             window.console.log('apiPlugin', '#### SERVER SAYS ####', 169, response);
-            //  handleResponse(store, items, response);
+            //No need to update our internally stored objects
+            //on the basis of the result
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
     }
 
 });
+
 /**
  //  * Asks the server to update the order of items
  //  * @param store
@@ -36963,38 +36989,52 @@ var ID_WAIT_DELAY = 3000;
  * insert new students into store
  * @param store
  * @param response
+ * @returns {Promise}
  */
 var handleLoadResponse = function handleLoadResponse(store, response) {
-    _.forEach(response.data, function (r) {
-        // window.console.log( 'studentRequests', 'r', 29, r );
-        var student = _Student2.default.factory({ r: r });
-        student.email = r.email;
-        student.firstName = r.firstName;
-        student.id = r.id;
-        student.identifier = !_.isUndefined(r.identifier) ? r.identifier : r.studentIdentifier;
-        student.lastName = r.lastName;
+    return new Promise(function (resolve, reject) {
 
-        var payload = _Payload2.default.factory({ obj: student, mutateSilently: true });
-        store.commit(mTypes.addStudentToRoster, payload);
+        _.forEach(response.data, function (r) {
+            // window.console.log( 'studentRequests', 'r', 29, r );
+            var student = _Student2.default.factory({ r: r });
+            student.email = r.email;
+            student.firstName = r.firstName;
+            student.id = r.id;
+            student.identifier = !_.isUndefined(r.identifier) ? r.identifier : r.studentIdentifier;
+            student.lastName = r.lastName;
 
-        if (r.kumiId) {
-            //if the server sent us the id of the associated kumi
-            //we are going to look up the client side representation
-            //and then store it in the student object
-            var kumi = store.getters.getKumiById(r.kumiId);
-            if (_.isUndefined(kumi)) {}
-            //if a kumi object doesn't exist yet with this id
-            //figure out what the fuck to do.....
-            //todo add promises to help with this
+            var payload = _Payload2.default.factory({ obj: student, mutateSilently: true });
+            store.commit(mTypes.addStudentToRoster, payload);
+
+            if (r.kumiId) {
+                //if the server sent us the id of the associated kumi
+                //we are going to look up the client side representation
+                //and then store it in the student object.
+                //NB, there might not be a kumi id for any number of reasons,
+                //including that an existing student is being newly associated with
+                //a kumi.
+                //Remember also that kumis are just groups now
+                var kumi = store.getters.getKumiById(r.kumiId);
+                if (_.isUndefined(kumi)) {}
+                //if a kumi object doesn't exist yet with this id
+                //figure out what the fuck to do.....
+                //the best thing will probably involve
+                //having the kumi loader update the kumi id's of
+                //existing students when it loads. Thus if each
+                //of them (kumi and student loaders) check and update ids
+                // when they are done, we should be okay
+                //todo add promises to help with this
 
 
-            //Otherwise we are good, so call the mutation
-            // this will both add the kumi to the student
-            //and store the relationship centrally
-            payload.student = student;
-            payload.kumi = kumi;
-            store.commit(mTypes.associateStudentWithKumi, payload);
-        }
+                //Otherwise we are good, so call the mutation
+                // this will both add the kumi to the student
+                //and store the relationship centrally
+                payload.student = student;
+                payload.kumi = kumi;
+                store.commit(mTypes.associateStudentWithKumi, payload);
+            }
+        });
+        resolve();
     });
 };
 
@@ -37010,6 +37050,7 @@ var handleCreateStudentResponse = function handleCreateStudentResponse(store, st
     return new Promise(function (resolve, reject) {
         var pl = _Payload2.default.factory({
             obj: student,
+            //we are just adding the id
             updateProp: 'id',
             updateVal: data.id,
             mutateSilently: true
@@ -37019,7 +37060,44 @@ var handleCreateStudentResponse = function handleCreateStudentResponse(store, st
 
         store.commit('updateStudentInRoster', pl);
 
-        resolve();
+        resolve(student);
+    });
+};
+
+/**
+ * Checks whether both student and kumi have ids
+ * and resolves when they do
+ * Used when the promises in loading student and kumi
+ * can't be chained.
+ * @param student
+ * @param kumi
+ * @param tries
+ * @returns {Promise}
+ */
+var readinessTester = function readinessTester(student, kumi) {
+    var tries = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 10;
+
+    return new Promise(function (resolve, reject) {
+        var check = function check(kumi, student) {
+            // while( kumi.id === -1 || student.id === -1 ) {
+            //     setTimeout( function () {
+            //         window.console.log( 'studentRequests', 'waiting inside timeout', 115, );
+            //     }, ID_WAIT_DELAY );
+            //     window.console.log( 'studentRequests', 'waiting outside timeout', 115, );
+            // }
+            return resolve();
+        };
+
+        for (var i = 0; i < tries; i++) {
+            //check immediately
+            if (check(student, kumi)) i = tries;
+
+            // //set timeout and check again
+            // setTimeout( function () {
+            //     if ( check( student, kumi ) ) i = tries;
+            // }, ID_WAIT_DELAY );
+        }
+        reject(Error("Failed to load student or kumi id"));
     });
 };
 
@@ -37041,16 +37119,16 @@ module.exports = {
 
         //Request is for every student belonging to the user
         if (_.isUndefined(exam)) {
-            window.axios.get(_apiSettings.Routes.loadAllStudents()).then(function (response) {
+            return window.axios.get(_apiSettings.Routes.loadAllStudents()).then(function (response) {
                 // window.console.log( 'studentRequests', '', 28, response );
-                handleLoadResponse(store, response);
+                return handleLoadResponse(store, response);
             }).catch(function (error) {
                 window.console.log('examRequests', 'ERROR', 39, error);
                 // errorHandling( error );
             });
         } else {
             //Get students for a particular exam
-            window.axios.get(_apiSettings.Routes.loadStudentsForExam(exam)).then(function (response) {
+            return window.axios.get(_apiSettings.Routes.loadStudentsForExam(exam)).then(function (response) {
                 // window.console.log( 'examRequests', '', 28, response );
                 handleLoadResponse(store, response);
             }).catch(function (error) {
@@ -37067,9 +37145,10 @@ module.exports = {
      * This does not affect their associations with a class or exam.
      * @param store
      * @param student
+     * @returns {Promise}
      */
     updateStudent: function updateStudent(store, student) {
-        window.axios.patch(_apiSettings.Routes.updateStudent(student), student).then(function (response) {
+        return window.axios.patch(_apiSettings.Routes.updateStudent(student), student).then(function (response) {
             // window.console.log( 'studentRequests', 'updateStudent', 28, response );
         }).catch(function (error) {
             window.console.log('studentRequests', 'ERROR', 39, error);
@@ -37082,6 +37161,7 @@ module.exports = {
      * Does not associate the student with a class or exam.
      * @param store
      * @param student
+     * @returns {Promise}
      */
     createStudent: function createStudent(store, student) {
         // if ( student && student.isNew() ) {
@@ -37089,7 +37169,7 @@ module.exports = {
             requestVersion: _apiSettings.REQUEST_VERSION
         });
 
-        window.axios.post(_apiSettings.Routes.createStudent(), toSend).then(function (response) {
+        return window.axios.post(_apiSettings.Routes.createStudent(), toSend).then(function (response) {
             // window.console.log( 'studentRequests', 'createStudent', 28, response );
             handleCreateStudentResponse(store, student, response.data);
         }).catch(function (error) {
@@ -37105,6 +37185,7 @@ module.exports = {
      * @param student
      * @param exam
      * @param kumi
+     * @returns {Promise}
      */
     associateStudent: function associateStudent(store, student, kumi) {
         return new Promise(function (resolve, reject) {
@@ -37113,7 +37194,7 @@ module.exports = {
             //with the need to wait for an id
             var makeRequest = function makeRequest(route) {
                 var out = out == { requestVersion: _apiSettings.REQUEST_VERSION };
-                window.axios.post(route, out).then(function (response) {
+                return window.axios.post(route, out).then(function (response) {
                     resolve();
                 }).catch(function (error) {
                     //todo add response handling
@@ -37122,18 +37203,27 @@ module.exports = {
                 });
             };
 
+            //dev This is the part I was working on for GOM-266
+            // return readinessTester(student, kumi)
+            //     .then( function(student, kumi){
+            //         window.console.log( 'studentRequests', 'ready', 256,student, kumi );
+            //     return makeRequest( Routes.associateStudent( student, kumi ) );
+            // });
+
+
             //Check whether both the kumi and student have their ids
             if (kumi.id === -1 || student.id === -1) {
                 //if either of them are not yet set, wait for a bit
                 //todo Rewrite this to use promises
                 setTimeout(function () {
-                    makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
+                    return makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
                 }, ID_WAIT_DELAY);
             } else {
                 //The ids are good to go, so we can just send it
-                makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
+                return makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
             }
         });
+        // });
     },
 
     /**
@@ -37152,7 +37242,7 @@ module.exports = {
      */
     disassociateStudent: function disassociateStudent(store, student, kumi) {
 
-        window.axios.post(_apiSettings.Routes.disassociateStudent(student, kumi)).then(function (response) {
+        return window.axios.post(_apiSettings.Routes.disassociateStudent(student, kumi)).then(function (response) {
             window.console.log('studentRequests', 'disassociateStudent', 214, response);
         }).catch(function (error) {
             //todo add response handling
@@ -37174,7 +37264,7 @@ module.exports = {
     anonymizeStudents: function anonymizeStudents(store, exam) {
         // let route = `${ROSTER_BASE_ROUTE}/anon/{exam.id}`;
 
-        window.axios.post(_apiSettings.Routes.anonymizeStudents(exam)).then(function (response) {
+        return window.axios.post(_apiSettings.Routes.anonymizeStudents(exam)).then(function (response) {
             window.console.log('examRequests', 'anonymize students', 28, response);
         }).catch(function (error) {
             //todo add response handling
@@ -37191,7 +37281,7 @@ module.exports = {
     destroyStudent: function destroyStudent(store, student) {
         // let route = `${STUDENT_BASE_ROUTE}/${student.id}`;
 
-        window.axios.delete(_apiSettings.Routes.destroyStudent(student)).then(function (response) {
+        return window.axios.delete(_apiSettings.Routes.destroyStudent(student)).then(function (response) {
             window.console.log('examRequests', 'anonymize students', 28, response);
         }).catch(function (error) {
             //todo add response handling
@@ -59568,26 +59658,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 exports.default = {
 
@@ -61107,8 +61177,9 @@ exports.default = function (store) {
              */
             case mTypes.addNewItem:
                 if (item) {
-                    (0, _requests.createItem)(store, item);
-                    // payload.callback();
+                    (0, _requests.createItem)(store, item).then(function () {
+                        // payload.callback();
+                    });
                 }
                 break;
 
@@ -61121,11 +61192,13 @@ exports.default = function (store) {
                         item.examId = store.getters.currentExam.id;
                     }
                     if (item.isNew()) {
-                        (0, _requests.createItem)(store, item);
-                        payload.callback();
+                        (0, _requests.createItem)(store, item).then(function () {
+                            payload.callback();
+                        });
                     } else {
-                        (0, _requests.updateItem)(store, item);
-                        payload.callback();
+                        (0, _requests.updateItem)(store, item).then(function () {
+                            payload.callback();
+                        });
                     }
                 }
                 break;
@@ -61151,8 +61224,6 @@ exports.default = function (store) {
                 } else if (item instanceof _Item2.default) {
                     (0, _requests.updateItem)(store, item);
                 }
-
-                // payload.callback();
                 break;
 
             case mTypes.insertNodeIntoOrder:
@@ -61221,7 +61292,6 @@ exports.default = function (store) {
 
             case 'updateStudentInRoster':
                 // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
-                // let kumi = payload.kumi
                 (0, _studentRequests.updateStudent)(store, payload.obj);
                 break;
 
@@ -61238,11 +61308,6 @@ exports.default = function (store) {
             case mTypes.updateKumi:
                 // window.console.log( 'apiPlugin', 'updateKumi', 184, payload );
                 (0, _kumiRequests.updateKumi)(store, payload);
-
-                // let exam = store.getters.currentExam;
-                // if(exam){
-                //     associateKumi(store, payload, exam);
-                // }
                 break;
 
             /**

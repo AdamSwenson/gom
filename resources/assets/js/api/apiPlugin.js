@@ -117,8 +117,9 @@ export default function ( store ) {
              */
             case mTypes.addNewItem:
                 if ( item ) {
-                    createItem( store, item );
-                    // payload.callback();
+                    createItem( store, item ).then( function () {
+                        // payload.callback();
+                    } );
                 }
                 break;
 
@@ -131,12 +132,15 @@ export default function ( store ) {
                         item.examId = store.getters.currentExam.id;
                     }
                     if ( item.isNew() ) {
-                        createItem( store, item );
-                        payload.callback();
+                        createItem( store, item )
+                            .then( function () {
+                                payload.callback();
+                            } );
                     }
                     else {
-                        updateItem( store, item );
-                        payload.callback();
+                        updateItem( store, item ).then( function () {
+                            payload.callback();
+                        } );
                     }
                 }
                 break;
@@ -163,8 +167,6 @@ export default function ( store ) {
                 else if ( item instanceof Item ) {
                     updateItem( store, item );
                 }
-
-                // payload.callback();
                 break;
 
             case mTypes.insertNodeIntoOrder:
@@ -235,7 +237,6 @@ export default function ( store ) {
 
             case 'updateStudentInRoster':
                 // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
-                // let kumi = payload.kumi
                 updateStudent( store, payload.obj );
                 break;
 
@@ -253,11 +254,6 @@ export default function ( store ) {
             case mTypes.updateKumi:
                 // window.console.log( 'apiPlugin', 'updateKumi', 184, payload );
                 updateKumi( store, payload );
-
-                // let exam = store.getters.currentExam;
-                // if(exam){
-                //     associateKumi(store, payload, exam);
-                // }
                 break;
 
             /**
