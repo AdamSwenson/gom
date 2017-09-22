@@ -41,7 +41,8 @@
         data: function () {
             return {
                 icons: {
-                    defaultSort: "fa fa-sort",
+                    defaultSort: "",
+//                    defaultSort: "fa fa-sort",
                     sortAsc: "fa fa-sort-amount-asc",
                     sortDesc: "fa fa-sort-amount-desc"
                 },
@@ -67,7 +68,7 @@
                 //we are on the selected column
                 //so we decide whether to show the up or down icon
                 if ( this.sortAsc ) return this.icons.sortAsc;
-                return this.icons.sortAsc;
+                return this.icons.sortDesc;
             },
 
             studentProperty: function () {
@@ -77,13 +78,17 @@
 
         methods: {
             sortRosterBy: function () {
-                this.$emit( 'sort-roster-by', this.shortText );
-
+                window.console.log( 'column-header-field', 'sortRosterBy', 80, this.column.shortText);
+                this.$emit( 'sort-roster-by', this.column.shortText );
             },
 
             toggleSortAscending: function () {
+                //don't react to clicks unless the column is selected and an icon is displayed
+                if ( this.studentProperty !== this.$parent.sortedBy ) return true;
+
+                window.console.log( 'column-header-field', 'toggleSortAscending', 85, this.column.shortText);
                 this.sortAsc = !this.sortAsc;
-                this.$emit( 'toggle-asc-clicked', this.shortText );
+                this.$emit( 'toggle-asc-clicked', this.column.shortText );
             }
         }
     }

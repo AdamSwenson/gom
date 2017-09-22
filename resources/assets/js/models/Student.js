@@ -16,6 +16,11 @@ export default class Student extends IModel{
         this.firstName = '';
 
         this.associatedKumis = [];
+
+        //sometimes it will be expeditious just
+        //to store these on the student.
+        this.score = null;
+        this.grade = null;
     }
 
     /* ************************* Server stuff ****************** */

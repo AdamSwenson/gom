@@ -10,6 +10,7 @@ require( 'sinon' );
 
 //helpers
 var Helper = require( '../../../../../helpers/vueTesting.helper.js' );
+import { testAction, description, factories } from '../../../../../helpers/vuex.spec.helpers';
 
 //for fixture
 require( 'bootstrap' );
@@ -21,18 +22,47 @@ var testedComponent = require( "../../../../../../../resources/assets/js/develop
 var fixture = 'generic.fixture.html';
 
 
-describe( " tests | ", function () {
+describe( " student-table | ", function () {
 
 
     beforeEach( function () {
 //runs before each test
     } );
 
-    afterEach( function () {
-//runs after each test
-    } );
+    describe( description( "sort " ), function () {
+        describe( description( "default state" ), function () {
+            
+        } );
+        
+        describe( description( "column selected" ), function () {
+           it("correct sort icon displays", function(){
+               
+           });
 
-    it( " ", function () {
+            describe( description("sort icon area is active"), function(){
+                it("clicking toggles sort order", function(){
+                    //verify rows are in correct order
+                });
+
+                it("icon changes with sort order", function(){
+
+                });
+
+            });
+
+        } );
+        
+        describe( description( "column not selected" ), function () {
+            it("icon area does not toggle sort", function(){
+
+            });      
+            
+            it("no icon is displayed", function(){
+
+            });
+        } );
+        
+      
     } );
 
 } );

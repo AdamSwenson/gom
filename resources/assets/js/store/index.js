@@ -62,6 +62,7 @@ import visibility from './modules/visibility'
 import kumi from './modules/roster/kumis'
 import notes from './modules/notes'
 import tags from './modules/tags'
+import rosterDisplay from './modules/roster/display'
 
 //api
 import requests from './modules/api/requests';
@@ -121,7 +122,9 @@ const debug = process.env.NODE_ENV !== 'production';
         kumi,
         requests,
         notes,
-        tags
+        tags,
+        //student table
+        rosterDisplay
     }
 
 // }

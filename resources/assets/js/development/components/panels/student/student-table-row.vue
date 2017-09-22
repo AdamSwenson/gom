@@ -1,8 +1,18 @@
 <template>
+
     <tr class="student-row"
-        v-on:toggle-checkbox-delete="handleToggleCheckboxDelete"
-        v-show="showRow"
+        v-bind:class="rowStyling"
+        v-show="isRowVisible"
     >
+
+        <td v-on:click="handleRowSelection">
+            <div class="field">
+                <span class="icon">
+                    <i class="fa" v-bind:class="icon"></i>
+                </span>
+            </div>
+        </td>
+
         <td>
             <div class="field">
 
@@ -10,97 +20,66 @@
                        class="input"
                        placeholder="First name"
                        v-model="firstName"
+                       aria-label="First name"
                        v-bind:id="getInputId('firstName')"
                 />
             </div>
-
         </td>
+
         <td>
             <div class="field">
                 <input type="text"
                        class="input"
                        placeholder="Last name"
+                       aria-label="Last name"
                        v-model="lastName"
                        v-bind:id="getInputId('lastName')"
                 />
             </div>
         </td>
+
         <td>
             <div class="field">
                 <input type="text"
                        class="input"
                        placeholder="Student id"
+                       aria-label="Student id"
                        v-model="identifier"
                        v-bind:id="getInputId('identifier')"
                 />
             </div>
         </td>
+
         <td>
             <div class="field">
                 <input type="text"
                        class="input"
                        placeholder="Email address"
+                       aria-label="Email address"
                        v-model="email"
                        v-bind:id="getInputId('email')"
                 />
             </div>
         </td>
 
-        <td>
-
-            <!--<student-op-area></student-op-area>-->
-            <div class="field is-horizontal">
-                <div class="field-body">
-
-                    <div class="control delete-operation-area"
-                         v-show="showDeleteOperationArea">
-                        <label class="checkbox">
-                            <input class="checkbox student-operation-checkbox"
-                                   type="checkbox"
-                                   v-bind:id="checkboxId"
-                                   v-model="isSelected">Delete</label>
-                    </div>
-
-                    <div class="control remove-operation-area"
-                         v-show="showRemoveOperationArea">
-                        <label class="checkbox">
-                            <input class="checkbox student-operation-checkbox"
-                                   type="checkbox"
-                                   v-bind:id="checkboxId"
-                                   v-model="isSelected"
-                            />Remove</label>
-                    </div>
-
-                    <div class="control move-operation-area"
-                         v-show="showMoveOperationArea"
-                    >
-                        <label class="checkbox student-operation-checkbox">
-                            <input type="checkbox"
-                                   class="checkbox"
-                                   v-bind:id="checkboxId"
-                                   v-model="isSelected"
-                            >Add</label>
-                    </div>
-
-                </div>
-            </div>
-        </td>
-
-        <td class="field is-horizontal"
-            v-show="showGradeInfo"
+        <td v-if="isGradeInfoVisible"
         >
-            <div class="field-body">
-                <div class="control">
-                    <input type="text"
-                           class="input"
-                           v-model="score"
-                           v-bind:id="getInputId('score')">
-                </div>
-                <div class="control">
-                    <input type="text"
-                           class="input"
-                           v-model="grade"
-                           v-bind:id="getInputId('grade')">
+            <div class="field is-horizontal grade-area">
+                <div class="field-body">
+                    <div class="control">
+                        <input type="text"
+                               class="input"
+                               v-model="score"
+                               aria-label="Score"
+                               v-bind:id="getInputId('score')">
+                    </div>
+                    <div class="control">
+                        <input type="text"
+                               class="input"
+                               v-model="grade"
+                               aria-label="Grade"
+                               v-bind:id="getInputId('grade')">
+                    </div>
                 </div>
             </div>
         </td>
@@ -136,21 +115,6 @@
 
         data: function () {
             return {
-
-                /**
-                 * Whether to display the checkbox by which
-                 * the student is selected for being moved,
-                 * removed, or deleted
-                 */
-//                showOperationCheckbox: false,
-
-                /**
-                 * Gets the label to display with the checkbox
-                 * i.e., Delete, Move, Remove
-                 */
-                operationCheckboxLabel: 'Delete | Move | Remove',
-
-
                 defaults: {
                     firstName: '-',
                     lastName: '-',
@@ -160,11 +124,28 @@
             }
         },
 
+
         computed: {
-//        asyncComputed: {
-//            student: function () {
-//                return this.$store.getters.getStudentFromRosterBySerialNumber( this.serialNumber );
-//            },
+            displayedKumis : function (  ) {
+                return this.$store.getters.getDisplayedKumis;
+            },
+
+            icon: function () {
+                return this.isSelected ? 'fa-check-circle-o' : 'fa-circle-thin';
+            },
+
+            email: {
+                get: function () {
+                    return this.student.email;
+                },
+                set: function ( v ) {
+                    this.$store.commit( 'updateStudentInRoster', Payload.factory( {
+                        obj: this.student,
+                        updateProp: 'email',
+                        updateVal: v
+                    } ) );
+                }
+            },
 
             firstName: {
                 get: function () {
@@ -180,18 +161,11 @@
                 }
             },
 
-            lastName: {
-                get: function () {
-//todo capitalize?
-                    return this.student.lastName;
-                },
-                set: function ( v ) {
-                    this.$store.commit( 'updateStudentInRoster', Payload.factory( {
-                        obj: this.student,
-                        updateProp: 'lastName',
-                        updateVal: _.capitalize( v )
-                    } ) );
-                }
+            /**
+             * Getter for the students grade, if displayed
+             */
+            grade: function () {
+                if ( this.student.grade ) return this.student.grade;
             },
 
             identifier: {
@@ -208,186 +182,110 @@
                 }
             },
 
-            email: {
-                get: function () {
-                    return this.student.email;
-                },
-                set: function ( v ) {
-                    this.$store.commit( 'updateStudentInRoster', Payload.factory( {
-                        obj: this.student,
-                        updateProp: 'email',
-                        updateVal: v
-                    } ) );
-                }
-            },
 
-            isStudentInSelectedKumi: function () {
-                return this.$store.getters.isStudentInSelectedKumi( this.student );
-            },
-
-            /**
-             * Whether this row is selected
-             */
-            isSelected: {
-                get: function () {
-                    return this.$parent.selectedStudents.indexOf( this.student ) > -1;
-                },
-                set: function ( v ) {
-                    let idx = this.$parent.selectedStudents.indexOf( this.student );
-                    if ( idx > -1 ) {
-//already selected, so remove
-                        return this.$parent.selectedStudents.splice( idx, 1 );
-                    }
-                    this.$parent.selectedStudents.push( this.student );
-                }
-            },
             /**
              * Whether to display score and other
              * info about how the student has done.
-             * (Note 'done on what?' is resolved by context
-             * since we want to be able to call this menu
-             * up in many contexts ---maybe on item score, exam score
+             * (Note 'done on what?' is resolved by whether
+             * the student has a grade or a score set on the object
              */
-            showGradeInfo: function () {
+            isGradeInfoVisible: function () {
+                if ( !_.isNull( this.student.grade ) || !_.isNull( this.student.score ) ) return true;
                 return false;
             },
-
-//these need to be here for the op area to read
-            /**
-             * Whether to display the checkbox by which
-             * the student is selected for being moved,
-             * removed, or deleted
-             */
-            showOperationCheckbox: function () {
-                return this.$parent.showDeleteOperationArea;
-            },
-
-            /**
-             * Gets the label to display with the checkbox
-             * i.e., Delete, Move, Remove
-             */
-//            operationCheckboxLabel: 'Delete | Move | Remove',
-
-
-            /**
-             * Whether to display the checkbox by which
-             * the student is selected for being moved,
-             * removed, or deleted
-             */
-            showDeleteOperationArea: function () {
-                return this.$parent.showDeleteOperationArea;
-            },
-
-            /**
-             * Whether to display the checkbox by which
-             * the student is selected for being moved,
-             * removed, or deleted
-             */
-            showMoveOperationArea: function () {
-                return this.$parent.showMoveOperationArea;
-            },
-
-            /**
-             * Whether to display the checkbox by which
-             * the student is selected for being moved,
-             * removed, or deleted
-             */
-            showRemoveOperationArea: function () {
-                return this.$parent.showRemoveOperationArea;
-            },
-
-//            /**
-            //             * Gets the label to display with the checkbox
-            //             * i.e., Delete, Move, Remove
-            //             */
-//            operationCheckboxLabel: function () {
-//                return 'Delete | Move | Remove';
-//            },
 
             /**
              * Whether the row is visible
              */
-            showRow: function () {
-                return true;
+            isRowVisible: function () {
+                if(this.displayedKumis.length === 0) return true;
 
-                if ( this.$parent.showKumi === -1 ) return true;
+                return this.$store.getters.isStudentInDisplayedKumi( this.student );
 
-                if(_.isUndefined(this.student)) return true;
+//                let me = this;
+//
+//                _.forEach(this.displayedKumis, function ( kumi ) {
+//                    window.console.log( 'student-table-row', 'displayedkumis', 198, kumi.serialNumber , me.student.associatedKumis);
+//                    if (me.student.associatedKumis.indexOf(kumi) > -1) return true;
+//                });
+//                return false;
+//                return this.student.associatedKumis.indexOf(this.displayedKumis)
+            },
 
-                let kumi = this.$store.getters.getKumiBySerialNumber( this.$parent.showKumi );
+            isSelected: function(){
+                return this.$store.getters.getSelectedStudents.indexOf(this.student) > -1;
+            },
 
-                return this.student.associatedKumis.indexOf( kumi ) > -1;
+
+
+            lastName: {
+                /**
+                 * todo capitalize? Probably not since there may be particular spellings that this would corrupt
+                 */
+                get: function () {
+                    return this.student.lastName;
+                },
+                set: function ( v ) {
+                    this.$store.commit( 'updateStudentInRoster', Payload.factory( {
+                        obj: this.student,
+                        updateProp: 'lastName',
+                        updateVal: _.capitalize( v )
+                    } ) );
+                }
             },
 
             /**
-             * Getter for the students grade, if displayed
+             * The class of the row is bound to this
              */
-            grade: function () {
+            rowStyling: function () {
+                if ( this.isSelected ) return 'is-selected';
             },
 
             /**
              * Getter for the student's score, if displayed
              */
             score: function () {
+                if ( this.student.score ) return this.student.score;
             },
 
-            checkboxId: function () {
-                return 'student-operation-checkbox-' + this.serialNumber;
+        },
+
+        directives: {
+            /**
+             * Triggers the row selection event handler
+             */
+            selectsRows: function ( evt ) {
+                window.console.log( 'student-table-row', 'selectsRows', 241, evt );
             }
-        }
-        ,
+        },
 
         methods: {
             getInputId: function ( name ) {
                 return _.kebabCase( name ) + '-' + this.serialNumber;
-            }
-            ,
-
-            getCheckboxValue: function () {
-                return this.student.serialNumber;
             },
 
-            handleToggleCheckboxDelete: function ( evt ) {
-                window.console.log( 'student-row', 'toggle-checkbox-delete', 203, 'caught', evt );
-                this.operationCheckboxLabel = 'Delete';
-                this.showOperationCheckbox = !this.showOperationCheckbox;
-            }
-            ,
-//
-//            handleRowSelection: function () {
-//                let idx = this.$parent.selectedStudents.indexOf( this.student );
-//                if ( idx > -1 ) {
-//                    //already selected, so remove
-//                    return this.$parent.selectedStudents.splice( idx, 1 );
-//                }
-//                this.$parent.selectedStudents.push( this.student );
+            /**
+             * Handles each click on the row
+             *
+             * NB, we don't want data input events bubbling up
+             * and calling this
+             */
+            handleRowSelection: function ( evt ) {
+                window.console.log( 'student-table-row', 'handleRowSelection', 247, this.student, evt );
+                //toggle the selected state
+                this.$store.commit('toggleStudent', Payload.factory({
+                    obj: this.student,
+                    mutateSilently: true
+                }));
 
-//            }
+                //let any interested parent know
+                this.$emit( 'row-selection-event', {
+                    obj: this.student,
+                    isSelected: this.isSelected
+                } );
+            }
 
         },
 
-        events: {
-//            'toggle-checkbox-delete': function (evt) {
-//
-////                'toggle-checkbox-delete': function (evt) {
-//                window.console.log( 'student-row', 'toggle-checkbox-delete', 203, 'caught' , evt);
-//                this.operationCheckboxLabel = 'Delete';
-//                this.showOperationCheckbox = !this.showOperationCheckbox;
-//            },
-
-            'toggle-checkbox-move': function () {
-                window.console.log( 'student-row', 'toggle-checkbox-move', 207, 'caught' );
-                this.operationCheckboxLabel = 'Move';
-                this.showOperationCheckbox = !this.showOperationCheckbox;
-            }
-
-            ,
-
-            'toggle-checkbox-remove': function () {
-                window.console.log( 'student-row', 'toggle-checkbox-remove', 211, 'caught' );
-                this.operationCheckboxLabel = 'Remove';
-                this.showOperationCheckbox = !this.showOperationCheckbox;
-            }
-        }
     };
 </script>

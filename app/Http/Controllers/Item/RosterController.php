@@ -48,7 +48,7 @@ class RosterController extends Controller
 //        $kumi->students()->attach($sid);
 
             $student->kumis()->attach($kumi->id); // add the student to the kumi
-     $student->save();
+            $student->save();
 
             $this->sendAjaxSuccess();
         } catch (Exception $e) {

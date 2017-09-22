@@ -109,13 +109,21 @@ module.exports = {
                 resolve();
             } );
 
-            payload.kumi = getters.getSelectedKumi
+
+            let kumi = [];
+            kumi = kumi.concat(getters.getDisplayedKumis);
+            window.console.log( 'roster', '', 115, kumi);
+            kumi = kumi.concat(getters.getSelectedKumis);
+            window.console.log( 'roster', 'd', 117,kumi );
             return p.then( () => {
                 return new Promise( ( resolve, reject ) => {
-                    //Create an association between the newly created
-                    //student and the currently selected kumi, both
-                    //locally and on server
-                    commit( mTypes.associateStudentWithKumi, payload );
+                    _.forEach(kumi, function(k){
+                        payload.kumi = k;
+                        //Create an association between the newly created
+                        //student and the currently selected kumi, both
+                        //locally and on server
+                        commit( mTypes.associateStudentWithKumi, payload );
+                    });
                     resolve();
                 } );
             } );

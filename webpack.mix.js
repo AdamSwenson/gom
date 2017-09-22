@@ -20,13 +20,17 @@ mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/d
 
 mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newSetup.scss'], 'public/css/new-setup-package.css');
 
-var LiveReloadPlugin = require('webpack-livereload-plugin');
+//this was not working for some reason
+//and slowed down everything
+// var LiveReloadPlugin = require('webpack-livereload-plugin');
+//
+// mix.webpackConfig({
+//     plugins: [
+//         new LiveReloadPlugin()
+//     ]
+// });
 
-mix.webpackConfig({
-    plugins: [
-        new LiveReloadPlugin()
-    ]
-});
+
 
 // mix.js('resources/assets/js/', 'dist/')
 //    .sass('src/app.scss', 'dist/');

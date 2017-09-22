@@ -1,33 +1,40 @@
 <template>
-    <table class="table is-striped is-fullwidth roster-table">
-        <thead>
+    <div id="student-table-component">
+        <div id="student-table-area"
+             class="panel-block"
+        >
+            <table class="table is-striped is-narrow is-fullwidth roster-table">
+                <thead>
 
-        <tr>
-            <th v-for="c in columns">
-                <header-field :column="c"
-                              v-on:toggle-asc-clicked="toggleSortAscending(evt)"
-                              v-on:sort-roster-by="sortRosterBy(evt)"
-                ></header-field>
+                <tr>
+                    <th><span class="icon"></span></th>
+                    <th v-for="c in columns">
+                        <header-field :column="c"
+                                      v-on:toggle-asc-clicked="toggleSortAscending"
+                                      v-on:sort-roster-by="sortRosterBy"
+                        ></header-field>
 
-            </th>
-        </tr>
+                    </th>
+                </tr>
 
-        </thead>
+                </thead>
 
-        <tbody>
+                <tbody>
 
-        <student-table-row v-for="student in sortedStudents"
-                           :key="student.serialNumber"
-                           :student="student"
-        ></student-table-row>
+                <student-table-row v-for="student in sortedStudents"
+                                   :key="student.serialNumber"
+                                   :student="student"
+                                   v-on:row-selection-event="handleRowSelectionEvent"
+                ></student-table-row>
 
-        </tbody>
+                </tbody>
 
-        <tfoot>
 
-        </tfoot>
+            </table>
+        </div>
 
-    </table>
+    </div>
+
 </template>
 
 <style lang="scss">
@@ -41,12 +48,15 @@
 <script>
     import studentTableRow from './student-table-row.vue';
     import headerField from './column-header-field.vue';
+//    import autoCloseModal from '../../helpers/auto-closing-modal.vue';
+    import Payload from '../../../../models/Payload';
 
     export default {
 
         props: [ 'students' ],
 
         components: {
+//            'auto-close-modal': autoCloseModal,
             'student-table-row': studentTableRow,
             'header-field': headerField
         },
@@ -77,12 +87,19 @@
 
                 ],
                 defaults: {},
+
+                messages: {
+                    noRowsSelected: "Please select at least one row by clicking outside of the input areas."
+                },
+
                 icons: {
                     defaultSort: "fa fa-sort",
                     sortAsc: "fa fa-sort-amount-asc",
                     sortDesc: "fa fa-sort-amount-desc"
                 },
 
+                isModalVisible: false,
+//                selectedStudents: [],
                 sortAsc: true,
                 //The name of the property on the student object
                 // that the list is currently sorted by
@@ -91,14 +108,20 @@
         },
 
         computed: {
-
-            selectedStudents: function () {
-                return this.$parent.selectedStudents || [];
+            selectedStudents : function (  ) {
+              return this.$store.getters.getSelectedStudents;
             },
 
-            showKumi: function () {
-                return this.$parent.showKumi;
+            /**
+             * Whether to display the move and delete buttons
+             */
+            isOpsButtonsAreaVisible: function () {
+                return this.selectedStudents.length > 0;
             },
+
+//            showKumi: function () {
+//                return this.$parent.showKumi;
+//            },
 
             sortedStudents: function () {
                 var me = this;
@@ -112,11 +135,13 @@
 
                 //if they need to be descending, reverse the list and return it
                 return _.reverse( sorted );
-            }
+            },
 
         },
 
         methods: {
+
+
             /**
              * Returns the icon which the
              * user will click to toggle sorting state
@@ -128,11 +153,55 @@
                 //we are on the selected column
                 //so we decide whether to show the up or down icon
                 if ( this.sortAsc ) return this.icons.sortAsc;
-                return this.icons.sortAsc;
+                return this.icons.sortDesc;
             },
 
+//            testOperationValidity: function () {
+//                if ( this.selectedStudents.length === 0 ) {
+//                    this.isModalVisible = true;
+//                    return false;
+//                }
+//                return true;
+//            },
+//
+//            handleDeleteClick: function () {
+//                window.console.log( 'student-table', 'handleDeleteClick', 235, );
+//                if ( this.testOperationValidity() ) {
+//                    //delete the selected students
+//                }
+//            },
+//
+//            handleMoveClick: function () {
+//                window.console.log( 'student-table', 'handleMoveClick', 241, );
+//                if ( this.testOperationValidity() ) {
+//                    //move the selected students
+//                }
+//            },
+//
+//            handleRemoveClick: function () {
+//                window.console.log( 'student-table', 'handleRemoveClick', 247, );
+//                if ( this.testOperationValidity() ) {
+//                    //remove the selected students
+//                }
+//            },
+//
+
+            handleRowSelectionEvent: function ( { obj, isSelected } ) {
+                window.console.log( 'student-table', 'handleRowSelectionEvent', 136, obj, isSelected );
+                if ( isSelected ) {
+                    //The row is newly selected
+                    //Add the student to selectedStudents
+                    this.$store.commit('selectStudent', Payload.factory({obj: obj,mutateSilently: true}));
+                }
+                else {
+                    //it was already selected, so remove it
+                    this.$store.commit('deselectStudent', Payload.factory({obj: obj, mutateSilently: true}));
+                }
+            },
+
+
             toggleSortAscending: function ( shortText ) {
-                window.console.log( 'student-table', 'toggleSortAscending', 156, shortText);
+                window.console.log( 'student-table', 'toggleSortAscending', 156, shortText );
                 //toggle sort ascending
                 this.sortAsc = !this.sortAsc;
             },
@@ -142,7 +211,7 @@
              * @param
              */
             sortRosterBy: function ( shortText ) {
-                window.console.log( 'student-table', 'sortRosterBy', 166, shortText);
+                window.console.log( 'student-table', 'sortRosterBy', 166, shortText );
                 //because we are going to sort by a new column
                 //we want it to initially be sorted ascending.
                 this.sortAsc = true;
@@ -158,12 +227,5 @@
             },
 
         },
-
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>
