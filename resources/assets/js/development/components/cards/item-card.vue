@@ -20,51 +20,52 @@
 
         <div class="card-footer">
             <div class="card-footer-item">
-                <div class="field is-grouped">
-                    <p class="control">
-                        <add-sibling-button
-                                :serial-number="serialNumber">
-                        </add-sibling-button>
-                    </p>
+                <!--<div class="field is-grouped">-->
+                <!--<p class="control">-->
+                <add-sibling-button
+                        :serial-number="serialNumber">
+                </add-sibling-button>
+                <!--</p>-->
 
-                    <p class="control">
-                        <add-child-button
-                                :serial-number="serialNumber">
-                        </add-child-button>
-                    </p>
+                <!--<p class="control">-->
+                <add-child-button
+                        :serial-number="serialNumber">
+                </add-child-button>
+                <!--</p>-->
 
-                    <p class="control">
-                        <button class="button is-primary is-outlined">
+
+                <!--<p class="control">-->
+                <a class="button is-primary is-outlined">
                                 <span class="icon is-small">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                 </span>
-                            <span>Clone</span>
-                        </button>
-                    </p>
+                    <span>Clone</span>
+                </a>
+                <!--</p>-->
 
-                    <p class="control">
-                        <button class="button is-primary is-outlined">
+                <!--<p class="control">-->
+                <a class="button is-primary is-outlined">
                                 <span class="icon is-small">
                                     <i class="fa fa-mail-forward" aria-hidden="true"></i>
                                 </span>
-                            <span>Import item</span>
-                        </button>
-                    </p>
+                    <span>Import item</span>
+                </a>
+                <!--</p>-->
 
-                    <p class="control">
-                        <public-indicator
-                                :serial-number="serialNumber">
-                        </public-indicator>
-                    </p>
+                <!--<p class="control">-->
+                <public-indicator
+                        :serial-number="serialNumber">
+                </public-indicator>
+                <!--</p>-->
 
-                    <p class="control">
-                        <remove-item-button
-                                :serial-number="serialNumber">
-                        </remove-item-button>
-                    </p>
-                </div>
-
+                <!--<p class="control">-->
+                <remove-item-button
+                        :serial-number="serialNumber">
+                </remove-item-button>
+                <!--</p>-->
             </div>
+
+            <!--</div>-->
         </div>
 
         <div class="card-footer navTabs">
@@ -130,7 +131,7 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
-    export default{
+    export default {
 
         props: [ 'serialNumber' ],
 
@@ -161,7 +162,7 @@
                 return this.identifier + "-" + this.height + '-' + this.depth; // + this.serialNumber;
             },
 
-            contentId: function(){
+            contentId: function () {
                 return "card-content-" + this.height + '-' + this.depth;
             },
 
@@ -210,7 +211,6 @@
             styling: function () {
 
             },
-
 
 
             type: {

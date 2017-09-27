@@ -178,7 +178,7 @@
 
                 //set the first kumi as the one to display
                 //this needs to happen before associate exam is called
-                me.$store.commit( 'updateSelectedKumi' );
+//                me.$store.commit( 'updateSelectedKumi' );
 
                 loadAllStudents( me.$store, me.exam );
             } );

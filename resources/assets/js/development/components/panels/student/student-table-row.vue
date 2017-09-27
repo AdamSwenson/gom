@@ -202,14 +202,6 @@
 
                 return this.$store.getters.isStudentInDisplayedKumi( this.student );
 
-//                let me = this;
-//
-//                _.forEach(this.displayedKumis, function ( kumi ) {
-//                    window.console.log( 'student-table-row', 'displayedkumis', 198, kumi.serialNumber , me.student.associatedKumis);
-//                    if (me.student.associatedKumis.indexOf(kumi) > -1) return true;
-//                });
-//                return false;
-//                return this.student.associatedKumis.indexOf(this.displayedKumis)
             },
 
             isSelected: function(){

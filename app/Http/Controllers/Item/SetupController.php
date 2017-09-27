@@ -33,6 +33,7 @@ use Illuminate\Http\Request;
  */
 class SetupController extends Controller
 {
+const DEFAULT_KUMI_NAME = 'All';
     const EXAM_JSON_NAME = 'loadedExam';
     const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
     const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
@@ -103,7 +104,7 @@ class SetupController extends Controller
         //this is a brand new exam, so there are no
         //kumis associated with it. So we create
         //and empty one to be the default kumi
-        $kumi = Kumi::create(['name' => 1]);
+        $kumi = Kumi::create(['name' => 'All']);
         $exam->kumis()->attach($kumi->id);
         $kumi->save();
 

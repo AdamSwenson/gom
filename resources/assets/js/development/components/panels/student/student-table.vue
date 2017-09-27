@@ -7,9 +7,20 @@
                 <thead>
 
                 <tr>
-                    <th><span class="icon"></span></th>
+                    <th>
+                        <a v-on:click="toggleSortAscending">
+                            <span class="icon is-small">
+                                <i v-bind:class="sortIcon" aria-hidden="true"></i>
+                            </span>
+                            <span class="sr-only" v-if="sortAsc">Sorted in ascending order. Clicking here toggles between ascending and descending sort</span>
+
+                            <span class="sr-only" v-else>Sorted in descending order. Clicking here toggles between ascending and descending sort</span>
+                        </a>
+                    </th>
+
                     <th v-for="c in columns">
                         <header-field :column="c"
+                                      :sortedBy="sortedBy"
                                       v-on:toggle-asc-clicked="toggleSortAscending"
                                       v-on:sort-roster-by="sortRosterBy"
                         ></header-field>
@@ -48,7 +59,7 @@
 <script>
     import studentTableRow from './student-table-row.vue';
     import headerField from './column-header-field.vue';
-//    import autoCloseModal from '../../helpers/auto-closing-modal.vue';
+    //    import autoCloseModal from '../../helpers/auto-closing-modal.vue';
     import Payload from '../../../../models/Payload';
 
     export default {
@@ -108,8 +119,8 @@
         },
 
         computed: {
-            selectedStudents : function (  ) {
-              return this.$store.getters.getSelectedStudents;
+            selectedStudents: function () {
+                return this.$store.getters.getSelectedStudents;
             },
 
             /**
@@ -119,9 +130,6 @@
                 return this.selectedStudents.length > 0;
             },
 
-//            showKumi: function () {
-//                return this.$parent.showKumi;
-//            },
 
             sortedStudents: function () {
                 var me = this;
@@ -135,6 +143,17 @@
 
                 //if they need to be descending, reverse the list and return it
                 return _.reverse( sorted );
+            },
+
+
+            sortIcon: function () {
+                //if it isn't the selected column, show the default
+           //     if ( this.studentProperty !== this.sortedBy ) return this.icons.defaultSort;
+
+                //we are on the selected column
+                //so we decide whether to show the up or down icon
+                if ( this.sortAsc ) return this.icons.sortAsc;
+                return this.icons.sortDesc;
             },
 
         },
@@ -156,46 +175,17 @@
                 return this.icons.sortDesc;
             },
 
-//            testOperationValidity: function () {
-//                if ( this.selectedStudents.length === 0 ) {
-//                    this.isModalVisible = true;
-//                    return false;
-//                }
-//                return true;
-//            },
-//
-//            handleDeleteClick: function () {
-//                window.console.log( 'student-table', 'handleDeleteClick', 235, );
-//                if ( this.testOperationValidity() ) {
-//                    //delete the selected students
-//                }
-//            },
-//
-//            handleMoveClick: function () {
-//                window.console.log( 'student-table', 'handleMoveClick', 241, );
-//                if ( this.testOperationValidity() ) {
-//                    //move the selected students
-//                }
-//            },
-//
-//            handleRemoveClick: function () {
-//                window.console.log( 'student-table', 'handleRemoveClick', 247, );
-//                if ( this.testOperationValidity() ) {
-//                    //remove the selected students
-//                }
-//            },
-//
 
             handleRowSelectionEvent: function ( { obj, isSelected } ) {
                 window.console.log( 'student-table', 'handleRowSelectionEvent', 136, obj, isSelected );
                 if ( isSelected ) {
                     //The row is newly selected
                     //Add the student to selectedStudents
-                    this.$store.commit('selectStudent', Payload.factory({obj: obj,mutateSilently: true}));
+                    this.$store.commit( 'selectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
                 }
                 else {
                     //it was already selected, so remove it
-                    this.$store.commit('deselectStudent', Payload.factory({obj: obj, mutateSilently: true}));
+                    this.$store.commit( 'deselectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
                 }
             },
 

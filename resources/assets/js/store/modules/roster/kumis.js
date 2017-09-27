@@ -182,15 +182,6 @@ const mutations = {
         //remove kumi from array stored in student
         student.associatedKumis.splice( student.associatedKumis.indexOf( kumi ) );
     },
-    //
-    // [mTypes.updateSelectedKumi]: ( state, payload ) => {
-    //     //if no payload arrived, use the 0th kumi
-    //     //this is so we don't have to look up the 0th kumi and do
-    //     //it from another module
-    //     let kumi = !_.isUndefined( payload ) && !_.isUndefined( payload.obj ) ? payload.obj : state.kumis[ 0 ];
-    //     state.selectedKumi = kumi;
-    // }
-
 
 };
 
@@ -311,7 +302,7 @@ const getters = {
 
                 // if(student.associatedKumis.length===0) return false;
 
-                window.console.log( 'kumis', '', 310, selectedKumis, student);
+                // window.console.log( 'kumis', '', 310, selectedKumis, student);
                 let a = false;
                 _.forEach( selectedKumis, function ( kumi ) {
                    _.forEach(student.associatedKumis, function(k){

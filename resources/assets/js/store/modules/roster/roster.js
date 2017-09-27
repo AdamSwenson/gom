@@ -114,6 +114,17 @@ module.exports = {
             kumi = kumi.concat(getters.getDisplayedKumis);
             window.console.log( 'roster', '', 115, kumi);
             kumi = kumi.concat(getters.getSelectedKumis);
+
+            //If no kumi is selected and it is displaying all
+            //the student won't be associated.
+            //So we check if the list is still empty
+            //and if so, use the root kumi
+            if(kumi.length === 0) {
+                //and associate it with the student before the others
+                kumi.push(getters.getRootKumi);
+                // commit( mTypes.associateStudentWithKumi, payload );
+            }
+
             window.console.log( 'roster', 'd', 117,kumi );
             return p.then( () => {
                 return new Promise( ( resolve, reject ) => {
@@ -129,36 +140,6 @@ module.exports = {
             } );
         },
 
-        // /**
-        //  * Adds a student record to state.roster.
-        //  * NB, this does not create any associations
-        //  * @param state
-        //  * @param payload
-        //  */
-        // storeNewlyCreatedStudent: ( { state, dispatch, commit, getters }, payload ) => {
-        //     return new Promise( ( resolve, reject ) => {
-        //         commit( mTypes.addStudentToRoster, payload );
-        //         resolve()
-        //     } );
-        // },
-
-        // /**
-        //  * Creates association with kumi for an existing student
-        //  * @param state
-        //  * @param dispatch
-        //  * @param commit
-        //  * @param getters
-        //  * @param payload
-        //  * @returns {Promise}
-        //  */
-        // addStudentToKumi: ( { state, dispatch, commit, getters }, payload ) => {
-        //     return new Promise( ( resolve, reject ) => {
-        //         if ( _.isUndefined( payload.student ) && !_.isUndefined( payload.obj ) ) payload.student = payload.obj;
-        //
-        //         commit( mTypes.associateStudentWithKumi, payload );
-        //         resolve()
-        //     } );
-        // },
 
     },
 

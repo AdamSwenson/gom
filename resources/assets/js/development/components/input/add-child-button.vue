@@ -1,6 +1,6 @@
 <template>
 
-    <button v-bind:id="id"
+    <a v-bind:id="id"
             class="button is-primary is-outlined"
             v-bind:class="stylz"
             v-on:click="add"
@@ -9,7 +9,7 @@
            <i class="fa fa-list-alt" aria-hidden="true"></i>
        </span>
         <span>Add Child</span>
-    </button>
+    </a>
 
 </template>
 <style>

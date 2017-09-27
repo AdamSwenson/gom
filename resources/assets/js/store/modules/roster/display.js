@@ -89,38 +89,51 @@ module.exports = {
         },
 
         clearDisplayedKumis: function ( state, payload ) {
-            state.displayedKumis = [];
-            },
+            state.displayedKumis = _.take( state.displayedKumis );
+        },
 
         clearSelectedKumis: function ( state, payload ) {
             //we always keep the first kumi because that ties the
             //student to the exam
-            state.selectedKumis = _.take(state.selectedKumis);
+            state.selectedKumis = _.take( state.selectedKumis );
         },
 
         clearSelectedStudents: function ( state, payload ) {
             state.selectedStudents = [];
         },
 
+        /**
+         * @deprecated
+         * @param state
+         * @param payload
+         */
+        updateSelectedKumi: function ( state, payload ) {
+            let kumi = payload.obj;
+            let idx = state.displayedKumis.indexOf( kumi );
 
-        [mTypes.updateSelectedKumi]: ( state, payload ) => {
-            //if no payload arrived, use the 0th kumi
-            //this is so we don't have to look up the 0th kumi and do
-            //it from another module
-            // let kumi = !_.isUndefined( payload ) && !_.isUndefined( payload.obj ) ? payload.obj : state.kumis[ 0 ];
-            // state.displayedKumis.push(payload);
+            if ( idx === -1 ) {
+                //was not previously selected
+                //so add it to the selected list
+                state.displayedKumis.push( kumi );
+            }
         }
 
-    },
-//
-    actions: {
-//        clearSelectedKumis: function({ state, dispatch, commit, getters } ){
-// //            state.displayedKumis = [];
-//         },
 
     },
+
+    actions: {},
 
     getters: {
+        /**
+         * Returns the root kumi object which attaches
+         * the exam to the students, i.e., the roster
+         * @param state
+         * @param getters
+         */
+        getRootKumi: function ( state, getters ) {
+            return _.take( getters.getKumis );
+        },
+
         getSelectedStudents: function ( state, getters, ) {
             return state.selectedStudents;
         },
@@ -131,16 +144,26 @@ module.exports = {
 
         getDisplayedKumis: function ( state, getters ) {
             return state.displayedKumis;
+
+            // if ( state.displayedKumis.length === 0 ) {
+            //     return getters.getRootKumi;
+            //     //let k = _.take( getters.getKumis );
+            //     //    state.commit('toggleKumi', Payload.factory({obj: k}))
+            // } else {
+            //     return state.displayedKumis;
+            // }
+
         },
         isKumiSelectVisible: function ( state, getters ) {
             return state.kumiSelectVisible;
+        },
+
+        isKumiDisplayed: ( state, getters, rootState, kumi ) => ( kumi ) => {
+            return state.displayedKumis.filter( ( i ) => {
+                if ( i.serialNumber === kumi.serialNumber ) {
+                    return i;
+                }
+            } );
         }
     }
 };
-//
-// export default {
-//     actions,
-//     getters,
-//     mutations,
-//     state
-// }

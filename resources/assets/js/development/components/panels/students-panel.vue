@@ -3,10 +3,13 @@
         <p class="panel-heading">
             <span class="mainHeading">Manage roster</span>
             <br/>
-            <span class="smallHeading">Add students, remove students from class, create classes, see individual grades</span>
+            <span class="smallHeading">Add students, manage classes and groups, see individual grades</span>
         </p>
 
-        <div class="panel-block">
+        <div id="student-search-area"
+             class="panel-block"
+             v-if="showSearch"
+        >
             <p class="control has-icons-left">
                 <input class="input is-small" type="text" placeholder="Search">
                 <span class="icon is-small is-left">
@@ -16,6 +19,7 @@
         </div>
 
         <div class="panel-tabs">
+            <span class="is-pulled-left">Groups</span>
             <kumi-tabs></kumi-tabs>
         </div>
 
@@ -69,8 +73,6 @@
                     v-on:update-select-label="updateSelectLabel"
             ></student-action-buttons>
         </div>
-
-
 
     </div>
 
@@ -136,6 +138,8 @@
             return {
 
                 fileButtonVisible: false,
+
+                showSearch: false,
 
                 /** whether to show the add and import buttons */
                 additionButtonsVisible: true,

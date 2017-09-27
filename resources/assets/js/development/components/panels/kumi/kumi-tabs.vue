@@ -14,7 +14,8 @@
                     <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
             </span>
 
-            <span v-else>
+            <span v-else
+            class="is-small">
                     {{ kumi.name }}
             </span>
         </a>
@@ -25,7 +26,8 @@
                     class="button is-outlined is-small"
                     v-on:click="newKumi"
             >
-                <span class="icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                <span class="icon is-small"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                <span class="is-small">New</span>
                 <span class="sr-only">New group button</span>
             </button>
         </a>
@@ -36,12 +38,14 @@
                     v-on:click="toggleEditable"
             >
                 <span v-if="isEditable">
-                    <span class="icon"><i class="fa fa-check-circle-o " aria-hidden="true"></i></span>
+                    <span class="icon is-small"><i class="fa fa-check-circle-o " aria-hidden="true"></i></span>
+                    <span class="is-small">Edit</span>
                     <span class="sr-only">Edit button in selected state</span>
                 </span>
 
                 <span v-else>
                     <span class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+                    <span class="is-small">Edit</span>
                     <span class="sr-only">Edit button in unselected state</span>
                 </span>
 
@@ -72,7 +76,7 @@
             return {
                 defaults: {},
 
-                isAllTabVisible: true,
+                isAllTabVisible: false,
 
                 //Whether the kumi properties are editable
                 isEditable: false,
@@ -111,6 +115,8 @@
             },
 
             isActive: function ( kumi ) {
+                window.console.log( 'kumi-tabs', 'isActive', 118, kumi, this.displayedKumis);
+//                return this.$store.getters.isKumiDisplayed(kumi);
                 return this.displayedKumis.indexOf( kumi ) !== -1;
             },
 

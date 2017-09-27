@@ -1,32 +1,21 @@
 <template>
-    <div class="header-field columns">
 
-        <div class="column has-text-left">
-            <a v-on:click="sortRosterBy">
-                <abbr v-bind:title="longText">
-                    {{shortText}}
-                </abbr>
-            </a>
-        </div>
-
-        <div class="column has-text-right">
-            <a v-on:click="toggleSortAscending">
-                <span class="icon is-small">
-                    <i v-bind:class="sortIcon"
-                       aria-hidden="true"
-                    ></i>
-                </span>
-            </a>
-        </div>
-
-    </div>
+    <a class="header-field"
+       v-on:click="sortRosterBy"
+       v-bind:class="styling"
+    >
+        <abbr v-bind:title="longText">
+            {{shortText}}
+        </abbr>
+        <span class="sr-only" v-if="isActive">Table is sorted by this column</span>
+    </a>
 
 </template>
 
 <style lang="scss">
-.header-field{
+    .header-field {
 
-}
+    }
 </style>
 
 <script>
@@ -36,7 +25,7 @@
      */
     export default {
 
-        props: [ 'column' ],
+        props: [ 'column', 'sortedBy' ],
 
         data: function () {
             return {
@@ -46,6 +35,10 @@
                     sortAsc: "fa fa-sort-amount-asc",
                     sortDesc: "fa fa-sort-amount-desc"
                 },
+                styles: {
+                    default: "",
+                    selected: "has-text-info"
+                },
                 sortAsc: true,
 
                 defaults: {}
@@ -53,6 +46,14 @@
         },
 
         computed: {
+            /**
+             * Whether this column is presently selected
+             * @returns {boolean}
+             */
+            isActive: function () {
+                return this.sortedBy === this.column.studentProperty;
+            },
+
             longText: function () {
                 return this.column.longText;
             },
@@ -61,15 +62,21 @@
                 return this.column.shortText;
             },
 
-            sortIcon: function () {
-                //if it isn't the selected column, show the default
-                if ( this.studentProperty !== this.$parent.sortedBy ) return this.icons.defaultSort;
-
-                //we are on the selected column
-                //so we decide whether to show the up or down icon
-                if ( this.sortAsc ) return this.icons.sortAsc;
-                return this.icons.sortDesc;
+            styling: function () {
+                if ( this.isActive ) return this.styles.selected;
+                return this.styles.default;
             },
+
+//
+//            sortIcon: function () {
+//                //if it isn't the selected column, show the default
+//                if ( this.studentProperty !== this.$parent.sortedBy ) return this.icons.defaultSort;
+//
+//                //we are on the selected column
+//                //so we decide whether to show the up or down icon
+//                if ( this.sortAsc ) return this.icons.sortAsc;
+//                return this.icons.sortDesc;
+//            },
 
             studentProperty: function () {
                 return this.column.studentProperty;
@@ -78,7 +85,7 @@
 
         methods: {
             sortRosterBy: function () {
-                window.console.log( 'column-header-field', 'sortRosterBy', 80, this.column.shortText);
+                window.console.log( 'column-header-field', 'sortRosterBy', 80, this.column.shortText );
                 this.$emit( 'sort-roster-by', this.column.shortText );
             },
 
@@ -86,7 +93,7 @@
                 //don't react to clicks unless the column is selected and an icon is displayed
                 if ( this.studentProperty !== this.$parent.sortedBy ) return true;
 
-                window.console.log( 'column-header-field', 'toggleSortAscending', 85, this.column.shortText);
+                window.console.log( 'column-header-field', 'toggleSortAscending', 85, this.column.shortText );
                 this.sortAsc = !this.sortAsc;
                 this.$emit( 'toggle-asc-clicked', this.column.shortText );
             }
