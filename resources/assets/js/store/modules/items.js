@@ -126,17 +126,18 @@ const getters = {
             // step 4
             let item = getters.getItemBySerialNumber( currentNode.data );
             // holdForIdLoading(item);
-            // window.console.log( 'items', 'recurse', 193, 'post hold', item.id );
-            let exam = item.isExam() ? item : getters.currentExam;
-            let parent = getters.getItemBySerialNumber( currentNode.parent );
+            // window.console.log( 'items', 'recurse', 193, 'post hold', item);
+            if(! _.isUndefined(item)){
+                let exam = item.isExam() ? item : getters.currentExam;
+                let parent = getters.getItemBySerialNumber( currentNode.parent );
+                out.push( {
+                    examId: exam.id,
+                    itemId: item.id,
+                    parentId: parent.id,
+                    itemOrder: cnt
+                } );
+            }
 
-
-            out.push( {
-                examId: exam.id,
-                itemId: item.id,
-                parentId: parent.id,
-                itemOrder: cnt
-            } );
         })( map );
         // }
         return out;
@@ -233,6 +234,26 @@ const actions = {
             commit( mTypes.addNewItem, pl );
 
             dispatch( aTypes.addItemToOrder, pl );
+
+        })( state, commit, dispatch, getters, payload );
+
+    },
+
+    importItem : ( { state, commit, dispatch, getters }, payload ) => {
+        return (function ( state, commit, dispatch, getters, payload ) {
+            //NB, parent is the parent item's serial number
+            //obj is an object
+            let { parent, obj } = payload;
+
+            let pl = Payload.factory( { parent: parent, obj: obj});
+            // window.console.log( 'items', 'cloneItem payload', 234, pl);
+
+            dispatch( aTypes.addItemToOrder, pl );
+            //the item will not have been stored in the regular items array
+            //instead it is loaded asynchronously.
+            //So we need to push it into the main array
+            pl.mutateSilently = true;
+            commit( mTypes.addNewItem, pl );
 
         })( state, commit, dispatch, getters, payload );
 

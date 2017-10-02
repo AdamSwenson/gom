@@ -43,14 +43,15 @@
                 <!--</a>-->
                 <!--</p>-->
 
+                <item-import-button :serial-number="serialNumber"></item-import-button>
 
                 <!--<p class="control">-->
-                <a class="button is-primary is-outlined">
-                                <span class="icon is-small">
-                                    <i class="fa fa-mail-forward" aria-hidden="true"></i>
-                                </span>
-                    <span>Import item</span>
-                </a>
+                <!--<a class="button is-primary is-outlined">-->
+                                <!--<span class="icon is-small">-->
+                                    <!--<i class="fa fa-mail-forward" aria-hidden="true"></i>-->
+                                <!--</span>-->
+                    <!--<span>Import item</span>-->
+                <!--</a>-->
                 <!--</p>-->
 
                 <!--<p class="control">-->
@@ -133,12 +134,14 @@
     import * as gTypes from '../../../store/getter-types'
 
     import itemCloneButton from '../items/item-clone-button.vue';
+    import itemImportButton from '../items/item-import-button.vue';
 
     export default {
 
         props: [ 'serialNumber' ],
 
-        components: {'item-clone-button' : itemCloneButton},
+        components: {'item-clone-button' : itemCloneButton,
+        'item-import-button': itemImportButton},
 
         data: function () {
             return {

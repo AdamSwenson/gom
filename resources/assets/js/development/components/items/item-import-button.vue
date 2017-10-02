@@ -1,37 +1,77 @@
 <template>
-    <a class="button is-primary is-outlined item-import-button"
-       v-on:click="handleClick"
-    >
+    <div class="item-import">
+        <a class="button is-primary is-outlined item-import-button"
+           v-on:click="handleClick"
+        >
         <span class="icon is-small">
             <i class="fa fa-mail-forward" aria-hidden="true"></i>
         </span>
-        <span>Import item</span>
-    </a>
+            <span>Import</span>
+        </a>
+        <item-select-modal
+                :is-visible="showModal"
+                select-action="remove"
+                v-on:item-selected="handleSelection"
+                v-on:toggle-modal="toggleModal"
+        ></item-select-modal>
+    </div>
 </template>
+
 
 <style lang="scss">
 
 </style>
 
 <script>
+    import itemSelectModal from './item-selection-modal.vue';
+
     export default {
 
-        props: [],
+        props: [ 'serialNumber' ],
 
-        components: {},
+        components: {
+            'item-select-modal': itemSelectModal
+        },
 
         data: function () {
             return {
+                showModal: false,
                 defaults: {}
             }
         },
 
-        computed: {},
+        computed: {
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            node: function () {
+                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+            },
+
+            parentSerialNumber: function () {
+                return this.node.parent;
+            },
+
+
+        },
 
         methods: {
             handleClick: function () {
+                //display modal with item selection area
+                this.toggleModal();
+            },
 
+            handleSelection: function ( itemObject ) {
+                //when an item is selected, dispatch the actions to add it
+                window.console.log( 'item-import-button', 'handleSelection', 55, itemObject );
+                this.$store.dispatch( 'importItem', { parent: this.parentSerialNumber, obj: itemObject } );
+            },
+
+            toggleModal: function () {
+                this.showModal = !this.showModal;
             }
+
         },
 
         directives: {},

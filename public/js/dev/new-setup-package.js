@@ -52953,15 +52953,150 @@ var _itemCloneButton = __webpack_require__(588);
 
 var _itemCloneButton2 = _interopRequireDefault(_itemCloneButton);
 
+var _itemImportButton = __webpack_require__(733);
+
+var _itemImportButton2 = _interopRequireDefault(_itemImportButton);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+//    import deleteButton from './item-remove-button.vue'
+//    import itemEditPane from './item.edit-pane.component.vue'
+//    import depthControl from './buttons.depth-control.component.vue'
+//    import itemMain from './item-main.vue'
 
 exports.default = {
 
     props: ['serialNumber'],
 
-    components: { 'item-clone-button': _itemCloneButton2.default },
+    components: { 'item-clone-button': _itemCloneButton2.default,
+        'item-import-button': _itemImportButton2.default },
 
     data: function data() {
         return {
@@ -53094,134 +53229,7 @@ exports.default = {
     },
 
     mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-//    import deleteButton from './item-remove-button.vue'
-//    import itemEditPane from './item.edit-pane.component.vue'
-//    import depthControl from './buttons.depth-control.component.vue'
-//    import itemMain from './item-main.vue'
+};
 
 /***/ }),
 /* 196 */
@@ -56752,11 +56760,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
 
 
 exports.default = {
 
-    props: [],
+    props: ['hiddenItems', 'selectedItems'],
 
     components: {},
 
@@ -56779,6 +56790,7 @@ exports.default = {
                     item.id = r.id;
                     item.name = r.name;
                     item.maxScore = r.max_score;
+
                     out.push(item);
                 });
                 return out;
@@ -56802,8 +56814,13 @@ exports.default = {
     computed: {},
 
     methods: {
-        handleRowClick: function handleRowClick(v) {
-            window.console.log('existing-items-list', 'handleClick', 63, v);
+        isVisible: function isVisible(obj) {
+            return this.hiddenItems.indexOf(obj) === -1;
+        },
+
+        handleRowClick: function handleRowClick(itemObject) {
+            window.console.log('existing-items-list', 'handleClick', 63, itemObject);
+            this.$emit('item-selected', itemObject);
         },
 
         handleNew: function handleNew() {
@@ -65466,16 +65483,17 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
         // step 4
         var item = getters.getItemBySerialNumber(currentNode.data);
         // holdForIdLoading(item);
-        // window.console.log( 'items', 'recurse', 193, 'post hold', item.id );
-        var exam = item.isExam() ? item : getters.currentExam;
-        var parent = getters.getItemBySerialNumber(currentNode.parent);
-
-        out.push({
-            examId: exam.id,
-            itemId: item.id,
-            parentId: parent.id,
-            itemOrder: cnt
-        });
+        // window.console.log( 'items', 'recurse', 193, 'post hold', item);
+        if (!_.isUndefined(item)) {
+            var exam = item.isExam() ? item : getters.currentExam;
+            var parent = getters.getItemBySerialNumber(currentNode.parent);
+            out.push({
+                examId: exam.id,
+                itemId: item.id,
+                parentId: parent.id,
+                itemOrder: cnt
+            });
+        }
     })(map);
     // }
     return out;
@@ -65543,6 +65561,29 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
         commit(mTypes.addNewItem, pl);
 
         dispatch(aTypes.addItemToOrder, pl);
+    }(state, commit, dispatch, getters, payload);
+}), _defineProperty(_extends3, 'importItem', function importItem(_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit,
+        dispatch = _ref3.dispatch,
+        getters = _ref3.getters;
+
+    return function (state, commit, dispatch, getters, payload) {
+        //NB, parent is the parent item's serial number
+        //obj is an object
+        var parent = payload.parent,
+            obj = payload.obj;
+
+
+        var pl = _Payload2.default.factory({ parent: parent, obj: obj });
+        // window.console.log( 'items', 'cloneItem payload', 234, pl);
+
+        dispatch(aTypes.addItemToOrder, pl);
+        //the item will not have been stored in the regular items array
+        //instead it is loaded asynchronously.
+        //So we need to push it into the main array
+        pl.mutateSilently = true;
+        commit(mTypes.addNewItem, pl);
     }(state, commit, dispatch, getters, payload);
 }), _defineProperty(_extends3, aTypes.removeItem, function () {
     //remove from order
@@ -66470,7 +66511,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 
     //Sort out whether obj and parent are nodes or items
 
-    var toAddSerialNumber = obj.serialNumber; // getSerialNumber( obj );
+    var toAddSerialNumber = _.isNumber(obj) ? obj : obj.serialNumber; // getSerialNumber( obj );
     var parentSerialNumber = _.isNumber(parent) ? parent : (0, _NodeTools.getSerialNumber)(parent);
     // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
@@ -66484,7 +66525,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         index: index,
         mutateSilently: mutateSilently
     });
-    // window.console.log( 'items.order.actions', 'pl', 47, pl );
+    window.console.log('items.order.actions', 'pl', 47, pl);
 
     commit(mTypes.insertNodeIntoOrder, pl);
 
@@ -87989,7 +88030,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "serial-number": _vm.serialNumber
     }
-  }), _vm._v(" "), _vm._m(0), _vm._v(" "), _c('public-indicator', {
+  }), _vm._v(" "), _c('item-import-button', {
+    attrs: {
+      "serial-number": _vm.serialNumber
+    }
+  }), _vm._v(" "), _c('public-indicator', {
     attrs: {
       "serial-number": _vm.serialNumber
     }
@@ -88015,18 +88060,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     })], 1)
   })) : _vm._e()])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('a', {
-    staticClass: "button is-primary is-outlined"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-mail-forward",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Import item")])])
-}]}
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -88044,16 +88078,17 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "items-panel panel"
   }, [_c('p', {
     staticClass: "panel-heading"
-  }, [_vm._v("\n        Items\n    ")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._l((_vm.items), function(obj) {
-    return _c('a', {
+  }, [_vm._t("heading", [_vm._v("Items")])], 2), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._l((_vm.items), function(obj) {
+    return (_vm.isVisible(obj)) ? _c('a', {
       key: obj.id,
       staticClass: "panel-block ",
+      class: [_vm.selectedItems.indexOf(obj) > -1 ? 'is-active' : ''],
       on: {
         "click": function($event) {
-          _vm.handleRowClick(obj.id)
+          _vm.handleRowClick(obj)
         }
       }
-    }, [_vm._m(2, true), _vm._v("\n        " + _vm._s(obj.name) + "\n        "), _vm._t("default")], 2)
+    }, [_vm._m(2, true), _vm._v("\n        " + _vm._s(obj.name) + "\n        "), _vm._t("default")], 2) : _vm._e()
   }), _vm._v(" "), _c('div', {
     staticClass: "panel-block"
   }, [_c('button', {
@@ -95469,6 +95504,472 @@ module.exports = function(module) {
 __webpack_require__(118);
 module.exports = __webpack_require__(174);
 
+
+/***/ }),
+/* 729 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _itemSelectionModal = __webpack_require__(734);
+
+var _itemSelectionModal2 = _interopRequireDefault(_itemSelectionModal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+
+    props: ['serialNumber'],
+
+    components: {
+        'item-select-modal': _itemSelectionModal2.default
+    },
+
+    data: function data() {
+        return {
+            showModal: false,
+            defaults: {}
+        };
+    },
+
+    computed: {
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        node: function node() {
+            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
+        },
+
+        parentSerialNumber: function parentSerialNumber() {
+            return this.node.parent;
+        }
+
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            //display modal with item selection area
+            this.toggleModal();
+        },
+
+        handleSelection: function handleSelection(itemObject) {
+            //when an item is selected, dispatch the actions to add it
+            window.console.log('item-import-button', 'handleSelection', 55, itemObject);
+            this.$store.dispatch('importItem', { parent: this.parentSerialNumber, obj: itemObject });
+        },
+
+        toggleModal: function toggleModal() {
+            this.showModal = !this.showModal;
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 730 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _existingItemsList = __webpack_require__(590);
+
+var _existingItemsList2 = _interopRequireDefault(_existingItemsList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+
+    props: ['isVisible', //whether the modal is currently visible
+    'selectAction' //what to do with rows when they are selected
+    ],
+
+    components: {
+        'item-list': _existingItemsList2.default
+    },
+
+    data: function data() {
+        return {
+
+            //items which the list will not display
+            hiddenItems: [],
+            //items which the list will display as active
+            selectedItems: [],
+            defaults: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {
+        handleSelection: function handleSelection(itemObject) {
+            this.$emit('item-selected', itemObject);
+            switch (this.selectAction) {
+                case 'highlight':
+                    this.selectedItems.push(itemObject);
+                    break;
+                case 'remove':
+                    this.hiddenItems.push(itemObject);
+                    break;
+            }
+        },
+
+        toggleModal: function toggleModal() {
+            this.$emit('toggle-modal');
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 731 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 732 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 733 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(738)
+}
+var Component = __webpack_require__(6)(
+  /* script */
+  __webpack_require__(729),
+  /* template */
+  __webpack_require__(736),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/items/item-import-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] item-import-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-f8440f06", Component.options)
+  } else {
+    hotAPI.reload("data-v-f8440f06", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 734 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(737)
+}
+var Component = __webpack_require__(6)(
+  /* script */
+  __webpack_require__(730),
+  /* template */
+  __webpack_require__(735),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/items/item-selection-modal.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] item-selection-modal.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-41bdc58f", Component.options)
+  } else {
+    hotAPI.reload("data-v-41bdc58f", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 735 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "modal",
+    class: [_vm.isVisible ? 'is-active' : '']
+  }, [_c('div', {
+    staticClass: "modal-background"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "modal-card"
+  }, [_c('header', {
+    staticClass: "modal-card-head"
+  }, [_c('p', {
+    staticClass: "modal-card-title"
+  }, [_vm._t("modalTitle", [_c('h3', {
+    staticClass: "title is-3"
+  }, [_vm._v("Previously created items")])])], 2), _vm._v(" "), _c('a', {
+    staticClass: "button is-primary",
+    attrs: {
+      "aria-label": "close"
+    },
+    on: {
+      "click": _vm.toggleModal
+    }
+  }, [_vm._v("Done")])]), _vm._v(" "), _c('section', {
+    staticClass: "modal-card-body"
+  }, [_c('item-list', {
+    attrs: {
+      "hidden-items": _vm.hiddenItems,
+      "selected-items": _vm.selectedItems
+    },
+    on: {
+      "item-selected": _vm.handleSelection
+    }
+  }, [_c('h4', {
+    staticClass: "subtitle is-5",
+    attrs: {
+      "slot": "heading"
+    },
+    slot: "heading"
+  }, [_vm._v("Clicking an item imports it into this exam. You will be able to directly compare student performance across different exams.")])]), _vm._v(" "), _vm._t("modalBody")], 2), _vm._v(" "), _c('footer', {
+    staticClass: "modal-card-foot"
+  }, [_c('button', {
+    staticClass: "button",
+    on: {
+      "click": _vm.toggleModal
+    }
+  }, [_vm._v("Cancel")])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-41bdc58f", module.exports)
+  }
+}
+
+/***/ }),
+/* 736 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "item-import"
+  }, [_c('a', {
+    staticClass: "button is-primary is-outlined item-import-button",
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Import")])]), _vm._v(" "), _c('item-select-modal', {
+    attrs: {
+      "is-visible": _vm.showModal,
+      "select-action": "remove"
+    },
+    on: {
+      "item-selected": _vm.handleSelection,
+      "toggle-modal": _vm.toggleModal
+    }
+  })], 1)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-mail-forward",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-f8440f06", module.exports)
+  }
+}
+
+/***/ }),
+/* 737 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(731);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(8)("4d0318fa", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-41bdc58f\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-selection-modal.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-41bdc58f\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-selection-modal.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 738 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(732);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(8)("8e468e8a", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f8440f06\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-import-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f8440f06\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-import-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

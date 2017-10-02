@@ -1,7 +1,8 @@
 <template>
     <div class="items-panel panel">
         <p class="panel-heading">
-            Items
+            <slot name="heading">Items</slot>
+
         </p>
 
         <div class="panel-block">
@@ -23,9 +24,11 @@
 
 
         <a v-for="obj in items"
-           v-on:click="handleRowClick(obj.id)"
+           v-on:click="handleRowClick(obj)"
            :key="obj.id"
+           v-if="isVisible(obj)"
            class="panel-block "
+           v-bind:class="[ selectedItems.indexOf(obj) > -1  ? 'is-active' : '' ]"
         >
                 <span class="panel-icon">
                     <i class="fa fa-book"></i>
@@ -60,7 +63,7 @@
 
     export default{
 
-        props: [],
+        props: ['hiddenItems', 'selectedItems'],
 
         components: {},
 
@@ -85,6 +88,7 @@
                             item.id = r.id;
                             item.name = r.name;
                             item.maxScore = r.max_score;
+
                             out.push( item );
                         } );
                         return out;
@@ -108,8 +112,13 @@
         computed: {},
 
         methods: {
-            handleRowClick: function (v) {
-                window.console.log( 'existing-items-list', 'handleClick', 63,  v);
+            isVisible: function ( obj ) {
+              return this.hiddenItems.indexOf(obj) === -1;
+            },
+
+            handleRowClick: function (itemObject) {
+                window.console.log( 'existing-items-list', 'handleClick', 63,  itemObject);
+                this.$emit('item-selected', itemObject);
             },
 
             handleNew: function(){

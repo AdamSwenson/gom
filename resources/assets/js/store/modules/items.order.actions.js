@@ -25,7 +25,7 @@ module.exports = {
         let { obj, parent, index, mutateSilently } = payload;
 
         //Sort out whether obj and parent are nodes or items
-        let toAddSerialNumber = obj.serialNumber; // getSerialNumber( obj );
+        let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber; // getSerialNumber( obj );
         let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
         // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
@@ -39,7 +39,7 @@ module.exports = {
             index: index,
             mutateSilently: mutateSilently
         } );
-        // window.console.log( 'items.order.actions', 'pl', 47, pl );
+        window.console.log( 'items.order.actions', 'pl', 47, pl );
 
         commit( mTypes.insertNodeIntoOrder, pl );
 
