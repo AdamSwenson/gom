@@ -33,15 +33,16 @@
                 </add-child-button>
                 <!--</p>-->
 
-
+<item-clone-button :serial-number="serialNumber"></item-clone-button>
                 <!--<p class="control">-->
-                <a class="button is-primary is-outlined">
-                                <span class="icon is-small">
-                                    <i class="fa fa-clone" aria-hidden="true"></i>
-                                </span>
-                    <span>Clone</span>
-                </a>
+                <!--<a class="button is-primary is-outlined">-->
+                                <!--<span class="icon is-small">-->
+                                    <!--<i class="fa fa-clone" aria-hidden="true"></i>-->
+                                <!--</span>-->
+                    <!--<span>Clone</span>-->
+                <!--</a>-->
                 <!--</p>-->
+
 
                 <!--<p class="control">-->
                 <a class="button is-primary is-outlined">
@@ -131,9 +132,13 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
+    import itemCloneButton from '../items/item-clone-button.vue';
+
     export default {
 
         props: [ 'serialNumber' ],
+
+        components: {'item-clone-button' : itemCloneButton},
 
         data: function () {
             return {

@@ -53,8 +53,8 @@ import depthControl from './components/input/buttons.depth-control.component.vue
 import maxScore from './components/input/max-score-input.vue'
 import itemNumber from './components/field.item-number.component.vue'
 import itemName from './components/input/item-name-input.vue'
-import siblingAddButton from './components/input/add-sibling-button.vue'
-import childAddButton from './components/input/add-child-button.vue'
+import siblingAddButton from './components/items/add-sibling-button.vue'
+import childAddButton from './components/items/add-child-button.vue'
 
 import movementControl from './components/input/card-movement-control.vue';
 

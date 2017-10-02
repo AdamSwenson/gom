@@ -92,10 +92,10 @@ Vue.component( 'exam-card', examCard );
 
 //Items
 
-import siblingAddButton from './components/input/add-sibling-button.vue'
+import siblingAddButton from './components/items/add-sibling-button.vue'
 Vue.component( 'add-sibling-button', siblingAddButton );
 
-import childAddButton from './components/input/add-child-button.vue'
+import childAddButton from './components/items/add-child-button.vue'
 Vue.component( 'add-child-button', childAddButton );
 
 import movementControl from './components/input/card-movement-control.vue';

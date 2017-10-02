@@ -150,18 +150,18 @@ const getters = {
      * @param rootState
      * @returns {boolean}
      */
-    canSync : ( state, getters, rootState )=> {
-        if(state.items.length === 0) return false;
+    canSync: ( state, getters, rootState ) => {
+        if ( state.items.length === 0 ) return false;
 
-        return (function ( state) {
+        return (function ( state ) {
             var r = state.items.filter( function ( item ) {
                 if ( item.id === -1 ) {
                     return item;
                 }
             } );
             return r.length === 0;
-            document.getElementById('isSyncing' )
-        })(state);
+            document.getElementById( 'isSyncing' )
+        })( state );
     }
 };
 
@@ -184,17 +184,17 @@ const actions = {
      * @param state
      * @param commit
      */
-    [aTypes.createItem]: ( { state, commit, dispatch, getters }, parent ) => {
-        return (function ( state, commit, dispatch, getters, parent ) {
+    [aTypes.createItem]: ( { state, commit, dispatch, getters }, parentSN ) => {
+        return (function ( state, commit, dispatch, getters, parentSN ) {
             // window.console.log( 'items', aTypes.createItem, 220, parent );
-            if ( _.isUndefined( parent ) ) {
-                parent = getters.currentExam;
+            if ( _.isUndefined( parentSN ) ) {
+                parentSN = getters.currentExam;
             }
 
             //If we were passed an item to serve as the parent
             //we will use s serial number
-            let item = Item.factory( { parent: parent } );
-            let payload = Payload.factory( { parent: parent, obj: item } );
+            let item = Item.factory( { parent: parentSN } );
+            let payload = Payload.factory( { parent: parentSN, obj: item } );
 
             commit( mTypes.addNewItem, payload );
             // window.console.log( 'items', 'canSync', 245, getters.canSync );
@@ -202,25 +202,42 @@ const actions = {
             // {
             dispatch( aTypes.addItemToOrder, payload );
             // }
-        })( state, commit, dispatch, getters, parent );
+        })( state, commit, dispatch, getters, parentSN );
 
-
-        // resolve();
-//
-//         let p = new Promise( ( resolve, reject ) => {
-//             commit( mTypes.addNewItem, pl );
-//             resolve();
-// //                commit( mTypes.setItem, Payload.factory( { index: index, obj: item, } ) );
-//         } );
-
-        // return p.then( () => {
-        //     return new Promise( ( resolve, reject ) => {
-        //         window.console.log( 'items', 'addItemToOrder', 172, pl );
-        //         dispatch( aTypes.addItemToOrder, pl );
-        //         resolve()
-        //     } );
-        // } );
     },
+
+    /**
+     * This handles the request to create an exact copy of
+     * an existing item. By default, we will make it a sibling of the
+     * cloned item.
+     *
+     * @param state
+     * @param commit
+     */
+    [aTypes.cloneItem]: ( { state, commit, dispatch, getters }, payload ) => {
+        return (function ( state, commit, dispatch, getters, payload ) {
+            //NB, parent is the parent item's serial number
+            //toClone is an object
+            let { parent, toClone } = payload;
+
+            //If we were passed an item to serve as the parent
+            //we will use s serial number
+            let item = Item.factory( { parent: parent } );
+
+            _.forEach( Item.clonableProps, function ( p ) {
+                item[ p ] = toClone[ p ];
+            } );
+
+            let pl = Payload.factory( { parent: parent, obj: item});
+            // window.console.log( 'items', 'cloneItem payload', 234, pl);
+            commit( mTypes.addNewItem, pl );
+
+            dispatch( aTypes.addItemToOrder, pl );
+
+        })( state, commit, dispatch, getters, payload );
+
+    },
+
 
     /**
      * Emancipates an item from its parent.

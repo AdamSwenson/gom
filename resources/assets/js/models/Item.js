@@ -90,6 +90,21 @@ export default class Item extends IModel {
         ].concat( super.fillableProps );
     };
 
+    /**
+     * These are the properties which get copied when we
+     * clone an item
+     * @returns {Array.<string>}
+     */
+    static get clonableProps() {
+        return [
+            'displayText',
+            'name',
+            'commentText',
+            'text',
+            'tags'
+        ];
+    };
+
 
     // /**
     //  * Returns the next serial number.

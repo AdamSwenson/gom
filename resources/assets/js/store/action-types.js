@@ -70,6 +70,7 @@ export const loadGradingTimes = 'loadGradingTimes';
 
 
 //items
+export const cloneItem = 'cloneItem';
 export const deleteItem = 'deleteItem'; //destroys item in db
 export const removeItem = 'removeItem'; //disassociates it from a parent
 export const addNewItem = 'addNewItem';
@@ -84,6 +85,7 @@ export const addYoungerSibling = 'addYoungerSibling';
 export const onUpdate = 'onUpdate';
 export const addItemToOrder = 'addItemToOrder';
 export const removeItemFromOrder = 'removeItemFromOrder';
+
 
 //roster and kumi
 export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';

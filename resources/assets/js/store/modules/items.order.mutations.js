@@ -19,7 +19,7 @@ import { getNode } from '../../models/NodeTools'
 const checkExpectedType = ( toBeSet ) => {
     if ( toBeSet instanceof Node ) return true;
 
-    window.console.log( 'items.ordrer.mutations', 'ERROR', 25, "is not a Node", toBeSet );
+    window.console.log( 'items.order.mutations', 'ERROR', 25, "is not a Node", toBeSet );
     throw new Error( "non node passed to order mutation", toBeSet );
     return false;
 };
@@ -30,7 +30,7 @@ module.exports = {
     [mTypes.insertNodeIntoOrder]: ( state, payload ) => {
         return new Promise( ( resolve, reject ) => {
 
-            window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+            // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
 
             let { index, objNode, parentNode } = payload;
 
