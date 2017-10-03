@@ -5,14 +5,14 @@
 
         </p>
 
-        <div class="panel-block">
-            <p class="control has-icons-left">
-                <input class="input is-small" type="text" placeholder="Search">
-                <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
-                    </span>
-            </p>
-        </div>
+        <!--<div class="panel-block">-->
+            <!--<p class="control has-icons-left">-->
+                <!--<input class="input is-small" type="text" placeholder="Search">-->
+                <!--<span class="icon is-small is-left">-->
+                        <!--<i class="fa fa-search"></i>-->
+                    <!--</span>-->
+            <!--</p>-->
+        <!--</div>-->
 
 
         <p class="panel-tabs">

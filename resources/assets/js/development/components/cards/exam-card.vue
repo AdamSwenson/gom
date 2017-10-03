@@ -25,37 +25,47 @@
         <div class="card-footer">
 
             <div class="card-footer-item">
-                <div class="field is-grouped">
-                    <p class="control">
+                <div class="columns is-mobile is-multiline ">
+
+                    <div class="column is-narrow">
+
                         <add-child-button
                                 :serial-number="serialNumber"
                         ></add-child-button>
-                    </p>
+                    </div>
 
-                    <p class="control">
+                    <div class="column is-narrow">
+
+                        <!--<p class="control">-->
                         <button class="button is-primary is-outlined">
                                 <span class="icon is-small">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                 </span>
                             <span>Clone</span>
                         </button>
-                    </p>
-                    <p class="control">
+                    </div>
+                    <div class="column is-narrow">
+
+                        <!--<p class="control">-->
                         <public-indicator
                                 :serial-number="serialNumber">
                         </public-indicator>
-                    </p>
-                    <p class="control">
+                    </div>
+
+
+                    <div class="column is-narrow">
+                        <!--<p class="control">-->
                         <delete-item-button
                                 :serial-number="serialNumber">
                         </delete-item-button>
-                    </p>
-                </div>
+                    </div>
+                    <!--</div>-->
 
-            </div>
-            <div class="card-footer-item">
-                <div class="field is-grouped">
-                    <p class="control">
+                    <!--</div>-->
+                    <!--<div class="card-footer-item">-->
+                    <!--<div class="field is-grouped">-->
+                    <!--<p class="control">-->
+                    <div class="column is-narrow">
 
                         <button class="button add-child-button is-success is-outlined">
                             <span class="icon is-small">
@@ -63,7 +73,7 @@
                             </span>
                             <span>Grade it!</span>
                         </button>
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>

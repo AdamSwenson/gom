@@ -1,40 +1,68 @@
 <template>
-    <div class="card-movement-control tabs ">
-        <ul>
-            <li>
-                <a v-on:click="moveLeft">
-                    <span class="icon"><i class="fa fa-angle-left"></i></span>
-                    <span>Left</span>
-                </a>
-            </li>
+    <div class="card-footer">
+        <a href="#" class="card-footer-item"
+           v-on:click=" moveLeft"
+        >
+            <span class="icon"><i class="fa fa-angle-left"></i></span>
+            <span>Left</span>
+        </a>
+        <a href="#" class="card-footer-item"
+           v-on:click=" moveUp"
+        >
+            <span class="icon"><i class="fa fa-angle-up"></i></span>
+            <span>Up</span>
+        </a>
 
-            <li>
-                <a v-on:click="moveUp">
-                    <span class="icon"><i class="fa fa-angle-up"></i></span>
-                    <span>Up</span>
-                </a>
-            </li>
-
-            <li>
-                <h5>    </h5>
-            </li>
-
-            <li>
-                <a v-on:click="moveDown">
-                    <span class="icon"><i class="fa fa-angle-down"></i></span>
-                    <span>Down</span>
-                </a>
-            </li>
-
-            <li>
-                <a v-on:click="moveRight">
-                    <span>Right</span>
-                    <span class="icon"><i class="fa fa-angle-right"></i></span>
-                </a>
-            </li>
-
-        </ul>
+        <a href="#" class="card-footer-item"
+           v-on:click=" moveDown"
+        >
+            <span class="icon"><i class="fa fa-angle-down"></i></span>
+            <span>Down</span>
+        </a>
+        <a href="#" class="card-footer-item"
+           v-on:click=" moveRight"
+        >
+            <span>Right</span>
+            <span class="icon"><i class="fa fa-angle-right"></i></span>
+        </a>
     </div>
+    <!---->
+    <!--<div class="card-movement-control tabs ">-->
+    <!--<ul>-->
+    <!--<li>-->
+    <!--<a v-on:click="moveLeft">-->
+    <!--<span class="icon"><i class="fa fa-angle-left"></i></span>-->
+    <!--<span>Left</span>-->
+    <!--</a>-->
+    <!--</li>-->
+
+    <!--<li>-->
+    <!--<a v-on:click="moveUp">-->
+    <!--<span class="icon"><i class="fa fa-angle-up"></i></span>-->
+    <!--<span>Up</span>-->
+    <!--</a>-->
+    <!--</li>-->
+
+    <!--<li>-->
+    <!--<h5>    </h5>-->
+    <!--</li>-->
+
+    <!--<li>-->
+    <!--<a v-on:click="moveDown">-->
+    <!--<span class="icon"><i class="fa fa-angle-down"></i></span>-->
+    <!--<span>Down</span>-->
+    <!--</a>-->
+    <!--</li>-->
+
+    <!--<li>-->
+    <!--<a v-on:click="moveRight">-->
+    <!--<span>Right</span>-->
+    <!--<span class="icon"><i class="fa fa-angle-right"></i></span>-->
+    <!--</a>-->
+    <!--</li>-->
+
+    <!--</ul>-->
+    <!--</div>&lt;!&ndash;&ndash;&gt;-->
 
 </template>
 
@@ -45,7 +73,8 @@
 <script>
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'
-    export default{
+
+    export default {
 
         props: [ 'serialNumber' ],
 
@@ -73,7 +102,7 @@
             moveUp: function () {
                 window.console.log( 'card-movement-control', 'moveUp', 65, );
                 let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
-                this.$store.commit('increasePosition', payload)
+                this.$store.commit( 'increasePosition', payload )
             },
 
             /**
@@ -82,7 +111,7 @@
             moveDown: function () {
                 window.console.log( 'card-movement-control', 'moveDown', 69, );
                 let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
-                this.$store.commit('decreasePosition', payload)
+                this.$store.commit( 'decreasePosition', payload )
             },
 
             /**
@@ -90,12 +119,14 @@
              */
             moveLeft: function () {
 
-                let payload = Payload.factory( { objNode: this.node,
-                    parentNode: this.parent } );
+                let payload = Payload.factory( {
+                    objNode: this.node,
+                    parentNode: this.parent
+                } );
 
                 window.console.log( 'card-movement-control', 'moveLeft', 72, payload );
 
-                this.$store.commit('promote', payload)
+                this.$store.commit( 'promote', payload )
 
             },
             /**
@@ -105,7 +136,7 @@
                 let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
                 window.console.log( 'card-movement-control', 'moveRight', 75, payload );
 
-                this.$store.commit('demote', payload)
+                this.$store.commit( 'demote', payload )
 
             }
         },

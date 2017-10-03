@@ -1,5 +1,5 @@
 <template>
-    <button
+    <a
             class="public-indicator button is-outlined "
             v-bind:class="displayClass"
             v-on:click="togglePublic"
@@ -8,7 +8,7 @@
            <i v-bind:class="icon" aria-hidden="true"></i>
        </span>
         <span>Visibility</span>
-    </button>
+    </a>
 
 </template>
 <style>

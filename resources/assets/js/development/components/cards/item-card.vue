@@ -19,63 +19,45 @@
         </div>
 
         <div class="card-footer">
-            <div class="card-footer-item">
-                <!--<div class="field is-grouped">-->
-                <!--<p class="control">-->
-                <add-sibling-button
-                        :serial-number="serialNumber">
-                </add-sibling-button>
-                <!--</p>-->
+            <div class="columns is-mobile is-multiline ">
 
-                <!--<p class="control">-->
-                <add-child-button
-                        :serial-number="serialNumber">
-                </add-child-button>
-                <!--</p>-->
+                <div class="column is-narrow">
+                    <add-sibling-button
+                            :serial-number="serialNumber">
+                    </add-sibling-button>
+                </div>
 
-<item-clone-button :serial-number="serialNumber"></item-clone-button>
-                <!--<p class="control">-->
-                <!--<a class="button is-primary is-outlined">-->
-                                <!--<span class="icon is-small">-->
-                                    <!--<i class="fa fa-clone" aria-hidden="true"></i>-->
-                                <!--</span>-->
-                    <!--<span>Clone</span>-->
-                <!--</a>-->
-                <!--</p>-->
+                <div class="column is-narrow">
+                    <add-child-button
+                            :serial-number="serialNumber">
+                    </add-child-button>
+                </div>
 
-                <item-import-button :serial-number="serialNumber"></item-import-button>
+                <div class="column is-narrow">
+                    <item-clone-button :serial-number="serialNumber"></item-clone-button>
+                </div>
 
-                <!--<p class="control">-->
-                <!--<a class="button is-primary is-outlined">-->
-                                <!--<span class="icon is-small">-->
-                                    <!--<i class="fa fa-mail-forward" aria-hidden="true"></i>-->
-                                <!--</span>-->
-                    <!--<span>Import item</span>-->
-                <!--</a>-->
-                <!--</p>-->
+                <div class="column is-narrow">
+                    <item-import-button :serial-number="serialNumber"></item-import-button>
+                </div>
 
-                <!--<p class="control">-->
-                <public-indicator
-                        :serial-number="serialNumber">
-                </public-indicator>
-                <!--</p>-->
+                <div class="column is-narrow">
+                    <public-indicator
+                            :serial-number="serialNumber">
+                    </public-indicator>
+                </div>
 
-                <!--<p class="control">-->
-                <remove-item-button
-                        :serial-number="serialNumber">
-                </remove-item-button>
-                <!--</p>-->
+                <div class="column is-narrow">
+                    <remove-item-button
+                            :serial-number="serialNumber">
+                    </remove-item-button>
+                </div>
             </div>
 
-            <!--</div>-->
         </div>
 
-        <div class="card-footer navTabs">
-            <div class="card-footer-item is-fullwidth">
-                <card-movement-control :serialNumber="serialNumber"
-                ></card-movement-control>
-            </div>
-        </div>
+        <!--This has the class card-footer-->
+        <card-movement-control :serialNumber="serialNumber"></card-movement-control>
 
 
         <!--Check whether the item has children, if it does-->
@@ -140,8 +122,10 @@
 
         props: [ 'serialNumber' ],
 
-        components: {'item-clone-button' : itemCloneButton,
-        'item-import-button': itemImportButton},
+        components: {
+            'item-clone-button': itemCloneButton,
+            'item-import-button': itemImportButton
+        },
 
         data: function () {
             return {

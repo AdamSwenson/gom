@@ -112,7 +112,7 @@ Vue.component( 'valence-button', valenceButton );
 import deleteButton from './components/input/item-delete-button.vue';
 Vue.component( 'delete-item-button', deleteButton );
 
-import removeButton from './components/input/item-remove-button.vue';
+import removeButton from './components/items/item-remove-button.vue';
 Vue.component( 'remove-item-button', removeButton );
 
 import childrenDisplayButton from './components/input/children-display-control.vue';

@@ -1,12 +1,13 @@
 <template>
-    <button class="item-remove-button button is-danger is-outlined "
+    <a class="item-remove-button button is-danger is-outlined "
             v-on:click="remove"
-            v-bind:id="buttonId">
+            v-bind:id="buttonId"
+    >
        <span class="icon is-small">
            <i class="fa fa-times" aria-hidden="true"></i>
        </span>
         <span>{{ label}}</span>
-    </button>
+    </a>
 </template>
 
 <style>
