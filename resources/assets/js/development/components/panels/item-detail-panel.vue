@@ -20,9 +20,8 @@
         </div>
 
         <tag-display
-                :serial-number="serialNumber" :object-type="'item'"></tag-display>
-
-
+                :serial-number="serialNumber"
+                :object-type="'item'"></tag-display>
     </div>
 
 </template>
@@ -57,23 +56,23 @@
     import Payload from '../../../models/Payload'
     import Item from '../../../models/Item'
 
-//    import tagMenu from '../menus/tags-menu.vue';
+    //    import tagMenu from '../menus/tags-menu.vue';
 
 
     export default {
-        components :{
+        components: {
 //          'tag-menu' : tagMenu
         },
 
         data: function () {
             return {
-                serialNumber: _.toInteger(this.$route.params.serialNumber),
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
 //                active: this.serialNumber,
 
                 showTagMenu: false,
 
                 labels: {
-                   questionText: 'Long name or full text'
+                    questionText: 'Long name or full text'
                 },
 
                 placeholders: {
@@ -83,9 +82,19 @@
             };
         },
 
+        watch: {
+            '$route'( to, from ) {
+                window.console.log( 'item-detail-panel', '$route', 88, to, from );
+                this.serialNumber = _.toInteger(to.serialNumber);
+            }
+        },
+
         computed: {
-            questionNameExample: function(){
-               return "I am the example for the question name";
+            sn: function (  ) {
+              return this.serialNumber;
+            },
+            questionNameExample: function () {
+                return "I am the example for the question name";
             },
 
 
@@ -105,7 +114,7 @@
                         let pl = Payload.factory( {
                             obj: this.item,
                             updateProp: 'text',
-                            updateVal:  value
+                            updateVal: value
                         } );
                         this.$store.commit( mTypes.updateItem, pl );
                     }
@@ -116,7 +125,8 @@
                 return 'item-text-' + this.serialNumber;
             },
 
-            isDetailTabActive: function () {},
+            isDetailTabActive: function () {
+            },
 
 
         },

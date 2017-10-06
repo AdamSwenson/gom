@@ -30,6 +30,14 @@ export const Routes = {
         return 'dev/exams/';
     },
 
+    setupExam: (exam) =>{
+      return 'dev/setup/' + exam.id;
+    },
+
+    newExam: () =>{
+        return 'dev/setup/';
+    },
+
     updateExam: ( exam ) => {
         return 'editexam/' + exam.id;
     },

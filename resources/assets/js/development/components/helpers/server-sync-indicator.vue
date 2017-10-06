@@ -1,19 +1,19 @@
 <template>
     <div id="sync-indicator"
-         class="box"
-         v-bind:class="{ 'is-primary' : isSyncing}"
+         class="content"
     >
         <p id="is-syncing-indicator"
            v-if="isSyncing">
             <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-
             <!--<i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>-->
             <span class="sr-only">Syncing...</span>
         </p>
+
         <p id="no-syncing-indicator" v-else>
             <i class="fa fa-circle-o "></i>
             <span class="sr-only">No sync in progress</span>
         </p>
+
         <input type="hidden"
                id="isSyncing"
                v-model="isSyncing">

@@ -57,7 +57,7 @@ Vue.component( 'tools-dashboard', toolsDashboard );
 import examMain from './components/old/exam.main.component.vue';
 Vue.component( 'exam-main', examMain );
 
-import itemMain from './components/input/item-main.vue';
+import itemMain from './components/items/item-main.vue';
 Vue.component( 'item-main', itemMain );
 
 
@@ -98,7 +98,7 @@ Vue.component( 'add-sibling-button', siblingAddButton );
 import childAddButton from './components/items/add-child-button.vue'
 Vue.component( 'add-child-button', childAddButton );
 
-import movementControl from './components/input/card-movement-control.vue';
+import movementControl from './components/items/card-movement-control.vue';
 Vue.component( 'card-movement-control', movementControl );
 
 
@@ -124,10 +124,10 @@ Vue.component( 'public-indicator', publicIndicator );
 
 
 //menus
-import examList from './components/menus/existing-exams-list.vue'
+import examList from './components/exams/existing-exams-list.vue'
 Vue.component( 'existing-exams-menu', examList )
 
-import itemList from './components/menus/existing-items-list.vue'
+import itemList from './components/items/existing-items-list.vue'
 Vue.component( 'existing-items-menu', itemList )
 
 

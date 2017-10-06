@@ -3,33 +3,29 @@
          class="setup-main"
     >
         <div class="container is-fluid">
+            <div class="columns is-centered">
 
-            <div class="columns">
-                <div class="column"></div>
                 <div class="column is-three-quarters ">
-                    <!--<div class="column is-three-quarters  border-image-lft">-->
+
                     <div id="examCardArea" class="card">
-                        <exam-card :serial-number="examSerialNumber"></exam-card>
+                        <exam-selection-bar></exam-selection-bar>
+
+                        <exam-card
+                                :serial-number="examSerialNumber"
+                        ></exam-card>
+
                     </div>
 
                 </div>
 
-                <div class="column"></div>
-
             </div>
 
-            <div class="tile">
-                <div class="tile is-vertical is-4">
-
-                    <p>{{ examId }}</p>
-                    <p>Can sync {{ canSync}}</p>
-
-                    <sync-indicator></sync-indicator>
-
-                    <!--<existing-exams-menu>&lt;!&ndash;<p slot="row-content">taco</p>&ndash;&gt;</existing-exams-menu>-->
+            <div class="columns">
+                <div class="column">
+                    <progress-dashboard></progress-dashboard>
                 </div>
-                <div class="tile is-vertical is-4">
-                    <!--<existing-items-menu></existing-items-menu>-->
+                <div class="column is-1">
+                    <sync-indicator></sync-indicator>
                 </div>
             </div>
 

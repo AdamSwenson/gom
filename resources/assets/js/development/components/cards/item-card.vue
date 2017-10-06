@@ -19,7 +19,7 @@
         </div>
 
         <div class="card-footer">
-            <div class="columns is-mobile is-multiline ">
+            <div class="columns is-mobile is-multiline is-centered">
 
                 <div class="column is-narrow">
                     <add-sibling-button
@@ -47,11 +47,11 @@
                     </public-indicator>
                 </div>
 
-                <div class="column is-narrow">
-                    <remove-item-button
-                            :serial-number="serialNumber">
-                    </remove-item-button>
-                </div>
+                <!--<div class="column is-narrow">-->
+                    <!--<remove-item-button-->
+                            <!--:serial-number="serialNumber">-->
+                    <!--</remove-item-button>-->
+                <!--</div>-->
             </div>
 
         </div>
@@ -108,23 +108,27 @@
     //    import deleteButton from './item-remove-button.vue'
     //    import itemEditPane from './item.edit-pane.component.vue'
     //    import depthControl from './buttons.depth-control.component.vue'
-    //    import itemMain from './item-main.vue'
 
-    import Item from '../../../models/Item'
-    import Payload from '../../../models/Payload'
+    import Item from '../../../models/Item';
+    import Payload from '../../../models/Payload';
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
     import itemCloneButton from '../items/item-clone-button.vue';
     import itemImportButton from '../items/item-import-button.vue';
+    import movementControl from '../items/card-movement-control.vue';
+    import itemMain from '../items/item-main.vue';
+
 
     export default {
 
         props: [ 'serialNumber' ],
 
         components: {
+            'card-movement-control': movementControl,
             'item-clone-button': itemCloneButton,
-            'item-import-button': itemImportButton
+            'item-import-button': itemImportButton,
+            'item-main': itemMain
         },
 
         data: function () {

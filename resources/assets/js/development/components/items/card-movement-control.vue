@@ -6,11 +6,21 @@
             <span class="icon"><i class="fa fa-angle-left"></i></span>
             <span>Left</span>
         </a>
+
         <a href="#" class="card-footer-item"
-           v-on:click=" moveUp"
+           v-on:click="moveUp"
         >
             <span class="icon"><i class="fa fa-angle-up"></i></span>
             <span>Up</span>
+        </a>
+
+        <a href="#" class="card-footer-item"
+           v-on:click="remove"
+        >
+            <span class="icon is-small has-text-danger ">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </span>
+            <span class="has-text-danger">Remove</span>
         </a>
 
         <a href="#" class="card-footer-item"
@@ -137,6 +147,12 @@
                 window.console.log( 'card-movement-control', 'moveRight', 75, payload );
 
                 this.$store.commit( 'demote', payload )
+
+            },
+
+            remove: function () {
+                window.console.log( 'card-movement-control', 'remove', 151, this.item );
+                this.$store.dispatch( aTypes.removeItem, { obj: this.item } );
 
             }
         },

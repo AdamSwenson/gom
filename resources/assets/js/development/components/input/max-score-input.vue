@@ -2,32 +2,26 @@
     <!-- max grade -->
 
     <div class="max-score-area">
-        <div class="columns">
-            <div class="column">
-                <div class="field">
-                    <label class="label max-score-label">{{labels.scoreInput}}</label>
-                    <p class="control">
-                        <input
-                                type="number"
-                                class="input max-score-input"
-                                v-bind:id="maxScoreId"
-                                v-bind:title="title"
-                                v-model="maxScore"
-                        />
-                    </p>
-                </div>
-            </div>
+        <div class="field">
+            <label class="label max-score-label">{{labels.scoreInput}}</label>
+            <p class="control">
+                <input type="number"
+                       class="input max-score-input"
+                       v-bind:id="maxScoreId"
+                       v-bind:title="title"
+                       v-model="maxScore"
+                />
+            </p>
+        </div>
 
-            <div class="column">
-                <div class="field">
-                    <p class="control">
-                        <label class="checkbox">
-                            <input type="checkbox" v-model="countsInTotal">
-                            {{labels.countsInTotal}}
-                        </label>
-                    </p>
-                </div>
-            </div>
+        <div class="field">
+            <p class="control">
+                <label class="checkbox">
+                    <input type="checkbox" v-model="countsInTotal">
+                    {{labels.countsInTotal}}
+                </label>
+            </p>
+
         </div>
     </div>
 
@@ -61,7 +55,7 @@
         data: function () {
             return {
 //                index: this.$route.params.index,
-                serialNumber: _.toInteger( this.$route.params.serialNumber ),
+//                serialNumber: _.toInteger( this.$route.params.serialNumber ),
 
                 labels: {
                     scoreInput: 'Max Score',
@@ -81,6 +75,10 @@
         },
 
         computed: {
+            serialNumber: function (  ) {
+                return _.toInteger( this.$route.params.serialNumber );
+            },
+
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
@@ -91,7 +89,7 @@
 
             maxScore: {
                 get: function () {
-                     if ( this.item instanceof Item ) {
+                    if ( this.item instanceof Item ) {
                         return this.item.maxScore
                     }
                 },
@@ -118,9 +116,7 @@
             }
         },
 
-        methods: {
-
-        }
+        methods: {}
     }
 
 

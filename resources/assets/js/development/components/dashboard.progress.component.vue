@@ -1,65 +1,89 @@
 <template>
-    <div id="progress-dashboard"
-         class="dashboard text-align-center"
+    <nav id="progress-dashboard"
+         class="level"
     >
-        <ul id="progressIndicator" class="list-inline">
 
-            <li id="progressSetup" v-bind:class="{'bg-success' : setupComplete }">
-                <ul class="list-inline">
-                    <li class="group-cell">
-                        <h5><span v-show="setupComplete"><span class="glyphicon glyphicon-ok"></span></span> Setup </h5>
-                    </li>
+            <!--<div class="level-item has-text-centered">-->
+                <!--<div><p class="heading">-->
+            <!--<span v-show="setupComplete">-->
+            <!--<span class="glyphicon glyphicon-ok"></span>-->
+            <!--</span> Setup-->
+                <!--</p>-->
+                <!--</div>-->
+            <!--</div>-->
 
-                    <li>
-                        Items <span class="badge">{{ numberItems }}</span>
-                    </li>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading"># Items</p>
+                    <p class="title">
+                        <span class="badge">{{ numberItems }}</span>
+                    </p>
+                </div>
+            </div>
 
-                    <li>
-                        Max total score <span class="badge">{{ perfectScore }}</span>
-                    </li>
-                    <li>
-                        Students <span class="badge">{{ numberStudents }}</span>
-                    </li>
-                </ul>
-            </li>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Max total score</p>
+                    <p class="title"><span class="badge">{{ perfectScore }}</span></p>
+                </div>
+            </div>
 
 
-            <li id="progressGrading">
-                <ul class="list-inline"
-                    v-bind:class="{'bg-success' : gradingComplete }"
-                >
+            <div class="level-item  has-text-centered">
+                <div>
+                    <p class="heading"># Students</p>
+                    <p class="title">
+                        <span class="badge">{{ numberStudents }}</span>
+                    </p>
+                </div>
+            </div>
 
-                    <li class="group-cell">
-                        <h5><span v-show="gradingComplete"></span> <span class="glyphicon glyphicon-ok"></span> Grading
-                        </h5>
-                    </li>
+            <!--<div class="level-item has-text-centered"-->
+                 <!--id="progressGrading"-->
+                 <!--v-bind:class="{'bg-success' : gradingComplete }"-->
+            <!--&gt;-->
+                <!--<div>-->
+                    <!--<p class="heading">-->
+                        <!--<span v-show="gradingComplete">-->
+                            <!--<span class="glyphicon glyphicon-ok"></span>-->
+                        <!--</span>-->
+                        <!--Grading-->
+                    <!--</p>-->
+                <!--</div>-->
+            <!--</div>-->
 
-                    <li>
-                        Graded <span class="badge">{{ numberGraded }}</span>
-                    </li>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading"># Graded </p>
+                    <p class="title">
+                        <span class="badge">{{ numberGraded }}</span>
+                    </p>
+                </div>
+            </div>
 
-                    <li>
-                        Time grading <span class="badge">{{ timeGrading }}</span>
-                    </li>
-                </ul>
-            </li>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Time grading</p>
+                    <p class="title"><span class="badge">{{ timeGrading }}</span></p>
+                </div>
+            </div>
 
-            <li id="progressReviewing">
-                <ul class="list-inline">
-                    <li class="group-cell">
-                        <h5>
-                            <span v-show="reviewingComplete">
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </span> Reviewing
-                        </h5>
-                    </li>
+            <!--<div class="level-item has-text-centered"-->
+                 <!--id="progressReviewing"-->
+            <!--&gt;-->
+                <!--<div>-->
+                    <!--<p class="heading">-->
+                        <!--<span v-show="reviewingComplete">-->
+                            <!--<span class="glyphicon glyphicon-ok"></span>-->
+                        <!--</span>-->
+                        <!--Reviewing-->
+                    <!--</p>-->
+                <!--</div>-->
+            <!--</div>-->
 
-                </ul>
-            </li>
+        <!--</div>-->
 
-        </ul>
-    </div>
-
+    </nav>
 
 </template>
 <style lang="scss">
@@ -146,7 +170,7 @@
             numberStudents: {
                 get: function () {
                     //if not set return placeholder
-                    return this.defaults.numberStudent;
+                    return this.defaults.numberStudents;
                 }
             },
 

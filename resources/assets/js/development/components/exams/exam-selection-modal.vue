@@ -8,22 +8,22 @@
             <header class="modal-card-head">
                 <p class="modal-card-title">
                     <slot name="modalTitle">
-                        <h3 class="title is-3">Previously created items</h3>
+                        <h3 class="title is-3">Previously created exams</h3>
                     </slot>
                 </p>
                 <a class="button is-primary" aria-label="close" v-on:click="toggleModal">Done</a>
             </header>
 
             <section class="modal-card-body">
-                <item-list
-                        :hidden-items="hiddenItems"
-                        :selected-items="selectedItems"
-                        v-on:item-selected="handleSelection"
+                <exam-list
+                        :hidden-exams="hiddenExams"
+                        :selected-exams="selectedExams"
+                        v-on:exam-selected="handleSelection"
                 >
 
-                    <h4 slot="heading" class="subtitle is-5">Clicking an item imports it into this exam. You will be able to directly compare student performance across different exams.</h4>
+                    <h4 slot="heading" class="subtitle is-5">Select the exam to switch to.</h4>
 
-                </item-list>
+                </exam-list>
                 <slot name="modalBody"></slot>
             </section>
 
@@ -39,7 +39,7 @@
 </style>
 
 <script>
-    import itemList from './existing-items-list.vue';
+    import itemList from './existing-exams-list.vue';
 
     export default {
 
@@ -49,16 +49,16 @@
         ],
 
         components: {
-            'item-list': itemList
+            'exam-list': itemList
         },
 
         data: function () {
             return {
 
-                //items which the list will not display
-                hiddenItems: [],
+                //item object representing exams which the list will not display
+                hiddenExams: [],
                 //items which the list will display as active
-                selectedItems: [],
+                selectedExams   : [],
                 defaults: {}
             }
         },
@@ -67,13 +67,14 @@
 
         methods: {
             handleSelection: function ( itemObject ) {
-                this.$emit( 'item-selected', itemObject );
+                window.console.log( 'exam-selection-modal', 'handleSelection', 70, itemObject);
+                this.$emit( 'exam-selected', itemObject );
                 switch ( this.selectAction ) {
                     case 'highlight':
-                        this.selectedItems.push(itemObject);
+                        this.selectedExams.push(itemObject);
                         break
                     case 'remove':
-                        this.hiddenItems.push(itemObject);
+                        this.hiddenExams.push(itemObject);
                         break;
                 }
 

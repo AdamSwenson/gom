@@ -45,7 +45,7 @@
 
 
 <script type="text/javascript">
-    var routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
+    window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
 </script>
 <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
 <script src="http://localhost:35729/livereload.js"></script>

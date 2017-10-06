@@ -9,20 +9,21 @@ window._ = require( 'lodash' );
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-window.$ = window.jQuery = require( 'jquery' );
+// window.$ = window.jQuery = require( 'jquery' );
 
 //set csrf token
-window.Laravel = { csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" ) };
+var element = document.querySelector( 'meta[name=csrf-token]');
+var content = element && element.getAttribute("content");
+window.Laravel = { csrfToken: content};
+// window.Laravel = { csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" ) };
 
 
 /**
  * Styling and templating libraries
  */
 //Pull in bootstrap libraries
-require( 'bootstrap' );
-require( 'bootstrap-sass' );
-// require('bootstrap-vue')
-// require('bootstrap-vue/dist/bootstrap-vue.css')
+// require( 'bootstrap' );
+// require( 'bootstrap-sass' );
 
 
 /**

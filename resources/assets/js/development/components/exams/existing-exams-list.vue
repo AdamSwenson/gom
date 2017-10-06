@@ -2,17 +2,18 @@
 <template>
     <div class="exams-panel panel">
         <p class="panel-heading">
-            Exams
+            <slot name="heading">Exams</slot>
+
         </p>
 
-        <div class="panel-block">
-            <p class="control has-icons-left">
-                <input class="input is-small" type="text" placeholder="Search">
-                <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
-                    </span>
-            </p>
-        </div>
+        <!--<div class="panel-block">-->
+            <!--<p class="control has-icons-left">-->
+                <!--<input class="input is-small" type="text" placeholder="Search">-->
+                <!--<span class="icon is-small is-left">-->
+                        <!--<i class="fa fa-search"></i>-->
+                    <!--</span>-->
+            <!--</p>-->
+        <!--</div>-->
 
         <p class="panel-tabs">
             <a class="is-active">All</a>
@@ -22,12 +23,16 @@
         </p>
 
         <a v-for="exam in exams"
-           v-on:click="handleRowClick(exam.id)"
+           v-on:click="handleRowClick(exam)"
            :key="exam.id"
-           class="panel-block ">
+           class="panel-block "
+           v-bind:class="[ selectedExams.indexOf(exam) > -1  ? 'is-active' : '' ]"
+        >
                 <span class="panel-icon">
                     <i class="fa fa-book"></i>
-                </span> {{exam.name}} <slot ></slot>
+                </span>
+            <span>{{exam.name}}</span>
+            <slot ></slot>
         </a>
 
 
@@ -57,7 +62,8 @@
 
     export default{
 
-        props: [],
+        props: ['hiddenExams', 'selectedExams'],
+
 
         components: {},
 
@@ -109,8 +115,15 @@
         },
 
         methods: {
-            handleRowClick: function ( v ) {
-                window.console.log( 'existing-exams-list', 'handleClick', 110, v );
+            isVisible: function ( obj ) {
+                return this.hiddenExams.indexOf(obj) === -1;
+            },
+
+
+            handleRowClick: function ( itemObject ) {
+                window.console.log( 'existing-exams-list', 'handleClick', 110, itemObject);
+                this.$emit('exam-selected', itemObject);
+
             },
 
             handleNew: function () {

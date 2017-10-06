@@ -67,12 +67,7 @@
                     <!--<p class="control">-->
                     <div class="column is-narrow">
 
-                        <button class="button add-child-button is-success is-outlined">
-                            <span class="icon is-small">
-                                <i class="fa fa-check" aria-hidden="true"></i>
-                            </span>
-                            <span>Grade it!</span>
-                        </button>
+
                     </div>
                 </div>
             </div>
@@ -89,14 +84,13 @@
             </div>
         </div>
 
-        <progress-dashboard></progress-dashboard>
     </div>
 </template>
 
 <style lang="scss">
 
     .exam-card {
-        margin-top: 2em;
+        /*margin-top: 2em;*/
 
         border-bottom: solid;
 
@@ -123,6 +117,8 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
+    import itemMain from '../items/item-main.vue';
+
     export default {
 
         //NB, the decisive consideration in favor of making this
@@ -130,6 +126,10 @@
         //with other exams. It thus won't do to assume that it is
         //the only exam and have it look up its serial number on its own
         props: [ 'serialNumber' ],
+
+        components: {
+            'item-main': itemMain
+        },
 
         data: function () {
             return {
