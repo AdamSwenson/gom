@@ -161,7 +161,7 @@ elixir( function ( mix ) {
 
 
 
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Dev and testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DevSeeder and testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     /* ------ Scripts and styles under development go here ------------------------- */
     //testing
     mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );

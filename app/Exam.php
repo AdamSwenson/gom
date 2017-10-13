@@ -96,6 +96,104 @@ class Exam extends BaseModel
     {
     }
 
+#----------------------------------------------------------- Item ordering
+
+    /**
+     * Returns the Assignment representing the exam
+     */
+    public function getAssignmentRoot()
+    {
+        return Assignment::where('exam_id', $this->id)
+            ->where('parent_id', null)
+            ->where('item_id', $this->id)
+            ->first();
+    }
+
+    /**
+     * Creates an assignment in the assignments table
+     * with this exam's id as item_id and exam_id
+     * @return bool
+     */
+    public function initializeAssignmentRoot()
+    {
+        if ( $this->getAssignmentRoot() ) return true;
+        $assignment = Assignment::create([
+            'item_id' => $this->id,
+            'exam_id' => $this->id
+        ]);
+
+        $this->assignments()->save($assignment);
+    }
+
+
+    /**
+     * If was associated with assignments, deletes the association
+     * and creates a new assignment
+     * If was none preexisting, creates new
+     */
+    public function resetAssignments()
+    {
+        //delete all items from assignment table with this
+        //exam id
+        Assignment::where('exam_id', $this->id)->delete();
+        //create a new assignment
+        $this->initializeAssignmentRoot();
+    }
+
+
+    /**
+     * Adds an Item to the exam either with the exam itself
+     * or another item as the parent.
+     * @param Item $item
+     * @param $parentId
+     * @param $depth
+     */
+    public function addAssignment( Item $item, $parentId, $depth )
+    {
+        //we need the assignment id of the parent
+        //to link them, so get the parent assignment
+        //This is okay as long as we can presume that
+        //if we haven't processed the parent yet.
+        // it will be updated when we get to it.
+        $parentAssign = Assignment::firstOrCreate(
+            [
+                'exam_id' => $this->id,
+                'item_id' => $parentId
+            ]);
+
+        //Now we can make the actual assignment entry
+        $assignment = Assignment::firstOrCreate([
+            'exam_id' => $this->id,
+            'item_id' => $item->id,
+        ]);
+
+        //and finally associate it into the tree.
+        $parentAssign->addChild($assignment, $depth);
+    }
+
+    /**
+     * Returns all the associated item objects
+     * in no order
+     * @return array
+     */
+    public function getItems()
+    {
+        $out = [];
+       $assignmentTree = $this->getAssignmentRoot();
+// Assignment::where('item_id', $this->id)
+//            ->where('exam_id', $this->id)
+//            ->get();
+        if ( $assignmentTree->hasChildren() ) {
+            $children = $assignmentTree->getChildren();
+            //children now holds a bunch of Assignment objects
+            foreach ($children as $c){
+                //push Item objects into the out array
+                $out[] = $c->item;
+            }
+        }
+        return $out;
+    }
+
 # -------------------------- Helpful methods
 
     /**
@@ -136,7 +234,6 @@ class Exam extends BaseModel
         return false;
     }
 
-
     /**
      * Returns true if at least one question for at least one student
      * has been graded. Returns false otherwise.
@@ -169,7 +266,6 @@ MYSQL;
 
         return false;
     }
-
 
     /**
      * Returns a collection of all students who have been associated with the exam
@@ -297,51 +393,6 @@ MYSQL;
 //    }
 
 
-#----------------------------------------------------------- Item ordering
-
-    /**
-     * Returns the Assignment representing the exam
-     */
-    public function getAssignmentsRoot()
-    {
-        return Assignment::where('exam_id', $this->id)
-            ->where('parent_id', null)
-            ->where('item_id', $this->id)
-            ->first();
-    }
-
-    /**
-     * Creates an assignment in the assignments table
-     * with this exam's id as item_id and exam_id
-     * @return bool
-     */
-    public function initializeAssignmentRoot()
-    {
-        if ( $this->getAssignmentsRoot() ) return true;
-        $assignment = Assignment::create([
-            'item_id' => $this->id,
-            'exam_id' => $this->id
-        ]);
-
-        $this->assignments()->save($assignment);
-    }
-
-
-    /**
-     * If was associated with assignments, deletes the association
-     * and creates a new assignment
-     * If was none preexisting, creates new
-     */
-    public function resetAssignments()
-    {
-        //delete all items from assignment table with this
-        //exam id
-        Assignment::where('exam_id', $this->id)->delete();
-        //create a new assignment
-        $this->initializeAssignmentRoot();
-    }
-
-
     #------------------------------------------------------ foreign keys
 
     /**
@@ -349,7 +400,7 @@ MYSQL;
      */
     public function assignment()
     {
-        return $this->getAssignmentsRoot();
+        return $this->getAssignmentRoot();
         //hasOne(Assignment::class);
     }
 

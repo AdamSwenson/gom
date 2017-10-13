@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Model;
  * This creates the db for the new gom
  *
  *
- * Class DevDatabaseSeeder
+ * Class DevSeeder
  */
-class DevDatabaseSeeder extends BaseSeeder
+class DevSeeder extends BaseSeeder
 {
 
     /**

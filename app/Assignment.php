@@ -24,4 +24,10 @@ class Assignment extends Entity implements assignmentInterface
     public function exam(){
         return $this->belongsTo(Exam::class );
     }
+
+    public function item(){
+        return $this->belongsTo(Item::class );
+
+    }
+
 }

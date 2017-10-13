@@ -7,6 +7,22 @@ use Illuminate\Database\Seeder;
 
 class NoteTableSeeder extends Seeder
 {
+
+    static public function populateExamAndItemsWithNotes(Exam $exam, $numberNotes){
+
+        //create notes for exam
+        $notes = factory(Note::class, $numberNotes)->create();
+        $exam->notes()->attach($notes);
+
+        //seed note items
+        $items = $exam->getItems();
+
+        foreach($items as $item){
+            $item->notes()->attach(factory(Note::class, $numberNotes)->create());
+            $item->save();
+        }
+    }
+
     /**
      * Run the database seeds.
      *

@@ -7,6 +7,22 @@ use Illuminate\Database\Seeder;
 
 class TagTableSeeder extends BaseSeeder
 {
+
+
+    static public function populateExamAndItemsWithTags(Exam $exam, $numberTags){
+
+        //create tags for exam
+        $tags = factory(Tag::class, $numberTags)->create();
+        $exam->tags()->attach($tags);
+
+        //seed tag items
+        $items = $exam->getItems();
+
+        foreach($items as $item){
+            $item->tags()->attach(factory(tag::class, $numberTags)->create());
+            $item->save();
+        }
+    }
     /**
      * Run the database seeds.
      *

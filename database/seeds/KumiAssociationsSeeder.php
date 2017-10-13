@@ -1,5 +1,8 @@
 <?php
 
+use App\Exam;
+use App\Kumi;
+use App\Student;
 use Illuminate\Database\Seeder;
 
 /**
@@ -35,18 +38,38 @@ class KumiAssociationsSeeder extends Seeder
 
     }
 
+    /**
+     * Populates an exam with the specified number of kumis and students.
+     *
+     * @param Exam $exam
+     * @param $numberKumi
+     * @param $studentsPerClass
+     */
+    static public function populateExamWithKumiAndStudents( Exam $exam, $numberKumi, $studentsPerClass )
+    {
+
+        //create some kumis and associate them with the exam
+        $kumis = factory(Kumi::class, $numberKumi)->create();
+        $exam->classes()->attach($kumis);
+
+        //now give each kumi some students
+        foreach ( $kumis as $kumi ) {
+            $students = factory(Student::class, $studentsPerClass)->create();
+            $kumi->students()->attach($students);
+        }
+    }
+
+
     protected function populateExamKumi()
     {
         $cnt = 0;
-        foreach ($this->exams as $exam)
-        {
-            try
-            {
+
+        foreach ( $this->exams as $exam ) {
+            try {
                 $exam->classes()->attach($this->kumis[$cnt]);
 //                $exam->classes()->attach(\App\Kumi::all()->random());
                 // $exam->classes()->attach(\App\Kumi::all()->random());
-            } catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
             }
             $cnt += 1;
         }
@@ -57,19 +80,16 @@ class KumiAssociationsSeeder extends Seeder
      * to simulate someone in multiple classes.
      * @param int $studentsPerClass
      */
-    protected function populateStudentKumi($studentsPerClass = 10)
+    protected
+    function populateStudentKumi( $studentsPerClass = 10 )
     {
         $cnt = 0;
-        foreach ($this->kumis as $kumi)
-        {
-            for ($i = 0; $i <= $studentsPerClass; $i++)
-            {
-                try
-                {
+        foreach ( $this->kumis as $kumi ) {
+            for ( $i = 0; $i <= $studentsPerClass; $i++ ) {
+                try {
                     $kumi->students()->attach($this->students[$i + $cnt]);
 //                $kumi->students()->attach(\App\Student::all()->random());
-                } catch (\Exception $e)
-                {
+                } catch (\Exception $e) {
 //                $i -=1;
                 }
             }

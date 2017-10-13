@@ -53,20 +53,27 @@ class DatabaseSeeder extends Seeder
         $this->call(ElementTableSeeder::class);
         $this->call(StudentTableSeeder::class);
         $this->call(KumiTableSeeder::class);
-        $this->call(QuestionAssignmentTableSeeder::class);
-        $this->call(QuestionScoresTableSeeder::class);
-        $this->call(ElementAssignmentTableSeeder::class);
-        $this->call(ElementScoresTableSeeder::class);
-        $this->call(KumiAssociationsSeeder::class);
-        $this->call(CommentTableSeeder::class);
-        $this->call(GradingTimeSeeder::class);
-        $this->call(GradeAssignmentSeeder::class);
-        //$this->call('ItemSeeder');
+
+        //todo dev not using these while working on dev
+//        $this->call(QuestionAssignmentTableSeeder::class);
+//        $this->call(QuestionScoresTableSeeder::class);
+//        $this->call(ElementAssignmentTableSeeder::class);
+//        $this->call(ElementScoresTableSeeder::class);
+//        $this->call(KumiAssociationsSeeder::class);
+//        $this->call(CommentTableSeeder::class);
+//        $this->call(GradingTimeSeeder::class);
+//        $this->call(GradeAssignmentSeeder::class);
+//        //$this->call('ItemSeeder');
         //$this->call('ItemAssignmentSeeder');
-        $this->call(AccessKeysTableSeeder::class);
-        $this->call(FeedbackTableSeeder::class);
+//        $this->call(AccessKeysTableSeeder::class);
+//        $this->call(FeedbackTableSeeder::class);
+
+        //      dev
         $this->call(AssignmentsTableSeeder::class);
         $this->call(NoteTableSeeder::class);
+
+        //dev
+//        $this->call(DevSeeder::class);
         Model::reguard();
     }
 }

@@ -20,6 +20,7 @@ class KumiTableSeeder extends Seeder
         $this->faker = \Faker\Factory::create();
 
         DB::table('kumis')->delete();
+
         for ($i = 0; $i < $num; $i++)
         {
             $s = new \App\Kumi();

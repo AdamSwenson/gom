@@ -18,9 +18,36 @@ use App\Question;
 class AssignmentRepository implements IAssignmentRepository
 {
 
-    static function addChildren( Assignment $assignment, $numSiblings = 5 )
+    static public function recursiveMaker(Exam $exam, $itemId, $parentId, $depth, $maxLevels, $currentLevel){
+
+        if($currentLevel < $maxLevels){
+            $itemAssignment = new Assignment(['item_id' => $itemId]);
+            $itemAssignment->save();
+            $exam->addAssignment($itemAssignment, $parentId, $depth);
+
+        }
+    }
+
+
+
+    /**
+     * @param Exam $exam
+     * @param Item $item
+     * @param $parentId
+     * @param $depth The child number of the item
+     * @return Assignment
+     */
+    static public function makeAssignment( Exam $exam, Item $item, $parentId, $depth )
     {
-        for ( $k = 0; $k < $numSiblings; $k++ ) {
+        $itemAssignment = new Assignment(['item_id' => $item->id]);
+        $itemAssignment->save();
+        $exam->addAssignment($itemAssignment, $parentId, $depth);
+        return $itemAssignment;
+    }
+
+    static function addChildren( Assignment $assignment, $numChildren = 5 )
+    {
+        for ( $k = 0; $k < $numChildren; $k++ ) {
             $ec = new Assignment(['item_id' => factory(Item::class)->create()->id]);
             $assignment->addChild($ec);
         }
@@ -67,32 +94,11 @@ class AssignmentRepository implements IAssignmentRepository
 
                 if ( $item ) {
                     $depth = $record['itemOrder'];
-
-                    //we need the assignment id of the parent
-                    //to link them, so get the parent assignment
-                    //This is okay as long as we can presume that
-                    //if we haven't processed the parent
-                    //yet, it will be updated when we get to it.
-//                    $parentAssign = $record['itemOrder'] === 0 ? $exam->getAssignmentsRoot() :
-                    $parentAssign = Assignment::firstOrCreate(
-                        [
-                            'exam_id' => $exam->id,
-                            'item_id' => $record['parentId']
-                        ]);
-
-                    //Now we can make the actual assignment entry
-                    $assignment = Assignment::firstOrCreate([
-                        'exam_id' => $exam->id,
-                        'item_id' => $item->id,
-                    ]);
-//dd($parentAssign);
-                    //and finally associate it into the tree.
-                    $parentAssign->addChild($assignment, $depth);
-
+                    $exam->addAssignment($item, $record['parentId'], $depth);
                 }
             }
         }
-
+    }
         //To clean up, we need to remove a record which was
         //a side effect todo and likely an indication of problems!
         //of the processing.
@@ -115,7 +121,7 @@ class AssignmentRepository implements IAssignmentRepository
 //            ->where('exam_id' , $exam->id)
 //            ->delete();
 
-    }
+
 
     /**
      * This is used on page load to order the items
@@ -188,4 +194,5 @@ class AssignmentRepository implements IAssignmentRepository
 //            }
 //        }
     }
+
 }

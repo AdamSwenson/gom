@@ -18,7 +18,7 @@
                 <div class="level-item has-text-centered">
                     <a class="button is-warning is-outlined"
                        v-on:click="handleChangeExam">
-                        <span>Select a different exam</span>
+                        <span>Change Exam</span>
                     </a>
                 </div>
 
@@ -46,6 +46,7 @@
 <style lang="scss">
     .exam-selection-bar {
         padding-top: 1em;
+        padding-right: 1em;
     }
 
 </style>
@@ -81,7 +82,7 @@
 
         methods: {
             handleGradeExamClick: function () {
-
+                window.console.log( 'exam-selection-bar', 'handleGradeExamClick', 85, );
             },
 
             handleChangeExam: function () {

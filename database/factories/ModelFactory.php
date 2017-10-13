@@ -387,3 +387,16 @@ $factory->define(Tag::class, function ( Faker\Generator $faker ) {
     ];
 
 });
+
+
+$factory->define(Tag::class, function ( Faker\Generator $faker ) {
+//    $userId = 1;
+//    Auth::logInUsingId($userId);
+
+    return [
+        'name' =>$faker->word(),
+        'text' => $faker->text(),
+        'props' => ['testProp' => 'testVal']
+    ];
+
+});
