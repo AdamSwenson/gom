@@ -142,7 +142,7 @@ class RosterEditPage
     {
         $I->test_login($I);
         # Go to page
-        $I->amOnPage("/exam/{$examId}/student/edit");
+        $I->amOnPage("/exam1/{$examId}/student/edit");
         $I->waitForElementVisible(self::$mainBodyLocator);
     }
 

@@ -25,7 +25,7 @@ class StudentControlsPage
     public static $pageSubHeadingText = "Send email notifications or review student feedback";
 
 
-    public static $noStudentsMessageText = "This exam has no students associated with it.";
+    public static $noStudentsMessageText = "This exam1 has no students associated with it.";
     public static $noStudentsMessageClassName = "noStudentsMessage";
 
     public static $controlRowClassName = "studentControlRow";

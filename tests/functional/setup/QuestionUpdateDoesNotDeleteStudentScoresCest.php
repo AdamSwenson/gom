@@ -20,7 +20,7 @@ class QuestionUpdateDoesNotDeleteStudentScoresCest
 
     public function _before(FunctionalTester $I)
     {
-//        $this->exam = Exam::find(self::$examId);
+//        $this->exam1 = Exam::find(self::$examId);
 //        $this->assignments = QuestionAssignment::where('exam_id', self::$examId)->get();
 //        $this->scores = [];
 //        foreach($this->assignments as $assign)

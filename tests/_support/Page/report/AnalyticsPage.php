@@ -43,7 +43,7 @@ class AnalyticsPage
 
     public static function navigateToPage($I, $examId)
     {
-        $I->amGoingTo("Navigate to the analytics page for exam " . $examId);
+        $I->amGoingTo("Navigate to the analytics page for exam1 " . $examId);
         $I->test_login($I);
         $I->amOnPage(self::URL($examId));
         $I->waitForElementVisible(self::$mainBodyLocator);

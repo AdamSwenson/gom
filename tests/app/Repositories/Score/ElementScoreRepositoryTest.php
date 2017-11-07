@@ -28,7 +28,7 @@ class ElementScoreRepositoryTest extends \TestCase
         parent::setUp();
         $this->object = new ElementScoreRepository;
 
-        //A fresh score, element assignment, and exam for every test!
+        //A fresh score, element assignment, and exam1 for every test!
         $this->elementScore = factory(ElementScore::class)->create();
         $this->elementAssign = ElementAssignment::find($this->elementScore->element_assignment_id);
         $this->exam = Exam::find($this->elementAssign->exam_id);

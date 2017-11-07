@@ -10,7 +10,7 @@ $w = '800px';
 ?>
 @extends('layouts.primalMaster')
 
-@section('pageTitle', 'Comments on your exam')
+@section('pageTitle', 'Comments on your exam1')
 @section('otherCss')
     {!! \HTML::style(asset('/inc/jqplot/jquery.jqplot.min.css')) !!}
     {!! \HTML::style(asset('/css/output.css')) !!}

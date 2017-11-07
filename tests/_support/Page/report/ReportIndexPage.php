@@ -14,10 +14,10 @@ class ReportIndexPage
     public static $mainBodyLocator = ['id' => 'examControlsPage'];
     public static $pageTitleText = "Reports | gradeomatic";
     public static $pageHeadingText = "Post-Grading Tasks";
-    public static $pageSubHeadingText = "Release grades to students or view data about an exam";
+    public static $pageSubHeadingText = "Release grades to students or view data about an exam1";
 
-    public static $releaseToggleOnText = "Hide exam from students";
-    public static $releaseToggleOffText = "Release exam to students";
+    public static $releaseToggleOnText = "Hide exam1 from students";
+    public static $releaseToggleOffText = "Release exam1 to students";
 
 
     /* ------------ Analytics ---------- */
@@ -164,16 +164,16 @@ class ReportIndexPage
     public static $releaseErrorTextClass = "releaseError";
     public static $hideErrorTextClass = "hideError";
 
-    public static $releaseConfirmationText = "Releasing this exam will e-mail all students their grades and personalized feedback. Do you wish to continue?";
+    public static $releaseConfirmationText = "Releasing this exam1 will e-mail all students their grades and personalized feedback. Do you wish to continue?";
 
     public static $reReleaseConfirmationText = "";
 
-    public static $hideConfirmationText = "Removing access will prevent students from viewing feedback on the exam. Access can be restored by releasing the exam again.";
+    public static $hideConfirmationText = "Removing access will prevent students from viewing feedback on the exam1. Access can be restored by releasing the exam1 again.";
     public static $releaseSuccessText = "All students have been e-mailed!";
-    public static $hideSuccessText = "All student access to the exam has been removed!";
+    public static $hideSuccessText = "All student access to the exam1 has been removed!";
 
-    public static $releaseErrorText = "Sorry, there was a problem releasing this exam! Please try again.";
-    public static $hideErrorText = "Sorry, there was a problem hiding this exam! Please try again.";
+    public static $releaseErrorText = "Sorry, there was a problem releasing this exam1! Please try again.";
+    public static $hideErrorText = "Sorry, there was a problem hiding this exam1! Please try again.";
 
 
     /**
@@ -213,7 +213,7 @@ class ReportIndexPage
         $I->see(self::$pageHeadingText);
         $I->see(self::$pageSubHeadingText);
 
-        $I->expectTo("see a table row with buttons for each exam");
+        $I->expectTo("see a table row with buttons for each exam1");
         if ( $numberOfExams > 0 )
         {
             for ( $i = 1; $i <= $numberOfExams; $i++ )
@@ -227,14 +227,14 @@ class ReportIndexPage
             }
         } else
         {
-            //if visited before created an exam
+            //if visited before created an exam1
             $I->seeElement(self::examRowLocator(0));
         }
     }
 
 
     /**
-     * Tests whether the exam's toggle is showing it as released/not released
+     * Tests whether the exam1's toggle is showing it as released/not released
      * @param $I
      * @param $examId
      * @param bool $isReleased
@@ -244,7 +244,7 @@ class ReportIndexPage
         $n = $isReleased ? '' : 'not';
         $text = $isReleased ? self::$releaseToggleOnText : self::$releaseToggleOffText;
 
-        $I->expectTo("see that exam #{$examId} is $n released");
+        $I->expectTo("see that exam1 #{$examId} is $n released");
         $I->seeElement(self::releaseToggleLocator($examId));
         $I->see($text, self::releaseToggleLocator($examId));
     }

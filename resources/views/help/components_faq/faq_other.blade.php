@@ -26,7 +26,7 @@
             he gave his students when his class sizes exploded.
             Thus the gradeomatic streamlines grading and its administrative tasks. It allows teachers to provide
             detailed and personalized feedback to their students. And it captures
-            fine-grained data on student performance and the grading process to improve pedagogy, exam design, and
+            fine-grained data on student performance and the grading process to improve pedagogy, exam1 design, and
             quality control in grading.</p>
     </div>
 </section>

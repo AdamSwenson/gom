@@ -8,14 +8,14 @@
 //
 //$I->disableMiddleware();
 //
-////Create new exam so have blank slate of students
-//$exam = new App\Exam();
-//$exam->setYear(\Faker\Factory::create()->year);
-//$exam->setTerm('Fall');
-//$exam->save();
+////Create new exam1 so have blank slate of students
+//$exam1 = new App\Exam();
+//$exam1->setYear(\Faker\Factory::create()->year);
+//$exam1->setTerm('Fall');
+//$exam1->save();
 //
 ///* --------------------------------------- Open the page */
-//$I->amOnPage('/exam/' . $exam->id .  '/question/edit');
+//$I->amOnPage('/exam1/' . $exam1->id .  '/question/edit');
 //
 ////Upload
 //// file is stored in 'tests/_data/roster_valid_w_headers.csv'
@@ -37,5 +37,5 @@
 //$I->seeInDatabase('students', ['student_identifier' => 385991747, 'last_name' => 'Monahan', 'first_name' => 'Newton', 'email' => 'sabryna69@hotmail.com' ]);
 //
 ////Go back to the page and make sure see everyone
-//$I->amOnPage('/exam/' . $exam->id .  '/question/edit');
+//$I->amOnPage('/exam1/' . $exam1->id .  '/question/edit');
 //$I->seeNumberOfElements('tr', 8); //studentRosterBody

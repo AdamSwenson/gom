@@ -10,6 +10,10 @@ use App\Student;
 use App\Models\NewGom\ItemScore;
 
 /**
+ * This is used for item score information
+ * where identifying student data is included
+ *
+ *
  */
 class ItemScoreController extends Controller
 {

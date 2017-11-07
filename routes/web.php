@@ -185,6 +185,7 @@ Route::resource('items', 'Item\ItemController'); //,
 Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
 
 Route::post('comments/{item}', 'Item\CommentController@store');
+
 //new exam controller
 Route::get('dev/exams', 'Item\ExamResourceController@index');
 
@@ -195,21 +196,15 @@ Route::resource('dev/students', 'Item\StudentResourceController');
 Route::post('dev/roster/{student}/assoc/{kumi}', 'Item\RosterController@associateStudent');
 Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassociateStudent');
 
-Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
-Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
 
-//new scores
-Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
-Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
-Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
-Route::post('dev/scores', 'Item\ItemScoreController@store');
+//History
+Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
 
+//Kumi
 Route::resource('dev/kumis', 'Item\KumiController');
 Route::get('dev/kumis/exam/{exam}', 'Item\KumiController@loadExamKumi');
 Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKumi');
 
-//History
-Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
 
 //Notes
 Route::post('dev/notes/item/{item}', 'Item\NotesController@store');
@@ -217,6 +212,26 @@ Route::get('dev/notes/item/{item}', 'Item\NotesController@showForItem');
 Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
 Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');
 Route::resource('dev/notes', 'Item\NotesController');
+
+
+//Scores
+Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
+Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
+Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
+Route::post('dev/scores', 'Item\ItemScoreController@store');
+
+//Stats (i.e., scores without identifying the student and statistical summaries )
+Route::get('dev/stats/item/{item}', 'Item\ItemStatsController@itemScores');
+Route::get('dev/stats/exam/{exam}', 'Item\ItemStatsController@examScores');
+Route::get('dev/stats/summary/item/{item}', 'Item\ItemStatsController@itemSummary');
+Route::get('dev/stats/summary/exam/{exam}', 'Item\ItemStatsController@examSummary');
+Route::get('dev/stats/summary/exam/{exam}/item/{item}', 'Item\ItemStatsController@itemSummaryForExam');
+Route::get('dev/stats/summary/kumi/item/{item}', 'Item\ItemStatsController@itemSummaryByKumi');
+
+//Students
+Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
+Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
+
 
 //Tags
 //-- tag-item

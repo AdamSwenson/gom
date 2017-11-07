@@ -35,7 +35,7 @@
             <h2>Edit Roster</h2>
 
             <form id="rosterData" method="post" role="form"
-                  action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
+                  action="{{ url('exam1/'.$exam1->getId().'/student/updateAll') }}">
                 {!! csrf_field() !!}
                 <table id="rosterTable"
                        class="table"

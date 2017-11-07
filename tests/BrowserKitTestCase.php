@@ -103,12 +103,12 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
     }
 
     /**
-     * Creates an exam with the specified number of questions assigned.
+     * Creates an exam1 with the specified number of questions assigned.
      * Returns the fixture as an array containing:
      *      'questionIds' => $questionIds,
      *      'questions'   => $questions,
-     *      'examId'      => $exam->id,
-     *      'exam'        => $exam,
+     *      'examId'      => $exam1->id,
+     *      'exam1'        => $exam1,
      *
      * @param $numberQuestions
      * @return array Keys: examId, questionIds (array)
@@ -130,20 +130,20 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
             'questionIds' => $questionIds,
             'questions'   => $questions,
             'examId'      => $exam->id,
-            'exam'        => $exam,
+            'exam1'        => $exam,
         ];
     }
 
     /**
-     * Creates an exam with one kumi, populated with students
+     * Creates an exam1 with one kumi, populated with students
      * Returns the fixture as an array containing:
-     *      'exam'       => $exam,
+     *      'exam1'       => $exam1,
      *      'kumi'       => $kumi,
      *      'students'   => $students,
      *      'studentIds' => $studentIds,
      *
      * Also sets the following properties of the test case object:
-     *      $this->exam = $exam;
+     *      $this->exam1 = $exam1;
      *      $this->kumi = $kumi;
      *      $this->students = $students;
      *
@@ -163,7 +163,7 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
         if ( ! $kumi )
         {
             $kumi = factory(Kumi::class)->create();
-            //add the kumi to the exam if not associated
+            //add the kumi to the exam1 if not associated
             $kumi->exams()->attach($exam);
         }
         
@@ -183,7 +183,7 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
         $this->students = $students;
 
         return [
-            'exam'       => $exam,
+            'exam1'       => $exam,
             'kumi'       => $kumi,
             'students'   => $students,
             'studentIds' => $studentIds,
@@ -243,7 +243,7 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
         }
 
         return [
-            'exam'               => $exam,
+            'exam1'               => $exam,
             'question'           => $question,
             'elements'           => $elements,
             'elementIds'         => $elementIds,
@@ -256,8 +256,8 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
 //
 //    public function setupExamWithStudents(){
 //        $this->kumi = factory(Kumi::class)->create();
-//        $this->exam = factory(Exam::class)->create();
-//        $this->kumi->exams()->attach($this->exam);
+//        $this->exam1 = factory(Exam::class)->create();
+//        $this->kumi->exams()->attach($this->exam1);
 //        //create students and put in expected order
 //        $this->students = factory(Student::class, 5)->create();
 //        $this->students = $this->students->sortBy('last_name');

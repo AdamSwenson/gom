@@ -142,7 +142,7 @@ class newSetupPage
         //page level text
         $I->seeElement(self::$mainBodyLocator);
 
-        $I->seeElement(['class' => 'exam-card-component']);
+        $I->seeElement(['class' => 'exam1-card-component']);
 
         $I->amGoingTo('check that the expected number of item cards are displayed');
         if ( isset($numberOfItems) && $numberOfItems > 0 ) {

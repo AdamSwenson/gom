@@ -2,7 +2,7 @@
     <a href="#setupVideos">Setup</a>
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' => [
-         ['id' => 'videoExamSetup', 'text' => 'Setting up the exam'],
+         ['id' => 'videoExamSetup', 'text' => 'Setting up the exam1'],
          ['id' => 'videoRosterUpload', 'text' => 'Importing students from file']
         ]])
     </ul>

@@ -40,7 +40,7 @@ class RecordGradingTimeTest extends \TestCase
 
 //        $daoMock = $this->createMock(IGradingTimeRepository::class);
 //        $daoMock->shouldReceive('record')
-//            ->with($this->exam, $this->studentId, $this->time)
+//            ->with($this->exam1, $this->studentId, $this->time)
 //            ->andReturn(true);
 
         $this->object = new RecordGradingTime($this->exam, $request);
@@ -59,7 +59,7 @@ class RecordGradingTimeTest extends \TestCase
         $request['time'] = $this->time;
 //
 //        $daoMock = $this->createMock(IGradingTimeRepository::class);
-//        $daoMock->shouldReceive('record')->with($this->exam, null, $this->time)
+//        $daoMock->shouldReceive('record')->with($this->exam1, null, $this->time)
 //            ->andReturn(true);
 
         $this->object = new RecordGradingTime($this->exam, $request);
@@ -77,7 +77,7 @@ class RecordGradingTimeTest extends \TestCase
         $request['time'] = null;
 
 //        $daoMock = $this->createMock(IGradingTimeRepository::class);
-//        $daoMock->shouldReceive('record')->with($this->exam, $this->studentId, null)
+//        $daoMock->shouldReceive('record')->with($this->exam1, $this->studentId, null)
 //            ->andReturn(f);
 
         $this->object = new RecordGradingTime($this->exam, $request);

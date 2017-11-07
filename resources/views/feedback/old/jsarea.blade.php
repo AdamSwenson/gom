@@ -30,8 +30,8 @@ var studentGrade = [{'gradeLetter' : selGrade}];
 
 var elementScores = <?php $student_scores->json_element_scores(); ?>;
 var questionScores = <?php $student_scores->json_question_scores(); ?>;
-var elementAverages = <?php echo $exam_stats->averages($exam, new \Element()); ?>;
-var questionAverages = <?php echo $exam_stats->averages($exam, new \Question()); ?>;
+var elementAverages = <?php echo $exam_stats->averages($exam1, new \Element()); ?>;
+var questionAverages = <?php echo $exam_stats->averages($exam1, new \Question()); ?>;
 //var comments = <?php //echo /$student_scores->json_comments(); ?>;
 $(document).ready(function () {
 var scripts = [
@@ -77,7 +77,7 @@ scriptLoader(scripts, scripts.length, onLoad, 0);
 {{--            //                ->orderByQuestionnumber()->find();--}}
 {{--            foreach ($student_scores->question_assigns as $qa) {--}}
 {{--            $dao = new \ScoreClasses\dao\ScoreDAO();--}}
-{{--            $dao->setExam($exam);--}}
+{{--            $dao->setExam($exam1);--}}
 {{--            $student = \StudentQuery::create()->filterById($visitor->studentID())->findOne();--}}
 {{--            $dao->setStudent($student);--}}
 {{--            $score = $dao->load('question', 'questionnumber', $qa->getQuestionnumber());--}}
@@ -94,7 +94,7 @@ scriptLoader(scripts, scripts.length, onLoad, 0);
 {{----}}
 {{--            $ck = new \OutputClasses\service\CommentKludge();--}}
 {{--            $ck->setDao(new \ScoreClasses\dao\ScoreDAO());--}}
-{{--            $cm = $ck->load_comments_for_question($exam, $student, $qa->getQuestionnumber());--}}
+{{--            $cm = $ck->load_comments_for_question($exam1, $student, $qa->getQuestionnumber());--}}
 {{--            echo $comment_maker->makeCommentsListOpening($qa->getQuestionnumber());--}}
 {{--            foreach ($cm as $c) {--}}
 {{--            $txt = $c->modified_comment;--}}

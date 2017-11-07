@@ -14,7 +14,7 @@ class SetupPage extends Page
 {
     const URL_BASE = '/dev/setup';
     static public $mainBodyLocator = '#examEditor';
-    static public $addItemToExamButton = '.add-child-to-exam-button';
+    static public $addItemToExamButton = '.add-child-to-exam1-button';
 
     /**
      * Get the URL for the page.
@@ -27,7 +27,7 @@ class SetupPage extends Page
     }
 
     /**
-     * Returns the url to visit setup for a particular preexisting exam
+     * Returns the url to visit setup for a particular preexisting exam1
      * @param $examId
      * @return string
      */
@@ -43,7 +43,7 @@ class SetupPage extends Page
 
 
     /**
-     * Visit a setup page for a particular exam
+     * Visit a setup page for a particular exam1
      * Performs assertions on path and waits for mainBodyLocator
      *
      * @param Browser $browser
@@ -91,7 +91,7 @@ class SetupPage extends Page
 
     public function navigateToStudentsPane( Browser $browser )
     {
-        return $browser->click('#exam-settings-button')
+        return $browser->click('#exam1-settings-button')
             ->click(' .students-nav')
             ->assertVisible('.add-students-panel');
     }
@@ -111,7 +111,7 @@ class SetupPage extends Page
 
     static public function makeExamData( $exam, $numLevels = 3, $numChildren = 3 )
     {
-        $rootItem = factory(Item::class)->create(); //standin for exam
+        $rootItem = factory(Item::class)->create(); //standin for exam1
         $parentAssignment = Assignment::create([
             'exam_id' => $exam->id,
             'item_id' => $rootItem->id
@@ -142,7 +142,7 @@ class SetupPage extends Page
 
         if ( !$exam ) factory(Exam::class)->create();
 
-        $root = factory(Item::class)->create(); //standin for exam
+        $root = factory(Item::class)->create(); //standin for exam1
 
         for ( $level = 0; $level < $numLevels; $level++ ) {
 
@@ -202,14 +202,14 @@ class SetupPage extends Page
         return [
             '@mainBodyLocator' => self::$mainBodyLocator,
             '@addItemToExamButton' => self::$addItemToExamButton,
-            '@examSettingsButton' => "[id^='exam-settings-button']",
+            '@examSettingsButton' => "[id^='exam1-settings-button']",
             '@addSibling' => '.add-sibling-button',
-            '@addQuestion' => 'button.add-child-to-exam-button',
+            '@addQuestion' => 'button.add-child-to-exam1-button',
             '@addChild' => '.add-child-button',
-            '@addChildButton' => "[id^='add-child-to-exam-button-']",
+            '@addChildButton' => "[id^='add-child-to-exam1-button-']",
             '@item-card' => 'div .item-card-component',
             '@item-name' => 'item-name',
-            //navigation tabs --- exam
+            //navigation tabs --- exam1
             '@studentNavTab' => '.students-nav',
             '@notesNavTab' => '.notes-nav'
         ];

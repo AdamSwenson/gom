@@ -1,6 +1,6 @@
 <section id="{{\App\ViewTools\HelpLinks::$examWhat['id']}}" class="group">
     @include('help.partials.section_top_picture',
-['imageFile' => 'exam/exam_setup.jpg',
+['imageFile' => 'exam1/exam_setup.jpg',
 'altText' =>"The Create Exam page",
 'caption' => 'The Create Exam page'])
 
@@ -8,13 +8,13 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">An <i>exam</i> is the basic unit of organization. We called this an 'exam' but it could be a quiz, an assignment, a paper, or virtually any other activity for which you want to assess multiple students on the same criteria at approximately the same time.
+            <p class="answer">An <i>exam1</i> is the basic unit of organization. We called this an 'exam1' but it could be a quiz, an assignment, a paper, or virtually any other activity for which you want to assess multiple students on the same criteria at approximately the same time.
             </p>
 
-            <p class="answer">An exam is identified by its name, and the year and term in which it is given. You associate a <a href="#{{\App\ViewTools\HelpLinks::$instructSectionRosterSetup['id']}}">roster</a> of students with each exam.
+            <p class="answer">An exam1 is identified by its name, and the year and term in which it is given. You associate a <a href="#{{\App\ViewTools\HelpLinks::$instructSectionRosterSetup['id']}}">roster</a> of students with each exam1.
             </p>
 
-            <p class="answer">Every exam contains at least one <a
+            <p class="answer">Every exam1 contains at least one <a
                         href="#{{\App\ViewTools\HelpLinks::$instructSectionQuestionSetup['id']}}">question</a>.
                 Questions usually (implicitly or explicitly) contain several tasks which a student must complete in order to receive full credit
                 for the question. These tasks are <a
@@ -25,20 +25,20 @@
         </div>
 
         <div class="col-lg-6">
-            <p class="answer">The following table summarizes the fields which comprise an exam. If a field is <em>Required</em>, you must enter a value in order to create the exam. If a field is <em>Optional</em>, you may choose to leave it blank. The <em>Visible to Students</em> column indicates whether the content of the field will be shown to your students.</p>
+            <p class="answer">The following table summarizes the fields which comprise an exam1. If a field is <em>Required</em>, you must enter a value in order to create the exam1. If a field is <em>Optional</em>, you may choose to leave it blank. The <em>Visible to Students</em> column indicates whether the content of the field will be shown to your students.</p>
             @include('help.partials.field_table', ['fields' => [
               ['name' => 'Exam name', 'required' => true, 'visible' => true],
               ['name' => 'Term', 'required' => true, 'visible' => true],
               ['name' => 'Year', 'required' => true, 'visible' => true]
               ],
-              'caption' => 'Components of an exam'])
+              'caption' => 'Components of an exam1'])
         </div>
     </div>
 </section>
 
 
 <section id="{{\App\ViewTools\HelpLinks::$examCreate['id']}}" class="group">
-    <h4 class="text-center">Create exam</h4>
+    <h4 class="text-center">Create exam1</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -49,7 +49,7 @@
                 <p>For our examples, we'll use a midterm for philosophy 101 about Descartes' famous skeptical argument
                     from the beginning of the <i>Meditations</i>.</p>
 
-                <p>Thus let's name the exam:
+                <p>Thus let's name the exam1:
                     <mark>Phil101 midterm Descartes cogito</mark>
                 </p>
             </blockquote>
@@ -65,11 +65,11 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Use the dropdown menu to select the term in which you are giving the exam. The term is required.</p>
+            <p class="answer">Use the dropdown menu to select the term in which you are giving the exam1. The term is required.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
-                        ['imageFile' => 'exam/exam_setup_term_select.jpg',
+                        ['imageFile' => 'exam1/exam_setup_term_select.jpg',
                         'altText' =>"Exam create showing the term dropdown menu with options 'winter', 'spring', 'summer', 'fall' displayed",
                         'caption' => 'Select the term'])
         </div>
@@ -77,14 +77,14 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Use the dropdown menu to select the year in which you are giving the exam. The year is required.</p>
+            <p class="answer">Use the dropdown menu to select the year in which you are giving the exam1. The year is required.</p>
 
             <p class="answer">Once the name is filled in and the term and year are selected, click <code>Add/Edit Questions</code>
-                to save the exam and move on to the next step.</p>
+                to save the exam1 and move on to the next step.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
-                        ['imageFile' => 'exam/exam_setup_year_select.jpg',
+                        ['imageFile' => 'exam1/exam_setup_year_select.jpg',
                         'altText' =>"Exam create showing the term dropdown menu with options 2015, 2016 displayed",
                         'caption' => 'Select the year'])
         </div>
@@ -92,30 +92,30 @@
 </section>
 
 <section id="{{ \App\ViewTools\HelpLinks::$examClone['id'] }}" class="group">
-    <h4 class="text-center">Create a new exam from an existing exam</h4>
+    <h4 class="text-center">Create a new exam1 from an existing exam1</h4>
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">If you give the same or similar exams in multiple semesters, you can save virtually all of the setup time by cloning a past exam.</p>
+            <p class="answer">If you give the same or similar exams in multiple semesters, you can save virtually all of the setup time by cloning a past exam1.</p>
 
-            <p class="answer">The cloning process duplicates all the questions, elements, and feedback from the parent exam. It does not duplicate the parent exam's roster, student scores, or any individualized feedback.</p>
+            <p class="answer">The cloning process duplicates all the questions, elements, and feedback from the parent exam1. It does not duplicate the parent exam1's roster, student scores, or any individualized feedback.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
-                        ['imageFile' => 'exam/exam_setup_clone_button_circled.jpg',
-                        'altText' =>"The exam selection page with a clone button circled",
-                        'caption' => 'Click Clone to duplicate an existing exam'])
+                        ['imageFile' => 'exam1/exam_setup_clone_button_circled.jpg',
+                        'altText' =>"The exam1 selection page with a clone button circled",
+                        'caption' => 'Click Clone to duplicate an existing exam1'])
         </div>
     </div>
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">The newly created exam will be named 'Clone of ' followed by the original exam's name. Click <code>Edit</code> to use the exam edit page to rename and update the term and year.</p>
+            <p class="answer">The newly created exam1 will be named 'Clone of ' followed by the original exam1's name. Click <code>Edit</code> to use the exam1 edit page to rename and update the term and year.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
-                        ['imageFile' => 'exam/exam_setup_clone_success.jpg',
-                        'altText' =>"The exam selection page the newly cloned exam whose name is 'Clone of' plus the original exam name",
+                        ['imageFile' => 'exam1/exam_setup_clone_success.jpg',
+                        'altText' =>"The exam1 selection page the newly cloned exam1 whose name is 'Clone of' plus the original exam1 name",
                         'caption' => 'Clone successful'])
 
         </div>

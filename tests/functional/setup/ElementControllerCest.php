@@ -196,7 +196,7 @@ e1valence2:q1e1 f
 e1valence3:q1e1 e
 elementId1:0
 nextAction:editStudents*/
-    public function testUpdateAllExistingElement(FunctionalTester $I) //$exam, $question, ElementRequest $request)
+    public function testUpdateAllExistingElement(FunctionalTester $I) //$exam1, $question, ElementRequest $request)
     {
         $elementId = 2;
         $element = new Element();

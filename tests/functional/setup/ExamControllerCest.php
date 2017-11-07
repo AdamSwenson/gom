@@ -81,7 +81,7 @@ class ExamControllerCest
 //        $response = $this->action('POST', 'ExamController@create');
 //        $this->assertNotNull($response);
 ////        $this->assertResponseOk();
-        //create new exam
+        //create new exam1
 //        return view('/setup/create_exam');
     }
 
@@ -97,7 +97,7 @@ class ExamControllerCest
 //        $mock->shouldReceive('save_new_exam')
 //            ->with($data['examYear'], $data['examTerm'], $data['name'])
 //            ->once()
-//            ->andReturn($this->exam);
+//            ->andReturn($this->exam1);
 //
 //        $response = $this->action('POST', 'ExamController@store', $data);
 //        $this->assertNotNull($response);
@@ -106,9 +106,9 @@ class ExamControllerCest
     }
 
     /*
-        public function testShow(Exam $exam)
+        public function testShow(Exam $exam1)
         {
-            // Maybe write a view to show an exam without editing?
+            // Maybe write a view to show an exam1 without editing?
         }
     */
 
@@ -117,8 +117,8 @@ class ExamControllerCest
     {
         $response = $this->action('GET', 'ExamController@edit', $this->eid);
         $this->assertNotEmpty($response);
-//        $this->call('GET', "exam/$eid/edit");
-//        $this->assertViewHas('exam');
+//        $this->call('GET', "exam1/$eid/edit");
+//        $this->assertViewHas('exam1');
     }
 
     public function testUpdate(FunctionalTester $I)
@@ -145,10 +145,10 @@ class ExamControllerCest
             ->once();
 
 //        $object = new ExamController();
-//        $response = $object->destroy($this->exam);
+//        $response = $object->destroy($this->exam1);
         $response = $this->action('DELETE', 'ExamController@destroy', ['exam_id' => $this->exam->id] );
-//        $response = $this->call('DELETE', "/exam", ['exam' => $this->exam]);
-//        $response = $this->call('DELETE', "/exam/{$this->exam->id}");
+//        $response = $this->call('DELETE', "/exam1", ['exam1' => $this->exam1]);
+//        $response = $this->call('DELETE', "/exam1/{$this->exam1->id}");
         $this->assertNotNull($response);
 
     }

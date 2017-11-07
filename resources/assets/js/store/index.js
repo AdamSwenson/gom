@@ -64,6 +64,9 @@ import notes from './modules/notes'
 import tags from './modules/tags'
 import rosterDisplay from './modules/roster/display'
 
+import itemScores from './modules/scores/itemscores';
+import stats from './modules/scores/scoresForStats';
+
 //api
 import requests from './modules/api/requests';
 
@@ -118,13 +121,17 @@ const debug = process.env.NODE_ENV !== 'production';
         students,
         times,
         visibility,
-        roster,
+
+        itemScores,
         kumi,
-        requests,
         notes,
+        requests,
+        roster,
+        rosterDisplay,
+        stats,
         tags,
         //student table
-        rosterDisplay
+
     }
 
 // }

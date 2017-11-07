@@ -64,9 +64,9 @@ class RosterTest extends DuskTestCase
                 $browser->loginAs($user)
                     ->visit(new SetupPage())
                     ->on(new StudentPanePage())
-                    ->click('#exam-settings-button')
-                    ->assertVisible('#exam-nav-tabs')
-                    ->assertVisible('#exam-nav-tabs li a .students-nav')
+                    ->click('#exam1-settings-button')
+                    ->assertVisible('#exam1-nav-tabs')
+                    ->assertVisible('#exam1-nav-tabs li a .students-nav')
                     ->assertVisible(StudentPanePage::navButton)
                     ->click(StudentPanePage::navButton)
                     ->assertVisible('.add-students-panel')
@@ -215,7 +215,7 @@ class RosterTest extends DuskTestCase
                 ->assertStudentRowCountIs($expectedRows)
                 ->assertStudentDbCountChanged($user, 0, $expectedRows);
 
-            //todo reenable check display, will require navigating to the same exam
+            //todo reenable check display, will require navigating to the same exam1
 //                ->assertStudentRowCountIs($expectedRows);
 //
 //            //now lets reload the page and make sure we see
@@ -507,7 +507,7 @@ class RosterTest extends DuskTestCase
             $browser->loginAs($user)
                 ->visit(new SetupPage())
 //                ->on(new SetupPage())
-//                ->navigateToExam($exam, $user)
+//                ->navigateToExam($exam1, $user)
                 ->on(new StudentPanePage())
                 ->navigateToStudentsPane()
                 ->clickNewStudentButton()

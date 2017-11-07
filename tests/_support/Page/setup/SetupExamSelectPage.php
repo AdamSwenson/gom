@@ -4,7 +4,7 @@ namespace Page\setup;
 class SetupExamSelectPage
 {
     // include url of current page
-    public static $URL = '/exam';
+    public static $URL = '/exam1';
 
     /**
      * Declare UI map for this page here. CSS or XPath allowed.
@@ -13,7 +13,7 @@ class SetupExamSelectPage
      */
     #common
     public static $mainBodyLocator = ['id' => 'setupSelectExamPage'];
-    public static $pageTitleText = 'Setup exam';
+    public static $pageTitleText = 'Setup exam1';
     public static $pageHeadingText = 'Exam Setup';
     public static $pageHeadingSubText = 'Create, edit and delete exams';
 
@@ -52,12 +52,12 @@ class SetupExamSelectPage
     public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/button[2]";
 
     #messages from server
-    public static $deleteExamSuccessMessage = "You have successfully deleted an exam.";
-    public static $cloneExamSuccessMessage = "You successfully cloned the exam.";
+    public static $deleteExamSuccessMessage = "You have successfully deleted an exam1.";
+    public static $cloneExamSuccessMessage = "You successfully cloned the exam1.";
 
     public static function forwardNavButtonTarget(){
         $routeBase = "http://localhost:8000";
-        return $routeBase . "/exam/create";
+        return $routeBase . "/exam1/create";
     }
 
     /**
@@ -67,11 +67,11 @@ class SetupExamSelectPage
      */
     public static function examTerm($examId){
         $examYear = 1990; //all exams are this year
-        return "exam{$examId}Term {$examYear}";
+        return "exam1{$examId}Term {$examYear}";
     }
 
     /**
-     * Returns the part of the exam name which is constant to all test exams
+     * Returns the part of the exam1 name which is constant to all test exams
      * @param $examId
      * @return string
      */
@@ -81,12 +81,12 @@ class SetupExamSelectPage
 
     public static function cloneButtonTargetRoute($examId)
     {
-        return "/exam/{$examId}/clone";
+        return "/exam1/{$examId}/clone";
     }
 
     public static function editButtonTargetRoute($examId)
     {
-        return "/exam/{$examId}/edit";
+        return "/exam1/{$examId}/edit";
     }
 
     public static function examRowId($examId){
@@ -139,12 +139,12 @@ class SetupExamSelectPage
 
     /* ------------------------------------------- tests ----------------------------- */
     /**
-     * Used for the exam select page on route '/exam'
+     * Used for the exam1 select page on route '/exam1'
      * @param $I
      * @param $id
      */
     public static function checkExamRowPresent($I, $id){
-        $I->expectTo("exam term and title");
+        $I->expectTo("exam1 term and title");
         $I->see(self::examTerm($id));
         $I->see(self::partialExamName($id));
 
@@ -164,14 +164,14 @@ class SetupExamSelectPage
     }
 
     /**
-     * For the index page displayed on route: '/exam'
+     * For the index page displayed on route: '/exam1'
      * Runs assertions to make sure see all fixed page elements, exams belonging to user, and no exams
      * not belonging to the user.
      * @param $I
      * @param $examIdsWhichShouldSee
      * @param $examIdsWhichShouldNotSee
      *
-     * @todo Check exam statistics displayed properly
+     * @todo Check exam1 statistics displayed properly
      */
     public static function verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee)
     {
@@ -190,19 +190,19 @@ class SetupExamSelectPage
             $I->amGoingTo("Check that other people's exams are absent");
             foreach ( $examIdsWhichShouldNotSee as $id )
             {
-                $I->amGoingTo("Check that do not see exam #{$id}'s term and title");
+                $I->amGoingTo("Check that do not see exam1 #{$id}'s term and title");
                 $I->dontSee(self::examTerm($id));
                 $I->dontSee(self::partialExamName($id));
 
-                $I->amGoingTo("Check that do not see exam #{$id}'s edit button");
+                $I->amGoingTo("Check that do not see exam1 #{$id}'s edit button");
                 $I->dontSeeLink(self::$editButtonText, 'http://localhost:8000' . self::editButtonTargetRoute($id));
                 $I->dontSeeElement(self::editButtonXPath($id));
 
-                $I->amGoingTo("Check that do not see exam #{$id} clone button");
+                $I->amGoingTo("Check that do not see exam1 #{$id} clone button");
                 $I->dontSeeLink(self::$cloneButtonText, 'http://localhost:8000' . self::cloneButtonTargetRoute($id));
                 $I->dontSeeElement(self::cloneButtonXPath($id));
 
-                $I->amGoingTo("Check that do not see exam #{$id} delete button");
+                $I->amGoingTo("Check that do not see exam1 #{$id} delete button");
                 $I->dontSeeElement(self::deleteButtonXPath($id));
             }
         }

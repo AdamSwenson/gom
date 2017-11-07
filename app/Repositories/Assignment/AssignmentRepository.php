@@ -24,7 +24,6 @@ class AssignmentRepository implements IAssignmentRepository
             $itemAssignment = new Assignment(['item_id' => $itemId]);
             $itemAssignment->save();
             $exam->addAssignment($itemAssignment, $parentId, $depth);
-
         }
     }
 

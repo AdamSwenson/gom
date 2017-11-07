@@ -80,7 +80,7 @@ class GradingTimeRepositoryTest extends \TestCase
             $currentTime = $r->updated_at;
             if ( ! is_null($prior) )
             {
-                $this->assertTrue($currentTime->gte($prior), "This exam was graded after the exam in the previous element of the result");
+                $this->assertTrue($currentTime->gte($prior), "This exam1 was graded after the exam1 in the previous element of the result");
             }
             $prior = $currentTime;
             //TODO improve the test data so that all grading times don't have the same updated_at

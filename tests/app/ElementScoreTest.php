@@ -147,7 +147,7 @@ class ElementScoreTest extends \TestCase
 
 //    public function testExam()
 //    {
-//        $this->assertInstanceOf('App\Exam', $this->score->exam);
+//        $this->assertInstanceOf('App\Exam', $this->score->exam1);
 //    }
 
 

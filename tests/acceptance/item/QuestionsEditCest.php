@@ -7,7 +7,7 @@ class ItemQuestionEditCest
 {
     public $examId = 2;
     public $examName = "TestExam#2 5QuestionsWElements User1";
-//The number of questions on the exam
+//The number of questions on the exam1
     public $numQuestions = 5;
 
 //test data
@@ -58,7 +58,7 @@ class ItemQuestionEditCest
         $I->waitForElementVisible(ElementEditPage::$mainBodyLocator);
 
         $I->amGoingTo("Go back to the edit page and see the changed questions");
-        $I->amOnPage("exam/{$this->examId}/question/edit");
+        $I->amOnPage("exam1/{$this->examId}/question/edit");
         $I->waitForElement(QuestionEditPage::$mainBodyLocator);
 
         $I->expectTo('see the changed values');
@@ -118,7 +118,7 @@ class ItemQuestionEditCest
 //
 //
 //$I->amGoingTo("Go back to the edit page and see the changed questions");
-//    $I->amOnPage("exam/{$examId}/question/edit");
+//    $I->amOnPage("exam1/{$examId}/question/edit");
 //    $I->seeInTitle(QuestionEditPage::$pageTitleText);
 //    $I->see($examName);
 //    $I->seeElement(QuestionEditPage::$addQuestionButtonId);

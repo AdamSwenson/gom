@@ -1,11 +1,11 @@
 <?php
 /*
  *       <p class="bodyText">
-            Saving 1 minute per exam rescues an hour of your life from 60 students.
+            Saving 1 minute per exam1 rescues an hour of your life from 60 students.
         </p>
 
         <p class="bodyText">
-            60 exams steal an hour of your life , 1 minute per exam.
+            60 exams steal an hour of your life , 1 minute per exam1.
         </p>
 
         <p class="bodyText">
@@ -14,7 +14,7 @@
         </p>
 
         <p class="bodyText">
-            Each wasted minute per exam is an hour you don't need to spend grading 60 exams.
+            Each wasted minute per exam1 is an hour you don't need to spend grading 60 exams.
         </p>
 
  */
@@ -24,7 +24,7 @@
     <div class="col-lg-3 col-md-2 col-sm-1"></div>
     <div class="col-lg-6 col-md-8 col-sm-10">
         <p class="bodyText">
-            Sixty exams steal an hour of your life for each minute you waste per exam.
+            Sixty exams steal an hour of your life for each minute you waste per exam1.
         </p>
         <p class="bodyText">
             The gradeomatic was born of a teacher's refusal to sacrifice detailed individualized feedback in the face of

@@ -44,20 +44,20 @@ export const makeRootState = function () {
     return {
         /**
          * Object indexed by Item id holding Item objects
-         On load the root exam object and first item are created but given no
-         ids. thus we will eventually need to create an exam object if one isn't set
+         On load the root exam1 object and first item are created but given no
+         ids. thus we will eventually need to create an exam1 object if one isn't set
 
          However don't ask the server to create an id just yet
-         lookup the exam object that resides at index 0
+         lookup the exam1 object that resides at index 0
          this will have either been newly created on page load
-         or it will be an existing exam object loaded from the db
-         let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-         //Call the set active exam method
+         or it will be an existing exam1 object loaded from the db
+         let exam1 = this.$store.getters[ gTypes.getActiveExamObj ];
+         //Call the set active exam1 method
          //We do this rather than call the mutation directly
          //because there may need to be various other events and
          //things which need to happen depending on the context.
-         //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-         this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+         //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam1}));
+         this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam1}));
          }
          */
         items: [],

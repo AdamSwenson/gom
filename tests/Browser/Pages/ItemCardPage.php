@@ -39,7 +39,7 @@ class ItemCardPage extends Page
             //navs
             '@itemDetailsNavs' => '.item-details-nav',
             '@studentsNavs' => '.students-nav',
-            '@examDetailsNavs' => '.exam-details-nav',
+            '@examDetailsNavs' => '.exam1-details-nav',
             '@gradesNavs' => '.grades-nav',
             '@feedbackNavs' => "[id^='item-feedback-nav-']",
             '@statsNavs' => '.stats-nav',

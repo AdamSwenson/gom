@@ -13,7 +13,7 @@
 
     <blockquote class="studentFeedback">
         <p>
-            For this journal I want to express my gratitude for your awesome and thorough feedback on the midterm exam!
+            For this journal I want to express my gratitude for your awesome and thorough feedback on the midterm exam1!
             It was so nice and enlightening even to get such direct feedback on each of our questions. I have enjoyed
             every aspect of this class so far and like to think I'm getting the gist of each topic, so reading all your
             feedback reinforced all those ideas! Although this is only my first semester at CSUN (finally away from

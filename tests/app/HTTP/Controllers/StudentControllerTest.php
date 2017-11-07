@@ -112,23 +112,23 @@ class StudentControllerTest extends \TestCase
 
 //    public function testEdit()
 //    {
-//        $exam = factory(Exam::class)->create();
+//        $exam1 = factory(Exam::class)->create();
 //        $student = factory(Student::class)->create();
 //
 //        $kumi_repository_processor_mock = $this->createMock('App\Repositories\Student\IKumiRepository');
 //        $kumi_repository_processor_mock
 //            ->shouldReceive('load')
-//            ->with($exam->name, $exam->year)
+//            ->with($exam1->name, $exam1->year)
 //            ->once()
 //            ->andReturn(Kumi::all()->random());
 //
 //        $dao = $this->createMock('App\Repositories\Student\IStudentRepository');
 //        $dao->shouldReceive('load_students_by_exam')
-//            ->with($exam->id)
+//            ->with($exam1->id)
 //            ->once()
 //            ->andReturn(Student::all());
 //
-//        $data = ['examId' => $exam->id, 'studentId' => $student->id];
+//        $data = ['examId' => $exam1->id, 'studentId' => $student->id];
 //
 //        $response = $this->post('StudentController@edit', $data);
 //        $this->assertNotNull($response);
@@ -152,7 +152,7 @@ class StudentControllerTest extends \TestCase
 
     /**
      * Builds test data and a StudentRequest object.
-     * Also creates a new exam and sets it to $this->exam
+     * Also creates a new exam1 and sets it to $this->exam1
      *
      * @param int $numberNew Number of brand new students to have in request
      * @param int $numberOriginal Number of existing unaltered students to have in request
@@ -161,7 +161,7 @@ class StudentControllerTest extends \TestCase
      */
     public function buildTestDataAndRequest($numberNew=10, $numberOriginal=0, $numberAltered=0)
     {
-        //Create new exam so have blank slate of students
+        //Create new exam1 so have blank slate of students
         $this->exam = factory(Exam::class)->create();
 
         for($i=1; $i<=$numberNew; $i++)
@@ -379,7 +379,7 @@ class StudentControllerTest extends \TestCase
 //        $request = $this->buildTestDataAndRequest(10, 10, 10);
 //
 //        #Call
-//        $response = $this->object->updateAll($this->exam, $request);
+//        $response = $this->object->updateAll($this->exam1, $request);
 //        #Check
 ////        $this->assertNotNull($response);
 //        foreach($this->expectedDbEntries as $data)

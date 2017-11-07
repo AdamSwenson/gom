@@ -29,12 +29,12 @@
         <div class="panel panel-default">
 
             <div class="panel-heading">
-                <h2>Setting up the questions, elements, and other exam components</h2>
+                <h2>Setting up the questions, elements, and other exam1 components</h2>
             </div>
 
             <div class="panel-body">
                 <section id="{{\App\ViewTools\HelpLinks::$videoExamSetup['id']}}">
-                    <h4>Setting up the exam</h4>
+                    <h4>Setting up the exam1</h4>
 
                     <div class="embed-responsive embed-responsive-16by9">
                         <iframe class="embed-responsive-item"
@@ -64,7 +64,7 @@
 
             <div class="panel-body">
                 <section id="{{\App\ViewTools\HelpLinks::$videoGrading['id']}}}}">
-                    <h4>Grading the exam</h4>
+                    <h4>Grading the exam1</h4>
 
                     <div class="embed-responsive embed-responsive-16by9">
                         <iframe class="embed-responsive-item"

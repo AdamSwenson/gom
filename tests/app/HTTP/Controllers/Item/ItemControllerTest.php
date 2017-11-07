@@ -35,7 +35,7 @@ class ItemControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        //    $this->exam = Exam::all()->random();
+        //    $this->exam1 = Exam::all()->random();
     }
 
     public function tearDown()
@@ -138,11 +138,11 @@ class ItemControllerTest extends \TestCase
 //        $this->assertEquals($data['maxScore'], $loaded->max_score);
 
 //        $dao = $this->createMock(IItemRepository::class);
-//        $exam = factory(Exam::class)->make();
+//        $exam1 = factory(Exam::class)->make();
 //        $data = ['order' => [1, 3, 4]];
-//        $dao->shouldReceive('handleStoreAndUpdate')->with([$exam, $data])->andReturn($data);
+//        $dao->shouldReceive('handleStoreAndUpdate')->with([$exam1, $data])->andReturn($data);
 //        //call
-//        $response = $this->call('PUT', 'items/' . $exam->id);
+//        $response = $this->call('PUT', 'items/' . $exam1->id);
 //        //check
 //        $this->assertNotEmpty($response);
 //    }

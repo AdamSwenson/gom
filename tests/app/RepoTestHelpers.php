@@ -51,8 +51,8 @@ class RepoTestHelpers extends \TestCase
 
 //    public static function setupExamWithStudents($dthis){
 //        $dthis->kumi = factory(Kumi::class)->create();
-//        $dthis->exam = factory(Exam::class)->create();
-//        $dthis->kumi->exams()->attach($dthis->exam);
+//        $dthis->exam1 = factory(Exam::class)->create();
+//        $dthis->kumi->exams()->attach($dthis->exam1);
 //        //create students and put in expected order
 //        $dthis->students = factory(Student::class, 5)->create();
 //        $dthis->students = $dthis->students->sortBy('last_name');

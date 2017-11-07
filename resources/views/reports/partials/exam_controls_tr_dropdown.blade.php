@@ -1,23 +1,23 @@
 <tr id="reportsForExam{{ $examId }}">
     <!-- width will override the column width setting for term info -->
     <td class="examDetailsCell" >
-        {{ $exam->term or '' }}
-        {{ $exam->year or '' }}
+        {{ $exam1->term or '' }}
+        {{ $exam1->year or '' }}
     </td>
     <td class="examNameCell">
-        {{ $exam->name or 'Name Not Found'}}
+        {{ $exam1->name or 'Name Not Found'}}
     </td>
 
     <td>
-        <exam-release-toggle
-        exam-id="{{ $exam->id }}"
-        released="{{ $exam->isReleased() }}"
-        previously-released="{{ $exam->wasPreviouslyReleased() }}"
-        graded="{{ $exam->isGraded() }}"></exam-release-toggle>
+        <exam1-release-toggle
+        exam1-id="{{ $exam1->id }}"
+        released="{{ $exam1->isReleased() }}"
+        previously-released="{{ $exam1->wasPreviouslyReleased() }}"
+        graded="{{ $exam1->isGraded() }}"></exam1-release-toggle>
 
-        <exam-buttons-dropdown
-             exam-id="{{ $exam->id }}"
-             base-url="{!! url('') !!}"></exam-buttons-dropdown>
+        <exam1-buttons-dropdown
+             exam1-id="{{ $exam1->id }}"
+             base-url="{!! url('') !!}"></exam1-buttons-dropdown>
     </td>
 
 

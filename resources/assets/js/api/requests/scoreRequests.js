@@ -22,7 +22,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION
         };
 
-        window.axios
+       return window.axios
             .post( to )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getExamScoreRequest', 28, response );
@@ -49,7 +49,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION
         };
 
-        window.axios
+        return window.axios
             .get( Routes.getExamScoreRequest(exam) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getExamScoreRequest', 28, response );
@@ -73,7 +73,7 @@ module.exports = {
 
     getStudentScoreRequest: ( student ) => {
 
-        window.axios
+       return  window.axios
             .get( Routes.getStudentScoreRequest(student) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getStudentScoreRequest', 28, response );
@@ -96,7 +96,7 @@ module.exports = {
 
     getItemScoreRequest: ( item ) => {
 
-        window.axios
+      return   window.axios
             .get( Routes.getItemScoreRequest(item))
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getItemScoreRequest', 28, response );

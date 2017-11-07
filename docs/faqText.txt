@@ -4,7 +4,7 @@ Do I have to use this to give my students feedback?
 
 No. Simply leave the elements blank and only record the question scores. 
 
-This still is worth doing. The creator of the gradeomatic was amazed to realize how much time he wasted in recording exams. The process of putting down the exam, finding the student in your grades spreadsheet, and recording the grade, or, worse, going through the pile of exams twice (once to grade and once to record) takes surprisingly long. If that process takes 30 seconds for each of 100 exams, that's 30 minutes. 
+This still is worth doing. The creator of the gradeomatic was amazed to realize how much time he wasted in recording exams. The process of putting down the exam1, finding the student in your grades spreadsheet, and recording the grade, or, worse, going through the pile of exams twice (once to grade and once to record) takes surprisingly long. If that process takes 30 seconds for each of 100 exams, that's 30 minutes.
 
 
 Do I have to use this to grade the students? Can't I just give them feedback?

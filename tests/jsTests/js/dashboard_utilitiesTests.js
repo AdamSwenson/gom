@@ -14,7 +14,7 @@ function setDummyGroup() {
     $("#qunit-fixture").append("<input type='text' id='groupNumber' value='0' />");
 }
 module('dashboard_utilities Dashboard initialize');
-test('Check exam timer intializes properly', function () {
+test('Check exam1 timer intializes properly', function () {
     expect(3);
     var timer = new TimerRecord('exam');
     ok(timer, 'Exam timer initialized');

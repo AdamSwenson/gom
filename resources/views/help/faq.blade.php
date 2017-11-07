@@ -29,7 +29,7 @@
         <div class="panel panel-default">
 
             <div class="panel-heading">
-                <h3>Setting up the questions, elements, and other exam components</h3>
+                <h3>Setting up the questions, elements, and other exam1 components</h3>
             </div>
 
             <div class="panel-body">

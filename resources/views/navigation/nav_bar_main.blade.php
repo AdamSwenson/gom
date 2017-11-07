@@ -13,13 +13,13 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li id="navSetup"
-                    title="Create or edit an exam">
-                    <a href="{{url('exam')}}"
+                    title="Create or edit an exam1">
+                    <a href="{{url('exam1')}}"
                        class="navItem"><span class="linkText">Setup</span></a>
                 </li>
 
                 <li id="navGrade"
-                    title="Grade an exam">
+                    title="Grade an exam1">
                     <a href="{{url('grade')}}"
                        class="navItem"><span class="linkText">Grade</span></a>
                 </li>

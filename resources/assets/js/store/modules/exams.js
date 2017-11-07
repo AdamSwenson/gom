@@ -159,19 +159,20 @@ const getters = {
      * @param getters
      * @param payload Object containing exam identifier
      */
-    [gTypes.getExam]: ( state, getters, payload ) => {
-        //finds the exam and returns it
-        const lookupByExamId = ( state, examId ) => {
-            return state.exams[ examId ];
-        };
+    [gTypes.getExam]: ( state, getters, rootState, payload ) =>
+        ( payload ) => {
+            //finds the exam and returns it
+            const lookupByExamId = ( state, examId ) => {
+                return state.exams[ examId ];
+            };
 
-        //Try looking up first by exam Id
-        if ( typeof (payload.examId) != 'undefined' ) {
-            return lookupByExamId( state, payload.examId );
-        }
+            //Try looking up first by exam Id
+            if ( typeof (payload.examId) != 'undefined' ) {
+                return lookupByExamId( state, payload.examId );
+            }
 
-        //other lookup methods
-    },
+            //other lookup methods
+        },
 
     /**
      * Return list of exam objects

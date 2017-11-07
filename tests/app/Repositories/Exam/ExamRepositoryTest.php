@@ -47,12 +47,12 @@ class ExamRepositoryTest extends \TestCase
     public function prepareDatabase()
     {
 //        parent::prepareDatabase();
-        //random exam
+        //random exam1
         $this->exam = Exam::all()->random();
     }
 
     /**
-     * Helper method to check that an exam deletion properly cascades.
+     * Helper method to check that an exam1 deletion properly cascades.
      * NB, This doesn't check questionScores or elementScores which should
      * have rows deleted via cascade even though they do not have an exam_id field.
      *
@@ -65,7 +65,7 @@ class ExamRepositoryTest extends \TestCase
             $this->assertDatabaseMissing($table, ['exam_id' => $examId]);
         }
     }
-#----------------------------------------------- delete exam
+#----------------------------------------------- delete exam1
     /**
      * @test
      */
@@ -134,7 +134,7 @@ class ExamRepositoryTest extends \TestCase
 //        $this->object->delete_exam(23422222223);
 //    }
 
-#----------------------------------------------------- save exam
+#----------------------------------------------------- save exam1
     public function testSave_new_exam()
     {
         #prep
@@ -232,7 +232,7 @@ class ExamRepositoryTest extends \TestCase
 //        $this->object->save_new_exam($examName, $year, $term, $classId);
 //    }
 
-#--------------------------------------------------------- load exam
+#--------------------------------------------------------- load exam1
 
     public function testLoad_exam()
     {
@@ -270,7 +270,7 @@ class ExamRepositoryTest extends \TestCase
     public function testClone_exam()
     {
         #prep
-        //prepare source exam and database
+        //prepare source exam1 and database
         $exam = factory(Exam::class)->create();
         $examToCloneId = $exam->id;
         $questionAssignDao = new QuestionAssignmentRepository();
@@ -283,11 +283,11 @@ class ExamRepositoryTest extends \TestCase
         $newExam = $this->object->clone_exam($examToCloneId);
 
         #check
-        //make sure made new exam with expected naming scheme
+        //make sure made new exam1 with expected naming scheme
         $clonedExam = Exam::where('id', $examToCloneId)->first();
         $expectedName = 'Clone of "' . $clonedExam->name . '"';
-        $this->assertEquals($expectedName, $newExam->name, "new exam has expected name");
-        //make sure other exam properties copied
+        $this->assertEquals($expectedName, $newExam->name, "new exam1 has expected name");
+        //make sure other exam1 properties copied
         $this->assertEquals($clonedExam->term, $newExam->term, "term properly copied");
         $this->assertEquals($clonedExam->year, $newExam->year, "year properly copied");
 
@@ -374,7 +374,7 @@ class ExamRepositoryTest extends \TestCase
         $knownUnlocked = $ex->getId();
 
         $result = $this->object->lock_exam($knownUnlocked);
-        $this->assertInstanceOf('\App\Exam', $result, "returns exam");
+        $this->assertInstanceOf('\App\Exam', $result, "returns exam1");
         $this->assertDatabaseHas('exams', ['id' => $knownUnlocked, 'locked' => 1]);
 //        $check = Exam::find($knownUnlocked);
 //        $this->assertEquals(1, $check->locked);
@@ -385,7 +385,7 @@ class ExamRepositoryTest extends \TestCase
     {
         $this->prepareDatabase();
         $exam = Exam::all()->random(1);
-        //Ensure that we have a locked exam to unlock
+        //Ensure that we have a locked exam1 to unlock
         $toUnlock = $exam;
         $eid = $toUnlock->id;
         $toUnlock->locked = 1;
@@ -396,7 +396,7 @@ class ExamRepositoryTest extends \TestCase
 
         //unlock and test
         $result = $this->object->unlock_exam($eid);
-        $this->assertInstanceOf('\App\Exam', $result, "returns exam");
+        $this->assertInstanceOf('\App\Exam', $result, "returns exam1");
         $this->assertDatabaseHas('exams', ['id' => $eid, 'locked' => 0]);
         $this->assertEquals(0, $result->locked);
     }
@@ -404,9 +404,9 @@ class ExamRepositoryTest extends \TestCase
 //
 //    public function testMark_exam_released($examId)
 //    {
-////        $exam = $this->load_exam($examId);
-////        $exam->setReleased(1);
-////        $exam->save();
+////        $exam1 = $this->load_exam($examId);
+////        $exam1->setReleased(1);
+////        $exam1->save();
 //    }
 //
 //    public function testUnmark_exam_released($examId)

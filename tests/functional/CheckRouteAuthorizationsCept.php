@@ -22,39 +22,39 @@ $student_owned_by_user = 1;
 
 //Make sure works in the authorized case
 $I->amLoggedAs($owner);
-$I->amOnPage("/exam/1/clone");
+$I->amOnPage("/exam1/1/clone");
 
 $I->logout();
 \Illuminate\Support\Facades\Auth::loginUsingId(2);
 //$I->amLoggedAs($stranger);
-$I->amOnPage("/exam/1/clone");
+$I->amOnPage("/exam1/1/clone");
 $I->seeResponseCodeIs($expected_error);
 
 
 $routes_requiring_exam_ownership = [
-//exam setup
-    "/exam/$exam_owned_by_user/clone",
-    "/exam/$exam_owned_by_user",
-    "/exam/$exam_owned_by_user/edit",
+//exam1 setup
+    "/exam1/$exam_owned_by_user/clone",
+    "/exam1/$exam_owned_by_user",
+    "/exam1/$exam_owned_by_user/edit",
 // question setup
-    "exam/$exam_owned_by_user/question/edit",
-    "exam/$exam_owned_by_user/question/updateAll",
-    "exam/$exam_owned_by_user/question",
-    "exam/$exam_owned_by_user/question/create",
+    "exam1/$exam_owned_by_user/question/edit",
+    "exam1/$exam_owned_by_user/question/updateAll",
+    "exam1/$exam_owned_by_user/question",
+    "exam1/$exam_owned_by_user/question/create",
 //student setup
-    "exam/$exam_owned_by_user/student/store",
-    "exam/$exam_owned_by_user/student/updateAll",
-    "exam/$exam_owned_by_user/student/edit",
-    "exam/$exam_owned_by_user/student",
-    "exam/$exam_owned_by_user/student/create",
+    "exam1/$exam_owned_by_user/student/store",
+    "exam1/$exam_owned_by_user/student/updateAll",
+    "exam1/$exam_owned_by_user/student/edit",
+    "exam1/$exam_owned_by_user/student",
+    "exam1/$exam_owned_by_user/student/create",
 //grade
-    "grade/exam/$exam_owned_by_user",
-    "grade/exam/$exam_owned_by_user/assign",
-    "grade/exam/$exam_owned_by_user/assign",
-    "grade/exam/$exam_owned_by_user",
-    "grade/exam/$exam_owned_by_user/remove",
-    "grade/exam/$exam_owned_by_user/time",
-    "grade/exam/$exam_owned_by_user/stats",
+    "grade/exam1/$exam_owned_by_user",
+    "grade/exam1/$exam_owned_by_user/assign",
+    "grade/exam1/$exam_owned_by_user/assign",
+    "grade/exam1/$exam_owned_by_user",
+    "grade/exam1/$exam_owned_by_user/remove",
+    "grade/exam1/$exam_owned_by_user/time",
+    "grade/exam1/$exam_owned_by_user/stats",
 //report
     "report/$exam_owned_by_user/gradeassign",
     "report/$exam_owned_by_user/students",
@@ -67,20 +67,20 @@ $routes_requiring_exam_ownership = [
 
 $routes_requiring_exam_and_other_ownership = [
     //setup
-    "exam/$exam_owned_by_user/question/$question_owned_by_user",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/edit",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element/edit",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element/updateAll",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element/create",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element/$element_owned_by_user",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element/$element_owned_by_user/edit",
-    "exam/$exam_owned_by_user/question/$question_owned_by_user/element/$element_owned_by_user",
-    "exam/$exam_owned_by_user/student/$student_owned_by_user",
-    "exam/$exam_owned_by_user/student/$student_owned_by_user/edit",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/edit",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element/edit",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element/updateAll",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element/create",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element/$element_owned_by_user",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element/$element_owned_by_user/edit",
+    "exam1/$exam_owned_by_user/question/$question_owned_by_user/element/$element_owned_by_user",
+    "exam1/$exam_owned_by_user/student/$student_owned_by_user",
+    "exam1/$exam_owned_by_user/student/$student_owned_by_user/edit",
     //student
-    "grade/exam/$exam_owned_by_user/student/$student_owned_by_user",
+    "grade/exam1/$exam_owned_by_user/student/$student_owned_by_user",
     //feedback
     "report/$exam_owned_by_user/students/$student_owned_by_user",
 ];
@@ -91,7 +91,7 @@ $all_routes = $routes_requiring_exam_ownership + $routes_requiring_exam_and_othe
 $I->logout();
 $I->amLoggedAs($stranger);
 /*
-    Iterate through with a user who does not own the exam
+    Iterate through with a user who does not own the exam1
     and make sure that throws error
 */
 foreach($routes_requiring_exam_ownership as $act)

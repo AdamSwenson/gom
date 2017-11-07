@@ -1,7 +1,7 @@
-<!-- create a new exam -->
+<!-- create a new exam1 -->
 @extends('layouts.master')
 @section('pageTitle', 'Create Exam | gradeomatic')
-@section('description', 'create an exam')
+@section('description', 'create an exam1')
 @section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
@@ -9,12 +9,12 @@
 @section('body')
     <div id="editExamPage" class="mainBodyLocator">
 
-        <form id="examForm" method="POST" action="{{url('exam')}}"
+        <form id="examForm" method="POST" action="{{url('exam1')}}"
               accept-charset="UTF-8" role="form">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <ul class="pager">
                 <li class="previous">
-                    <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
+                    <a href="{{ url('exam1/') }}" id="prev-question" style="cursor:pointer;"> <span
                                 class="glyphicon glyphicon-chevron-left"
                                 aria-hidden="true"></span> Setup
                     </a>

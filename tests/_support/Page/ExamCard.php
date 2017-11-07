@@ -6,7 +6,7 @@ class ExamCard
 {
 
     #common
-    public static $mainBodyLocator = ['id' => 'exam-card'];
+    public static $mainBodyLocator = ['id' => 'exam1-card'];
 
 
     #form fields
@@ -22,7 +22,7 @@ class ExamCard
 
     public static function examDetailPaneLocator()
     {
-        return ['class' => 'panel-exam-detail-component'];
+        return ['class' => 'panel-exam1-detail-component'];
     }
 
     public static function termLocator()
@@ -41,7 +41,7 @@ class ExamCard
     /* -------------------------- tests -------------------------- */
     public static function assertCardIntact( $I )
     {
-        $I->expectTo("See all the major page level elements and form fields for the exam card");
+        $I->expectTo("See all the major page level elements and form fields for the exam1 card");
         $I->seeElement(self::$mainBodyLocator);
         $I->seeElement(self::examNameLocator());
         $I->seeElement(ItemCard::settingsButtonLocator(0));

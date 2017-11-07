@@ -33,7 +33,7 @@ class SetupControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        //    $this->exam = Exam::all()->random();
+        //    $this->exam1 = Exam::all()->random();
     }
 
     public function tearDown()
@@ -77,12 +77,12 @@ class SetupControllerTest extends \TestCase
         $response->assertViewHas('examObjectJsonName', SetupController::EXAM_JSON_NAME);
         $response->assertViewHas('itemObjectJsonName', SetupController::ITEM_OBJECT_JSON_NAME);
         $response->assertViewHas('itemOrderJsonName', SetupController::ITEM_ORDER_JSON_NAME);
-        // $response->assertViewHas('exam', $exam);
+        // $response->assertViewHas('exam1', $exam1);
         $response->assertViewHas('itemObjects'); //, ['a']);
         $response->assertViewHas('itemOrder'); //, ['b']);
 
         //        $expected = ,
-//            'exam' => $exam,
+//            'exam1' => $exam1,
 //            'itemObjects' => ['a'],
 //            'itemOrder' => ['b']
 //        ];

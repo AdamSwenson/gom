@@ -2,7 +2,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Assign Grades | gradeomatic')
-@section('description', 'Assign letter grades for the exam')
+@section('description', 'Assign letter grades for the exam1')
 
 @section('otherCss')
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
@@ -10,9 +10,9 @@
 
 @section('body')
     <div id="gradeAssignPage" class="mainBodyLocator">
-    <h3><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign Grades: {{ $exam->getTerm() }}
-        {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
-    <h4>Enter the minimum exam grade for each letter assignment. Blank grades will not be used.</h4>
+    <h3><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign Grades: {{ $exam1->getTerm() }}
+        {{ $exam1->getYear() }} "{{ $exam1->getName() }}"</h3>
+    <h4>Enter the minimum exam1 grade for each letter assignment. Blank grades will not be used.</h4>
     <br/>
 
     <div class="row">
@@ -21,7 +21,7 @@
             <h4 style="text-align: center;">Maximum possible score: {{ $examMaxScore or '--' }}</h4>
 
             <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
-                  action="{{ url('exams'.$exam->getId().'/assign') }}">
+                  action="{{ url('exams'.$exam1->getId().'/assign') }}">
                 <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <!-- Grade Assignment fields. These will form into 2 columns of up to 7 items each -->
                 <div class="row">
@@ -62,7 +62,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
-        var strExamScores = JSON.parse('{!! json_encode( $examScores )!!}'); // student exam scores as strings
+        var strExamScores = JSON.parse('{!! json_encode( $examScores )!!}'); // student exam1 scores as strings
         var gradeTypes = JSON.parse('{!! json_encode( $gradeTypes ) !!}'); // holds string values for grades: "A+", "A", etc
         var scoreChartData = []; // array to be passed to google API for the student score dist chart
         var freqChartData = []; // array to be passed for the grade frequency chart

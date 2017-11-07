@@ -48,15 +48,15 @@ class NotifyAllStudentsTest extends \TestCase
     public function handleFailureCase()
     {
         //TODO Add error handing
-//        $exam = factory(Exam::class)->create();
+//        $exam1 = factory(Exam::class)->create();
 //        $student = factory(Student::class)->create();
 //
 //        $mock = $this->createMock(IFeedbackBuilder::class);
 //        $mock->shouldReceive('recompileFeedbackForStudent')
 //            ->once()
-//            ->with($exam->id, \Mockery::type(Student::class));
+//            ->with($exam1->id, \Mockery::type(Student::class));
 //        $this->expectsEvents(FeedbackCompilationFailureEvent::class);
-//        $this->object = new BuildFeedbackOneStudent($exam, $student);
+//        $this->object = new BuildFeedbackOneStudent($exam1, $student);
 //        $this->object->handle();
     }
 

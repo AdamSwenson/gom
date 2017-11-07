@@ -45,14 +45,14 @@ class AssignmentRepositoryTest extends \TestCase
 
 //        $order = [];
 //
-//        $root = factory(Item::class)->create(); //standin for exam
+//        $root = factory(Item::class)->create(); //standin for exam1
 //
 //        for ( $level = 0; $level < $numLevels; $level++ ) {
 //
 //            for ( $h = 0; $h < $numAtLevel; $h++ ) {
 //                $item = factory(Item::class)->create();
 //                $order[] = [
-//                    'examId' => $exam->id,
+//                    'examId' => $exam1->id,
 //                    'parentId' => $root->id,
 //                    'itemId' => $item->id,
 //                    'itemOrder' => $h];
@@ -63,7 +63,7 @@ class AssignmentRepositoryTest extends \TestCase
 //                for ( $j = 0; $j < $numAtLevel; $j++ ) {
 //                    $child = factory(Item::class)->create();
 //                    $order[] = [
-//                        'examId' => $exam->id,
+//                        'examId' => $exam1->id,
 //                        'parentId' => $item->id,
 //                        'itemId' => $child->id,
 //                        'itemOrder' => $j];
@@ -77,12 +77,12 @@ class AssignmentRepositoryTest extends \TestCase
 //        }
 //        for ( $i = 0; $i < $numLevels; $i++ ) {
 //            if ( $i === 0 ) {
-//                $parent = factory(Item::class)->create(); //standin for exam
+//                $parent = factory(Item::class)->create(); //standin for exam1
 //            }
 //            for ( $j = 0; $j < $numAtLevel; $j++ ) {
 //                $item = factory(Item::class)->create();
 //                $order[] = [
-//                    'examId' => $exam->id,
+//                    'examId' => $exam1->id,
 //                    'parentId' => $parent->id,
 //                    'itemId' => $item->id,
 //                    'itemOrder' => $j];
@@ -124,10 +124,10 @@ class AssignmentRepositoryTest extends \TestCase
         $this->assertDatabaseHas('assignments', [
             'exam_id' => $this->exam->id,
             'item_id' => $item3->id,
-//            'parent_id' => Assignment::where('exam_id', $this->exam->id)->
+//            'parent_id' => Assignment::where('exam_id', $this->exam1->id)->
             'position' => 0]);
 
-        //Check tha these are the only records for the exam
+        //Check tha these are the only records for the exam1
         $this->assertEquals(5, $assignments->count());
     }
 

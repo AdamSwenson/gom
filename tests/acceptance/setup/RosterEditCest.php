@@ -27,7 +27,7 @@ class RosterEditCest
     {
         $I->wantTo('Visit the roster edit page which already contains students, then make edits and see them in the database');
         
-#Exam with no questions is exam #4
+#Exam with no questions is exam1 #4
         $this->examId = $I->examIdWithQuestions();
         RosterEditPage::navigateToPage($I, $this->examId);
     }
@@ -252,8 +252,8 @@ class RosterEditCest
         $I->click(RosterEditPage::$forwardNavButton);
         # Properly redirected
         $I->seeInTitle('Edit Exam | gradeomatic');
-        $I->seeInCurrentUrl("/exam/{$this->examId}/edit");
-        //$I->seeInCurrentUrl("/exam/{$examId}/question/1/element/edit");
+        $I->seeInCurrentUrl("/exam1/{$this->examId}/edit");
+        //$I->seeInCurrentUrl("/exam1/{$examId}/question/1/element/edit");
 
         $I->amGoingTo("Check that the new student is in the db");
         $I->assertDatabaseHas('students', [

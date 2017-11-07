@@ -102,7 +102,7 @@ describe( "store.modules.item.order getters  ", function () {
                 //call
                 let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
-                //At the exam level, so the result should be 0
+                //At the exam1 level, so the result should be 0
                 expect( result ).toBe( 0 );
             } );
 
@@ -143,7 +143,7 @@ describe( "store.modules.item.order getters  ", function () {
                 //call
                 let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
-                //At the exam level, so the result should be 0
+                //At the exam1 level, so the result should be 0
                 expect( result ).toBe( 0 );
             } );
 
@@ -153,7 +153,7 @@ describe( "store.modules.item.order getters  ", function () {
                 //call
                 let result = getters[ gTypes.getHeightOfNode ]( this.filledState, getters,  {}, targetSerialNumber );
                 //check
-                //At the exam level, so the result should be 0
+                //At the exam1 level, so the result should be 0
                 expect( result ).toBe( 1 );
 
             } );

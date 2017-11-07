@@ -6,11 +6,11 @@ use App\Student;
 use Illuminate\Support\Facades\Auth;
 
 $testedScriptPath = '';
-//$testedScriptPath = asset('js/grade-exam-package.js');
+//$testedScriptPath = asset('js/grade-exam1-package.js');
 $testingScriptPath = '';
 $navTab = 'gradeNav';
 Auth::loginUsingId(1);
-$exam = factory(Exam::class)->make();
+$exam1 = factory(Exam::class)->make();
 
 $students = factory(Student::class, 5)->make();
 $questionAssignments = QuestionAssignment::where('exam_id', 2)->get();
@@ -123,7 +123,7 @@ $elements = factory(Element::class, 2)->create();
 
 @section('jsScripts')
     @include('grade.partials.element_panel')
-    <script type="text/javascript" src="{{ asset('js/grade-exam-data.js') }}" data-cover></script>
+    <script type="text/javascript" src="{{ asset('js/grade-exam1-data.js') }}" data-cover></script>
 
     <!--<script type="text/javascript" src="../../src/www/inc/js/examSetup.js" data-cover></script>-->
     <script>
@@ -138,7 +138,7 @@ $elements = factory(Element::class, 2)->create();
         data.loadNumberQuestions({!! $numQuestions !!});
 
     </script>
-    <script type="text/javascript" src="{{ asset('js/grade-exam-package.js') }}" data-cover></script>
+    <script type="text/javascript" src="{{ asset('js/grade-exam1-package.js') }}" data-cover></script>
     <!-- Your tests file goes here -->
     <script>
         test( 'select student | ', function () {

@@ -22,12 +22,12 @@ module("dashboard_TimerDisplayTests TimerDisplay.getServerTime calls", {
     }
 });
 /** @covers TimerDisplay.prototype.getServerTime */
-QUnit.asyncTest("TimerDisplay.getServerTime for exam", function () {
+QUnit.asyncTest("TimerDisplay.getServerTime for exam1", function () {
     expect(0);
     start();
 //    expect(4);
-//    var examtimer = new TimerDisplay('exam');
-//    equal(examtimer.timerType, 'exam', "timer initialized");
+//    var examtimer = new TimerDisplay('exam1');
+//    equal(examtimer.timerType, 'exam1', "timer initialized");
 //    examtimer.getServerTime();
 //    setTimeout(function () {
 //        equal(examtimer.elapsedTime, 1, "Elapsed time loaded into object");
@@ -57,7 +57,7 @@ module('dashboard_TimerDisplayTests Display dashboard time values', {
         $("#qunit-fixture").append("<input type='text' id='currentGroupGaugeBox' />");
     }
 });
-test('setCurrentTimeBox for exam', function () {
+test('setCurrentTimeBox for exam1', function () {
     var t = new TimerDisplay('exam');
     var testvals = [
         {'test': 5.5, 'display': '5.50 Sec'},

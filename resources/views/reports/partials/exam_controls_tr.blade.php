@@ -1,16 +1,16 @@
 <tr>
     <!-- width will override the column width setting for term info -->
     <td style="vertical-align:middle; width: 10%;">
-        {{ $exam->term or '' }}
-        {{ $exam->year or '' }}
+        {{ $exam1->term or '' }}
+        {{ $exam1->year or '' }}
     </td>
     <td style="vertical-align:middle; min-width: 200px;">
-        {{ $exam->name or 'Name Not Found'}}
+        {{ $exam1->name or 'Name Not Found'}}
     </td>
     <!-- control buttons -- do not show if no exams -->
     <td style="text-align:right; min-width: 340px;">
         <a class="btn btn-primary confirmRelease"
-           id="{{'exam'.$examId }}"
+           id="{{'exam1'.$examId }}"
            style="width:140px;"
            title="Release Exam"
            data-released="{{ $examId }}"
@@ -27,10 +27,10 @@
         </a>
         <a class="btn btn-info"
            title="Exam Analytics"
-           href="{{url('report/' . $exam->id. '/analytics')}}"><span
+           href="{{url('report/' . $exam1->id. '/analytics')}}"><span
                     class="glyphicon glyphicon-stats"
                     aria-hidden="true"></span> </a>
-        <a class="btn btn-default" href="{{ url('backup/'.$exam->getId()) }}"
+        <a class="btn btn-default" href="{{ url('backup/'.$exam1->getId()) }}"
            title="Export Scores to Csv">
             <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>
         </a>

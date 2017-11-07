@@ -51,7 +51,7 @@
                 the gradeomatic for reporting scores.
             </p>
 
-            <p class="answer">If you are familiar with using rubrics to grade an exam, you are already familiar with how
+            <p class="answer">If you are familiar with using rubrics to grade an exam1, you are already familiar with how
                 to
                 divide a question into its elements.</p>
 
@@ -59,7 +59,7 @@
                 familiar, scenario:</p>
             <blockquote class="example">
                 <p><em>Scene: A good student comes to your office, distraught after doing poorly on one question on the
-                        exam.</em></p>
+                        exam1.</em></p>
 
                 <p><strong>Student</strong> What did I miss? What should I have done?</p>
 
@@ -172,7 +172,7 @@
                 gradeomatic
                 allows for four responses varieties: "missing", "poor", "fair" and "excellent". These responses will
                 be what
-                the student sees once you have graded the exam.
+                the student sees once you have graded the exam1.
             </p>
 
             <p class="answer">Let's use the following as the stock feedback for this element.</p>

@@ -389,7 +389,7 @@ describe( "StudentListItem | ", function () {
                 store.isBlind = true;
             } );
 
-            it( "displays a placeholder rather than the student name if the exam is being graded blind", function () {
+            it( "displays a placeholder rather than the student name if the exam1 is being graded blind", function () {
                 Helper.assertValueIs( this, 'studentName', this.namePlaceholder, false );
                 // expect( this.$studentName.text() ).toBe( this.placeHolder );
             } );

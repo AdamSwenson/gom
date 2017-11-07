@@ -2,15 +2,15 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Analytics | gradeomatic')
-@section('description', 'View information about the exam')
+@section('description', 'View information about the exam1')
 
 @section('otherCss')
-    <link rel="stylesheet" href="{{ asset('css/exam-analytics-package.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('css/exam1-analytics-package.css') }}"/>
 @endsection
 
 @section('body')
-    <h3><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Analytics: {{ $exam->getTerm() }}
-        {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
+    <h3><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Analytics: {{ $exam1->getTerm() }}
+        {{ $exam1->getYear() }} "{{ $exam1->getName() }}"</h3>
 
     <div id="app">
         <h3 class="text-center">Question Score Statistics</h3>
@@ -110,7 +110,7 @@
         console.log( 'questionScoresByQNum', questionScoresByQNumber );
         console.log( 'elementScoresByQENum', elementScoresByQENumber );
     </script>
-    <script type="text/javascript" src="{{ asset('js/report-exam-analytics-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-exam1-analytics-package.js') }}"></script>
 
 @endsection
 

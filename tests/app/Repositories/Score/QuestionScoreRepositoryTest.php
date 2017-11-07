@@ -32,7 +32,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->questionAssignment = QuestionAssignment::find($this->questionScore->question_assignment_id);
         $this->exam = Exam::find($this->questionAssignment->exam_id);
 
-//        $this->exam = Exam::find(self::$examId);
+//        $this->exam1 = Exam::find(self::$examId);
         $this->assignments = [$this->questionAssignment];
     }
 
@@ -73,7 +73,7 @@ class QuestionScoreRepositoryTest extends \TestCase
             //   $this->assertEquals($studentId, $r->student_id, 'has correct student id');
             $this->assertTrue($r->questionScore >= 0, "Question score has 0 or greater value");
             $this->assertTrue($r->questionName != '', "Question name not an empty string");
-            $this->assertContains($r->questionAssignmentId, $questionAssignmentIds, "Question assignment belongs to the exam");
+            $this->assertContains($r->questionAssignmentId, $questionAssignmentIds, "Question assignment belongs to the exam1");
         }
     }
 

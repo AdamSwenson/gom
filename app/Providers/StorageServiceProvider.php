@@ -24,6 +24,7 @@ use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Item\IItemCommentRepository;
+use App\Repositories\Item\IItemScoreStatisticsRepository;
 use App\Repositories\Item\ItemCommentRepository;
 use App\Repositories\Exam\ExamRepository;
 use App\Repositories\Exam\IExamRepository;
@@ -40,6 +41,7 @@ use App\Repositories\Grade\IGradeAssignmentRepository;
 use App\Repositories\Grade\StudentGradeRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Item\ItemRepository;
+use App\Repositories\Item\ItemScoreStatisticsRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\IQuestionRepository;
 use App\Repositories\Question\QuestionAssignmentRepository;
@@ -125,6 +127,7 @@ class StorageServiceProvider extends ServiceProvider
         //Item
         $this->app->bind(IItemRepository::class,
             ItemRepository::class);
+        $this->app->bind(IItemScoreStatisticsRepository::class, ItemScoreStatisticsRepository::class);
 
         //Kumi (classes)
         $this->app->bind(IKumiRepository::class,

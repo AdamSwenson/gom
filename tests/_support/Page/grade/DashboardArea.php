@@ -70,10 +70,10 @@ class DashboardArea
     {
         if ( ! $not )
         {
-            $I->expectTo("see the correct current exam's grading time");
+            $I->expectTo("see the correct current exam1's grading time");
             $I->see($currentExamTime, self::$currentExamTimeLocator);
 
-            $I->expectTo("see the correct average exam grading time");
+            $I->expectTo("see the correct average exam1 grading time");
             $I->see($averageExamTime, self::$avgTimeLocator);
 
             $I->expectTo("see the correct total time");
@@ -83,10 +83,10 @@ class DashboardArea
             $I->see($remainingGradingTime, self::$remainingTimeLocator);
         } else
         {
-            $I->expectTo("see the correct current exam's grading time");
+            $I->expectTo("see the correct current exam1's grading time");
             $I->dontSee($currentExamTime, self::$currentExamTimeLocator);
 
-            $I->expectTo("see the correct average exam grading time");
+            $I->expectTo("see the correct average exam1 grading time");
             $I->dontSee($averageExamTime, self::$avgTimeLocator);
 
             $I->expectTo("see the correct total time");
@@ -122,7 +122,7 @@ class DashboardArea
         $I->seeElement(DashboardArea::$totalTimeLocator);
         $I->seeElement(DashboardArea::$remainingTimeLocator);
 
-        $I->expectTo("see the exam stats area ");
+        $I->expectTo("see the exam1 stats area ");
         $I->seeElement(DashboardArea::$gradedExamsLocator);
         $I->seeElement(DashboardArea::$remainingExamsLocator);
     }

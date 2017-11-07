@@ -90,7 +90,7 @@ class ElementAssignmentTest extends \TestCase
 
 //    public function testExam()
 //    {
-//        $this->assertInstanceOf('App\Exam', $this->assignment->exam);
+//        $this->assertInstanceOf('App\Exam', $this->assignment->exam1);
 // }
 
 

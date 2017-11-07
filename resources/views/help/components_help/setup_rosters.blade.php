@@ -1,11 +1,11 @@
 
 <section id="{{\App\ViewTools\HelpLinks::$rosterWhat['id']}}" class="group">
-    <h4 class="text-center">Rosters: Associating students with an exam</h4>
+    <h4 class="text-center">Rosters: Associating students with an exam1</h4>
 
     <div class="row">
         <div class="col-lg-6">
 
-            <p class="answer">Each exam has a student roster with all the students who will take the exam. On the "edit
+            <p class="answer">Each exam1 has a student roster with all the students who will take the exam1. On the "edit
                 roster"
                 page you can import students from a .csv file and edit student information.
             </p>
@@ -32,14 +32,14 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To import students, click <code>Edit Student Roster</code> on the exam setup page. You will also be
+            <p class="answer">To import students, click <code>Edit Student Roster</code> on the exam1 setup page. You will also be
                 automatically taken to the import students page after you save elements for the last question.
             </p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'roster_edit/roster_edit_edit_roster_circled.jpg',
-            'altText' =>'Circle around the edit roster button on exam setup page',
+            'altText' =>'Circle around the edit roster button on exam1 setup page',
             'caption' => 'Click Edit Roster'])
         </div>
     </div>

@@ -17,7 +17,7 @@ class QuestionEditPage
     public static $pageTitleText = 'Edit Questions | gradeomatic';
 
 
-    /** @var int The number of question fields displayed for a new exam */
+    /** @var int The number of question fields displayed for a new exam1 */
     public static $defaultNumberOfQuestions = 1;
 
     //Fields
@@ -153,7 +153,7 @@ public static function questionPanelId($questionNumber){
      * @return string
      */
     public static function redirectToUrl($examId, $questionId){
-        return "/exam/{$examId}/question/{$questionId}/element/edit";
+        return "/exam1/{$examId}/question/{$questionId}/element/edit";
     }
 
     /**
@@ -170,7 +170,7 @@ public static function questionPanelId($questionNumber){
     public static function navigateToPage($I, $examId)
     {
         $I->test_login($I);
-        $I->amOnPage("exam/{$examId}/question/edit");
+        $I->amOnPage("exam1/{$examId}/question/edit");
         $I->waitForElement(self::$mainBodyLocator);
 //        $I->waitForElement(['id' => 'scriptBox']);
 
@@ -244,7 +244,7 @@ public static function questionPanelId($questionNumber){
     {
         $I->amGoingTo("Check that everything is displayed properly");
         $I->expectTo('see page level items');
-        $I->seeInCurrentUrl("exam/{$examId}/question/edit");
+        $I->seeInCurrentUrl("exam1/{$examId}/question/edit");
         $I->seeInTitle(self::$pageTitleText);
         $I->see($examName);
         $I->seeElement(self::$addQuestionButtonLocator);

@@ -74,7 +74,7 @@ class ExamControllerTest extends \TestCase
         $storedExamStatsDaoMock->shouldReceive('getNumberStudents')->times(count($exams));
         $storedExamStatsDaoMock->shouldReceive('getNumberQuestions')->times(count($exams));
 
-        $response = $this->call('GET', '/exam');
+        $response = $this->call('GET', '/exam1');
 //        $response = $this->get('ExamController@index');
         $this->assertNotNull($response);
     }
@@ -99,7 +99,7 @@ class ExamControllerTest extends \TestCase
         $response = $this->post('ExamController@create');
         $this->assertNotNull($response);
 //        $this->assertResponseOk();
-        //create new exam
+        //create new exam1
 //        return view('/setup/create_exam');
     }
 
@@ -124,32 +124,32 @@ class ExamControllerTest extends \TestCase
     }
 
     /*
-        public function testShow(Exam $exam)
+        public function testShow(Exam $exam1)
         {
-            // Maybe write a view to show an exam without editing?
+            // Maybe write a view to show an exam1 without editing?
         }
     */
 
 
     public function testEdit()
     {
-//        $response = $this->call('Get', "exam/{$this->exam->id}/edit");
+//        $response = $this->call('Get', "exam1/{$this->exam1->id}/edit");
         $response = $this->get('ExamController@edit', $this->exam);
         $this->assertNotEmpty($response);
 //TODO This isn't actually working
-//        $this->assertViewHas('exam', $this->exam);
+//        $this->assertViewHas('exam1', $this->exam1);
 //        $this->assertViewHas('terms', ExamController::$terms);
 
 //        $years[] = date('Y');
 //        $years[] = strval($years[ $offset ] + 1);
 //        $this->assertViewHas('years', [$value = null);
-//        $this->call('GET', "exam/$eid/edit");
-//        $this->assertViewHas('exam');
+//        $this->call('GET', "exam1/$eid/edit");
+//        $this->assertViewHas('exam1');
     }
 
 //    public function testUpdate()
 //    {
-//        $exam = factory(Exam::class)->make();
+//        $exam1 = factory(Exam::class)->make();
 //
 //        $data = [
 //            'name'     => $this->examName,
@@ -159,12 +159,12 @@ class ExamControllerTest extends \TestCase
 //
 //        $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
 //        $mock->shouldReceive('update_exam_object')
-//            ->with($exam, $data['examYear'], $data['examTerm'], $data['name'])
+//            ->with($exam1, $data['examYear'], $data['examTerm'], $data['name'])
 //            ->once()
-//            ->andReturn($exam);
+//            ->andReturn($exam1);
 //
 //        //will hit ExamController@update
-//        $response = $this->call('PUT', '/exam/' . $exam->id, $data);
+//        $response = $this->call('PUT', '/exam1/' . $exam1->id, $data);
 //        $this->assertNotNull($response);
 //
 //    }
@@ -174,14 +174,14 @@ class ExamControllerTest extends \TestCase
 //    {
 //        $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
 //        $mock->shouldReceive('delete_exam')
-//            ->with($this->exam)
+//            ->with($this->exam1)
 //            ->once();
 //
 ////        $object = new ExamController();
-////        $response = $object->destroy($this->exam);
-//        $response = $this->delete('ExamController@destroy', ['exam_id' => $this->exam->id]);
-////        $response = $this->call('DELETE', "/exam", ['exam' => $this->exam]);
-////        $response = $this->call('DELETE', "/exam/{$this->exam->id}");
+////        $response = $object->destroy($this->exam1);
+//        $response = $this->delete('ExamController@destroy', ['exam_id' => $this->exam1->id]);
+////        $response = $this->call('DELETE', "/exam1", ['exam1' => $this->exam1]);
+////        $response = $this->call('DELETE', "/exam1/{$this->exam1->id}");
 //        $this->assertNotNull($response);
 //
 //    }

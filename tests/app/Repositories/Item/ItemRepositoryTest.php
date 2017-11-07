@@ -236,7 +236,7 @@ class ItemRepositoryTest extends \TestCase
     {
         $question = \factory(Question::class)->create();
         $result = $this->object->handleQuestionStoreAndUpdate($this->request, $question);
-        $this->assertEquals($question, $result); //nothing was done to it because no exam id
+        $this->assertEquals($question, $result); //nothing was done to it because no exam1 id
     }
 
 }

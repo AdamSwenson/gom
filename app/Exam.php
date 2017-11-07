@@ -409,6 +409,11 @@ MYSQL;
         return $this->hasMany(Assignment::class);
     }
 
+    public function items(){
+        return $this->hasManyThrough(Item::class, Assignment::class);
+
+    }
+
 
     /**
      * Classes (kumis) taking the exam

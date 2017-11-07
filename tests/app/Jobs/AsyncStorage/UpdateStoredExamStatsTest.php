@@ -116,7 +116,7 @@ class UpdateStoredExamStatsTest extends \TestCase
 
 
         $this->object = new UpdateStoredExamStats($this->exam);
-        $this->assertAttributeInstanceOf(Exam::class, 'exam', $this->object, 'exam set for testing');
+        $this->assertAttributeInstanceOf(Exam::class, 'exam1', $this->object, 'exam1 set for testing');
 
         //call
         $this->object->updateStudents();
@@ -150,7 +150,7 @@ class UpdateStoredExamStatsTest extends \TestCase
         $this->registerMock(StudentRepository::class, $studentDao);
 
         $this->object = new UpdateStoredExamStats($this->exam);
-        $this->assertAttributeInstanceOf(Exam::class, 'exam', $this->object, 'exam set for testing');
+        $this->assertAttributeInstanceOf(Exam::class, 'exam1', $this->object, 'exam1 set for testing');
 
         //call
         $this->object->updateStudents();

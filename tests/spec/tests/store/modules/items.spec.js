@@ -149,7 +149,7 @@ describe( "store.modules.items | ", function () {
                 var expectedIds = this.expectedIds;
                 let tester = function ( currentNode ) {
                     // window.console.log( 'items.spec', 'tester', 182, currentNode);
-                    //ignore the exam
+                    //ignore the exam1
                     if ( currentNode.data === 0 ) return true;
 
                     //Check the type and that the id is one of the expected
@@ -161,7 +161,7 @@ describe( "store.modules.items | ", function () {
                     return true;
                 };
 
-                //Check that received the exam
+                //Check that received the exam1
                 expect( result instanceof Node ).toBe( true );
                 expect( result.data ).toBe( 0 );
                 expect( result.children.length ).toBe( this.numItems );

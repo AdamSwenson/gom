@@ -22,7 +22,7 @@ class CreateExamCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkIntact(AcceptanceTester $I)
@@ -32,7 +32,7 @@ class CreateExamCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkTermDropdownWorking(AcceptanceTester $I)
@@ -67,7 +67,7 @@ class CreateExamCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkYearDropdownWorking(AcceptanceTester $I)
@@ -91,7 +91,7 @@ class CreateExamCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function createExam(AcceptanceTester $I)
@@ -121,7 +121,7 @@ class CreateExamCest
         $I->see("Add / Edit Questions");
         $I->seeInCurrentUrl('/question/edit');
 
-        $I->expectTo("see the exam in the database");
+        $I->expectTo("see the exam1 in the database");
         $I->assertDatabaseHas('exams', [
             'user_id'  => 1,
             'term'     => $testTerm,

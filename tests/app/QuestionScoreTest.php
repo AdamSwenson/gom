@@ -28,9 +28,9 @@ class QuestionScoreTest extends \TestCase
         parent::setUp();
         $this->object = new QuestionScore;
 //        $fixture1 = $this->makeExamWAssignedQuestions(3);
-//        $fixture2 = $this->setupExamWithStudents($fixture1['exam']);
-//        //exam and students are now stored in
-//        $this->questionAssign = $fixture1['questions'][0] QuestionAssignment::where('exam_id', $fixture1['exam'])->where('question_id', $fixture1['questions'][0]->id)->first();
+//        $fixture2 = $this->setupExamWithStudents($fixture1['exam1']);
+//        //exam1 and students are now stored in
+//        $this->questionAssign = $fixture1['questions'][0] QuestionAssignment::where('exam_id', $fixture1['exam1'])->where('question_id', $fixture1['questions'][0]->id)->first();
 //        $this->student = $this->students[0];
 //
 //        $this->score = new QuestionScore();

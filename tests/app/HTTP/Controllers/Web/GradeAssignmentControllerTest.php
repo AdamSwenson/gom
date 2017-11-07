@@ -25,10 +25,10 @@ class GradeAssignmentControllerTest extends \TestCase
      */
     public function assign()
     {
-//        $exam = Exam::class
+//        $exam1 = Exam::class
 
 //        return View::make('grade.grade_assign', [
-//            'exam'         => $exam,
+//            'exam1'         => $exam1,
 //            'examScores'   => $examScores,
 //            'examMaxScore' => $examMaxScore,
 //            'gradeTypes'   => $gradeTypes,
@@ -40,7 +40,7 @@ class GradeAssignmentControllerTest extends \TestCase
      * @incomplete
      */
     public function recordAssignments(){
-//        Exam $exam, GradeAssignmentRequest $request
+//        Exam $exam1, GradeAssignmentRequest $request
 
     }
 }

@@ -23,7 +23,7 @@ class ExamTest extends \TestCase
         parent::setUp();
         $this->object = new Exam;
         $this->exam = Exam::find($this->examWithQuestionsAndStudentsId);
-        //$this->exam = Exam::all()->random();
+        //$this->exam1 = Exam::all()->random();
 
         \Auth::loginUsingId(self::$userid);
     }
@@ -46,7 +46,7 @@ class ExamTest extends \TestCase
         #check
         $e = Exam::find($examId);
         $this->assertTrue(!is_null($e), "found something");
-        $this->assertInstanceOf(Exam::class, $e, "found an exam");
+        $this->assertInstanceOf(Exam::class, $e, "found an exam1");
         $this->assertTrue($exam->released == true, "Released set to true in db");
         $this->assertTrue($exam->previously_released == true, "Previously released set to true in db");
 
@@ -72,7 +72,7 @@ class ExamTest extends \TestCase
         #check
         $e = Exam::find($examId);
         $this->assertTrue(!is_null($e), "found something");
-        $this->assertInstanceOf(Exam::class, $e, "found an exam");
+        $this->assertInstanceOf(Exam::class, $e, "found an exam1");
         $this->assertTrue($exam->released == false, "Released set to false in db");
         $this->assertTrue($exam->previously_released == true, "Previously released still set to true in db");
     }
@@ -165,7 +165,7 @@ class ExamTest extends \TestCase
     {
         #prep
         $fixture = $this->setupExamWithStudents();
-        $exam = $fixture['exam'];
+        $exam = $fixture['exam1'];
         $this->makeQuestionAssignment($exam, factory(Question::class)->create(), 2);
 
         #call and test
@@ -189,8 +189,8 @@ class ExamTest extends \TestCase
     {
         #prep
         $exam = Exam::find($this->examWithQuestionsButNoStudentsId);
-        $this->assertInstanceOf(Exam::class, $exam, "exam object to test");
-        $this->assertEquals(0, count($exam->getAllAssociatedStudents()), "exam has no students");
+        $this->assertInstanceOf(Exam::class, $exam, "exam1 object to test");
+        $this->assertEquals(0, count($exam->getAllAssociatedStudents()), "exam1 has no students");
 
         #call
         $result = $exam->isGradable();
@@ -291,13 +291,13 @@ class ExamTest extends \TestCase
                 $students[] = $s;
             }
         }
-        $this->assertTrue(count($students) > 0, "At least one student associated with exam");
+        $this->assertTrue(count($students) > 0, "At least one student associated with exam1");
 
         #call
         $associatedStudents = $exam->getAllAssociatedStudents();
 
         #check
-        $this->assertTrue(count($associatedStudents) > 0, "At least one student associated with exam");
+        $this->assertTrue(count($associatedStudents) > 0, "At least one student associated with exam1");
         foreach ( $associatedStudents as $as ) {
             $this->assertContains($as, $students, "returned student in the array of expected students");
         }
@@ -365,17 +365,17 @@ class ExamTest extends \TestCase
         $this->assertTrue(!empty($result));
         $this->assertInstanceOf(Assignment::class, $result);
 
-        $this->assertEquals($exam->id, $result->exam_id, "has correct exam id set");
+        $this->assertEquals($exam->id, $result->exam_id, "has correct exam1 id set");
         $this->assertEquals(null, $result->parent_id, "parent id is null as expected");
         $this->assertEquals(0, $result->position, "at 0th position as expected");
-        $this->assertEquals($exam->id, $result->item_id, "exam id used in item id field");
+        $this->assertEquals($exam->id, $result->item_id, "exam1 id used in item id field");
 
     }
 
     /** @test */
     public function resetAssignments()
     {
-        //prep by creating assignments for an exam
+        //prep by creating assignments for an exam1
         $exam = factory(Exam::class)->create();
         $exam->initializeAssignmentRoot();
         //check setup
@@ -423,7 +423,7 @@ class ExamTest extends \TestCase
     public function testElements()
     {
         $fixture = $this->makeElementAssignmentsForQuestion(3);
-        $elements = $fixture['exam']->elements;
+        $elements = $fixture['exam1']->elements;
         $this->assertTrue(!is_null($elements), "Returned something");
         $this->assertTrue(count($elements) > 0, "At least one thing returned");
         foreach ( $elements as $r ) {
@@ -435,7 +435,7 @@ class ExamTest extends \TestCase
     public function testElementAssignments()
     {
         $fixture = $this->makeElementAssignmentsForQuestion(3);
-        $exam = $fixture['exam'];
+        $exam = $fixture['exam1'];
         $elements = $exam->elements;
         $elementAssignments = $exam->elementAssignments;
         $this->assertTrue(!is_null($elementAssignments), "Returned something");
@@ -449,7 +449,7 @@ class ExamTest extends \TestCase
 
 //    public function testElementScores()
 //    {
-//        foreach ($this->exam->elementScores as $r)
+//        foreach ($this->exam1->elementScores as $r)
 //        {
 //            $this->assertInstanceOf('App\ElementScore', $r);
 //        }
@@ -462,7 +462,7 @@ class ExamTest extends \TestCase
         $numQuestions = 5;
 
         $r = $this->makeExamWAssignedQuestions($numQuestions);
-        $exam = $r['exam'];
+        $exam = $r['exam1'];
         $questionIds = $r['questionIds'];
 
         #call
@@ -498,10 +498,10 @@ class ExamTest extends \TestCase
 
 //    public function testStudents()
 //    {
-//        $students = $this->exam->students();
+//        $students = $this->exam1->students();
 //        $this->assertTrue(! is_null($students), "Returned something");
 //        $this->assertTrue(count($students) >0, "At least one thing returned");
-//        foreach ($this->exam->students as $r)
+//        foreach ($this->exam1->students as $r)
 //        {
 //            $this->assertInstanceOf(Student::class, $r, "student object returned");
 //        }

@@ -1,17 +1,17 @@
 <section id="{{ \App\ViewTools\HelpLinks::$faqSetupGradeOnly['id'] }}" class="group">
     <div class="infoItem">
-        <p class="lead"><b>Q.</b> I'm grading a final exam. Do I have to give feedback?</p>
+        <p class="lead"><b>Q.</b> I'm grading a final exam1. Do I have to give feedback?</p>
 
         <p class="answer">No. You can use the gradeomatic just to record grades without giving feedback. This may still save you a lot of time. Each small administrative task adds up quickly when you have large classes. Indeed, the gradeomatic was born during budget cuts and exploding class sizes when the creator realized that spending an extra 30 seconds on each of 120 exams drained an hour from his life.</p>
 
         <p class="answer"><b>Q.</b> Great. So how do I do that?</p>
 
         <ol>
-            <li><a href="#{{\App\ViewTools\HelpLinks::$examCreate['id']}}">Create</a> the exam.</li>
+            <li><a href="#{{\App\ViewTools\HelpLinks::$examCreate['id']}}">Create</a> the exam1.</li>
             <li><a href="#{{\App\ViewTools\HelpLinks::$questionCreate['id']}}">Create</a> the questions. </li>
             <li>After creating the questions, you will be sent to the create elements page. If you want to use elements for assessment, only fill in the <code>Element Name</code> field. If you do not want to use elements, you may find yourself trapped by an error message when you try to save a blank element by clicking <code>Edit Questions</code> or </code><code>Next Question</code>. Instead, click <code>Setup</code> in the navigation bar at the top. This will take you back to the list of exams.</li>
-            <li>We still need to add students. So, on the list of exams, click <code>Edit</code>. This will take you back to the page where you created the exam.</li>
-            <li>From the exam creation/editing page, click <code>Edit Student Roster</code></li>
+            <li>We still need to add students. So, on the list of exams, click <code>Edit</code>. This will take you back to the page where you created the exam1.</li>
+            <li>From the exam1 creation/editing page, click <code>Edit Student Roster</code></li>
             <li>Follow the instructions for <a href="#{{\App\ViewTools\HelpLinks::$rosterPrep['id']}}">preparing</a> and <a href="#{{\App\ViewTools\HelpLinks::$rosterImport['id']}}">uploading</a> your roster. You won't be emailing students, so don't upload them.</li>
             <li>Click <code>Grade</code> in the navigation bar. </li>
             <li>Follow the instructions for <a href="#{{\App\ViewTools\HelpLinks::$gradeExamSelect['id']}}">grading</a> your students' exams</li>

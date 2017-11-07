@@ -13,9 +13,9 @@
             <img
                     class="img-responsive"
                     src="{{asset('images')}}"
-                    alt="Picture of a student's exam, ready for grading.">
+                    alt="Picture of a student's exam1, ready for grading.">
             <div class="carousel-caption">
-                <p>....a good exam is a graded exam</p>
+                <p>....a good exam1 is a graded exam1</p>
             </div>
         </div>
 

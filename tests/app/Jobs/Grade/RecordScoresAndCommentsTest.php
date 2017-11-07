@@ -200,7 +200,7 @@ class RecordScoresAndCommentsTest extends \TestCase
 //        $this->expectsEvents(PleaseSendAjaxFail::class);
 //
 //        #call
-//        $this->object = new RecordScoresAndComments($this->exam, $this->request);
+//        $this->object = new RecordScoresAndComments($this->exam1, $this->request);
 //        dispatch($this->object);
 //    }
 //

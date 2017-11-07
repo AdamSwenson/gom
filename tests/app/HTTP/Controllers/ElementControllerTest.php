@@ -199,7 +199,7 @@ class ElementControllerTest extends \TestCase
     }
 
 
-    public function testUpdateAllExistingElement() //$exam, $question, ElementRequest $request)
+    public function testUpdateAllExistingElement() //$exam1, $question, ElementRequest $request)
     {
         $elementId = 2;
         $element = new Element();

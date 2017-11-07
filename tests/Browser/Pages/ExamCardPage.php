@@ -35,7 +35,7 @@ class ExamCardPage extends Page
     public function elements()
     {
         return [
-            '@examFeedbackNav' => "[id^='exam-feedback-nav']",
+            '@examFeedbackNav' => "[id^='exam1-feedback-nav']",
         ];
     }
 }

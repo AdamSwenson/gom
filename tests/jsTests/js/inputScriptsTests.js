@@ -91,7 +91,7 @@ module('inputScriptsTests.js AJAX calls to getExamInfo', {
     }
 });
 /**
- * The autocomplete function will set the sid in the exam object and then make a json post query, this checks the latter
+ * The autocomplete function will set the sid in the exam1 object and then make a json post query, this checks the latter
  * @returns {undefined}
  */
 asyncTest('getExamInfo() | Test call to getExamInfo', function () {

@@ -41,7 +41,7 @@ class ReportIndexCest
     public function checkToggleDropdown(AcceptanceTester $I)
     {
 
-        $I->amGoingTo("Click the dropdown toggle button for each exam and see the expected options");
+        $I->amGoingTo("Click the dropdown toggle button for each exam1 and see the expected options");
         $I->dontSeeElement(['class' => 'dropdown-menu']);
         for ( $i = 1; $i <= $this->numberOfExams; $i++ )
         {

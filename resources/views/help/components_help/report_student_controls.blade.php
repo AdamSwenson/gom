@@ -24,7 +24,7 @@
             <p class="answer">
                 This can also be helpful if you discover a grading error and want to update a few students' scores and feedback
                 after
-                the exam has been released. They will be sent the same link as in the original email (whereas, if you had <a href="#{{\App\ViewTools\HelpLinks::$reportLock['id']}}">locked</a> and then re-released the whole exam, every student would need to receive a new link).
+                the exam1 has been released. They will be sent the same link as in the original email (whereas, if you had <a href="#{{\App\ViewTools\HelpLinks::$reportLock['id']}}">locked</a> and then re-released the whole exam1, every student would need to receive a new link).
             </p>
 
         </div>
@@ -44,7 +44,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">By clicking the Review button, you can preview the feedback that the student will receive. </p>
-            <p class="answer">This is often helpful in office hours when a student wants to talk about their exam, but does not have a printed copy of their feedback.</p>
+            <p class="answer">This is often helpful in office hours when a student wants to talk about their exam1, but does not have a printed copy of their feedback.</p>
         </div>
         <div class="col-lg-6">
             <div class="col-lg-6">

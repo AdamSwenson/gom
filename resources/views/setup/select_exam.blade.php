@@ -2,12 +2,12 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Setup exam')
+@section('pageTitle', 'Setup exam1')
 
-@section('description', 'Create, edit, clone or delete an exam')
+@section('description', 'Create, edit, clone or delete an exam1')
 
 @section('otherCss')
-    <link rel="stylesheet" href="{{ asset('css/select-exam-package.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/select-exam1-package.css') }}">
 @endsection
 
 @section('body')
@@ -17,7 +17,7 @@
                 <li class="next">
                     <a id="forwardNavButton"
                        href="{{ url('exams') }}"
-                       title="Create new exam">Create New Exam
+                       title="Create new exam1">Create New Exam
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                 </li>
             </ul>
@@ -36,32 +36,32 @@
             </thead>
             <tbody>
             @if ( sizeof($exams) > 0 )
-                @foreach($exams as $exam)
-                    <tr id="examRow{{ $exam->getId() }}">
+                @foreach($exams as $exam1)
+                    <tr id="examRow{{ $exam1->getId() }}">
                         <td style="vertical-align:middle; width: 10%;">
-                            {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
+                            {{ $exam1->getTerm() }} {{ $exam1->getYear() }}</td>
                         <td style="vertical-align:middle">
-                            {{ $exam->getName() }}</td>
-                        <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
-                        <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
+                            {{ $exam1->getName() }}</td>
+                        <td style="vertical-align: middle">{{ $numberOfQuestions[$exam1->getId()] or '0' }}</td>
+                        <td style="vertical-align: middle">{{ $numberOfStudents[$exam1->getId()] or '0' }}</td>
                         <!-- edit / clone / delete buttons -->
                         <td style="text-align:right;">
-                            <a id="editExamButton{{$exam->getId()}}"
+                            <a id="editExamButton{{$exam1->getId()}}"
                                class="editExam btn btn-info"
-                               href="{{ url('exam/'.$exam->getId().'/edit') }}"
+                               href="{{ url('exam1/'.$exam1->getId().'/edit') }}"
                                title="Edit Exam">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 Edit
                             </a>
-                            <a id="cloneExamButton{{$exam->getId()}}"
+                            <a id="cloneExamButton{{$exam1->getId()}}"
                                class="cloneExam btn btn-default"
-                               href="{{ url('exam/'.$exam->getId().'/clone') }}"
+                               href="{{ url('exam1/'.$exam1->getId().'/clone') }}"
                                title="Clone Exam">
                                 <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
                             </a>
-                            <a id="deleteExamButton{{$exam->getId()}}"
+                            <a id="deleteExamButton{{$exam1->getId()}}"
                                class="deleteExam btn btn-danger"
-                               data-exam-id="{{ $exam->getId() }}"
+                               data-exam1-id="{{ $exam1->getId() }}"
                                title="Delete Exam">
                                 <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                                 Delete
@@ -89,7 +89,7 @@
         //The tab to be set as active
         var activeTab = 'navSetup';
     </script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/exam-select-package.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="{{ asset('js/exam1-select-package.js') }}"></script>
 @endsection
 
 

@@ -19,7 +19,7 @@ class ReleaseAndLockCest
 //        $this->toHideExamId = $I->haveRecord('exams', ['user_id' => 1, 'term' => 'dfljdfljdf',
 //                                           'year' => 2015, 'released' => 1]);
 
-        $I->wantTo("Make sure that the /report page behaves correctly for releasing and locking an exam. (Other /report actions are handled separately)");
+        $I->wantTo("Make sure that the /report page behaves correctly for releasing and locking an exam1. (Other /report actions are handled separately)");
         ReportIndexPage::navigateToReportIndexPage($I);
     }
 
@@ -95,7 +95,7 @@ class ReleaseAndLockCest
      */
     public function releaseExam(AcceptanceTester $I)
     {
-        $I->wantTo("release an exam and see the expected messages and page changes");
+        $I->wantTo("release an exam1 and see the expected messages and page changes");
 
         $I->amGoingTo("Click the release button and check that see confirmation message");
         $I->click(ReportIndexPage::releaseToggleLocator($this->toReleaseExamId));
@@ -122,7 +122,7 @@ class ReleaseAndLockCest
         $I->click(BootboxModals::bootboxAlertOkButtonLocator());
         BootboxModals::waitForBootboxModal($I, true, true);
 
-        $I->expectTo("see that the toggle for the exam has changed state");
+        $I->expectTo("see that the toggle for the exam1 has changed state");
         ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId, true);
 
     }
@@ -135,7 +135,7 @@ class ReleaseAndLockCest
      */
     public function hideExam(AcceptanceTester $I)
     {
-        $I->wantTo("hide the exam which I just released and verify that it is no longer released");
+        $I->wantTo("hide the exam1 which I just released and verify that it is no longer released");
 
         $I->amOnPage(ReportIndexPage::$URL);
         $I->waitForElementVisible(ReportIndexPage::$mainBodyLocator);
@@ -160,7 +160,7 @@ class ReleaseAndLockCest
         $I->click(BootboxModals::bootboxAlertOkButtonLocator());
         BootboxModals::waitForBootboxModal($I, true, true);
 
-        $I->expectTo("see that the toggle for exam is back to the unreleased state");
+        $I->expectTo("see that the toggle for exam1 is back to the unreleased state");
         ReportIndexPage::checkExamReleased($I, $this->toHideExamId);
 
     }
@@ -173,7 +173,7 @@ class ReleaseAndLockCest
      */
     public function reReleaseExam(AcceptanceTester $I)
     {
-        $I->wantTo("re-release the exam which I just released and verify that get the appropriate message");
+        $I->wantTo("re-release the exam1 which I just released and verify that get the appropriate message");
         $I->amGoingTo("Click the release button and check that see confirmation message");
         $I->click(ReportIndexPage::releaseToggleLocator($this->toReReleaseExamId));
         $I->waitForElementVisible(ReportIndexPage::$confirmationModalLocator);
@@ -197,7 +197,7 @@ class ReleaseAndLockCest
         $I->click(BootboxModals::bootboxAlertOkButtonLocator());
         BootboxModals::waitForBootboxModal($I, true, true);
 
-        $I->expectTo("see that the toggle for exam is back to the unreleased state");
+        $I->expectTo("see that the toggle for exam1 is back to the unreleased state");
         ReportIndexPage::checkExamReleased($I, $this->toReReleaseExamId);
 
     }

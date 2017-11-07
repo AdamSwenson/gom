@@ -28,7 +28,7 @@ test('StatsData receiveAverageExam', function () {
     st.setFormatter(formatter);
 
     st.receiveAverageExam(goodvalue);
-    equal(st.avgExam, 2, "Average exam converted to minutes");
+    equal(st.avgExam, 2, "Average exam1 converted to minutes");
 });
 test('StatsData receiveGradeRemaining', function () {
     var goodvalue = 120;

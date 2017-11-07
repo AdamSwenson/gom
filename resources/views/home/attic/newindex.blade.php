@@ -102,7 +102,7 @@
                         </p>
                         <p class="text-left"><strong>Grade:</strong>
                         <a href="#" class="instructionTooltip instructionOrder2"
-                           data-toggle="tooltip" title="The exam grade automatically updates">
+                           data-toggle="tooltip" title="The exam1 grade automatically updates">
                             <mark>@{{ grade }}</mark>
                             </a>
                         </p>

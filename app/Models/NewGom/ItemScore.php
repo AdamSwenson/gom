@@ -5,6 +5,7 @@ namespace App\Models\NewGom;
 use App\BaseModel;
 use App\Exam;
 use App\Item;
+use App\Kumi;
 use App\Student;
 use App\User;
 
@@ -22,6 +23,13 @@ class ItemScore extends BaseModel
     {
         return $this->belongsTo(Exam::class);
     }
+
+//    /**
+//     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+//     */
+//    public function kumis(){
+//        return $this->hasManyThrough(Kumi::class, Student::class, 'id', 'kumi_id', 'student_id');
+//    }
 
     public function item()
     {

@@ -1,4 +1,4 @@
-<!-- Release an exam, un-release an exam, view analytics and review student feedback -->
+<!-- Release an exam1, un-release an exam1, view analytics and review student feedback -->
 @extends('layouts.master')
 @section('pageTitle', 'Reports | gradeomatic')
 @section('description', 'Handle post-grading tasks')
@@ -11,7 +11,7 @@
     <div id="examControlsPage">
         <div id="app">
             <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Post-Grading Tasks</h3>
-            <h4>Release grades to students or view data about an exam</h4>
+            <h4>Release grades to students or view data about an exam1</h4>
 
             <div class="panel panel-default">
                 <table class="table">
@@ -25,8 +25,8 @@
 
                     <tbody>
                     @if ( sizeof($exams) > 0 )
-                        @foreach($exams as $exam)
-                            <?php $examId = $exam->id or '0'; ?>
+                        @foreach($exams as $exam1)
+                            <?php $examId = $exam1->id or '0'; ?>
                             @include('reports.partials.exam_controls_tr_dropdown')
                         @endforeach
                     @else
@@ -51,7 +51,7 @@
 //        var activeTab = '';
         var baseUrl = '{!! url('') !!}';
     </script>
-    <script type="text/javascript" src="{{ asset('js/report-exam-controls-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-exam1-controls-package.js') }}"></script>
 @endsection
 
 

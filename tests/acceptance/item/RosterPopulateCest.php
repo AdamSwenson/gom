@@ -7,7 +7,7 @@ class ItemRosterPopulateCest
 {
 
 public $examWithQuestionsId = 1;
-#Exam with no questions is exam #4
+#Exam with no questions is exam1 #4
 public $examId;
 
     public function _before(AcceptanceTester $I)
@@ -17,7 +17,7 @@ public $examId;
         $I->test_login($I);
         $I->wait(2);
 # Go to page
-        $I->amOnPage("/exam/{$this->examId}/student/edit");
+        $I->amOnPage("/exam1/{$this->examId}/student/edit");
         $I->wait(2);
     }
 
@@ -82,15 +82,15 @@ public $examId;
         $I->click(RosterEditPage::$forwardNavButton);
 
 # Properly redirected
-        /* If there are no questions on the exam, it will redirect to the edit exam
+        /* If there are no questions on the exam1, it will redirect to the edit exam1
          * Otherwise, the default destination is the edit elements page.
          *
-         * Since we've created a brand-new exam for this, we should go to the edit exam
+         * Since we've created a brand-new exam1 for this, we should go to the edit exam1
          * page
          */
         $I->amGoingTo("Verify that I was properly redirected");
         $I->seeInTitle("Edit Exam | gradeomatic");
-        $I->seeInCurrentUrl("exam/{$this->examId}/edit");
+        $I->seeInCurrentUrl("exam1/{$this->examId}/edit");
 //$I->see('5 students added');
 
     }
@@ -142,9 +142,9 @@ public $examId;
     public function checkRedirection(AcceptanceTester $I){
 
 
-        $I->amGoingTo("Check that we will get the default redirection experience if the exam has questions");
+        $I->amGoingTo("Check that we will get the default redirection experience if the exam1 has questions");
         # Go to page
-        $I->amOnPage("/exam/{$this->examWithQuestionsId}/student/edit");
+        $I->amOnPage("/exam1/{$this->examWithQuestionsId}/student/edit");
         $I->wait(2);
         // Make sure seeing what should
         RosterEditPage::verifyRosterEditPageIntact($I);
@@ -157,7 +157,7 @@ public $examId;
         //since we don't need to know which question id is involved, we split this
         //between two lines
         //the actual url would be http://localhost:8000/exam/3/question/15/element/edit
-        $I->seeInCurrentUrl("/exam/{$this->examWithQuestionsId}/question");
+        $I->seeInCurrentUrl("/exam1/{$this->examWithQuestionsId}/question");
         $I->seeInCurrentUrl("/element/edit");
 
     }

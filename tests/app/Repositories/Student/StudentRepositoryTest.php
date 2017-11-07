@@ -56,7 +56,7 @@ class StudentRepositoryTest extends \TestCase
 
     /**
      * Builds test data and a StudentRequest object.
-     * Also creates a new exam and sets it to $this->exam
+     * Also creates a new exam1 and sets it to $this->exam1
      *
      * @param int $numberNew Number of brand new students to have in request
      * @param int $numberOriginal Number of existing unaltered students to have in request
@@ -67,7 +67,7 @@ class StudentRepositoryTest extends \TestCase
     {
         //Make enough preexisting students to cover the needs for unaltered and altered
         $numberPreexisting = $numberOriginal + $numberAltered;
-        //Create new exam so have blank slate of students
+        //Create new exam1 so have blank slate of students
         $this->exam = factory(Exam::class)->create();
         $this->kumi = factory(Kumi::class)->create();
         $this->exam->classes()->save($this->kumi);
@@ -217,8 +217,8 @@ class StudentRepositoryTest extends \TestCase
 //    public function setupExamWithStudents()
 //    {
 //        $this->kumi = factory(Kumi::class)->create();
-//        $this->exam = factory(Exam::class)->create();
-//        $this->kumi->exams()->attach($this->exam);
+//        $this->exam1 = factory(Exam::class)->create();
+//        $this->kumi->exams()->attach($this->exam1);
 //        //create students and put in expected order
 //        $this->students = factory(Student::class, 5)->create();
 //        $this->students = $this->students->sortBy('last_name');
@@ -241,9 +241,9 @@ class StudentRepositoryTest extends \TestCase
 
         # call
         //case where loading from id
-        $result1 = $this->object->load_students_by_exam($fixture['exam']->id);
+        $result1 = $this->object->load_students_by_exam($fixture['exam1']->id);
         //case where loading from object
-        $result2 = $this->object->load_students_by_exam($fixture['exam']);
+        $result2 = $this->object->load_students_by_exam($fixture['exam1']);
 
         # check
         //check results of loading by id
@@ -260,7 +260,7 @@ class StudentRepositoryTest extends \TestCase
         $this->assertNotEmpty($result2);
         $this->assertEquals(sizeof($fixture['studentIds']), sizeof($result2), "Number of students as expected");
 
-        //check results of loading from exam
+        //check results of loading from exam1
         $result2Ids = [];
         foreach ( $result2 as $r )
         {
@@ -766,10 +766,10 @@ class StudentRepositoryTest extends \TestCase
         $this->setupExamWithStudents();
 
         #prep
-//        $exam = Exam::find(1);
-//        $existingStudents = $exam->getAllAssociatedStudents();
-        //make sure there are students associated with the exam
-        $this->assertTrue(count($this->students) > 0, "At least one student associated with exam");
+//        $exam1 = Exam::find(1);
+//        $existingStudents = $exam1->getAllAssociatedStudents();
+        //make sure there are students associated with the exam1
+        $this->assertTrue(count($this->students) > 0, "At least one student associated with exam1");
         $emptyRequest = new StudentRequest();
 
         #call

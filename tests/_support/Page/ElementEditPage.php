@@ -90,7 +90,7 @@ public static function valenceTextPath($subtask, $valence){
 
     public static function expectedRedirectRoute($examId, $questionId)
     {
-        return "/exam/{$examId}/question/{$questionId}/element/edit";
+        return "/exam1/{$examId}/question/{$questionId}/element/edit";
 
 }
 
@@ -105,7 +105,7 @@ public static function valenceTextPath($subtask, $valence){
      */
     public static function route($examId, $questionId)
     {
-        return "/exam/{$examId}/question/{$questionId}/element/edit";
+        return "/exam1/{$examId}/question/{$questionId}/element/edit";
 
     }
 

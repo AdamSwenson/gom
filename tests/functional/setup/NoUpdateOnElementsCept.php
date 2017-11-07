@@ -8,7 +8,7 @@ $I->wantTo('Click past the element edit page and have nothing in the database ch
 $I->disableMiddleware();
 
 /* --------------------------------------- Open the page */
-$I->amOnPage('/exam/1/question/1/element/edit');
+$I->amOnPage('/exam1/1/question/1/element/edit');
 
 /* --------------------------------------- Check that opened correctly */
 $I->seeInTitle("Edit Elements | gradeomatic");
@@ -22,7 +22,7 @@ $I->submitForm('#elementForm', ['nextAction' => 2]);
 
 //Check that sent to next page
 $I->canSeeResponseCodeIs(200);
-$I->seeInCurrentUrl('/exam/1/question/2/element/edit');
+$I->seeInCurrentUrl('/exam1/1/question/2/element/edit');
 $I->seeInTitle("Edit Elements | gradeomatic");
 
 //Verify that assignments not altered

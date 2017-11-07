@@ -1,4 +1,4 @@
-<!-- Used by 'edit_exam' and 'create_exam' to display the fields for exam name, term, year -->
+<!-- Used by 'edit_exam' and 'create_exam' to display the fields for exam1 name, term, year -->
 <div class="row container">
     <div class="col-lg-10">
         <!-- name input -->
@@ -8,17 +8,17 @@
                    class="form-control input-lg"
                    id="name"
                    name="name"
-                   value="{{ isset($exam) ? $exam->getName() : '' }}"
+                   value="{{ isset($exam1) ? $exam1->getName() : '' }}"
                    placeholder="Enter a descriptive name for this test (e.g., English 101 Exam #1)"
                    aria-describedby="basic-addon1">
         </div>
         <br/>
         <!-- term selector -->
-        <input name="examTerm" type="hidden" id="hiddenTerm" value="{{ isset($exam) ? $exam->getTerm() : '' }}"/>
+        <input name="examTerm" type="hidden" id="hiddenTerm" value="{{ isset($exam1) ? $exam1->getTerm() : '' }}"/>
 
         <div class="btn-group btn-group">
             <button class="btn btn-primary dropdown-toggle" id="term" title="Choose Exam Term"
-                    data-toggle="dropdown">{{ isset($exam) ? $exam->getTerm() : 'Term' }} <span
+                    data-toggle="dropdown">{{ isset($exam1) ? $exam1->getTerm() : 'Term' }} <span
                         class="glyphicon glyphicon-menu-down"></span></button>
             <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">
                 @foreach($terms as $term)
@@ -30,13 +30,13 @@
         <input name="examYear"
                type="hidden"
                id="hiddenYear"
-               value="{{ isset($exam) ? $exam->getYear() : '' }}"/>
+               value="{{ isset($exam1) ? $exam1->getYear() : '' }}"/>
 
         <div class="btn-group btn-group">
             <button class="btn btn-primary dropdown-toggle"
                     id="year"
                     title="Choose Exam Year"
-                    data-toggle="dropdown">{{ isset($exam) ? $exam->getYear() : 'Year' }}
+                    data-toggle="dropdown">{{ isset($exam1) ? $exam1->getYear() : 'Year' }}
                 <span class="glyphicon glyphicon-menu-down"></span></button>
             <ul class="dropdown-menu"
                 id="yearList"
@@ -48,9 +48,9 @@
             </ul>
         </div>
         <p>
-        <?php isset($exam) ? $examId = $exam->getId() : $examId = 0; ?>
-        <div style="display: {{ isset($exam) ? 'visible' : 'none' }}">
-            <a href="{{ url('exam/'.$examId.'/student/edit') }}"
+        <?php isset($exam1) ? $examId = $exam1->getId() : $examId = 0; ?>
+        <div style="display: {{ isset($exam1) ? 'visible' : 'none' }}">
+            <a href="{{ url('exam1/'.$examId.'/student/edit') }}"
                class="btn btn-info"
                title="Edit Student Roster"
                style="cursor:pointer;"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>

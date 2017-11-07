@@ -24,7 +24,7 @@ class ItemCreateExamCest
     /**
      * @group item
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkIntact( AcceptanceTester $I )
@@ -40,7 +40,7 @@ class ItemCreateExamCest
      */
     public function enterTextInExamName( AcceptanceTester $I )
     {
-        $I->amGoingTo('Enter some text in the exam name box, then return to the page to make sure that it has been saved');
+        $I->amGoingTo('Enter some text in the exam1 name box, then return to the page to make sure that it has been saved');
 
     }
 
@@ -87,7 +87,7 @@ class ItemCreateExamCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkTermDropdownWorking( AcceptanceTester $I )
@@ -121,7 +121,7 @@ class ItemCreateExamCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkYearDropdownWorking( AcceptanceTester $I )
@@ -146,7 +146,7 @@ class ItemCreateExamCest
     /**
      * @group item
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function createExam( AcceptanceTester $I )

@@ -8,7 +8,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Every exam has at least one question. Again, the system is designed to be extremely
+            <p class="answer">Every exam1 has at least one question. Again, the system is designed to be extremely
                 flexible. 'Questions' are really just whatever items a student's grade depends upon.</p>
 
             <p class="answer">For example, if you were using the gradeomatic to grade long form essays, you could
@@ -50,7 +50,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">In setting up the exam, you create a <i>question</i> by giving it a brief
+            <p class="answer">In setting up the exam1, you create a <i>question</i> by giving it a brief
                 <code>Question Name</code> (to use as a reminder while grading) and, optionally, the full <code>Question Text</code> that was presented to the student.</p>
 
             <blockquote>
@@ -87,7 +87,7 @@
 
             <p class="answer">If you will not assign grades with the gradeomatic (and don't need question data for assessment), set the max score to 0.</p>
 
-            <p class="answer">If you want all questions to count equally toward the overall exam grade, assign each question the same number of points. If all questions count equally, we recommend assigning each question 100 points.</p>
+            <p class="answer">If you want all questions to count equally toward the overall exam1 grade, assign each question the same number of points. If all questions count equally, we recommend assigning each question 100 points.</p>
         </div>
 
         <div class="col-lg-6">
@@ -237,10 +237,10 @@
     <div class="row">
         <div class="col-lg-6">
 
-            <p class="answer">We mentioned earlier that while an exam must have at least one question, there is
+            <p class="answer">We mentioned earlier that while an exam1 must have at least one question, there is
                 no need for the questions to be 'questions' in the traditional sense.</p>
 
-            <p class="answer">For example, suppose you have an exam with four
+            <p class="answer">For example, suppose you have an exam1 with four
                 questions
                 each worth 20%
                 and want the student's grammar on all questions to count for 20%. Simply add an extra question
@@ -281,7 +281,7 @@
                 would see all
                 the feedback but without a grade.</p>
 
-            <p class="answer">Then, when the final draft is turned in, simply clone the 'exam' you used for the
+            <p class="answer">Then, when the final draft is turned in, simply clone the 'exam1' you used for the
                 rough draft and
                 change the points for each question to their actual values.</p>
         </div>

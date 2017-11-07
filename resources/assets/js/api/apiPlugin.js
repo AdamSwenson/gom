@@ -111,6 +111,7 @@ export default function ( store ) {
 
         switch ( type ) {
 
+            // ******************** Items
             /**
              * This mutation type indicates that we are supposed to ask
              * the server to create something for us
@@ -287,6 +288,10 @@ export default function ( store ) {
             case mTypes.destroyNote:
                 destroyNoteRequest( store, payload.obj );
                 break;
+
+
+            // ******************** Scores
+
 
 
 

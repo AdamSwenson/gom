@@ -42,7 +42,7 @@ class SetupTest extends DuskTestCase
     /**
      * @group b
      * @group setup
-     * @group exam
+     * @group exam1
      * @group items
      * @group addItem
      */
@@ -54,11 +54,11 @@ class SetupTest extends DuskTestCase
                 //prep
                 ->visit(new SetupPage())
                 ->waitFor(SetupPage::$mainBodyLocator)
-                ->assertVisible('.add-child-to-exam-button')
+                ->assertVisible('.add-child-to-exam1-button')
                 ->assertVisible('@addChildButton')
                 ->assertMissing('.item-card-component')
                 //call
-                ->click("[id^='add-child-to-exam-button-']")
+                ->click("[id^='add-child-to-exam1-button-']")
                 ->waitFor('#item-card-1-0')
                 ->assertVisible('.item-card-component')
                 ->pause(10000);
@@ -78,9 +78,9 @@ class SetupTest extends DuskTestCase
     /**
      * @group aa
      * @group setup
-     * @group exam
+     * @group exam1
      * @group editExam
-     * Alter the exam name and make sure it persists
+     * Alter the exam1 name and make sure it persists
      */
     public function testEditExamName()
     {
@@ -92,17 +92,17 @@ class SetupTest extends DuskTestCase
                 //prep
                 ->visit(new SetupPage())
                 ->waitFor(SetupPage::$mainBodyLocator)
-                ->assertVisible('#exam-name')
+                ->assertVisible('#exam1-name')
                 //call
-                ->type('#exam-name', $testText)
-                ->assertInputValue('#exam-name', $testText)
+                ->type('#exam1-name', $testText)
+                ->assertInputValue('#exam1-name', $testText)
                 ->pause(2000);
 
             //make sure it persisted
             $examId = $browser->value('#examId');
             $browser->navigateToExam($examId, $user)
-                ->assertVisible('#exam-name')
-                ->assertInputValue('#exam-name', $testText);
+                ->assertVisible('#exam1-name')
+                ->assertInputValue('#exam1-name', $testText);
         });
 
     }
@@ -125,7 +125,7 @@ class SetupTest extends DuskTestCase
                 ->visit(new SetupPage())
                 ->waitFor(SetupPage::$mainBodyLocator)
                 //call
-                ->click('.add-child-to-exam-button')
+                ->click('.add-child-to-exam1-button')
                 //check creation
                 ->assertVisible('.item-card-component')
                 ->assertVisible('#item-card-1-0')
@@ -209,7 +209,7 @@ class SetupTest extends DuskTestCase
     /**
      * @group aa
      * @group setup
-     * @group exam
+     * @group exam1
      * @group createExam
      */
     public function testMakeExam()
@@ -217,7 +217,7 @@ class SetupTest extends DuskTestCase
 //        $user = factory(User::class)->create();
         Auth::loginUsingId(1);
         $exam = factory(Exam::class)->create();
-//        $exam->user()->save($user);
+//        $exam1->user()->save($user);
         $order = SetupPage::makeExamData($exam);
 
         $this->browse(function ( Browser $browser ) use ( $exam ) {

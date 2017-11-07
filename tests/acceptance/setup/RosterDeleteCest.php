@@ -10,7 +10,7 @@ class RosterDeleteCest
     public function _before(AcceptanceTester $I)
     {
         $this->students = RosterEditPage::students1Through5();
-        #Exam with questions is exam #1
+        #Exam with questions is exam1 #1
         $this->examId = $I->examIdWithQuestions();
 
         $I->wantTo("Remove a roster and see that all students on it were removed from all tables");
@@ -88,7 +88,7 @@ class RosterDeleteCest
      */
     public function deleteRoster(AcceptanceTester $I)
     {
-        $I->wantTo("Remove all students associated with the exam");
+        $I->wantTo("Remove all students associated with the exam1");
 
         $I->expect("that the confirmation modal is not visible");
         $I->dontSeeElement(RosterEditPage::$deleteConfirmationModalLocator);
@@ -148,8 +148,8 @@ class RosterDeleteCest
         $I->click(RosterEditPage::$forwardNavLocator);
         $I->waitForElementVisible(ExamEditPage::$mainBodyLocator);
 
-        $I->expect("to have been redirected to the edit exam page");
-        $I->seeInCurrentUrl("exam/{$this->examId}/edit");
+        $I->expect("to have been redirected to the edit exam1 page");
+        $I->seeInCurrentUrl("exam1/{$this->examId}/edit");
 
 //TODO Do I want to check other tables to make sure the removal cascaded?
         $I->expect("that all the students were removed from the database");

@@ -190,7 +190,7 @@ class AccessKeyTest extends \TestCase
         $result = $this->object->exam;
 
         #check
-        $this->assertInstanceOf(Exam::class, $result, "returns an exam");
+        $this->assertInstanceOf(Exam::class, $result, "returns an exam1");
         $this->assertEquals($expect, $result->id, "has expected id");
     }
 

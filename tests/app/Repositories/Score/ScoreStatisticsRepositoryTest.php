@@ -47,7 +47,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $numberStudents = 5;
 
         $fixture = $this->makeExamWAssignedQuestions($numberQuestions);
-        $exam = $fixture['exam'];
+        $exam = $fixture['exam1'];
         $questionIds = $fixture['questionIds'];
         $questions = $fixture['questions'];
         $students = factory(Student::class, $numberStudents)->create();
@@ -214,7 +214,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
             $currentTime = Carbon::parse($r['dateTime']);
             if ( ! is_null($prior) )
             {
-                $this->assertTrue($currentTime->gte($prior), "This exam was graded after the exam in the previous element of the result");
+                $this->assertTrue($currentTime->gte($prior), "This exam1 was graded after the exam1 in the previous element of the result");
             }
             $prior = $currentTime;
         }
@@ -407,7 +407,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
 //        $expectedMean = array_sum($scores) / count($scores);
 //
 //        //call
-//        $result = $this->object->getStatsForElementAssignment($this->exam, self::$elementAssignmentId, $returnValueOf=null);
+//        $result = $this->object->getStatsForElementAssignment($this->exam1, self::$elementAssignmentId, $returnValueOf=null);
 //
 //        //check
 //        //Make sure internal array was populated and made into laravel collection
@@ -435,7 +435,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
 //        $expectedMean = array_sum($scores) / count($scores);
 //
 //        //call
-//        $result = $this->object->getStatsForElementAssignment($this->exam, self::$elementAssignmentId, $returnValueOf='mean');
+//        $result = $this->object->getStatsForElementAssignment($this->exam1, self::$elementAssignmentId, $returnValueOf='mean');
 //
 //        //check
 //        //Make sure internal array was populated and made into laravel collection
@@ -460,7 +460,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
 //        $expectedMean = array_sum($scores) / count($scores);
 //
 //        //call
-//        $result = $this->object->getStatsForQuestionAssignment($this->exam, self::$questionAssignmentId, $returnValueOf=null);
+//        $result = $this->object->getStatsForQuestionAssignment($this->exam1, self::$questionAssignmentId, $returnValueOf=null);
 //
 //        //check
 //        //Make sure internal array was populated and made into laravel collection
@@ -488,7 +488,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
 //        $expectedMean = array_sum($scores) / count($scores);
 //
 //        //call
-//        $result = $this->object->getStatsForQuestionAssignment($this->exam, self::$questionAssignmentId, $returnValueOf=ScoreStatisticsRepository::STAT_MEAN);
+//        $result = $this->object->getStatsForQuestionAssignment($this->exam1, self::$questionAssignmentId, $returnValueOf=ScoreStatisticsRepository::STAT_MEAN);
 //
 //        //check
 //        //Make sure internal array was populated and made into laravel collection

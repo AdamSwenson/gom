@@ -4,10 +4,10 @@
 
 /**
  * Sets up the fixture
- * #8released  Released button for unreleased exam
- * #9released  Released button for released exam
- * #6locked    Locked button for unlocked exam
- * #7locked    Locked button for locked exam
+ * #8released  Released button for unreleased exam1
+ * #9released  Released button for released exam1
+ * #6locked    Locked button for unlocked exam1
+ * #7locked    Locked button for locked exam1
  *
  * #totalExams Text field for total exams
  */

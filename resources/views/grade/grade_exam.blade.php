@@ -1,12 +1,12 @@
-<!-- the grade exam tool -->
+<!-- the grade exam1 tool -->
 @extends('layouts.master')
 
 @section('pageTitle', 'Grade Exam | gradeomatic')
-@section('description', 'Grade an exam')
+@section('description', 'Grade an exam1')
 
 @section('otherCss')
     <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
-    <script src="{{asset('js/grade-exam-data.js')}}"></script>
+    <script src="{{asset('js/grade-exam1-data.js')}}"></script>
 @endsection
 
 @section('body')
@@ -15,9 +15,9 @@
         <div id="questionAndSliderColumn"
              class="col-md-8 questionAndSliderColumn">
 
-            <h3 data-exam-id="{{ $exam->getId() }}">
+            <h3 data-exam1-id="{{ $exam1->getId() }}">
                 <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                {{ $exam->getTerm() }}, {{ $exam->getYear() }} "{{ $exam->getName() }}"
+                {{ $exam1->getTerm() }}, {{ $exam1->getYear() }} "{{ $exam1->getName() }}"
             </h3>
 
             <h4 id="selectPrompt">Select a student to begin grading</h4>
@@ -101,6 +101,6 @@
 
     </script>
 
-    <script type="text/javascript" src="{{ asset('js/grade-exam-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/grade-exam1-package.js') }}"></script>
 
 @endsection

@@ -1,9 +1,9 @@
 <section id="{{\App\ViewTools\HelpLinks::$gradeExamSelect['id'] }}" class="group">
-    <h4 class="text-center">Choose the exam to grade</h4>
+    <h4 class="text-center">Choose the exam1 to grade</h4>
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">When you are done setting up the exam and ready to grade, click <code>Grade</code> in the
+            <p class="answer">When you are done setting up the exam1 and ready to grade, click <code>Grade</code> in the
                 navigation bar at the top of the page.</p>
         </div>
         <div class="col-lg-6">
@@ -23,7 +23,7 @@
             @include('help.partials.picture_container',
             ['imageFile' => 'grade/grade_select_page.jpg',
             'altText' =>'The grade select page',
-            'caption' => 'Select exam to grade'])
+            'caption' => 'Select exam1 to grade'])
         </div>
 
     </div>
@@ -31,7 +31,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Click <span class="btn btn-primary" title="Grade exam"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</span> to start grading the exam</p>
+            <p class="answer">Click <span class="btn btn-primary" title="Grade exam1"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</span> to start grading the exam1</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -48,7 +48,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">The student selection area allows you to choose which exam to grade.</p>
+            <p class="answer">The student selection area allows you to choose which exam1 to grade.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -104,13 +104,13 @@
             <p class="answer">The dashboard displays statistics to keep you motivated and grading quickly.</p>
 
             <p class="answer">The button marked <code>Pause</code> or <code>Start</code> manually starts and stops the timer. When you take a
-                break, it's a good idea to click pause. Otherwise the timer will keep running for the last exam you graded. This will throw off the average time and reduce the accuracy of the estimated remaining time.</p>
+                break, it's a good idea to click pause. Otherwise the timer will keep running for the last exam1 you graded. This will throw off the average time and reduce the accuracy of the estimated remaining time.</p>
 
             <p class="answer">The fields displayed in the dashboard are</p>
 
             <dl class="dl-horizontal">
                 <dt>Time This Exam</dt>
-                <dd>How long you have spent grading the current exam.</dd>
+                <dd>How long you have spent grading the current exam1.</dd>
 
                 <dt>Average Time</dt>
                 <dd>The average amount of time spent grading for the exams you have graded so far.</dd>
@@ -120,7 +120,7 @@
 
                 <dt>Time Remaining</dt>
                 <dd>The estimated amount of time until you are done grading. It is calculated by multiplying the average
-                    exam time with the number of ungraded students (with a few basic corrections for outliers).
+                    exam1 time with the number of ungraded students (with a few basic corrections for outliers).
                 </dd>
             </dl>
 
@@ -143,7 +143,7 @@
         <div class="col-lg-6">
             <p class="answer">When you click on a student's row, the gradeomatic loads the student's record and
                 highlights their row in blue to show that it is currently being graded. This will reveal the
-                questions for the exam and a slider for each element.</p>
+                questions for the exam1 and a slider for each element.</p>
 
         </div>
         <div class="col-lg-6">
@@ -199,7 +199,7 @@
                 score area blank.</p>
 
             <p class="answer">You may notice that once a grade is entered for at least one
-                question, the student's exam is considered graded for timing and release purposes. For example, the
+                question, the student's exam1 is considered graded for timing and release purposes. For example, the
                 values used in calculating the time remaining will update. This was necessary to accommodate exams which
                 give students multiple options of which questions to answer.</p>
         </div>
@@ -266,14 +266,14 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">
-                You might be looking for a Save button or wondering when the scores are saved for an exam.</p>
+                You might be looking for a Save button or wondering when the scores are saved for an exam1.</p>
 
             <p class="answer">
                 Unlike the setup pages where no changes were saved until you moved to the next step, during grading,
                 every
                 time you move a slider, click a button, or type in a box and then click somewhere else on the page, the
                 gradeomatic
-                sends all the data for the current exam to the server.
+                sends all the data for the current exam1 to the server.
             </p>
 
             <p class="answer">Since the data gets sent to the server behind the scenes, you may occasionally see a

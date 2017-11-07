@@ -5,11 +5,11 @@ use App\QuestionAssignment;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
 $testedScriptPath = '';
-//$testedScriptPath = asset('js/grade-exam-package.js');
+//$testedScriptPath = asset('js/grade-exam1-package.js');
 $testingScriptPath = '';
         $navTab = 'gradeNav';
         Auth::loginUsingId(1);
-$exam = factory(Exam::class)->make();
+$exam1 = factory(Exam::class)->make();
 
 $students = factory(Student::class, 5)->make();
 $questionAssignments = QuestionAssignment::where('exam_id', 2)->get();
@@ -554,7 +554,7 @@ $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
 $numQuestions = count($questionAssignments);
 
 //
-//                                             $data = ['exam'                   => $exam,
+//                                             $data = ['exam1'                   => $exam1,
 //                                                    'students'               => $students,
 //                                                    'questionAssignments'    => $questionAssignments,
 //                                                    'maxQuestionScores'      => $maxQuestionScores,
@@ -623,7 +623,7 @@ $numQuestions = count($questionAssignments);
 @endsection
 
 @section('jsScripts')
-<script type="text/javascript" src="{{ asset('js/grade-exam-data.js') }}" data-cover></script>
+<script type="text/javascript" src="{{ asset('js/grade-exam1-data.js') }}" data-cover></script>
 
 <!--<script type="text/javascript" src="../../src/www/inc/js/examSetup.js" data-cover></script>-->
 <script>
@@ -638,7 +638,7 @@ $numQuestions = count($questionAssignments);
     data.loadNumberQuestions({!! $numQuestions !!});
 
 </script>
-<script type="text/javascript" src="{{ asset('js/grade-exam-package.js') }}" data-cover></script>
+<script type="text/javascript" src="{{ asset('js/grade-exam1-package.js') }}" data-cover></script>
 <!-- Your tests file goes here -->
 <script>
     test('select student | ', function(){

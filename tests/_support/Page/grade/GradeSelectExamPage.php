@@ -17,7 +17,7 @@ class GradeSelectExamPage
     #common
     public static $mainBodyLocator = ['id' => "gradeSelectExamPage"];
     public static $pageHeadingText = "Grade Exam";
-    public static $pageSubHeadingText = "Select an exam to grade";
+    public static $pageSubHeadingText = "Select an exam1 to grade";
     public static $pageTitleText = 'Grade Exam | gradeomatic';
 
 
@@ -57,7 +57,7 @@ class GradeSelectExamPage
     {
 
         $examYear = 1990; //all exams are this year
-        return "exam{$examId}Term {$examYear}";
+        return "exam1{$examId}Term {$examYear}";
     }
 
     /**
@@ -119,7 +119,7 @@ class GradeSelectExamPage
     public static function gradeButtonTargetRoute($examId, $withRoot=false)
     {
         $prefix = ($withRoot ? self::$routeRoot : '');
-        return $prefix . "/grade/exam/{$examId}";
+        return $prefix . "/grade/exam1/{$examId}";
     }
 
     /**
@@ -129,7 +129,7 @@ class GradeSelectExamPage
     public static function assignButtonTargetRoute($examId, $withRoot=false)
     {
         $prefix = ($withRoot ? self::$routeRoot : '');
-        return $prefix . "/grade/exam/{$examId}/assign";
+        return $prefix . "/grade/exam1/{$examId}/assign";
     }
 
     /**
@@ -184,25 +184,25 @@ class GradeSelectExamPage
 
    /* ----------------------------------- tests ------------------------ */
     /**
-     * Tests whether the specified exam row is present
+     * Tests whether the specified exam1 row is present
      * @param $I
      * @param $examId
      */
     public static function checkExamRowPresentForGradeExamSelectPage($I, $examId){
-        $I->amGoingTo("Check that see exam #{$examId}term and title");
+        $I->amGoingTo("Check that see exam1 #{$examId}term and title");
         $I->see(self::examTerm($examId));
         $I->see(self::partialExamName($examId));
 
-        $I->amGoingTo("Check to make sure the stats cells are present for exam #{$examId}");
+        $I->amGoingTo("Check to make sure the stats cells are present for exam1 #{$examId}");
         $I->seeElement(self::numberGradedCellLocator($examId));
         $I->seeElement(self::numberStudentsCellLocator($examId));
         $I->seeElement(self::numberQuestionsCellLocator($examId));
 
-        $I->amGoingTo("Check that see correct grade button for exam #{$examId}");
+        $I->amGoingTo("Check that see correct grade button for exam1 #{$examId}");
         //$I->seeLink(self::$gradeButtonText, self::gradeButtonTargetRoute($examId, true));
         $I->seeElement(self::gradeButtonLocator($examId));
 
-        $I->amGoingTo("Check that see correct assign button for exam #{$examId}");
+        $I->amGoingTo("Check that see correct assign button for exam1 #{$examId}");
         //$I->seeLink(self::$assignButtonText, self::assignButtonTargetRoute($examId, true));
         $I->seeElement(self::assignButtonLocator($examId));
 
@@ -230,15 +230,15 @@ class GradeSelectExamPage
             $I->amGoingTo("Check that other people's exams are absent");
             foreach ( $examIdsWhichShouldNotSee as $id )
             {
-                $I->amGoingTo("Check that do not see exam #{$id}'s term and title");
+                $I->amGoingTo("Check that do not see exam1 #{$id}'s term and title");
                 $I->dontSee(self::examTerm($id));
                 $I->dontSee(self::partialExamName($id));
 
-                $I->amGoingTo("Check that do not see exam #{$id}'s grade button");
+                $I->amGoingTo("Check that do not see exam1 #{$id}'s grade button");
                 $I->dontSeeLink(self::$gradeButtonText,self::gradeButtonTargetRoute($id, true));
                 $I->dontSeeElement(self::gradeButtonLocator($id));
 
-                $I->expect("not to see exam #{$id} assign button");
+                $I->expect("not to see exam1 #{$id} assign button");
                 $I->dontSeeLink(self::$assignButtonText, self::assignButtonTargetRoute($id, true));
                 $I->dontSeeElement(self::assignButtonLocator($id));
             }

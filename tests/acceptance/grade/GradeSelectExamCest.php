@@ -31,7 +31,7 @@ class GradeSelectExamCest
      * @param AcceptanceTester $I
      */
     public function updateCounts(AcceptanceTester $I){
-        $I->amGoingTo('make sure the exam stats are up to date. This is not really a test. just prepping. only needs to run once. thus not going in _before');
+        $I->amGoingTo('make sure the exam1 stats are up to date. This is not really a test. just prepping. only needs to run once. thus not going in _before');
         $I->amOnPage('utilities/updateExamCounts');
         $I->wait(10);
     }
@@ -54,9 +54,9 @@ class GradeSelectExamCest
      */
     public function checkStatsDisplayed(AcceptanceTester $I){
 
-        $I->wantTo("Verify correct numbers are displayed for exam statistics");
+        $I->wantTo("Verify correct numbers are displayed for exam1 statistics");
 
-        // $scenario->incomplete('TODO Check exam statistics displayed properly');
+        // $scenario->incomplete('TODO Check exam1 statistics displayed properly');
     }
 
     /**
@@ -66,11 +66,11 @@ class GradeSelectExamCest
      */
     public function checkRedirectToGrading(AcceptanceTester $I)
     {
-        $I->wantTo("Check that I am redirected to the grading page for exam #{$this->examWithStudents}");
-        $I->amGoingTo("Click the grade button for an exam with students ");
+        $I->wantTo("Check that I am redirected to the grading page for exam1 #{$this->examWithStudents}");
+        $I->amGoingTo("Click the grade button for an exam1 with students ");
         $I->click(GradeSelectExamPage::gradeButtonLocator($this->examWithStudents));
 
-        $I->expectTo("be on the grading page for exam {$this->examWithStudents}");
+        $I->expectTo("be on the grading page for exam1 {$this->examWithStudents}");
         $I->waitForElementVisible(GradingPage::$mainBodyLocator);
         $I->seeInCurrentUrl(GradeSelectExamPage::gradeButtonTargetRoute($this->examWithStudents));
     }
@@ -82,11 +82,11 @@ class GradeSelectExamCest
      */
     public function checkRedirectToAssignment(AcceptanceTester $I)
     {
-        $I->wantTo("Click the assign button for an exam with students and make sure I am properly redirected");
-        $I->amGoingTo("Click the assign button for an exam with students ");
+        $I->wantTo("Click the assign button for an exam1 with students and make sure I am properly redirected");
+        $I->amGoingTo("Click the assign button for an exam1 with students ");
         $I->click(GradeSelectExamPage::assignButtonLocator($this->examWithStudents));
 
-        $I->expectTo("be on the assignment page for exam {$this->examWithStudents}");
+        $I->expectTo("be on the assignment page for exam1 {$this->examWithStudents}");
         $I->waitForElementVisible(GradeAssignPage::$mainBodyLocator);
         $I->seeInCurrentUrl(GradeSelectExamPage::assignButtonTargetRoute($this->examWithStudents));
     }
@@ -102,7 +102,7 @@ class GradeSelectExamCest
 //        $I->wantTo("Check that the appropriate error modal displays for attempting to GRADE exams without QUESTIONS and that I am not redirected");
 //        GradeSelectExamPage::setNumberStudents($I, $this->examWithQuestionsButNoStudentsId, '5');
 //        GradeSelectExamPage::setNumberQuestions($I, $this->examWithQuestionsButNoStudentsId, '0');
-//        $I->amGoingTo("Click the grade button for an exam with no questions ");
+//        $I->amGoingTo("Click the grade button for an exam1 with no questions ");
 //        $I->click(GradeSelectExamPage::gradeButtonXPath($this->examWithNoQuestionsId));
 //        BootboxModals::waitForBootboxModal($I, false);
 //
@@ -128,7 +128,7 @@ class GradeSelectExamCest
 //        $I->wantTo("Check that the appropriate error modal displays for attempting to ASSIGN exams without QUESTIONS and that I am not redirected");
 //        GradeSelectExamPage::setNumberStudents($I, $this->examWithQuestionsButNoStudentsId, 5);
 //        GradeSelectExamPage::setNumberQuestions($I, $this->examWithQuestionsButNoStudentsId, 0);
-//        $I->amGoingTo("Click the assign button for an exam with no questions ");
+//        $I->amGoingTo("Click the assign button for an exam1 with no questions ");
 //        $I->click(GradeSelectExamPage::assignButtonXPath($this->examWithNoQuestionsId));
 //        BootboxModals::waitForBootboxModal($I, false);
 //
@@ -154,7 +154,7 @@ class GradeSelectExamCest
 //        $I->wantTo("Check that the appropriate error modal displays for attempting to GRADE exams without STUDENTS and that I am not redirected");
 //        GradeSelectExamPage::setNumberStudents($I, $this->examWithQuestionsButNoStudentsId, 0);
 //        GradeSelectExamPage::setNumberQuestions($I, $this->examWithQuestionsButNoStudentsId, 5);
-//        $I->amGoingTo("Click the grade button for an exam with no students ");
+//        $I->amGoingTo("Click the grade button for an exam1 with no students ");
 //        $I->click(['css' => '#gradeExam' . $this->examWithQuestionsButNoStudentsId]);
 //        BootboxModals::waitForBootboxModal($I);
 //
@@ -182,7 +182,7 @@ class GradeSelectExamCest
 //        $I->wantTo("Check that the appropriate error modal displays for attempting to ASSIGN exams without STUDENTS and that I am not redirected");
 //        GradeSelectExamPage::setNumberQuestions($I, $this->examWithQuestionsButNoStudentsId, 5);
 //        GradeSelectExamPage::setNumberStudents($I, $this->examWithQuestionsButNoStudentsId, 0);
-//        $I->amGoingTo("Click the assign button for an exam with no students ");
+//        $I->amGoingTo("Click the assign button for an exam1 with no students ");
 //        $I->click(GradeSelectExamPage::assignButtonXPath($this->examWithQuestionsButNoStudentsId));
 //        BootboxModals::waitForBootboxModal($I, false);
 //

@@ -22,7 +22,7 @@ class QuestionControllerCest
         {
             $this->questions[] = $qa->getQuestion();
         }
-        $this->target = "/exam/{$this->exam->getId()}/question/updateAll";
+        $this->target = "/exam1/{$this->exam->getId()}/question/updateAll";
 
         parent::setUp();
         $this->exam = Exam::find(self::$examId);
@@ -112,7 +112,7 @@ class QuestionControllerCest
     public function noChanges(FunctionalTester $I)
     {
         //prep
-//        $target = "/exam/{$this->exam->getId()}/question/updateAll";
+//        $target = "/exam1/{$this->exam1->getId()}/question/updateAll";
         $data = $this->buildOriginalData();
         //call
         $response = $this->call('POST', $this->target, $data);
@@ -188,7 +188,7 @@ class QuestionControllerCest
         ];
 
         //call
-        // $target = "/exam/{$this->exam->getId()}/question/edit";
+        // $target = "/exam1/{$this->exam1->getId()}/question/edit";
         $response = $this->call('POST', $this->target, $data);
 
         //check

@@ -11,9 +11,9 @@
 @section('body')
     <div id="studentControlsPage" class="mainBodyLocator">
     <h3 id="examTitle"
-        data-exam-id="{{ $exam->getId() }}">
+        data-exam1-id="{{ $exam1->getId() }}">
         <span class="glyphicon glyphicon-user" aria-hidden="true"> </span> Student Controls:
-        {{ $exam->getTerm() }} {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
+        {{ $exam1->getTerm() }} {{ $exam1->getYear() }} "{{ $exam1->getName() }}"</h3>
 
     <h4>Send email notifications or review student feedback</h4>
 
@@ -29,7 +29,7 @@
         <tbody>
         @if(count($students) == 0)
             <tr>
-                <td class="noStudentsMessage" style="vertical-align:middle">This exam has no students associated with
+                <td class="noStudentsMessage" style="vertical-align:middle">This exam1 has no students associated with
                     it.
                 </td>
             </tr>
@@ -47,8 +47,8 @@
                         <a class="btn btn-info"
                            title="Review Student Feedback"
                            id="btnReview"
-                           data-feedback-available="{{ $student->isFeedBackAvailable($exam->getId()) }}"
-                           href="{{ url('report/'.$exam->getId().'/students/'.$student->getId()) }}">
+                           data-feedback-available="{{ $student->isFeedBackAvailable($exam1->getId()) }}"
+                           href="{{ url('report/'.$exam1->getId().'/students/'.$student->getId()) }}">
                             <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
                             Review
                         </a>
@@ -57,9 +57,9 @@
                            style="width:120px;"
                            id="{{ 'studentId'.$student->getId() }}"
                            title="Email Student"
-                           data-graded="{{ $student->hasBeenGraded($exam->getId()) }}"
+                           data-graded="{{ $student->hasBeenGraded($exam1->getId()) }}"
                            data-studentid="{{ $student->getId() }}"
-                           data-emailed="{{ $student->feedBackEmailSent($exam->getId()) }}">
+                           data-emailed="{{ $student->feedBackEmailSent($exam1->getId()) }}">
                             <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
                         </a>
 

@@ -22,7 +22,7 @@
             <div class="col-md-6"></div>
         </div>
     </h3>
-    <h4>{{ $exam->getTerm() }} {{ $exam->getYear() }} "{{ $exam->getName() }}"</h4>
+    <h4>{{ $exam1->getTerm() }} {{ $exam1->getYear() }} "{{ $exam1->getName() }}"</h4>
     <hr>
     <!-- student feedback copypasta from feedback.blade -->
     <?php $h = '400px'; $w = '800px'; ?>

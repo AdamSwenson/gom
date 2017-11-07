@@ -1,12 +1,12 @@
 <div class="row">
     <div class="col-lg-6">
-        <p class="answer">If you want to use the gradeomatic to assign grades, click the Assign button on the grade exam
+        <p class="answer">If you want to use the gradeomatic to assign grades, click the Assign button on the grade exam1
             select page. </p>
     </div>
     <div class="col-lg-6">
         @include('help.partials.picture_container',
         ['imageFile' => 'grade_assign/grade_select_page_assign_circled.jpg',
-        'altText' =>"Circle around the Assign button on exam selection page.",
+        'altText' =>"Circle around the Assign button on exam1 selection page.",
         'caption' => 'Manage grade distribution'])
     </div>
 </div>
@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">The gradeomatic calculates the maximum possible score on the exam from the maximum
+            <p class="answer">The gradeomatic calculates the maximum possible score on the exam1 from the maximum
                 scores of each question. It then provides suggestions for the minimum total score for each
                 letter grade. </p>
 
@@ -85,7 +85,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">When assigning grades, it is often helpful to look for natural gaps between student scores. The
-                bar chart on the lower right-hand side of the page shows the total exam score for each student along with
+                bar chart on the lower right-hand side of the page shows the total exam1 score for each student along with
                 the grade that they would receive under the present distribution.</p>
 
             <p class="answer"> To help you impartially assign grades, each number on the x axis
@@ -94,7 +94,7 @@
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'grade_assign/grade_assign_student_score_chart.jpg',
-            'altText' =>"Bar chart showing anonymous students' total exam score and grade.",
+            'altText' =>"Bar chart showing anonymous students' total exam1 score and grade.",
             'caption' => 'Visualizing total score distribution'])
         </div>
     </div>

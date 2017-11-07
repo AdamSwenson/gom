@@ -237,7 +237,7 @@ describe( "dashboard-timer tests | ", function () {
             } );
         } );
 
-        describe( "Average exam time | ", function () {
+        describe( "Average exam1 time | ", function () {
             beforeEach( function () {
                 this.totalTime = 400;
                 this.numberGraded = 4;

@@ -15,13 +15,42 @@ export const getCommentTextForActiveStudent = 'getCommentTextForActiveStudent'
 export const getExamGradeForActiveStudent = 'getExamGradeForActiveStudent'
 export const getElementScoreForActiveStudent = 'getElementScoreForActiveStudent'
 
-
-//Exam(s)
+// ================================================================
+// ==================================== EXAMS =====================
+// ================================================================
 export const getExam = 'getExam'
 export const getAllExams = 'getAllExams'
 export const getActiveExamObj = 'getActiveExamObj'
 
-//items
+// ================================================================
+// ==================================== ITEMS =====================
+// ================================================================
+
+ /**
+ * Returns list of items objects
+ * @param state
+ * @param getters
+ * @param payload
+ * @returns []
+ */
+export const getAllItems = 'getAllItems'
+
+export const getAllIndexesList = 'getAllIndexesList'
+
+/**
+ * Return list of Item objects
+ * @param state
+ * @param getters
+ * @param payload
+ * @returns []
+ */
+export const getAllItemsList = 'getAllItemsList'
+
+ /**
+ * Returns the item object. See original for
+ * parameters
+ * @type {string}
+ */
 export const getItem = 'getItem'
 
 /**
@@ -58,42 +87,12 @@ export const getItemBySerialNumber = 'getItemBySerialNumber'
 export const getItemCount = 'getItemCount'
 
 /**
- * Returns list of items objects
- * @param state
- * @param getters
- * @param payload
- * @returns []
- */
-export const getAllItems = 'getAllItems'
-
-export const getAllIndexesList = 'getAllIndexesList'
-
-/**
- * Return list of Item objects
- * @param state
- * @param getters
- * @param payload
- * @returns []
- */
-export const getAllItemsList = 'getAllItemsList'
-
-/**
- * Translates the current map of items into
- * a map with the database ids set as data on the
- * nodes.
- * This is the object which will be sent to sync
- * with the server.
- * @type {string}
- */
-export const getSortedIds = 'getSortedIds'
-
-/**
  * Returns a node from the itemMap by serial number
  * @type {string}
  */
 export const getItemNodeFromOrder = 'getItemNodeFromOrder'
 
-
+//Node properties
 export const getHeightOfNode = 'getHeightOfNode';
 export const getDepthOfNode = 'getDepthOfNode';
 
@@ -111,11 +110,26 @@ export const getItemMapCopy = 'getItemMapCopy'
 export const isItemSettingsVisible = 'isItemSettingsVisible'
 export const isExamSettingsVisible = 'isExamSettingsVisible';
 
-//Notes
+/**
+ * Translates the current map of items into
+ * a map with the database ids set as data on the
+ * nodes.
+ * This is the object which will be sent to sync
+ * with the server.
+ * @type {string}
+ */
+export const getSortedIds = 'getSortedIds'
+
+
+/* ================================================================
+   ==================================== NOTES =====================
+   ================================================================ */
 export const getNotesForItem = 'getNotesForItem';
 export const getNoteBySerialNumber = 'getNoteBySerialNumber';
 
-//Tags
+// ================================================================
+// ==================================== TAGS  =====================
+// ================================================================
 export const getTagBySerialNumber = 'getTagBySerialNumber';
 export const getAllTags = 'getAllTags';
 export const getTagsForObject = 'getTagsForObject';

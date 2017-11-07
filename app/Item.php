@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Http\Requests\Request;
+use App\Models\NewGom\ItemScore;
 use App\Models\NewGom\Note;
 use App\Models\NewGom\Tag;
 use Carbon\Carbon;
@@ -62,8 +63,13 @@ class Item extends BaseModel
 
     #------------ foreign keys
 
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
 
-    public function comments(){
+    public function comments()
+    {
         return $this->hasMany(ItemComment::class);
     }
 
@@ -73,9 +79,53 @@ class Item extends BaseModel
      * @todo Update this to reflect that an exam is a special friend of one item
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function exam()
+    public function exams()
     {
-        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
+        return $this->hasManyThrough(Exam::class, Assignment::class, 'item_id', 'id');//, 'item_id', 'id', 'id');
+//
+//        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
+    }
+
+    /**
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getExams()
+    {
+        $exams = [];
+        foreach ( $this->assignments as $assignment ) {
+            $exams[] = $assignment->exam;
+        }
+        return collect($exams);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function kumis()
+    {
+        return $this->hasManyThrough(Kumi::class, Exam::class);
+    }
+
+
+    public function notes()
+    {
+        return $this->belongsToMany(Note::class, 'item_note')->withTimestamps();
+    }
+
+    /**
+     * Returns associated scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function scores()
+    {
+        return $this->hasMany(ItemScore::class);
+    }
+
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'item_tag')->withTimestamps();
     }
 
     /**
@@ -87,27 +137,6 @@ class Item extends BaseModel
         return $this->belongsTo('App\User');
     }
 
-
-    public function notes()
-    {
-        return $this->belongsToMany(Note::class, 'item_note' )->withTimestamps();
-    }
-
-    /**
-     * Returns associated scores
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function scores()
-    {
-        return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment', 'question_id',
-            'question_assignment_id');
-    }
-
-
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, 'item_tag' )->withTimestamps();
-    }
 
 
     /* ----------------------------------- Defaults ----------------- */

@@ -1,10 +1,10 @@
 @extends('layouts.master')
 @section('pageTitle', 'Grade Exam | gradeomatic')
-@section('description', 'Grade an exam')
+@section('description', 'Grade an exam1')
 
 @section('otherCss')
     <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
-    <script src="{{asset('js/grade-exam-data.js')}}"></script>
+    <script src="{{asset('js/grade-exam1-data.js')}}"></script>
 @endsection
 
 @section('body')
@@ -35,7 +35,7 @@
         //        var activeTab = 'gradeNav';
         var store = new Data();
         store.activeStudent = 0;
-        store.setExamId({!! $exam->id !!});
+        store.setExamId({!! $exam1->id !!});
         store.loadStockComments({!! $stockComments !!});
         store.loadElementComments( {!! $studentElementComments !!});
         store.loadElementScores({!! $studentElementScores !!});

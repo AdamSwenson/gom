@@ -62,7 +62,7 @@ class ElementAssignmentRepositoryTest extends \TestCase
         $numberElements = 5;
         //prep
         $fixture = $this->makeElementAssignmentsForQuestion($numberElements);
-        $examId = $fixture['exam']->id;
+        $examId = $fixture['exam1']->id;
         $questionId = $fixture['question']->id;
         $elementIds = $fixture['elementIds'];
         $questionNumber = $fixture['questionNumber'];
@@ -85,7 +85,7 @@ class ElementAssignmentRepositoryTest extends \TestCase
     {
         //prep
         $fixture = $this->makeElementAssignmentsForQuestion(5);
-        $examId = $fixture['exam']->id;
+        $examId = $fixture['exam1']->id;
         $questionId = $fixture['question']->id;
 //        $elementId = $fixture['elementIds'][0];
         $qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();

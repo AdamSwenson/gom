@@ -118,10 +118,10 @@ class TagsControllerTest extends TestCase
                 'props' => $tag->props]);
 
 //todo test that eager loads associations
-//            foreach ( $exams as $exam ) {
+//            foreach ( $exams as $exam1 ) {
 //                $response->assertJsonFragment([
 //                    //associations
-//                    'pivot' => ['exam_id' => $exam->id]
+//                    'pivot' => ['exam_id' => $exam1->id]
 //                ]);
 //            }
         }
@@ -152,9 +152,9 @@ class TagsControllerTest extends TestCase
     /** @test */
     public function associateTagWithExam()
     {
-//        $exam = \factory(Exam::class)->create();
+//        $exam1 = \factory(Exam::class)->create();
 //        $tag = factory(Tag::class)->create();
-        $route = $this->route . "/exam/{$this->exam->id}/tag/{$this->tag->id}";
+        $route = $this->route . "/exam1/{$this->exam->id}/tag/{$this->tag->id}";
 
         $response = $this->post($route);
 
@@ -168,7 +168,7 @@ class TagsControllerTest extends TestCase
         $this->assertNotEmpty($r);
         $this->assertEquals($this->tag->id, $r->id);
 //        $this->assertDatabaseHas('exam_tag', [
-//            'exam_id' => $this->exam->id,
+//            'exam_id' => $this->exam1->id,
 //            'tag_id' => $this->tag->id
 //        ]);
     }
@@ -178,7 +178,7 @@ class TagsControllerTest extends TestCase
     {
         $this->exam->tags()->attach($this->tag);
 
-        $route = $this->route . "/exam/{$this->exam->id}/tag/{$this->tag->id}";
+        $route = $this->route . "/exam1/{$this->exam->id}/tag/{$this->tag->id}";
 
         $response = $this->delete($route);
 
@@ -292,7 +292,7 @@ class TagsControllerTest extends TestCase
     /** @test */
     public function showForExam()
     {
-        $route = $this->route . '/exam/' . $this->exam->id;
+        $route = $this->route . '/exam1/' . $this->exam->id;
         $tags = \factory(Tag::class, $this->numTags)->create();
         self::tagObjects($tags, [$this->exam]);
 

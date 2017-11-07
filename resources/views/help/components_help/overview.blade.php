@@ -7,7 +7,7 @@
 
             <dl class="dl-horizontal">
                 <dt><a href="#{{\App\ViewTools\HelpLinks::$instructSectionSetup['id']}}">Setup</a></dt>
-                <dd>Create the exam, prepare the questions, add raw material for feedback, and upload students</dd>
+                <dd>Create the exam1, prepare the questions, add raw material for feedback, and upload students</dd>
 
                 <dt><a href="#{{\App\ViewTools\HelpLinks::$instructSectionGrade['id']}}">Grade</a></dt>
                 <dd>Evaluate student work and adjust the grade distribution</dd>

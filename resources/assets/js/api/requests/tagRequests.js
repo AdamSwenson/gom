@@ -164,10 +164,10 @@ module.exports = {
         let out = {
             requestVersion: REQUEST_VERSION
         };
-        window.console.log( 'tagRequests', 'disassociateTagRequest', 161, tag, object );
+        // window.console.log( 'tagRequests', 'disassociateTagRequest', 161, tag, object );
 
         if ( object.kind === 'item' ) {
-            window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
+            // window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
             return window.axios
                 .delete( Routes.tagItem( object, tag ), out )
                 .then( ( response ) => {
@@ -182,7 +182,7 @@ module.exports = {
         switch ( object ) {
 
             case object.kind === 'item':
-                window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
+                // window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
                 return window.axios
                     .delete( Routes.tagItem( object, tag ), out )
                     .then( ( response ) => {
@@ -192,7 +192,7 @@ module.exports = {
                     } );
                 break;
             case object instanceof Item:
-                window.console.log( 'tagRequests', 'disassociateTagRequest', 164, 'is item' );
+                // window.console.log( 'tagRequests', 'disassociateTagRequest', 164, 'is item' );
                 return window.axios
                     .delete( Routes.tagItem( object, tag ), out )
                     .then( ( response ) => {

@@ -156,7 +156,11 @@ export const Routes = {
     destroyNote: (note)=>{return NOTES_BASE_ROUTE + '/' + note.id},
     getNotesForItem: (item)=>{return NOTES_BASE_ROUTE + '/item/' + item.id},
     getNotesForExam: (exam) =>{return NOTES_BASE_ROUTE+ '/exam/' + exam.id },
-    
+
+
+    //Stats (no identifying student data)
+    // getExamSummaryStats:
+
     //Tags
     createTag: ()=>{ return TAGS_BASE_ROUTE},
     updateTag: (tag)=>{return TAGS_BASE_ROUTE  + '/' + tag.id},

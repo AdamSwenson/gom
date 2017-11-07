@@ -124,7 +124,7 @@ class NotesControllerTest extends \TestCase
             $exam->notes()->attach($note->id);
             $exam->save();
         }
-        $route = $this->route . '/exam/' . $exam->id;
+        $route = $this->route . '/exam1/' . $exam->id;
 
         //call
         $response = $this->get($route);

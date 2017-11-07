@@ -5,7 +5,7 @@ class GradeAssignPage
 {
 
     public static function URL($examId){
-        return "/grade/exam/{$examId}/assign";
+        return "/grade/exam1/{$examId}/assign";
     }
 
 
@@ -18,7 +18,7 @@ class GradeAssignPage
     #common
     public static $mainBodyLocator = ['id' => 'gradeAssignPage'];
     public static $pageHeadingText = "Assign Grades";
-    public static $pageSubHeadingText = "Enter the minimum exam grade for each letter assignment. Blank grades will not be used.";
+    public static $pageSubHeadingText = "Enter the minimum exam1 grade for each letter assignment. Blank grades will not be used.";
 
     public static $pageTitleText = 'Assign Grades | gradeomatic';
 

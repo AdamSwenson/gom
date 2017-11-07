@@ -133,7 +133,7 @@ class ItemScoreControllerTest extends \TestCase
             $expectedScores[] = $score;
         }
 
-        $route = self::$baseRoute . '/exam/' . $this->exam->id;
+        $route = self::$baseRoute . '/exam1/' . $this->exam->id;
         $response = $this->get($route);
 
         //check
@@ -145,7 +145,7 @@ class ItemScoreControllerTest extends \TestCase
         }
 
 
-//        return ItemScore::where('exam_id', $exam->id)->get();
+//        return ItemScore::where('exam_id', $exam1->id)->get();
     }
 
     /** @test */

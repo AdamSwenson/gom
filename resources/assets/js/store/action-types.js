@@ -52,23 +52,6 @@ export const setQuestionScore = 'setQuestionScore';
 export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
 
 
-//questions
-export const loadMaxQuestionScores = 'loadMaxQuestionScores';
-export const loadQuestions = 'loadQuestions';
-export const loadNumberQuestions = 'loadNumberQuestions';
-export const addQuestion = 'addQuestion';
-
-//students
-export const loadStudents = 'loadStudents';
-
-
-//times
-export const storeGradingTime = 'storeGradingTime';
-export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-export const incrementGradingTime = 'incrementGradingTime';
-export const loadGradingTimes = 'loadGradingTimes';
-
-
 //items
 export const cloneItem = 'cloneItem';
 export const deleteItem = 'deleteItem'; //destroys item in db
@@ -87,5 +70,27 @@ export const addItemToOrder = 'addItemToOrder';
 export const removeItemFromOrder = 'removeItemFromOrder';
 
 
+//questions
+export const loadMaxQuestionScores = 'loadMaxQuestionScores';
+export const loadQuestions = 'loadQuestions';
+export const loadNumberQuestions = 'loadNumberQuestions';
+export const addQuestion = 'addQuestion';
+
 //roster and kumi
 export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';
+
+//scores
+export const loadItemScores ='loadItemScores';
+export const setItemScore = 'setItemScore';
+
+//students
+export const loadStudents = 'loadStudents';
+
+
+//times
+export const storeGradingTime = 'storeGradingTime';
+export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+export const incrementGradingTime = 'incrementGradingTime';
+export const loadGradingTimes = 'loadGradingTimes';
+
+

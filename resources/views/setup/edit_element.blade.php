@@ -37,7 +37,7 @@
 
             <!-- form will update all given elements and create new ones where required -->
     <form id="elementForm" name="elementForm" method="post" role="form"
-          action="{{ url('exam/'.$examId.'/question/'.$questionId.'/element/updateAll') }}"
+          action="{{ url('exam1/'.$examId.'/question/'.$questionId.'/element/updateAll') }}"
           accept-charset="UTF-8">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <ul class="form-group" id="elementList">

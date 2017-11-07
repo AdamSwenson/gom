@@ -28,7 +28,7 @@ class ItemExamSetupPageCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkIntact(AcceptanceTester $I)
@@ -40,45 +40,45 @@ class ItemExamSetupPageCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkRedirectToExamEdit(AcceptanceTester $I)
     {
-        $I->amGoingTo("Click exam {$this->editedExamId}'s edit button and check that I am properly redirected");
+        $I->amGoingTo("Click exam1 {$this->editedExamId}'s edit button and check that I am properly redirected");
         $I->click(SetupExamSelectPage::editButtonLocator($this->editedExamId));
         
-        $I->expectTo("be on the appropriate exam edit page");
+        $I->expectTo("be on the appropriate exam1 edit page");
         $I->waitForElementVisible(ExamEditPage::$mainBodyLocator);
-        $I->seeInCurrentUrl("/exam/{$this->editedExamId}/edit");
+        $I->seeInCurrentUrl("/exam1/{$this->editedExamId}/edit");
     }
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkCloneExam(AcceptanceTester $I)
     {
-        $I->wantTo("Clone an exam");
+        $I->wantTo("Clone an exam1");
         $I->click(SetupExamSelectPage::cloneButtonLocator($this->clonedExamId));
 
         $I->expectTo("see the success message from the server");
         $I->waitForText(SetupExamSelectPage::$cloneExamSuccessMessage);
 
-        $I->expectTo("see the new exam in the table");
+        $I->expectTo("see the new exam1 in the table");
         $I->see(SetupExamSelectPage::examTerm($this->clonedExamId));
         $I->see('Clone of "' . SetupExamSelectPage::partialExamName($this->clonedExamId));
     }
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function startDeletingExamButCancel(AcceptanceTester $I)
     {
-        $I->wantTo("Start deleting an exam and chicken out by pressing cancel");
+        $I->wantTo("Start deleting an exam1 and chicken out by pressing cancel");
 
         $I->expect("that the confirmation modal is not visible");
         $I->dontSeeElement(SetupExamSelectPage::$confirmModalLocator);
@@ -112,13 +112,13 @@ class ItemExamSetupPageCest
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      * @throws
      */
     public function checkDeleteExam(AcceptanceTester $I)
     {
-        $I->wantTo("Delete an exam");
+        $I->wantTo("Delete an exam1");
 
         $I->expect("that the confirmation modal is not visible");
         $I->dontSeeElement(SetupExamSelectPage::$confirmModalLocator);
@@ -155,21 +155,21 @@ class ItemExamSetupPageCest
             SetupExamSelectPage::verifySetupExamSelectPageIntact($I, $this->examIdsWhichShouldSee, $this->examIdsWhichShouldNotSee);
         } else
         {
-            throw Exception("The test assumes that the deleted exam was the last element of the examIdsWhichShouldSee array. This assumption made an ass out of you and the test");
+            throw Exception("The test assumes that the deleted exam1 was the last element of the examIdsWhichShouldSee array. This assumption made an ass out of you and the test");
         }
 
     }
 
     /**
      * @group setup
-     * @group exam
+     * @group exam1
      * @param AcceptanceTester $I
      */
     public function checkCreateNewExam(AcceptanceTester $I)
     {
-        $I->amGoingTo("Click the create new exam button and make sure properly directed");
+        $I->amGoingTo("Click the create new exam1 button and make sure properly directed");
         $I->click(SetupExamSelectPage::$forwardNavButton);
-        $I->seeInCurrentUrl("/exam/create");
+        $I->seeInCurrentUrl("/exam1/create");
 
     }
 

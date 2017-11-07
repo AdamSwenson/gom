@@ -108,15 +108,21 @@ export const hideItemSettings = 'hideItemSettings';
 export const toggleExamSettings = 'toggleExamSettings';
 
 
+//notes
+export const updateNote = 'updateNote';
+export const destroyNote = 'destroyNote';
+export const createNote = 'createNote';
+
+
 //requests
 export const startRequest = 'startRequest';
 export const stopRequestSuccess = 'stopRequestSuccess';
 export const stopRequestError = 'stopRequestError';
 
-//notes
-export const updateNote = 'updateNote';
-export const destroyNote = 'destroyNote';
-export const createNote = 'createNote';
+//scores
+export const setItemScore = 'setItemScore';
+export const removeItemScore = 'removeItemScore';
+
 
 //tags
 export const updateTag = 'updateTag';

@@ -85,7 +85,7 @@ class QuestionAddCest
 
 
         $I->amGoingTo("Go back to the edit page and see the changed questions");
-        $I->amOnPage("exam/{$this->examId}/question/edit");
+        $I->amOnPage("exam1/{$this->examId}/question/edit");
         $I->waitForElement(QuestionEditPage::$mainBodyLocator);
 
         for ( $i = 1; $i <= $this->numQuestions; $i++ )

@@ -62,7 +62,7 @@ class KumiControllerTest extends \TestCase
     public function loadExamKumi()
     {
         //prep
-        $route = 'dev/kumis/exam/' . $this->exam->id;
+        $route = 'dev/kumis/exam1/' . $this->exam->id;
 
         $user = $user = factory(User::class)->create();
         Auth::login($user);

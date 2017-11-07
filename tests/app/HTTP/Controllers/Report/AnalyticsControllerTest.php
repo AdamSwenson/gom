@@ -46,7 +46,7 @@ class AnalyticsControllerTest extends \TestCase
         parent::setUp();
         \Auth::loginUsingId(1);
         $this->exam = Exam::all()->first();
-//        $this->exam = factory(Exam::class)->create();
+//        $this->exam1 = factory(Exam::class)->create();
         $this->exam->save();
 
         $this->student = factory(Student::class)->create();

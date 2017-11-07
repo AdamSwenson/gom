@@ -9,7 +9,7 @@
             <p class="answer">Eventually, the analytics page will contain three kinds of tools.
             </p>
             <ol>
-                <li>Tools for visualizing and analyzing student performance on the present exam at different levels of
+                <li>Tools for visualizing and analyzing student performance on the present exam1 at different levels of
                     detail
                 </li>
                 <li>Tools for quality control in grading. These will help you identify exams on which you might have
@@ -19,7 +19,7 @@
                 </li>
                 <li>Tools for comparing student performance across different terms and exams. These will help you
                     construct
-                    better exam questions and improve your teaching.
+                    better exam1 questions and improve your teaching.
                 </li>
             </ol>
             <p class="answer">We will be grateful for suggestions about other useful tools and visualizations</p>

@@ -46,7 +46,7 @@ class DashboardCest
      */
     public function checkInitialExamStatsValues($I)
     {
-        $I->amGoingTo("Check the values of the exam stats");
+        $I->amGoingTo("Check the values of the exam1 stats");
         $numRemaining = $this->numberStudents - $this->previouslyGradedExams;
         DashboardArea::assertExamStatsHasValues($I, $this->previouslyGradedExams, $numRemaining);
     }

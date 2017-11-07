@@ -39,7 +39,7 @@ class LoginPageCest
 //        $I->fillField(LoginPage::$passwordField, LoginPage::$testAccountPassword);
 //        $I->click(LoginPage::$loginButton);
 //
-//        $I->amGoingTo("check that properly redirected to exam setup page");
+//        $I->amGoingTo("check that properly redirected to exam1 setup page");
 //        $I->seeInCurrentUrl(SetupExamSelectPage::$URL);
 //        $I->seeInTitle(SetupExamSelectPage::$pageTitleText);
 //    }

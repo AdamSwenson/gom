@@ -137,7 +137,7 @@ describe( "store | modules |  exams | ", function () {
 
 
             describe( "unhappy paths | ", function () {
-                //needs non instance of exam case too
+                //needs non instance of exam1 case too
             } );
         } );
 
@@ -161,7 +161,7 @@ describe( "store | modules |  exams | ", function () {
             } );
 
             describe( "unhappy paths | ", function () {
-                //needs non instance of exam case too
+                //needs non instance of exam1 case too
             } );
         } );
 

@@ -115,7 +115,7 @@ class RosterControllerTest extends \TestCase
         }
         $this->assertEquals(5, sizeof($this->kumi->students));
 
-        $route = "dev/roster/exam/{$this->exam->id}";
+        $route = "dev/roster/exam1/{$this->exam->id}";
 
         //call
         $response = $this->get($route);
@@ -139,7 +139,7 @@ class RosterControllerTest extends \TestCase
     /** @test */
     public function anonymizeStudents()
     {
-//        $exam = factory(Exam::class)->create();
+//        $exam1 = factory(Exam::class)->create();
 
     }
 

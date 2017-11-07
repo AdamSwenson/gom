@@ -50,7 +50,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/exam.jpg', env('APP_ENV') == 'production')}}"
+                <img src="{{asset('inc/home/images/exam1.jpg', env('APP_ENV') == 'production')}}"
                      alt="Teach">
                 <div class="carousel-caption">
                     <h2>Teach Better</h2>

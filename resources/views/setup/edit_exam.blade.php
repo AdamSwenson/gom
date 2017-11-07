@@ -1,8 +1,8 @@
-<!-- 'edit_exam' houses controls for exam name, term, and year -->
+<!-- 'edit_exam' houses controls for exam1 name, term, and year -->
 @extends('layouts.master')
 
 @section('pageTitle', 'Edit Exam | gradeomatic')
-@section('description', 'Edit an exam')
+@section('description', 'Edit an exam1')
 
 @section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
@@ -10,7 +10,7 @@
 
 @section('body')
     <div class="section mainBodyLocator" id="editExamPage">
-        <form id="examForm" method="post" action="{{ url('exam/'.$exam->getId()) }}"
+        <form id="examForm" method="post" action="{{ url('exam1/'.$exam1->getId()) }}"
               accept-charset="UTF-8">
             <input type="hidden" name="_method" value="patch">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -43,7 +43,7 @@
     var forwardNavTarget = 'editQuestions';
     var backNavTarget = 'selectExam';
     </script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/exam-setup-package.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="{{ asset('js/exam1-setup-package.js') }}"></script>
     {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>--}}
 
 @endsection

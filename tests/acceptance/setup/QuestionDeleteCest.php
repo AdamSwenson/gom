@@ -11,7 +11,7 @@ class QuestionDeleteCest
     public $replacedDeletedQuestionNumber = 5;
     public $examId = 2;
     public $examName = "TestExam#2 5QuestionsWElements User1";
-//The number of questions on the exam
+//The number of questions on the exam1
     public $numQuestions = 5;
 //the id of question 1, for building the redirection route
     public $firstQuestionId = 6;
@@ -119,7 +119,7 @@ class QuestionDeleteCest
 
 
         $I->amGoingTo("Go back to the edit page and see the changed questions");
-        $I->amOnPage("exam/{$this->examId}/question/edit");
+        $I->amOnPage("exam1/{$this->examId}/question/edit");
         QuestionEditPage::verifyQuestionEditPageIntact($I, $this->examId, $this->examName, $this->numQuestions);
 
         //make sure have expected right given the edits

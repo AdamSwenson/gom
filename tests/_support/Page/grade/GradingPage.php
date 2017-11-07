@@ -12,7 +12,7 @@ namespace Page\grade;
 class GradingPage
 {
     // include url of current page
-    public static $URL = '/grade/exam/';
+    public static $URL = '/grade/exam1/';
 
     /**
      * Declare UI map for this page here. CSS or XPath allowed.

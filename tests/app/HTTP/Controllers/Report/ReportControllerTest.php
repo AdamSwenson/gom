@@ -67,7 +67,7 @@ class ReportControllerTest extends \TestCase
 
 
 //        $url = action('ReportController@updateFeedbackForStudent');
-//        $this->call("GET", $url, [$exam, $student->id]);
+//        $this->call("GET", $url, [$exam1, $student->id]);
 
     }
 
@@ -245,7 +245,7 @@ class ReportControllerTest extends \TestCase
         $accessKeyDao = $this->createMock(IAccessKeyRepository::class);
         $accessKeyDao->shouldReceive('getAccessKeyForStudent')
             ->times($numberStudents)
-            //->with($this->exam->id, $this->student->id)
+            //->with($this->exam1->id, $this->student->id)
             ->andReturn($key);
 
         $accessKeyDao->shouldReceive('retrieveFeedback')

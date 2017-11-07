@@ -50,7 +50,7 @@ class ElementTest extends \TestCase
 //        //Prepare the victim.....
 //        $this->object = factory(Element::class)->create();
 //
-//        /* At this point, the first question on exam 1 has question_id = 1.
+//        /* At this point, the first question on exam1 1 has question_id = 1.
 //            There are five element assignments.
 //            element_assignment_id = 1 =>
 //                element_id = 1   subtask = 1  (exam_id = 1, question_number = 1, question_id = 1, question_assignment_id = 1)
@@ -60,9 +60,9 @@ class ElementTest extends \TestCase
 //            element_assignment_id = 5 =>
 //                element_id = 5   subtask = 5  (exam_id = 1, question_number = 1, question_id = 1, question_assignment_id = 1)
 //
-//            Also, the first element which is not on exam 1 is element_id = 26.
+//            Also, the first element which is not on exam1 1 is element_id = 26.
 //        */
-//        $target_exam_id = $fixture['exam']->id;
+//        $target_exam_id = $fixture['exam1']->id;
 //        $element_id_to_add_to_exam = $this->object->id;
 //
 //        /*
@@ -133,13 +133,13 @@ class ElementTest extends \TestCase
 //                element_id = 4   subtask = 3  (exam_id = 1, question_number = 1, question_id = 1, question_assignment_id = 1)
 //                element_id = 5   subtask = 4  (exam_id = 1, question_number = 1, question_id = 1, question_assignment_id = 1)
 //        */
-//        $target_exam_id = $fixture['exam']->id;
+//        $target_exam_id = $fixture['exam1']->id;
 //        $question_id_being_assigned_to = $fixture['question']->id;
 //
 //        /* Note that the tricky thing here is that we won't know coming in whether the update included just adding
 //           new elements, reshuffling without deletion, or deletion; or some combination of those. So we are
 //           going to assume that this function gets called successively for each element. As long as we clean up
-//           any pre-existing assignments to that exam we should be okay.
+//           any pre-existing assignments to that exam1 we should be okay.
 //
 //           For any but the very last subtask, the problem will be taken care of by overwriting in a subsequent call.
 //           But that won't happen for the last subtask. So let's check that case to make sure everything is clean.
@@ -250,7 +250,7 @@ class ElementTest extends \TestCase
 
 //    public function testExam()
 //    {
-//        foreach($this->element->exam as $r)
+//        foreach($this->element->exam1 as $r)
 //        {
 //            $this->assertInstanceOf('App\ElementScore', $r);
 //        }

@@ -149,7 +149,7 @@ class ScoreControllerTest extends \TestCase
 
 //        $this->mock->shouldReceive('deleteScore')
 //            ->once();
-//            ->with([$this->exam, $data['question_assignment_id'], $data['student_id']]
+//            ->with([$this->exam1, $data['question_assignment_id'], $data['student_id']]
         $response = $this->post('Grade\ScoreController@removeScore', $data);
 //        $this->assertResponseOk();
         $this->assertNotNull($response);

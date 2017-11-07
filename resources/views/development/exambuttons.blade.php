@@ -16,37 +16,37 @@
     <div id="app">
         <table>
             @if ( sizeof($exams) > 0 )
-                @foreach($exams as $exam)
+                @foreach($exams as $exam1)
                     {{--<div class="row">--}}
                     {{--<div class="col-lg-3 col-xs-4">--}}
                     <tr>
                         <td>
-                            <exam-release-toggle
-                                    exam-id="{{ $exam->id }}"
-                                    released="{{ $exam->isReleased() }}"
-                            ></exam-release-toggle>
+                            <exam1-release-toggle
+                                    exam1-id="{{ $exam1->id }}"
+                                    released="{{ $exam1->isReleased() }}"
+                            ></exam1-release-toggle>
                             {{--</div>--}}
                         </td>
                         <td>
                             {{--<div class="col-xs-4">--}}
-                            <exam-buttons-dropdown
-                                    exam-id="{{ $exam->id }}"
-                                    base-url="{!! url() !!}"></exam-buttons-dropdown>
+                            <exam1-buttons-dropdown
+                                    exam1-id="{{ $exam1->id }}"
+                                    base-url="{!! url() !!}"></exam1-buttons-dropdown>
                             {{--</div>--}}
                         </td>
                         {{--<div class="col-lg-5"></div>--}}
                         {{--<div class="col-lg-3">--}}
-                        {{--<exam-release-toggle--}}
-                        {{--exam-id="{{ $exam->id }}"--}}
-                        {{--released="{{ $exam->isReleased() }}"--}}
-                        {{--></exam-release-toggle>--}}
+                        {{--<exam1-release-toggle--}}
+                        {{--exam1-id="{{ $exam1->id }}"--}}
+                        {{--released="{{ $exam1->isReleased() }}"--}}
+                        {{--></exam1-release-toggle>--}}
                         {{--</div>--}}
                         {{--<div class="col-lg-4">--}}
-                        {{--<exam-buttons--}}
-                        {{--exam-id="{{ $exam->id }}"--}}
+                        {{--<exam1-buttons--}}
+                        {{--exam1-id="{{ $exam1->id }}"--}}
                         {{--base-url="{!! url() !!}"--}}
-                        {{--released="{{ $exam->isReleased() }}"--}}
-                        {{--></exam-buttons>--}}
+                        {{--released="{{ $exam1->isReleased() }}"--}}
+                        {{--></exam1-buttons>--}}
                         {{--</div>--}}
                         {{--</div>--}}
                     </tr>

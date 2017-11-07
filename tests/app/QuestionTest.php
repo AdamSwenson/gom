@@ -54,7 +54,7 @@ class QuestionTest extends \TestCase
         #check
         $this->assertEquals($qnum, $result, "question number is correct");
 
-//        /* We know that question_id = 1 should be the first question on exam 1 */
+//        /* We know that question_id = 1 should be the first question on exam1 1 */
 //        $target_question_id = 1;
 //        $target_exam_id = 1;
 //        $expected_question_number = 1;
@@ -99,11 +99,11 @@ class QuestionTest extends \TestCase
 //        $qnum = $this->faker->randomNumber(3);
 //
 //        //call
-//        $result = $this->question->setQuestionNumber($this->exam->getId(), $qnum);
+//        $result = $this->question->setQuestionNumber($this->exam1->getId(), $qnum);
 //
 //        //check
 //        $this->assertInstanceOf('App\Question', $result);
-//        $this->assertDatabaseHas('question_assignments', ['exam_id' => $this->exam->getId(), 'question_id' => $this->question->getId(), 'question_number' => $qnum]);
+//        $this->assertDatabaseHas('question_assignments', ['exam_id' => $this->exam1->getId(), 'question_id' => $this->question->getId(), 'question_number' => $qnum]);
     }
 
     /**
@@ -148,7 +148,7 @@ class QuestionTest extends \TestCase
 //        $this->loginAndMakeQuestion();
 //
 //        /*
-//        Question_id = 6 is the first question not on exam 1.
+//        Question_id = 6 is the first question not on exam1 1.
 //        So let's replace the second question (question_id = 2) with it to simulate the user
 //        creating a new question, deleting an existing question, and moving the new question
 //        into the existing question's place

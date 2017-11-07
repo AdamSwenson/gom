@@ -100,7 +100,7 @@ class NotifyStudentsHelperTest extends \TestCase
 //        $mailer = $this->createMock(IMailSender::class);
 //        $mailer->shouldReceive('send')
 //            ->once();
-//            //->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+//            //->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam1));
 
     }
 
@@ -127,7 +127,7 @@ class NotifyStudentsHelperTest extends \TestCase
 Mail::fake();
 //        $mailer = $this->createMock(IMailSender::class);
 //        $mailer->shouldReceive('send')->once();
-            //->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+            //->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam1));
 
         #call
         $object = new NotifyStudentsHelper;
@@ -191,12 +191,12 @@ Mail::fake();
 
 //    $mock->shouldReceive('getAccessKeyForStudent')
 //        ->once()
-//        ->with($exam->id, $student->id)
+//        ->with($exam1->id, $student->id)
 //        ->andReturn($accessKey);
 //
 //    $data =[
 //        'studentName' => $student->getFullName(),
-//        'examName' => $exam->getName(),
+//        'examName' => $exam1->getName(),
 //        'feedbackLink' => $this->buildFeedbackLink($accessKey),
 //        'siteLink' => $this->buildSiteLink(),
 //        'accessKey' => $accessKey
@@ -204,7 +204,7 @@ Mail::fake();
 //
 //    $mailer->shouldReceive('send')
 //        ->once()
-//        ->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+//        ->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam1));
 //
 //}
 
