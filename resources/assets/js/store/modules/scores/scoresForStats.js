@@ -58,7 +58,7 @@ const mutations = {
 
 const actions = {
 
-    processAxiosResponse: ( { state, dispatch, commit, getters }, axiosResponse ) => {
+    processScoreForStatsResponse: ( { state, dispatch, commit, getters }, axiosResponse ) => {
         // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
         return new Promise( function ( resolve ) {
             let stats = [];

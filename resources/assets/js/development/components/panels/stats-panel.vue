@@ -147,8 +147,11 @@
                 //display loading indicator
                 me.isScoresLoading = true;
 
+                //this loads the scores into store
+               //and returns a promise
                 let p = statsRequests.getItemScoresForStats( this.$store, this.item );
 
+                //thus when it is complete, we get them from the store
                 return p.then( function () {
                     let stats = me.$store.getters.getStatsForItem( me.item );
                     //done loading
@@ -157,23 +160,22 @@
                 } );
             },
 
+
+            /**
+             * Requests summarized scores for the item
+             * This will include things like mean, median, sd
+             */
             itemSummary: function () {
                 if ( this.isExam ) return [];
                 let me = this;
                 me.isItemSummaryLoading = true;
 
-                return window.axios
-                    .get( 'dev/stats/summary/item/' + this.item.id )
-                    .then( ( response ) => {
-                        window.console.log( 'itemSummary', 69, response );
-                        //done loading
-                        me.isItemSummaryLoading = false;
-                        return response.data;
+                let p = statsRequests.getItemSummaryStats(this.item);
 
-                    } )
-                    .catch( function ( error ) {
-//                        errorHandling( error );
-                    } );
+                return p.then(function(data){
+                    me.isItemSummaryLoading = false;
+                    return data;
+                });
 
             },
 
@@ -187,37 +189,32 @@
                 let me = this;
                 me.isExamSummaryLoading = true;
 
-                return window.axios
-                    .get( 'dev/stats/summary/exam/' + this.exam.id + '/item/' + this.item.id )
-                    .then( ( response ) => {
-                        window.console.log( 'examSummary', 173, response );
-                        me.isExamSummaryLoading = false;
-                        return response.data;
-                    } )
-                    .catch( function ( error ) {
-//                        errorHandling( error );
-                    } );
+                let p = statsRequests.getItemScoreSummaryForExam(this.exam, this.item);
+
+                return p.then(function(data){
+                    me.isExamSummaryLoading = false;
+                    return data;
+                });
+
             },
 
             /**
-             * Requests summarized scores for the item on the
-             * given kumi
+             * Requests summarized scores for the item for each
+             * kumi it is associated with
              * This will include things like mean, median, sd
-             * @param item
+             * along with the kumi id and name
+              * @param item
              */
             kumiSummary: function () {
                 let me = this;
                 me.isKumiStatsLoading = true;
-                return window.axios
-                    .get( 'dev/stats/summary/kumi/item/' + this.item.id )
-                    .then( ( response ) => {
-                        window.console.log( 'kumi', 69, response );
-                        me.isKumiStatsLoading = false;
-                        return response.data;
-                    } )
-                    .catch( function ( error ) {
-//                        errorHandling( error );
-                    } );
+
+                let p = statsRequests.getItemScoreSummariesByKumis(this.item);
+
+                return p.then(function(data){
+                    me.isKumiStatsLoading = false;
+                    return data;
+                });
             },
 
         },

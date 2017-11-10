@@ -24,82 +24,21 @@ module.exports = {
      * @returns {Promise.<T>|*}
      */
     getExamScoresForStats: ( store, exam ) => {
-        // let to = route + '/exam/' + exam.id;
+        let to = 'dev/stats/exam/' + exam.id;
         let out = {
             requestVersion: REQUEST_VERSION
         };
 
         return window.axios
-            .get( 'dev/stats/exam/' + exam.id )
+            .get( to )
             .then( ( response ) => {
                 // window.console.log( 'statsRequests---getExamStats', 35, response );
-                store.dispatch( 'processAxiosResponse', response );
-
+                store.dispatch( 'processScoreForStatsResponse', response );
             } )
             .catch( function ( error ) {
                 errorHandling( error );
             } );
     },
-
-    getExamStatsSummary: ( exam ) => {
-    },
-
-    /**
-     * Requests summarized scores for the item
-     * This will include things like mean, median, sd
-     * @param item
-     */
-    getItemSummaryStats: ( item ) => {
-        // 'dev/stats/summary/exam/{exam}'
-
-        return window.axios
-            .get( 'dev/stats/summary/item/' + item.id )
-            .then( ( response ) => {
-                // window.console.log( 'statsRequests---getItemStats', 69, response );
-                store.dispatch( 'processAxiosResponse', response );
-            } )
-            .catch( function ( error ) {
-                errorHandling( error );
-            } );
-    },
-
-    // /**
-    //  * Requests summarized scores for the item
-    //  * This will include things like mean, median, sd
-    //  * @param item
-    //  */
-    // getItemSummaryForExam: ( item , exam) => {
-    //     // 'dev/stats/summary/exam/{exam}'
-    //
-    //     return window.axios
-    //         .get( 'dev/stats/summary/exam/' + exam.id + 'item/' + item.id )
-    //         .then( ( response ) => {
-    //             window.console.log( 'statsRequests---getItemStats', 69, response );
-    //             store.dispatch( 'processAxiosResponse', response );
-    //         } )
-    //         .catch( function ( error ) {
-    //             errorHandling( error );
-    //         } );
-    // },
-    //
-    // /**
-    //  * Requests summarized scores for the item on the
-    //  * given kumi
-    //  * This will include things like mean, median, sd
-    //  * @param item
-    //  */
-    // getItemSummaryForKumi: ( item , kumi) => {
-    //     return window.axios
-    //         .get( 'dev/stats/summary/kumi/' + kumi.id + 'item/' + item.id )
-    //         .then( ( response ) => {
-    //             window.console.log( 'statsRequests---getItemStats', 69, response );
-    //             store.dispatch( 'processAxiosResponse', response );
-    //         } )
-    //         .catch( function ( error ) {
-    //             errorHandling( error );
-    //         } );
-    // },
-
 
     /**
      * This gets every score for the item ever without
@@ -114,11 +53,65 @@ module.exports = {
             .get( 'dev/stats/item/' + item.id )
             .then( ( response ) => {
                 // window.console.log( 'statsRequests---getItemStats', 69, response );
-                store.dispatch( 'processAxiosResponse', response );
+                store.dispatch( 'processScoreForStatsResponse', response );
             } )
             .catch( function ( error ) {
                 errorHandling( error );
             } );
     },
 
+    getItemScoreSummaryForExam: ( exam, item ) => {
+        let to = 'dev/stats/summary/exam/' + exam.id + '/item/' + item.id;
+        return window.axios
+            .get( to )
+            .then( ( response ) => {
+                window.console.log( 'examSummary', 173, response );
+                //me.isExamSummaryLoading = false;
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } )
+    },
+
+    /**
+     * Requests summarized scores for the item for each
+     * kumi it is associated with
+     * This will include things like mean, median, sd
+     * along with the kumi id and name
+     * @param item
+     */
+    getItemScoreSummariesByKumis: ( item ) => {
+        let to = 'dev/stats/summary/kumi/item/' + item.id;
+        return window.axios
+            .get( to )
+            .then( ( response ) => {
+                window.console.log( 'getItemScoreSummariesByKumis', 82, response );
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
+    },
+
+
+    /**
+     * Requests summarized scores for the item across all exams
+     * This will include things like mean, median, sd
+     * @param item
+     */
+    getItemSummaryStats: ( item ) => {
+        let to = 'dev/stats/summary/item/' + item.id;
+
+        return window.axios
+            .get( to )
+            .then( ( response ) => {
+                window.console.log( 'getItemSummaryStats', 69, response );
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+    }
 };
