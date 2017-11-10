@@ -47,14 +47,11 @@ const handleCreateResponse = ( store, tag, data ) => {
  * @param response
  */
 const handleLoadResponse = ( store, data, itemOrExam ) => {
-    // window.console.log( 'tagRequests', 'handleLoadResponse', 48, store );
     _.forEach( data, function ( r ) {
-        // window.console.log( 'tagRequests', 'r', 29, r );
 
         //make sure we don't already have a tag
         //object
         let tag = store.getters.getTagById( r.id );
-        // window.console.log( 'tagRequests', 'tag', 55, tag);
 
         if ( _.isUndefined( tag ) ) {
             tag = Tag.factory( { r } );
@@ -297,7 +294,7 @@ module.exports = {
                 }
             } )
             .catch( function ( error ) {
-                window.console.log( 'examRequests', 'ERROR', 39, error );
+                // window.console.log( 'examRequests', 'ERROR', 39, error );
                 errorHandling( error );
             } );
     },
@@ -334,7 +331,7 @@ module.exports = {
 
             } )
             .catch( function ( error ) {
-                window.console.log( 'examRequests', 'ERROR', 39, error );
+                // window.console.log( 'examRequests', 'ERROR', 39, error );
                 errorHandling( error );
             } );
     },

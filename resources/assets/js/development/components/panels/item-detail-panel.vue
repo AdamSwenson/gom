@@ -84,7 +84,7 @@
 
         watch: {
             '$route'( to, from ) {
-                window.console.log( 'item-detail-panel', '$route', 88, to, from );
+//                window.console.log( 'item-detail-panel', '$route', 88, to, from );
                 this.serialNumber = _.toInteger(to.serialNumber);
             }
         },

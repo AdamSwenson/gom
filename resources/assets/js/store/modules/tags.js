@@ -140,12 +140,12 @@ const actions = {
         if ( itemObject.tags.length === 0 ) return true;
 
         _.forEach( itemObject.tags, function ( r ) {
-            window.console.log( 'tagRequests', 'r', 29, r );
+            // window.console.log( 'tagRequests', 'r', 29, r );
 
             //make sure we don't already have a tag
             //object
             let tag = getters.getTagById( r.id );
-            window.console.log( 'tagRequests', 'tag', 55, tag);
+            // window.console.log( 'tagRequests', 'tag', 55, tag);
 
             //if the tag doesn't already exist
             //we create it

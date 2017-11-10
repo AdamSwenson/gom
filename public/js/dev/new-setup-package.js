@@ -32131,14 +32131,11 @@ var handleCreateResponse = function handleCreateResponse(store, tag, data) {
  * @param response
  */
 var handleLoadResponse = function handleLoadResponse(store, data, itemOrExam) {
-    // window.console.log( 'tagRequests', 'handleLoadResponse', 48, store );
     _.forEach(data, function (r) {
-        // window.console.log( 'tagRequests', 'r', 29, r );
 
         //make sure we don't already have a tag
         //object
         var tag = store.getters.getTagById(r.id);
-        // window.console.log( 'tagRequests', 'tag', 55, tag);
 
         if (_.isUndefined(tag)) {
             tag = _Tag2.default.factory({ r: r });
@@ -32346,7 +32343,7 @@ module.exports = {
                 return tags;
             }
         }).catch(function (error) {
-            window.console.log('examRequests', 'ERROR', 39, error);
+            // window.console.log( 'examRequests', 'ERROR', 39, error );
             (0, _responseHandlers.errorHandling)(error);
         });
     },
@@ -32382,7 +32379,7 @@ module.exports = {
                 return tags;
             }
         }).catch(function (error) {
-            window.console.log('examRequests', 'ERROR', 39, error);
+            // window.console.log( 'examRequests', 'ERROR', 39, error );
             (0, _responseHandlers.errorHandling)(error);
         });
     },
@@ -32524,7 +32521,7 @@ module.exports = {
                 case 'exam':
                     var p = handleExamResponse(store, item, response);
                     p.then(function (resolve) {
-                        window.console.log('responseHandlers', 'exam response resolved', 73);
+                        // window.console.log( 'responseHandlers', 'exam response resolved', 73 );
                         resolve();
                     });
 
@@ -32535,7 +32532,7 @@ module.exports = {
                     handleItemResponse(store, item, response)
                     //this is what we do when it succeeds
                     .then(function () {
-                        window.console.log('responseHandlers', 'item response resolved', 81);
+                        // window.console.log( 'responseHandlers', 'item response resolved', 81 );
                         //we resolve our outer promise
                         resolve();
                     }).catch(function () {
@@ -47178,7 +47175,7 @@ exports.default = {
 
     watch: {
         '$route': function $route(to, from) {
-            window.console.log('item-detail-panel', '$route', 88, to, from);
+            //                window.console.log( 'item-detail-panel', '$route', 88, to, from );
             this.serialNumber = _.toInteger(to.serialNumber);
         }
     },
@@ -58070,12 +58067,12 @@ var actions = {
         if (itemObject.tags.length === 0) return true;
 
         _.forEach(itemObject.tags, function (r) {
-            window.console.log('tagRequests', 'r', 29, r);
+            // window.console.log( 'tagRequests', 'r', 29, r );
 
             //make sure we don't already have a tag
             //object
             var tag = getters.getTagById(r.id);
-            window.console.log('tagRequests', 'tag', 55, tag);
+            // window.console.log( 'tagRequests', 'tag', 55, tag);
 
             //if the tag doesn't already exist
             //we create it
@@ -86434,6 +86431,19 @@ exports.default = {
     data: function data() {
         return {
 
+            emptyStatsObject: {
+                kumiName: "-",
+                kumiId: "-",
+                mean: "-",
+                median: "-",
+                standardDeviation: "-",
+                maxScore: "-",
+                minScore: "-",
+                numberAnswers: "-",
+                percentile25: "-",
+                percentile75: "-"
+            },
+
             /**
              * Whether there are any stats for this
              * item. Used to control what message displays
@@ -86442,13 +86452,13 @@ exports.default = {
             loadingIndicator: " ... ",
             isLoading: false,
 
-            isItemSummaryLoading: false,
+            isItemSummaryLoading: true,
 
-            isExamSummaryLoading: false,
+            isExamSummaryLoading: true,
 
             /** Whether the raw scores are currently loading */
             isScoresLoading: false,
-            isKumiStatsLoading: false,
+            isKumiStatsLoading: true,
 
             emptyMessage: "No scores have been recorded for this item on this exam.",
             serialNumber: _.toInteger(this.$route.params.serialNumber),
@@ -86490,7 +86500,7 @@ exports.default = {
          * Requests summarized scores for the item
          * This will include things like mean, median, sd
          */
-        itemSummary: function itemSummary() {
+        itemSummaryAjax: function itemSummaryAjax() {
             if (this.isExam) return [];
             var me = this;
             me.isItemSummaryLoading = true;
@@ -86509,7 +86519,7 @@ exports.default = {
          * This will include things like mean, median, sd
          * @param item
          */
-        examSummary: function examSummary() {
+        examSummaryAjax: function examSummaryAjax() {
             var me = this;
             me.isExamSummaryLoading = true;
 
@@ -86528,7 +86538,7 @@ exports.default = {
          * along with the kumi id and name
           * @param item
          */
-        kumiSummary: function kumiSummary() {
+        kumiSummaryAjax: function kumiSummaryAjax() {
             var me = this;
             me.isKumiStatsLoading = true;
 
@@ -86561,12 +86571,33 @@ exports.default = {
             return this.$store.getters.getItemBySerialNumber(this.serialNumber);
         },
 
+        itemSummary: function itemSummary() {
+            if (_.isUndefined(this.itemSummaryAjax) || this.isItemSummaryLoading) {
+                return this.emptyStatsObject;
+            }
+            return this.itemSummaryAjax;
+        },
+
         exam: function exam() {
             return this.item.isExam() ? this.item : this.$store.getters.currentExam;
         },
 
+        examSummary: function examSummary() {
+            if (_.isUndefined(this.examSummaryAjax) || this.isExamSummaryLoading) {
+                return this.emptyStatsObject;
+            }
+            return this.examSummaryAjax;
+        },
+
         kumis: function kumis() {
             return this.$store.getters.getK;
+        },
+
+        kumiSummary: function kumiSummary() {
+            if (_.isUndefined(this.kumiSummaryAjax) || this.isKumiSummaryLoading) {
+                return this.emptyStatsObject;
+            }
+            return this.kumiSummaryAjax;
         },
 
         isExam: function isExam() {

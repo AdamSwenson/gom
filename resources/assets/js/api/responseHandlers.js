@@ -86,7 +86,7 @@ module.exports = {
                 case 'exam':
                     let p = handleExamResponse( store, item, response );
                     p.then( function ( resolve ) {
-                        window.console.log( 'responseHandlers', 'exam response resolved', 73 );
+                        // window.console.log( 'responseHandlers', 'exam response resolved', 73 );
                         resolve();
                     } );
 
@@ -97,7 +97,7 @@ module.exports = {
                     handleItemResponse( store, item, response )
                         //this is what we do when it succeeds
                         .then( function () {
-                            window.console.log( 'responseHandlers', 'item response resolved', 81 );
+                            // window.console.log( 'responseHandlers', 'item response resolved', 81 );
                             //we resolve our outer promise
                             resolve();
                         } )

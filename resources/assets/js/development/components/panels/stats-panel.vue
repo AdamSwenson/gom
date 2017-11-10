@@ -108,6 +108,19 @@
         data: function () {
             return {
 
+                emptyStatsObject :  {
+                    kumiName: "-",
+                    kumiId: "-",
+                    mean: "-",
+                    median: "-",
+                    standardDeviation: "-",
+                    maxScore: "-",
+                    minScore: "-",
+                    numberAnswers: "-",
+                    percentile25: "-",
+                    percentile75: "-",
+                },
+
                 /**
                  * Whether there are any stats for this
                  * item. Used to control what message displays
@@ -116,13 +129,13 @@
                 loadingIndicator: " ... ",
                 isLoading: false,
 
-                isItemSummaryLoading: false,
+                isItemSummaryLoading: true,
 
-                isExamSummaryLoading: false,
+                isExamSummaryLoading: true,
 
                 /** Whether the raw scores are currently loading */
                 isScoresLoading: false,
-                isKumiStatsLoading: false,
+                isKumiStatsLoading: true,
 
                 emptyMessage: "No scores have been recorded for this item on this exam.",
                 serialNumber: _.toInteger( this.$route.params.serialNumber ),
@@ -165,7 +178,7 @@
              * Requests summarized scores for the item
              * This will include things like mean, median, sd
              */
-            itemSummary: function () {
+            itemSummaryAjax: function () {
                 if ( this.isExam ) return [];
                 let me = this;
                 me.isItemSummaryLoading = true;
@@ -185,7 +198,7 @@
              * This will include things like mean, median, sd
              * @param item
              */
-            examSummary: function () {
+            examSummaryAjax: function () {
                 let me = this;
                 me.isExamSummaryLoading = true;
 
@@ -205,7 +218,7 @@
              * along with the kumi id and name
               * @param item
              */
-            kumiSummary: function () {
+            kumiSummaryAjax: function () {
                 let me = this;
                 me.isKumiStatsLoading = true;
 
@@ -233,18 +246,45 @@
                 return this.item.id;
             },
 
+
             //if this is not the panel for the exam
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            itemSummary: function (  ) {
+                if(_.isUndefined(this.itemSummaryAjax) || this.isItemSummaryLoading)
+                {
+                    return this.emptyStatsObject;
+                }
+                return this.itemSummaryAjax;
             },
 
             exam: function () {
                 return this.item.isExam() ? this.item : this.$store.getters.currentExam;
             },
 
+            examSummary: function (  ) {
+                if(_.isUndefined(this.examSummaryAjax)|| this.isExamSummaryLoading)
+                {
+                    return this.emptyStatsObject;
+                }
+                return this.examSummaryAjax;
+            },
+
             kumis: function () {
                 return this.$store.getters.getK
             },
+
+
+            kumiSummary: function (  ) {
+                if(_.isUndefined(this.kumiSummaryAjax)|| this.isKumiSummaryLoading)
+                {
+                    return this.emptyStatsObject;
+                }
+                return this.kumiSummaryAjax;
+            },
+
 
             isExam: function () {
                 return this.item ? this.item.isExam() : false;
