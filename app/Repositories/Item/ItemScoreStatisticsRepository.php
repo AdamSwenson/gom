@@ -84,44 +84,24 @@ MYSQL;
          WHERE i.item_id = :itemId AND k.kumi_id = :kumiId;
 MYSQL;
 
-
-    /**
-     * Returns the summary stats for the item
-     * If the item is the only param, it will return the summary
-     * across all exams, etc. If the exam is set, it restricts to the exam.
-     * Mutatis mutandis for kumi
-     * @param Item $item
-     * @param Exam|null $exam
-     * @return \Illuminate\Support\Collection
-     */
-    public function getSummaryStatsForItem( Item $item, Exam $exam = null )
-    {
-//
-//        $result = $this->getDescriptiveStats($item, $exam);
-//
-//        //Add the median to the result
-//        $result['median'] = $this->getMedian($item, $exam);
-//
-//        //Add the quartiles
-////        $quartiles = $this->getQuartiles($item, $exam);
-////        $result['percentile25'] = $quartiles['quartile1'];
-////        $result['percentile75'] = $quartiles['quartile3'];
-//
-//        //Make the summary array into a laravel collection
-//        $result = collect($result);
-//        return $result;
-    }
+    const ITEM_SCORES_FOR_KUMI = <<<MYSQL
+              SELECT i.item_id, i.score, i.exam_id, k.kumi_id 
+              FROM item_scores i
+              INNER JOIN kumi_student k ON i.student_id = k.student_id 
+              WHERE i.item_id = :itemId AND k.kumi_id = :kumiId;
+MYSQL;
 
 
     /**
      * Will return collection of stats for item scores with keys
      *      mean,
+     *      median,
      *      standardDeviation,
      *      maxScore,
      *      minScore,
      *      numberAnswers
      *
-     * The median and quartiles need to be added with a call to those methods.
+     * The quartiles need to be added independently if they are desired.
      *
      * If only the item is provided, it returns these for all scores.
      *
@@ -158,14 +138,20 @@ MYSQL;
 
         //Make the summary array into a laravel collection
         $result = collect($result[0]);
+
+        //Add the median
+        $result['median'] = $this->getMedian($item, $exam);
+
         return $result;
     }
 
     /**
      * Returns the mean, standard deviation, max, min, and n
+     * for the item scores by kumis that the scores are associated with.
+     * The median and quartiles must be obtained from different methods
+     *
      *
      * @param Item|null $item
-     * @param Exam|null $exam
      * @param Kumi|null $kumi
      * @return \Illuminate\Support\Collection
      */
@@ -182,12 +168,23 @@ MYSQL;
         return $result;
     }
 
+
+    public function getItemScoresByKumi( $itemId, $kumiId )
+    {
+        $values = ['itemId' => $itemId, 'kumiId' => $kumiId];
+        return collect(DB::select(self::ITEM_SCORES_FOR_KUMI, $values));
+    }
+
+    /**
+     * @param Item $item
+     * @return \Illuminate\Support\Collection
+     */
     public function getDescriptiveStatsByKumiForItem( Item $item )
     {
 
         $query = <<<MYSQL
         SELECT
-         ks.id AS kumiId,
+         k.id AS kumiId,
          k.name AS kumiName,
           AVG(score) AS mean,
           STD(score) AS standardDeviation,
@@ -198,61 +195,45 @@ MYSQL;
          INNER JOIN kumi_student ks ON i.student_id = ks.student_id
          INNER JOIN kumis k ON ks.kumi_id = k.id
          WHERE i.item_id = :itemId
-         GROUP BY ks.id
+         GROUP BY ks.kumi_id
 MYSQL;
 
         $values = ['itemId' => $item->id];
         $results = collect(DB::select($query, $values));
 
+        //We now have a collection of results by kumi
+        //to add things like the median for each kumi
+        //we need to iterate through the collection and
+        //add them manually
         foreach ( $results as $r ) {
-            $kumiId = $r->kumiId;
-
-            $query2 = <<<MYSQL
-              SELECT score 
-              FROM item_scores i
-              INNER JOIN kumi_student k ON i.student_id = k.student_id 
-              WHERE i.item_id = :itemId AND k.kumi_id = :kumiId;
-MYSQL;
-            $scores = collect(DB::select($query2, ['itemId' => $item->id, 'kumiId' => $kumiId]));
-            $r->scores = $scores;
+            //It has been way too much of a pain in the ass to
+            //write a fancy query that gets the median as well
+            //in one shot. Since we want the scores anyway,
+            //we load them and then use the collection method to calculate
+            //the median and quartiles.
+            $scores = $this->getItemScoresByKumi($item->id, $r->kumiId);
+            $r->scores = $scores->sortBy('score');
+            //compute the median from the scores
             $r->median = $scores->median('score');
+
+            //Add quartiles here by counting the scores
+            if($r->scores->count() >= 4 ){
+                $cutoff25Index = ceil(0.25 * $r->scores->count());
+                //todo should this be plus 1 since we want the next value? or will ceiling always get it?
+                $cutoff75Index = ceil(0.75 * $r->scores->count());
+                $r->percentile25 = $r->scores[$cutoff25Index];
+                $r->percentile75 = $r->scores[$cutoff75Index];
+
+            }
         }
         return collect($results);
-//
-//        $query = <<<MYSQL
-//select score, k.id as kumiId
-//FROM item_scores i
-//         INNER JOIN kumi_student ks ON i.student_id = ks.student_id
-//         INNER JOIN kumis k ON ks.kumi_id = k.id
-//         WHERE i.item_id = :itemId
-//MYSQL;
-//
-//        $values = ['itemId' => $item->id];
-//
-//        $results = collect(DB::select($query, $values));
-//
-//
-//        $out = [];
-//        foreach ( $results->groupBy('kumiId') as $k ) {
-//            $out[] = [
-//                'kumiId' => $k[0]->kumiId,
-//                'maxScore' => $k->max('score'),
-//                'mean' => $k->avg('score'),
-//                'median' => $k->median('score'),
-//                'minScore' => $k->min('score'),
-//                'numberAnswers' => $k->count(),
-//                'standardDeviation' => $this->sd($k->values('score')->toArray())
-//            ];
-//         }
-//        return $out;
-//       return $results->groupBy('kumiId')->median('score');
-
 
     }
 
 
     /**
-     * Find the median for the item scores
+     * Find the median for the item scores using
+     * a database query for speed
      *
      * @param Item $item
      * @param Exam|null $exam

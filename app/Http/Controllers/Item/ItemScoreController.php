@@ -13,6 +13,8 @@ use App\Models\NewGom\ItemScore;
  * This is used for item score information
  * where identifying student data is included
  *
+ * ANY REQUEST FOR SCORES WHICH DOES NOT NEED STUDENT
+ * DATA SHOULD BE HANDLED BY THE ITEM STATS CONTROLLER.
  *
  */
 class ItemScoreController extends Controller
@@ -89,7 +91,8 @@ class ItemScoreController extends Controller
     }
 
     /**
-     * Get all item scores for all students on the exam
+     * Get all item scores for all items and all students on the exam
+     *
      * @param Exam $exam
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -98,6 +101,13 @@ class ItemScoreController extends Controller
         return ItemScore::where('exam_id', $exam->id)->get();
     }
 
+    /**
+     * Gets all scores for the student, regardless of exam or
+     * item.
+     *
+     * @param Student $student
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function studentScores( Student $student )
     {
         return ItemScore::where('student_id', $student->id)->get();

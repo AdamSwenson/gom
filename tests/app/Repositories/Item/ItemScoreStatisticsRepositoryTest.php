@@ -14,6 +14,7 @@ use App\Item;
 use App\Kumi;
 use App\Models\NewGom\ItemScore;
 use App\Student;
+use Faker\Factory;
 
 class ItemScoreStatisticsRepositoryTest extends \TestCase
 {
@@ -23,6 +24,8 @@ class ItemScoreStatisticsRepositoryTest extends \TestCase
     public $exam1;
     public $exam2;
     public $scores;
+    public $students = [];
+    public $kumis = [];
 
     const NUM_SCORES = 10;
     const EXPECTED_MEDIAN = 5;
@@ -40,8 +43,44 @@ class ItemScoreStatisticsRepositoryTest extends \TestCase
         $this->object = new ItemScoreStatisticsRepository;
     }
 
+//
+//    /**
+//     * THIS DUPLICATES THE SEEDER. SHOULD NOT USE THIS.
+//     * Creates test kumis
+//     * if overlapping is false, then there are no students
+//     * in the intersection of the kumis
+//     * @param $numberStudentsInKumi
+//     * @param int $numberKumis
+//     */
+//    public function makeKumis($numberStudentsInKumi, $numberKumis=2, $overlapping=false){
+//        $this->kumis = factory(Kumi::class, $numberKumis)->create();
+//
+//        foreach($this->kumis as $kumi){
+//            $students = factory(Student::class, $numberStudentsInKumi)->create();
+//            foreach($students as $student){
+//                $this->students[] = $student;
+//                $student->kumis()->attach($kumi);
+//            }
+//        }
+//
+//    }
+//
+//    /** @test */
+//    public function makeKumisBehavesAsExpected(){
+//        $numKumis = Factory::create()->randomNumber(1);
+//        $numberStudentsInKumi = Factory::create()->randomNumber(1);
+//
+//        $this->makeKumis($numberStudentsInKumi, $numKumis);
+//
+//        //check
+//        $this->assertEquals($numKumis, sizeof($this->kumis));
+//        $this->assertEquals($numberStudentsInKumi * $numKumis, sizeof($this->students));
+//
+//    }
+
     /**
      * Creates test data
+     * The data will have two kumi for the exam
      */
     public function makeScores( $exam, $startScore = 1 )
     {
@@ -89,15 +128,17 @@ class ItemScoreStatisticsRepositoryTest extends \TestCase
 
 
     /** @test */
-    public function getDescriptiveStatsByKumi()
+    public function getDescriptiveStatsByKumiForItem()
     {
         $result = $this->object->getDescriptiveStatsByKumiForItem($this->item);
         //check that has expected keys
-        $this->assertEquals(5.5, $result['mean']);
-        $this->assertEquals(2.87, $result['standardDeviation'], '', 0.2);
-        $this->assertEquals(1, $result['minScore']);
-        $this->assertEquals(10, $result['maxScore']);
-        $this->assertEquals(10, $result['numberAnswers']);
+        $this->assertGreaterThan(0, $result->count());
+        $this->assertEquals(5.5, $result->mean);
+        $this->assertEquals(2.87, $result->standardDeviation, '', 0.2);
+        $this->assertEquals(1, $result->minScore);
+        $this->assertEquals(10, $result->maxScore);
+        $this->assertEquals(10, $result->numberAnswers);
+        $this->assertEquals(5, $result->median);
     }
 
 

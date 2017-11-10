@@ -23,7 +23,7 @@ module.exports = {
      * @param exam
      * @returns {Promise.<T>|*}
      */
-    getExamStats: ( store, exam ) => {
+    getExamScoresForStats: ( store, exam ) => {
         // let to = route + '/exam/' + exam.id;
         let out = {
             requestVersion: REQUEST_VERSION
@@ -108,7 +108,7 @@ module.exports = {
      * @param student
      * @returns {Promise.<T>|*}
      */
-    getItemStats: ( store, item ) => {
+    getItemScoresForStats: ( store, item ) => {
 
         return window.axios
             .get( 'dev/stats/item/' + item.id )

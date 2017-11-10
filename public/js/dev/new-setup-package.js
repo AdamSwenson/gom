@@ -48569,16 +48569,10 @@ exports.default = {
             /** Whether the raw scores are currently loading */
             isScoresLoading: false,
             isKumiStatsLoading: false,
+
             emptyMessage: "No scores have been recorded for this item on this exam.",
             serialNumber: _.toInteger(this.$route.params.serialNumber),
             active: this.serialNumber,
-
-            mean: '',
-            sd: '',
-            min: '',
-            median: '',
-            max: '',
-            numberAnswers: '',
 
             scoreSortOrder: 'desc',
 
@@ -48599,7 +48593,7 @@ exports.default = {
             //display loading indicator
             me.isScoresLoading = true;
 
-            var p = _statsRequests2.default.getItemStats(this.$store, this.item);
+            var p = _statsRequests2.default.getItemScoresForStats(this.$store, this.item);
 
             return p.then(function () {
                 var stats = me.$store.getters.getStatsForItem(me.item);
@@ -48619,13 +48613,6 @@ exports.default = {
                 //done loading
                 me.isItemSummaryLoading = false;
                 return response.data;
-
-                //                        me.mean = _.round( response.data.mean, 2 );
-                //                        me.median = _.round( response.data.median, 2 );
-                //                        me.min = _.round( response.data.minScore, 2 );
-                //                        me.max = _.round( response.data.maxScore, 2 );
-                //                        me.sd = _.round( response.data.standardDeviation, 2 );
-                //                        me.count = response.data.numberAnswers;
             }).catch(function (error) {
                 //                        errorHandling( error );
             });
@@ -52051,7 +52038,7 @@ module.exports = {
      * @param exam
      * @returns {Promise.<T>|*}
      */
-    getExamStats: function getExamStats(store, exam) {
+    getExamScoresForStats: function getExamScoresForStats(store, exam) {
         // let to = route + '/exam/' + exam.id;
         var out = {
             requestVersion: _apiSettings.REQUEST_VERSION
@@ -52128,7 +52115,7 @@ module.exports = {
      * @param student
      * @returns {Promise.<T>|*}
      */
-    getItemStats: function getItemStats(store, item) {
+    getItemScoresForStats: function getItemScoresForStats(store, item) {
 
         return window.axios.get('dev/stats/item/' + item.id).then(function (response) {
             // window.console.log( 'statsRequests---getItemStats', 69, response );

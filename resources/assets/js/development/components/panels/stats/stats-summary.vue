@@ -1,7 +1,7 @@
 <template>
     <div class="stats-summary box">
 
-        <p class="h4" v-if="showName">{{ name }}</p>
+    <p class="h4" v-if="showName">{{ name }}</p>
         <div v-if="isLoading">
             <loading-indicator :is-loading="isLoading"></loading-indicator>
         </div>

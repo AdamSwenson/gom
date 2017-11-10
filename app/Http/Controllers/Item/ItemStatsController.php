@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 /**
- * This is used for information about item scores
- * without including student information
+ * This is used for retrieving pre-computed
+ * information about item scores and raw item
+ * scores WITHOUT including student information
  *
+ * ANY REQUEST FOR SCORES WHICH DOES NOT NEED STUDENT
+ * DATA SHOULD BE HANDLED BY THIS CONTROLLER.
  *
  * Class ItemStatsController
  * @package App\Http\Controllers\Item
@@ -38,7 +41,7 @@ class ItemStatsController extends Controller
     public function itemScores( Item $item )
     {
         $out = [];
-        $scores = $item->scores;
+        $scores = collect($item->scores)->sortByDesc('score');
         foreach ( $scores as $score ) {
 
             $out[] = [
@@ -63,7 +66,7 @@ class ItemStatsController extends Controller
         $out = [];
         $items = $exam->getItems();
         foreach ( $items as $item ) {
-            $scores = $item->scores;
+            $scores = collect($item->scores)->sortByDesc('score');
 
             foreach ( $scores as $score ) {
 
@@ -85,7 +88,9 @@ class ItemStatsController extends Controller
      *      standardDeviation,
      *      maxScore,
      *      minScore,
-     *      numberAnswers
+     *      numberAnswers,
+     *      percentile25,
+     *      percentile75
      * @param Item $item
      * @return \Illuminate\Support\Collection
      */
@@ -95,9 +100,6 @@ class ItemStatsController extends Controller
 
         $result = $repo->getDescriptiveStats($item);
 
-        //Add the median to the result
-        $result['median'] = $repo->getMedian($item);
-
         //Add the quartiles
         $quartiles = $repo->getQuartiles($item);
         $result['percentile25'] = $quartiles['quartile1'];
@@ -106,17 +108,19 @@ class ItemStatsController extends Controller
         //Make the summary array into a laravel collection
         $result = collect($result);
         return $result;
-//        return $repo->getSummaryStatsForItem($item);
     }
 
 
     /**
      * Will return collection for item scores on the exam with keys
      *      mean,
+     *      median,
      *      standardDeviation,
      *      maxScore,
      *      minScore,
-     *      numberAnswers
+     *      numberAnswers,
+     *      percentile25,
+     *      percentile75
      * @param Exam $exam
      * @param Item $item
      * @return \Illuminate\Support\Collection
@@ -126,9 +130,6 @@ class ItemStatsController extends Controller
         $repo = app()->make(IItemScoreStatisticsRepository::class);
 
         $result = $repo->getDescriptiveStats($item, $exam);
-
-        //Add the median to the result
-        $result['median'] = $repo->getMedian($item, $exam);
 
         //Add the quartiles
         $quartiles = $repo->getQuartiles($item, $exam);
@@ -143,13 +144,6 @@ class ItemStatsController extends Controller
 
     public function itemSummaryByKumi( Item $item )
     {
-//        dd($item->kumis);
-//        $kumis = [];
-//        foreach($item->scores as $score){
-//             $kumis[] = $score->kumis;
-//         }
-//         dd($kumis);
-
         $repo = app()->make(IItemScoreStatisticsRepository::class);
         return $repo->getDescriptiveStatsByKumiForItem($item);
     }

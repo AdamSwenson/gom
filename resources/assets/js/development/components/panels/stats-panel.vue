@@ -123,16 +123,10 @@
                 /** Whether the raw scores are currently loading */
                 isScoresLoading: false,
                 isKumiStatsLoading: false,
+
                 emptyMessage: "No scores have been recorded for this item on this exam.",
                 serialNumber: _.toInteger( this.$route.params.serialNumber ),
                 active: this.serialNumber,
-
-                mean: '',
-                sd: '',
-                min: '',
-                median: '',
-                max: '',
-                numberAnswers: '',
 
                 scoreSortOrder: 'desc',
 
@@ -153,7 +147,7 @@
                 //display loading indicator
                 me.isScoresLoading = true;
 
-                let p = statsRequests.getItemStats( this.$store, this.item );
+                let p = statsRequests.getItemScoresForStats( this.$store, this.item );
 
                 return p.then( function () {
                     let stats = me.$store.getters.getStatsForItem( me.item );
@@ -175,13 +169,6 @@
                         //done loading
                         me.isItemSummaryLoading = false;
                         return response.data;
-
-//                        me.mean = _.round( response.data.mean, 2 );
-//                        me.median = _.round( response.data.median, 2 );
-//                        me.min = _.round( response.data.minScore, 2 );
-//                        me.max = _.round( response.data.maxScore, 2 );
-//                        me.sd = _.round( response.data.standardDeviation, 2 );
-//                        me.count = response.data.numberAnswers;
 
                     } )
                     .catch( function ( error ) {
