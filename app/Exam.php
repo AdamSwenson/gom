@@ -520,6 +520,13 @@ MYSQL;
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function gradingTimes(){
+        return $this->hasMany(GradingTime::class);
+    }
+
+    /**
      * Associated user
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

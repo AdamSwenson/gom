@@ -65,9 +65,14 @@ Route::post('grade/exam/{exam}/assign', 'Grade\GradeAssignmentController@recordA
 /* Api */
 // record a question or element score
 Route::post('grade/exam/{exam}', 'Grade\ScoreController@recordScore');
-Route::post('grade/exam/{exam}/time', 'Grade\TimeController@recordTime');
+
 // delete a question or element score
 Route::delete('grade/exam/{exam}', 'Grade\ScoreController@removeScore');
+
+
+
+
+
 
 /* -----------------------------------------------  Home   ---------------------------------------------------------- */
 /* Home page - now called 'landing' */
@@ -136,12 +141,16 @@ Route::get('feedback/login', 'Report\PublicFeedbackController@showLogin');
 Route::get('feedback/view', 'Report\PublicFeedbackController@showFeedback');
 
 
-/* ---------------------------------------------- Utilities --------------------------------------------------------- */
 // Export exam scores in csv
 Route::get('backup/{exam}', 'UtilityController@exportExamScores');
 // Make sure stats stored in redis are up to date
 Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
+
+
+/* ---------------------------------------------- Time --------------------------------------------------------- */
+Route::post('grade/exam/{exam}/time', 'Time\TimeController@recordTime');
+Route::get('time/exam/{exam}', 'Time\TimeController@getGradingTime');
 
 
 

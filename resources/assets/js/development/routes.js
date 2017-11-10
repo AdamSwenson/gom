@@ -12,6 +12,7 @@ import panelHistory from './components/panels/history-panel.vue'
 import panelNotes from './components/panels/notes-panel.vue'
 import panelItemDetail from './components/panels/item-detail-panel.vue'
 import panelStats from './components/panels/stats-panel.vue'
+import panelExamStats from './components/panels/exam-stats-panel.vue'
 import panelTags from './components/panels/tags-panel.vue'
 import panelStudents from './components/panels/students-panel.vue'
 import panelGrades from './components/panels/grades-panel.vue'
@@ -88,6 +89,14 @@ export const routes = [
         components: { itemPanels: panelStats },
         props: true
     },
+
+    //stats-exam
+    {
+        path: '/panel-exam-stats/:serialNumber',
+        components: { examPanels: panelExamStats },
+        props: true
+    },
+
     //students
     {
         path: '/panel-students/:serialNumber',

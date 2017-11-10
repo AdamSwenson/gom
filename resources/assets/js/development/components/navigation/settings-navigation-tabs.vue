@@ -61,7 +61,19 @@
                 </router-link>
             </li>
 
-            <li role="presentation">
+            <li v-if="isExam" role="presentation">
+                <router-link v-bind:to="routeToExamStats">
+                    <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
+                        <span class="icon is-small">
+                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                        </span>
+                        <span>Stats</span>
+                    </a>
+                </router-link>
+            </li>
+
+
+            <li v-else role="presentation">
                 <router-link v-bind:to="routeToStats">
                     <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
@@ -71,6 +83,7 @@
                     </a>
                 </router-link>
             </li>
+
 
             <li role="presentation">
                 <router-link v-bind:to="routeToHistory">
@@ -186,6 +199,10 @@
                 if(this.isExam) return "/panel-exam-notes/" + this.serialNumber;
 
                 return "/panel-item-notes/" + this.serialNumber;
+            },
+
+            routeToExamStats: function () {
+                return "/panel-exam-stats/" + this.serialNumber;
             },
 
             routeToStats: function () {

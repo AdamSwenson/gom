@@ -46303,6 +46303,19 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
@@ -46352,6 +46365,10 @@ exports.default = {
             if (this.isExam) return "/panel-exam-notes/" + this.serialNumber;
 
             return "/panel-item-notes/" + this.serialNumber;
+        },
+
+        routeToExamStats: function routeToExamStats() {
+            return "/panel-exam-stats/" + this.serialNumber;
         },
 
         routeToStats: function routeToStats() {
@@ -51559,6 +51576,10 @@ var _statsPanel = __webpack_require__(733);
 
 var _statsPanel2 = _interopRequireDefault(_statsPanel);
 
+var _examStatsPanel = __webpack_require__(743);
+
+var _examStatsPanel2 = _interopRequireDefault(_examStatsPanel);
+
 var _tagsPanel = __webpack_require__(604);
 
 var _tagsPanel2 = _interopRequireDefault(_tagsPanel);
@@ -51575,13 +51596,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //Panels
 
-//Panes (main container for edit tools)
-_vue2.default.component('panel-detail', _itemDetailPanel2.default);
 
 //Panels (objects within pane)
 /**
  * Created by adam on 7/12/17.
  */
+_vue2.default.component('panel-detail', _itemDetailPanel2.default);
+//Panes (main container for edit tools)
 
 _vue2.default.component('panel-comments', _commentSetupPanel2.default);
 _vue2.default.component('panel-history', _historyPanel2.default);
@@ -51644,6 +51665,14 @@ var routes = exports.routes = [{
     components: { itemPanels: _statsPanel2.default },
     props: true
 },
+
+//stats-exam
+{
+    path: '/panel-exam-stats/:serialNumber',
+    components: { examPanels: _examStatsPanel2.default },
+    props: true
+},
+
 //students
 {
     path: '/panel-students/:serialNumber',
@@ -80897,7 +80926,27 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("Feedback")])])])], 1), _vm._v(" "), _c('li', {
+  })]), _vm._v(" "), _c('span', [_vm._v("Feedback")])])])], 1), _vm._v(" "), (_vm.isExam) ? _c('li', {
+    attrs: {
+      "role": "presentation"
+    }
+  }, [_c('router-link', {
+    attrs: {
+      "to": _vm.routeToExamStats
+    }
+  }, [_c('a', {
+    staticClass: "stats-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-bar-chart",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Stats")])])])], 1) : _c('li', {
     attrs: {
       "role": "presentation"
     }
@@ -87297,6 +87346,371 @@ if(false) {
  // When the module is disposed, remove the <style> tags
  module.hot.dispose(function() { update(); });
 }
+
+/***/ }),
+/* 741 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _timeRequests = __webpack_require__(746);
+
+var _timeRequests2 = _interopRequireDefault(_timeRequests);
+
+var _loadingIndicator = __webpack_require__(725);
+
+var _loadingIndicator2 = _interopRequireDefault(_loadingIndicator);
+
+var _statsSummary = __webpack_require__(734);
+
+var _statsSummary2 = _interopRequireDefault(_statsSummary);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    components: {
+        'loading-indicator': _loadingIndicator2.default,
+        'stats-summary': _statsSummary2.default
+    },
+
+    //        props: ['index'],
+
+    data: function data() {
+        return {
+
+            isTimeLoading: true,
+
+            placeholders: {}
+        };
+    },
+
+    asyncComputed: {
+
+        timeElapsedAjax: function timeElapsedAjax() {
+            var me = this;
+            me.isTimeLoading = true;
+
+            var p = _timeRequests2.default.getTotalGradingTime(this.item);
+
+            return p.then(function (data) {
+                me.isTimeLoading = false;
+                return data.elapsedSeconds;
+            });
+        }
+
+    },
+
+    watch: {},
+
+    computed: {
+        id: function id() {
+            return this.item.id;
+        },
+
+        //if this is not the panel for the exam
+        item: function item() {
+            return this.$store.getters.currentExam;
+
+            //                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+        },
+        averageGradingTime: function averageGradingTime() {},
+
+        timeElapsed: function timeElapsed() {},
+
+        timeRemaining: function timeRemaining() {},
+
+        numberItems: function numberItems() {},
+
+        numberStudents: function numberStudents() {},
+
+        examsGraded: function examsGraded() {},
+
+        examsRemaining: function examsRemaining() {},
+
+        exam: function exam() {
+            return this.item.isExam() ? this.item : this.$store.getters.currentExam;
+        },
+
+        isExam: function isExam() {
+            return this.item ? this.item.isExam() : false;
+        }
+
+    },
+
+    methods: {}
+};
+
+/***/ }),
+/* 742 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 743 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(745)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(741),
+  /* template */
+  __webpack_require__(744),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/exam-stats-panel.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] exam-stats-panel.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-67a2940a", Component.options)
+  } else {
+    hotAPI.reload("data-v-67a2940a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 744 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "exam-stats-panel"
+  }, [_c('h3', {
+    staticClass: "title is-3"
+  }, [_vm._v("Exam stats")]), _vm._v(" "), _c('div', {
+    staticClass: "box"
+  }, [_c('div', {
+    staticClass: "tile is-ancestor"
+  }, [_c('div', {
+    staticClass: "tile is-vertical is-parent"
+  }, [_c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('p', {
+    staticClass: "h4"
+  }, [_vm._v("Exam properties")]), _vm._v(" "), _c('div', {
+    staticClass: "box"
+  }, [_c('ul', [_c('li', [_vm._v("# items : " + _vm._s(_vm.numberItems))]), _vm._v(" "), _c('li', [_vm._v("# students : " + _vm._s(_vm.numberStudents) + " ")])])])]), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('p', {
+    staticClass: "h4"
+  }, [_vm._v("Counts")]), _vm._v(" "), _c('div', {
+    staticClass: "box"
+  }, [_c('ul', [_c('li', [_vm._v("# Graded : " + _vm._s(_vm.examsGraded))]), _vm._v(" "), _c('li', [_vm._v("# Remaining : " + _vm._s(_vm.examsRemaining))])])])])]), _vm._v(" "), _c('div', {
+    staticClass: "tile is-parent is-vertical"
+  }, [_c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('p', {
+    staticClass: "h4"
+  }, [_vm._v("Total Time")]), _vm._v(" "), _c('div', {
+    staticClass: "box"
+  }, [_c('ul', [_c('li', [_vm._v("Elapsed : " + _vm._s(_vm.timeElapsedAjax) + " seconds")]), _vm._v(" "), _c('li', [_vm._v("Remaining : " + _vm._s(_vm.timeRemaining))]), _vm._v(" "), _c('li', [_vm._v("Average grading time : " + _vm._s(_vm.averageGradingTime))])])])])])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-67a2940a", module.exports)
+  }
+}
+
+/***/ }),
+/* 745 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(742);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(20)("6e6da7cc", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-67a2940a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./exam-stats-panel.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-67a2940a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./exam-stats-panel.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 746 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _apiSettings = __webpack_require__(23);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = __webpack_require__(10);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = __webpack_require__(7);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _responseHandlers = __webpack_require__(67);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 7/7/17.
+ */
+var route = 'dev/scores';
+
+module.exports = {
+
+    /**
+     * Gets all item scores for the exam without identifying
+     * student information
+     * @param exam
+     * @returns {Promise.<T>|*}
+     */
+    getTotalGradingTime: function getTotalGradingTime(exam) {
+        var to = 'time/exam/' + exam.id;
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION
+        };
+
+        return window.axios.get(to).then(function (response) {
+            return response.data;
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    }
+
+};
 
 /***/ })
 /******/ ]);
