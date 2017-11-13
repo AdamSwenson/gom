@@ -119,7 +119,10 @@ const getters = {
      */
     getStudents: ( state, getters, rootState ) => {
         return state.students;
-    }
+    },
+
+
+
 }
 
 

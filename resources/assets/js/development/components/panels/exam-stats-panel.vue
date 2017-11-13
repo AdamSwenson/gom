@@ -58,6 +58,8 @@
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
 
+    import * as gTypes from '../../../store/getter-types';
+
     import Payload from '../../../models/Payload';
 
     import timeRequests from '../../../api/requests/timeRequests';
@@ -78,7 +80,9 @@
 
                 isTimeLoading : true,
 
-                placeholders: {},
+                placeholders: {
+                    numberItems: ''
+                },
             };
         },
 
@@ -124,11 +128,16 @@
             },
 
             numberItems: function () {
+                let v = this.$store.getters[ gTypes.getItemCount ];
+                //if not set return placeholder
+                return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
 
             },
 
             numberStudents: function () {
-
+                let v = this.$store.getters.getStudentCount;
+                //if not set return placeholder
+                return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
             },
 
             examsGraded: function () {

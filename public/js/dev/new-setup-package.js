@@ -57921,6 +57921,7 @@ var getters = {
     getStudents: function getStudents(state, getters, rootState) {
         return state.students;
     }
+
 };
 
 exports.default = {
@@ -87366,6 +87367,10 @@ var _mutationTypes = __webpack_require__(1);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
 var _Payload = __webpack_require__(2);
 
 var _Payload2 = _interopRequireDefault(_Payload);
@@ -87386,63 +87391,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 exports.default = {
     components: {
         'loading-indicator': _loadingIndicator2.default,
@@ -87456,7 +87404,9 @@ exports.default = {
 
             isTimeLoading: true,
 
-            placeholders: {}
+            placeholders: {
+                numberItems: ''
+            }
         };
     },
 
@@ -87495,9 +87445,17 @@ exports.default = {
 
         timeRemaining: function timeRemaining() {},
 
-        numberItems: function numberItems() {},
+        numberItems: function numberItems() {
+            var v = this.$store.getters[gTypes.getItemCount];
+            //if not set return placeholder
+            return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
+        },
 
-        numberStudents: function numberStudents() {},
+        numberStudents: function numberStudents() {
+            var v = this.$store.getters.getStudentCount;
+            //if not set return placeholder
+            return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
+        },
 
         examsGraded: function examsGraded() {},
 
@@ -87514,7 +87472,62 @@ exports.default = {
     },
 
     methods: {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 742 */
