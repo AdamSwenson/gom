@@ -28,6 +28,7 @@
                 :serial-number="serialNumber"
                 :is-exam="isExam"
         ></valence-buttons>
+
         <div class="level">
             <!-- Left side -->
             <div class="level-left">
@@ -70,10 +71,15 @@
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
-        props: [ 'forExam' ],
+        props: [ 'forExam', 'dataSerialNumber' ],
 
         data: function () {
             return {
+
+                serialNumber: function () {
+//                    if(!_.isUndefined(this.dataSerialNumber)) return this.dataSerialNumber
+                    return this.$parent.serialNumber;
+                },
 
                 identifier: 'comment-setup-panel',
 
@@ -139,11 +145,9 @@
                 return this.identifier;
             },
 
-            serialNumber: function () {
-                return this.$parent.serialNumber;
-            },
 
             item: function () {
+//                return this.$parent.item;
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
