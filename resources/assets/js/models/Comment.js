@@ -12,30 +12,13 @@ export default class Comment extends IModel {
         super();
         this.type = 'comment';
         this.valence = null;
-        //
-        // this.commentIngredients = {
-        //     absent: {
-        //         prefix: 'To answer this correctly, you needed to',
-        //         postfix: 'Unfortunately, you forgot to do this'
-        //     },
-        //     poor: {
-        //         prefix: 'This required you to',
-        //         postfix: 'You attempted to do it, but there were many problems'
-        //     },
-        //
-        //     good: {
-        //
-        //         prefix: 'As was evident from your answer, you recognized that you needed to',
-        //         postfix: 'Your answer was okay'
-        //     },
-        //
-        //     excellent: {
-        //         prefix: 'As was evident from your excellent answer, you recognized that you needed to',
-        //         postfix: 'You did a great job here'
-        //     }
-        // };
     }
 
+    /**
+     * Whether or not this is the stock comment
+     * for an item
+     * @returns {boolean}
+     */
     isStock() {
         return this.valence === 'stock';
     }

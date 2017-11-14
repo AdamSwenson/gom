@@ -23,35 +23,41 @@ Vue.component( 'panel-comments', panelComments );
 Vue.component( 'panel-history', panelHistory );
 Vue.component( 'panel-stats', panelStats );
 Vue.component( 'panel-notes', panelNotes );
-Vue.component('panel-tags', panelTags);
+Vue.component( 'panel-tags', panelTags );
 Vue.component( 'edit-tabs', editTabs );
-Vue.component('panel-students', panelStudents);
-Vue.component('panel-grades', panelGrades);
+Vue.component( 'panel-students', panelStudents );
+Vue.component( 'panel-grades', panelGrades );
 
 
 export const routes = [
-    {
-        name: 'comments',
-        path: '/panel-comments/:serialNumber',
-        components: { itemPanels: panelComments },
-        props: true, //{default: true}
-    }, //props: (route) => {return route.index;}},
-//exams
+
+    //exams: change, grade, or new
     {
         name: 'load-exam',
         path: '',
     },
-    {name: 'new-exam', path: ''},
+
+    { name: 'new-exam', path: '' },
+    { name: 'grade-exam', path: '/grade/exam/:id' },
+
+
+//comment setup
+    {
+        name: 'comments',
+        path: '/panel-comments/:serialNumber',
+        components: { itemPanels: panelComments },
+        props: {itemPanels: true} //{default: true}
+    }, //props: (route) => {return route.index;}},
+
     {
         name: 'exam-comments',
         path: '/exam-panel-comments/:serialNumber',
-        components: { examPanels: panelComments},
+        components: { examPanels: panelComments },
         props: {
             isExam: true
         }
     },
 
-    {name: 'grade-exam', path: '/grade/exam/:id'},
 
     {
         name: 'exam-detail',
@@ -106,15 +112,15 @@ export const routes = [
     //tags
     {
         path: '/panel-tags/:serialNumber',
-        components: { itemPanels: panelTags},
-        props :{
+        components: { itemPanels: panelTags },
+        props: {
             objectType: 'item'
         }
     },
     //grades
     {
         path: '/panel-grades/:serialNumber',
-        components: { itemPanels: panelGrades},
+        components: { itemPanels: panelGrades },
         props: true
     }
 ];

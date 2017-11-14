@@ -3,7 +3,8 @@
         <span class="icon"
              v-on:click="toggleHelp"
         >
-            <i class="fa fa-question-circle"></i>
+            <i v-bind:class="iconClass" aria-hidden="true"></i>
+            <span class="sr-only">Help icon</span>
         </span>
 
         <div class="modal"
@@ -14,7 +15,7 @@
             <div class="modal-content">
                 {{ displayText }}
             </div>
-            <button class="modal-close is-large" aria-label="close"v-on:click="toggleHelp" ></button>
+            <button class="modal-close is-large" aria-label="close" v-on:click="toggleHelp" ></button>
         </div>
     </div>
 </template>
@@ -32,6 +33,8 @@
 
         data: function () {
             return {
+                iconClass: "fa fa-question-circle-o",
+
                 showHelp: false,
                 defaults: {}
             }

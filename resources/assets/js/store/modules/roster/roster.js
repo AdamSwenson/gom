@@ -206,6 +206,14 @@ module.exports = {
         //     })( state, identifier )
         // },
 
+        /**
+         * Returns the number of students state.roster
+         *
+         * @param state
+         * @param getters
+         * @param rootState
+         * @returns {Number}
+         */
         getStudentCount: ( state, getters, rootState ) => {
             return state.roster.length;
         },

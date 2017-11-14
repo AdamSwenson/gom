@@ -2,12 +2,23 @@
     <div v-bind:class="styling"
          v-bind:id="panelId"
     >
+        <div class="level">
+            <!-- Left side -->
+            <div class="level-left">
+            </div>
+            <div class="level-right">
+                <div class="level-item">
+                    <info-button :help-text="helpText"></info-button>
+                </div>
+            </div>
+        </div>
+
         <div class="field ">
             <label class="label ">{{ label }}</label>
             <p class="control">
                 <textarea
                         class="textarea comment-text"
-                        rows="3"
+                        rows="4"
                         v-bind:placeholder="placeholder"
                         v-model="commentText"></textarea>
             </p>
@@ -17,15 +28,19 @@
                 :serial-number="serialNumber"
                 :is-exam="isExam"
         ></valence-buttons>
-
-        <div class="field">
-            <p class="control">
-                <label class="checkbox">
-                    <input type="checkbox" v-model="shouldPrePopulate">
-                    Sync with stock             <info-button :help-text="helpText"></info-button>
-                </label>
-
-            </p>
+        <div class="level">
+            <!-- Left side -->
+            <div class="level-left">
+                <div class="level-item">
+                    <label class="checkbox">
+                        <input type="checkbox" v-model="shouldPrePopulate">
+                        {{ syncControlLabel }}
+                    </label>
+                </div>
+                <div class="level-item">
+                    <info-button :help-text="prePopulationHelpText"></info-button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -60,10 +75,6 @@
         data: function () {
             return {
 
-                serialNumber: _.toInteger( this.$route.params.serialNumber ),
-
-//                active: this.serialNumber,
-
                 identifier: 'comment-setup-panel',
 
                 labels: {
@@ -71,20 +82,31 @@
                     item: "Set up student feedback for this item"
                 },
 
-                //Which valence is currently displayed
+                /** Which valence is currently displayed */
                 displayed: 'stock',
 
-                helpText : 'This is a thing which does stuff',
-
-
-                //Whether to prepopulate the comments
-                shouldPrePopulate: true,
+                /** The instructional help text for the overall panel */
+                helpText: `<div class="help">
+                    <p>In this area, you create the feedback your students will receive for this item. </p>
+                    <p>[Explanation of score levels nd valences here]</p>
+                    </div>`,
 
 
                 placeholders: {
+                    //These are for the text entry textarea
                     exam: "Set up a global comment on the exam as a whole",
                     item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
                 },
+
+                /** The help text to be displayed for the sync checkbox */
+                prePopulationHelpText: `<div class="help">
+                    <p>If this box is checked, when you enter text into the Stock valence
+                    comments will be generated for the other valences.</p>
+                    <p>You will probably still want to further customize the text for each.</p>
+                    </div> `,
+
+                //Whether to pre-populate the comments
+                shouldPrePopulate: true,
 
 
                 defaults: {
@@ -102,12 +124,13 @@
          hooks of the component will not be called.
          To react to params changes in the same component, you can simply watch the $route object:
          */
-        watch: {
-            '$route'( to, from ) {
-                // react to route changes...
-            }
-        },
+//        watch: {
+//            '$route'( to, from ) {
+//                // react to route changes...
+//            }
+//        },
         computed: {
+
             panelId: function () {
                 return this.identifier + '-' + this.serialNumber;
             },
@@ -116,6 +139,9 @@
                 return this.identifier;
             },
 
+            serialNumber: function () {
+                return this.$parent.serialNumber;
+            },
 
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
@@ -137,6 +163,10 @@
                 return this.labels.item;
             },
 
+            /**
+             * Gets the appropriate placeholder text depending
+             * on the type of item involved
+             */
             placeholder: function () {
                 if ( this.isExam ) return this.placeholders.exam;
                 return this.placeholders.item;
@@ -166,9 +196,12 @@
                         updateValence: this.displayed,
                         updateVal: v
                     } );
+
                     this.$store.commit( mTypes.updateComment, pl );
 
-                    //now set the other comments if the valence was stock
+                    //If the user indicated that they want to prepopulate
+                    //the other comments from stock and if the valence was stock
+                    //we now set the other comments
                     if ( this.displayed === 'stock' && this.shouldPrePopulate === true ) {
                         this.prePopulateComments( v );
                     }
@@ -188,6 +221,17 @@
                         }
                     }
                 }
+            },
+
+            /**
+             * The text displayed for the control which
+             * governs whether changes to stock overwrite
+             * existing comments.
+             */
+            syncControlLabel :function (  ) {
+                let noChanges = 'Prepopulate comments from stock';
+                let changes = 'Overwrite existing comment with changes to stock';
+                return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
             },
 
 
@@ -214,47 +258,39 @@
             },
 
 
+            /**
+             * Takes the stock comment and creates the valenced comments
+             */
             prePopulateComments: function ( stock ) {
                 var me = this;
-                window.console.log( 'comment-setup-panel', 'prePopulateComments', 201, this.item.getEmptyComments() );
-
-                //todo this is no good, because if fires on the initial keystroke into stock, it will only show the first letter.
 
                 _.forEach( this.valences, function ( v ) {
-                    if (v !== 'stock' ) {
-                        let comment = this.item.getComment( v );
-                        // let comment of this.item.getComment()
-//                    for (let comment of this.item.getEmptyComments()) {
+                    if ( v !== 'stock' ) {
+                        let comment = me.item.getComment( v );
+
+                        //skip if it's the stock comment
                         if ( comment.valence === 'stock' ) return true;
+
+                        // Skip if the comment text is already set
+                        // We don't want to overwrite existing comments if stock is altered.
+                        if ( comment.text.length > 0 ) return true;
+
+                        //create the new text.
+                        //nb, any enhancements to prepopulation should be done in Comment
                         let text = Comment.makePrePopulatedContent( comment.valence, stock );
-                        window.console.log( 'comment-setup-panel', 'prePopulateComments', 206, text );
+
+                        //save the new comment text for the valence
                         let pl = Payload.factory( {
-                            obj: this.item,
+                            obj: me.item,
                             updateValence: comment.valence,
                             updateVal: text
                         } );
-                        this.$store.commit( mTypes.updateComment, pl );
+                        me.$store.commit( mTypes.updateComment, pl );
                     }
                 } );
             }
 
-//
-//            /**
-//             * Returns true if the non-stock values are
-//             * all empty
-//             */
-//            testIfCanPopulate: function (){
-//                let empty = this.item.getEmptyComments();
-//                for (let [ comment ] of this.item.getEmptyComments()) {
-//                    if ( comment.valence === 'stock' ) return false;
-//                }
-//            }
-        }
-        ,
-
-
-        directives: {}
-        ,
+        },
 
         events: {
             'please-change-valence':
@@ -266,10 +302,6 @@
         }
         ,
 
-        mounted: function () {
-//            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
-        }
-        ,
-    }
-    ;
+
+    };
 </script>

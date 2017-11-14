@@ -1163,6 +1163,28 @@ var Item = function (_IModel) {
                 });
             }
         }
+
+        /**
+         * whether or not the comments are
+         * either all empty or what would've
+         * been produced by prepopulating from stock.
+         */
+
+    }, {
+        key: 'haveCommentsBeenCustomized',
+        value: function haveCommentsBeenCustomized() {
+            if (this.getEmptyComments().length === _Comment2.default.valences.length) return false;
+            var me = this;
+            _.forEach(this.comments, function (comment) {
+                if (comment.text !== _Comment2.default.makePrePopulatedContent(comment.valence, me.getStockComment())) {
+                    return true;
+                }
+            });
+            return false;
+        }
+
+        //----------------- ordering
+
     }, {
         key: 'promote',
         value: function promote() {
@@ -32602,30 +32624,15 @@ var Comment = function (_IModel) {
 
         _this.type = 'comment';
         _this.valence = null;
-        //
-        // this.commentIngredients = {
-        //     absent: {
-        //         prefix: 'To answer this correctly, you needed to',
-        //         postfix: 'Unfortunately, you forgot to do this'
-        //     },
-        //     poor: {
-        //         prefix: 'This required you to',
-        //         postfix: 'You attempted to do it, but there were many problems'
-        //     },
-        //
-        //     good: {
-        //
-        //         prefix: 'As was evident from your answer, you recognized that you needed to',
-        //         postfix: 'Your answer was okay'
-        //     },
-        //
-        //     excellent: {
-        //         prefix: 'As was evident from your excellent answer, you recognized that you needed to',
-        //         postfix: 'You did a great job here'
-        //     }
-        // };
         return _this;
     }
+
+    /**
+     * Whether or not this is the stock comment
+     * for an item
+     * @returns {boolean}
+     */
+
 
     _createClass(Comment, [{
         key: 'isStock',
@@ -43101,6 +43108,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
 
 exports.default = {
 
@@ -43110,6 +43118,8 @@ exports.default = {
 
     data: function data() {
         return {
+            iconClass: "fa fa-question-circle-o",
+
             showHelp: false,
             defaults: {}
         };
@@ -46522,10 +46532,6 @@ exports.default = {
     data: function data() {
         return {
 
-            serialNumber: _.toInteger(this.$route.params.serialNumber),
-
-            //                active: this.serialNumber,
-
             identifier: 'comment-setup-panel',
 
             labels: {
@@ -46533,18 +46539,23 @@ exports.default = {
                 item: "Set up student feedback for this item"
             },
 
-            //Which valence is currently displayed
+            /** Which valence is currently displayed */
             displayed: 'stock',
 
-            helpText: 'This is a thing which does stuff',
-
-            //Whether to prepopulate the comments
-            shouldPrePopulate: true,
+            /** The instructional help text for the overall panel */
+            helpText: '<div class="help">\n                    <p>In this area, you create the feedback your students will receive for this item. </p>\n                    <p>[Explanation of score levels nd valences here]</p>\n                    </div>',
 
             placeholders: {
+                //These are for the text entry textarea
                 exam: "Set up a global comment on the exam as a whole",
                 item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student."
             },
+
+            /** The help text to be displayed for the sync checkbox */
+            prePopulationHelpText: '<div class="help">\n                    <p>If this box is checked, when you enter text into the Stock valence\n                    comments will be generated for the other valences.</p>\n                    <p>You will probably still want to further customize the text for each.</p>\n                    </div> ',
+
+            //Whether to pre-populate the comments
+            shouldPrePopulate: true,
 
             defaults: {
                 commentText: ''
@@ -46560,18 +46571,23 @@ exports.default = {
      hooks of the component will not be called.
      To react to params changes in the same component, you can simply watch the $route object:
      */
-    watch: {
-        '$route': function $route(to, from) {
-            // react to route changes...
-        }
-    },
+    //        watch: {
+    //            '$route'( to, from ) {
+    //                // react to route changes...
+    //            }
+    //        },
     computed: {
+
         panelId: function panelId() {
             return this.identifier + '-' + this.serialNumber;
         },
 
         styling: function styling() {
             return this.identifier;
+        },
+
+        serialNumber: function serialNumber() {
+            return this.$parent.serialNumber;
         },
 
         item: function item() {
@@ -46594,6 +46610,10 @@ exports.default = {
             return this.labels.item;
         },
 
+        /**
+         * Gets the appropriate placeholder text depending
+         * on the type of item involved
+         */
         placeholder: function placeholder() {
             if (this.isExam) return this.placeholders.exam;
             return this.placeholders.item;
@@ -46622,9 +46642,12 @@ exports.default = {
                     updateValence: this.displayed,
                     updateVal: v
                 });
+
                 this.$store.commit(mTypes.updateComment, pl);
 
-                //now set the other comments if the valence was stock
+                //If the user indicated that they want to prepopulate
+                //the other comments from stock and if the valence was stock
+                //we now set the other comments
                 if (this.displayed === 'stock' && this.shouldPrePopulate === true) {
                     this.prePopulateComments(v);
                 }
@@ -46644,6 +46667,17 @@ exports.default = {
                     }
                 }
             }
+        },
+
+        /**
+         * The text displayed for the control which
+         * governs whether changes to stock overwrite
+         * existing comments.
+         */
+        syncControlLabel: function syncControlLabel() {
+            var noChanges = 'Prepopulate comments from stock';
+            var changes = 'Overwrite existing comment with changes to stock';
+            return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
         },
 
         valences: function valences() {
@@ -46668,57 +46702,63 @@ exports.default = {
             }
         },
 
+        /**
+         * Takes the stock comment and creates the valenced comments
+         */
         prePopulateComments: function prePopulateComments(stock) {
             var me = this;
-            window.console.log('comment-setup-panel', 'prePopulateComments', 201, this.item.getEmptyComments());
-
-            //todo this is no good, because if fires on the initial keystroke into stock, it will only show the first letter.
 
             _.forEach(this.valences, function (v) {
                 if (v !== 'stock') {
-                    var comment = this.item.getComment(v);
-                    // let comment of this.item.getComment()
-                    //                    for (let comment of this.item.getEmptyComments()) {
+                    var comment = me.item.getComment(v);
+
+                    //skip if it's the stock comment
                     if (comment.valence === 'stock') return true;
+
+                    // Skip if the comment text is already set
+                    // We don't want to overwrite existing comments if stock is altered.
+                    if (comment.text.length > 0) return true;
+
+                    //create the new text.
+                    //nb, any enhancements to prepopulation should be done in Comment
                     var text = _Comment2.default.makePrePopulatedContent(comment.valence, stock);
-                    window.console.log('comment-setup-panel', 'prePopulateComments', 206, text);
+
+                    //save the new comment text for the valence
                     var pl = _Payload2.default.factory({
-                        obj: this.item,
+                        obj: me.item,
                         updateValence: comment.valence,
                         updateVal: text
                     });
-                    this.$store.commit(mTypes.updateComment, pl);
+                    me.$store.commit(mTypes.updateComment, pl);
                 }
             });
         }
 
-        //
-        //            /**
-        //             * Returns true if the non-stock values are
-        //             * all empty
-        //             */
-        //            testIfCanPopulate: function (){
-        //                let empty = this.item.getEmptyComments();
-        //                for (let [ comment ] of this.item.getEmptyComments()) {
-        //                    if ( comment.valence === 'stock' ) return false;
-        //                }
-        //            }
     },
-
-    directives: {},
 
     events: {
         'please-change-valence': function pleaseChangeValence(evt) {
             console.log('caught please-change-valence', evt);
             this.displayedValence = evt;
         }
-    },
-
-    mounted: function mounted() {
-        //            window.console.log('panel.comment-setup.component', 'mounted', 166, this.index);
     }
 
 }; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -51613,24 +51653,30 @@ _vue2.default.component('edit-tabs', _settingsNavigationTabs2.default);
 _vue2.default.component('panel-students', _studentsPanel2.default);
 _vue2.default.component('panel-grades', _gradesPanel2.default);
 
-var routes = exports.routes = [{
-    name: 'comments',
-    path: '/panel-comments/:serialNumber',
-    components: { itemPanels: _commentSetupPanel2.default },
-    props: true //{default: true}
-}, //props: (route) => {return route.index;}},
-//exams
+var routes = exports.routes = [
+
+//exams: change, grade, or new
 {
     name: 'load-exam',
     path: ''
-}, { name: 'new-exam', path: '' }, {
+}, { name: 'new-exam', path: '' }, { name: 'grade-exam', path: '/grade/exam/:id' },
+
+//comment setup
+{
+    name: 'comments',
+    path: '/panel-comments/:serialNumber',
+    components: { itemPanels: _commentSetupPanel2.default },
+    props: { itemPanels: true //{default: true}
+    } }, //props: (route) => {return route.index;}},
+
+{
     name: 'exam-comments',
     path: '/exam-panel-comments/:serialNumber',
     components: { examPanels: _commentSetupPanel2.default },
     props: {
         isExam: true
     }
-}, { name: 'grade-exam', path: '/grade/exam/:id' }, {
+}, {
     name: 'exam-detail',
     path: '/panel-exam-detail/:serialNumber',
     components: { examPanels: _examDetailPanel2.default },
@@ -57454,6 +57500,14 @@ module.exports = {
         //     })( state, identifier )
         // },
 
+        /**
+         * Returns the number of students state.roster
+         *
+         * @param state
+         * @param getters
+         * @param rootState
+         * @returns {Number}
+         */
         getStudentCount: function getStudentCount(state, getters, rootState) {
             return state.roster.length;
         }
@@ -78518,8 +78572,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.toggleHelp
     }
   }, [_c('i', {
-    staticClass: "fa fa-question-circle"
-  })]), _vm._v(" "), _c('div', {
+    class: _vm.iconClass,
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("Help icon")])]), _vm._v(" "), _c('div', {
     staticClass: "modal",
     class: _vm.isActive
   }, [_c('div', {
@@ -78558,6 +78617,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": _vm.panelId
     }
   }, [_c('div', {
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "level-right"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('info-button', {
+    attrs: {
+      "help-text": _vm.helpText
+    }
+  })], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "field "
   }, [_c('label', {
     staticClass: "label "
@@ -78572,7 +78643,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     staticClass: "textarea comment-text",
     attrs: {
-      "rows": "3",
+      "rows": "4",
       "placeholder": _vm.placeholder
     },
     domProps: {
@@ -78590,9 +78661,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "is-exam": _vm.isExam
     }
   }), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('p', {
-    staticClass: "control"
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }, [_c('div', {
+    staticClass: "level-item"
   }, [_c('label', {
     staticClass: "checkbox"
   }, [_c('input', {
@@ -78626,9 +78699,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }
     }
-  }), _vm._v("\n                Sync with stock             "), _c('info-button', {
+  }), _vm._v("\n                    " + _vm._s(_vm.syncControlLabel) + "\n                ")])]), _vm._v(" "), _c('div', {
+    staticClass: "level-item"
+  }, [_c('info-button', {
     attrs: {
-      "help-text": _vm.helpText
+      "help-text": _vm.prePopulationHelpText
     }
   })], 1)])])], 1)
 },staticRenderFns: []}

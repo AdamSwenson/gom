@@ -214,6 +214,25 @@ export default class Item extends IModel {
         }
     }
 
+    /**
+     * whether or not the comments are
+     * either all empty or what would've
+     * been produced by prepopulating from stock.
+     */
+    haveCommentsBeenCustomized() {
+        if ( this.getEmptyComments().length === Comment.valences.length ) return false;
+        var me = this;
+        _.forEach( this.comments, function ( comment ) {
+            if ( comment.text !== Comment.makePrePopulatedContent( comment.valence, me.getStockComment() ) ) {
+                return true;
+            }
+        } );
+        return false;
+
+    }
+
+
+    //----------------- ordering
     promote() {
         if ( this.depth > 0 ) {
             this.depth -= 1;
