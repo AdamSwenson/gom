@@ -18,7 +18,7 @@
 </style>
 <script>
 
-    import Comment from '../../../models/Comment';
+    import Comment from '../../../../models/Comment';
 
     export default{
 
@@ -56,7 +56,8 @@
              */
             setValence: function ( valence ) {
                 this.valence = valence;
-                this.$parent.changeDisplayedValence( valence );
+              this.$emit('please-change-valence', valence);
+                //  this.$parent.changeDisplayedValence( valence );
             }
 
         }

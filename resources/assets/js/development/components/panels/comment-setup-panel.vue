@@ -27,6 +27,7 @@
         <valence-buttons
                 :serial-number="serialNumber"
                 :is-exam="isExam"
+                v-on:please-change-valence="changeDisplayedValence"
         ></valence-buttons>
 
         <div class="level">
@@ -60,7 +61,7 @@
     import * as mTypes from '../../../store/mutation-types';
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
-    import valenceButtons from '../input/buttons.valence.component.vue'
+    import valenceButtons from './comment/valence-buttons.vue'
 
     /**
      * The comment details setup area
@@ -75,11 +76,17 @@
 
         data: function () {
             return {
-
-                serialNumber: function () {
+//                serialNumber: function () {
 //                    if(!_.isUndefined(this.dataSerialNumber)) return this.dataSerialNumber
-                    return this.$parent.serialNumber;
-                },
+//                    return this.$parent.serialNumber;
+//
+////                    return this.parentSerialNumber;
+//                },
+                serialNumber:  _.toInteger( this.$route.params.serialNumber ),
+
+//                serialNumber: !_.isUndefined(this.dataSerialNumber) ? this.dataSerialNumber : _.toInteger( this.$route.params.serialNumber ),
+                active: this.serialNumber,
+
 
                 identifier: 'comment-setup-panel',
 
@@ -123,19 +130,12 @@
         },
 
 
-        /*
-         One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
-         the same component instance will be reused. Since both routes render the same component, this is more efficient
-         than destroying the old instance and then creating a new one. However, this also means that the lifecycle
-         hooks of the component will not be called.
-         To react to params changes in the same component, you can simply watch the $route object:
-         */
-//        watch: {
-//            '$route'( to, from ) {
-//                // react to route changes...
-//            }
-//        },
         computed: {
+
+
+            parentSerialNumber: function (  ) {
+                return this.$parent.serialNumber;
+            },
 
             panelId: function () {
                 return this.identifier + '-' + this.serialNumber;
@@ -147,7 +147,6 @@
 
 
             item: function () {
-//                return this.$parent.item;
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
@@ -235,7 +234,8 @@
             syncControlLabel :function (  ) {
                 let noChanges = 'Prepopulate comments from stock';
                 let changes = 'Overwrite existing comment with changes to stock';
-                return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+             //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+            return changes;
             },
 
 

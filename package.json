@@ -6,7 +6,8 @@
     "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot",
     "production": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "bd": "cross-env NODE_ENV=development webpack --progress --hide-modules",
-    "test": "mocha-webpack --webpack-config webpack.mocha.config.js --require tests/mocha/mocha.setup.js \"tests/mocha/spec/**/*.test.js\""
+    "test": "mocha-webpack --webpack-config webpack.mocha.config.js --require tests/mocha/mocha.setup.js \"tests/mocha/spec/**/*.test.js\"",
+    "testw": "mocha-webpack --webpack-config webpack.mocha.config.js --require tests/mocha/mocha.setup.js --watch \"tests/mocha/spec/**/*.test.js\""
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
