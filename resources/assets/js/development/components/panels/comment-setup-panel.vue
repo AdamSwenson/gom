@@ -82,7 +82,7 @@
 //
 ////                    return this.parentSerialNumber;
 //                },
-                serialNumber:  _.toInteger( this.$route.params.serialNumber ),
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
 
 //                serialNumber: !_.isUndefined(this.dataSerialNumber) ? this.dataSerialNumber : _.toInteger( this.$route.params.serialNumber ),
                 active: this.serialNumber,
@@ -133,7 +133,7 @@
         computed: {
 
 
-            parentSerialNumber: function (  ) {
+            parentSerialNumber: function () {
                 return this.$parent.serialNumber;
             },
 
@@ -231,11 +231,11 @@
              * governs whether changes to stock overwrite
              * existing comments.
              */
-            syncControlLabel :function (  ) {
+            syncControlLabel: function () {
                 let noChanges = 'Prepopulate comments from stock';
                 let changes = 'Overwrite existing comment with changes to stock';
-             //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
-            return changes;
+                //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+                return changes;
             },
 
 
@@ -275,9 +275,15 @@
                         //skip if it's the stock comment
                         if ( comment.valence === 'stock' ) return true;
 
-                        // Skip if the comment text is already set
+//                        todo This logic could probably be improved
+                        // Skip if the comment text is already set.
                         // We don't want to overwrite existing comments if stock is altered.
-                        if ( comment.text.length > 0 ) return true;
+                        // We can't judge when to overwrite the saved text with
+                        // changes from stock by checking that comment.text.length > 0
+                        // since that will stop after the first letter of stock.
+                        // Thus we instead check that it isn't longer than the current stock we
+                        // are trying to insert.
+                        if ( !_.isUndefined( comment.text ) && !_.isNull( comment.text ) && comment.text.length > stock ) return true;
 
                         //create the new text.
                         //nb, any enhancements to prepopulation should be done in Comment

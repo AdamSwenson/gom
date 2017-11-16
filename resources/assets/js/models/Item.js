@@ -48,6 +48,7 @@ export default class Item extends IModel {
          * The maximum possible value of the item
          */
         this.maxScore;
+
         /** The nickname or title by which this item is identified */
         this.name;
 
@@ -70,7 +71,6 @@ export default class Item extends IModel {
         this.publicName;
 
         this.tags = [];
-
 
     }
 
@@ -120,7 +120,6 @@ export default class Item extends IModel {
 
 
     get idx() {
-
         return this.idxStore.split( separator );
     } //[ this.index,  this.depth];}
 
