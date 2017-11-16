@@ -27,7 +27,9 @@
         <valence-buttons
                 :serial-number="serialNumber"
                 :is-exam="isExam"
+                v-on:please-change-valence="changeDisplayedValence"
         ></valence-buttons>
+
         <div class="level">
             <!-- Left side -->
             <div class="level-left">
@@ -59,7 +61,7 @@
     import * as mTypes from '../../../store/mutation-types';
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
-    import valenceButtons from '../input/buttons.valence.component.vue'
+    import valenceButtons from './comment/valence-buttons.vue'
 
     /**
      * The comment details setup area
@@ -70,10 +72,21 @@
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
-        props: [ 'forExam' ],
+        props: [ 'forExam', 'dataSerialNumber' ],
 
         data: function () {
             return {
+//                serialNumber: function () {
+//                    if(!_.isUndefined(this.dataSerialNumber)) return this.dataSerialNumber
+//                    return this.$parent.serialNumber;
+//
+////                    return this.parentSerialNumber;
+//                },
+                serialNumber: _.toInteger( this.$route.params.serialNumber ),
+
+//                serialNumber: !_.isUndefined(this.dataSerialNumber) ? this.dataSerialNumber : _.toInteger( this.$route.params.serialNumber ),
+                active: this.serialNumber,
+
 
                 identifier: 'comment-setup-panel',
 
@@ -117,19 +130,12 @@
         },
 
 
-        /*
-         One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
-         the same component instance will be reused. Since both routes render the same component, this is more efficient
-         than destroying the old instance and then creating a new one. However, this also means that the lifecycle
-         hooks of the component will not be called.
-         To react to params changes in the same component, you can simply watch the $route object:
-         */
-//        watch: {
-//            '$route'( to, from ) {
-//                // react to route changes...
-//            }
-//        },
         computed: {
+
+
+            parentSerialNumber: function () {
+                return this.$parent.serialNumber;
+            },
 
             panelId: function () {
                 return this.identifier + '-' + this.serialNumber;
@@ -139,9 +145,6 @@
                 return this.identifier;
             },
 
-            serialNumber: function () {
-                return this.$parent.serialNumber;
-            },
 
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
@@ -228,10 +231,11 @@
              * governs whether changes to stock overwrite
              * existing comments.
              */
-            syncControlLabel :function (  ) {
+            syncControlLabel: function () {
                 let noChanges = 'Prepopulate comments from stock';
                 let changes = 'Overwrite existing comment with changes to stock';
-                return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+                //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+                return changes;
             },
 
 
@@ -271,9 +275,15 @@
                         //skip if it's the stock comment
                         if ( comment.valence === 'stock' ) return true;
 
-                        // Skip if the comment text is already set
+//                        todo This logic could probably be improved
+                        // Skip if the comment text is already set.
                         // We don't want to overwrite existing comments if stock is altered.
-                        if ( comment.text.length > 0 ) return true;
+                        // We can't judge when to overwrite the saved text with
+                        // changes from stock by checking that comment.text.length > 0
+                        // since that will stop after the first letter of stock.
+                        // Thus we instead check that it isn't longer than the current stock we
+                        // are trying to insert.
+                        if ( !_.isUndefined( comment.text ) && !_.isNull( comment.text ) && comment.text.length > stock ) return true;
 
                         //create the new text.
                         //nb, any enhancements to prepopulation should be done in Comment

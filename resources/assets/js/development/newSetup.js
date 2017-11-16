@@ -48,7 +48,7 @@ import itemAddButton from './components/input/buttons.item.add.component.vue'
 //Other buttons
 import settingsButton from './components/input/settings-display-control.vue'
 import childrenDisplayButton from './components/input/children-display-control.vue'
-import valenceButton from './components/input/buttons.valence.component.vue'
+import valenceButton from './components/panels/comment/valence-buttons.vue'
 import deleteButton from './components/input/item-delete-button.vue'
 import removeButton from './components/items/item-remove-button.vue'
 

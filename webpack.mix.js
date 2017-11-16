@@ -16,9 +16,9 @@ const { mix } = require('laravel-mix');
  |
  */
 //mix.react('resources/assets/js/development/newSetup.js', 'public/js/Item/new-setup-package.js');
-
 mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js');
 
+// mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
 mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newSetup.scss'], 'public/css/new-setup-package.css');
 
 //this was not working for some reason

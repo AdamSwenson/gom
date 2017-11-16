@@ -106,7 +106,7 @@ Vue.component( 'card-movement-control', movementControl );
 import settingsButton from './components/input/settings-display-control.vue';
 Vue.component( 'settings-button', settingsButton );
 
-import valenceButton from './components/input/buttons.valence.component.vue';
+import valenceButton from './components/panels/comments/buttons.valence.component.vue';
 Vue.component( 'valence-button', valenceButton );
 
 import deleteButton from './components/input/item-delete-button.vue';

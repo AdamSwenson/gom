@@ -1031,6 +1031,7 @@ var Item = function (_IModel) {
          * The maximum possible value of the item
          */
         _this.maxScore;
+
         /** The nickname or title by which this item is identified */
         _this.name;
 
@@ -1273,7 +1274,6 @@ var Item = function (_IModel) {
 
 
         get: function get() {
-
             return this.idxStore.split(separator);
         } //[ this.index,  this.depth];}
 
@@ -39707,7 +39707,50 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 173 */,
+/* 173 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(687)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(233),
+  /* template */
+  __webpack_require__(652),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/comment/valence-buttons.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] valence-buttons.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-65f35604", Component.options)
+  } else {
+    hotAPI.reload("data-v-65f35604", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
 /* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -40910,9 +40953,9 @@ var _childrenDisplayControl = __webpack_require__(582);
 
 var _childrenDisplayControl2 = _interopRequireDefault(_childrenDisplayControl);
 
-var _buttonsValenceComponent = __webpack_require__(744);
+var _valenceButtons = __webpack_require__(173);
 
-var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
+var _valenceButtons2 = _interopRequireDefault(_valenceButtons);
 
 var _itemDeleteButton = __webpack_require__(583);
 
@@ -41069,7 +41112,7 @@ _vue2.default.component('settings-button', _settingsDisplayControl2.default);
 
 
 // Vue.component( 'item-settings-comment-setup', commentSetup )
-_vue2.default.component('valence-button', _buttonsValenceComponent2.default);
+_vue2.default.component('valence-button', _valenceButtons2.default);
 _vue2.default.component('delete-item-button', _itemDeleteButton2.default);
 
 _vue2.default.component('remove-item-button', _itemRemoveButton2.default);
@@ -47276,9 +47319,9 @@ var _getterTypes = __webpack_require__(6);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _buttonsValenceComponent = __webpack_require__(744);
+var _valenceButtons = __webpack_require__(173);
 
-var _buttonsValenceComponent2 = _interopRequireDefault(_buttonsValenceComponent);
+var _valenceButtons2 = _interopRequireDefault(_valenceButtons);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -47290,13 +47333,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.default = {
     components: {
-        valenceButtons: _buttonsValenceComponent2.default // 'valence-buttons': valenceButtons,
+        valenceButtons: _valenceButtons2.default // 'valence-buttons': valenceButtons,
     },
 
-    props: ['forExam'],
+    props: ['forExam', 'dataSerialNumber'],
 
     data: function data() {
         return {
+            //                serialNumber: function () {
+            //                    if(!_.isUndefined(this.dataSerialNumber)) return this.dataSerialNumber
+            //                    return this.$parent.serialNumber;
+            //
+            ////                    return this.parentSerialNumber;
+            //                },
+            serialNumber: _.toInteger(this.$route.params.serialNumber),
+
+            //                serialNumber: !_.isUndefined(this.dataSerialNumber) ? this.dataSerialNumber : _.toInteger( this.$route.params.serialNumber ),
+            active: this.serialNumber,
 
             identifier: 'comment-setup-panel',
 
@@ -47330,19 +47383,11 @@ exports.default = {
         };
     },
 
-    /*
-     One thing to note when using routes with params is that when the user navigates from /user/foo to /user/bar,
-     the same component instance will be reused. Since both routes render the same component, this is more efficient
-     than destroying the old instance and then creating a new one. However, this also means that the lifecycle
-     hooks of the component will not be called.
-     To react to params changes in the same component, you can simply watch the $route object:
-     */
-    //        watch: {
-    //            '$route'( to, from ) {
-    //                // react to route changes...
-    //            }
-    //        },
     computed: {
+
+        parentSerialNumber: function parentSerialNumber() {
+            return this.$parent.serialNumber;
+        },
 
         panelId: function panelId() {
             return this.identifier + '-' + this.serialNumber;
@@ -47350,10 +47395,6 @@ exports.default = {
 
         styling: function styling() {
             return this.identifier;
-        },
-
-        serialNumber: function serialNumber() {
-            return this.$parent.serialNumber;
         },
 
         item: function item() {
@@ -47443,7 +47484,8 @@ exports.default = {
         syncControlLabel: function syncControlLabel() {
             var noChanges = 'Prepopulate comments from stock';
             var changes = 'Overwrite existing comment with changes to stock';
-            return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+            //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
+            return changes;
         },
 
         valences: function valences() {
@@ -47481,9 +47523,15 @@ exports.default = {
                     //skip if it's the stock comment
                     if (comment.valence === 'stock') return true;
 
-                    // Skip if the comment text is already set
+                    //                        todo This logic could probably be improved
+                    // Skip if the comment text is already set.
                     // We don't want to overwrite existing comments if stock is altered.
-                    if (comment.text.length > 0) return true;
+                    // We can't judge when to overwrite the saved text with
+                    // changes from stock by checking that comment.text.length > 0
+                    // since that will stop after the first letter of stock.
+                    // Thus we instead check that it isn't longer than the current stock we
+                    // are trying to insert.
+                    if (!_.isUndefined(comment.text) && !_.isNull(comment.text) && comment.text.length > stock) return true;
 
                     //create the new text.
                     //nb, any enhancements to prepopulation should be done in Comment
@@ -47562,9 +47610,86 @@ exports.default = {
 //
 //
 //
+//
+//
 
 /***/ }),
-/* 233 */,
+/* 233 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Comment = __webpack_require__(68);
+
+var _Comment2 = _interopRequireDefault(_Comment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+
+    data: function data() {
+        return {
+            valence: 'stock'
+        };
+    },
+
+    computed: {
+        valences: function valences() {
+            return _Comment2.default.valences;
+        },
+
+        displayedValence: function displayedValence() {
+            return this.$parent.displayedValence;
+        }
+    },
+
+    methods: {
+        buttonId: function buttonId(valence) {
+            return valence + '-button';
+        },
+
+        styling: function styling(valence) {
+            if (valence === this.displayedValence) {
+                return 'is-primary';
+            }
+            return 'is-info  is-outlined';
+        },
+
+        /**
+         * Called when the valence button is clicked
+         */
+        setValence: function setValence(valence) {
+            this.valence = valence;
+            this.$emit('please-change-valence', valence);
+            //  this.$parent.changeDisplayedValence( valence );
+        }
+
+    }
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
 /* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -53545,6 +53670,80 @@ exports.default = Question;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    return {
+        // export const actions = {
+        // module.exports = {
+        /**
+         * Creates a new exam on the client, sets
+         * it as the active exam, and requests an
+         * exam id from the server
+         * @param state
+         * @param commit
+         * @param payload
+         */
+        createExam: function createExam(_ref, payload) {
+            var state = _ref.state,
+                commit = _ref.commit;
+
+            return new Promise(function (resolve, reject) {
+                //instantiate the new exam
+                var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
+                //set it in the items list
+                //this will call the api lister.
+                commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
+                //set it as active (in case anything is depending on the older structure)
+                // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+                resolve();
+            });
+        },
+
+        /**
+         * The payload should contain the exam that is presently set
+         * as the active exam, but with updated properties. This
+         * will replace the exam stored, so that vue can see the change
+         * @param state
+         * @param commit
+         * @param payload
+         */
+        updateExam: function updateExam(_ref2, payload) {
+            var state = _ref2.state,
+                commit = _ref2.commit;
+
+            //set it as active
+            commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
+        }
+        //,
+        //
+        // /**
+        //  * These are actions which different parts of the gom
+        //  * call to when they initialize.
+        //  *
+        //  */
+        // /** This is what gets run when the root instance is mounted for the setup page */
+        // setupOnMount: ( { state, commit, dispatch } ) => {
+        //     //wrap in promise? probably not since this doesn't yet hit the server
+        //     commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
+        //     dispatch( 'parseExamData' ).then( () => {
+        //         dispatch( 'parseItemObjectData' ).then(
+        //             () => {
+        //                 dispatch( 'parseItemOrderData' );
+        //             } );
+        //     } );
+        //     // .then( () => {
+        //     //
+        //     // } ).then( () => {
+        //     //
+        //     // } );
+        //
+        // }
+    };
+};
+
 var _mutationTypes = __webpack_require__(1);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
@@ -53595,72 +53794,7 @@ var EXAM_JSON_NAME = 'loadedExam';
 var ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
 var ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
 
-// export const actions = {
-module.exports = {
-    /**
-     * Creates a new exam on the client, sets
-     * it as the active exam, and requests an
-     * exam id from the server
-     * @param state
-     * @param commit
-     * @param payload
-     */
-    createExam: function createExam(_ref, payload) {
-        var state = _ref.state,
-            commit = _ref.commit;
-
-        return new Promise(function (resolve, reject) {
-            //instantiate the new exam
-            var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
-            //set it in the items list
-            //this will call the api lister.
-            commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
-            //set it as active (in case anything is depending on the older structure)
-            // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
-            resolve();
-        });
-    },
-
-    /**
-     * The payload should contain the exam that is presently set
-     * as the active exam, but with updated properties. This
-     * will replace the exam stored, so that vue can see the change
-     * @param state
-     * @param commit
-     * @param payload
-     */
-    updateExam: function updateExam(_ref2, payload) {
-        var state = _ref2.state,
-            commit = _ref2.commit;
-
-        //set it as active
-        commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-    }
-    //,
-    //
-    // /**
-    //  * These are actions which different parts of the gom
-    //  * call to when they initialize.
-    //  *
-    //  */
-    // /** This is what gets run when the root instance is mounted for the setup page */
-    // setupOnMount: ( { state, commit, dispatch } ) => {
-    //     //wrap in promise? probably not since this doesn't yet hit the server
-    //     commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
-    //     dispatch( 'parseExamData' ).then( () => {
-    //         dispatch( 'parseItemObjectData' ).then(
-    //             () => {
-    //                 dispatch( 'parseItemOrderData' );
-    //             } );
-    //     } );
-    //     // .then( () => {
-    //     //
-    //     // } ).then( () => {
-    //     //
-    //     // } );
-    //
-    // }
-};
+;
 
 // export const parseItemData = ( { state, commit, dispatch } ) => {
 //     return new Promise( ( resolve, reject ) => {
@@ -60195,6 +60329,19 @@ exports.default = {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    return _defineProperty({}, mTypes.setExam, function (state, payload) {
+        if (Number.isInteger(payload)) {
+            state.examId = payload;
+        }
+        //other allowed payload types
+    });
+};
+
 var _mutationTypes = __webpack_require__(1);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
@@ -60203,12 +60350,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-module.exports = _defineProperty({}, mTypes.setExam, function (state, payload) {
-    if (Number.isInteger(payload)) {
-        state.examId = payload;
-    }
-    //other allowed payload types
-});
+;
 
 /***/ }),
 /* 299 */
@@ -66030,7 +66172,20 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 
 /***/ }),
-/* 536 */,
+/* 536 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
 /* 537 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -80532,6 +80687,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "serial-number": _vm.serialNumber,
       "is-exam": _vm.isExam
+    },
+    on: {
+      "please-change-valence": _vm.changeDisplayedValence
     }
   }), _vm._v(" "), _c('div', {
     staticClass: "level"
@@ -82407,7 +82565,40 @@ if (false) {
 }
 
 /***/ }),
-/* 652 */,
+/* 652 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "valence-buttons field "
+  }, [_c('p', {
+    staticClass: "control"
+  }, _vm._l((_vm.valences), function(valence) {
+    return _c('button', {
+      key: valence,
+      staticClass: "button valence-button",
+      class: _vm.styling(valence),
+      attrs: {
+        "type": "button",
+        "id": _vm.buttonId(valence)
+      },
+      on: {
+        "click": function($event) {
+          _vm.setValence(valence)
+        }
+      }
+    }, [_vm._v(_vm._s(valence) + "\n        ")])
+  }))])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-65f35604", module.exports)
+  }
+}
+
+/***/ }),
 /* 653 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -84488,7 +84679,32 @@ if(false) {
 }
 
 /***/ }),
-/* 687 */,
+/* 687 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(536);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(19)("3847da3c", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-65f35604\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./valence-buttons.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-65f35604\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./valence-buttons.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
 /* 688 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -88579,199 +88795,6 @@ exports.clearImmediate = clearImmediate;
 __webpack_require__(177);
 module.exports = __webpack_require__(178);
 
-
-/***/ }),
-/* 744 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(748)
-}
-var Component = __webpack_require__(5)(
-  /* script */
-  __webpack_require__(745),
-  /* template */
-  __webpack_require__(747),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/input/buttons.valence.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] buttons.valence.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4e08278b", Component.options)
-  } else {
-    hotAPI.reload("data-v-4e08278b", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 745 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Comment = __webpack_require__(68);
-
-var _Comment2 = _interopRequireDefault(_Comment);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-
-    data: function data() {
-        return {
-            valence: 'stock'
-        };
-    },
-
-    computed: {
-        valences: function valences() {
-            return _Comment2.default.valences;
-        },
-
-        displayedValence: function displayedValence() {
-            return this.$parent.displayedValence;
-        }
-    },
-
-    methods: {
-        buttonId: function buttonId(valence) {
-            return valence + '-button';
-        },
-
-        styling: function styling(valence) {
-            if (valence === this.displayedValence) {
-                return 'is-primary';
-            }
-            return 'is-info  is-outlined';
-        },
-
-        /**
-         * Called when the valence button is clicked
-         */
-        setValence: function setValence(valence) {
-            this.valence = valence;
-            this.$parent.changeDisplayedValence(valence);
-        }
-
-    }
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
-/* 746 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 747 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "valence-buttons field "
-  }, [_c('p', {
-    staticClass: "control"
-  }, _vm._l((_vm.valences), function(valence) {
-    return _c('button', {
-      key: valence,
-      staticClass: "button valence-button",
-      class: _vm.styling(valence),
-      attrs: {
-        "type": "button",
-        "id": _vm.buttonId(valence)
-      },
-      on: {
-        "click": function($event) {
-          _vm.setValence(valence)
-        }
-      }
-    }, [_vm._v(_vm._s(valence) + "\n        ")])
-  }))])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-4e08278b", module.exports)
-  }
-}
-
-/***/ }),
-/* 748 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(746);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(19)("3ccc6b24", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4e08278b\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.valence.component.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4e08278b\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./buttons.valence.component.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
 
 /***/ })
 /******/ ]);
