@@ -12,6 +12,7 @@ export default class Comment extends IModel {
         super();
         this.type = 'comment';
         this.valence = null;
+
     }
 
     /**
@@ -23,9 +24,22 @@ export default class Comment extends IModel {
         return this.valence === 'stock';
     }
 
+
+    /**
+     * By passing in a string, this will reply whether
+     * the present comment's text is prepopulated from
+     * that string.
+     *
+     * @param potentialStockText
+     * @returns {boolean}
+     */
+    isTextBasedOnStock( potentialStockText ) {
+        return this.text === Comment.makePrePopulatedContent( this.valence, potentialStockText );
+    }
+
     isEmpty() {
-        if(_.isUndefined( this.text ) || _.isNull(this.text)) return true;
-        if(this.text.length > 0) return false;
+        if ( _.isUndefined( this.text ) || _.isNull( this.text ) ) return true;
+        if ( this.text.length > 0 ) return false;
         // if ( !_.isUndefined( this.text ) && this.text.length > 0 ) return false;
         return true;
     }
@@ -56,9 +70,9 @@ export default class Comment extends IModel {
 
     static makePrePopulatedContent( valence, stock ) {
         let ingredients = Comment.commentIngredients()[ valence ]
-        let prefix = _.trim(ingredients.prefix);
-        let postfix = _.trim(ingredients.postfix);
-        stock = _.trim(stock);
+        let prefix = _.trim( ingredients.prefix );
+        let postfix = _.trim( ingredients.postfix );
+        stock = _.trim( stock );
 
         //check punctuation
         //if the prefix is not a full sentence, make the

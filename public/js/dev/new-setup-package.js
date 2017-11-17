@@ -1145,15 +1145,20 @@ var Item = function (_IModel) {
         }
 
         /**
+         * Whether all comments for the item are empty;
+         */
+
+    }, {
+        key: 'loadCommentsFromJson',
+
+
+        /**
          * When loading comments into an item
          * from ajax or on page load, use this
          * to do it.
          *
          * @param jsonComments
          */
-
-    }, {
-        key: 'loadCommentsFromJson',
         value: function loadCommentsFromJson(jsonComments) {
             if (Object.keys(jsonComments).length > 0) {
                 var me = this;
@@ -1163,25 +1168,6 @@ var Item = function (_IModel) {
                     me.addComment(comment.valence, comment);
                 });
             }
-        }
-
-        /**
-         * whether or not the comments are
-         * either all empty or what would've
-         * been produced by prepopulating from stock.
-         */
-
-    }, {
-        key: 'haveCommentsBeenCustomized',
-        value: function haveCommentsBeenCustomized() {
-            if (this.getEmptyComments().length === _Comment2.default.valences.length) return false;
-            var me = this;
-            _.forEach(this.comments, function (comment) {
-                if (comment.text !== _Comment2.default.makePrePopulatedContent(comment.valence, me.getStockComment())) {
-                    return true;
-                }
-            });
-            return false;
         }
 
         //----------------- ordering
@@ -1289,6 +1275,11 @@ var Item = function (_IModel) {
          * @param index
          */
 
+    }, {
+        key: 'isEveryCommentEmpty',
+        get: function get() {
+            return _.size(this.getEmptyComments()) === _.size(_Comment2.default.valences);
+        }
     }, {
         key: 'type',
         get: function get() {
@@ -33047,6 +33038,7 @@ var Comment = function (_IModel) {
 
         _this.type = 'comment';
         _this.valence = null;
+
         return _this;
     }
 
@@ -33061,6 +33053,21 @@ var Comment = function (_IModel) {
         key: 'isStock',
         value: function isStock() {
             return this.valence === 'stock';
+        }
+
+        /**
+         * By passing in a string, this will reply whether
+         * the present comment's text is prepopulated from
+         * that string.
+         *
+         * @param potentialStockText
+         * @returns {boolean}
+         */
+
+    }, {
+        key: 'isTextBasedOnStock',
+        value: function isTextBasedOnStock(potentialStockText) {
+            return this.text === Comment.makePrePopulatedContent(this.valence, potentialStockText);
         }
     }, {
         key: 'isEmpty',
@@ -47355,14 +47362,23 @@ exports.default = {
 
             labels: {
                 exam: "Set up student feedback for the exam as a whole",
-                item: "Set up student feedback for this item"
+                item: "Set up student feedback for this item",
+                syncControl: {
+                    noChanges: 'Use stock to create rough drafts of other comments',
+                    changes: 'Overwrite existing comments with rough drafts from stock'
+                }
             },
 
             /** Which valence is currently displayed */
             displayed: 'stock',
 
             /** The instructional help text for the overall panel */
-            helpText: '<div class="help">\n                    <p>In this area, you create the feedback your students will receive for this item. </p>\n                    <p>[Explanation of score levels nd valences here]</p>\n                    </div>',
+            helpText: {
+                overall: '<div class="help">\n                    <p>In this area, you create the feedback your students will receive for this item. </p>\n                    <p>[Explanation of score levels nd valences here]</p>\n                    </div>',
+
+                /** The help text to be displayed for the sync checkbox */
+                prePopulation: '<div class="help">\n                    <p>If this box is checked, when you enter text into the Stock valence\n                    comments will be generated for the other valences.</p>\n                    <p>You will probably still want to further customize the text for each.</p>\n                    </div> '
+            },
 
             placeholders: {
                 //These are for the text entry textarea
@@ -47370,60 +47386,30 @@ exports.default = {
                 item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student."
             },
 
-            /** The help text to be displayed for the sync checkbox */
-            prePopulationHelpText: '<div class="help">\n                    <p>If this box is checked, when you enter text into the Stock valence\n                    comments will be generated for the other valences.</p>\n                    <p>You will probably still want to further customize the text for each.</p>\n                    </div> ',
-
-            //Whether to pre-populate the comments
-            shouldPrePopulate: true,
-
-            defaults: {
-                commentText: ''
-            }
+            /** Whether to pre-populate the comments */
+            shouldPrePopulate: true
 
         };
     },
 
     computed: {
 
-        parentSerialNumber: function parentSerialNumber() {
-            return this.$parent.serialNumber;
-        },
+        /**
+         * Whether all comments for the item lack
+         * values for their text property
+         */
+        isEveryCommentEmpty: function isEveryCommentEmpty() {
+            if (_.isUndefined(this.item)) return true;
 
-        panelId: function panelId() {
-            return this.identifier + '-' + this.serialNumber;
-        },
-
-        styling: function styling() {
-            return this.identifier;
-        },
-
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
-        },
-
-        comments: function comments() {
-            return this.item.comments;
-        },
-
-        //Doing this via computed property so don't have to pass in on route
-        isExam: function isExam() {
-            if (this.item instanceof _Exam2.default) return true;
-            if (this.forExam) return true;
-            return false;
-        },
-
-        label: function label() {
-            if (this.isExam) return this.labels.exam;
-            return this.labels.item;
+            return this.item.isEveryCommentEmpty;
         },
 
         /**
-         * Gets the appropriate placeholder text depending
-         * on the type of item involved
+         * Returns an iterator [[key, value]]
+         * from map object of the comments
          */
-        placeholder: function placeholder() {
-            if (this.isExam) return this.placeholders.exam;
-            return this.placeholders.item;
+        comments: function comments() {
+            return this.item.comments.entries();
         },
 
         /**
@@ -47436,6 +47422,7 @@ exports.default = {
                     //so we get the comment by passing in the valence to
                     //the item object
                     var comment = this.item.getComment(this.displayed);
+                    //                        window.console.log( 'comment-setup-panel', 'get', 190, comment);
                     if (typeof comment !== 'undefined') {
                         return comment.text;
                     }
@@ -47477,87 +47464,155 @@ exports.default = {
         },
 
         /**
+         * This returns an object with each of the
+         * valences as keys and the prepopulated comments
+         */
+        commentsCreatedFromStock: function commentsCreatedFromStock() {
+            var stock = this.item.getComment('stock');
+            var out = {};
+            _.forEach(this.valencesExcludingStock, function (valence) {
+                out[valence] = _Comment2.default.makePrePopulatedContent(valence, stock.text);
+            });
+            return out;
+        },
+
+        /**
+         * This determines whether any of the comments have been
+         * customized by the user. This is important to know so that
+         * we do not allow her to accidentally overwrite something she
+         * customized on accident, while at the same time allowing her to
+         * start anew from stock if that's what she wants.
+         */
+        haveCommentsBeenCustomized: function haveCommentsBeenCustomized() {
+            var me = this;
+            var stock = this.item.getComment('stock');
+
+            var v = false;
+            _.forEach(this.valencesExcludingStock, function (valence) {
+                var currentComment = me.item.getComment(valence);
+                if (currentComment.isTextBasedOnStock(stock.text)) v = true;
+            });
+            return v;
+        },
+
+        //Doing this via computed property so don't have to pass in on route
+        isExam: function isExam() {
+            if (this.item instanceof _Exam2.default) return true;
+            if (this.forExam) return true;
+            return false;
+        },
+
+        isOverwriteHelpMessageVisible: function isOverwriteHelpMessageVisible() {
+            //This only displays when we are working on stock
+            if (this.displayed !== 'stock') return false;
+            //if nothing has been set, the info dialog is assumed to be enough
+            if (this.isEveryCommentEmpty) return false;
+
+            if (this.shouldPrePopulate) return true;
+        },
+
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        label: function label() {
+            if (this.isExam) return this.labels.exam;
+            return this.labels.item;
+        },
+
+        panelId: function panelId() {
+            return this.identifier + '-' + this.serialNumber;
+        },
+
+        parentSerialNumber: function parentSerialNumber() {
+            return this.$parent.serialNumber;
+        },
+
+        /**
+         * Gets the appropriate placeholder text depending
+         * on the type of item involved
+         */
+        placeholder: function placeholder() {
+            if (this.isExam) return this.placeholders.exam;
+            return this.placeholders.item;
+        },
+
+        styling: function styling() {},
+
+        /**
          * The text displayed for the control which
          * governs whether changes to stock overwrite
          * existing comments.
          */
         syncControlLabel: function syncControlLabel() {
-            var noChanges = 'Prepopulate comments from stock';
-            var changes = 'Overwrite existing comment with changes to stock';
-            //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
-            return changes;
+            return this.haveCommentsBeenCustomized ? this.labels.syncControl.changes : this.labels.syncControl.noChanges;
         },
 
         valences: function valences() {
             return _Comment2.default.valences;
-        }
+        },
 
+        valencesExcludingStock: function valencesExcludingStock() {
+            return _.drop(_Comment2.default.valences);
+        }
     },
 
     methods: {
-        getComment: function getComment(valence) {
-            return this.comments;
-        },
 
         /**
          * Alters which valence is displayed.
-         * Called by child components
+         * Called by child components or by bound listener
          */
         changeDisplayedValence: function changeDisplayedValence(newValence) {
-            window.console.log('changeDisplayedValence', 130, newValence);
+            //                window.console.log( 'changeDisplayedValence', 130, newValence , this.item);
             if (newValence) {
                 this.displayedValence = newValence;
             }
         },
 
         /**
-         * Takes the stock comment and creates the valenced comments
+         * Takes the stock comment and creates rough drafts
+         * of the valenced comments for the user to work from.
          */
         prePopulateComments: function prePopulateComments(stock) {
+            if (!this.shouldPrePopulate) return false;
+
             var me = this;
 
-            _.forEach(this.valences, function (v) {
-                if (v !== 'stock') {
-                    var comment = me.item.getComment(v);
+            _.forEach(this.valencesExcludingStock, function (v) {
+                var comment = me.item.getComment(v);
 
-                    //skip if it's the stock comment
-                    if (comment.valence === 'stock') return true;
+                //                        todo This logic could probably be improved
+                // Skip if the comment text is already set.
+                // We don't want to overwrite existing comments if stock is altered.
+                // We can't judge when to overwrite the saved text with
+                // changes from stock by checking that comment.text.length > 0
+                // since that will stop after the first letter of stock.
+                // Thus we instead check that it isn't longer than the current stock we
+                // are trying to insert.
+                if (!_.isUndefined(comment.text) && !_.isNull(comment.text) && comment.text.length > stock) return true;
 
-                    //                        todo This logic could probably be improved
-                    // Skip if the comment text is already set.
-                    // We don't want to overwrite existing comments if stock is altered.
-                    // We can't judge when to overwrite the saved text with
-                    // changes from stock by checking that comment.text.length > 0
-                    // since that will stop after the first letter of stock.
-                    // Thus we instead check that it isn't longer than the current stock we
-                    // are trying to insert.
-                    if (!_.isUndefined(comment.text) && !_.isNull(comment.text) && comment.text.length > stock) return true;
+                //create the new text.
+                //nb, any enhancements to prepopulation should be done in Comment
+                var text = _Comment2.default.makePrePopulatedContent(comment.valence, stock);
 
-                    //create the new text.
-                    //nb, any enhancements to prepopulation should be done in Comment
-                    var text = _Comment2.default.makePrePopulatedContent(comment.valence, stock);
-
-                    //save the new comment text for the valence
-                    var pl = _Payload2.default.factory({
-                        obj: me.item,
-                        updateValence: comment.valence,
-                        updateVal: text
-                    });
-                    me.$store.commit(mTypes.updateComment, pl);
-                }
+                //save the new comment text for the valence
+                var pl = _Payload2.default.factory({
+                    obj: me.item,
+                    updateValence: comment.valence,
+                    updateVal: text
+                });
+                me.$store.commit(mTypes.updateComment, pl);
             });
         }
 
-    },
-
-    events: {
-        'please-change-valence': function pleaseChangeValence(evt) {
-            console.log('caught please-change-valence', evt);
-            this.displayedValence = evt;
-        }
     }
 
 }; //
+//
+//
+//
+//
 //
 //
 //
@@ -80640,6 +80695,7 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
+    staticClass: "comment-setup-panel",
     class: _vm.styling,
     attrs: {
       "id": _vm.panelId
@@ -80654,7 +80710,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level-item"
   }, [_c('info-button', {
     attrs: {
-      "help-text": _vm.helpText
+      "help-text": _vm.helpText.overall
     }
   })], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "field "
@@ -80683,7 +80739,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.commentText = $event.target.value
       }
     }
-  })])]), _vm._v(" "), _c('valence-buttons', {
+  })]), _vm._v(" "), (_vm.isOverwriteHelpMessageVisible) ? _c('p', {
+    staticClass: "help is-danger"
+  }, [_vm._v("Changes to the stock text will be used to create rough drafts of the text for the other comments. If you have already customized any of these, these changes will replace any customizations you've made. If you don't want either of these things to happen, un-check the box below.")]) : _vm._e()]), _vm._v(" "), _c('valence-buttons', {
     attrs: {
       "serial-number": _vm.serialNumber,
       "is-exam": _vm.isExam
@@ -80706,6 +80764,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.shouldPrePopulate),
       expression: "shouldPrePopulate"
     }],
+    staticClass: "prepopulationControl",
     attrs: {
       "type": "checkbox"
     },
@@ -80734,7 +80793,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level-item"
   }, [_c('info-button', {
     attrs: {
-      "help-text": _vm.prePopulationHelpText
+      "help-text": _vm.helpText.prePopulation
     }
   })], 1)])])], 1)
 },staticRenderFns: []}

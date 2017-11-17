@@ -196,6 +196,14 @@ export default class Item extends IModel {
     }
 
     /**
+     * Whether all comments for the item are empty;
+     */
+    get isEveryCommentEmpty (  ) {
+        return _.size(this.getEmptyComments()) === _.size(Comment.valences);
+    }
+
+
+    /**
      * When loading comments into an item
      * from ajax or on page load, use this
      * to do it.
@@ -213,22 +221,6 @@ export default class Item extends IModel {
         }
     }
 
-    /**
-     * whether or not the comments are
-     * either all empty or what would've
-     * been produced by prepopulating from stock.
-     */
-    haveCommentsBeenCustomized() {
-        if ( this.getEmptyComments().length === Comment.valences.length ) return false;
-        var me = this;
-        _.forEach( this.comments, function ( comment ) {
-            if ( comment.text !== Comment.makePrePopulatedContent( comment.valence, me.getStockComment() ) ) {
-                return true;
-            }
-        } );
-        return false;
-
-    }
 
 
     //----------------- ordering

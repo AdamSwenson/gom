@@ -1,5 +1,6 @@
 <template>
-    <div v-bind:class="styling"
+    <div class="comment-setup-panel"
+         v-bind:class="styling"
          v-bind:id="panelId"
     >
         <div class="level">
@@ -8,7 +9,7 @@
             </div>
             <div class="level-right">
                 <div class="level-item">
-                    <info-button :help-text="helpText"></info-button>
+                    <info-button :help-text="helpText.overall"></info-button>
                 </div>
             </div>
         </div>
@@ -22,6 +23,9 @@
                         v-bind:placeholder="placeholder"
                         v-model="commentText"></textarea>
             </p>
+            <p v-if=" isOverwriteHelpMessageVisible "
+               class="help is-danger"
+            >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you have already customized any of these, these changes will replace any customizations you've made. If you don't want either of these things to happen, un-check the box below.</p>
         </div>
 
         <valence-buttons
@@ -35,12 +39,12 @@
             <div class="level-left">
                 <div class="level-item">
                     <label class="checkbox">
-                        <input type="checkbox" v-model="shouldPrePopulate">
+                        <input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">
                         {{ syncControlLabel }}
                     </label>
                 </div>
                 <div class="level-item">
-                    <info-button :help-text="prePopulationHelpText"></info-button>
+                    <info-button :help-text="helpText.prePopulation"></info-button>
                 </div>
             </div>
         </div>
@@ -92,87 +96,69 @@
 
                 labels: {
                     exam: "Set up student feedback for the exam as a whole",
-                    item: "Set up student feedback for this item"
+                    item: "Set up student feedback for this item",
+                    syncControl: {
+                        noChanges: 'Use stock to create rough drafts of other comments',
+                        changes: 'Overwrite existing comments with rough drafts from stock'
+                    }
                 },
 
                 /** Which valence is currently displayed */
-                displayed: 'stock',
+                displayed:
+                    'stock',
+
 
                 /** The instructional help text for the overall panel */
-                helpText: `<div class="help">
+                helpText: {
+                    overall:
+                        `<div class="help">
                     <p>In this area, you create the feedback your students will receive for this item. </p>
                     <p>[Explanation of score levels nd valences here]</p>
                     </div>`,
 
-
-                placeholders: {
-                    //These are for the text entry textarea
-                    exam: "Set up a global comment on the exam as a whole",
-                    item: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
-                },
-
-                /** The help text to be displayed for the sync checkbox */
-                prePopulationHelpText: `<div class="help">
+                    /** The help text to be displayed for the sync checkbox */
+                    prePopulation: `<div class="help">
                     <p>If this box is checked, when you enter text into the Stock valence
                     comments will be generated for the other valences.</p>
                     <p>You will probably still want to further customize the text for each.</p>
-                    </div> `,
-
-                //Whether to pre-populate the comments
-                shouldPrePopulate: true,
-
-
-                defaults: {
-                    commentText: ''
+                    </div> `
                 },
+
+
+                placeholders:
+                    {
+                        //These are for the text entry textarea
+                        exam: "Set up a global comment on the exam as a whole",
+                        item:
+                            "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
+                    }
+                ,
+
+
+                /** Whether to pre-populate the comments */
+                shouldPrePopulate: true,
 
             };
         },
 
-
         computed: {
 
-
-            parentSerialNumber: function () {
-                return this.$parent.serialNumber;
-            },
-
-            panelId: function () {
-                return this.identifier + '-' + this.serialNumber;
-            },
-
-            styling: function () {
-                return this.identifier;
-            },
-
-
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
-            comments: function () {
-                return this.item.comments;
-            },
-
-            //Doing this via computed property so don't have to pass in on route
-            isExam: function () {
-                if ( this.item instanceof Exam ) return true;
-                if ( this.forExam ) return true;
-                return false;
-            },
-
-            label: function () {
-                if ( this.isExam ) return this.labels.exam;
-                return this.labels.item;
+            /**
+             * Whether all comments for the item lack
+             * values for their text property
+             */
+            isEveryCommentEmpty: function (  ) {
+                if(_.isUndefined(this.item)) return true;
+                
+                return this.item.isEveryCommentEmpty;
             },
 
             /**
-             * Gets the appropriate placeholder text depending
-             * on the type of item involved
+             * Returns an iterator [[key, value]]
+             * from map object of the comments
              */
-            placeholder: function () {
-                if ( this.isExam ) return this.placeholders.exam;
-                return this.placeholders.item;
+            comments: function () {
+                return this.item.comments.entries();
             },
 
 
@@ -186,11 +172,13 @@
                         //so we get the comment by passing in the valence to
                         //the item object
                         let comment = this.item.getComment( this.displayed );
+//                        window.console.log( 'comment-setup-panel', 'get', 190, comment);
                         if ( typeof comment !== 'undefined' ) {
                             return comment.text;
                         }
                     }
-                },
+                }
+                ,
 
                 set: function ( v ) {
 //                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
@@ -214,7 +202,8 @@
             displayedValence: {
                 get: function () {
                     return this.displayed;
-                },
+                }
+                ,
 
                 set: function ( newValence ) {
                     if ( newValence ) {
@@ -226,36 +215,113 @@
                 }
             },
 
+
+            /**
+             * This returns an object with each of the
+             * valences as keys and the prepopulated comments
+             */
+            commentsCreatedFromStock: function () {
+                let stock = this.item.getComment( 'stock' );
+                let out = {};
+                _.forEach( this.valencesExcludingStock, function ( valence ) {
+                    out[ valence ] = Comment.makePrePopulatedContent( valence, stock.text );
+                } );
+                return out;
+            },
+
+
+            /**
+             * This determines whether any of the comments have been
+             * customized by the user. This is important to know so that
+             * we do not allow her to accidentally overwrite something she
+             * customized on accident, while at the same time allowing her to
+             * start anew from stock if that's what she wants.
+             */
+            haveCommentsBeenCustomized: function () {
+                let me = this;
+                let stock = this.item.getComment( 'stock' );
+
+                let v = false;
+                _.forEach( this.valencesExcludingStock, function ( valence ) {
+                    let currentComment = me.item.getComment( valence );
+                    if ( currentComment.isTextBasedOnStock( stock.text ) ) v = true;
+                } );
+                return v;
+            },
+
+            //Doing this via computed property so don't have to pass in on route
+            isExam: function () {
+                if ( this.item instanceof Exam ) return true;
+                if ( this.forExam ) return true;
+                return false;
+            },
+
+            isOverwriteHelpMessageVisible: function (  ) {
+              //This only displays when we are working on stock
+                if(this.displayed !== 'stock') return false;
+                //if nothing has been set, the info dialog is assumed to be enough
+                if(this.isEveryCommentEmpty) return false;
+
+                if(this.shouldPrePopulate) return true;
+
+
+            },
+
+            item: function () {
+                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            label: function () {
+                if ( this.isExam ) return this.labels.exam;
+                return this.labels.item;
+            },
+
+            panelId: function () {
+                return this.identifier + '-' + this.serialNumber;
+            },
+
+            parentSerialNumber: function () {
+                return this.$parent.serialNumber;
+            },
+
+            /**
+             * Gets the appropriate placeholder text depending
+             * on the type of item involved
+             */
+            placeholder: function () {
+                if ( this.isExam ) return this.placeholders.exam;
+                return this.placeholders.item;
+            },
+
+            styling: function () {
+            },
+
             /**
              * The text displayed for the control which
              * governs whether changes to stock overwrite
              * existing comments.
              */
             syncControlLabel: function () {
-                let noChanges = 'Prepopulate comments from stock';
-                let changes = 'Overwrite existing comment with changes to stock';
-                //   return this.item.haveCommentsBeenCustomized() ? changes : noChanges;
-                return changes;
+                return this.haveCommentsBeenCustomized ? this.labels.syncControl.changes : this.labels.syncControl.noChanges;
             },
-
 
             valences: function () {
                 return Comment.valences;
-            }
+            },
 
+            valencesExcludingStock: function () {
+                return _.drop( Comment.valences );
+            }
         },
 
         methods: {
-            getComment: function ( valence ) {
-                return this.comments
-            },
 
             /**
              * Alters which valence is displayed.
-             * Called by child components
+             * Called by child components or by bound listener
              */
             changeDisplayedValence: function ( newValence ) {
-                window.console.log( 'changeDisplayedValence', 130, newValence );
+//                window.console.log( 'changeDisplayedValence', 130, newValence , this.item);
                 if ( newValence ) {
                     this.displayedValence = newValence;
                 }
@@ -263,55 +329,42 @@
 
 
             /**
-             * Takes the stock comment and creates the valenced comments
+             * Takes the stock comment and creates rough drafts
+             * of the valenced comments for the user to work from.
              */
             prePopulateComments: function ( stock ) {
+                if( ! this.shouldPrePopulate ) return false;
+
                 var me = this;
 
-                _.forEach( this.valences, function ( v ) {
-                    if ( v !== 'stock' ) {
-                        let comment = me.item.getComment( v );
-
-                        //skip if it's the stock comment
-                        if ( comment.valence === 'stock' ) return true;
+                _.forEach( this.valencesExcludingStock, function ( v ) {
+                    let comment = me.item.getComment( v );
 
 //                        todo This logic could probably be improved
-                        // Skip if the comment text is already set.
-                        // We don't want to overwrite existing comments if stock is altered.
-                        // We can't judge when to overwrite the saved text with
-                        // changes from stock by checking that comment.text.length > 0
-                        // since that will stop after the first letter of stock.
-                        // Thus we instead check that it isn't longer than the current stock we
-                        // are trying to insert.
-                        if ( !_.isUndefined( comment.text ) && !_.isNull( comment.text ) && comment.text.length > stock ) return true;
+                    // Skip if the comment text is already set.
+                    // We don't want to overwrite existing comments if stock is altered.
+                    // We can't judge when to overwrite the saved text with
+                    // changes from stock by checking that comment.text.length > 0
+                    // since that will stop after the first letter of stock.
+                    // Thus we instead check that it isn't longer than the current stock we
+                    // are trying to insert.
+                    if ( !_.isUndefined( comment.text ) && !_.isNull( comment.text ) && comment.text.length > stock ) return true;
 
-                        //create the new text.
-                        //nb, any enhancements to prepopulation should be done in Comment
-                        let text = Comment.makePrePopulatedContent( comment.valence, stock );
+                    //create the new text.
+                    //nb, any enhancements to prepopulation should be done in Comment
+                    let text = Comment.makePrePopulatedContent( comment.valence, stock );
 
-                        //save the new comment text for the valence
-                        let pl = Payload.factory( {
-                            obj: me.item,
-                            updateValence: comment.valence,
-                            updateVal: text
-                        } );
-                        me.$store.commit( mTypes.updateComment, pl );
-                    }
+                    //save the new comment text for the valence
+                    let pl = Payload.factory( {
+                        obj: me.item,
+                        updateValence: comment.valence,
+                        updateVal: text
+                    } );
+                    me.$store.commit( mTypes.updateComment, pl );
                 } );
             }
 
         },
-
-        events: {
-            'please-change-valence':
-
-                function ( evt ) {
-                    console.log( 'caught please-change-valence', evt );
-                    this.displayedValence = evt;
-                }
-        }
-        ,
-
 
     };
 </script>
