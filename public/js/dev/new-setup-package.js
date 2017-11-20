@@ -48229,36 +48229,27 @@ var _Payload2 = _interopRequireDefault(_Payload);
 
 var _historyRequests = __webpack_require__(258);
 
+var _loadingIndicator = __webpack_require__(117);
+
+var _loadingIndicator2 = _interopRequireDefault(_loadingIndicator);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
 exports.default = {
     //        props: ['index'],
 
+
+    components: {
+        'loading-indicator': _loadingIndicator2.default
+    },
+
     data: function data() {
         return {
+            /** Whether the history info is currently loading */
+            isLoading: false,
+
             serialNumber: _.toInteger(this.$route.params.serialNumber),
             //                active: this.serialNumber,
 
@@ -48270,7 +48261,15 @@ exports.default = {
 
         exams: function exams() {
             if (!_.isUndefined(this.item) && this.item.id !== -1) {
-                return (0, _historyRequests.getItemHistory)(this.$store, this.item);
+                var me = this;
+                //Start the loading indicator
+                me.isLoading = true;
+                var p = (0, _historyRequests.getItemHistory)(this.$store, this.item);
+
+                return p.then(function (data) {
+                    me.isLoading = false;
+                    return data;
+                });
             }
             return [];
         }
@@ -48290,12 +48289,39 @@ exports.default = {
     },
 
     methods: {
-        handleClick: function handleClick(examId) {
-            window.console.log('history-panel', 'handleClick', 70, examId);
+        handleClick: function handleClick(exam) {
+            window.console.log('history-panel', 'handleClick', 70, exam);
             //todo redirect to new exam
         }
     }
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 238 */
@@ -65983,7 +66009,7 @@ exports = module.exports = __webpack_require__(4)();
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -81626,21 +81652,28 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "panel-history-component "
-  }, [_c('h3', {
-    staticClass: "title is-3"
-  }, [_vm._v("Exams using this item")]), _vm._v(" "), _c('div', {
-    staticClass: "tile is-ancestor"
-  }, _vm._l((_vm.exams), function(exam) {
-    return (_vm.exams.length > 0) ? _c('div', {
-      staticClass: "tile"
-    }, [_vm._v("j\n            "), _c('a', {
+  }, [(_vm.isLoading) ? _c('loading-indicator', {
+    attrs: {
+      "is-loading": _vm.isLoading
+    }
+  }) : _c('div', {
+    staticClass: "panel"
+  }, [_c('p', {
+    staticClass: "panel-heading"
+  }, [_vm._v("\n            Exams using this item\n        ")]), _vm._v(" "), _vm._l((_vm.exams), function(exam) {
+    return _c('a', {
+      staticClass: "panel-block",
       on: {
         "click": function($event) {
-          _vm.handleClick(exam.id)
+          _vm.handleClick(exam)
         }
       }
-    }, [_vm._v(_vm._s(exam.name))])]) : _vm._e()
-  }))])
+    }, [_c('span', {
+      staticClass: "panel-icon"
+    }, [_c('i', {
+      staticClass: "fa fa-book"
+    })]), _vm._v("\n            " + _vm._s(exam.name) + "\n        ")])
+  })], 2)], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

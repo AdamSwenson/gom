@@ -149,7 +149,7 @@
              */
             isEveryCommentEmpty: function (  ) {
                 if(_.isUndefined(this.item)) return true;
-                
+
                 return this.item.isEveryCommentEmpty;
             },
 
