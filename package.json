@@ -74,6 +74,7 @@
     "md5-hash-webpack-plugin": "^0.1.1",
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
+    "moxios": "^0.4.0",
     "node-sass": "^4.5.3",
     "popper": "^1.0.0",
     "requirejs": "^2.3.5",

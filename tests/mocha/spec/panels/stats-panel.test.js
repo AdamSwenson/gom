@@ -1,6 +1,6 @@
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 import sinon from 'sinon';
-import VueRouter from 'vue-router';
+// import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 // import Vue from 'vue';
 import moxios from 'moxios';
@@ -21,10 +21,10 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/history-panel.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/panels/stats-panel.vue" );
 
 
-describe( "history-panel  ", () => {
+describe( "stats-panel for items  ", () => {
 
     let getters;
     let mutations;
@@ -77,7 +77,7 @@ describe( "history-panel  ", () => {
 
     describe( " loads into expected default state for testing ", () => {
 
-        it( " test has been set up properly ", () => {
+        it( " test store has been set up properly ", () => {
             expect( store.getters.getItemBySerialNumber() ).toBe( item );
         } );
 
@@ -85,60 +85,26 @@ describe( "history-panel  ", () => {
             expect( wrapper.vm.serialNumber ).toBe( item.serialNumber );
         } );
 
-        it( 'displays the expected default on first load', () => {
-            expect( wrapper.find( '.history-panel' ).isEmpty() ).toBe( false );
+        it( 'displays the expected component div on first load', () => {
+            expect( wrapper.find( '.stats-panel' ).isEmpty() ).toBe( false );
         } );
 
     } );
 
-    //
-    // describe( " loading indicator  ", () => {
-    //
-    //     it( " hides and shows elements according to value of isLoading  ", () => {
-    //
-    //
-    //         wrapper.vm.isLoading = true;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator' ) ).toBe( true );
-    //         expect( wrapper.contains( '.exam-list' ) ).toBe( false );
-    //
-    //         //not loading; should see list of exams
-    //         wrapper.vm.isLoading = false;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
-    //         expect( wrapper.contains( '.exam-list' ) ).toBe( true );
-    //     } );
-    // } );
-    describe( " displays exam names upon loading async   ", () => {
-        let expected = {};
 
-        it( " displays the expected comment text when the displayed valence value changes ", () => {
-            let exam = {
-                created_at: "2017-11-10 09:57:27",
-                id: 5,
-                locked: false,
-                name: "Repudiandae et.",
-                previously_released: false,
-                released: false,
-                term: "Quia.",
-                updated_at: "2017-11-10 09:57:27",
-                user_id: 1,
-                year: "2017",
-            };
-            moxios.wait( function () {
-                let request = moxios.requests.mostRecent()
-                request.respondWith( {
-                    status: 200,
-                    response: [ exam ]
-                } ).then( function () {
 
-                    //should see
-                    see( exam.name, '.exam-list' );
+    /**
+     * Asserts that the specified text is present within
+     * the specified selector or page if no selector is
+     * specified
+     * @param text
+     * @param selector
+     */
+    let see = ( text, selector ) => {
+        let wrap = selector ? wrapper.find( selector ) : wrapper;
+        expect( wrap.html() ).toContain( text );
+    };
 
-                } );
-            } )
-        } )
-    } );
 } );
 
 

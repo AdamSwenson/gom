@@ -12,6 +12,7 @@ import Item from "./../../../../resources/assets/js/models/Item";
 import Comment from "./../../../../resources/assets/js/models/Comment";
 import Payload from "./../../../../resources/assets/js/models/Payload";
 import * as mTypes from "./../../../../resources/assets/js/store/mutation-types";
+import * as gTypes from "./../../../../resources/assets/js/store/getter-types";
 
 
 const localVue = createLocalVue();
@@ -21,10 +22,10 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/history-panel.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/panels/exam-stats-panel.vue" );
 
 
-describe( "history-panel  ", () => {
+describe( "stats-panel for exam  ", () => {
 
     let getters;
     let mutations;
@@ -45,7 +46,11 @@ describe( "history-panel  ", () => {
         getters = {
             getItemBySerialNumber: ( v ) => ( v ) => {
                 return item;
-            }
+            },
+            [ gTypes.getItemCount ]: (v)=> (v) =>{},
+
+            getStudentCount: (v)=> (v) =>{},
+
         };
 
         mutations = {
@@ -77,63 +82,55 @@ describe( "history-panel  ", () => {
 
     describe( " loads into expected default state for testing ", () => {
 
-        it( " test has been set up properly ", () => {
+        it( " test store has been set up properly ", () => {
             expect( store.getters.getItemBySerialNumber() ).toBe( item );
         } );
 
-        it( " has serial number from route ", () => {
-            expect( wrapper.vm.serialNumber ).toBe( item.serialNumber );
-        } );
 
-        it( 'displays the expected default on first load', () => {
-            expect( wrapper.find( '.history-panel' ).isEmpty() ).toBe( false );
+        it( 'displays the expected component div on first load', () => {
+            expect( wrapper.find( '.exam-stats-panel' ).isEmpty() ).toBe( false );
         } );
 
     } );
 
-    //
-    // describe( " loading indicator  ", () => {
-    //
-    //     it( " hides and shows elements according to value of isLoading  ", () => {
-    //
-    //
-    //         wrapper.vm.isLoading = true;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator' ) ).toBe( true );
-    //         expect( wrapper.contains( '.exam-list' ) ).toBe( false );
-    //
-    //         //not loading; should see list of exams
-    //         wrapper.vm.isLoading = false;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
-    //         expect( wrapper.contains( '.exam-list' ) ).toBe( true );
-    //     } );
-    // } );
-    describe( " displays exam names upon loading async   ", () => {
+
+    describe( " loading indicator  ", () => {
+
+        it( " loading indicator displays and time-list is hidden when isTimeLoading is true  ", () => {
+            wrapper.vm.isTimeLoading = true;
+            wrapper.update();
+            expect( wrapper.contains( '.load-indicator ' ) ).toBe( true );
+            expect( wrapper.contains( '.time-list' ) ).toBe( false );
+        });
+
+        it( " loading indicator is hidden and time-list is visibile when isTimeLoading is false  ", () => {
+            //not loading; should see list of exams
+            wrapper.vm.isTimeLoading = false;
+            wrapper.update();
+            expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
+            expect( wrapper.contains( '.time-list' ) ).toBe( true );
+        } );
+    } );
+
+
+    describe( " displays expected data after loading async   ", () => {
         let expected = {};
 
-        it( " displays the expected comment text when the displayed valence value changes ", () => {
-            let exam = {
-                created_at: "2017-11-10 09:57:27",
-                id: 5,
-                locked: false,
-                name: "Repudiandae et.",
-                previously_released: false,
-                released: false,
-                term: "Quia.",
-                updated_at: "2017-11-10 09:57:27",
-                user_id: 1,
-                year: "2017",
-            };
+        it( " happy path ", () => {
+            let data = {
+                elapsedSeconds :
+                 590.86,
+                };
+
             moxios.wait( function () {
                 let request = moxios.requests.mostRecent()
                 request.respondWith( {
                     status: 200,
-                    response: [ exam ]
+                    response: [ data ]
                 } ).then( function () {
 
                     //should see
-                    see( exam.name, '.exam-list' );
+                           see( wrapper, data.elapsedSeconds, '.timeBox' );
 
                 } );
             } )

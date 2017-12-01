@@ -1,16 +1,16 @@
 <template>
-    <div class="panel-history-component ">
-
-        <loading-indicator v-if="isLoading"
-                           :is-loading="isLoading"
-        ></loading-indicator>
-
-        <div v-else
-             class="panel">
+    <div class="history-panel ">
+        <div class="panel">
             <p class="panel-heading">
                 Exams using this item
             </p>
-            <a class="panel-block"
+
+            <div v-if="isLoading" class="panel-block">
+                <loading-indicator :is-loading="isLoading"></loading-indicator>
+            </div>
+
+            <a v-else
+               class="panel-block exam-list"
                v-for="exam in exams"
                v-on:click="handleClick(exam)"
             >
@@ -34,6 +34,7 @@
     import Payload from '../../../models/Payload'
 
     import { getItemHistory } from '../../../api/requests/historyRequests';
+    import { Routes } from '../../../api/apiSettings';
 
     import loadingIndicator from '../helpers/loading-indicator.vue';
 
@@ -51,7 +52,6 @@
                 isLoading: false,
 
                 serialNumber: _.toInteger( this.$route.params.serialNumber ),
-//                active: this.serialNumber,
 
                 placeholders: {},
             };
@@ -94,8 +94,10 @@
         methods: {
             handleClick: function ( exam ) {
                 window.console.log( 'history-panel', 'handleClick', 70, exam );
-                //todo redirect to new exam
 
+                //handle redirection
+                let route = window.routeRoot + '/' + Routes.setupExam( exam );
+                return window.open( route, "_self" );
             }
         }
     }

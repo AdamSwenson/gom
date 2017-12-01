@@ -237,6 +237,8 @@ Route::get('dev/stats/summary/exam/{exam}', 'Item\ItemStatsController@examSummar
 Route::get('dev/stats/summary/exam/{exam}/item/{item}', 'Item\ItemStatsController@itemSummaryForExam');
 Route::get('dev/stats/summary/kumi/item/{item}', 'Item\ItemStatsController@itemSummaryByKumi');
 
+Route::get('dev/numgraded/exam/{exam}', 'Analytics\ExamCountsController@getExamCounts');
+
 //Students
 Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
 Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');

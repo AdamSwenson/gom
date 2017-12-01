@@ -4,6 +4,7 @@ namespace App\Jobs\AsyncStorage;
 
 use App\Exam;
 use App\Jobs\Job;
+use App\Repositories\Exam\INumberGradedRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Student\IStudentRepository;
 
@@ -29,7 +30,7 @@ class UpdateStoredNumGraded extends Job
     public function __construct(Exam $exam)
     {
         $this->exam = $exam;
-        $this->numberGradedRepository = app()->make('App\Repositories\Exam\INumberGradedRepository');
+        $this->numberGradedRepository = app()->make(INumberGradedRepository::class);
     }
 
     /**

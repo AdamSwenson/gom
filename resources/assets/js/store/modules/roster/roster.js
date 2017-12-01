@@ -18,6 +18,7 @@ import Kumi from '../../../models/Kumi'
 
 import * as mTypes from '../../mutation-types'
 import * as aTypes from '../../action-types'
+import * as gTypes from '../../getter-types';
 
 import StudentImporter from './studentFileImporter'
 
@@ -214,7 +215,7 @@ module.exports = {
          * @param rootState
          * @returns {Number}
          */
-        getStudentCount: ( state, getters, rootState ) => {
+        [gTypes.getStudentCount] : ( state, getters, rootState ) => {
             return state.roster.length;
         },
 

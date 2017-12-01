@@ -24,7 +24,7 @@ export const type = ( selector, text ) => {
  * @param text
  * @param selector
  */
-export const see = ( text, selector ) => {
+export const see = ( wrapper, text, selector ) => {
     let wrap = selector ? wrapper.find( selector ) : wrapper;
     expect( wrap.html() ).toContain( text );
 };

@@ -23,6 +23,31 @@ export default class Exam extends Item {
         this.year; // = year;
         this.term;// = term;
         this.kind = 'exam';
+
+        /**
+         * The total number of students associated with the exam and thus
+         * the total number of exams to be graded
+         * */
+        this.numberStudents;
+
+        /**
+         * The number of students who have been graded
+         */
+        this.numberGraded;
+
+        /**
+         * The total number of seconds spent grading
+         * the exam
+         */
+        this.totalGradingSeconds;
+
+        /**
+         * The average number of seconds spent grading a
+         * student's exam
+         */
+        this.averageGradingSeconds;
+
+
         if ( params.length > 0 ) {
             //fill in from params
         }
@@ -40,7 +65,11 @@ export default class Exam extends Item {
         return [
             'year',
             'term',
-            'id'
+            'id',
+            'numberStudents',
+            'numberGraded',
+            'totalGradingSeconds',
+            'averageGradingSeconds'
         ].concat(super.fillableProps);
     };
 
@@ -77,6 +106,31 @@ export default class Exam extends Item {
         return this.index;
 
     }
+
+    /* ************************** Stats ************** */
+
+    /**
+     * The number of student exams which have not been graded
+     * @returns {*}
+     */
+    get numberRemaining() {
+        if ( _.isInteger( this.numberStudents ) && _.isInteger( this.numberGraded ) ) {
+            return this.numberStudents - this.numberGraded;
+        }
+    }
+
+    /**
+     * The estimated amount of seconds required to
+     * finish grading all student exams
+     */
+    get estimatedGradingTimeRemaining(){
+        return this.numberRemaining * this.averageGradingSeconds;
+
+        if ( _.isInteger( this.averageGradingSeconds ) && _.isInteger( this.numberRemaining ) ) {
+            return this.numberRemaining * this.averageGradingSeconds;
+        }
+    }
+
 
     /* *************************** Props ************* */
 

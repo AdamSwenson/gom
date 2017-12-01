@@ -85,6 +85,9 @@ export const getItemByIndex = 'getItemByIndex'
 export const getItemBySerialNumber = 'getItemBySerialNumber'
 
 export const getItemCount = 'getItemCount'
+export const getStudentCount = 'getStudentCount'
+export const getKumiCount = 'getKumiCount'
+export const getKumiCountForExam = 'getKumiCountForExam'
 
 /**
  * Returns a node from the itemMap by serial number

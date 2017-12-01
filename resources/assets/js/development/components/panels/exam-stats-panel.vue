@@ -9,40 +9,20 @@
                 <div class="tile is-vertical is-parent">
 
                     <div class="tile is-child box">
-                        <p class="h4">Exam properties</p>
-                        <div class="box">
-                            <ul>
-                                <li># items : {{ numberItems }}</li>
-                                <li># students : {{numberStudents}} </li>
-                            </ul>
-                        </div>
+                        <exam-properties :exam="exam"></exam-properties>
                     </div>
 
-                    <div class="tile is-child box">
-                        <p class="h4">Counts</p>
-                        <div class="box">
-                            <ul>
-                                <li># Graded : {{ examsGraded }}</li>
-                                <li># Remaining : {{ examsRemaining }}</li>
-                            </ul>
-                        </div>
+                    <div class="countBox tile is-child box">
+                        <exam-counts :exam="exam"></exam-counts>
                     </div>
 
                 </div>
 
                 <div class="tile is-parent is-vertical">
 
-                    <div class="tile is-child box">
-                        <p class="h4">Total Time</p>
-                        <div class="box">
-                            <ul>
-                                <li>Elapsed : {{ timeElapsedAjax }} seconds</li>
-                                <li>Remaining : {{ timeRemaining}}</li>
-                                <li>Average grading time : {{ averageGradingTime }}</li>
-                            </ul>
-                        </div>
+                    <div class="timeBox tile is-child box">
+                        <time-stats :exam="item"></time-stats>
                     </div>
-
 
                 </div>
 
@@ -64,21 +44,23 @@
 
     import timeRequests from '../../../api/requests/timeRequests';
     import loadingIndicator from '../helpers/loading-indicator.vue';
-
-    import statsSummary from './stats/stats-summary.vue'
+    import timeStats from './stats/time-stats.vue'
+    import statsSummary from './stats/summary-stats-display.vue'
+    import examCounts from './stats/number-graded.vue'
+    import examProperties from './stats/exam-properties.vue'
 
     export default {
         components: {
+            'exam-counts' : examCounts,
+            'exam-properties': examProperties,
             'loading-indicator': loadingIndicator,
-            'stats-summary': statsSummary
+            'stats-summary': statsSummary,
+            'time-stats': timeStats
         },
 
-//        props: ['index'],
 
         data: function () {
             return {
-
-                isTimeLoading : true,
 
                 placeholders: {
                     numberItems: ''
@@ -86,21 +68,7 @@
             };
         },
 
-        asyncComputed: {
-
-            timeElapsedAjax: function () {
-                let me = this;
-                me.isTimeLoading = true;
-
-                let p = timeRequests.getTotalGradingTime(this.item);
-
-                return p.then(function(data){
-                    me.isTimeLoading = false;
-                    return data.elapsedSeconds;
-                });
-            },
-
-        },
+        asyncComputed: {},
 
         watch: {},
 
@@ -114,38 +82,6 @@
                 return this.$store.getters.currentExam;
 
 //                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-            averageGradingTime: function () {
-
-            },
-
-            timeElapsed: function () {
-
-            },
-
-            timeRemaining: function () {
-
-            },
-
-            numberItems: function () {
-                let v = this.$store.getters[ gTypes.getItemCount ];
-                //if not set return placeholder
-                return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
-
-            },
-
-            numberStudents: function () {
-                let v = this.$store.getters.getStudentCount;
-                //if not set return placeholder
-                return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
-            },
-
-            examsGraded: function () {
-
-            },
-
-            examsRemaining: function () {
-
             },
 
             exam: function () {

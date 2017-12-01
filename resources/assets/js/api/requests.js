@@ -43,7 +43,7 @@ module.exports = {
                 .then( ( response ) => {
                     handleResponse( store, item, response )
                         .then( function () {
-                            window.console.log( 'requests', 'handleResponse promise resolved', 46 );
+                            // window.console.log( 'requests', 'handleResponse promise resolved', 46 );
                         } )
                         .catch( function ( error ) {
                             throw error;
@@ -75,7 +75,7 @@ module.exports = {
             .then( ( response ) => {
                 handleResponse( store, exam, response )
                     .then( function () {
-                        window.console.log( 'requests', 'handleResponse promise resolved', 46 );
+                        // window.console.log( 'requests', 'handleResponse promise resolved', 46 );
                     } )
                     .catch( function ( error ) {
                         throw error;
@@ -120,7 +120,7 @@ module.exports = {
             .then( ( response ) => {
                 handleResponse( store, item, response )
                     .then( function () {
-                        window.console.log( 'requests', 'createItem', 'handleResponse promise resolved', 46 );
+                        // window.console.log( 'requests', 'createItem', 'handleResponse promise resolved', 46 );
                     } )
                     .catch( function ( error ) {
                         throw error;
@@ -157,7 +157,7 @@ module.exports = {
         return window.axios
             .post( route, payload )
             .then( ( response ) => {
-                window.console.log( 'apiPlugin', '#### SERVER SAYS ####', 169, response );
+                // window.console.log( 'apiPlugin', '#### SERVER SAYS ####', 169, response );
                 //No need to update our internally stored objects
                 //on the basis of the result
             } )

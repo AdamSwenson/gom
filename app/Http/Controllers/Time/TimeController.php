@@ -34,9 +34,14 @@ class TimeController extends Controller
 
     public function getGradingTime( Exam $exam )
     {
-        $out = ['examId' => $exam,
-            'elapsedSeconds' => collect($exam->gradingTimes)->sum('seconds')
+        $c = collect($exam->gradingTimes);
+
+        $out = [
+            'examId' => $exam,
+            'elapsedSeconds' => $c->sum('seconds'),
+            'averageSeconds' => $c->average('seconds')
         ];
+
         return $out;
     }
 

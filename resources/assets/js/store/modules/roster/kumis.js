@@ -13,6 +13,7 @@
 import Vue from 'vue'
 import * as mTypes from '../../mutation-types'
 import * as aTypes from '../../action-types'
+import * as gTypes from '../../getter-types'
 
 import Payload from '../../../models/Payload'
 import Kumi from '../../../models/Kumi'
@@ -364,7 +365,24 @@ const getters = {
                 window.console.log( 'kumis', 'isStudentInSelectedKumi', 209, Error );
                       return false;
             }
-        }
+        },
+
+
+    [gTypes.getKumiCount ]: ( state, getters, rootState) => {
+        return _.size( state.kumis );
+    }
+
+        // [gTypes.getKumiCountForExam ]: ( state, getters, rootState, examOrExamId ) => ( examOrExamId ) => {
+        //     return _.size(state.kumis);
+        //
+        //     let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.currentExam : examOrExamId;
+        //     let kumis = getters.getExamKumis(examOrExamId);
+        //     // let objId = exam.id;
+        //     // let kumiIds = filterExamAssociations( state, objId );
+        //
+        //     return _.size(kumis);
+        //
+        // }
 
     }
 ;
