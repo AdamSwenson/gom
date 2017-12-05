@@ -24,6 +24,17 @@ use Illuminate\Database\Eloquent\Model;
  *      The number to be multiplied against the maximum possible score on the exam in order
  *      to generate the initial cutoff values.
  *
+ * group: integer
+ *      If we allow users to define groups of grades for customizable grading schemes,
+ *      this value identifies the group
+ *
+ *  ordinal: integer
+ *      The position in the overall order of the grade.
+ *      Once we allow customization, we can't just use calc_value since
+ *      not every grade may have such a value, or multiple grades might
+ *      have the same value.
+ *
+ *
  * @package App
  */
 class Grade extends BaseModel
@@ -34,7 +45,9 @@ class Grade extends BaseModel
     protected $casts = [
         'display_value' => 'string',
         'calc_value' => 'float',
-        'default_cutoff' => 'float'
+        'default_cutoff' => 'float',
+        'ordinal' => 'integer',
+        'group' => 'integer'
     ];
 
 //

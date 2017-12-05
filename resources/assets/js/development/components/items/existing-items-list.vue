@@ -80,7 +80,7 @@
                 return window.axios
                     .get( Routes.loadAllItems() )
                     .then( ( response ) => {
-                        window.console.log( 'itemRequests', '', 28, response );
+                        // window.console.log( 'itemRequests', '', 28, response );
                         let out = [];
                         _.forEach( response.data, function ( r ) {
 //                            window.console.log( 'existing-items-list', 'r', 80, r);

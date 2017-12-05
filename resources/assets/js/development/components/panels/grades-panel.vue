@@ -32,18 +32,17 @@
                     </table>
                 </div>
 
-                <div class="assignment-controls tile is-child">
-                    <a class="button is-danger">Clear</a>
+                <!--<div class="assignment-controls tile is-child">-->
+                <!--<a class="button is-danger">Clear</a>-->
 
-                    <a class="button is-warning">Undo</a>
+                <!--<a class="button is-warning">Undo</a>-->
 
-                </div>
+                <!--</div>-->
 
 
             </div>
 
             <div class="right-side tile is-parent is-vertical">
-
 
                 <div class="tile is-child">
                     <div class="freq-chart-area">
@@ -68,9 +67,7 @@
                     </dist-area>
                 </div>
 
-
             </div>
-
 
         </div>
     </div>
@@ -128,41 +125,46 @@
                 let me = this;
                 let p = requests.getGradeAssignments( this.exam );
                 p.then( function ( data ) {
-                    _.forEach( data, function ( d ) {
-//                        window.console.log( 'grades-panel', 'gradesAjax', 73, d);
-                        //get the correct grade assignment
-                        let ga = me.$store.getters[ gTypes.getCutOffsForLetterGrade ]( d.letterGrade );
-                        //update with the server id
-                        let pl = Payload.factory( {
-                            obj: ga,
-                            updateProp: 'id',
-                            updateVal: d[ 'id' ],
-                            mutateSilently: true
-                        } );
-                        me.$store.commit( mTypes.updateGradeCutoffs, pl );
-
-                        //and update the minScore
-                        let pl2 = Payload.factory( {
-                            obj: ga,
-                            updateProp: 'minScore',
-                            updateVal: d[ 'minScore' ],
-                            mutateSilently: true
-                        } );
-                        me.$store.commit( mTypes.updateGradeCutoffs, pl2 );
-
-                        let pl3 = Payload.factory( {
-                            obj: ga,
-                            updateProp: 'displayValue',
-                            updateVal: d[ 'letterGrade' ],
-                            mutateSilently: true
-                        } );
-                        me.$store.commit( mTypes.updateGradeCutoffs, pl3 );
-
-                    } );
-
-
+                    let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
                 } );
             },
+
+            //the load action itself returns a promise
+            //once that promise has fulfilled, we return
+            //the data, using the getter
+            // p2.then(function(data){
+            //     return me.$store.getters(gTypes.getGradeAssignments);
+            // });
+//                     _.forEach( data, function ( d ) {
+// //                        window.console.log( 'grades-panel', 'gradesAjax', 73, d);
+//                         //get the correct grade assignment
+//                         let ga = me.$store.getters[ gTypes.getCutOffsForLetterGrade ]( d.letterGrade );
+//                         //update with the server id
+//                         let pl = Payload.factory( {
+//                             obj: ga,
+//                             updateProp: 'id',
+//                             updateVal: d[ 'id' ],
+//                             mutateSilently: true
+//                         } );
+//                         me.$store.commit( mTypes.updateGradeCutoffs, pl );
+//
+//                         //and update the minScore
+//                         let pl2 = Payload.factory( {
+//                             obj: ga,
+//                             updateProp: 'minScore',
+//                             updateVal: d[ 'minScore' ],
+//                             mutateSilently: true
+//                         } );
+//                         me.$store.commit( mTypes.updateGradeCutoffs, pl2 );
+//
+//                         let pl3 = Payload.factory( {
+//                             obj: ga,
+//                             updateProp: 'displayValue',
+//                             updateVal: d[ 'displayValue' ],
+//                             mutateSilently: true
+//                         } );
+//                         me.$store.commit( mTypes.updateGradeCutoffs, pl3 );
+
 
             totalScores: function () {
                 let me = this;
@@ -185,7 +187,7 @@
 
 
             examMaxScore: function () {
-                return this.$store.getters[gTypes.getMaxPossibleScore];
+                return this.formatForDisplay( this.$store.getters[ gTypes.getMaxPossibleScore ] );
             },
 
 
@@ -197,6 +199,15 @@
                 return this.$store.getters.getListOfGradeValues;
             },
 
+            inconsistentRows: function () {
+                let letterGrades = [];
+
+                _.forIn( this.gradeAssignments, function ( value, key ) {
+
+                } );
+
+
+            },
 
             frequencies: function () {
                 return this.$store.getters[ gTypes.getGradeFrequencies ];
@@ -222,6 +233,9 @@
         },
 
         methods: {
+            formatForDisplay: function ( value ) {
+                return _.round( value, 2 );
+            },
 
 
             /**

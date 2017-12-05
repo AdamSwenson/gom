@@ -105,6 +105,7 @@ export default class Payload {
      */
     static get fillableProps() {
         return [
+            'array',
             'callback',
             'exam',
             'kumi',

@@ -11,13 +11,13 @@
                 >
             </p>
             <p class="control">
-                <a class="button is-primary is-inverted" v-on:click="increment">
+                <a class="button is-primary " v-on:click="increment">
                     <span class="icon">
                         <i class="fa fa-plus" aria-hidden="true"></i></span>
                 </a>
             </p>
             <p class="control">
-                <a class="button is-info is-inverted"
+                <a class="button is-info "
                    v-on:click="decrement">
                     <span class="icon"><i class="fa fa-minus" aria-hidden="true"></i></span>
                 </a>
@@ -56,6 +56,8 @@
         asyncComputed: {},
 
         computed: {
+
+
             letterGrade: function () {
                 return this.grade ? this.grade.displayValue : '';
             },
@@ -66,13 +68,12 @@
              */
             minScore: {
                 get: function () {
-                    return this.grade ? this.grade.minScore : '';
+                    return this.grade ? this.formatForDisplay(this.grade.minScore) : '';
                 },
 
                 set: function ( v ) {
                     let pl = Payload.factory( {
                         obj: this.grade,
-                        exam: this.exam,
                         updateProp: 'minScore',
                         updateVal: v
                     } );
@@ -88,7 +89,11 @@
             },
             decrement: function () {
                 this.minScore -= 1;
-            }
+            },
+            formatForDisplay: function ( value ) {
+                return _.round( value, 2 );
+            },
+
         },
 
         directives: {},

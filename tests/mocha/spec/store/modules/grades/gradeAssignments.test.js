@@ -17,6 +17,129 @@ import GradeAssignment from '../../../../../../resources/assets/js/models/GradeA
 var Component = require( '../../../../../../resources/assets/js/store/modules/grades/gradeAssignments' );
 let { getters, actions, mutations } = Component.default;
 
+
+const makeFakeServerResponse = () => {
+    return [
+        {
+            displayValue: 'A+',
+            calcValue: 98,
+            minScore: 97,
+            group: 0,
+            ordinal: 0,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'A',
+            calcValue: 95,
+            minScore: 93,
+            group: 0,
+            ordinal: 1,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'A-',
+            calcValue: 92,
+            minScore: 90,
+            group: 0,
+            ordinal: 2,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'B+',
+            calcValue: 88,
+            minScore: 87,
+            group: 0,
+            ordinal: 3,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'B',
+            calcValue: 85,
+            minScore: 83,
+            group: 0,
+            ordinal: 4,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'B-',
+            calcValue: 82,
+            minScore: 80,
+            group: 0,
+            ordinal: 5,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'C+',
+            calcValue: 78,
+            minScore: 77,
+            group: 0,
+            ordinal: 6,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'C',
+            calcValue: 75,
+            minScore: 73,
+            group: 0,
+            ordinal: 7,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'C-',
+            calcValue: 72,
+            minScore: 70,
+            group: 0,
+            ordinal: 8,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'D+',
+            calcValue: 68,
+            minScore: 67,
+            group: 0,
+            ordinal: 9,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'D',
+            calcValue: 65,
+            minScore: 63,
+            group: 0,
+            ordinal: 10,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'D-',
+            calcValue: 62,
+            minScore: 60,
+            group: 0,
+            ordinal: 11,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        },
+        {
+            displayValue: 'F',
+            calcValue: 55,
+            minScore: 50,
+            group: 0,
+            ordinal: 12,
+            id: faker.random.number(),
+            gradeId: faker.random.number()
+        }
+    ];
+};
+
 describe.only( "gradeAssignments  ", () => {
     let freq;
     let scores;
@@ -72,8 +195,26 @@ describe.only( "gradeAssignments  ", () => {
 
         } );
 
-        describe( gTypes.getGradeFrequencies, () => {
 
+        describe( gTypes.getGradeForScore, () => {
+            it( " returns correct grade object ", () => {
+                _.forEach( GradeAssignment.defaults, function ( g ) {
+                    //prep
+                    let testScore = g.minScore + 1;
+
+                    //call
+                    let result = getters.getGradeForScore( state, getters, state, testScore )
+
+                    //check
+                    expect( result.calcValue ).toBe( g.calcValue );
+                    expect( result.displayValue ).toBe( g.displayValue );
+                    expect( result.minScore ).toBe( g.minScore );
+                } );
+            } );
+        } );
+
+
+        describe( gTypes.getGradeFrequencies, () => {
 
             it( " returns the expected object with the correct structure ", () => {
                 //call
@@ -83,12 +224,14 @@ describe.only( "gradeAssignments  ", () => {
                 _.forEach( GradeAssignment.defaults, function ( g ) {
                     expect( result[ g.displayValue ] ).toBe( freq );
                 } );
-
-
             } );
+
+            it( " correctly calculates the frequency values " );
+
         } );
 
-        describe( " getListOfGradeValues ", () => {
+
+        describe( gTypes.getListOfGradeValues, () => {
 
             it( " returns expected list ", () => {
                 let origLen = _.size( scores );
@@ -97,33 +240,44 @@ describe.only( "gradeAssignments  ", () => {
                 expect( _.isArray( result ) ).toBe( true );
                 expect( _.size( result ) ).toBe( _.size( scores ) );
 
-                for(let i=0; i < scores.length; i++){
-                    expect(result[i]).toBe(scores[i]);
+                for (let i = 0; i < scores.length; i++) {
+                    expect( result[ i ] ).toBe( scores[ i ] );
                 }
-
             } );
 
         } );
 
 
-        describe( " getGradeForScore ", (  ) => {
-           it(" returns correct grade object ", (  ) => {
-               _.forEach( GradeAssignment.defaults, function ( g ) {
-                   //prep
-                   let testScore = g.minScore + 1;
+        describe( gTypes.getMaxPossibleScore, () => {
+            it( " computes the max score from the minScores of all the loaded items " );
+        } );
 
-                   //call
-                   let result = getters.getGradeForScore(state, getters,state,  testScore)
 
-                   //check
-                   expect( result.calcValue ).toBe( g.calcValue );
-                   expect( result.displayValue ).toBe( g.displayValue );
-                   expect( result.minScore ).toBe( g.minScore );
-
-               } );
-           })
-        });
     } );//getters
+
+
+    describe.only( " actions ", () => {
+        let commit;
+        beforeEach( () => {
+            commit[ 'replaceGradeAssignments' ] = sinon.spy();
+        } );
+        describe( aTypes.loadGradeAssignmentsFromServerData, () => {
+            it( " correctly parses the data and calls mutations  ", () => {
+                //prep
+                let payload = makeFakeServerResponse();
+
+                //call
+                actions[ aTypes.loadGradeAssignmentsFromServerData ]( {}, {}, commit, {}, payload );
+
+                //check
+                expect( commit.replaceGradeAssignments.callCount ).toBe( 1 );
+                expect( commit.replaceGradeAssignments.args.className ).toBe( 'gradeAssignment' );
+
+            } );
+        } );
+
+    } );
+
 
 } );
 //

@@ -336,17 +336,25 @@ $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
 });
 
 
-$factory->define(App\Item::class, function ( Faker\Generator $faker ) {
-//    $userId = 1;
-//    Auth::logInUsingId($userId);
+$factory->define(/**
+ * @param \Faker\Generator $faker
+ * @return array
+ */
+    App\Item::class, function ( Faker\Generator $faker ) {
+
+    ///Create the maximum score based on the values in
+    ///  database seeder
+    $score = Factory::create()->randomFloat(2, 1, DatabaseSeeder::MAX_ITEM_SCORE);
+
+    $maxScore = DatabaseSeeder::VARY_MAX_ITEM_SCORES ? $score : DatabaseSeeder::MAX_ITEM_SCORE;
 
     return [
         'name' => $faker->word,
         'displayText' => $faker->word,
-        'comment_text' => $faker->word,
-        'text' => $faker->word,
+        'comment_text' => $faker->word(),
+        'text' => $faker->word(),
         'settings' => [],
-        'max_score' => $faker->randomNumber()
+        'max_score' => $maxScore
     ];
 });
 
@@ -356,7 +364,7 @@ $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator 
     Auth::logInUsingId($userId);
 
     return [
-        'comment_text' => $faker->word,
+        'comment_text' => $faker->words,
         'score' => $faker->randomNumber()
     ];
 });
@@ -367,10 +375,10 @@ $factory->define(Note::class, function ( Faker\Generator $faker ) {
 //    Auth::logInUsingId($userId);
 
     return [
-        'name' =>$faker->word(),
+        'name' => $faker->word(),
         'text' => $faker->text(),
         'priority' => $faker->randomElement(Note::PRIORITY_LEVELS),
-        'props' =>  ['testProp' => 'testVal']
+        'props' => ['testProp' => 'testVal']
     ];
 
 });
@@ -381,7 +389,7 @@ $factory->define(Tag::class, function ( Faker\Generator $faker ) {
 //    Auth::logInUsingId($userId);
 
     return [
-        'name' =>$faker->word(),
+        'name' => $faker->word(),
         'text' => $faker->text(),
         'props' => ['testProp' => 'testVal']
     ];
@@ -394,7 +402,7 @@ $factory->define(Tag::class, function ( Faker\Generator $faker ) {
 //    Auth::logInUsingId($userId);
 
     return [
-        'name' =>$faker->word(),
+        'name' => $faker->word(),
         'text' => $faker->text(),
         'props' => ['testProp' => 'testVal']
     ];

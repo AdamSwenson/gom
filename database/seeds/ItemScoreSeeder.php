@@ -20,6 +20,10 @@ class ItemScoreSeeder extends BaseSeeder
         $kumis = $exam->kumis;
 
         foreach ( $items as $item ) {
+            //grab the max score so that the fake
+            //scores will be proportional to the cutoffs
+            //etc
+            $maxScore = $item->max_score;
             foreach ( $kumis as $kumi ) {
                 $students = $kumi->students;
 
@@ -28,7 +32,7 @@ class ItemScoreSeeder extends BaseSeeder
                     $score->exam_id = $exam->id;
                     $score->item_id = $item->id;
                     $score->student_id = $student->id;
-                    $score->score = Factory::create()->randomFloat(2, 0, 1000);
+                    $score->score = Factory::create()->randomFloat(2, 0, $maxScore);
                     $score->comment_text = Factory::create()->word();
                     $score->save();
 

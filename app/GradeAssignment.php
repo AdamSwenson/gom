@@ -80,7 +80,7 @@ class GradeAssignment extends BaseModel
     /* -------------------------------- Relationships ---------------------------------- */
     /**
      * Junction to the grade object
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function grade()
     {

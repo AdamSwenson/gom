@@ -28,6 +28,12 @@
             }
         },
 
+        watch: {
+          'freqChartData':function (  ) {
+              this.drawChart();
+          }
+        },
+
         computed: {
             gradeAssignments: function () {
                 return this.$store.getters.getGradeAssignments;
@@ -37,24 +43,17 @@
                 let me = this;
                 let data = _.toPairs( this.gradeFrequencies );
                 _.forEach( data, (function ( d, i ) {
-                    //    //todo dev renable this once chart working
-                    var barColor = me.getColorForGrade( d[ 0 ] );
-
                     // let barColor = "00FF00";
+                    var barColor = me.getColorForGrade( d[ 0 ] );
                     d.push( barColor );
                 }) );
 
-                //
-                //     _.forEach(this.gradeFrequencies, ( function ( freq, i ) {
-                //
-                //     let barColor = "00FF00";
-                //     data.push( [ gradeTypes[ i ], freq, barColor ] );
-                // } ));
                 data.push( [ 'Grade', 'Frequency', { role: 'style' } ] );
+
                 // now reverse the chart data so that "F" is the first column and A+ the furthest right
                 data.reverse();
-                return data;
 
+                return data;
             }
 
         },
@@ -107,9 +106,9 @@
                     }
                 };
 
-                // var chart = new GoogleCharts.api.visualization.ColumnChart( this.el); //document.getElementById( 'gradeFreqChart' ) );
+                var chart = new GoogleCharts.api.visualization.ColumnChart( this.$el ); //document.getElementById( 'gradeFreqChart' ) );
 
-                var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( 'gradeFreqChart' ) );
+                // var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( 'gradeFreqChart' ) );
 
                 chart.draw( data, options );
             },
@@ -122,11 +121,11 @@
 
         mounted: function () {
             var me = this;
-            // this.$nextTick( function () {
-            //Load the charts library with a callback
-            GoogleCharts.load( me.drawChart );
+            this.$nextTick( function () {
+                //Load the charts library with a callback
+                GoogleCharts.load( me.drawChart );
 
-            // } );
+            } );
 
         }
     }

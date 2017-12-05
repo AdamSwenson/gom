@@ -16,19 +16,29 @@ class GradeFactory
 
     /** @var array The standardized grades and various associated values in descending order */
     static public $grades = [
-        ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98, 'default_cutoff' => 0.97 ],
-        ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95, 'default_cutoff' => 0.93],
-        ['grade_id' => 102, 'display_value' => 'A-', 'calc_value' => 92, 'default_cutoff' => 0.90],
-        ['grade_id' => 103, 'display_value' => 'B+', 'calc_value' => 88, 'default_cutoff' => 0.87],
-        ['grade_id' => 104, 'display_value' => 'B', 'calc_value' => 85, 'default_cutoff' => 0.83],
-        ['grade_id' => 105, 'display_value' => 'B-', 'calc_value' => 82, 'default_cutoff' => 0.80],
-        ['grade_id' => 106, 'display_value' => 'C+', 'calc_value' => 78, 'default_cutoff' => 0.77],
-        ['grade_id' => 107, 'display_value' => 'C', 'calc_value' => 75, 'default_cutoff' => 0.73],
-        ['grade_id' => 108, 'display_value' => 'C-', 'calc_value' => 72, 'default_cutoff' => 0.70],
-        ['grade_id' => 109, 'display_value' => 'D+', 'calc_value' => 68, 'default_cutoff' => 0.67],
-        ['grade_id' => 110, 'display_value' => 'D', 'calc_value' => 65, 'default_cutoff' => 0.63],
-        ['grade_id' => 111, 'display_value' => 'D-', 'calc_value' => 62, 'default_cutoff' => 0.60],
-        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.50]
+        ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98, 'default_cutoff' => 0.97, 'group' => 0, 'ordinal' => 0],
+        ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95, 'default_cutoff' => 0.93, 'group' => 0, 'ordinal' => 1],
+
+        ['grade_id' => 102, 'display_value' => 'A-', 'calc_value' => 92, 'default_cutoff' => 0.90, 'group' => 0, 'ordinal' => 2],
+
+        ['grade_id' => 103, 'display_value' => 'B+', 'calc_value' => 88, 'default_cutoff' => 0.87, 'group' => 0, 'ordinal' => 3],
+
+        ['grade_id' => 104, 'display_value' => 'B', 'calc_value' => 85, 'default_cutoff' => 0.83, 'group' => 0, 'ordinal' => 4],
+
+        ['grade_id' => 105, 'display_value' => 'B-', 'calc_value' => 82, 'default_cutoff' => 0.80, 'group' => 0, 'ordinal' => 5],
+
+        ['grade_id' => 106, 'display_value' => 'C+', 'calc_value' => 78, 'default_cutoff' => 0.77, 'group' => 0, 'ordinal' => 6],
+
+        ['grade_id' => 107, 'display_value' => 'C', 'calc_value' => 75, 'default_cutoff' => 0.73, 'group' => 0, 'ordinal' => 7],
+
+        ['grade_id' => 108, 'display_value' => 'C-', 'calc_value' => 72, 'default_cutoff' => 0.70, 'group' => 0, 'ordinal' => 8],
+
+        ['grade_id' => 109, 'display_value' => 'D+', 'calc_value' => 68, 'default_cutoff' => 0.67, 'group' => 0, 'ordinal' => 9],
+
+        ['grade_id' => 110, 'display_value' => 'D', 'calc_value' => 65, 'default_cutoff' => 0.63, 'group' => 0, 'ordinal' => 10],
+
+        ['grade_id' => 111, 'display_value' => 'D-', 'calc_value' => 62, 'default_cutoff' => 0.60, 'group' => 0, 'ordinal' => 11],
+        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.50, 'group' => 0, 'ordinal' => 12]
     ];
 
     /** @var array The default cutoffs for each possible grade */
@@ -40,16 +50,16 @@ class GradeFactory
     /** @var array The value of each grade to be used in calculations of statistics */
     static public $calcValues = [];
 
-    /** @var array Laravel collection of the grades  */
+    /** @var array Laravel collection of the grades */
     static protected $searchableGrades = [];
 
     /**
      * Returns grades as a json object for the grading page
      */
-    static public function gradeJson(){
+    static public function gradeJson()
+    {
         $grades = [];
-        foreach ( self::$grades as $g )
-        {
+        foreach ( self::$grades as $g ) {
             $grades[] = ['displayValue' => $g['display_value'], 'calcValue' => $g['calc_value']];
         }
         return json_encode($grades, JSON_FORCE_OBJECT);
@@ -62,13 +72,16 @@ class GradeFactory
      * The grades are not shared so that a user could modify the standard
      * set if she chooses
      */
-    static public function initializeStandardGrades(){
+    static public function initializeStandardGrades()
+    {
 
-        foreach(self::$grades as $g){
+        foreach ( self::$grades as $g ) {
             Grade::create([
                 'display_value' => $g['display_value'],
                 'calc_value' => $g['calc_value'],
-                'default_cutoff' => $g['default_cutoff']
+                'default_cutoff' => $g['default_cutoff'],
+                'group' => $g['group'],
+                'ordinal' => $g['ordinal']
             ]);
         }
 
@@ -83,11 +96,11 @@ class GradeFactory
      * @param $gradeId
      * @return Grade
      */
-    static public function loadByGradeId($gradeId)
+    static public function loadByGradeId( $gradeId )
     {
         self::makeSearchable();
 
-        $v =  self::$searchableGrades->where('grade_id', $gradeId)->first();
+        $v = self::$searchableGrades->where('grade_id', $gradeId)->first();
 
         return Grade::find($gradeId);
         //Make and return a new object
@@ -103,14 +116,13 @@ class GradeFactory
      * @return Grade
      * @throws \Exception
      */
-    static public function loadByDisplayValue($displayValue)
+    static public function loadByDisplayValue( $displayValue )
     {
         //Load the properties
         $gradeValues = self::getGradeFromDisplayValue($displayValue);
 
         //Throw exception if couldn't retrieve the display value
-        if (empty($gradeValues))
-        {
+        if ( empty($gradeValues) ) {
             throw new \Exception('grade could not be loaded');
         }
 
@@ -129,7 +141,7 @@ class GradeFactory
      * @param integer $order
      * @return Grade
      */
-    static public function loadByOrder($order)
+    static public function loadByOrder( $order )
     {
         $gradeValues = self::$grades[$order];
         return new Grade($gradeValues['grade_id'], $gradeValues['display_value'], $gradeValues['calc_value']);
@@ -173,10 +185,8 @@ class GradeFactory
      */
     static protected function buildStaticArrays()
     {
-        if(empty(self::$displayValues) && empty(self::$calcValues) && empty(self::$displayValues))
-        {
-            foreach (self::$grades as $g )
-            {
+        if ( empty(self::$displayValues) && empty(self::$calcValues) && empty(self::$displayValues) ) {
+            foreach ( self::$grades as $g ) {
                 self::$calcValues[] = $g['calc_value'];
                 self::$defaultCutoffs[] = $g['default_cutoff'];
                 self::$displayValues[] = $g['display_value'];
@@ -191,8 +201,7 @@ class GradeFactory
      */
     static protected function makeSearchable()
     {
-        if (empty(self::$searchableGrades))
-        {
+        if ( empty(self::$searchableGrades) ) {
             self::$searchableGrades = collect(self::$grades);
         }
     }
@@ -202,7 +211,7 @@ class GradeFactory
      * @param $displayValue
      * @return mixed
      */
-    static protected function getGradeFromDisplayValue($displayValue)
+    static protected function getGradeFromDisplayValue( $displayValue )
     {
         self::makeSearchable();
 

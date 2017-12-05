@@ -17,12 +17,7 @@ use Illuminate\Database\Seeder;
  */
 class CompleteNewSetupSeeder extends Seeder
 {
-    const NUMBER_TAGS = 5;
-    const NUMBER_NOTES = 2;
 
-    /** @var int The number of items at each level */
-    public $numAtLevel = 2;
-    public $numLevels = 2;
 
     /**
      * @param $numLevels
@@ -31,7 +26,7 @@ class CompleteNewSetupSeeder extends Seeder
      * @param $studentsPerClass
      * @return mixed
      */
-    static public function makeCompleteExam( $numLevels, $numAtLevel, $numKumi, $studentsPerClass )
+    static public function makeCompleteExam( $numLevels, $numAtLevel, $numKumi, $studentsPerClass , $numberNotes, $numberTags)
     {
         $exam = factory(Exam::class)->create();
 
@@ -42,16 +37,18 @@ class CompleteNewSetupSeeder extends Seeder
         KumiAssociationsSeeder::populateExamWithKumiAndStudents($exam, $numKumi, $studentsPerClass);
 
         //at notes
-        NoteTableSeeder::populateExamAndItemsWithNotes($exam, self::NUMBER_NOTES);
+        NoteTableSeeder::populateExamAndItemsWithNotes($exam, $numberNotes);
 
         //add tags
-        TagTableSeeder::populateExamAndItemsWithTags($exam, self::NUMBER_TAGS);
+        TagTableSeeder::populateExamAndItemsWithTags($exam, $numberTags);
 
         //add scores
         ItemScoreSeeder::populateExamWithScores($exam);
 
         //add grading times
         GradingTimeSeeder::populateExamWithGradingTimes($exam);
+
+        GradeAssignmentSeeder::populateExamWithGradeAssignments($exam);
 
         return $exam;
     }
@@ -63,7 +60,5 @@ class CompleteNewSetupSeeder extends Seeder
      */
     public function run()
     {
-        self::makeCompleteExam($this->numLevels, $this->numAtLevel, $this->numKumi, $this->studentsPerClass);
-        //
     }
 }

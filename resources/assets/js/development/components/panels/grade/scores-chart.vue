@@ -98,7 +98,7 @@
                     }
                 };
 
-                var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( 'scoreChart' ) );
+                var chart = new GoogleCharts.api.visualization.ColumnChart( this.$el); // document.getElementById( 'scoreChart' ) );
 
                 chart.draw( data, options );
             },

@@ -6,10 +6,27 @@ export default class GradeAssignment extends IModel {
     constructor() {
         super();
 
+        /** The id of the grade assignment on the server */
         this.id;
+
+        /** The letter grade or other string display */
         this.displayValue;
-        this.calcValue
+
+        /** The value of the grade used in calculations */
+        this.calcValue;
+
+        /** The id of the grade object on the server */
+        this.gradeId;
+
+        /** If the grade is part of a user defined group of grades,
+         * this identifies the group */
+        this.group;
+
+        /** The minimum score required to receive this grade */
         this.minScore;
+
+        /** The correct position in the order of grades */
+        this.ordinal;
     }
 
     static get letterGrades() {
@@ -86,7 +103,10 @@ export default class GradeAssignment extends IModel {
             'id',
             'displayValue', //the string value of the grade
             'calcValue',
-            'minScore'
+            'gradeId',
+            'group',
+            'minScore',
+            'ordinal'
         ];
 
     }
@@ -97,7 +117,7 @@ export default class GradeAssignment extends IModel {
      * @returns {string}
      */
     static className() {
-        return 'letterGrade';
+        return 'gradeAssignment';
     }
 
 

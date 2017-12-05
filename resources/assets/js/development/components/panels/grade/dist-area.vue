@@ -82,10 +82,10 @@
 
             },
             average: function () {
-                return this.formatForDisplay( _.mean( this.listOfValues ) );
+                return  _.mean( this.listOfValues ) ;
             },
             averageDisplay : function (  ) {
-                let out = this.average;
+                let out = this.formatForDisplay(this.average);
                 if(this.showLetter) out += ' ' + this.averageLetter;
                 return out;
             },
@@ -109,8 +109,12 @@
                 return (this.sortedValues[ lowMiddle ] + this.sortedValues[ highMiddle ]) / 2;
             },
 
+            /**
+             * The value shown to the user
+             * @returns {*}
+             */
             medianDisplay : function (  ) {
-              let out = this.median;
+              let out = this.formatForDisplay(this.median);
               if(this.showLetter) out += ' ' + this.medianLetter;
               return out;
             },

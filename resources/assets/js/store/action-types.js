@@ -48,6 +48,7 @@ export const updateExamGrade = 'updateExamGrade';
 
 //grade assignments
 export const updateCutoff = 'updateCutoff';
+export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
 
 //qscores
 export const loadQuestionScores = 'loadQuestionScores';

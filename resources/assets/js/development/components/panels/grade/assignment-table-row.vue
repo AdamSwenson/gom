@@ -47,8 +47,19 @@
         },
 
         computed: {
+
+
             freqs : function() {
                 return this.$store.getters[ gTypes.getGradeFrequencies ];
+            },
+
+            /**
+             * If this is true, the min score is
+             * out of order with its friends.
+             */
+            isInconsistent : function(){
+                let inconsistentList = this.$store.getters[gTypes.getInconsistentCutOffs];
+                if(inconsistentList.indexOf(this.grade) >= 0) return true;
             },
 
             letterGrade : function (  ) {

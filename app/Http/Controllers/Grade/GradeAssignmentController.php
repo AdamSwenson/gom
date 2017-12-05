@@ -314,14 +314,28 @@ class GradeAssignmentController extends Controller
             //This will give it default values based on the max possible score,
             GradeAssignment::initializeOnExam($exam, true);
         }
+//        $out = [];
+//        return GradeAssignment::where('exam_id', $exam->id)->with('grade')->get();
+
+//        foreach (GradeAssignment::where('exam_id', $exam->id)->with('grade')->get() as $assign){
+//            //we want to flatten the grade object properties
+//            //into the grade assignment properties
+//            $out[] =  collect($assign->toJson())->flatten();
+//        }
+//        return $out;
+
 
 
         $out = [];
-        foreach ( GradeAssignment::where('exam_id', $exam->id)->get() as $assign ) {
+        foreach ( GradeAssignment::where('exam_id', $exam->id)->with('grade')->get() as $assign ) {
             $out[] = [
                 'id' => $assign->id,
+                'calcValue' => $assign->grade->calc_value,
+                'displayValue' => $assign->grade->display_value,
+                'gradeId' =>$assign->grade->id,
+                'group' => $assign->grade->group,
                 'minScore' => $assign->min_score,
-                'letterGrade' => $assign->grade->display_value
+                'ordinal' => $assign->grade->ordinal
             ];
         }
         return $out;
