@@ -147,3 +147,4 @@ export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
 export const getTotalScores = 'getTotalScores';
 export const getGradeFrequencies = 'getGradeFrequencies';
 export const getGradeForScore = 'getGradeForScore';
+export const getMaxPossibleScore = 'getMaxPossibleScore';

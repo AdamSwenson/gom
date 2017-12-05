@@ -1,7 +1,7 @@
 <template>
     <div class="cut-off-field">
 
-        <div class="field">
+        <div class="field has-addons">
             <p class="control">
                 <span class="sr-only">{{letterGrade}}</span>
                 <input class="input minScore"
@@ -9,6 +9,18 @@
                        placeholder="Cutoff score"
                        v-model="minScore"
                 >
+            </p>
+            <p class="control">
+                <a class="button is-primary is-inverted" v-on:click="increment">
+                    <span class="icon">
+                        <i class="fa fa-plus" aria-hidden="true"></i></span>
+                </a>
+            </p>
+            <p class="control">
+                <a class="button is-info is-inverted"
+                   v-on:click="decrement">
+                    <span class="icon"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                </a>
             </p>
         </div>
 
@@ -60,6 +72,7 @@
                 set: function ( v ) {
                     let pl = Payload.factory( {
                         obj: this.grade,
+                        exam: this.exam,
                         updateProp: 'minScore',
                         updateVal: v
                     } );
@@ -69,7 +82,14 @@
 
         },
 
-        methods: {},
+        methods: {
+            increment: function () {
+                this.minScore += 1;
+            },
+            decrement: function () {
+                this.minScore -= 1;
+            }
+        },
 
         directives: {},
 

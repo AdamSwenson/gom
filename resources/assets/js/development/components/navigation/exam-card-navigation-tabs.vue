@@ -1,9 +1,9 @@
 <template>
-
-    <nav class="nav-edit-tabs-component tabs is-centered"
+<!--These are the navigation tabs for the exam only-->
+    <nav class="exam-card-navigation-tabs tabs is-centered"
     >
         <ul v-bind:id="id">
-            <li v-if="isExam" role="presentation">
+            <li role="presentation">
                 <router-link v-bind:to="routeToExamDetails">
                     <a class="exam-details-nav"
                        v-bind:class="{ 'exam-nav' : isExam  }">
@@ -15,18 +15,8 @@
                 </router-link>
             </li>
 
-            <li v-else role="presentation">
-                <router-link v-bind:to="routeToItemDetails">
-                    <a class="item-details-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </span>
-                        <span>Details</span>
-                    </a>
-                </router-link>
-            </li>
 
-            <li v-if="isExam" role="presentation">
+            <li role="presentation">
                 <router-link v-bind:to="routeToStudents">
                     <a class="students-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">
@@ -37,18 +27,9 @@
                 </router-link>
             </li>
 
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToGrades">
-                    <a class="grades-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>
-                        </span>
-                        <span>Grades</span>
-                    </a>
-                </router-link>
-            </li>
 
-            <li role="presentation">
+            <li class="exam-comments-tab"
+                role="presentation">
                 <router-link v-bind:to="routeToComments"
                              v-bind:id="getId('feedback')"
                 >
@@ -61,42 +42,19 @@
                 </router-link>
             </li>
 
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToExamStats">
-                    <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                        </span>
-                        <span>Stats</span>
-                    </a>
-                </router-link>
-            </li>
+            <!--<li class="exam-stats-tab"-->
+                <!--role="presentation">-->
+                <!--<router-link v-bind:to="routeToExamStats">-->
+                    <!--<a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
+                        <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-bar-chart" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                        <!--<span>Stats</span>-->
+                    <!--</a>-->
+                <!--</router-link>-->
+            <!--</li>-->
 
-
-            <li v-else role="presentation">
-                <router-link v-bind:to="routeToStats">
-                    <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                        </span>
-                        <span>Stats</span>
-                    </a>
-                </router-link>
-            </li>
-
-
-            <li v-if="!isExam" role="presentation">
-                <router-link v-bind:to="routeToHistory">
-                    <a class="history-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-book" aria-hidden="true"></i>
-                        </span>
-                        <span>History</span>
-                    </a>
-                </router-link>
-            </li>
-
-            <li role="presentation">
+            <li class="exam-notes-tab"role="presentation">
                 <router-link v-bind:to="routeToNotes">
                     <a id="notes-nav"
                        class="notes-nav"
@@ -110,24 +68,28 @@
                 </router-link>
             </li>
 
+            <!--These are for post grading tasks-->
 
-            <!--<li role="presentation">-->
-                <!--<router-link v-bind:to="routeToTags">-->
-                    <!--<a class="tags-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
-                        <!--<span class="icon is-small">-->
-                            <!--<i class="fa fa-tags" aria-hidden="true"></i>-->
-                        <!--</span>-->
-                        <!--<span>Tags</span>-->
-                    <!--</a>-->
-                <!--</router-link>-->
-            <!--</li>-->
+            <li class="exam-grades-tab"
+                role="presentation">
+                <router-link v-bind:to="routeToGrades">
+                    <a class="grades-nav" v-bind:class="{ 'exam-nav' : isExam  }">
+                        <span class="icon is-small">
+                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+                        </span>
+                        <span>Grades</span>
+                    </a>
+                </router-link>
+            </li>
+
+
         </ul>
     </nav>
 
 
 </template>
 <style lang="scss">
-    .nav-edit-tabs-component {
+    .exam-card-navigation-tabs {
         .exam-nav {
             color: #DDDDDD;
         }
@@ -180,18 +142,18 @@
             routeToExamDetails: function () {
                 return "/panel-exam-detail/" + this.serialNumber;
             },
-
-            routeToItemDetails: function () {
-                return "/panel-item-detail/" + this.serialNumber;
-            },
+            //
+            // routeToItemDetails: function () {
+            //     return "/panel-item-detail/" + this.serialNumber;
+            // },
 
             routeToGrades: function () {
                 return "/panel-grades/" + this.serialNumber;
             },
-
-            routeToHistory: function () {
-                return "/panel-history/" + this.serialNumber;
-            },
+            //
+            // routeToHistory: function () {
+            //     return "/panel-history/" + this.serialNumber;
+            // },
 
             //Notes
             routeToNotes: function () {
@@ -201,21 +163,21 @@
                 return "/panel-item-notes/" + this.serialNumber;
             },
 
-            routeToExamStats: function () {
-                return "/panel-exam-stats/" + this.serialNumber;
-            },
-
-            routeToStats: function () {
-                return "/panel-stats/" + this.serialNumber;
-            },
+            // routeToExamStats: function () {
+            //     return "/panel-exam-stats/" + this.serialNumber;
+            // },
+            //
+            // routeToStats: function () {
+            //     return "/panel-stats/" + this.serialNumber;
+            // },
 
             routeToStudents: function () {
                 return "/panel-students/" + this.serialNumber;
             },
 
-            routeToTags: function () {
-                return "/panel-tags/" + this.serialNumber;
-            },
+            // routeToTags: function () {
+            //     return "/panel-tags/" + this.serialNumber;
+            // },
 
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
@@ -278,28 +240,7 @@
             }
 
 
-//            show: function () {
-//                console.log('itemSetting', 'CALLED', 'show');
-//                this.$store.commit( mTypes.showItemSettings( Payload.factory( { index: this.index } ) ) );
-//            },
-//            hide: function () {
-//                console.log('itemSetting', 'CALLED', 'hide');
-//                this.$store.commit( mTypes.hideItemSettings( Payload.factory( { index: this.index } ) ) );
-//            },
 
-        },
-
-        directives: {},
-
-        events: {
-            'display-settings': function () {
-//                console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
-                //this.toggle();
-            }
-        },
-
-        mounted: function () {
-//            window.console.log('nav.edit-tabs.component', 'mounted', 136, this.index);
         },
 
     }

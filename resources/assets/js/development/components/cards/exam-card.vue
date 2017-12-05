@@ -13,10 +13,10 @@
         </div>
 
         <div class="card-content" v-show="isPaneVisible">
-            <edit-tabs
+            <nav-tabs
                     :serial-number="serialNumber"
                     :is-exam="true"
-            ></edit-tabs>
+            ></nav-tabs>
 
             <router-view name="examPanels"></router-view>
 
@@ -118,6 +118,7 @@
     import * as gTypes from '../../../store/getter-types'
 
     import itemMain from '../items/item-main.vue';
+    import navTabs from '../navigation/exam-card-navigation-tabs';
 
     export default {
 
@@ -128,6 +129,7 @@
         props: [ 'serialNumber' ],
 
         components: {
+            'nav-tabs': navTabs,
             'item-main': itemMain
         },
 

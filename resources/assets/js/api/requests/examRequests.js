@@ -32,6 +32,7 @@ module.exports = {
                         exam.id = r.id;
                         exam.name = r.name;
                         exam.term = r.term;
+                        exam.maxScore = r.maxScore;
                         let payload = Payload.factory( { obj: exam, mutateSilently: true } );
                         store.commit( mTypes.addExam, payload );
                     } );

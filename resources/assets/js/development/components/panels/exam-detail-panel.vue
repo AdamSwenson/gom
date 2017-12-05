@@ -1,58 +1,80 @@
 <template>
 
     <div class="exam-detail-panel  ">
-        <div class="box">
+        <div class="tile is-ancestor box">
 
-            <div class="public-name-input field">
-                <label class="label">Public Name</label>
-                <p class="control">
-                    <input type="text"
-                           class="input"
-                           id="publicName"
-                           name="publicName"
-                           v-model="publicName"
-                           v-bind:placeholder="placeholders.publicName"
-                    >
-                </p>
-            </div>
+            <div class="tile is-vertical">
+                <div class="tile is-parent">
+                    <div class="tile is-child">
+                        <div class="public-name-input field">
+                            <label class="label">Public Name</label>
+                            <p class="control">
+                                <input type="text"
+                                       class="input"
+                                       id="publicName"
+                                       name="publicName"
+                                       v-model="publicName"
+                                       v-bind:placeholder="placeholders.publicName"
+                                >
+                            </p>
+                        </div>
 
-            <div id="term-entry"
-                 class="field has-addons">
+                        <div id="term-entry"
+                             class="field has-addons">
 
-                <label class="label">Term</label>
+                            <label class="label">Term</label>
 
-                <p class="control">
+                            <p class="control">
                 <span class="select">
                     <select>
                         <option v-for="term in terms" :key="term">{{term}}</option>
                     </select>
                 </span>
-                </p>
+                            </p>
 
-                <p class="control">
-                    <input id="term"
-                           type="text"
-                           class="input" aria-label="term-text"
-                           v-model="term">
-                </p>
-            </div>
+                            <p class="control">
+                                <input id="term"
+                                       type="text"
+                                       class="input" aria-label="term-text"
+                                       v-model="term">
+                            </p>
+                        </div>
 
-            <div id="year-entry"
-                 class="field has-addons">
-                <label class="label">Year</label>
-                <p class="control">
+                        <div id="year-entry"
+                             class="field has-addons">
+                            <label class="label">Year</label>
+                            <p class="control">
                 <span class="select">
                     <select>
                         <option v-for="year in years" :key="year">year</option>
                     </select>
                 </span>
-                </p>
-                <p class="control">
-                    <input
-                            type="number"
-                            class="input" aria-label="year-text"
-                            v-model="year">
-                </p>
+                            </p>
+                            <p class="control">
+                                <input
+                                        type="number"
+                                        class="input" aria-label="year-text"
+                                        v-model="year">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tile  is-parent">
+
+                    <div class="tile is-child ">
+                        <exam-properties :exam="exam"></exam-properties>
+                    </div>
+
+                    <div class="countBox tile is-child ">
+                        <exam-counts :exam="exam"></exam-counts>
+                    </div>
+
+                    <div class="timeBox tile is-child ">
+                        <time-stats :exam="item"></time-stats>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -78,8 +100,22 @@
 
     import Payload from '../../../models/Payload'
 
+    import timeRequests from '../../../api/requests/timeRequests';
+    import loadingIndicator from '../helpers/loading-indicator.vue';
+    import timeStats from './stats/time-stats.vue'
+    import statsSummary from './stats/summary-stats-display.vue'
+    import examCounts from './stats/number-graded.vue'
+    import examProperties from './stats/exam-properties.vue'
+
 
     export default {
+        components: {
+            'exam-counts': examCounts,
+            'exam-properties': examProperties,
+            'loading-indicator': loadingIndicator,
+            'stats-summary': statsSummary,
+            'time-stats': timeStats
+        },
 
         props: [ 'exam-id' ],
 
@@ -103,6 +139,22 @@
         },
 
         computed: {
+
+            //if this is not the panel for the exam
+            item: function () {
+                return this.$store.getters.currentExam;
+
+//                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            },
+
+            exam: function () {
+                return this.item.isExam() ? this.item : this.$store.getters.currentExam;
+            },
+
+            isExam: function () {
+                return this.item ? this.item.isExam() : false;
+            },
+
 
             /**
              * Name which will be visible to students when they see the exam.

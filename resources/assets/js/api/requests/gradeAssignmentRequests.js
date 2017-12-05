@@ -60,16 +60,16 @@ module.exports = {
      * @returns {Promise.<T>|*}
      */
     updateGradeAssignment: ( store, exam, letterGrade ) => {
-        let to = 'dev/stats/exam/' + exam.id;
+        let to = 'dev/grade-assignment/' + letterGrade.id;
+
         let out = {
-            requestVersion: REQUEST_VERSION
+            requestVersion: REQUEST_VERSION,
+            min_score : letterGrade.minScore
         };
 
         return window.axios
-            .get( to )
+            .post( to, out )
             .then( ( response ) => {
-                // window.console.log( 'statsRequests---getExamStats', 35, response );
-                store.dispatch( 'processScoreForStatsResponse', response );
             } )
             .catch( function ( error ) {
                 errorHandling( error );

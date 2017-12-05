@@ -13,12 +13,12 @@
             <tbody>
             <stat-row>
                 <div slot="label">Average</div>
-                <div slot="value">{{ average }} {{ averageLetter }}</div>
+                <div slot="value">{{ averageDisplay }} </div>
             </stat-row>
 
             <stat-row>
                 <div slot="label">Median</div>
-                <div slot="value">{{ median }} {{ medianLetter }}</div>
+                <div slot="value">{{ medianDisplay }}</div>
             </stat-row>
 
             <stat-row>
@@ -35,26 +35,6 @@
         </table>
     </div>
 
-    <!--<stat-display>-->
-    <!--<div slot="label">Average</div>-->
-    <!--<div slot="value">{{ average }} {{ averageLetter }}</div>-->
-    <!--</stat-display>-->
-
-    <!--<stat-display>-->
-    <!--<div slot="label">Median</div>-->
-    <!--<div slot="value">{{ median }} {{ medianLetter }}</div>-->
-    <!--</stat-display>-->
-    <!--<stat-display>-->
-    <!--<div slot="label">Standard deviation</div>-->
-    <!--<div slot="value">{{ standardDeviation }}</div>-->
-    <!--</stat-display>-->
-
-    <!--<stat-display>-->
-    <!--<div slot="label">Count</div>-->
-    <!--<div slot="value">{{ count }}</div>-->
-    <!--</stat-display>-->
-    <!--</div>&lt;!&ndash;&ndash;&gt;-->
-    <!--</div>-->
 </template>
 
 <style lang="scss">
@@ -73,7 +53,8 @@
     export default {
 
         props: [
-            'listOfValues'
+            'listOfValues',
+            'showLetter'
         ],
 
         components: {
@@ -103,6 +84,11 @@
             average: function () {
                 return this.formatForDisplay( _.mean( this.listOfValues ) );
             },
+            averageDisplay : function (  ) {
+                let out = this.average;
+                if(this.showLetter) out += ' ' + this.averageLetter;
+                return out;
+            },
 
             averageLetter: function () {
                 let letter = this.$store.getters[ gTypes.getGradeForScore ]( this.average );
@@ -121,6 +107,12 @@
                 let lowMiddle = Math.floor( (this.sortedValues.length - 1) / 2 );
                 let highMiddle = Math.ceil( (this.sortedValues.length - 1) / 2 );
                 return (this.sortedValues[ lowMiddle ] + this.sortedValues[ highMiddle ]) / 2;
+            },
+
+            medianDisplay : function (  ) {
+              let out = this.median;
+              if(this.showLetter) out += ' ' + this.medianLetter;
+              return out;
             },
 
             medianLetter: function () {

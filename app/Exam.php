@@ -202,6 +202,12 @@ class Exam extends BaseModel
         return $items->sum('max_score');
     }
 
+    public function getMaxPossibleScoreAttribute()
+    {
+        $items = collect($this->getItems());
+        return $items->sum('max_score');
+    }
+
 # -------------------------- Helpful methods
 
     /**
@@ -592,6 +598,7 @@ MYSQL;
     {
         return $this->attributes['locked'];
     }
+
 
     /**
      * Get the [released] column value.

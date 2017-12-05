@@ -3,6 +3,7 @@ namespace App\Providers;
 
 use App\Element;
 use App\Exam;
+use App\GradeAssignment;
 use App\Item;
 use App\Kumi;
 use App\Models\NewGom\Note;
@@ -42,6 +43,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('student', Student::class);
         Route::model('tag', Tag::class);
         Route::model('note', Note::class);
+        Route::model('gradeassignment', GradeAssignment::class);
     }
 
     /**

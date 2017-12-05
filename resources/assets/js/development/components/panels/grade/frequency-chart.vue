@@ -23,7 +23,7 @@
 
         data: function () {
             return {
-chartDivId : 'gradeFreqChart',
+                chartDivId: 'gradeFreqChart',
                 defaults: {}
             }
         },
@@ -38,7 +38,7 @@ chartDivId : 'gradeFreqChart',
                 let data = _.toPairs( this.gradeFrequencies );
                 _.forEach( data, (function ( d, i ) {
                     //    //todo dev renable this once chart working
-                        var barColor = me.getColorForGrade( d[0] );
+                    var barColor = me.getColorForGrade( d[ 0 ] );
 
                     // let barColor = "00FF00";
                     d.push( barColor );
@@ -65,7 +65,7 @@ chartDivId : 'gradeFreqChart',
             getColorForGrade: function ( letterGrade ) {
                 var gradeGroup = 0;
                 for (var i = 0; i < this.gradeAssignments.length; i++) {
-                    if ( letterGrade === this.gradeAssignments[ i ].displayValue)  {
+                    if ( letterGrade === this.gradeAssignments[ i ].displayValue ) {
                         gradeGroup = i;
                         break;
                     }
@@ -122,11 +122,11 @@ chartDivId : 'gradeFreqChart',
 
         mounted: function () {
             var me = this;
-            this.$nextTick( function () {
-                    //Load the charts library with a callback
-                    GoogleCharts.load( me.drawChart );
+            // this.$nextTick( function () {
+            //Load the charts library with a callback
+            GoogleCharts.load( me.drawChart );
 
-            } );
+            // } );
 
         }
     }

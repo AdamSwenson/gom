@@ -11,10 +11,10 @@
         <div class="card-content"
              v-bind:id="contentId"
              v-show="isPaneVisible">
-            <edit-tabs
+            <nav-tabs
                     :serial-number="serialNumber"
                     :is-exam="false">
-            </edit-tabs>
+            </nav-tabs>
             <router-view name="itemPanels"></router-view>
         </div>
 
@@ -119,6 +119,8 @@
     import movementControl from '../items/card-movement-control.vue';
     import itemMain from '../items/item-main.vue';
 
+    import navTabs from '../navigation/item-card-navigation-tabs.vue'
+
 
     export default {
 
@@ -128,7 +130,8 @@
             'card-movement-control': movementControl,
             'item-clone-button': itemCloneButton,
             'item-import-button': itemImportButton,
-            'item-main': itemMain
+            'item-main': itemMain,
+            'nav-tabs': navTabs
         },
 
         data: function () {

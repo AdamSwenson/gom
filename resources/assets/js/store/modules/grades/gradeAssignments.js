@@ -51,7 +51,7 @@ const sortTotalScores = ( totalScores, ascending = true ) => {
  * @param ascending
  */
 const sortGradeAssignments = ( gradeAssignments, ascending = true ) => {
-    return (function ( gradeAssignments, ascending) {
+    return (function ( gradeAssignments, ascending ) {
 
         let list = [];
 
@@ -65,7 +65,7 @@ const sortGradeAssignments = ( gradeAssignments, ascending = true ) => {
         if ( !ascending ) list = _.reverse( list );
 
         return list;
-    })(gradeAssignments, ascending)
+    })( gradeAssignments, ascending )
 }
 
 const gradeGetterForScore = ( gradeAssignments, score ) => {
@@ -206,6 +206,17 @@ const getters = {
         return state.totalScores;
     },
 
+    [ gTypes.getMaxPossibleScore ]: ( state, getters, rootState ) => {
+        let score = 0;
+        let items = getters[ [ gTypes.getAllItems ] ];
+
+        _.forEach( items, function ( item ) {
+            score += !_.isUndefined( item.maxScore ) ? item.maxScore : 0;
+        } );
+
+        return score;
+    },
+
     /**
      * Returns an object with letter grades as keys.
      * The value is the count of total scores falling into each
@@ -248,9 +259,9 @@ const getters = {
 
     },
 
-    [gTypes.getGradeForScore] : ( state, getters, rootState, score )  => (score) => {
+    [ gTypes.getGradeForScore ]: ( state, getters, rootState, score ) => ( score ) => {
         return (function ( score ) {
-            window.console.log( 'gradeAssignments', 'score', 253, score);
+            // window.console.log( 'gradeAssignments', 'score', 253, score);
             return gradeGetterForScore( state.gradeAssignments, score );
         })( score );
     }

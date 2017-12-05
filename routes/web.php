@@ -194,7 +194,7 @@ Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassoci
 //retrieve assignments for a particular exam
 Route::get('dev/grade-assignment/exam/{exam}', 'Grade\GradeAssignmentController@show');
 // update grade assignments
-Route::post('dev/grade-assignment/{gradeAssignment}', 'Grade\GradeAssignmentController@update');
+Route::post('dev/grade-assignment/{gradeassignment}', 'Grade\GradeAssignmentController@update');
 
 
 //History

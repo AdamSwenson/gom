@@ -111,10 +111,10 @@
 
         mounted: function () {
             var me = this;
-            this.$nextTick( function () {
+            // this.$nextTick( function () {
                 //Load the charts library with a callback
                 GoogleCharts.load( me.drawChart );
-            } );
+            // } );
         }
     }
 

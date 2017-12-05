@@ -40,7 +40,7 @@ import toolsDashboard from './components/dashboard.tools.component.vue';
 Vue.component( 'tools-dashboard', toolsDashboard );
 
 //Panes (main container for edit tools)
-// import editTabs from './components/navigation/settings-navigation-tabs.vue'
+// import editTabs from './components/navigation/item-card-navigation-tabs.vue'
 
 //Panels (objects within pane)
 // import panelComments from './components/panels/comment-setup-panel.vue'

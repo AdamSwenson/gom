@@ -44,6 +44,8 @@ import {
 } from '../api/requests/studentRequests';
 import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
 
+import {updateGradeAssignment} from '../api/requests/gradeAssignmentRequests';
+
 import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
 
 import {
@@ -203,42 +205,9 @@ export default function ( store ) {
                 break;
 
 
-            // ******************** Students
-            case mTypes.addStudentToRoster:
-                //Remember this now ONLY handles pushing a student into
-                //the roster. So it only sends the request to create a new
-                //student. This does nothing to create an association with a kumi
-                //either on the server or locally.
-                setSyncStarting( store );
-                // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                var student = payload.obj;
-                //Requests the creation of a new student
-                createStudent( store, student );
-                setSyncDone( store );
-                //Assigns them to a particular kumi
-                // var kumi = store.getters.getSelectedKumi;
-                // let p = associateStudent( store, student, kumi );
-                // p.then(()=>{
-                //
-                // })
-
-                break;
-
-            case 'removeStudentFromRoster':
-                window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
-                var kumi = store.getters.getSelectedKumi;
-                var student = payload.obj;
-                disassociateStudent( store, student, kumi );
-                break;
-
-            case 'deleteStudent':
-                window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
-                destroyStudent( store, payload.obj );
-                break;
-
-            case 'updateStudentInRoster':
-                // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
-                updateStudent( store, payload.obj );
+            // ******************** Grades
+            case mTypes.updateGradeCutoffs:
+                updateGradeAssignment(store, payload.exam, payload.obj);
                 break;
 
 
@@ -292,6 +261,45 @@ export default function ( store ) {
 
             // ******************** Scores
 
+
+
+            // ******************** Students
+            case mTypes.addStudentToRoster:
+                //Remember this now ONLY handles pushing a student into
+                //the roster. So it only sends the request to create a new
+                //student. This does nothing to create an association with a kumi
+                //either on the server or locally.
+                setSyncStarting( store );
+                // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
+                var student = payload.obj;
+                //Requests the creation of a new student
+                createStudent( store, student );
+                setSyncDone( store );
+                //Assigns them to a particular kumi
+                // var kumi = store.getters.getSelectedKumi;
+                // let p = associateStudent( store, student, kumi );
+                // p.then(()=>{
+                //
+                // })
+
+                break;
+
+            case 'removeStudentFromRoster':
+                window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
+                var kumi = store.getters.getSelectedKumi;
+                var student = payload.obj;
+                disassociateStudent( store, student, kumi );
+                break;
+
+            case 'deleteStudent':
+                window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
+                destroyStudent( store, payload.obj );
+                break;
+
+            case 'updateStudentInRoster':
+                // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
+                updateStudent( store, payload.obj );
+                break;
 
 
 

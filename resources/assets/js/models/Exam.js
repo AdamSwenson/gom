@@ -66,6 +66,7 @@ export default class Exam extends Item {
             'year',
             'term',
             'id',
+            'maxPossibleScore',
             'numberStudents',
             'numberGraded',
             'totalGradingSeconds',

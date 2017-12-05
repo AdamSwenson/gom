@@ -6,7 +6,7 @@ use App\Comment;
 use App\Grade;
 use App\GradeAssignment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
+
 use App\Http\Requests\GradeAssignmentRequest;
 use App\Http\Requests\GradingRequest;
 
@@ -27,8 +27,8 @@ use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 
 use App\Repositories\Utilities\IJsDataPreparation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -119,6 +119,7 @@ class GradeAssignmentController extends Controller
      *  Launch the grade assignment page
      * @param Exam $exam
      * @return string
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function assign( Exam $exam )
     {
@@ -207,6 +208,7 @@ class GradeAssignmentController extends Controller
      * @param Exam $exam
      * @param integer $examMaxScore
      * @return array
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     protected function getGradeCutoffs( Exam $exam, $examMaxScore )
     {
@@ -237,6 +239,7 @@ class GradeAssignmentController extends Controller
      * @param Exam $exam
      * @param GradeAssignmentRequest $request
      * @return redirect
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function recordAssignments( Exam $exam, GradeAssignmentRequest $request )
     {
@@ -288,6 +291,9 @@ class GradeAssignmentController extends Controller
         return redirect()->action('GradeController@index');
     }
 
+
+    // =================================== New gom
+
     /**
      * Returns all grade assignments for the exam
      * If no assignments exist, it creates them with
@@ -327,13 +333,13 @@ class GradeAssignmentController extends Controller
     /**
      * Updates the grade assignment
      * @param GradeAssignment $assignment
-     * @param GradeAssignmentRequest|Request $assignmentRequest
+     * @param Request $assignmentRequest
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function update( GradeAssignment $assignment, Request $assignmentRequest )
     {
-        $assignment->min_score = $assignmentRequest->input('min_score');
-        $assignment->save();
+        $assignment->update(['min_score' => $assignmentRequest->input('min_score')]);
+//        $assignment->save();
 
         return $this->sendAjaxSuccess();
     }

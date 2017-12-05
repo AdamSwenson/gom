@@ -8,10 +8,10 @@
         <div class="tile is-ancestor box">
 
             <div class="assignment-table  tile is-parent is-vertical">
-
+                <p>Maximum possible score: {{ examMaxScore }}</p>
 
                 <div class="tile is-child">
-                    <table class="table">
+                    <table class="table is-narrow">
                         <thead>
                         <tr>
                             <th>Grade</th>
@@ -37,7 +37,6 @@
 
                     <a class="button is-warning">Undo</a>
 
-                    <a class="button is-primary">Save</a>
                 </div>
 
 
@@ -54,11 +53,11 @@
                 </div>
 
                 <div class="score-chart-area tile is-child">
-                        <score-chart :scores="scores"></score-chart>
+                    <score-chart :scores="scores"></score-chart>
                 </div>
 
                 <div class="tile is-child ">
-                    <dist-area :list-of-values="grades">
+                    <dist-area :list-of-values="grades" :show-letter="true">
                         <span slot="heading">Grades</span>
                     </dist-area>
                 </div>
@@ -75,20 +74,6 @@
 
         </div>
     </div>
-
-    <!--<div class="columns">-->
-    <!--<div class="column is-one-quarter">-->
-
-    <!--</div>-->
-    <!--<div class="column">-->
-    <!--Minimum score cut off-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<grade-assignment-field v-for="g in grades"-->
-    <!--v-bind:key="g.displayValue"-->
-    <!--:grade="g"-->
-    <!--&gt;</grade-assignment-field>-->
-
 
 </template>
 <style>
@@ -125,8 +110,7 @@
             'grade-assignment-field': gradeAssignmentField,
             'dist-stats': distStats,
             'dist-area': distArea,
-            'score-chart':scoreChart
-
+            'score-chart': scoreChart
         },
 
         data: function () {
@@ -138,6 +122,8 @@
         },
 
         asyncComputed: {
+
+
             gradesAjax: function () {
                 let me = this;
                 let p = requests.getGradeAssignments( this.exam );
@@ -197,6 +183,12 @@
                 return this.$store.getters.getGradeAssignments;
             },
 
+
+            examMaxScore: function () {
+                return this.$store.getters[gTypes.getMaxPossibleScore];
+            },
+
+
             scores: function () {
                 return this.$store.getters[ gTypes.getTotalScores ];
             },
@@ -205,9 +197,6 @@
                 return this.$store.getters.getListOfGradeValues;
             },
 
-            examMaxScore: function () {
-
-            },
 
             frequencies: function () {
                 return this.$store.getters[ gTypes.getGradeFrequencies ];
