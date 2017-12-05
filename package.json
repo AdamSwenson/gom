@@ -118,6 +118,7 @@
     "datatables.net-colreorder-bs": "^1.4.1",
     "datatables.net-fixedcolumns": "^3.2.3",
     "datatables.net-fixedcolumns-bs": "^3.2.3",
+    "google-charts": "^1.0.0",
     "gulp-nsp": "^2.4.1",
     "imagemin-giflossy": "^5.1.10",
     "imagemin-gifsicle": "^5.2.0",

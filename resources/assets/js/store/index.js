@@ -67,6 +67,9 @@ import rosterDisplay from './modules/roster/display'
 import itemScores from './modules/scores/itemscores';
 import stats from './modules/scores/scoresForStats';
 
+//grade assignments
+import gradeAssignments from './modules/grades/gradeAssignments';
+
 //api
 import requests from './modules/api/requests';
 
@@ -131,6 +134,8 @@ const debug = process.env.NODE_ENV !== 'production';
         stats,
         tags,
         //student table
+
+        gradeAssignments
 
     }
 

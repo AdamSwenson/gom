@@ -55,6 +55,25 @@ class GradeFactory
         return json_encode($grades, JSON_FORCE_OBJECT);
     }
 
+
+    /**
+     * Each user gets their own set of standard grade values
+     * This populates their individual table with their own set.
+     * The grades are not shared so that a user could modify the standard
+     * set if she chooses
+     */
+    static public function initializeStandardGrades(){
+
+        foreach(self::$grades as $g){
+            Grade::create([
+                'display_value' => $g['display_value'],
+                'calc_value' => $g['calc_value'],
+                'default_cutoff' => $g['default_cutoff']
+            ]);
+        }
+
+    }
+
     /**
      * Factory method for grade object
      *
@@ -70,8 +89,9 @@ class GradeFactory
 
         $v =  self::$searchableGrades->where('grade_id', $gradeId)->first();
 
+        return Grade::find($gradeId);
         //Make and return a new object
-        return new Grade($v['grade_id'], $v['display_value'], $v['calc_value']);
+//        return new Grade($v['grade_id'], $v['display_value'], $v['calc_value']);
     }
 
     /**

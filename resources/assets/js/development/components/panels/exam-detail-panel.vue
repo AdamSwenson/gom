@@ -1,62 +1,61 @@
 <template>
 
-
     <div class="exam-detail-panel  ">
+        <div class="box">
 
-        <div class="public-name-input field">
-            <label class="label">Public Name</label>
-            <p class="control">
-                <input type="text"
-                       class="input"
-                       id="publicName"
-                       name="publicName"
-                       v-model="publicName"
-                       v-bind:placeholder="placeholders.publicName"
-                >
-            </p>
-        </div>
+            <div class="public-name-input field">
+                <label class="label">Public Name</label>
+                <p class="control">
+                    <input type="text"
+                           class="input"
+                           id="publicName"
+                           name="publicName"
+                           v-model="publicName"
+                           v-bind:placeholder="placeholders.publicName"
+                    >
+                </p>
+            </div>
 
+            <div id="term-entry"
+                 class="field has-addons">
 
-        <div id="term-entry"
-             class="field has-addons">
+                <label class="label">Term</label>
 
-            <label class="label">Term</label>
-
-            <p class="control">
+                <p class="control">
                 <span class="select">
                     <select>
                         <option v-for="term in terms" :key="term">{{term}}</option>
                     </select>
                 </span>
-            </p>
+                </p>
 
-            <p class="control">
-                <input id="term"
-                       type="text"
-                       class="input" aria-label="term-text"
-                       v-model="term">
-            </p>
-        </div>
+                <p class="control">
+                    <input id="term"
+                           type="text"
+                           class="input" aria-label="term-text"
+                           v-model="term">
+                </p>
+            </div>
 
-        <div id="year-entry"
-             class="field has-addons">
-            <label class="label">Year</label>
-            <p class="control">
+            <div id="year-entry"
+                 class="field has-addons">
+                <label class="label">Year</label>
+                <p class="control">
                 <span class="select">
                     <select>
                         <option v-for="year in years" :key="year">year</option>
                     </select>
                 </span>
-            </p>
-            <p class="control">
-                <input
-                        type="number"
-                        class="input" aria-label="year-text"
-                        v-model="year">
-            </p>
+                </p>
+                <p class="control">
+                    <input
+                            type="number"
+                            class="input" aria-label="year-text"
+                            v-model="year">
+                </p>
+            </div>
         </div>
-
-    </div><!-- /input-group -->
+    </div>
 
 </template>
 
@@ -80,7 +79,7 @@
     import Payload from '../../../models/Payload'
 
 
-    export default{
+    export default {
 
         props: [ 'exam-id' ],
 

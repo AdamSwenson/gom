@@ -12,6 +12,7 @@
 */
 
 /* ---------------------------- Authentication and registration ------------------------------------------------------*/
+
 use App\Http\Controllers\Item\KumiController;
 
 Route::auth();
@@ -28,11 +29,11 @@ Route::get('account', 'LandingController@loggedIn');
 
 /* ----------------------------------------------- Exam set up  ----------------------------------------------------- */
 /* Routes for exam */
-Route::get('exam/{exam}/clone','ExamController@cloneExam');
+Route::get('exam/{exam}/clone', 'ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
 
 /* Routes for questions */
-Route::get('exam/{exam}/question/edit', array('as' =>'editAllQuestions', 'uses' => 'QuestionController@editAll'));
+Route::get('exam/{exam}/question/edit', array('as' => 'editAllQuestions', 'uses' => 'QuestionController@editAll'));
 Route::post('exam/{exam}/question/updateAll', 'QuestionController@updateAll'); // updates all questions for the exam
 Route::resource('exam.question', 'QuestionController');
 
@@ -43,7 +44,7 @@ Route::resource('exam.question.element', 'ElementController');
 
 /* Manage students */
 Route::post('exam/{exam}/student/store', 'StudentController@store');
-Route::post('exam/{exam}/student/updateAll','StudentController@updateAll');
+Route::post('exam/{exam}/student/updateAll', 'StudentController@updateAll');
 Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' => 'StudentController@editAll'));
 Route::resource('exam.student', 'StudentController');
 
@@ -68,10 +69,6 @@ Route::post('grade/exam/{exam}', 'Grade\ScoreController@recordScore');
 
 // delete a question or element score
 Route::delete('grade/exam/{exam}', 'Grade\ScoreController@removeScore');
-
-
-
-
 
 
 /* -----------------------------------------------  Home   ---------------------------------------------------------- */
@@ -105,7 +102,7 @@ Route::get('gettingStarted', 'InfoController@showGettingStarted');
 // Report index page
 Route::get('report', 'Report\ReportController@index');
 // Analytics page
-Route::get('report/{exam}/analytics','Report\AnalyticsController@index');
+Route::get('report/{exam}/analytics', 'Report\AnalyticsController@index');
 // Quality control tools
 Route::get('report/{exam}/qualitycontrol', 'Report\QualityControlController@index');
 // shows student controls for the exam
@@ -147,11 +144,9 @@ Route::get('backup/{exam}', 'UtilityController@exportExamScores');
 Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
 
-
 /* ---------------------------------------------- Time --------------------------------------------------------- */
 Route::post('grade/exam/{exam}/time', 'Time\TimeController@recordTime');
 Route::get('time/exam/{exam}', 'Time\TimeController@getGradingTime');
-
 
 
 /* ---------------------------------------------- Testing ----------------------------------------------------------- */
@@ -168,16 +163,6 @@ Route::get('dev/test', 'TestController@test');
 //before the resource show route below. However, if somehow this route
 //didn't get hit, we may have a problem.
 //When we want those directly, we use the edit route
-
-
-
-
-
-
-
-
-
-
 
 
 /* ******************** New setup page ***************** */
@@ -205,6 +190,12 @@ Route::resource('dev/students', 'Item\StudentResourceController');
 Route::post('dev/roster/{student}/assoc/{kumi}', 'Item\RosterController@associateStudent');
 Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassociateStudent');
 
+//Grade assignments
+//retrieve assignments for a particular exam
+Route::get('dev/grade-assignment/exam/{exam}', 'Grade\GradeAssignmentController@show');
+// update grade assignments
+Route::post('dev/grade-assignment/{gradeAssignment}', 'Grade\GradeAssignmentController@update');
+
 
 //History
 Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
@@ -228,6 +219,8 @@ Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScor
 Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
 Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
 Route::post('dev/scores', 'Item\ItemScoreController@store');
+
+Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreController@getTotalScoresForExam');
 
 //Stats (i.e., scores without identifying the student and statistical summaries )
 Route::get('dev/stats/item/{item}', 'Item\ItemStatsController@itemScores');

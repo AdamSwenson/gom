@@ -85,7 +85,7 @@
             </li>
 
 
-            <li role="presentation">
+            <li v-if="!isExam" role="presentation">
                 <router-link v-bind:to="routeToHistory">
                     <a class="history-nav" v-bind:class="{ 'exam-nav' : isExam  }">
                         <span class="icon is-small">

@@ -120,7 +120,7 @@ export const routes = [
     //grades
     {
         path: '/panel-grades/:serialNumber',
-        components: { itemPanels: panelGrades },
+        components: { examPanels: panelGrades },
         props: true
     }
 ];

@@ -46,6 +46,9 @@ export const loadExamGrades = 'loadExamGrades';
 export const loadStandardGrades = 'loadStandardGrades';
 export const updateExamGrade = 'updateExamGrade';
 
+//grade assignments
+export const updateCutoff = 'updateCutoff';
+
 //qscores
 export const loadQuestionScores = 'loadQuestionScores';
 export const setQuestionScore = 'setQuestionScore';

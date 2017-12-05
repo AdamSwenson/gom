@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Http\Controllers\Grade;
 
 use App\Comment;
+use App\Grade;
+use App\GradeAssignment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Http\Requests\GradeAssignmentRequest;
@@ -88,16 +91,16 @@ class GradeAssignmentController extends Controller
      * @param IGradeAssignmentRepository $gradeAssignmentRepository
      * @param IJsDataPreparation $jsonPrep
      */
-    public function __construct(IExamRepository $IExamRepository,
-                                IElementRepository $elementRepository,
-                                IElementAssignmentRepository $elementAssignmentRepository,
-                                IElementScoreRepository $elementScoreRepository,
-                                IQuestionAssignmentRepository $questionAssignmentRepository,
-                                IQuestionScoreRepository $questionScoreRepository,
-                                IGradingTimeRepository $gradingTimeRepository,
-                                IStudentRepository $studentRepository,
-                                IGradeAssignmentRepository $gradeAssignmentRepository,
-                                IJsDataPreparation $jsonPrep)
+    public function __construct( IExamRepository $IExamRepository,
+                                 IElementRepository $elementRepository,
+                                 IElementAssignmentRepository $elementAssignmentRepository,
+                                 IElementScoreRepository $elementScoreRepository,
+                                 IQuestionAssignmentRepository $questionAssignmentRepository,
+                                 IQuestionScoreRepository $questionScoreRepository,
+                                 IGradingTimeRepository $gradingTimeRepository,
+                                 IStudentRepository $studentRepository,
+                                 IGradeAssignmentRepository $gradeAssignmentRepository,
+                                 IJsDataPreparation $jsonPrep )
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -117,7 +120,7 @@ class GradeAssignmentController extends Controller
      * @param Exam $exam
      * @return string
      */
-    public function assign(Exam $exam)
+    public function assign( Exam $exam )
     {
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
@@ -128,13 +131,11 @@ class GradeAssignmentController extends Controller
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
         $examMaxScore = 0;
 
-        foreach ( $questionAssignments as $assignment )
-        {
+        foreach ( $questionAssignments as $assignment ) {
             $questionMax = $assignment->getQuestion()->getMaxScore();
 
             //If max question score not set, use the default max score
-            if ( empty($questionMax) )
-            {
+            if ( empty($questionMax) ) {
                 $questionMax = self::DEFAULT_MAX_QUESTION_SCORE;
             }
 
@@ -152,36 +153,31 @@ class GradeAssignmentController extends Controller
 
         // calculate exam scores
         $examScores = [];
-        foreach ( $students as $student )
-        {
+        foreach ( $students as $student ) {
             $questionItems = $this->questionScoreDao->load_for_student_on_exam($examId, $student->getId());
             // Don't include any students who haven't been graded
-            if ( ! $this->examGraded($questionItems) )
-            {
+            if ( !$this->examGraded($questionItems) ) {
                 continue;
             }
 
             $examScore = 0;
-            foreach ( $questionItems as $score )
-            {
-                if ( isset($score->questionScore) )
-                {
+            foreach ( $questionItems as $score ) {
+                if ( isset($score->questionScore) ) {
                     $examScore += $score->questionScore;
                 }
             }
             $examScores[] = $examScore;
         }
 
-        if ( empty($students) || empty($examScores) )
-        {
+        if ( empty($students) || empty($examScores) ) {
             return ('Either students or exam scores are empty');
         }
 
         return View::make('grade.grade_assign', [
-            'exam'         => $exam,
-            'examScores'   => $examScores,
+            'exam' => $exam,
+            'examScores' => $examScores,
             'examMaxScore' => $examMaxScore,
-            'gradeTypes'   => $gradeTypes,
+            'gradeTypes' => $gradeTypes,
             'gradeCutoffs' => $gradeCutoffs,
         ]);
     }
@@ -190,13 +186,11 @@ class GradeAssignmentController extends Controller
      * @param $questionItems
      * @return bool
      */
-    protected function examGraded($questionItems)
+    protected function examGraded( $questionItems )
     {
         $graded = false;
-        foreach ( $questionItems as $questionItem )
-        {
-            if ( $questionItem->questionScore != null )
-            {
+        foreach ( $questionItems as $questionItem ) {
+            if ( $questionItem->questionScore != null ) {
                 $graded = true;
                 break;
             }
@@ -214,7 +208,7 @@ class GradeAssignmentController extends Controller
      * @param integer $examMaxScore
      * @return array
      */
-    protected function getGradeCutoffs(Exam $exam, $examMaxScore)
+    protected function getGradeCutoffs( Exam $exam, $examMaxScore )
     {
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
@@ -222,17 +216,13 @@ class GradeAssignmentController extends Controller
         $gradeCutoffs = $this->gradeAssignmentDao->load_grade_min_scores_for_exam($exam);
 
         // if gradecutoffs aren't set, calculate them...
-        if ( empty($gradeCutoffs) )
-        {
+        if ( empty($gradeCutoffs) ) {
             $gradeCutoffs = [];
-            foreach ( GradeFactory::getDefaultCutoffsOfGrades() as $val )
-            {
+            foreach ( GradeFactory::getDefaultCutoffsOfGrades() as $val ) {
                 // allow decimals if the exam has a very low maximum grade
-                if ( $examMaxScore < 25 )
-                {
+                if ( $examMaxScore < 25 ) {
                     $decRound = 1;
-                } else
-                {
+                } else {
                     $decRound = 0;
                 }
                 $gradeCutoffs[] = round($examMaxScore * $val, $decRound);
@@ -248,7 +238,7 @@ class GradeAssignmentController extends Controller
      * @param GradeAssignmentRequest $request
      * @return redirect
      */
-    public function recordAssignments(Exam $exam, GradeAssignmentRequest $request)
+    public function recordAssignments( Exam $exam, GradeAssignmentRequest $request )
     {
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
@@ -258,37 +248,30 @@ class GradeAssignmentController extends Controller
         //This will hold the grades which are not being assigned and slated for deletion if they were in the db
         $nonAssigned = [];
 
-        try
-        {
+        try {
             //Pull out each value to assign, make a grade object and push into $assignments
-            for ( $i = 0; $i <= 12; $i++ )
-            {
+            for ( $i = 0; $i <= 12; $i++ ) {
                 //Check that the field has a value. If just try checking the value, may
                 //run into trouble with empty(0) for F grade.
-                if ( $request->has(self::GRADE_ASSIGNMENT_FIELD_BASE . $i) )
-                {
+                if ( $request->has(self::GRADE_ASSIGNMENT_FIELD_BASE . $i) ) {
                     $grade = GradeFactory::loadByOrder($i);
                     $minScore = $request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . $i);
                     //push into array to be recorded
                     $assignments[] = ['minScore' => $minScore, 'grade' => $grade];
-                } else
-                {
+                } else {
                     //If a letter grade was not assigned, make note so any preexisting value can be removed
                     $nonAssigned[] = $i;
                 }
             }
 
             //Request validator already checked for consistency, so let's write to the db
-            foreach ( $assignments as $assign )
-            {
+            foreach ( $assignments as $assign ) {
                 $this->gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
             }
 
             //Delete any pre-existing grades which were not assigned on this request
-            if ( ! empty($nonAssigned) )
-            {
-                foreach ( $nonAssigned as $naOrder )
-                {
+            if ( !empty($nonAssigned) ) {
+                foreach ( $nonAssigned as $naOrder ) {
                     $grade = GradeFactory::loadByOrder($naOrder);
                     $this->gradeAssignmentDao->delete_grade_assignment($exam, $grade);
                 }
@@ -296,14 +279,63 @@ class GradeAssignmentController extends Controller
 
             flash()->success('Grade assignments have been recorded');
 
-        } catch ( \Exception $e )
-        {
+        } catch (\Exception $e) {
             Log::error('Problem recording grade assignments ' . $e->getMessage());
 
             flash()->error('There was a problem recording the grade assignments. Please try again. If the problem persists, please let us know');
         }
 
         return redirect()->action('GradeController@index');
+    }
+
+    /**
+     * Returns all grade assignments for the exam
+     * If no assignments exist, it creates them with
+     * default values based on the maximum possible score on the
+     * exam
+     * @param Exam $exam
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function show( Exam $exam )
+    {
+        if ( Grade::all()->count() === 0 ) GradeFactory::initializeStandardGrades();
+
+        $assignments = GradeAssignment::where('exam_id', $exam->id)->get();
+
+        //If we have some assignments, then we just return them
+        if ( is_null($assignments) || sizeof($assignments) === 0 ) {
+//Otherwise we need to initialize them
+            //This will give it default values based on the max possible score,
+            GradeAssignment::initializeOnExam($exam, true);
+        }
+
+
+        $out = [];
+        foreach ( GradeAssignment::where('exam_id', $exam->id)->get() as $assign ) {
+            $out[] = [
+                'id' => $assign->id,
+                'minScore' => $assign->min_score,
+                'letterGrade' => $assign->grade->display_value
+            ];
+        }
+        return $out;
+
+
+    }
+
+
+    /**
+     * Updates the grade assignment
+     * @param GradeAssignment $assignment
+     * @param GradeAssignmentRequest|Request $assignmentRequest
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function update( GradeAssignment $assignment, Request $assignmentRequest )
+    {
+        $assignment->min_score = $assignmentRequest->input('min_score');
+        $assignment->save();
+
+        return $this->sendAjaxSuccess();
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\NewGom\ItemScore;
 use App\Models\NewGom\Note;
 use App\Models\NewGom\Tag;
 use Illuminate\Support\Facades\DB;
@@ -179,19 +180,26 @@ class Exam extends BaseModel
     public function getItems()
     {
         $out = [];
-       $assignmentTree = $this->getAssignmentRoot();
+        $assignmentTree = $this->getAssignmentRoot();
 // Assignment::where('item_id', $this->id)
 //            ->where('exam_id', $this->id)
 //            ->get();
         if ( $assignmentTree->hasChildren() ) {
             $children = $assignmentTree->getChildren();
             //children now holds a bunch of Assignment objects
-            foreach ($children as $c){
+            foreach ( $children as $c ) {
                 //push Item objects into the out array
                 $out[] = $c->item;
             }
         }
         return $out;
+    }
+
+
+    public function getMaxPossibleScore()
+    {
+        $items = collect($this->getItems());
+        return $items->sum('max_score');
     }
 
 # -------------------------- Helpful methods
@@ -355,43 +363,6 @@ MYSQL;
         return $query->whereReleased(1);
     }
 
-#----------------------------------------------------------- Setters and getters
-
-    /**
-     * Set the term in which the exam occurs
-     * @param string $term
-     * @return $this|void
-     */
-    public function setTerm( $term )
-    {
-        $this->attributes['term'] = $term;
-    }
-
-    /**
-     * Set exam name
-     * @param string $name
-     * @return $this The current object (for fluent API support)
-     */
-    public function setName( $name )
-    {
-        $this->attributes['name'] = $name;
-    }
-
-    /**
-     * Set the year of the exam
-     * @param int|string $year
-     * @return $this|\Exam|void
-     */
-    public function setYear( $year )
-    {
-        $this->attributes['year'] = $year;
-    }
-
-//    public function getQuestion($questionNumber)
-//    {
-//     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
-//    }
-
 
     #------------------------------------------------------ foreign keys
 
@@ -409,12 +380,6 @@ MYSQL;
         return $this->hasMany(Assignment::class);
     }
 
-    public function items(){
-        return $this->hasManyThrough(Item::class, Assignment::class);
-
-    }
-
-
     /**
      * Classes (kumis) taking the exam
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -423,16 +388,6 @@ MYSQL;
     {
         return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
     }
-
-    /**
-     * Classes (kumis) taking the exam
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function kumis()
-    {
-        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
-    }
-
 
     /**
      * Associated elements and their subtask numbers
@@ -454,14 +409,51 @@ MYSQL;
         return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
     }
 
-//    /**
-//     * Associated element scores
-//     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-//     */
-//    public function elementScores()
-//    {
-//        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
-//    }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function gradingTimes()
+    {
+        return $this->hasMany(GradingTime::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function gradeAssignments()
+    {
+        return $this->hasMany(GradeAssignment::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function items()
+    {
+        return $this->hasManyThrough(Item::class, Assignment::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function itemScores()
+    {
+        return $this->hasMany(ItemScore::class);
+    }
+
+    /**
+     * Classes (kumis) taking the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function kumis()
+    {
+        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
+    }
+
+    public function notes()
+    {
+        return $this->belongsToMany(Note::class, 'exam_note')->withTimestamps();
+    }
 
     /**
      * Junction to all questions associated with the exam
@@ -504,14 +496,8 @@ MYSQL;
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');
     }
 
-//    public function students(){
-//         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
-//    }
-
-
-    public function notes()
-    {
-        return $this->belongsToMany(Note::class, 'exam_note')->withTimestamps();
+    public function students(){
+         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
     }
 
     public function tags()
@@ -519,12 +505,6 @@ MYSQL;
         return $this->belongsToMany(Tag::class, 'exam_tag')->withTimestamps();
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function gradingTimes(){
-        return $this->hasMany(GradingTime::class);
-    }
 
     /**
      * Associated user
@@ -534,6 +514,44 @@ MYSQL;
     {
         return $this->belongsTo('App\User');
     }
+
+    #----------------------------------------------------------- Setters and getters
+
+    /**
+     * Set the term in which the exam occurs
+     * @param string $term
+     * @return $this|void
+     */
+    public function setTerm( $term )
+    {
+        $this->attributes['term'] = $term;
+    }
+
+    /**
+     * Set exam name
+     * @param string $name
+     * @return $this The current object (for fluent API support)
+     */
+    public function setName( $name )
+    {
+        $this->attributes['name'] = $name;
+    }
+
+    /**
+     * Set the year of the exam
+     * @param int|string $year
+     * @return $this|\Exam|void
+     */
+    public function setYear( $year )
+    {
+        $this->attributes['year'] = $year;
+    }
+
+//    public function getQuestion($questionNumber)
+//    {
+//     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
+//    }
+
 
     # --------------------------------- Other getters and setters
 

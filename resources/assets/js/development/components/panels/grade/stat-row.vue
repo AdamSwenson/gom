@@ -1,25 +1,12 @@
 <template>
-
-
-    <div class="columns">
-        <div class="column is-narrow stat-label subtitle">
-            <slot name="label"></slot>
-        </div>
-        <div class="column stat-value">
-            <slot name="value"></slot>
-        </div>
-    </div>
-
+    <tr>
+        <th><slot name="label"></slot></th>
+        <td><slot name="value"></slot></td>
+    </tr>
 </template>
 
 <style lang="scss">
-    .stat-label {
-        /*font-weight: bold;*/
-    }
 
-    .stat-value {
-
-    }
 </style>
 
 <script>

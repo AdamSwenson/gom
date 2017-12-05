@@ -44,11 +44,67 @@ class GradeAssignment extends BaseModel
 
     /** @var array Fields that are mass assignable */
     protected $fillable = [
-    ];
+    'min_score'
+        ];
 
     protected $casts = [
         'min_score' => 'float'
     ];
+
+
+    /**
+     * Creates a grade assignment for each of the standard grades on the
+     * exam. The minimum scores will be null unless $setDefaultCutoffs is true
+     *
+     * @param Exam $exam
+     * @param bool $setDefaultCutoffs
+     */
+    static public function initializeOnExam(Exam $exam, $setDefaultCutoffs=false){
+        foreach( GradeFactory::$grades as $standardGrade){
+            $grade = Grade::where('display_value', $standardGrade['display_value'])->first();
+
+            //todo this could be problematic later. we probably will need to flag the defaults or store them
+            $assignment = new GradeAssignment();
+            $assignment->exam()->associate($exam);
+            $assignment->grade()->associate($grade);
+
+            if($setDefaultCutoffs){
+                $assignment->min_score = $grade->default_cutoff * $exam->getMaxPossibleScore();
+            }
+
+            $assignment->save();
+        }
+
+    }
+
+    /* -------------------------------- Relationships ---------------------------------- */
+    /**
+     * Junction to the grade object
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function grade()
+    {
+       return $this->belongsTo(Grade::class);
+    }
+
+    /**
+     * Junction to the exam object
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
+    }
+
+    /**
+     * The user the grade assignment belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 
     /**
      * Sets the lower bound for the grade assignment.
@@ -70,12 +126,6 @@ class GradeAssignment extends BaseModel
     public function getMinScore()
     {
         return $this->attributes['min_score'];
-    }
-
-
-    public function __construct()
-    {
-        parent::boot();
     }
 
 
@@ -137,35 +187,6 @@ class GradeAssignment extends BaseModel
 
         return $this->grade;
     }
-
-    /* -------------------------------- Relationships ---------------------------------- */
-//    /**
-//     * Junction to the grade object
-//     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-//     */
-//    public function grade()
-//    {
-//       return $this->hasOne('App\Grade');
-//    }
-
-    /**
-     * Junction to the exam object
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function exam()
-    {
-        return $this->belongsTo('App\Exam');
-    }
-
-    /**
-     * The user the grade assignment belongs to
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
-
 
 
     }

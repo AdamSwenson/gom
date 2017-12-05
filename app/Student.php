@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\NewGom\ItemScore;
 use App\Models\NewGom\Tag;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -9,17 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Class Student
- * 
+ *
  * A student who will take an exams.
- * 
+ *
  * Each student can take an exams exactly once.
- * 
+ *
  * The sid property is a unique string (usually, but not necessarily, an integer provided by the user, it is not the
  * same as the id.
- * 
+ *
  * Here is a list keys that are available in the attributes array (08/04/15)
  *     'id' , 'user_id' , 'student_identifier' , 'first_name' , 'last_name' , 'email' , 'created_at' , 'updated_at' ,
- * 
+ *
  *  'pivot'  which contains:
  *        '_id' , 'student_id' , 'created_at' , 'updated_at'
  *
@@ -65,9 +66,9 @@ class Student extends BaseModel
 
     protected $casts = [
         'student_identifier' => 'integer',
-        'last_name'          => 'string',
-        'first_name'         => 'string',
-        'email'              => 'string',
+        'last_name' => 'string',
+        'first_name' => 'string',
+        'email' => 'string',
     ];
 
     /** @var array Attributes which should be encrypted in the database */
@@ -155,7 +156,7 @@ class Student extends BaseModel
      *
      * @param string $firstName
      */
-    public function setFirstNameAttribute($firstName)
+    public function setFirstNameAttribute( $firstName )
     {
         $firstName = trim(ucfirst($firstName));
         $this->attributes['first_name'] = $firstName;
@@ -169,7 +170,7 @@ class Student extends BaseModel
      * so will be called if someone tries $student->last_name = last_name
      * @param string $lastName
      */
-    public function setLastNameAttribute($lastName)
+    public function setLastNameAttribute( $lastName )
     {
         $lastName = trim(ucfirst($lastName));
         $this->attributes['last_name'] = $lastName;
@@ -182,7 +183,7 @@ class Student extends BaseModel
      * so will be called if someone tries $student->email = email_address
      * @param $email
      */
-    public function setEmailAttribute($email)
+    public function setEmailAttribute( $email )
     {
         $email = trim($email);
         $this->attributes['email'] = $email;
@@ -218,7 +219,7 @@ class Student extends BaseModel
      * THIS SHOULD ALWAYS BE USED BECAUSE THE ID IS STORED ENCRYPTED.
      * @param integer $studentId
      */
-    public function setStudentId($studentId)
+    public function setStudentId( $studentId )
     {
         $this->setStudentIdentifierAttribute($studentId);
 //        $this->attributes['student_identifier'] = $studentId;
@@ -231,7 +232,7 @@ class Student extends BaseModel
      * NB., does not save the change. So update needs to be independently called.
      * @param string $firstName
      */
-    public function setStudentFName($firstName)
+    public function setStudentFName( $firstName )
     {
         $this->setFirstNameAttribute($firstName);
 //        $this->setAttribute('first_name', $firstName);
@@ -254,7 +255,7 @@ class Student extends BaseModel
      * NB., does not save the change. So update needs to be independently called.
      * @param string $lastName
      */
-    public function setStudentLName($lastName)
+    public function setStudentLName( $lastName )
     {
         $this->setLastNameAttribute($lastName);
 //        $this->setAttribute('last_name', $lastName);
@@ -295,7 +296,7 @@ class Student extends BaseModel
      * NB., does not save the change. So update needs to be independently called.
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail( $email )
     {
         $this->setEmailAttribute($email);
 //        $this->setAttribute('email', $email);
@@ -314,7 +315,7 @@ class Student extends BaseModel
      * @param integer $examId
      * @return boolean
      */
-    public function feedbackEmailSent($examId)
+    public function feedbackEmailSent( $examId )
     {
         $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
 
@@ -328,7 +329,7 @@ class Student extends BaseModel
      * @param integer $examId
      * @return boolean
      */
-    public function hasBeenGraded($examId)
+    public function hasBeenGraded( $examId )
     {
         $query = <<<MYSQL
         SELECT count(qs.score) AS numberAnswered 
@@ -339,8 +340,7 @@ class Student extends BaseModel
 MYSQL;
         $values = ['examId' => $examId, 'studentId' => $this->attributes['id']];
         $result = DB::select($query, $values);
-        if ( $result[0]->numberAnswered > 0 )
-        {
+        if ( $result[0]->numberAnswered > 0 ) {
             return true;
         }
 
@@ -354,13 +354,11 @@ MYSQL;
      * @param integer $examId
      * @return bool
      */
-    public function isFeedbackAvailable($examId)
+    public function isFeedbackAvailable( $examId )
     {
         $expirationDate = $this->getFeedbackAccessExpirationDate($examId);
-        if ( ! is_null($expirationDate) )
-        {
-            if ( Carbon::now()->lte($expirationDate) )
-            {
+        if ( !is_null($expirationDate) ) {
+            if ( Carbon::now()->lte($expirationDate) ) {
                 return true;
             }
         }
@@ -368,12 +366,20 @@ MYSQL;
         return false;
     }
 
+    public function getTotalScoreOnExam( Exam $exam )
+    {
+        $scores = ItemScore::where('student_id', $this->attributes['id'])
+            ->where('exam_id', $exam->id)
+            ->get();
+        return collect($scores)->sum('score');
+    }
+
     /**
      * Returns the date feedback will begin no longer being available to the student
      * @param integer $examId
      * @return bool|Carbon
      */
-    public function getFeedbackAccessExpirationDate($examId)
+    public function getFeedbackAccessExpirationDate( $examId )
     {
         $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
 
@@ -397,11 +403,17 @@ MYSQL;
 //        return $this->hasManyThrough('App\Exam', 'App\Kumi');
 //    }
 
-
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function itemScores()
+    {
+        return $this->hasMany(ItemScore::class);
+    }
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'student_tag' )->withTimestamps();
+        return $this->belongsToMany(Tag::class, 'student_tag')->withTimestamps();
     }
 
     /**

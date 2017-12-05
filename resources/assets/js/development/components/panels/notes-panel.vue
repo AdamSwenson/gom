@@ -9,14 +9,21 @@
             <div id="existing-notes-area">
                 <h5 class="title is-5">Reminders from your past self</h5>
 
-                <note-object
-                        v-for="note in notes"
-                        v-bind:key="note.serialNumber"
-                        :object="note"
-                        :serial-number="note.serialNumber"
-                        v-on:note-deleted="refreshNotes"
-                        v-on:note-updated="refreshNotes"
-                ></note-object>
+                <div v-if="isLoading">
+                    <loading-indicator :isLoading="isLoading"></loading-indicator>
+                </div>
+
+                <div v-if="!isLoading">
+                    <note-object
+                            v-for="note in notes"
+                            v-bind:key="note.serialNumber"
+                            :object="note"
+                            :serial-number="note.serialNumber"
+                            v-on:note-deleted="refreshNotes"
+                            v-on:note-updated="refreshNotes"
+                    ></note-object>
+                </div>
+
             </div>
 
             <div class="new-note-input-area "
@@ -50,7 +57,7 @@
                         v-on:priority-selected="handlePrioritySelection"
                 ></color-selector>
                 <!--<priority-selector-->
-                        <!--v-on:priority-selected="handlePrioritySelection"-->
+                <!--v-on:priority-selected="handlePrioritySelection"-->
                 <!--&gt;</priority-selector>-->
 
 
@@ -83,7 +90,6 @@
         </div>
 
 
-
     </div>
 </template>
 
@@ -109,6 +115,8 @@
 
     import prioritySelector from './note/priority-selector';
     import colorSelector from './tag/color-selector.vue';
+    import loadingIndicator from '../helpers/loading-indicator.vue';
+
 
     export default {
 //        props: ['serialNumber'], //the serial number of the note
@@ -116,11 +124,13 @@
         components: {
             'note-object': noteObject,
             'priority-selector': prioritySelector,
-            'color-selector' : colorSelector
+            'color-selector': colorSelector,
+            'loading-indicator': loadingIndicator
         },
 
         data: function () {
             return {
+                isLoading: false,
 
                 isNewNoteVisible: false,
 
@@ -162,7 +172,8 @@
 
         asyncComputed: {
             notes: {
-                get () {
+                get() {
+                    let me = this;
                     let result = [];
                     if ( this.useCentralStore ) {
                         result = this.$store.getters[ gTypes.getNotesForItem ]( this.item );
@@ -179,9 +190,15 @@
                         }
 
                     } else {
-                        result = loadNotesForItemRequest( null, this.item );
+
+                        //load it from the server
+                        this.isLoading = true;
+                        let p = loadNotesForItemRequest( null, this.item );
+                        return p.then( function ( data ) {
+                            me.isLoading = false;
+                            return data;
+                        } );
                     }
-                    return result;
                 },
 
                 watch() {
@@ -298,7 +315,7 @@
             },
 
             handlePrioritySelection: function ( priority ) {
-                window.console.log( 'notes-panel', 'handlePrioritySelection', 297, priority);
+                window.console.log( 'notes-panel', 'handlePrioritySelection', 297, priority );
                 this.newNotePriority = priority;
             },
 

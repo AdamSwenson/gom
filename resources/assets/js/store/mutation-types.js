@@ -130,3 +130,7 @@ export const destroyTag = 'destroyTag';
 export const createTag = 'createTag';
 export const associateTag = 'associateTag';
 export const disassociateTag = 'disassociateTag';
+
+//Grade assignments
+export const updateGradeCutoffs = 'updateGradeCutoffs';
+export const loadTotalScores = 'loadTotalScores';

@@ -12,7 +12,7 @@
  * @param selector
  * @param text
  */
-export const type = ( selector, text ) => {
+export const type = ( wrapper, selector, text ) => {
     wrapper.find( selector ).element.value = text;
     wrapper.find( selector ).trigger( 'input' );
 };

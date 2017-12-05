@@ -25,7 +25,7 @@ localVue.use( Vuex )
 var Component = require( "../../../../../resources/assets/js/development/components/panels/stats/number-graded.vue" );
 
 
-describe.only( "number-graded  ", () => {
+describe( "number-graded  ", () => {
 
     let getters;
     let mutations;

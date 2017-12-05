@@ -137,3 +137,13 @@ export const getTagBySerialNumber = 'getTagBySerialNumber';
 export const getAllTags = 'getAllTags';
 export const getTagsForObject = 'getTagsForObject';
 export const getTagById = 'getTagById';
+
+/* ================================================================
+   ================== GRADE ASSIGNMENTS       =====================
+   ================================================================ */
+export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
+export const getGradeAssignments = 'getGradeAssignments';
+export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
+export const getTotalScores = 'getTotalScores';
+export const getGradeFrequencies = 'getGradeFrequencies';
+export const getGradeForScore = 'getGradeForScore';
