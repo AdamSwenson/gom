@@ -58,7 +58,7 @@
 
             // returns grade letter -- this is shoddy because it does the same loop as getColorForGrade.
             getLetterForScore: function ( score ) {
-                let ga = this.$store.getters[ gTypes.getGradeForScore ]( score );
+                let ga = this.$store.getters[ gTypes.getGradeAssignmentForScore ]( score );
                 if ( ! _.isUndefined( ga ) ) return ga.displayValue;
             },
             getLetterForGrade: function ( score ) {

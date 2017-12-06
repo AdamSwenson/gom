@@ -91,9 +91,9 @@
             },
 
             averageLetter: function () {
-                let letter = this.$store.getters[ gTypes.getGradeForScore ]( this.average );
-                if ( _.isUndefined( letter ) ) return '';
-                return '( ' + letter + ')';
+                let ga = this.$store.getters[ gTypes.getGradeAssignmentForScore ]( this.average );
+                if ( _.isUndefined( ga ) ) return '';
+                return '( ' + ga.displayValue + ' )';
             },
 
             count: function () {
@@ -120,9 +120,9 @@
             },
 
             medianLetter: function () {
-                let letter = this.$store.getters[ gTypes.getGradeForScore ]( this.median );
-                if ( _.isUndefined( letter ) ) return '';
-                return '( ' + letter + ')';
+                let ga = this.$store.getters[ gTypes.getGradeAssignmentForScore ]( this.median );
+                if ( _.isUndefined( ga ) ) return '';
+                return '( ' + ga.displayValue + ')';
             },
 
             standardDeviation: function () {

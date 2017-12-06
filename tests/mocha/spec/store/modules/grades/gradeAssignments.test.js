@@ -1,7 +1,8 @@
-require( 'sinon' );
+import sinon from 'sinon';
+
 let faker = require( 'faker' );
 //
-// import { testAction, description, factories } from '../../../../helpers/vuex.spec.helpers';
+import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 //Dependencies
 //import * as items from '../../../../../resources/assets/js/store/modules/items';
@@ -13,8 +14,9 @@ import Item from '../../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../../resources/assets/js/models/Payload'
 import GradeAssignment from '../../../../../../resources/assets/js/models/GradeAssignment'
 
-// import  { getters, actions, mutations } from '../../../../../../resources/assets/js/store/modules/grades/gradeAssignments';
+
 var Component = require( '../../../../../../resources/assets/js/store/modules/grades/gradeAssignments' );
+
 let { getters, actions, mutations } = Component.default;
 
 
@@ -171,6 +173,7 @@ describe.only( "gradeAssignments  ", () => {
             expect( _.isObject( mutations ) ).toBe( true );
         } );
     } );
+
     describe( " helpers ", () => {
 
         describe( " sortTotalScores ", () => {
@@ -187,23 +190,24 @@ describe.only( "gradeAssignments  ", () => {
 
         } );
 
-        describe( gTypes.getCutOffsForLetterGrade, () => {
+        // describe( gTypes.getCutOffsForLetterGrade, () => {
+        //
+        //     it( "happy path", function () {
+        //
+        //     } );
+        //
+        // } );
 
-            it( "happy path", function () {
 
-            } );
-
-        } );
-
-
-        describe( gTypes.getGradeForScore, () => {
-            it( " returns correct grade object ", () => {
+        describe( gTypes.getGradeAssignmentForScore, () => {
+            it( " the underlying helper function returns correct grade object", () => {
                 _.forEach( GradeAssignment.defaults, function ( g ) {
                     //prep
                     let testScore = g.minScore + 1;
 
                     //call
-                    let result = getters.getGradeForScore( state, getters, state, testScore )
+                    let result = Component.gradeGetterForScore( state.grade, testScore );
+                    // let result = getters.getGradeAssignmentForScore( state, getters, {}, testScore )
 
                     //check
                     expect( result.calcValue ).toBe( g.calcValue );
@@ -216,7 +220,7 @@ describe.only( "gradeAssignments  ", () => {
 
         describe( gTypes.getGradeFrequencies, () => {
 
-            it( " returns the expected object with the correct structure ", () => {
+            it( " returns an object with the correct structure and values ", () => {
                 //call
                 let result = getters.getGradeFrequencies( state );
                 //check
@@ -226,7 +230,57 @@ describe.only( "gradeAssignments  ", () => {
                 } );
             } );
 
-            it( " correctly calculates the frequency values " );
+
+        } );
+
+        describe( gTypes.getInconsistentCutOffs, () => {
+            let letters;
+
+            beforeEach( (  ) => {
+               letters = _.keys(state.gradeAssignments);
+            });
+
+            it( " behaves properly when there are no inconsistencies ", () => {
+                let result = getters[ gTypes.getInconsistentCutOffs ]( state, getters );
+                expect( result.length ).toBe( 0 );
+            } );
+
+        it( " behaves properly (easy) ", (  ) => {
+            let problemKey = faker.random.arrayElement( letters );
+            if(problemKey === 'A+') problemKey = 'B-';
+
+            state.gradeAssignments[problemKey].minScore = 1000000007;
+            let result = getters[ gTypes.getInconsistentCutOffs ]( state, getters );
+            //check
+            expect( result.length > 0 ).toBe( true );
+
+        });
+
+
+            it( " behaves properly when there is one inconsistency ", () => {
+let letters = _.keys(state.gradeAssignments);
+                window.console.log( 'gradeAssignments.test', '', 245, letters );
+                let problemKey = faker.random.arrayElement( letters );
+                let problemIndex = letters.indexOf( problemKey );
+                window.console.log( 'gradeAssignments.test', '', 248, problemKey);
+                // let neighbor = problemIndex > 0 ? state.gradeAssignments[ problemIndex - 1 ]
+                let neighborKey = letters[ problemIndex + 1 ];
+                //we set the problem element min score, lower than its neighbor's
+                state.gradeAssignments[problemKey].minScore = state.gradeAssignments[neighborKey].minScore - 1;
+
+                //call
+                let result = getters[ gTypes.getInconsistentCutOffs ]( state, getters );
+
+                //check
+                expect( result.length > 0 ).toBe( true );
+
+
+            } );
+
+            it( " behaves properly when there are two inconsistencies, separated by at least one value ", () => {
+
+            } );
+
 
         } );
 
@@ -249,17 +303,38 @@ describe.only( "gradeAssignments  ", () => {
 
 
         describe( gTypes.getMaxPossibleScore, () => {
-            it( " computes the max score from the minScores of all the loaded items " );
+            it( " computes the max score from the minScores of all the loaded items ", () => {
+
+                let numItems = 5;
+                let expectedTotal = 0;
+                let items = [];
+                //create items
+                for (let i = 0; i < numItems; i++) {
+                    let max = numItems + i;
+                    items.push( Item.factory( { maxScore: max } ) );
+                    expectedTotal += max;
+                }
+                //we can't stub this because the test is not invoking vue
+                //so it doesn't realize the stub is supposed to be a function
+                // let getterStub = sinon.stub();
+                // getterStub.returns(items);
+                getters[ gTypes.getAllItems ] = items; // getterStub;
+
+                //call
+                let result = getters[ gTypes.getMaxPossibleScore ]( {}, getters, {} );
+
+                //check
+                // expect(getterStub.callCount).toBe(1);
+                expect( result ).toBe( expectedTotal );
+            } );
         } );
 
 
     } );//getters
 
 
-    describe.only( " actions ", () => {
-        let commit;
+    describe( " actions ", () => {
         beforeEach( () => {
-            commit[ 'replaceGradeAssignments' ] = sinon.spy();
         } );
         describe( aTypes.loadGradeAssignmentsFromServerData, () => {
             it( " correctly parses the data and calls mutations  ", () => {
@@ -267,11 +342,9 @@ describe.only( "gradeAssignments  ", () => {
                 let payload = makeFakeServerResponse();
 
                 //call
-                actions[ aTypes.loadGradeAssignmentsFromServerData ]( {}, {}, commit, {}, payload );
-
-                //check
-                expect( commit.replaceGradeAssignments.callCount ).toBe( 1 );
-                expect( commit.replaceGradeAssignments.args.className ).toBe( 'gradeAssignment' );
+                testAction( actions[ aTypes.loadGradeAssignmentsFromServerData ], payload, {}, [
+                    { type: 'replaceGradeAssignments' }
+                ], { verbose: true } );
 
             } );
         } );
@@ -280,102 +353,3 @@ describe.only( "gradeAssignments  ", () => {
 
 
 } );
-//
-//     describe( "mutations | ", function () {
-//         describe( description( mTypes.setItem ), function () {
-//
-//             describe( "no preexisting | ", function () {
-//                 describe( "payload is Payload | ", function () {
-//
-//                     //This is the main use case
-//                     it( "happy path", function () {
-//                         let payload = Payload.factory( { obj: this.item } );
-//
-//                         //call
-//                         mutations[ mTypes.setItem ]( this.state, payload );
-//
-//                         //check
-//                         //expect( state.items[ item.index ] ).toBe( item );
-//                         expect( this.state.items[ this.item.index ] ).toBe( this.item );
-//                     } );
-//
-//                     describe( 'unhappy paths | ', function () {
-//                         it( "payload.obj not Item | ", function () {
-//
-//                             // mutations[ mTypes.setItem ]( this.state, this.mutationPayload );
-//                             // console.log( 'addItems', this.state.items , this.mutationPayload.index);
-//                             // expect( this.state.items[ this.mutationPayload.index] ).toBe( this.mutationPayload.obj );
-//                             // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
-//                             // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
-//                         } );
-//
-//
-//                     } );
-//
-//                 } );
-//
-//                 describe( " payload is Item", function () {
-//                     // it( "happy path", function () {
-//                     //     //call
-//                     //     mutations[ mTypes.setItem ]( this.state, this.item );
-//                     //
-//                     //     //check
-//                     //     expect( this.state.items[ this.item.index ] ).toBe( this.item );
-//                     //     // expect( this.state.items[ item.index ] ).toBe( item );
-//                     // } );
-//                     //
-//                     // describe( "unhappy paths | ", function () {
-//                     // } );
-//                 } );
-//
-//             } );
-//         } );
-//         describe( description( mTypes.addItemIndexMapping ), function () {
-//             it( "happy path ", function () {
-//
-//                 //call
-//                 mutations[ mTypes.addItemIndexMapping ]( this.state, this.rootState, this.mutationPayload );
-//
-//                 //check
-//                 expect( this.state.indexMap.get( this.mutationPayload.index ) ).toBe( this.mutationPayload.id );
-//             } );
-//
-//             describe( "unhappy paths | ", function () {
-//                 xit( "payload does not contain index  | ", function () {
-//                     // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
-//                     // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
-//                 } );
-//
-//                 xit( "payload does not contain id  | ", function () {
-//                     // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
-//                     // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
-//                 } );
-//             } );
-//         } );
-//
-//         describe( description( mTypes.loadItems ), function () {
-//             xit( "happy path | ", function () {
-//                 //todo
-//             } );
-//         } );
-//
-//         describe( description( mTypes.addNewItem ), function () {
-//             it( "happy path", function () {
-//                 let prevLen = this.state.itemsRepo.length;
-//                 //call
-//                 mutations[ mTypes.addNewItem ]( this.state );
-//
-//                 //check
-//                 //expect( state.items[ item.index ] ).toBe( item );
-//                 let r = this.state.itemsRepo[ prevLen + 1 ];
-//                 // expect( this.state.itemsRepo.length ).toBe( prevLen + 1 );
-//                 expect( r.index ).toBe( prevLen + 1 );
-// //                            expect( this.state.items.get( this.item.index ) ).toBe( this.item );
-//             } );
-//
-//             describe( 'unhappy paths | ', function () {
-//             } );
-//         } );
-//     } );
-//
-

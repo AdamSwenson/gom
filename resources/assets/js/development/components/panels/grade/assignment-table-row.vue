@@ -27,7 +27,7 @@
     import * as gTypes from '../../../../store/getter-types';
     import Payload from '../../../../models/Payload';
 
-    import cutoffEntry from './cutoff-field';
+    import cutoffEntry from './cutoff-field.vue';
 
     export default {
 

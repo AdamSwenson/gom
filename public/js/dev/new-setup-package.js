@@ -972,7 +972,7 @@ var getGradeAssignments = exports.getGradeAssignments = 'getGradeAssignments';
 var getGradeAssignmentsInSortedList = exports.getGradeAssignmentsInSortedList = 'getGradeAssignmentsInSortedList';
 var getTotalScores = exports.getTotalScores = 'getTotalScores';
 var getGradeFrequencies = exports.getGradeFrequencies = 'getGradeFrequencies';
-var getGradeForScore = exports.getGradeForScore = 'getGradeForScore';
+var getGradeAssignmentForScore = exports.getGradeAssignmentForScore = 'getGradeAssignmentForScore';
 var getMaxPossibleScore = exports.getMaxPossibleScore = 'getMaxPossibleScore';
 var getInconsistentCutOffs = exports.getInconsistentCutOffs = 'getInconsistentCutOffs';
 var getListOfGradeValues = exports.getListOfGradeValues = 'getListOfGradeValues';
@@ -37047,9 +37047,12 @@ var GradeAssignment = function (_IModel) {
                 g[grade.displayValue] = GradeAssignment.factory({
                     displayValue: grade.displayValue,
                     calcValue: grade.calcValue,
-                    minScore: grade.minScore
+                    minScore: grade.minScore,
+                    group: grade.group,
+                    ordinal: grade.ordinal
                 });
             });
+
             return g;
         }
 
@@ -37098,7 +37101,7 @@ var GradeAssignment = function (_IModel) {
     }, {
         key: 'defaults',
         get: function get() {
-            return [{ displayValue: 'A+', calcValue: 98, minScore: 97 }, { displayValue: 'A', calcValue: 95, minScore: 93 }, { displayValue: 'A-', calcValue: 92, minScore: 90 }, { displayValue: 'B+', calcValue: 88, minScore: 87 }, { displayValue: 'B', calcValue: 85, minScore: 83 }, { displayValue: 'B-', calcValue: 82, minScore: 80 }, { displayValue: 'C+', calcValue: 78, minScore: 77 }, { displayValue: 'C', calcValue: 75, minScore: 73 }, { displayValue: 'C-', calcValue: 72, minScore: 70 }, { displayValue: 'D+', calcValue: 68, minScore: 67 }, { displayValue: 'D', calcValue: 65, minScore: 63 }, { displayValue: 'D-', calcValue: 62, minScore: 60 }, { displayValue: 'F', calcValue: 55, minScore: 50 }];
+            return [{ displayValue: 'A+', calcValue: 98, minScore: 97, group: 0, ordinal: 0 }, { displayValue: 'A', calcValue: 95, minScore: 93, group: 0, ordinal: 1 }, { displayValue: 'A-', calcValue: 92, minScore: 90, group: 0, ordinal: 2 }, { displayValue: 'B+', calcValue: 88, minScore: 87, group: 0, ordinal: 3 }, { displayValue: 'B', calcValue: 85, minScore: 83, group: 0, ordinal: 4 }, { displayValue: 'B-', calcValue: 82, minScore: 80, group: 0, ordinal: 5 }, { displayValue: 'C+', calcValue: 78, minScore: 77, group: 0, ordinal: 6 }, { displayValue: 'C', calcValue: 75, minScore: 73, group: 0, ordinal: 7 }, { displayValue: 'C-', calcValue: 72, minScore: 70, group: 0, ordinal: 8 }, { displayValue: 'D+', calcValue: 68, minScore: 67, group: 0, ordinal: 9 }, { displayValue: 'D', calcValue: 65, minScore: 63, group: 0, ordinal: 10 }, { displayValue: 'D-', calcValue: 62, minScore: 60, group: 0, ordinal: 11 }, { displayValue: 'F', calcValue: 55, minScore: 50, group: 0, ordinal: 12 }];
         }
     }, {
         key: 'fillableProps',
@@ -49549,9 +49552,9 @@ exports.default = {
         },
 
         averageLetter: function averageLetter() {
-            var letter = this.$store.getters[gTypes.getGradeForScore](this.average);
-            if (_.isUndefined(letter)) return '';
-            return '( ' + letter + ')';
+            var ga = this.$store.getters[gTypes.getGradeAssignmentForScore](this.average);
+            if (_.isUndefined(ga)) return '';
+            return '( ' + ga.displayValue + ' )';
         },
 
         count: function count() {
@@ -49578,9 +49581,9 @@ exports.default = {
         },
 
         medianLetter: function medianLetter() {
-            var letter = this.$store.getters[gTypes.getGradeForScore](this.median);
-            if (_.isUndefined(letter)) return '';
-            return '( ' + letter + ')';
+            var ga = this.$store.getters[gTypes.getGradeAssignmentForScore](this.median);
+            if (_.isUndefined(ga)) return '';
+            return '( ' + ga.displayValue + ')';
         },
 
         standardDeviation: function standardDeviation() {
@@ -49987,7 +49990,7 @@ exports.default = {
 
         // returns grade letter -- this is shoddy because it does the same loop as getColorForGrade.
         getLetterForScore: function getLetterForScore(score) {
-            var ga = this.$store.getters[gTypes.getGradeForScore](score);
+            var ga = this.$store.getters[gTypes.getGradeAssignmentForScore](score);
             if (!_.isUndefined(ga)) return ga.displayValue;
         },
         getLetterForGrade: function getLetterForGrade(score) {
@@ -50189,43 +50192,6 @@ exports.default = {
                 var p2 = me.$store.dispatch(aTypes.loadGradeAssignmentsFromServerData, data);
             });
         },
-
-        //the load action itself returns a promise
-        //once that promise has fulfilled, we return
-        //the data, using the getter
-        // p2.then(function(data){
-        //     return me.$store.getters(gTypes.getGradeAssignments);
-        // });
-        //                     _.forEach( data, function ( d ) {
-        // //                        window.console.log( 'grades-panel', 'gradesAjax', 73, d);
-        //                         //get the correct grade assignment
-        //                         let ga = me.$store.getters[ gTypes.getCutOffsForLetterGrade ]( d.letterGrade );
-        //                         //update with the server id
-        //                         let pl = Payload.factory( {
-        //                             obj: ga,
-        //                             updateProp: 'id',
-        //                             updateVal: d[ 'id' ],
-        //                             mutateSilently: true
-        //                         } );
-        //                         me.$store.commit( mTypes.updateGradeCutoffs, pl );
-        //
-        //                         //and update the minScore
-        //                         let pl2 = Payload.factory( {
-        //                             obj: ga,
-        //                             updateProp: 'minScore',
-        //                             updateVal: d[ 'minScore' ],
-        //                             mutateSilently: true
-        //                         } );
-        //                         me.$store.commit( mTypes.updateGradeCutoffs, pl2 );
-        //
-        //                         let pl3 = Payload.factory( {
-        //                             obj: ga,
-        //                             updateProp: 'displayValue',
-        //                             updateVal: d[ 'displayValue' ],
-        //                             mutateSilently: true
-        //                         } );
-        //                         me.$store.commit( mTypes.updateGradeCutoffs, pl3 );
-
 
         totalScores: function totalScores() {
             var me = this;
@@ -58694,6 +58660,7 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.gradeGetterForScore = undefined;
 
 var _mutations, _actions, _getters;
 
@@ -58791,7 +58758,7 @@ var sortGradeAssignments = function sortGradeAssignments(gradeAssignments) {
     }(gradeAssignments, ascending);
 };
 
-var gradeGetterForScore = function gradeGetterForScore(gradeAssignments, score) {
+var gradeGetterForScore = exports.gradeGetterForScore = function gradeGetterForScore(gradeAssignments, score) {
     return function (gradeAssignments, score) {
         var assignments = sortGradeAssignments(state.gradeAssignments, false);
 
@@ -58869,6 +58836,8 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradeAssignme
         commit = _ref2.commit,
         getters = _ref2.getters;
 
+    // NEITHER USED NOR FUNCTIONAL; HERE IN CASE WE NEED IT IN FUTURE
+
     //validate that adding this value won't mess
     //up the proper ordering of the scores
 
@@ -58880,11 +58849,11 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradeAssignme
     }
 }), _actions);
 
-var getters = (_getters = {}, _defineProperty(_getters, gTypes.getCutOffsForLetterGrade, function (state, getters, rootState, letterGrade) {
-    return function (letterGrade) {
-        return function () {
-            return state.gradeAssignments[letterGrade];
-        }(letterGrade);
+var getters = (_getters = {}, _defineProperty(_getters, gTypes.getGradeAssignmentForScore, function (state, getters, rootState, score) {
+    return function (score) {
+        return function (score) {
+            return gradeGetterForScore(state.gradeAssignments, score);
+        }(score);
     };
 }), _defineProperty(_getters, gTypes.getGradeAssignments, function (state, getters, rootState) {
     return state.gradeAssignments;
@@ -58920,19 +58889,16 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.getCutOffsForLett
     });
 
     return gradeFrequency;
-}), _defineProperty(_getters, gTypes.getGradeForScore, function (state, getters, rootState, score) {
-    return function (score) {
-        return function (score) {
-            // window.console.log( 'gradeAssignments', 'score', 253, score);
-            return gradeGetterForScore(state.gradeAssignments, score);
-        }(score);
-    };
 }), _defineProperty(_getters, gTypes.getInconsistentCutOffs, function (state, getters) {
     var inconsistent = [];
-    for (var i = 0; i < state.gradeAssignments.length; i++) {
-        var prev = i === 0 ? 0 : i - 1;
-        var current = state.gradeAssignments[i];
-        if (current.minScore > prev.minScore) inconsistent.push(current);
+    var assignments = _.values(state.gradeAssignments);
+    for (var i = 0; i < assignments.length - 1; i++) {
+        //note that we need to stop before the last one (F)
+        var current = assignments[i];
+        var nextLower = assignments[i + 1];
+        window.console.log('gradeAssignments', '', 280, current, nextLower);
+        window.console.log('gradeAssignments', '', 280, nextLower.minScore, current.minScore);
+        if (nextLower.minScore > current.minScore) inconsistent.push(current);
     }
     return inconsistent;
 }), _defineProperty(_getters, gTypes.getListOfGradeValues, function (state, getters, rootState) {
@@ -58958,12 +58924,13 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.getCutOffsForLett
     }(state);
 }), _defineProperty(_getters, gTypes.getMaxPossibleScore, function (state, getters, rootState) {
     var score = 0;
-    var items = getters[[gTypes.getAllItems]];
+    var items = getters[gTypes.getAllItems];
 
-    _.forEach(items, function (item) {
-        score += !_.isUndefined(item.maxScore) ? item.maxScore : 0;
-    });
-
+    if (!_.isUndefined(items) && !_.isNull(items)) {
+        _.forEach(items, function (item) {
+            score += !_.isUndefined(item.maxScore) ? item.maxScore : 0;
+        });
+    }
     return score;
 }), _defineProperty(_getters, gTypes.getTotalScores, function (state, getters, rootState) {
     return state.totalScores;

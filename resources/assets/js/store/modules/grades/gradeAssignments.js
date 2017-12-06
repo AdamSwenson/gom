@@ -68,7 +68,7 @@ const sortGradeAssignments = ( gradeAssignments, ascending = true ) => {
     })( gradeAssignments, ascending )
 }
 
-const gradeGetterForScore = ( gradeAssignments, score ) => {
+export const gradeGetterForScore = ( gradeAssignments, score ) => {
     return (function ( gradeAssignments, score ) {
         let assignments = sortGradeAssignments( state.gradeAssignments, false );
 
@@ -108,6 +108,13 @@ const state = {
 };
 
 const mutations = {
+
+    /**
+     * Updates a property of a grade assignment object
+     *
+     * @param state
+     * @param payload
+     */
     [ mTypes.updateGradeCutoffs ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         Vue.set( payload.obj, payload.updateProp, payload.updateVal );
@@ -116,6 +123,11 @@ const mutations = {
     /**
      * Overwrites the existing grade assignments
      * with an new array (usually from server)
+     *
+     * This is not defined in gTypes because it
+     * really shouldn't need to be called except by the action
+     * in this file
+     *
      * @param state
      * @param payload
      */
@@ -174,71 +186,38 @@ const actions = {
         } );
     },
 
-//
-// //                        window.console.log( 'grades-panel', 'gradesAjax', 73, d);
-//                     //get the correct grade assignment
-//                     let ga = me.$store.getters[ gTypes.getCutOffsForLetterGrade ]( d.letterGrade );
-//                     //update with the server id
-//                     let pl = Payload.factory( {
-//                         obj: ga,
-//                         updateProp: 'id',
-//                         updateVal: d[ 'id' ],
-//                         mutateSilently: true
-//                     } );
-//                     me.$store.commit( mTypes.updateGradeCutoffs, pl );
-//
-//                     //and update the minScore
-//                     let pl2 = Payload.factory( {
-//                         obj: ga,
-//                         updateProp: 'minScore',
-//                         updateVal: d[ 'minScore' ],
-//                         mutateSilently: true
-//                     } );
-//                     me.$store.commit( mTypes.updateGradeCutoffs, pl2 );
-//
-//                     let pl3 = Payload.factory( {
-//                         obj: ga,
-//                         updateProp: 'displayValue',
-//                         updateVal: d[ 'displayValue' ],
-//                         mutateSilently: true
-//                     } );
-//                     me.$store.commit( mTypes.updateGradeCutoffs, pl3 );
+    [ aTypes.updateCutoff ]: ( { state, dispatch, commit, getters }, payload ) => {
+       // NEITHER USED NOR FUNCTIONAL; HERE IN CASE WE NEED IT IN FUTURE
 
-                // } );
+        //validate that adding this value won't mess
+        //up the proper ordering of the scores
 
+        if ( validateOrderingChange( payload ) ) {
+            //Call the mutation
+            commit( mTypes.updateGradeCutoffs, payload );
 
-            [ aTypes.updateCutoff ]: ( { state, dispatch, commit, getters }, payload ) => {
-            //validate that adding this value won't mess
-            //up the proper ordering of the scores
-
-            if ( validateOrderingChange( payload ) ) {
-                //Call the mutation
-                commit( mTypes.updateGradeCutoffs, payload );
-
-            } else {
-                //error handling
-            }
+        } else {
+            //error handling
         }
+    }
 
-    };
+};
 
 const getters = {
 
     /**
-     * Gets the minimum score for the represented letter grade
-     *
+     * Given a score, it returns the appropriate gradeAssignment object
      * @param state
      * @param getters
      * @param rootState
-     * @param letterGrade
+     * @param score
      * @returns {function(*=)}
      */
-    [ gTypes.getCutOffsForLetterGrade ]: ( state, getters, rootState, letterGrade ) => ( letterGrade ) => {
-        return (function () {
-            return state.gradeAssignments[ letterGrade ];
-        })( letterGrade )
+    [ gTypes.getGradeAssignmentForScore ]: ( state, getters, rootState, score ) => ( score ) => {
+        return (function ( score ) {
+            return gradeGetterForScore( state.gradeAssignments, score );
+        })( score );
     },
-
 
     [ gTypes.getGradeAssignments ]: ( state, getters, rootState ) => {
         return state.gradeAssignments;
@@ -290,28 +269,17 @@ const getters = {
 
     },
 
-    /**
-     * Given a score, it returns the appropriate gradeAssignment object
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param score
-     * @returns {function(*=)}
-     */
-    [ gTypes.getGradeForScore ]: ( state, getters, rootState, score ) => ( score ) => {
-        return (function ( score ) {
-            // window.console.log( 'gradeAssignments', 'score', 253, score);
-            return gradeGetterForScore( state.gradeAssignments, score );
-        })( score );
-    },
 
 
     [ gTypes.getInconsistentCutOffs ]: ( state, getters ) => {
         let inconsistent = [];
-        for (let i = 0; i < state.gradeAssignments.length; i++) {
-            let prev = i === 0 ? 0 : i - 1;
-            let current = state.gradeAssignments[ i ];
-            if ( current.minScore > prev.minScore ) inconsistent.push( current );
+        let assignments = _.values(state.gradeAssignments);
+        for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
+            let current = assignments[ i ];
+            let nextLower = assignments[i + 1];
+            window.console.log( 'gradeAssignments', '', 280, current, nextLower);
+            window.console.log( 'gradeAssignments', '', 280, nextLower.minScore, current.minScore);
+            if ( nextLower.minScore  > current.minScore ) inconsistent.push( current );
         }
         return inconsistent;
     },
@@ -357,12 +325,13 @@ const getters = {
      */
     [ gTypes.getMaxPossibleScore ]: ( state, getters, rootState ) => {
         let score = 0;
-        let items = getters[ [ gTypes.getAllItems ] ];
+        let items = getters[ gTypes.getAllItems ];
 
-        _.forEach( items, function ( item ) {
-            score += !_.isUndefined( item.maxScore ) ? item.maxScore : 0;
-        } );
-
+        if(! _.isUndefined(items) && ! _.isNull(items)) {
+            _.forEach( items, function ( item ) {
+                score += !_.isUndefined( item.maxScore ) ? item.maxScore : 0;
+            } );
+        }
         return score;
     },
 
