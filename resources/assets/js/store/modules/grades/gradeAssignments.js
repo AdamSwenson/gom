@@ -86,6 +86,20 @@ export const gradeGetterForScore = ( gradeAssignments, score ) => {
     })( gradeAssignments, score )
 }
 
+export const updateInconsistentList = ( state ) => {
+    let inconsistent = [];
+    // let sortedAssignments = sortGradeAssignments(state.gradeAssignments);
+    // let assignments = _.values( sortedAssignments  );
+    let assignments = _.values( state.gradeAssignments  );
+    assignments = _.sortBy(state.gradeAssignments, 'ordinal');
+    for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
+        let current = assignments[ i ];
+        let nextLower = assignments[ i + 1 ];
+        if ( nextLower.minScore > current.minScore ) inconsistent.push( current );
+    }
+    Vue.set(state, 'inconsistent', inconsistent);
+};
+
 const state = {
 
     /**
@@ -93,7 +107,7 @@ const state = {
      * letter grade on an exam
      */
     gradeAssignments: (function () {
-        return GradeAssignment.initialize();
+        return sortGradeAssignments(GradeAssignment.initialize());
     })(),
 
     totalScores: [],
@@ -102,8 +116,12 @@ const state = {
      * A list of the calcValues of each grade
      * based on a score and the current distribution
      */
-    gradeValues: []
+    gradeValues: [],
 
+    /** Keeping the list of inconsistent grade assignments here
+     * so that can dynamically update stuff
+     */
+    inconsistent : []
 
 };
 
@@ -118,6 +136,8 @@ const mutations = {
     [ mTypes.updateGradeCutoffs ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         Vue.set( payload.obj, payload.updateProp, payload.updateVal );
+
+        updateInconsistentList(state);
     },
 
     /**
@@ -133,6 +153,8 @@ const mutations = {
      */
     replaceGradeAssignments: ( state, payload ) => {
         Vue.set( state, 'gradeAssignments', payload.obj );
+        updateInconsistentList(state);
+
     },
 
     /**
@@ -146,7 +168,10 @@ const mutations = {
      */
     [ mTypes.loadTotalScores ]: ( state, payload ) => {
         state.totalScores = sortTotalScores( payload.updateVal );
-    }
+    },
+
+
+
 
 };
 
@@ -200,6 +225,7 @@ const actions = {
             //error handling
         }
     }
+
 
 };
 
@@ -272,16 +298,15 @@ const getters = {
 
 
     [ gTypes.getInconsistentCutOffs ]: ( state, getters ) => {
-        let inconsistent = [];
-        let assignments = _.values(state.gradeAssignments);
-        for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
-            let current = assignments[ i ];
-            let nextLower = assignments[i + 1];
-            window.console.log( 'gradeAssignments', '', 280, current, nextLower);
-            window.console.log( 'gradeAssignments', '', 280, nextLower.minScore, current.minScore);
-            if ( nextLower.minScore  > current.minScore ) inconsistent.push( current );
-        }
-        return inconsistent;
+       return state.inconsistent;
+        // let inconsistent = [];
+        // let assignments = _.values(getters[gTypes.getGradeAssignments]);
+        // for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
+        //     let current = assignments[ i ];
+        //     let nextLower = assignments[i + 1];
+        //     if ( nextLower.minScore  > current.minScore ) inconsistent.push( current );
+        // }
+        // return inconsistent;
     },
 
     /**

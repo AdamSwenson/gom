@@ -75,7 +75,7 @@
                     let pl = Payload.factory( {
                         obj: this.grade,
                         updateProp: 'minScore',
-                        updateVal: v
+                        updateVal: Number.parseFloat(v)
                     } );
                     this.$store.commit( mTypes.updateGradeCutoffs, pl );
                 }

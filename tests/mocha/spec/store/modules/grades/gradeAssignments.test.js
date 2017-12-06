@@ -146,6 +146,7 @@ describe.only( "gradeAssignments  ", () => {
     let freq;
     let scores;
     let state;
+    let letters;
     // let getters, actions, mutations;
 
     beforeEach( () => {
@@ -162,8 +163,12 @@ describe.only( "gradeAssignments  ", () => {
         } );
         state = {
             gradeAssignments: GradeAssignment.initialize(),
-            totalScores: scores
+            totalScores: scores,
+            inconsistent: []
         };
+
+        letters = _.keys( state.gradeAssignments );
+
     } );
 
     describe( " test environment is set up correctly ", () => {
@@ -183,12 +188,37 @@ describe.only( "gradeAssignments  ", () => {
         describe( " sortGradeAssignments ", () => {
 
         } );
+
+        describe( " updateInconsistentList ", () => {
+
+            // beforeEach( () => {
+            //     letters = _.keys( state.gradeAssignments );
+            // } );
+
+            it( " behaves properly when there are no inconsistencies ", () => {
+                Component.updateInconsistentList( state );
+                expect( state.inconsistent.length ).toBe( 0 );
+            } );
+
+            it( " behaves properly (easy) ", () => {
+
+                let problemKey = faker.random.arrayElement( letters );
+                if ( problemKey === 'A+' ) problemKey = 'B-';
+
+                state.gradeAssignments[ problemKey ].minScore = 1000000007;
+                Component.updateInconsistentList( state );
+
+                //check
+                expect( state.inconsistent.length > 0 ).toBe( true );
+
+            } );
+
+
+        } );
     } );
 
     describe( "getters", () => {
-        beforeEach( () => {
-
-        } );
+        beforeEach( () => {} );
 
         // describe( gTypes.getCutOffsForLetterGrade, () => {
         //
@@ -197,7 +227,6 @@ describe.only( "gradeAssignments  ", () => {
         //     } );
         //
         // } );
-
 
         describe( gTypes.getGradeAssignmentForScore, () => {
             it( " the underlying helper function returns correct grade object", () => {
@@ -233,55 +262,21 @@ describe.only( "gradeAssignments  ", () => {
 
         } );
 
-        describe( gTypes.getInconsistentCutOffs, () => {
-            let letters;
 
-            beforeEach( (  ) => {
-               letters = _.keys(state.gradeAssignments);
-            });
+        describe( gTypes.getInconsistentCutOffs, () => {
 
             it( " behaves properly when there are no inconsistencies ", () => {
                 let result = getters[ gTypes.getInconsistentCutOffs ]( state, getters );
                 expect( result.length ).toBe( 0 );
             } );
 
-        it( " behaves properly (easy) ", (  ) => {
-            let problemKey = faker.random.arrayElement( letters );
-            if(problemKey === 'A+') problemKey = 'B-';
-
-            state.gradeAssignments[problemKey].minScore = 1000000007;
-            let result = getters[ gTypes.getInconsistentCutOffs ]( state, getters );
-            //check
-            expect( result.length > 0 ).toBe( true );
-
-        });
-
-
-            it( " behaves properly when there is one inconsistency ", () => {
-let letters = _.keys(state.gradeAssignments);
-                window.console.log( 'gradeAssignments.test', '', 245, letters );
+            it( " behaves properly when there is an inconsistency ", () => {
                 let problemKey = faker.random.arrayElement( letters );
-                let problemIndex = letters.indexOf( problemKey );
-                window.console.log( 'gradeAssignments.test', '', 248, problemKey);
-                // let neighbor = problemIndex > 0 ? state.gradeAssignments[ problemIndex - 1 ]
-                let neighborKey = letters[ problemIndex + 1 ];
-                //we set the problem element min score, lower than its neighbor's
-                state.gradeAssignments[problemKey].minScore = state.gradeAssignments[neighborKey].minScore - 1;
-
-                //call
+                state.inconsistent.push( state.gradeAssignments[ problemKey ] );
                 let result = getters[ gTypes.getInconsistentCutOffs ]( state, getters );
-
-                //check
-                expect( result.length > 0 ).toBe( true );
-
-
+                expect( result.length ).toBe( 1 );
+                expect( result[ 0 ] ).toBe( state.gradeAssignments[ problemKey] );
             } );
-
-            it( " behaves properly when there are two inconsistencies, separated by at least one value ", () => {
-
-            } );
-
-
         } );
 
 
@@ -351,5 +346,66 @@ let letters = _.keys(state.gradeAssignments);
 
     } );
 
+    describe( " mutations ", () => {
+        describe( mTypes.updateGradeCutoffs, () => {
 
+            // beforeEach( () => {c} );
+
+            it( " behaves properly when there are no inconsistencies ", () => {
+                let alteredKey = faker.random.arrayElement( letters );
+                let obj = state.gradeAssignments[ alteredKey ];
+                let payload = Payload.factory( { obj: obj, updateProp: 'minScore', updateVal: obj.minScore + 1 } )
+
+                //call
+                mutations[ mTypes.updateGradeCutoffs ]( state, payload );
+                //check
+                //the value updated as expected
+                expect( obj.minScore ).toBe( payload.updateVal );
+                //the inconsistent list was not altered
+                expect( state.inconsistent.length ).toBe( 0 );
+            } );
+
+            it( " behaves properly when there is one inconsistency ( value is too high for position) ", () => {
+                let problemKey = faker.random.arrayElement( letters );
+                if ( problemKey === 'A+' ) problemKey = 'B-';
+                let obj = state.gradeAssignments[ problemKey ];
+                let payload = Payload.factory( { obj: obj, updateProp: 'minScore', updateVal: 1000000007 } )
+
+                //call
+                mutations[ mTypes.updateGradeCutoffs ]( state, payload );
+
+                //check
+                //the mutation itself still happened
+                expect( obj.minScore ).toBe( payload.updateVal );
+                //the grade was recorded as inconsistent
+                expect( state.inconsistent.length === 1 ).toBe( true );
+                //since the value was too high, the newly inconsistent object
+                //should be the changed object's higher neighbor. We can check via the
+                //ordinal property
+                expect( state.inconsistent[ 0 ].ordinal ).toBe( obj.ordinal - 1 );
+            } );
+
+            it( " behaves properly when there is one inconsistency ( value is too low for position) ", () => {
+                let problemKey = faker.random.arrayElement( letters );
+                if ( problemKey === 'A+' ) problemKey = 'B-';
+                let obj = state.gradeAssignments[ problemKey ];
+                let payload = Payload.factory( { obj: obj, updateProp: 'minScore', updateVal: 0 } )
+
+                //call
+                mutations[ mTypes.updateGradeCutoffs ]( state, payload );
+
+                //check
+                //the mutation itself still happened
+                expect( obj.minScore ).toBe( payload.updateVal );
+                //the grade was recorded as inconsistent
+                expect( state.inconsistent.length === 1 ).toBe( true );
+                //since the value was too low, the newly inconsistent object
+                //should be the changed object itself.
+                expect( state.inconsistent[ 0 ] ).toBe( obj );
+
+            } );
+
+        } );
+
+    } );
 } );

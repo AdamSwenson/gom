@@ -92,9 +92,8 @@
 
             averageLetter: function () {
                 let ga = this.$store.getters[ gTypes.getGradeAssignmentForScore ]( this.average );
-                if ( _.isUndefined( ga ) ) return '';
-                return '( ' + ga.displayValue + ' )';
-            },
+                return this.formatLetterForDisplay(ga);
+                },
 
             count: function () {
                 return _.size( this.listOfValues );
@@ -121,9 +120,8 @@
 
             medianLetter: function () {
                 let ga = this.$store.getters[ gTypes.getGradeAssignmentForScore ]( this.median );
-                if ( _.isUndefined( ga ) ) return '';
-                return '( ' + ga.displayValue + ')';
-            },
+                return this.formatLetterForDisplay(ga);
+                 },
 
             standardDeviation: function () {
                 var avg = _.mean( this.listOfValues );
@@ -146,6 +144,11 @@
         methods: {
             formatForDisplay: function ( value ) {
                 return _.round( value, 2 );
+            },
+
+            formatLetterForDisplay: function ( gradeAssignment ) {
+                if ( _.isUndefined( gradeAssignment ) ) return '';
+                return '( ' + gradeAssignment.displayValue + ' )';
             }
         },
 

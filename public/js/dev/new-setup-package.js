@@ -49293,6 +49293,10 @@ exports.default = {
     },
 
     computed: {
+        styling: function styling() {
+            if (this.isInconsistent) return 'is-selected';
+            return '';
+        },
 
         freqs: function freqs() {
             return this.$store.getters[gTypes.getGradeFrequencies];
@@ -49331,6 +49335,7 @@ exports.default = {
 
     mounted: function mounted() {}
 }; //
+//
 //
 //
 //
@@ -49453,7 +49458,7 @@ exports.default = {
                 var pl = _Payload2.default.factory({
                     obj: this.grade,
                     updateProp: 'minScore',
-                    updateVal: v
+                    updateVal: Number.parseFloat(v)
                 });
                 this.$store.commit(mTypes.updateGradeCutoffs, pl);
             }
@@ -49553,8 +49558,7 @@ exports.default = {
 
         averageLetter: function averageLetter() {
             var ga = this.$store.getters[gTypes.getGradeAssignmentForScore](this.average);
-            if (_.isUndefined(ga)) return '';
-            return '( ' + ga.displayValue + ' )';
+            return this.formatLetterForDisplay(ga);
         },
 
         count: function count() {
@@ -49582,8 +49586,7 @@ exports.default = {
 
         medianLetter: function medianLetter() {
             var ga = this.$store.getters[gTypes.getGradeAssignmentForScore](this.median);
-            if (_.isUndefined(ga)) return '';
-            return '( ' + ga.displayValue + ')';
+            return this.formatLetterForDisplay(ga);
         },
 
         standardDeviation: function standardDeviation() {
@@ -49606,6 +49609,11 @@ exports.default = {
     methods: {
         formatForDisplay: function formatForDisplay(value) {
             return _.round(value, 2);
+        },
+
+        formatLetterForDisplay: function formatLetterForDisplay(gradeAssignment) {
+            if (_.isUndefined(gradeAssignment)) return '';
+            return '( ' + gradeAssignment.displayValue + ' )';
         }
     },
 
@@ -49680,6 +49688,19 @@ exports.default = {
     data: function data() {
         return {
             chartDivId: 'gradeFreqChart',
+
+            chartOptions: {
+                chart: { title: 'Grade Distribution' },
+                vAxis: { title: 'Count', format: '#' },
+                hAxis: { title: 'Grade' },
+                chartArea: { 'width': '80%', 'height': '70%' },
+                legend: { position: 'none' },
+                animation: {
+                    duration: 600,
+                    startup: "true"
+                }
+            },
+
             defaults: {}
         };
     },
@@ -49747,25 +49768,25 @@ exports.default = {
 
         // displays the grade frequency chart
         drawChart: function drawChart() {
+            if (_.isUndefined(_googleCharts.GoogleCharts.api.visualization)) return false;
+
             var data = _googleCharts.GoogleCharts.api.visualization.arrayToDataTable(this.freqChartData);
 
-            var options = {
-                chart: { title: 'Grade Distribution' },
-                vAxis: { title: 'Count', format: '#' },
-                hAxis: { title: 'Grade' },
-                chartArea: { 'width': '80%', 'height': '70%' },
-                legend: { position: 'none' },
-                animation: {
-                    duration: 600,
-                    startup: "true"
-                }
-            };
+            /**
+             * The chart drawing object
+             *
+             * For some reason, probably related to how this.el and this.$el work,
+             * instantiating it like this:
+             *      var chart = new GoogleCharts.api.visualization.ColumnChart( this.$el )
+             * seemed to cause harmless but console cluttering error messages. However,
+             * the problem briefly reappeared and disappeared while this was changed. So may
+             * not have been the cause
+             *
+             * @type {google.visualization.ColumnChart}
+             */
+            var chart = new _googleCharts.GoogleCharts.api.visualization.ColumnChart(document.getElementById('gradeFreqChart'));
 
-            var chart = new _googleCharts.GoogleCharts.api.visualization.ColumnChart(this.$el); //document.getElementById( 'gradeFreqChart' ) );
-
-            // var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( 'gradeFreqChart' ) );
-
-            chart.draw(data, options);
+            chart.draw(data, this.chartOptions);
         }
 
     },
@@ -49778,7 +49799,9 @@ exports.default = {
         var me = this;
         this.$nextTick(function () {
             //Load the charts library with a callback
-            _googleCharts.GoogleCharts.load(me.drawChart);
+            _googleCharts.GoogleCharts.load(function () {
+                return me.drawChart;
+            }());
         });
     }
 }; //
@@ -58660,7 +58683,7 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.gradeGetterForScore = undefined;
+exports.updateInconsistentList = exports.gradeGetterForScore = undefined;
 
 var _mutations, _actions, _getters;
 
@@ -58776,6 +58799,21 @@ var gradeGetterForScore = exports.gradeGetterForScore = function gradeGetterForS
     }(gradeAssignments, score);
 };
 
+var updateInconsistentList = exports.updateInconsistentList = function updateInconsistentList(state) {
+    var inconsistent = [];
+    // let sortedAssignments = sortGradeAssignments(state.gradeAssignments);
+    // let assignments = _.values( sortedAssignments  );
+    var assignments = _.values(state.gradeAssignments);
+    assignments = _.sortBy(state.gradeAssignments, 'ordinal');
+    for (var i = 0; i < assignments.length - 1; i++) {
+        //note that we need to stop before the last one (F)
+        var current = assignments[i];
+        var nextLower = assignments[i + 1];
+        if (nextLower.minScore > current.minScore) inconsistent.push(current);
+    }
+    _vue2.default.set(state, 'inconsistent', inconsistent);
+};
+
 var state = {
 
     /**
@@ -58783,7 +58821,7 @@ var state = {
      * letter grade on an exam
      */
     gradeAssignments: function () {
-        return _GradeAssignment2.default.initialize();
+        return sortGradeAssignments(_GradeAssignment2.default.initialize());
     }(),
 
     totalScores: [],
@@ -58792,15 +58830,23 @@ var state = {
      * A list of the calcValues of each grade
      * based on a score and the current distribution
      */
-    gradeValues: []
+    gradeValues: [],
+
+    /** Keeping the list of inconsistent grade assignments here
+     * so that can dynamically update stuff
+     */
+    inconsistent: []
 
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateGradeCutoffs, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     _vue2.default.set(payload.obj, payload.updateProp, payload.updateVal);
+
+    updateInconsistentList(state);
 }), _defineProperty(_mutations, 'replaceGradeAssignments', function replaceGradeAssignments(state, payload) {
     _vue2.default.set(state, 'gradeAssignments', payload.obj);
+    updateInconsistentList(state);
 }), _defineProperty(_mutations, mTypes.loadTotalScores, function (state, payload) {
     state.totalScores = sortTotalScores(payload.updateVal);
 }), _mutations);
@@ -58890,17 +58936,15 @@ var getters = (_getters = {}, _defineProperty(_getters, gTypes.getGradeAssignmen
 
     return gradeFrequency;
 }), _defineProperty(_getters, gTypes.getInconsistentCutOffs, function (state, getters) {
-    var inconsistent = [];
-    var assignments = _.values(state.gradeAssignments);
-    for (var i = 0; i < assignments.length - 1; i++) {
-        //note that we need to stop before the last one (F)
-        var current = assignments[i];
-        var nextLower = assignments[i + 1];
-        window.console.log('gradeAssignments', '', 280, current, nextLower);
-        window.console.log('gradeAssignments', '', 280, nextLower.minScore, current.minScore);
-        if (nextLower.minScore > current.minScore) inconsistent.push(current);
-    }
-    return inconsistent;
+    return state.inconsistent;
+    // let inconsistent = [];
+    // let assignments = _.values(getters[gTypes.getGradeAssignments]);
+    // for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
+    //     let current = assignments[ i ];
+    //     let nextLower = assignments[i + 1];
+    //     if ( nextLower.minScore  > current.minScore ) inconsistent.push( current );
+    // }
+    // return inconsistent;
 }), _defineProperty(_getters, gTypes.getListOfGradeValues, function (state, getters, rootState) {
     return function (state) {
         var list = [];
@@ -88042,7 +88086,8 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('tr', {
-    staticClass: "assignment-table-row "
+    staticClass: "assignment-table-row ",
+    class: _vm.styling
   }, [_c('th', [_vm._v(_vm._s(_vm.letterGrade))]), _vm._v(" "), _c('td', [_c('cutoff-entry', {
     attrs: {
       "grade": _vm.grade

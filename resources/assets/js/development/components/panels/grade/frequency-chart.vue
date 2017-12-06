@@ -24,6 +24,20 @@
         data: function () {
             return {
                 chartDivId: 'gradeFreqChart',
+
+
+                chartOptions : {
+                    chart: { title: 'Grade Distribution' },
+                    vAxis: { title: 'Count', format: '#' },
+                    hAxis: { title: 'Grade' },
+                    chartArea: { 'width': '80%', 'height': '70%' },
+                    legend: { position: 'none' },
+                    animation: {
+                        duration: 600,
+                        startup: "true"
+                    }
+                },
+
                 defaults: {}
             }
         },
@@ -92,25 +106,25 @@
 
             // displays the grade frequency chart
             drawChart: function () {
+                if(_.isUndefined(GoogleCharts.api.visualization)) return false;
+
                 var data = GoogleCharts.api.visualization.arrayToDataTable( this.freqChartData );
 
-                var options = {
-                    chart: { title: 'Grade Distribution' },
-                    vAxis: { title: 'Count', format: '#' },
-                    hAxis: { title: 'Grade' },
-                    chartArea: { 'width': '80%', 'height': '70%' },
-                    legend: { position: 'none' },
-                    animation: {
-                        duration: 600,
-                        startup: "true"
-                    }
-                };
+                /**
+                 * The chart drawing object
+                 *
+                 * For some reason, probably related to how this.el and this.$el work,
+                 * instantiating it like this:
+                 *      var chart = new GoogleCharts.api.visualization.ColumnChart( this.$el )
+                 * seemed to cause harmless but console cluttering error messages. However,
+                 * the problem briefly reappeared and disappeared while this was changed. So may
+                 * not have been the cause
+                 *
+                 * @type {google.visualization.ColumnChart}
+                 */
+                var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( 'gradeFreqChart' ) );
 
-                var chart = new GoogleCharts.api.visualization.ColumnChart( this.$el ); //document.getElementById( 'gradeFreqChart' ) );
-
-                // var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( 'gradeFreqChart' ) );
-
-                chart.draw( data, options );
+                chart.draw( data, this.chartOptions );
             },
 
         },
@@ -123,8 +137,7 @@
             var me = this;
             this.$nextTick( function () {
                 //Load the charts library with a callback
-                GoogleCharts.load( me.drawChart );
-
+                GoogleCharts.load( (function(){return me.drawChart})() );
             } );
 
         }

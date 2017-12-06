@@ -1,5 +1,6 @@
 <template>
-    <tr class="assignment-table-row ">
+    <tr class="assignment-table-row "
+        v-bind:class="styling">
 
         <th>{{ letterGrade }}</th>
 
@@ -36,20 +37,23 @@
         ],
 
         components: {
-            'cutoff-entry' :cutoffEntry
+            'cutoff-entry': cutoffEntry
         },
 
         data: function () {
             return {
 
-            defaults: {}
+                defaults: {}
             }
         },
 
         computed: {
+            styling: function () {
+                if ( this.isInconsistent ) return 'is-selected';
+                return '';
+            },
 
-
-            freqs : function() {
+            freqs: function () {
                 return this.$store.getters[ gTypes.getGradeFrequencies ];
             },
 
@@ -57,12 +61,12 @@
              * If this is true, the min score is
              * out of order with its friends.
              */
-            isInconsistent : function(){
-                let inconsistentList = this.$store.getters[gTypes.getInconsistentCutOffs];
-                if(inconsistentList.indexOf(this.grade) >= 0) return true;
+            isInconsistent: function () {
+                let inconsistentList = this.$store.getters[ gTypes.getInconsistentCutOffs ];
+                if ( inconsistentList.indexOf( this.grade ) >= 0 ) return true;
             },
 
-            letterGrade : function (  ) {
+            letterGrade: function () {
                 return this.grade.displayValue;
             },
 
@@ -71,7 +75,7 @@
              * the present grade on the current assignment scheme
              */
             gradeFrequency: function () {
-                if(_.isUndefined(this.grade) || _.isUndefined(this.freqs)) return false;
+                if ( _.isUndefined( this.grade ) || _.isUndefined( this.freqs ) ) return false;
 
                 return this.freqs[ this.letterGrade ];
             }
