@@ -1,8 +1,9 @@
 <template>
     <div class="number-graded">
-        <p class="h4">Grading Progress</p>
         <div class="box">
-            <div v-if="isLoading"
+
+        <p class="h4">Grading Progress</p>
+              <div v-if="isLoading" class="loadingArea"
             >
                 <loading-indicator
                         :is-loading="isLoading"
@@ -10,7 +11,31 @@
             </div>
 
             <div class="number-graded-list"
-                 v-if="! isLoading"
+                 v-if="showTables">
+                <table class="table is-narrow">
+
+                    <stat-display-table-row>
+                        <div slot="label">To grade</div>
+                        <div slot="value">{{totalExams}}</div>
+                    </stat-display-table-row>
+
+                    <stat-display-table-row>
+                        <div slot="label">Graded</div>
+                        <div slot="value">{{examsGraded}}</div>
+                    </stat-display-table-row>
+
+                    <stat-display-table-row>
+                        <div slot="label">Remaining</div>
+                        <div slot="value">{{examsRemaining}}</div>
+                    </stat-display-table-row>
+
+                </table>
+
+            </div>
+
+
+            <div class="number-graded-list"
+                 v-if="showColumns"
             >
 
                 <stat-display>
@@ -22,7 +47,6 @@
                     <div slot="label">Graded</div>
                     <div slot="value">{{examsGraded}}</div>
                 </stat-display>
-
 
                 <stat-display>
                     <div slot="label">Remaining</div>
@@ -49,7 +73,8 @@
     import Payload from '../../../../models/Payload';
 
     import loadingIndicator from '../../helpers/loading-indicator.vue';
-import statDisplay from './stat-display.vue';
+    import statDisplay from './stat-display-columns.vue';
+    import StatDisplayTableRow from "./stat-display-table-row";
 
     export default {
 
@@ -58,13 +83,17 @@ import statDisplay from './stat-display.vue';
         ],
 
         components: {
+            StatDisplayTableRow,
             'loading-indicator': loadingIndicator,
-        'stat-display': statDisplay
+            'stat-display': statDisplay
         },
 
         data: function () {
             return {
                 isLoading: false,
+
+                format: 'table',
+                formats: [ 'columns', 'table' ],
 
                 defaults: {}
             }
@@ -78,14 +107,14 @@ import statDisplay from './stat-display.vue';
 
 //                if( _.isInteger(me.exam.numberStudents) && _.isInteger(me.exam.numberGraded)) return true;
 
-                    this.isLoading = true;
+                this.isLoading = true;
 
                 axios.get( route ).then( ( response ) => {
                     let pl = Payload.factory( {
                         mutateSilently: true,
                         obj: me.exam,
                         updateProp: 'numberStudents',
-                        updateVal: _.toInteger(response.data.numStudents)
+                        updateVal: _.toInteger( response.data.numStudents )
                     } );
 
                     //store the number of students on the exam
@@ -93,7 +122,7 @@ import statDisplay from './stat-display.vue';
 
                     //store the number of graded exams on the exam
                     pl.updateProp = 'numberGraded';
-                    pl.updateVal = _.toInteger(response.data.numGraded);
+                    pl.updateVal = _.toInteger( response.data.numGraded );
                     me.$store.commit( mTypes.updateItem, pl );
 
                     me.isLoading = false;
@@ -129,13 +158,22 @@ import statDisplay from './stat-display.vue';
 
             isExam: function () {
                 return this.item ? this.item.isExam() : false;
-            }
+            },
+
+            showColumns: function () {
+                if ( !this.isLoading && this.format === 'columns' ) return true;
+                return false;
+            },
+            showTables: function () {
+                if ( !this.isLoading && this.format === 'table' ) return true;
+                return false;
+            },
 
         },
 
 
         formatForDisplay: function ( value ) {
-            return _.round(value);
+            return _.round( value );
         }
 
 

@@ -19,9 +19,17 @@ export default class Exam extends Item {
          */
      //   this.id = -1;
 
+
+        /**
+         * The average number of seconds spent grading a
+         * student's exam
+         */
+        this.averageGradingSeconds;
+
+        this.description;
+
         // this._name; // = name;
-        this.year; // = year;
-        this.term;// = term;
+
         this.kind = 'exam';
 
         /**
@@ -35,18 +43,20 @@ export default class Exam extends Item {
          */
         this.numberGraded;
 
+        this.publicName;
+
         /**
          * The total number of seconds spent grading
          * the exam
          */
         this.totalGradingSeconds;
 
-        /**
-         * The average number of seconds spent grading a
-         * student's exam
-         */
-        this.averageGradingSeconds;
+        /** The sort of graded thing to call this. E.g., exam, quiz, paper... */
+        this.family;
 
+
+        this.year; // = year;
+        this.term;// = term;
 
         if ( params.length > 0 ) {
             //fill in from params
@@ -63,14 +73,18 @@ export default class Exam extends Item {
      */
     static get fillableProps() {
         return [
-            'year',
-            'term',
+            'averageGradingSeconds',
+            'description',
             'id',
             'maxPossibleScore',
+            'name',
             'numberStudents',
             'numberGraded',
+            'publicName',
+            'term',
             'totalGradingSeconds',
-            'averageGradingSeconds'
+            'family',
+            'year'
         ].concat(super.fillableProps);
     };
 

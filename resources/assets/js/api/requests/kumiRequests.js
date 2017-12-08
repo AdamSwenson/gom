@@ -43,7 +43,7 @@ const handleLoadKumiResponse = ( store, response ) => {
  * @returns {Promise}
  */
 const handleCreateKumiResponse = ( store, kumi, data ) => {
-    window.console.log( 'kumiRequests', 'handleCreateKumiResponse', 46, store, kumi, data );
+    // window.console.log( 'kumiRequests', 'handleCreateKumiResponse', 46, store, kumi, data );
     return new Promise( ( resolve, reject ) => {
         store.commit( 'updateKumi', Payload.factory( {
             obj: kumi,
@@ -76,14 +76,14 @@ const handleCreateKumiResponse = ( store, kumi, data ) => {
 module.exports = {
 
     loadExamKumi: ( store, exam ) => {
-        window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8, exam );
+        // window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8, exam );
         let out = {
             requestVersion: REQUEST_VERSION
         };
         return window.axios
             .get( Routes.loadExamKumi(exam) )
             .then( ( response ) => {
-                window.console.log( 'kumiRequests', 'loadExamKumi', 28, response );
+                // window.console.log( 'kumiRequests', 'loadExamKumi', 28, response );
                 let kumis = response.data;
                 _.forEach( kumis, ( kumi ) => {
                     let k = Kumi.factory( kumi );
@@ -108,7 +108,7 @@ module.exports = {
         window.axios
             .get( Routes.loadAllKumi() )
             .then( ( response ) => {
-                window.console.log( 'kumiRequests', 'loadAllKumi', 28, response );
+                // window.console.log( 'kumiRequests', 'loadAllKumi', 28, response );
             } )
             .catch( function ( error ) {
                 //todo add response handling
@@ -132,7 +132,7 @@ module.exports = {
         window.axios
             .post( Routes.associateKumi(kumi, exam), toSend )
             .then( ( response ) => {
-                window.console.log( 'kumiRequests', 'associateKumi', 28, response );
+                // window.console.log( 'kumiRequests', 'associateKumi', 28, response );
             } )
             .catch( function ( error ) {
                 //todo add response handling
@@ -157,7 +157,7 @@ module.exports = {
         window.axios
             .post( Routes.createKumi(), toSend )
             .then( ( response ) => {
-                window.console.log( 'kumiRequests', 'createKumi', 28, response );
+                // window.console.log( 'kumiRequests', 'createKumi', 28, response );
                 handleCreateKumiResponse( store, kumi, response.data );
             } )
             .catch( function ( error ) {
@@ -180,7 +180,7 @@ module.exports = {
         window.axios
             .put( Routes.updateKumi(kumi), toSend )
             .then( ( response ) => {
-                window.console.log( 'kumiRequests', 'updateKumi', 28, response );
+                // window.console.log( 'kumiRequests', 'updateKumi', 28, response );
             } )
             .catch( function ( error ) {
                 //todo add response handling
@@ -194,7 +194,7 @@ module.exports = {
         window.axios
             .delete( Routes.destroyKumi(kumi) )
             .then( ( response ) => {
-                window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
+                // window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
             } )
             .catch( function ( error ) {
                 //todo add response handling

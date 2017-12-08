@@ -1,10 +1,11 @@
+let faker= require('faker');
+import GradeAssignment from "../../../resources/assets/js/models/GradeAssignment";
 
 
 /**
  * These are assertions and action shortcuts
  * to assist in running mocha tests
  */
-
 
 
 /**
@@ -28,3 +29,4 @@ export const see = ( wrapper, text, selector ) => {
     let wrap = selector ? wrapper.find( selector ) : wrapper;
     expect( wrap.html() ).toContain( text );
 };
+

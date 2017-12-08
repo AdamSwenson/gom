@@ -142,12 +142,11 @@ const makeFakeServerResponse = () => {
     ];
 };
 
-describe.only( "gradeAssignments  ", () => {
+describe ( "gradeAssignments  ", () => {
     let freq;
     let scores;
     let state;
     let letters;
-    // let getters, actions, mutations;
 
     beforeEach( () => {
         //we fill the total scores with two scores of

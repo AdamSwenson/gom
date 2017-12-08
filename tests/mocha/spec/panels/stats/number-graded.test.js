@@ -87,7 +87,7 @@ describe( "number-graded  ", () => {
         it( " loading indicator displays and data is hidden when isLoading is true  ", () => {
             wrapper.vm.isLoading = true;
             wrapper.update();
-            expect( wrapper.contains( '.load-indicator ' ) ).toBe( true );
+            expect( wrapper.contains( '.loadingArea ' ) ).toBe( true );
             expect( wrapper.contains( '.number-graded-list' ) ).toBe( false );
         } );
 
@@ -95,7 +95,7 @@ describe( "number-graded  ", () => {
             //not loading; should see list of exams
             wrapper.vm.isLoading = false;
             wrapper.update();
-            expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
+            expect( wrapper.contains( '.loadingArea ' ) ).toBe( false );
             expect( wrapper.contains( '.number-graded-list' ) ).toBe( true );
         } );
     } );

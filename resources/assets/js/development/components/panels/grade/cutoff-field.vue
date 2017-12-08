@@ -10,13 +10,13 @@
                        v-model="minScore"
                 >
             </p>
-            <p class="control">
+            <p v-if="showButtons" class="control">
                 <a class="button is-primary " v-on:click="increment">
                     <span class="icon">
                         <i class="fa fa-plus" aria-hidden="true"></i></span>
                 </a>
             </p>
-            <p class="control">
+            <p v-if="showButtons" class="control">
                 <a class="button is-info "
                    v-on:click="decrement">
                     <span class="icon"><i class="fa fa-minus" aria-hidden="true"></i></span>
@@ -49,6 +49,7 @@
 
         data: function () {
             return {
+                showButtons: false,
                 defaults: {}
             }
         },

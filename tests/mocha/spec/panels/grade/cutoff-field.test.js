@@ -4,7 +4,8 @@ import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 // import Vue from 'vue';
 import moxios from 'moxios';
-let faker= require('faker');
+
+let faker = require( 'faker' );
 //helpers
 import { see, type } from '../../../helpers/test-helpers';
 
@@ -27,7 +28,7 @@ var Component = require( "../../../../../resources/assets/js/development/compone
 
 
 describe( "cutoff-field  ", function () {
-
+    let componentDivId = '.cut-off-field';
     let getters;
     let mutations;
     let store;
@@ -42,21 +43,21 @@ describe( "cutoff-field  ", function () {
 
     beforeEach( function () {
 
-        grade = faker.random.arrayElement(GradeAssignment.defaults);
-        
-        getterStub.returns(grade);
+        grade = faker.random.arrayElement( GradeAssignment.defaults );
 
-        let totalScores = [ 2, 2, 5, 6, 7, 9];
-        getterStub2.returns(totalScores);
+        getterStub.returns( grade );
+
+        let totalScores = [ 2, 2, 5, 6, 7, 9 ];
+        getterStub2.returns( totalScores );
 
         getters = {
-            [gTypes.getGradeFrequencies]: sinon.stub(),
-            [gTypes.getCutOffsForLetterGrade]: getterStub,
-            [gTypes.getTotalScores]: getterStub2
+            [ gTypes.getGradeFrequencies ]: sinon.stub(),
+            [ gTypes.getCutOffsForLetterGrade ]: getterStub,
+            [ gTypes.getTotalScores ]: getterStub2
         };
 
         mutations = {
-            [mTypes.updateGradeCutoffs]: updateStub
+            [ mTypes.updateGradeCutoffs ]: updateStub
         };
 
         store = new Vuex.Store( {
@@ -76,13 +77,16 @@ describe( "cutoff-field  ", function () {
     describe( " loads into expected default state for testing ", () => {
 
         it( 'displays the expected component div on first load', () => {
-            expect( wrapper.find( '.grade-assignment-fields' ).isEmpty() ).toBe( false );
+
+
+            expect( wrapper.find( componentDivId ).isEmpty() ).toBe( false );
         } );
 
     } );
 
 
-    describe( " loading indicator  ", () => {} );
+    describe( " loading indicator  ", () => {
+    } );
 
     describe( " when a value is entered into the min score field", () => {
 
@@ -98,24 +102,22 @@ describe( "cutoff-field  ", function () {
     describe( " gradeFrequency  ", function () {
         let freqs;
 
-        beforeEach(function (  ) {
-
-
+        beforeEach( function () {
             //create the frequency object which
             //the stubbed getter will return to the component
             freqs = {};
-            _.forEach(GradeAssignment.defaults, function(g){
-                freqs[g.displayValue] = faker.random.number();
-            });
+            _.forEach( GradeAssignment.defaults, function ( g ) {
+                freqs[ g.displayValue ] = faker.random.number();
+            } );
             //set up the stub getter
-            getters[gTypes.getGradeFrequencies].returns(freqs);
-        });
+            getters[ gTypes.getGradeFrequencies ].returns( freqs );
+        } );
 
         it( " returns the count corresponding to the component's grade ", function () {
             let gr = grade.displayVal;
-            let expectedCount = freqs[gr];
-            expect(wrapper.vm.gradeFrequency).toBe(expectedCount);
-            expect(getters[gTypes.getGradeFrequencies].callCount).toBe(1);
+            let expectedCount = freqs[ gr ];
+            expect( wrapper.vm.gradeFrequency ).toBe( expectedCount );
+            // expect(getters[gTypes.getGradeFrequencies].callCount).toBe(1);
         } );
 
         it( " displays the count in the expected area  ", function () {
@@ -128,44 +130,44 @@ describe( "cutoff-field  ", function () {
         let expected = {};
 
         it( " happy path ", () => {
-        //     let data = {
-        //         numStudents: 590,
-        //         numGraded: 400
-        //     };
-        //
-        //     updateStub.withArgs( Payload.factory( {
-        //         mutateSilently: true,
-        //         obj: exam,
-        //         updateProp: 'numberStudents',
-        //         updateVal: data.numStudents
-        //     } ) ).returns( data.numStudents );
-        //
-        //
-        //     updateStub.withArgs( Payload.factory( {
-        //         mutateSilently: true,
-        //         obj: exam,
-        //         updateProp: 'numberGraded',
-        //         updateVal: data.numGraded
-        //     } ) ).returns( data.numGraded );
-        //
-        //     // updateStub.onCall( 1 ).returns( data.numGraded );
-        //
-        //     moxios.wait( function () {
-        //         let request = moxios.requests.mostRecent()
-        //         request.respondWith( {
-        //             status: 200,
-        //             response: [ data ]
-        //         } ).then( function () {
-        //             //check that mutation was called as expected
-        //             expect( updateStub.callCount ).toBe( 2 );
-        //
-        //             //should see values on page
-        //             see( wrapper, data.numStudents, '.number-graded' );
-        //             see( wrapper, data.numGraded, '.number-graded' );
-        //             see( wrapper, data.numStudents - data.numGraded, '.number-graded' );
-        //
-        //         } );
-        //     } )
+            //     let data = {
+            //         numStudents: 590,
+            //         numGraded: 400
+            //     };
+            //
+            //     updateStub.withArgs( Payload.factory( {
+            //         mutateSilently: true,
+            //         obj: exam,
+            //         updateProp: 'numberStudents',
+            //         updateVal: data.numStudents
+            //     } ) ).returns( data.numStudents );
+            //
+            //
+            //     updateStub.withArgs( Payload.factory( {
+            //         mutateSilently: true,
+            //         obj: exam,
+            //         updateProp: 'numberGraded',
+            //         updateVal: data.numGraded
+            //     } ) ).returns( data.numGraded );
+            //
+            //     // updateStub.onCall( 1 ).returns( data.numGraded );
+            //
+            //     moxios.wait( function () {
+            //         let request = moxios.requests.mostRecent()
+            //         request.respondWith( {
+            //             status: 200,
+            //             response: [ data ]
+            //         } ).then( function () {
+            //             //check that mutation was called as expected
+            //             expect( updateStub.callCount ).toBe( 2 );
+            //
+            //             //should see values on page
+            //             see( wrapper, data.numStudents, '.number-graded' );
+            //             see( wrapper, data.numGraded, '.number-graded' );
+            //             see( wrapper, data.numStudents - data.numGraded, '.number-graded' );
+            //
+            //         } );
+            //     } )
         } )
     } );
 } );

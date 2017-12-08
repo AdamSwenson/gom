@@ -64,7 +64,7 @@
 
 <script>
 
-    import statDisplay from './stat-display.vue';
+    import statDisplay from './stat-display-columns.vue';
 
     export default {
 

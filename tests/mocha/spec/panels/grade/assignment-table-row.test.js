@@ -2,11 +2,16 @@ import { mount, shallow, createLocalVue } from 'vue-test-utils';
 import sinon from 'sinon';
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
-// import Vue from 'vue';
+
+//test libraries
 import moxios from 'moxios';
-let faker= require('faker');
+
+let faker = require( 'faker' );
+
 //helpers
 import { see, type } from '../../../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
+import {makeGradeFrequencyObject } from '../../../helpers/factories';
 
 import Exam from "./../../../../../resources/assets/js/models/Exam";
 import Comment from "./../../../../../resources/assets/js/models/Comment";
@@ -27,37 +32,38 @@ var Component = require( "../../../../../resources/assets/js/development/compone
 
 
 describe( "assignment-table-row  ", function () {
-
+    let componentDivId = '.assignment-table-row ';
     let getters;
     let mutations;
     let store;
     let grade;
     let $route = { params: { serialNumber: null } };
     let wrapper;
-    let routeSerialNumber;
-    let updateStub = sinon.stub();
     let getterStub = sinon.stub();
     let getterStub2 = sinon.stub();
+    let testFreqs = {};
+    let inconsistent = [];
     let minScore = 3;
 
     beforeEach( function () {
 
-        grade = faker.random.arrayElement(GradeAssignment.defaults);
-        
-        getterStub.returns(grade);
+        grade = faker.random.arrayElement( GradeAssignment.defaults );
 
-        let totalScores = [ 2, 2, 5, 6, 7, 9];
-        getterStub2.returns(totalScores);
+        testFreqs = makeGradeFrequencyObject();
+
+        getterStub.returns( testFreqs );
+
+        //the inconsistent list is set to be returned
+        inconsistent.push( grade );
+        getterStub2.returns( inconsistent );
+
 
         getters = {
-            [gTypes.getGradeFrequencies]: sinon.stub(),
-            [gTypes.getCutOffsForLetterGrade]: getterStub,
-            [gTypes.getTotalScores]: getterStub2
+            [ gTypes.getGradeFrequencies ]: getterStub,
+            [ gTypes.getInconsistentCutOffs ]: getterStub2,
         };
 
-        mutations = {
-            [mTypes.updateGradeCutoffs]: updateStub
-        };
+        mutations = {};
 
         store = new Vuex.Store( {
             getters,
@@ -76,7 +82,7 @@ describe( "assignment-table-row  ", function () {
     describe( " loads into expected default state for testing ", () => {
 
         it( 'displays the expected component div on first load', () => {
-            expect( wrapper.find( '.grade-assignment-fields' ).isEmpty() ).toBe( false );
+            assertExpectedDivIsDisplayed( wrapper, componentDivId );
         } );
 
     } );
@@ -85,15 +91,10 @@ describe( "assignment-table-row  ", function () {
     describe( " marks the row as inconsistent by adding style and other indicators ", () => {
 
         it( " adds the indicators when the row's grade is in the inconsistent list ", () => {
-            let testVal = 45;
-            type( wrapper, '.minScore', testVal );
-
-            expect( updateStub.callCount ).toBe( 1 );
+            expect(wrapper.vm.styling).toBe('is-selected');
+            see( wrapper, 'is-selected', componentDivId );
         } );
 
-        it( " removes the indicators when the row's grade is no longer on the inconsistent list ", () => {
-
-        } );
 
     } );
 } );

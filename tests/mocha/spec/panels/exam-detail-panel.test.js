@@ -6,12 +6,14 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../../helpers/test-helpers';
-import Exam from "./../../../../../resources/assets/js/models/Exam";
-import Item from "./../../../../../resources/assets/js/models/Item";
-import Payload from "./../../../../../resources/assets/js/models/Payload";
-import * as mTypes from "./../../../../../resources/assets/js/store/mutation-types";
-import * as gTypes from "./../../../../../resources/assets/js/store/getter-types";
+import { see } from '../../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
+
+import Item from "./../../../../resources/assets/js/models/Item";
+import Comment from "./../../../../resources/assets/js/models/Comment";
+import Payload from "./../../../../resources/assets/js/models/Payload";
+import * as mTypes from "./../../../../resources/assets/js/store/mutation-types";
+import * as gTypes from "./../../../../resources/assets/js/store/getter-types";
 
 
 const localVue = createLocalVue();
@@ -19,15 +21,14 @@ const localVue = createLocalVue();
 localVue.use( Vuex )
 // localVue.use( VueRouter );
 
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-import { makeGradeFrequencyObject } from '../../../helpers/factories';
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/stats/time-stats.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/panels/exam-detail-panel.vue" );
 
 
-describe( "time-stats  ", () => {
-    let componentDivIdentifier = '.time-stats';
+describe( " exam-detail-panel ", () => {
+    let componentDivIdentifier = '.exam-detail-panel';
+
     let getters;
     let mutations;
     let store;
@@ -37,11 +38,12 @@ describe( "time-stats  ", () => {
     let routeSerialNumber;
 
     beforeEach( () => {
-        item = new Exam();
+        item = new Item();
         routeSerialNumber = item.serialNumber;
 
         // import and pass your custom axios instance to this method
         moxios.install()
+
 
         getters = {
             getItemBySerialNumber: ( v ) => ( v ) => {
@@ -66,7 +68,6 @@ describe( "time-stats  ", () => {
 
         $route.params.serialNumber = item.serialNumber;
 
-
         wrapper = shallow( Component, {
             store, localVue,
             stubs: [ 'router-link', 'router-view' ],
@@ -83,36 +84,12 @@ describe( "time-stats  ", () => {
     } )
 
     describe( " loads into expected default state for testing ", () => {
-
-        it( " test store has been set up properly ", () => {
-            expect( store.getters.getItemBySerialNumber() ).toBe( item );
-        } );
-
-
         it( 'displays the expected component div on first load', () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
 
     } );
 
-
-    describe( " loading indicator  ", () => {
-
-        it( " loading indicator displays and time-list is hidden when isTimeLoading is true  ", () => {
-            wrapper.vm.isLoading = true;
-            wrapper.update();
-            expect( wrapper.contains( '.loadArea ' ) ).toBe( true );
-            expect( wrapper.contains( '.time-list' ) ).toBe( false );
-        } );
-
-        it( " loading indicator is hidden and time-list is visible when isTimeLoading is false  ", () => {
-            //not loading; should see list of exams
-            wrapper.vm.isLoading = false;
-            wrapper.update();
-            expect( wrapper.contains( '.loadArea ' ) ).toBe( false );
-            expect( wrapper.contains( '.time-list' ) ).toBe( true );
-        } );
-    } );
 
 
     describe( " displays expected data after loading async   ", () => {
@@ -122,11 +99,7 @@ describe( "time-stats  ", () => {
             let data = {
                 elapsedSeconds:
                     590.86,
-                averageSeconds: 324.56
             };
-
-            item.numberStudents = 34;
-            item.numberGraded =0
 
             moxios.wait( function () {
                 let request = moxios.requests.mostRecent()
@@ -134,14 +107,48 @@ describe( "time-stats  ", () => {
                     status: 200,
                     response: [ data ]
                 } ).then( function () {
-                    //elapsed time
-                    see( wrapper, data.elapsedSeconds, componentDivIdentifier );
-                    //average time
-                    see(wrapper, data.averageSeconds, componentDivIdentifier);
-                    //remaining time
-                    see(wrapper, item.numberRemaining * data.averageSeconds);
+
+                    //should see
+                    see( wrapper, data.elapsedSeconds, '.timeBox' );
+
                 } );
             } )
         } )
     } );
 } );
+
+
+//
+//     beforeEach(  ()=> {
+// //runs before each test
+// //         let component = mount( commentPanel );
+//
+//     })
+
+// wrapper.vm // the mounted Vue instance
+
+
+//
+// describe( "computed properties ", () => {
+//
+//     it( 'displays the expected default on first load',  ()=> {
+//        // let component = mount( commentPanel );
+//
+//         expect( wrapper.vm.displayed ).toBe( 'stock' )
+//
+//         expect( true ).toBe( true );
+//     } );
+//
+// } );
+//
+// describe(  "methods" , function () {
+//     beforeEach( function () {
+//         let component = mount( commentPanel );
+//
+//     } );
+//
+//     it( 'prePopulateComments | ', function () {
+//         expect( true ).toBe( true );
+//     } );
+// } );
+// } );

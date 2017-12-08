@@ -55,36 +55,37 @@ module.exports = {
         }
     },
 
-    /**
-     * Handles the call to the server to update
-     * properties of an item which already has an id
-     * @param store
-     * @param item
-     * @returns {Promise}
-     */
-    updateExam: ( store, exam ) => {
-        window.console.log( 'apiPlugin', 'updateExam', 181, exam );
-        let out = {
-            ...exam,
-            examId: store.getters.currentExam.id,
-            requestVersion: REQUEST_VERSION
-        };
-
-        return window.axios
-            .put( Routes.updateExam( exam ), exam )
-            .then( ( response ) => {
-                handleResponse( store, exam, response )
-                    .then( function () {
-                        // window.console.log( 'requests', 'handleResponse promise resolved', 46 );
-                    } )
-                    .catch( function ( error ) {
-                        throw error;
-                    } );
-            } )
-            .catch( function ( error ) {
-                errorHandling( error );
-            } );
-    },
+    // /**
+    //  * Handles the call to the server to update
+    //  * properties of an item which already has an id
+    //  * @param store
+    //  * @param item
+    //  * @returns {Promise}
+    //  */
+    // updateExam: ( store, exam ) => {
+    //     window.console.log( 'apiPlugin', 'updateExam', 181, exam );
+    //     let examId = ! _.isUndefined(exam.id) ? exam.id : store.getters.currentExam.id;
+    //     let out = {
+    //         ...exam,
+    //         examId: exam.id,
+    //         requestVersion: REQUEST_VERSION
+    //     };
+    //
+    //     return window.axios
+    //         .put( Routes.updateExam( exam ), out )
+    //         .then( ( response ) => {
+    //             handleResponse( store, exam, response )
+    //                 .then( function () {
+    //                     // window.console.log( 'requests', 'handleResponse promise resolved', 46 );
+    //                 } )
+    //                 .catch( function ( error ) {
+    //                     throw error;
+    //                 } );
+    //         } )
+    //         .catch( function ( error ) {
+    //             errorHandling( error );
+    //         } );
+    // },
 
     /**
      * Handles the actual call to the server to create an

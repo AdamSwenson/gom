@@ -11,15 +11,6 @@ import * as gTypes from '../../getter-types';
 import GradeAssignment from '../../../models/GradeAssignment';
 import Payload from '../../../models/Payload';
 
-/**
- * Returns true if the new ordering will not
- * mess up the grading structure.
- * Returns false if it will
- * @param payload
- */
-const validateOrderingChange = ( payload ) => {
-    //todo
-}
 
 /**
  * Takes the totalScores array
@@ -68,6 +59,11 @@ const sortGradeAssignments = ( gradeAssignments, ascending = true ) => {
     })( gradeAssignments, ascending )
 }
 
+/**
+ * Looks up the appropriate grade assignment for a given score
+ * @param gradeAssignments
+ * @param score
+ */
 export const gradeGetterForScore = ( gradeAssignments, score ) => {
     return (function ( gradeAssignments, score ) {
         let assignments = sortGradeAssignments( state.gradeAssignments, false );
@@ -86,6 +82,14 @@ export const gradeGetterForScore = ( gradeAssignments, score ) => {
     })( gradeAssignments, score )
 }
 
+/**
+ * Checks whether the grade assignments are consistent.
+ * If any grade assignment has a higher minimum score
+ * than the next lowest grade assignment, this will
+ * push it into state.inconsistent
+ *
+ * @param state
+ */
 export const updateInconsistentList = ( state ) => {
     let inconsistent = [];
     // let sortedAssignments = sortGradeAssignments(state.gradeAssignments);
@@ -103,23 +107,33 @@ export const updateInconsistentList = ( state ) => {
 const state = {
 
     /**
-     * The maximum and minimum scores for each
-     * letter grade on an exam
+     * This holds the objects defining which scores receive
+     * which grades.
+     *
+     * It is an object with letter grade strings as keys and
+     * GradeAssignment objects for its values.
      */
     gradeAssignments: (function () {
         return sortGradeAssignments(GradeAssignment.initialize());
     })(),
 
+    /**
+     * A list of unidentifiable student total scores
+     * on the exam.
+     */
     totalScores: [],
 
     /**
      * A list of the calcValues of each grade
-     * based on a score and the current distribution
+     * based on a score and the current distribution.
+     * This is used for statistical computations about
+     * the grade distribution
      */
     gradeValues: [],
 
-    /** Keeping the list of inconsistent grade assignments here
-     * so that can dynamically update stuff
+    /**
+     * The list of inconsistent grade assignments are kept here
+     *
      */
     inconsistent : []
 
@@ -128,7 +142,8 @@ const state = {
 const mutations = {
 
     /**
-     * Updates a property of a grade assignment object
+     * Updates a property of a grade assignment object.
+     * Also calls for a consistency check
      *
      * @param state
      * @param payload
@@ -147,6 +162,8 @@ const mutations = {
      * This is not defined in gTypes because it
      * really shouldn't need to be called except by the action
      * in this file
+     *
+     * Also calls for a consistency check
      *
      * @param state
      * @param payload
@@ -169,9 +186,6 @@ const mutations = {
     [ mTypes.loadTotalScores ]: ( state, payload ) => {
         state.totalScores = sortTotalScores( payload.updateVal );
     },
-
-
-
 
 };
 
@@ -211,6 +225,7 @@ const actions = {
         } );
     },
 
+    /*
     [ aTypes.updateCutoff ]: ( { state, dispatch, commit, getters }, payload ) => {
        // NEITHER USED NOR FUNCTIONAL; HERE IN CASE WE NEED IT IN FUTURE
 
@@ -225,7 +240,7 @@ const actions = {
             //error handling
         }
     }
-
+*/
 
 };
 
@@ -233,6 +248,7 @@ const getters = {
 
     /**
      * Given a score, it returns the appropriate gradeAssignment object
+     *
      * @param state
      * @param getters
      * @param rootState
@@ -245,6 +261,16 @@ const getters = {
         })( score );
     },
 
+    /**
+     * Returns the state.gradeAssignment object
+     * which has letter grade strings as keys and
+     * GradeAssignment objects for its values.
+     *
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {*}
+     */
     [ gTypes.getGradeAssignments ]: ( state, getters, rootState ) => {
         return state.gradeAssignments;
     },
@@ -295,18 +321,17 @@ const getters = {
 
     },
 
-
-
+    /**
+     * Returns an array of GradeAssignment objects which
+     * have minimum scores that are higher than the next
+     * lowest GradeAssignment.
+     *
+     * @param state
+     * @param getters
+     * @returns {Array}
+     */
     [ gTypes.getInconsistentCutOffs ]: ( state, getters ) => {
        return state.inconsistent;
-        // let inconsistent = [];
-        // let assignments = _.values(getters[gTypes.getGradeAssignments]);
-        // for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
-        //     let current = assignments[ i ];
-        //     let nextLower = assignments[i + 1];
-        //     if ( nextLower.minScore  > current.minScore ) inconsistent.push( current );
-        // }
-        // return inconsistent;
     },
 
     /**

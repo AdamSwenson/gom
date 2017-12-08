@@ -42,7 +42,6 @@
 
         data: function () {
             return {
-
                 defaults: {}
             }
         },
@@ -63,11 +62,11 @@
              */
             isInconsistent: function () {
                 let inconsistentList = this.$store.getters[ gTypes.getInconsistentCutOffs ];
-                if ( inconsistentList.indexOf( this.grade ) >= 0 ) return true;
+                if ( ! _.isUndefined(inconsistentList) && inconsistentList.indexOf( this.grade ) >= 0 ) return true;
             },
 
             letterGrade: function () {
-                return this.grade.displayValue;
+                return ! _.isUndefined(this.grade) ? this.grade.displayValue : '';
             },
 
             /**

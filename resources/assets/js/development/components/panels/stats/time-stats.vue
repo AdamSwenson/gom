@@ -1,8 +1,9 @@
 <template>
-    <div class="timeBox ">
-        <p class="h4">Grading Time</p>
+    <div class="time-stats ">
         <div class="box">
-            <div v-if="isLoading"
+            <p class="h4">Grading Time</p>
+
+            <div v-if="isLoading" class="loadArea"
             >
                 <loading-indicator
                         :is-loading="isLoading"
@@ -10,7 +11,32 @@
             </div>
 
             <div class="time-list"
-                 v-if="! isLoading"
+                 v-if="showTables"
+            >
+                <table class="table is-narrow">
+
+                    <stat-display-table-row>
+                        <div slot="label">Elapsed</div>
+                        <div slot="value">{{timeElapsed}}</div>
+                    </stat-display-table-row>
+
+                    <stat-display-table-row>
+                        <div slot="label">Average</div>
+                        <div slot="value">{{averageGradingTime}}</div>
+                    </stat-display-table-row>
+
+                    <stat-display-table-row>
+                        <div slot="label">Remaining</div>
+                        <div slot="value">{{timeRemaining}}</div>
+                    </stat-display-table-row>
+
+                </table>
+
+            </div>
+
+
+            <div class="time-list"
+                 v-if="showColumns"
             >
 
                 <stat-display>
@@ -48,7 +74,8 @@
 
     import timeRequests from '../../../../api/requests/timeRequests';
     import loadingIndicator from '../../helpers/loading-indicator.vue';
-    import statDisplay from './stat-display.vue';
+    import statDisplay from './stat-display-columns.vue';
+    import StatDisplayTableRow from "./stat-display-table-row.vue";
 
     export default {
 
@@ -57,6 +84,7 @@
         ],
 
         components: {
+            StatDisplayTableRow,
             'loading-indicator': loadingIndicator,
             'stat-display': statDisplay
         },
@@ -64,6 +92,9 @@
         data: function () {
             return {
                 isLoading: false,
+
+                format: 'table',
+                formats: [ 'columns', 'table' ],
 
                 defaults: {}
             }
@@ -136,6 +167,15 @@
             isExam: function () {
                 return this.item ? this.item.isExam() : false;
             },
+            showColumns: function () {
+                if ( !this.isLoading && this.format === 'columns' ) return true;
+                return false;
+            },
+            showTables: function () {
+                if ( !this.isLoading && this.format === 'table' ) return true;
+                return false;
+            },
+
 
         },
 

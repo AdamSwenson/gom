@@ -33,8 +33,14 @@ import Payload from '../models/Payload'
 import Exam from '../models/Exam'
 import Item from '../models/Item'
 
-import { createItem, updateExam, updateItem, updateItemsOrder } from './requests'
+import { createItem, updateItem, updateItemsOrder } from './requests'
+
+//comments
 import { updateComment } from '../api/requests/commentRequests';
+
+//exams
+import { updateExam }from '../api/requests/examRequests';
+
 import {
     createStudent,
     destroyStudent,

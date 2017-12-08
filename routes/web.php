@@ -182,6 +182,7 @@ Route::post('comments/{item}', 'Item\CommentController@store');
 
 //new exam controller
 Route::get('dev/exams', 'Item\ExamResourceController@index');
+Route::put('dev/exam/{exam}', 'Item\ExamResourceController@update');
 
 //new student controller for intrinsic props of student objects
 Route::resource('dev/students', 'Item\StudentResourceController');

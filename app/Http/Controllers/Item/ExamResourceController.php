@@ -79,15 +79,32 @@ class ExamResourceController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
+     * Update the specified exam in storage.
+     * Receives PUT
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Exam  $exam
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Exam $exam)
     {
-        //
+$updatable = ['name', 'publicName', 'term', 'year'];
+
+        //update its properties
+        $exam->update(
+            [
+                'description' => $request->input('description'),
+                'family' => $request->input('family'),
+                'name' => $request->input('name'),
+                'public_name' => $request->input('publicName'),
+                'term' => $request->input('term'),
+                'year' => $request->input('year'),
+            ]);
+        return $exam;
+
+        //return $this->itemRepository->handleStoreAndUpdate($request);
+
+
+
     }
 
     /**

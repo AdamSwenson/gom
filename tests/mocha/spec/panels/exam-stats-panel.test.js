@@ -7,6 +7,7 @@ import moxios from 'moxios';
 
 //helpers
 import { see } from '../../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
 
 import Item from "./../../../../resources/assets/js/models/Item";
 import Comment from "./../../../../resources/assets/js/models/Comment";

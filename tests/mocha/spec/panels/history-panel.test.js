@@ -7,6 +7,8 @@ import moxios from 'moxios';
 
 //helpers
 import { see } from '../../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
+
 
 import Item from "./../../../../resources/assets/js/models/Item";
 import Comment from "./../../../../resources/assets/js/models/Comment";
@@ -91,24 +93,7 @@ describe( "history-panel  ", () => {
 
     } );
 
-    //
-    // describe( " loading indicator  ", () => {
-    //
-    //     it( " hides and shows elements according to value of isLoading  ", () => {
-    //
-    //
-    //         wrapper.vm.isLoading = true;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator' ) ).toBe( true );
-    //         expect( wrapper.contains( '.exam-list' ) ).toBe( false );
-    //
-    //         //not loading; should see list of exams
-    //         wrapper.vm.isLoading = false;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
-    //         expect( wrapper.contains( '.exam-list' ) ).toBe( true );
-    //     } );
-    // } );
+
     describe( " displays exam names upon loading async   ", () => {
         let expected = {};
 
@@ -141,38 +126,3 @@ describe( "history-panel  ", () => {
     } );
 } );
 
-
-//
-//     beforeEach(  ()=> {
-// //runs before each test
-// //         let component = mount( commentPanel );
-//
-//     })
-
-// wrapper.vm // the mounted Vue instance
-
-
-//
-// describe( "computed properties ", () => {
-//
-//     it( 'displays the expected default on first load',  ()=> {
-//        // let component = mount( commentPanel );
-//
-//         expect( wrapper.vm.displayed ).toBe( 'stock' )
-//
-//         expect( true ).toBe( true );
-//     } );
-//
-// } );
-//
-// describe(  "methods" , function () {
-//     beforeEach( function () {
-//         let component = mount( commentPanel );
-//
-//     } );
-//
-//     it( 'prePopulateComments | ', function () {
-//         expect( true ).toBe( true );
-//     } );
-// } );
-// } );

@@ -1,7 +1,8 @@
 <template>
     <div class="exam-properties">
-        <p class="h4">Exam properties</p>
         <div class="box">
+
+            <p class="h4">Exam properties</p>
             <div v-if="isLoading"
             >
                 <loading-indicator
@@ -10,7 +11,31 @@
             </div>
 
             <div class="exam-properties-list"
-                 v-if="! isLoading"
+            v-if="showTables">
+                <table class="table is-narrow">
+
+                    <stat-display-table-row>
+                        <div slot="label">Items</div>
+                        <div slot="value">{{numberItems}}</div>
+                    </stat-display-table-row>
+
+                    <stat-display-table-row>
+                        <div slot="label">Students</div>
+                        <div slot="value">{{numberStudents}}</div>
+                    </stat-display-table-row>
+
+                    <stat-display-table-row>
+                        <div slot="label">Groups</div>
+                        <div slot="value">{{numberGroups}}</div>
+                    </stat-display-table-row>
+
+                </table>
+                
+            </div>
+            
+            
+            <div class="exam-properties-list"
+                 v-if="showColumns"
             >
 
                 <stat-display>
@@ -47,7 +72,8 @@
     import Payload from '../../../../models/Payload';
 
     import loadingIndicator from '../../helpers/loading-indicator.vue';
-    import statDisplay from './stat-display.vue';
+    import statDisplay from './stat-display-columns.vue';
+    import StatDisplayTableRow from "./stat-display-table-row.vue";
 
 
     export default {
@@ -57,6 +83,7 @@
         ],
 
         components: {
+            StatDisplayTableRow,
             'loading-indicator': loadingIndicator,
             'stat-display': statDisplay
         },
@@ -64,6 +91,9 @@
         data: function () {
             return {
                 isLoading: false,
+
+                format : 'table',
+                formats : ['columns', 'table'],
 
                 placeholders: {
                     numberItems: ''
@@ -98,8 +128,17 @@
                 let v = this.$store.getters[ gTypes.getKumiCount ];
                 //if not set return placeholder
                 return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
-
             },
+
+            showColumns: function (  ) {
+                if(! this.isLoading && this.format === 'columns') return true;
+                return false;
+            },
+            showTables: function (  ) {
+                if(! this.isLoading && this.format === 'table') return true;
+                return false;
+            },
+
 
         },
 

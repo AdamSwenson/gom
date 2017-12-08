@@ -32,6 +32,9 @@ class ExamRequest extends Request
     public function rules()
     {
         return [
+//            'description'
+        //'type'
+//            'family'
             'year' => 'date_format:Y',
             'term' => 'max:225',
             'examYear' => 'date_format:Y',

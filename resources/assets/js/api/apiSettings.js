@@ -3,8 +3,8 @@
  */
 
 //Not exported!
-    const KUMI_BASE_ROUTE = 'dev/kumis';
-    const NOTES_BASE_ROUTE = 'dev/notes';
+const KUMI_BASE_ROUTE = 'dev/kumis';
+const NOTES_BASE_ROUTE = 'dev/notes';
 const ROSTER_BASE_ROUTE = 'dev/roster';
 const SCORE_BASE_ROUTE = 'dev/scores';
 const STUDENT_BASE_ROUTE = 'dev/students';
@@ -39,7 +39,8 @@ export const Routes = {
     },
 
     updateExam: ( exam ) => {
-        return 'editexam/' + exam.id;
+        //should be used with put
+        return 'dev/exam/' + exam.id;
     },
 
     // ------------------------- Kumi

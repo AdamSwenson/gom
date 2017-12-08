@@ -61,7 +61,6 @@
 
         data: function () {
             return {
-
                 placeholders: {
                     numberItems: ''
                 },
