@@ -11,7 +11,9 @@
 </head>
 
 <body>
+
 <div class="container-fluid">
+
     <div id="app"></div>
 
     {{ method_field('PUT') }}
@@ -41,14 +43,14 @@
 
 <input type="hidden"
        id="{{ $kumisJsonName}}"
-       data='{!! isset($kumis) ?  json_encode($kumis, JSON_FORCE_OBJECT) : '' !!}' />
+       data='{!! isset($kumis) ?  json_encode($kumis, JSON_FORCE_OBJECT) : '' !!}'/>
 
 
 <script type="text/javascript">
     window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
 </script>
 <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
-<script src="http://localhost:35729/livereload.js"></script>
+{{--<script src="http://localhost:35729/livereload.js"></script>--}}
 
 </body>
 </html>

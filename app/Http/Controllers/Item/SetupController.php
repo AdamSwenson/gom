@@ -127,6 +127,7 @@ const DEFAULT_KUMI_NAME = 'All';
         //  'itemObjects'
         //  'itemOrder'
         $kumis = $exam->kumis()->get();
+
         if($kumis->count() === 0){
             //if there isn't one, we need it
             $kumi = Kumi::create();

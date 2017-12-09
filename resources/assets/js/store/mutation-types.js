@@ -107,6 +107,8 @@ export const showItemSettings = 'showItemSettings';
 export const hideItemSettings = 'hideItemSettings';
 export const toggleExamSettings = 'toggleExamSettings';
 
+//Initialization
+export const loadInitialData = 'loadInitialData';
 
 //notes
 export const updateNote = 'updateNote';

@@ -86,7 +86,9 @@ export default class Item extends IModel {
             'name',
             'commentText',
             'text',
-            'tags'
+            'tags',
+            //for exam
+
         ].concat( super.fillableProps );
     };
 

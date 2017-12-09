@@ -17,7 +17,7 @@
                         <select class="ias-select"
                                 v-model="selected"
                         >
-                            <option disabled value="">
+                            <option disabled value="" class="title-option">
                                 <slot name="disabledOption"></slot>
                             </option>
 
@@ -31,7 +31,7 @@
                     </span>
             </div>
 
-            <div class="control  is-expanded"
+            <div class="control "
                  v-if="! isTextArea"
             >
                 <input class="input ias-input"
@@ -65,8 +65,13 @@
 </template>
 
 <style lang="scss">
-    .input-and-selector{
+    .input-and-selector {
         margin: 1em;
+        .title-option {
+        }
+        .select {
+            /*width: 100%;*/
+        }
     }
 </style>
 

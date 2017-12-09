@@ -7,7 +7,6 @@ window._ = require( 'lodash' );
 
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
-
 import * as gTypes from '../getter-types';
 
 import Student from '../../models/Student'
@@ -82,7 +81,7 @@ module.exports = {
          *
          */
         /** This is what gets run when the root instance is mounted for the setup page */
-        loadInitialData: ( state, payload ) => {
+        [mTypes.loadInitialData] : ( state, payload ) => {
             // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
             let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
 

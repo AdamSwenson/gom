@@ -189,6 +189,7 @@ export default class Exam extends Item {
 
     static get aliasMap() {
         return {
+            public_name : 'publicName'
             // examId: 'id',
             // examIndex: 'index'
         };
@@ -198,9 +199,9 @@ export default class Exam extends Item {
 
     static factory( params ) {
         let exam = new Exam();
-// //we will still return an empty exam if there
-//         //were no parameters
-        return this.fillObject(exam, params); //, Exam.aliasMap);
+        // we will still return an empty exam if there
+        // were no parameters
+        return this.fillObject(exam, params, Exam.aliasMap);
     }
 
 

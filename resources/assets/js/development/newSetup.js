@@ -126,19 +126,14 @@ Vue.use( VueAxios, window.axios );
 import VueRouter from 'vue-router'
 
 Vue.use( VueRouter );
-// 1. Define route components.
-// These can be imported from other files
 
-// 2. Define some routes
+// Define some routes
 // Each route should map to a component. The "component" can
 // either be an actual component constructor created via
 // Vue.extend(), or just a component options object.
-// We'll talk about nested routes later.
 import { routes } from './routes';
 
-// 3. Create the router instance and pass the `routes` option
-// You can pass in additional options here, but let's
-// keep it simple for now.
+// Create the router instance and pass the `routes` option
 const router = new VueRouter( {
     routes, // short for routes: routes
     base: window.routeRoot

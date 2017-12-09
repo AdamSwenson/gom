@@ -5,7 +5,8 @@
         <div class="container is-fluid">
             <div class="columns is-centered">
 
-                <div class="column is-three-quarters ">
+                <div class="column is-three-fourths ">
+                <!--<div class="column is-four-fifths ">-->
 
                     <div id="examCardArea" class="card">
                         <exam-selection-bar></exam-selection-bar>
@@ -164,22 +165,17 @@
         events: {},
 
         created: function () {
-            window.console.log( 'new-setup', 'created', 169 );
-            this.$store.commit( 'loadInitialData' );
-            let p = loadExamKumi( this.$store, this.exam );
+            this.$store.commit( mTypes.loadInitialData );
             let me = this;
-//            setTimeout( function () {
+
+            let p = loadExamKumi( this.$store, this.exam );
             p.then( function () {
-
-
                 //set the first kumi as the one to display
                 //this needs to happen before associate exam is called
 //                me.$store.commit( 'updateSelectedKumi' );
-
                 loadAllStudents( me.$store, me.exam );
             } );
 
-//            }, 3000 );
             //Tags for the items loaded
             //Does not load tags that aren't yet used on the
             //exam. That is done on the tags-panel creation

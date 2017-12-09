@@ -77,71 +77,19 @@ class Exam extends BaseModel
 //    ];
 
     protected $casts = [
-        'term' => 'string',
-        'name' => 'string',
-        'year' => 'year',
         'locked' => 'boolean',
-        'released' => 'boolean',
+        'name' => 'string',
+        'public_name' => 'string',
         'previously_released' => 'boolean',
-        'other' => 'array'
+        'released' => 'boolean',
+        'term' => 'string',
+        'other' => 'array',
+        'year' => 'year',
     ];
 
 
-    //new props
-    public function getText()
-    {
-    }
-
-
-    public function getNumber()
-    {
-    }
 
 #----------------------------------------------------------- Item ordering
-
-    /**
-     * Returns the Assignment representing the exam
-     */
-    public function getAssignmentRoot()
-    {
-        return Assignment::where('exam_id', $this->id)
-            ->where('parent_id', null)
-            ->where('item_id', $this->id)
-            ->first();
-    }
-
-    /**
-     * Creates an assignment in the assignments table
-     * with this exam's id as item_id and exam_id
-     * @return bool
-     */
-    public function initializeAssignmentRoot()
-    {
-        if ( $this->getAssignmentRoot() ) return true;
-        $assignment = Assignment::create([
-            'item_id' => $this->id,
-            'exam_id' => $this->id
-        ]);
-
-        $this->assignments()->save($assignment);
-    }
-
-
-    /**
-     * If was associated with assignments, deletes the association
-     * and creates a new assignment
-     * If was none preexisting, creates new
-     */
-    public function resetAssignments()
-    {
-        //delete all items from assignment table with this
-        //exam id
-        Assignment::where('exam_id', $this->id)->delete();
-        //create a new assignment
-        $this->initializeAssignmentRoot();
-    }
-
-
     /**
      * Adds an Item to the exam either with the exam itself
      * or another item as the parent.
@@ -173,40 +121,46 @@ class Exam extends BaseModel
     }
 
     /**
-     * Returns all the associated item objects
-     * in no order
-     * @return array
+     * Returns the Assignment representing the exam
      */
-    public function getItems()
+    public function getAssignmentRoot()
     {
-        $out = [];
-        $assignmentTree = $this->getAssignmentRoot();
-// Assignment::where('item_id', $this->id)
-//            ->where('exam_id', $this->id)
-//            ->get();
-        if ( $assignmentTree->hasChildren() ) {
-            $children = $assignmentTree->getChildren();
-            //children now holds a bunch of Assignment objects
-            foreach ( $children as $c ) {
-                //push Item objects into the out array
-                $out[] = $c->item;
-            }
-        }
-        return $out;
+        return Assignment::where('exam_id', $this->id)
+            ->where('parent_id', null)
+            ->where('item_id', $this->id)
+            ->first();
     }
 
-
-    public function getMaxPossibleScore()
+    /**
+     * Creates an assignment in the assignments table
+     * with this exam's id as item_id and exam_id
+     * @return bool
+     */
+    public function initializeAssignmentRoot()
     {
-        $items = collect($this->getItems());
-        return $items->sum('max_score');
+        if ( $this->getAssignmentRoot() ) return true;
+        $assignment = Assignment::create([
+            'item_id' => $this->id,
+            'exam_id' => $this->id
+        ]);
+
+        $this->assignments()->save($assignment);
     }
 
-    public function getMaxPossibleScoreAttribute()
+    /**
+     * If was associated with assignments, deletes the association
+     * and creates a new assignment
+     * If was none preexisting, creates new
+     */
+    public function resetAssignments()
     {
-        $items = collect($this->getItems());
-        return $items->sum('max_score');
+        //delete all items from assignment table with this
+        //exam id
+        Assignment::where('exam_id', $this->id)->delete();
+        //create a new assignment
+        $this->initializeAssignmentRoot();
     }
+
 
 # -------------------------- Helpful methods
 
@@ -279,28 +233,6 @@ MYSQL;
         }
 
         return false;
-    }
-
-    /**
-     * Returns a collection of all students who have been associated with the exam
-     * The collection is sorted in descending order by last_name
-     * @return \Illuminate\Support\Collection
-     */
-    public function getAllAssociatedStudents()
-    {
-        $students = [];
-        $classes = $this->classes;
-        foreach ( $classes as $c ) {
-            foreach ( $c->students as $s ) {
-                $students[] = $s;
-            }
-        }
-
-        //Make into a laravel collection and sort in descending order
-        $students = collect($students);
-        $students = $students->sortBy('last_name');
-
-        return $students;
     }
 
     /**
@@ -511,7 +443,6 @@ MYSQL;
         return $this->belongsToMany(Tag::class, 'exam_tag')->withTimestamps();
     }
 
-
     /**
      * Associated user
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -521,7 +452,7 @@ MYSQL;
         return $this->belongsTo('App\User');
     }
 
-    #----------------------------------------------------------- Setters and getters
+    # ----------------------------------- Setters
 
     /**
      * Set the term in which the exam occurs
@@ -553,13 +484,57 @@ MYSQL;
         $this->attributes['year'] = $year;
     }
 
+    /**
+     * Set the value of [locked] column.
+     *
+     * @param $value
+     * @return $this|\Exam The current object (for fluent API support)
+     */
+    public function setLocked( $value )
+    {
+        $this->attributes['locked'] = $value;
+    }
+
+    /**
+     * Set the value of [released] column.
+     *
+     * @param $value
+     * @return $this|\Exam The current object (for fluent API support)
+     */
+    public function setReleased( $value )
+    {
+        $this->attributes['released'] = $value;
+    }
+
 //    public function getQuestion($questionNumber)
 //    {
 //     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
 //    }
 
 
-    # --------------------------------- Other getters and setters
+    # --------------------------------- Getters
+
+    /**
+     * Returns a collection of all students who have been associated with the exam
+     * The collection is sorted in descending order by last_name
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAllAssociatedStudents()
+    {
+        $students = [];
+        $classes = $this->classes;
+        foreach ( $classes as $c ) {
+            foreach ( $c->students as $s ) {
+                $students[] = $s;
+            }
+        }
+
+        //Make into a laravel collection and sort in descending order
+        $students = collect($students);
+        $students = $students->sortBy('last_name');
+
+        return $students;
+    }
 
     /**
      * Get the [id] column value.
@@ -569,6 +544,29 @@ MYSQL;
     public function getId()
     {
         return $this->attributes['id'];
+    }
+
+    /**
+     * Returns all the associated item objects
+     * in no order
+     * @return array
+     */
+    public function getItems()
+    {
+        $out = [];
+        $assignmentTree = $this->getAssignmentRoot();
+// Assignment::where('item_id', $this->id)
+//            ->where('exam_id', $this->id)
+//            ->get();
+        if ( $assignmentTree->hasChildren() ) {
+            $children = $assignmentTree->getChildren();
+            //children now holds a bunch of Assignment objects
+            foreach ( $children as $c ) {
+                //push Item objects into the out array
+                $out[] = $c->item;
+            }
+        }
+        return $out;
     }
 
     /**
@@ -599,6 +597,17 @@ MYSQL;
         return $this->attributes['locked'];
     }
 
+    public function getMaxPossibleScore()
+    {
+        $items = collect($this->getItems());
+        return $items->sum('max_score');
+    }
+
+    public function getMaxPossibleScoreAttribute()
+    {
+        $items = collect($this->getItems());
+        return $items->sum('max_score');
+    }
 
     /**
      * Get the [released] column value.
@@ -609,7 +618,6 @@ MYSQL;
     {
         return $this->attributes['released'];
     }
-
 
     /**
      * Get the [user_id] column value.
@@ -628,28 +636,6 @@ MYSQL;
     public function getYear()
     {
         return $this->attributes['year'];
-    }
-
-    /**
-     * Set the value of [locked] column.
-     *
-     * @param $value
-     * @return $this|\Exam The current object (for fluent API support)
-     */
-    public function setLocked( $value )
-    {
-        $this->attributes['locked'] = $value;
-    }
-
-    /**
-     * Set the value of [released] column.
-     *
-     * @param $value
-     * @return $this|\Exam The current object (for fluent API support)
-     */
-    public function setReleased( $value )
-    {
-        $this->attributes['released'] = $value;
     }
 
 }
