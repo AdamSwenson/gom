@@ -1,5 +1,5 @@
 <template>
-<!--These are the navigation tabs for the exam only-->
+    <!--These are the navigation tabs for the exam only-->
     <nav class="exam-card-navigation-tabs tabs is-centered"
     >
         <ul v-bind:id="id">
@@ -43,18 +43,18 @@
             </li>
 
             <!--<li class="exam-stats-tab"-->
-                <!--role="presentation">-->
-                <!--<router-link v-bind:to="routeToExamStats">-->
-                    <!--<a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
-                        <!--<span class="icon is-small">-->
-                            <!--<i class="fa fa-bar-chart" aria-hidden="true"></i>-->
-                        <!--</span>-->
-                        <!--<span>Stats</span>-->
-                    <!--</a>-->
-                <!--</router-link>-->
+            <!--role="presentation">-->
+            <!--<router-link v-bind:to="routeToExamStats">-->
+            <!--<a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
+            <!--<span class="icon is-small">-->
+            <!--<i class="fa fa-bar-chart" aria-hidden="true"></i>-->
+            <!--</span>-->
+            <!--<span>Stats</span>-->
+            <!--</a>-->
+            <!--</router-link>-->
             <!--</li>-->
 
-            <li class="exam-notes-tab"role="presentation">
+            <li class="exam-notes-tab" role="presentation">
                 <router-link v-bind:to="routeToNotes">
                     <a id="notes-nav"
                        class="notes-nav"
@@ -68,7 +68,18 @@
                 </router-link>
             </li>
 
-            <!--These are for post grading tasks-->
+            <!--These are for post grading task-->
+
+            <li class="quality-control-tab" role="presentation">
+                <router-link v-bind:to="routeToQuality">
+                    <a class="quality-nav" v-bind:class="{ 'exam-nav' : isExam  }">
+                        <span class="icon is-small">
+                            <i class="fa fa-rocket" aria-hidden="true"></i>
+                        </span>
+                        <span>Quality</span>
+                    </a>
+                </router-link>
+            </li>
 
             <li class="exam-grades-tab"
                 role="presentation">
@@ -157,9 +168,7 @@
 
             //Notes
             routeToNotes: function () {
-
-                if(this.isExam) return "/panel-exam-notes/" + this.serialNumber;
-
+                if ( this.isExam ) return "/panel-exam-notes/" + this.serialNumber;
                 return "/panel-item-notes/" + this.serialNumber;
             },
 
@@ -170,6 +179,10 @@
             // routeToStats: function () {
             //     return "/panel-stats/" + this.serialNumber;
             // },
+
+            routeToQuality: function () {
+                return '/panel-quality/' + this.serialNumber;
+            },
 
             routeToStudents: function () {
                 return "/panel-students/" + this.serialNumber;
@@ -238,7 +251,6 @@
                 if ( this.isExam ) return 'exam-' + name + '-nav-' + this.serialNumber;
                 return 'item-' + name + '-nav-' + this.serialNumber;
             }
-
 
 
         },

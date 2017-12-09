@@ -36,13 +36,20 @@ class TagsControllerTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+
+        $user = \factory(User::class)->create();
+        Auth::login($user);
+
         $this->numTags = 4; //$this->faker->randomDigit();
 
         $this->exam = factory(Exam::class)->create();
         $this->exam->save();
         $this->tag = \factory(Tag::class)->create();
+        $this->tag->save();
         $this->item = \factory(Item::class)->create();
+        $this->item->save();
         $this->student = \factory(Student::class)->create();
+        $this->student->save();
     }
 
 
@@ -152,22 +159,28 @@ class TagsControllerTest extends TestCase
     /** @test */
     public function associateTagWithExam()
     {
-//        $exam1 = \factory(Exam::class)->create();
-//        $tag = factory(Tag::class)->create();
-        $route = $this->route . "/exam1/{$this->exam->id}/tag/{$this->tag->id}";
+        $user = \factory(User::class)->create();
+        Auth::login($user);
 
-        $response = $this->post($route);
+        $exam = factory(Exam::class)->create();
+        $tag = factory(Tag::class)->create();
+        $exam->save();
+        $tag->save();
+        $route = $this->route . "/exam/{$exam->id}/tag/{$tag->id}";
+
+        $response = $this->actingAs($user)->post($route);
 
         //check
         $response->assertStatus(200);
+//
+//        $exam2 = Exam::find($exam->id);
+//
+//        $r = $exam2->tags()->first();
+//
+//        $this->assertNotEmpty($r);
+//        $this->assertEquals($tag->id, $r->id);
 
-        $exam = Exam::find($this->exam->id);
-
-        $r = $exam->tags()->first();
-
-        $this->assertNotEmpty($r);
-        $this->assertEquals($this->tag->id, $r->id);
-//        $this->assertDatabaseHas('exam_tag', [
+///        $this->assertDatabaseHas('exam_tag', [
 //            'exam_id' => $this->exam1->id,
 //            'tag_id' => $this->tag->id
 //        ]);
@@ -176,18 +189,28 @@ class TagsControllerTest extends TestCase
     /** @test */
     public function disassociateTagFromExam()
     {
-        $this->exam->tags()->attach($this->tag);
+        $user = \factory(User::class)->create();
+        $user->save();
+        Auth::login($user);
 
-        $route = $this->route . "/exam1/{$this->exam->id}/tag/{$this->tag->id}";
+        $exam = factory(Exam::class)->create();
+        $tag = factory(Tag::class)->create();
+        $exam->save();
+        $tag->save();
 
-        $response = $this->delete($route);
+        $exam->tags()->attach($tag->id);
+        $exam->save();
+
+        //call
+        $route = $this->route . "/exam/{$exam->id}/tag/{$tag->id}";
+        $response = $this->actingAs($user)->delete($route);
 
         //check
         $response->assertStatus(200);
 
         $this->assertDatabaseMissing('exam_tag', [
-            'exam_id' => $this->exam->id,
-            'tag_id' => $this->tag->id
+            'exam_id' => $exam->id,
+            'tag_id' => $tag->id
         ]);
 
     }
@@ -292,7 +315,7 @@ class TagsControllerTest extends TestCase
     /** @test */
     public function showForExam()
     {
-        $route = $this->route . '/exam1/' . $this->exam->id;
+        $route = $this->route . '/exam/' . $this->exam->id;
         $tags = \factory(Tag::class, $this->numTags)->create();
         self::tagObjects($tags, [$this->exam]);
 
@@ -374,7 +397,7 @@ class TagsControllerTest extends TestCase
     public function destroy()
     {
         $tag = factory(Tag::class)->create();
-        $id= $tag->id;
+        $id = $tag->id;
 //        $this->assertDatabaseHas('tags', $tag->toArray());
 //            [
 //                'id' => $tag->id,

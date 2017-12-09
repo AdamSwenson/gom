@@ -104,7 +104,7 @@ Route::get('report', 'Report\ReportController@index');
 // Analytics page
 Route::get('report/{exam}/analytics', 'Report\AnalyticsController@index');
 // Quality control tools
-Route::get('report/{exam}/qualitycontrol', 'Report\QualityControlController@index');
+Route::get('report/{exam}/qualitycontrol', 'Quality\QualityControlController@index');
 // shows student controls for the exam
 Route::get('report/{exam}/students', 'Report\ReportController@showStudentControls');
 
@@ -233,6 +233,9 @@ Route::get('dev/stats/summary/kumi/item/{item}', 'Item\ItemStatsController@itemS
 
 Route::get('dev/numgraded/exam/{exam}', 'Analytics\ExamCountsController@getExamCounts');
 
+//Quality control
+Route::get('quality/exam/{exam}', 'Quality\QualityControlController@show');
+
 //Students
 Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
 Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
@@ -253,3 +256,4 @@ Route::delete('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@disas
 Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
 
 Route::resource('dev/tags', 'Item\TagsController');
+

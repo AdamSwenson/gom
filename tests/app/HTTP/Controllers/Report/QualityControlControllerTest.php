@@ -6,7 +6,7 @@
  * Time: 4:32 PM
  */
 
-namespace App\HTTP\Controllers\Report;
+namespace App\HTTP\Controllers\Quality;
 
     use App\AccessKey;
     use App\Exam;
@@ -64,5 +64,8 @@ class QualityControlControllerTest  extends \TestCase
         #call
         $this->call('GET', $route);
     }
+
+    /** @test */
+    public function show(){}
 
 }

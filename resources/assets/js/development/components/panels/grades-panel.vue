@@ -8,9 +8,9 @@
         <div class="tile is-ancestor box">
 
             <div class="assignment-table  tile is-parent is-vertical">
-<div class="maxScoreArea">
-                <p ><span class="h4">Maximum possible score:</span> {{ examMaxScore }}</p>
-</div>
+                <div class="maxScoreArea">
+                    <p><span class="h4">Maximum possible score:</span> {{ examMaxScore }}</p>
+                </div>
 
                 <div class="tile is-child">
                     <table class="table is-narrow">
@@ -76,9 +76,9 @@
 
 </template>
 <style>
-.maxScoreArea{
-    margin-bottom: 2em;
-}
+    .maxScoreArea {
+        margin-bottom: 2em;
+    }
 </style>
 <script>
     import * as aTypes from '../../../store/action-types';

@@ -47944,6 +47944,17 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
@@ -47989,9 +48000,7 @@ exports.default = {
 
         //Notes
         routeToNotes: function routeToNotes() {
-
             if (this.isExam) return "/panel-exam-notes/" + this.serialNumber;
-
             return "/panel-item-notes/" + this.serialNumber;
         },
 
@@ -48002,6 +48011,10 @@ exports.default = {
         // routeToStats: function () {
         //     return "/panel-stats/" + this.serialNumber;
         // },
+
+        routeToQuality: function routeToQuality() {
+            return '/panel-quality/' + this.serialNumber;
+        },
 
         routeToStudents: function routeToStudents() {
             return "/panel-students/" + this.serialNumber;
@@ -57300,13 +57313,17 @@ var _examStatsPanel = __webpack_require__(668);
 
 var _examStatsPanel2 = _interopRequireDefault(_examStatsPanel);
 
-var _tagsPanel = __webpack_require__(698);
+var _qualityControlPanel = __webpack_require__(880);
 
-var _tagsPanel2 = _interopRequireDefault(_tagsPanel);
+var _qualityControlPanel2 = _interopRequireDefault(_qualityControlPanel);
 
 var _studentsPanel = __webpack_require__(695);
 
 var _studentsPanel2 = _interopRequireDefault(_studentsPanel);
+
+var _tagsPanel = __webpack_require__(698);
+
+var _tagsPanel2 = _interopRequireDefault(_tagsPanel);
 
 var _gradesPanel = __webpack_require__(674);
 
@@ -57323,6 +57340,7 @@ _vue2.default.component('panel-comments', _commentSetupPanel2.default);
 
 //Panels (objects within pane)
 
+
 _vue2.default.component('panel-history', _historyPanel2.default);
 
 _vue2.default.component('panel-notes', _notesPanel2.default);
@@ -57331,9 +57349,11 @@ _vue2.default.component('panel-detail', _itemDetailPanel2.default);
 
 _vue2.default.component('panel-stats', _statsPanel2.default);
 
-_vue2.default.component('panel-tags', _tagsPanel2.default);
+_vue2.default.component('panel-quality', _qualityControlPanel2.default);
 
 _vue2.default.component('panel-students', _studentsPanel2.default);
+
+_vue2.default.component('panel-tags', _tagsPanel2.default);
 
 _vue2.default.component('panel-grades', _gradesPanel2.default);
 
@@ -57343,7 +57363,10 @@ var routes = exports.routes = [
 {
     name: 'load-exam',
     path: ''
-}, { name: 'new-exam', path: '' }, { name: 'grade-exam', path: '/grade/exam/:id' },
+},
+
+//external
+{ name: 'new-exam', path: '' }, { name: 'grade-exam', path: '/grade/exam/:id' },
 
 //comment setup
 {
@@ -57353,6 +57376,7 @@ var routes = exports.routes = [
     props: { itemPanels: true //{default: true}
     } }, //props: (route) => {return route.index;}},
 
+//comments-exam
 {
     name: 'exam-comments',
     path: '/exam-panel-comments/:serialNumber',
@@ -57360,18 +57384,30 @@ var routes = exports.routes = [
     props: {
         isExam: true
     }
-}, {
+},
+
+//detail-exam
+{
     name: 'exam-detail',
     path: '/panel-exam-detail/:serialNumber',
     components: { examPanels: _examDetailPanel2.default },
     props: true
 },
+
+//grades
+{
+    path: '/panel-grades/:serialNumber',
+    components: { examPanels: _gradesPanel2.default },
+    props: true
+},
+
 //history
 {
     path: '/panel-history/:serialNumber',
     components: { itemPanels: _historyPanel2.default },
     props: true
 },
+
 //item detail
 {
     name: 'item-detail',
@@ -57379,10 +57415,18 @@ var routes = exports.routes = [
     components: { itemPanels: _itemDetailPanel2.default },
     props: true
 },
+
 //notes
 {
     path: '/panel-item-notes/:serialNumber',
     components: { itemPanels: _notesPanel2.default },
+    props: true
+},
+
+//quality control
+{
+    path: '/panel-quality/:serialNumber',
+    components: { examPanels: _qualityControlPanel2.default },
     props: true
 }, {
     path: '/panel-exam-notes/:serialNumber',
@@ -57409,6 +57453,7 @@ var routes = exports.routes = [
     components: { examPanels: _studentsPanel2.default },
     props: true
 },
+
 //tags
 {
     path: '/panel-tags/:serialNumber',
@@ -57416,12 +57461,6 @@ var routes = exports.routes = [
     props: {
         objectType: 'item'
     }
-},
-//grades
-{
-    path: '/panel-grades/:serialNumber',
-    components: { examPanels: _gradesPanel2.default },
-    props: true
 }];
 
 /***/ }),
@@ -58645,6 +58684,10 @@ var _itemscores = __webpack_require__(329);
 
 var _itemscores2 = _interopRequireDefault(_itemscores);
 
+var _quality = __webpack_require__(904);
+
+var _quality2 = _interopRequireDefault(_quality);
+
 var _scoresForStats = __webpack_require__(330);
 
 var _scoresForStats2 = _interopRequireDefault(_scoresForStats);
@@ -58675,6 +58718,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import createLogger from '../../../src/plugins/logger'
 
 //grade assignments
+_vue2.default.use(_vuex2.default);
+
+/**
+ * This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+
+
+//api
 
 
 //Newer
@@ -58714,16 +58767,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 // import Vue from  'vue/dist/vue.js'
-_vue2.default.use(_vuex2.default);
-
-/**
- * This subscribes the api package which
- * handles data exchange with the server
- * to mutations in the store.
- */
-
-
-//api
 
 
 var debug = "development" !== 'production';
@@ -58749,29 +58792,28 @@ exports.default = new _vuex2.default.Store({
     activeexam: _activeexam2.default,
     activestudent: _activestudent2.default,
     comments: _comments2.default,
-    escores: _escores2.default,
     exams: _exams2.default,
-    items: _items2.default,
+    gradeAssignments: _gradeAssignments2.default,
     grades: _grades2.default,
-    // orderings,
-    qscores: _qscores2.default,
-    questions: _questions2.default,
-    settings: _settings2.default,
-    students: _students2.default,
-    times: _times2.default,
-    visibility: _visibility2.default,
-
+    items: _items2.default,
     itemScores: _itemscores2.default,
     kumi: _kumis2.default,
     notes: _notes2.default,
+    quality: _quality2.default,
     requests: _requests2.default,
     roster: _roster2.default,
     rosterDisplay: _display2.default,
+    settings: _settings2.default,
     stats: _scoresForStats2.default,
+    students: _students2.default,
     tags: _tags2.default,
-    //student table
+    times: _times2.default,
+    visibility: _visibility2.default,
 
-    gradeAssignments: _gradeAssignments2.default
+    //older
+    escores: _escores2.default,
+    qscores: _qscores2.default,
+    questions: _questions2.default
 
     // }
     // plugins: debug ? [createLogger()] : []
@@ -70576,7 +70618,7 @@ exports = module.exports = __webpack_require__(4)();
 
 
 // module
-exports.push([module.i, "\n.maxScoreArea{\n    margin-bottom: 2em;\n}\n", ""]);
+exports.push([module.i, "\n.maxScoreArea {\n    margin-bottom: 2em;\n}\n", ""]);
 
 // exports
 
@@ -86847,6 +86889,27 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "aria-hidden": "true"
     }
   })]), _vm._v(" "), _c('span', [_vm._v("Notes")])])])], 1), _vm._v(" "), _c('li', {
+    staticClass: "quality-control-tab",
+    attrs: {
+      "role": "presentation"
+    }
+  }, [_c('router-link', {
+    attrs: {
+      "to": _vm.routeToQuality
+    }
+  }, [_c('a', {
+    staticClass: "quality-nav",
+    class: {
+      'exam-nav': _vm.isExam
+    }
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-rocket",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', [_vm._v("Quality")])])])], 1), _vm._v(" "), _c('li', {
     staticClass: "exam-grades-tab",
     attrs: {
       "role": "presentation"
@@ -88809,7 +88872,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "grades-panel"
   }, [_c('p', {
     staticClass: "title"
-  }, [_vm._v("\n            Setting grade distribution happens here\n        ")]), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n        Setting grade distribution happens here\n    ")]), _vm._v(" "), _c('div', {
     staticClass: "tile is-ancestor box"
   }, [_c('div', {
     staticClass: "assignment-table  tile is-parent is-vertical"
@@ -96104,6 +96167,1512 @@ exports.clearImmediate = clearImmediate;
 __webpack_require__(190);
 module.exports = __webpack_require__(191);
 
+
+/***/ }),
+/* 878 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _googleCharts = __webpack_require__(175);
+
+var _gradeOrderChart = __webpack_require__(891);
+
+var _gradeOrderChart2 = _interopRequireDefault(_gradeOrderChart);
+
+var _gradingTimeHist = __webpack_require__(892);
+
+var _gradingTimeHist2 = _interopRequireDefault(_gradingTimeHist);
+
+var _timeScoreScatter = __webpack_require__(894);
+
+var _timeScoreScatter2 = _interopRequireDefault(_timeScoreScatter);
+
+var _revisitList = __webpack_require__(893);
+
+var _revisitList2 = _interopRequireDefault(_revisitList);
+
+var _qualityRequests = __webpack_require__(903);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/*
+How about a chart which represents the grade distibution by
+student mean item scores and compares it to the total
+score distrubution
+ */
+
+exports.default = {
+
+    props: [],
+
+    components: {
+        RevisitList: _revisitList2.default,
+        TimeScoreScatter: _timeScoreScatter2.default,
+        GradingTimeHist: _gradingTimeHist2.default,
+        GradeOrderChart: _gradeOrderChart2.default
+    },
+
+    data: function data() {
+        return {
+            itemSerialNumber: _.toInteger(this.$route.params.serialNumber),
+
+            toRevisit: [],
+            defaults: {}
+        };
+    },
+
+    asyncComputed: {
+
+        qcData: function qcData() {
+            var me = this;
+
+            //If already loaded, use it
+            var g = this.$store.getters.getByGradedOrder;
+            if (!_.isUndefined(g) && g.length > 0) return g;
+
+            //otherwise, fetch it from the server
+            var p2 = me.$store.dispatch('loadQCDataFromServer', this.exam);
+            return p2.then(function () {
+                return me.$store.getters.getByGradedOrder;
+            });
+        }
+
+    },
+
+    computed: {
+        exam: function exam() {
+            return this.item;
+        },
+        /**
+         * The exam or item the note is associated with
+         */
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.itemSerialNumber);
+        },
+
+        isExam: function isExam() {
+            return this.item ? this.item.isExam() : false;
+        }
+
+    },
+
+    methods: {
+
+        /**
+         * Adds the clicked on student to the list of students whose exams should
+         * be revisited.
+         * TODO Make bar change color when clicked.
+         * @param chart
+         */
+        chartClickHandler: function chartClickHandler(chart) {
+            var me = this;
+            var selection = chart.getSelection();
+            for (var i = 0; i < selection.length; i++) {
+                var item = selection[i];
+                if (item.row != null && item.column != null) {
+                    var selectedData = scoresAndTimesAll[item.row];
+                    me.addStudentToList(selectedData[4], selectedData[3]);
+                    //item.row.color = 'red';
+                    window.console.log('click happened', selectedData);
+                }
+            }
+        },
+
+        /**
+         * Appends student info to the list of students whose exams should be revisited
+         * @param studentName
+         * @param studentIdentifier
+         */
+        addStudentToList: function addStudentToList(studentId) {
+            this.toRevisit.push(studentId);
+            // var listItem = "<li class='list-group-item'>" + studentName + " (id: " + studentIdentifier + ") [Link to comments] [Link to grading] <span class='text-right'><span class='toRemove glyphicon glyphicon-remove'></span></span></li>";
+            // $( "#revisitList" ).append( listItem );
+            // $( ".toRemove" ).on( 'click', function () {
+            //     $( this ).parent().remove();
+            // } );
+        }
+
+    },
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 879 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 880 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(882)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(878),
+  /* template */
+  __webpack_require__(881),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/quality-control-panel.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] quality-control-panel.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-322a2758", Component.options)
+  } else {
+    hotAPI.reload("data-v-322a2758", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 881 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "mainBodyLocator",
+    attrs: {
+      "id": "quality-control-panel"
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v("\n        <>Catch grading errors before your students do\n    ")]), _vm._v(" "), _c('h4', [_vm._v("Please note: The tools on this page are still under development. ")]), _vm._v(" "), _c('div', {
+    staticClass: "box"
+  }, [_vm._m(1), _vm._v(" "), _c('div', {
+    staticClass: "tile is-ancestor"
+  }, [_c('div', {
+    staticClass: "tile is-parent is-vertical"
+  }, [_c('div', {
+    staticClass: "tile box"
+  }, [_c('grade-order-chart', {
+    attrs: {
+      "qc-data": _vm.qcData
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile box"
+  }, [_c('grading-time-hist', {
+    attrs: {
+      "qc-data": _vm.qcData
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile box"
+  }, [_c('time-score-scatter', {
+    attrs: {
+      "qc-data": _vm.qcData
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile box"
+  }, [_c('revisit-list', {
+    attrs: {
+      "to-revisit": _vm.toRevisit
+    }
+  })], 1)])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "title"
+  }, [_c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-rocket",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" Quality Control")])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "panel-body has-text-justified"
+  }, [_c('p', [_vm._v("Grading is boring and hard. Mistakes are both inevitable and consequential. A struggling student who\n                gets\n                a D instead of the C she deserves might lose financial aid and drop out of college. At the same\n                time, it\n                is difficult to do any real quality control without expending an unreasonable amount of time and\n                effort.")]), _vm._v(" "), _c('p', [_vm._v("We are working on algorithms to better identify potential grading errors. In the meantime, here are\n                some\n                representations of your grading process which can help you visually identify potential problems. Use\n                them to identify exams to quickly glance over and double-check your work.")]), _vm._v(" "), _c('p', [_vm._v("Clicking on exams in the following charts adds them to the list of exams on the right. ")])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-322a2758", module.exports)
+  }
+}
+
+/***/ }),
+/* 882 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(879);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("38cdb0aa", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-322a2758\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./quality-control-panel.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-322a2758\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./quality-control-panel.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 883 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _googleCharts = __webpack_require__(175);
+
+exports.default = {
+
+    props: ['qcData'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+        preparedData: function preparedData() {
+            var scoreTime = [];
+            if (_.isUndefined(this.qcData)) return scoreTime;
+            for (var i = 0; i < this.qcData.length; i++) {
+                scoreTime.push(['g', this.qcData[i].totalScore, this.qcData[i].gradingTime]);
+            }
+            return scoreTime;
+        }
+    },
+
+    methods: {
+
+        /**
+         * Draws a column chart with columns for score and time grading following the order
+         * in which exams were graded.
+         */
+        draw: function draw() {
+            var me = this;
+
+            var data = new _googleCharts.GoogleCharts.api.visualization.DataTable();
+
+            // Declare columns
+            data.addColumn('string', 'Graded');
+            data.addColumn('number', 'score');
+            data.addColumn('number', 'times');
+            data.addRows(this.preparedData);
+
+            var options = {
+                title: "Scores by graded order",
+                height: 600,
+                bar: { groupWidth: "90%" },
+                legend: { position: "top" }
+            };
+            var chart = new _googleCharts.GoogleCharts.api.visualization.ColumnChart(document.getElementById("scoresGradedOrderBar"));
+            chart.draw(data, options);
+
+            function clickHandler() {
+                me.chartClickHandler(chart);
+            }
+
+            _googleCharts.GoogleCharts.api.visualization.events.addListener(chart, 'select', clickHandler);
+        },
+
+        /**
+         * Makes column chart of total scores in the order in which the exams were graded
+         */
+        drawScoresByOrder: function drawScoresByOrder() {
+            var me = this;
+            var data = new google.visualization.DataTable();
+
+            // Declare columns
+            data.addColumn('string', 'Graded');
+            data.addColumn('number', 'score');
+            data.addRows(scoresGradedOrder);
+
+            var options = {
+                title: "Scores by graded order",
+                width: 1000,
+                height: 400,
+                bar: { groupWidth: "85%" },
+                vAxis: { title: 'Total Score' },
+                legend: { position: "none" }
+            };
+            var chart = new google.visualization.ColumnChart(document.getElementById("scoresGradedOrderBar"));
+            chart.draw(data, options);
+
+            function clickHandler() {
+                me.chartClickHandler(chart);
+            }
+
+            google.visualization.events.addListener(chart, 'select', clickHandler);
+        },
+
+        /**
+         * Draws a column chart of grading times in the order in which they were graded.
+         */
+        drawTimesByOrder: function drawTimesByOrder() {
+            var me = this;
+            var data = new google.visualization.DataTable();
+
+            // Declare columns
+            data.addColumn('string', 'Graded');
+            data.addColumn('number', 'seconds');
+            data.addRows(timesGradedOrder);
+
+            var options = {
+                title: "Grading times by graded order",
+                width: 600,
+                height: 400,
+                bar: { groupWidth: "95%" },
+                vAxis: { title: 'Time Grading' },
+                legend: { position: "none" }
+            };
+            var chart = new google.visualization.ColumnChart(document.getElementById("timesGradedOrderBar"));
+            chart.draw(data, options);
+
+            function clickHandler() {
+                me.chartClickHandler(chart);
+            }
+
+            google.visualization.events.addListener(chart, 'select', clickHandler);
+        },
+
+        chartClickHandler: function chartClickHandler() {
+            window.console.log('grade-order-chart', 'chartClickHandler', 155);
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        var me = this;
+        this.$nextTick(function () {
+            //Load the charts library with a callback
+            _googleCharts.GoogleCharts.load(function () {
+                return me.draw;
+            }());
+        });
+    }
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 884 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _googleCharts = __webpack_require__(175);
+
+exports.default = {
+
+    props: ['qcData'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+        preparedData: function preparedData() {
+            //todo make sure is actually sorted properly
+            var byMinutes = [];
+
+            if (_.isUndefined(this.qcData)) return byMinutes;
+
+            var timesGradedOrder = this.qcData;
+
+            for (var i = 0; i < timesGradedOrder.length; i++) {
+                var minutes = timesGradedOrder[i].gradingTime / 60;
+                byMinutes.push([minutes]);
+            }
+
+            return byMinutes;
+        }
+
+    },
+
+    methods: {
+
+        /**
+         * Draws a histogram of time spent grading exams
+         */
+        draw: function draw() {
+            var me = this;
+            // var byMinutes = [];
+            // for (var i = 0; i < timesGradedOrder.length; i++) {
+            //     var minutes = timesGradedOrder[ i ][ 1 ] / 60;
+            //     byMinutes.push( [ minutes ] )
+            // }
+            //
+            var data = new _googleCharts.GoogleCharts.api.visualization.DataTable();
+
+            // Declare columns
+            data.addColumn('number', 'time');
+            data.addRows(this.preparedData);
+
+            var options = {
+                title: 'Grading times distribution',
+                vAxis: { title: 'Number of exams' },
+                hAxis: { title: 'Minutes spent grading' },
+                legend: { position: 'top' }
+            };
+
+            var chart = new _googleCharts.GoogleCharts.api.visualization.Histogram(document.getElementById('gradingTimeHistogram'));
+            chart.draw(data, options);
+
+            function clickHandler() {
+                me.chartClickHandler(chart);
+            }
+
+            _googleCharts.GoogleCharts.api.visualization.events.addListener(chart, 'select', clickHandler);
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        var me = this;
+        this.$nextTick(function () {
+            //Load the charts library with a callback
+            _googleCharts.GoogleCharts.load(function () {
+                return me.draw;
+            }());
+        });
+    }
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 885 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+        toRevisit: function toRevisit() {
+            return [];
+        }
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 886 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _googleCharts = __webpack_require__(175);
+
+exports.default = {
+
+    props: ['qcData'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+        preparedData: function preparedData() {
+            var scoreTime = [];
+
+            if (_.isUndefined(this.qcData)) return scoreTime;
+
+            var scoresAndTimes = this.qcData;
+
+            for (var i = 0; i < scoresAndTimes.length; i++) {
+                scoreTime.push([scoresAndTimes[i].totalScore, scoresAndTimes[i].gradingTime]);
+            }
+            return scoreTime;
+        }
+    },
+
+    methods: {
+
+        /**
+         * Draws a scatterplot of time grading vs. score with R squared value
+         */
+        draw: function draw() {
+            var scoresAndTimes = this.qcData;
+            var me = this;
+            var scoreTime = [];
+            for (var i = 0; i < scoresAndTimes.length; i++) {
+                scoreTime.push([scoresAndTimes[i].totalScore, scoresAndTimes[i].gradingTime]);
+            }
+
+            var data = new _googleCharts.GoogleCharts.api.visualization.DataTable();
+
+            // Declare columns
+            data.addColumn('number', 'score');
+            data.addColumn('number', 'Grading time');
+
+            data.addRows(this.preparedData);
+
+            var options = {
+                title: "Scores vs. Grading time",
+                width: 600,
+                height: 400,
+                vAxis: { title: 'Total Score' },
+                hAxis: { title: 'Grading Time (seconds)' },
+                trendlines: {
+                    0: {
+                        type: 'linear',
+                        color: 'green',
+                        lineWidth: 3,
+                        opacity: 0.3,
+                        showR2: true,
+                        visibleInLegend: true
+                    }
+                }
+            };
+            var chart = new _googleCharts.GoogleCharts.api.visualization.ScatterChart(document.getElementById("timeScoreScatter"));
+            chart.draw(data, options);
+
+            function clickHandler() {
+                me.chartClickHandler(chart);
+            }
+
+            _googleCharts.GoogleCharts.api.visualization.events.addListener(chart, 'select', clickHandler);
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        var me = this;
+        this.$nextTick(function () {
+            //Load the charts library with a callback
+            _googleCharts.GoogleCharts.load(function () {
+                return me.draw;
+            }());
+        });
+    }
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 887 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 888 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 889 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 890 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 891 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(899)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(883),
+  /* template */
+  __webpack_require__(895),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/quality/grade-order-chart.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] grade-order-chart.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-198bb927", Component.options)
+  } else {
+    hotAPI.reload("data-v-198bb927", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 892 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(901)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(884),
+  /* template */
+  __webpack_require__(897),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/quality/grading-time-hist.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] grading-time-hist.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-38bd3832", Component.options)
+  } else {
+    hotAPI.reload("data-v-38bd3832", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 893 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(900)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(885),
+  /* template */
+  __webpack_require__(896),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/quality/revisit-list.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] revisit-list.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-20499445", Component.options)
+  } else {
+    hotAPI.reload("data-v-20499445", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 894 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(902)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(886),
+  /* template */
+  __webpack_require__(898),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/quality/time-score-scatter.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] time-score-scatter.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-e7b18c16", Component.options)
+  } else {
+    hotAPI.reload("data-v-e7b18c16", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 895 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "scoresOrderArea"
+    }
+  }, [_c('div', {
+    staticClass: "quality-description "
+  }, [_c('p', {
+    staticClass: "h3"
+  }, [_vm._v("Framing effects")]), _vm._v(" "), _c('p', [_vm._v("If you read several very good exams and then one average exam1, the average exam1 may seem worse\n            than it is. Or vice-versa.")]), _vm._v(" "), _c('p', [_vm._v(" Each bar in the following chart represents an exam1. The exams are arranged in the order they were\n            graded. The first exam1 you graded is on the left. The last exam1 is on the right.")]), _vm._v(" "), _c('p', [_vm._v("Look for sudden peaks and valleys. That is, exams with scores much higher or lower than their\n            predecessors. These may be worth taking a quick look at. ")])]), _vm._v(" "), _c('div', {
+    staticClass: "chart-area level"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('div', {
+    attrs: {
+      "id": "scoresGradedOrderBar"
+    }
+  })])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-198bb927", module.exports)
+  }
+}
+
+/***/ }),
+/* 896 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "revisit-list "
+  }, [_c('h3', [_vm._v("Exams to revisit")]), _vm._v(" "), _c('ul', {
+    staticClass: "list-group",
+    attrs: {
+      "id": "revisitList"
+    }
+  }, _vm._l((_vm.toRevisit), function(exam) {
+    return _c('li')
+  })), _vm._v(" "), _c('p', [_vm._v("(Make sure you copy this list and paste it into a document; it won't be saved after you leave this\n        page)")])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-20499445", module.exports)
+  }
+}
+
+/***/ }),
+/* 897 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "grading-time-hist"
+  }, [_c('div', {
+    staticClass: "quality-description "
+  }, [_c('p', [_vm._v("In many disciplines, there will tend to be a rough positive correlation between exam1 quality and\n            grading time (i.e., better students tend to write more than less good students). Howevever, this\n            will not always be the case. It thus may help to look for outliers by grading time alone. The\n            following chart is a simple histogram of the amount of time spent grading exams. The number of\n            exams\n            taking the amount of time a particular bin is on the vertical axis. You may want to revisit\n            exams in\n            the extreme left and right bins.")])]), _vm._v(" "), _c('div', {
+    staticClass: "chart-area level"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('div', {
+    attrs: {
+      "id": "gradingTimeHistogram"
+    }
+  })])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-38bd3832", module.exports)
+  }
+}
+
+/***/ }),
+/* 898 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "timeScoreScatterArea"
+    }
+  }, [_c('div', {
+    staticClass: "quality-description "
+  }, [_c('p', {
+    staticClass: "h3"
+  }, [_vm._v("Grading time")]), _vm._v(" "), _c('p', [_vm._v("To help keep you motivated, the gradeomatic recorded how long you spent grading each exam1. You\n            can\n            use this data to help with quality control.")]), _vm._v(" "), _c('p', [_vm._v("For example, you might have spent twice as long on one B- exam1 than on other B- exams because you\n            were tired or losing focus on the task. Similarly, spending a lot less time on an exam1 might be\n            a\n            sign that you were rushing.")]), _vm._v(" "), _c('p', [_vm._v("The following chart plots the time spent grading each exam1 against it's total score. You might\n            want\n            to pay particular attention to outliers in the upper left quadrent (high score; graded fast) and\n            lower right quadrent (low score; graded slow).")])]), _vm._v(" "), _c('div', {
+    staticClass: "chart-area level"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('div', {
+    attrs: {
+      "id": "timeScoreScatter"
+    }
+  })])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-e7b18c16", module.exports)
+  }
+}
+
+/***/ }),
+/* 899 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(887);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("0be278fc", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-198bb927\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grade-order-chart.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-198bb927\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grade-order-chart.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 900 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(888);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("f6625ea6", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-20499445\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./revisit-list.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-20499445\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./revisit-list.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 901 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(889);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("1f5bd49f", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38bd3832\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grading-time-hist.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38bd3832\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grading-time-hist.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 902 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(890);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("2f03c922", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e7b18c16\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./time-score-scatter.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e7b18c16\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./time-score-scatter.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 903 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = {
+
+    getQCData: function getQCData(exam) {
+        var to = '/quality/exam/' + exam.id;
+
+        return window.axios.get(to).then(function (response) {
+            return response.data;
+        });
+    }
+};
+
+/***/ }),
+/* 904 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _IModel2 = __webpack_require__(50);
+
+var _IModel3 = _interopRequireDefault(_IModel2);
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _vue = __webpack_require__(19);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Kumi = __webpack_require__(22);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _qualityRequests = __webpack_require__(903);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 12/9/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+/**
+ *
+ * NB this is stored separately from the score data
+ * because this needs to have the student id so that
+ * we can revisit their exam
+ *
+ */
+
+var QCDatum = function (_IModel) {
+    _inherits(QCDatum, _IModel);
+
+    function QCDatum() {
+        _classCallCheck(this, QCDatum);
+
+        var _this = _possibleConstructorReturn(this, (QCDatum.__proto__ || Object.getPrototypeOf(QCDatum)).call(this));
+
+        _this.examId;
+
+        _this.studentId;
+
+        _this.kumiIds = [];
+
+        _this.totalScore;
+
+        _this.gradingTime;
+
+        _this.gradedDatetime;
+
+        _this.gradedOrder;
+        return _this;
+    }
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+
+
+    _createClass(QCDatum, null, [{
+        key: 'factory',
+        value: function factory(params) {
+            var obj = new QCDatum();
+            return this.fillObject(obj, params, {});
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['examId', 'kumiIds', 'totalScore', 'gradingTime', 'gradedDatetime', 'gradedOrder', 'studentId'].concat(_get(QCDatum.__proto__ || Object.getPrototypeOf(QCDatum), 'fillableProps', this));
+        }
+    }]);
+
+    return QCDatum;
+}(_IModel3.default);
+
+var state = {
+
+    quality: []
+};
+
+var mutations = {
+    overwriteQuality: function overwriteQuality(state, payload) {
+        state.quality = payload.obj;
+    }
+
+};
+
+var actions = {
+    /**
+     * This makes the request to the server and then
+     * loads the data into state.quality
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param exam
+     * @returns {Promise<any>}
+     */
+    loadQCDataFromServer: function loadQCDataFromServer(_ref, exam) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+            var p = (0, _qualityRequests.getQCData)(exam);
+            p.then(function (data) {
+                var processed = [];
+                _.forEach(data, function (d) {
+                    processed.push(QCDatum.factory(_extends({}, d)));
+                });
+                commit('overwriteQuality', _Payload2.default.factory({ obj: processed, mutateSilently: true }));
+                resolve();
+            });
+        });
+    }
+
+    // loadQCDataFromServer: ( { state, dispatch, commit, getters }, data ) => {
+    //     return new Promise( function ( resolve, reject ) {
+    //
+    //
+    //         let processed = [];
+    //         _.forEach( data, function ( d ) {
+    //             processed.push( QCDatum.factory( { ...d } ) );
+    //         } );
+    //         commit( 'overwriteQuality', Payload.factory( { obj: processed } ) );
+    //         resolve();
+    //     } );
+    // }
+};
+
+var getters = {
+    getByGradedOrder: function getByGradedOrder(state) {
+        return state.quality;
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
 
 /***/ })
 /******/ ]);

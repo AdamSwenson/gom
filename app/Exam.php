@@ -300,158 +300,6 @@ MYSQL;
     {
         return $query->whereReleased(1);
     }
-
-
-    #------------------------------------------------------ foreign keys
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function assignment()
-    {
-        return $this->getAssignmentRoot();
-        //hasOne(Assignment::class);
-    }
-
-    public function assignments()
-    {
-        return $this->hasMany(Assignment::class);
-    }
-
-    /**
-     * Classes (kumis) taking the exam
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function classes()
-    {
-        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
-    }
-
-    /**
-     * Associated elements and their subtask numbers
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function elementAssignments()
-    {
-        return $this->belongsToMany('App\Element', 'element_assignments')
-            ->withPivot('subtask')
-            ->withTimestamps();
-    }
-
-    /**
-     * Elements comprising the exam
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function elements()
-    {
-        return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function gradingTimes()
-    {
-        return $this->hasMany(GradingTime::class);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function gradeAssignments()
-    {
-        return $this->hasMany(GradeAssignment::class);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function items()
-    {
-        return $this->hasManyThrough(Item::class, Assignment::class);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function itemScores()
-    {
-        return $this->hasMany(ItemScore::class);
-    }
-
-    /**
-     * Classes (kumis) taking the exam
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function kumis()
-    {
-        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
-    }
-
-    public function notes()
-    {
-        return $this->belongsToMany(Note::class, 'exam_note')->withTimestamps();
-    }
-
-    /**
-     * Junction to all questions associated with the exam
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function questions()
-    {
-        return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
-
-
-        /*The third argument is the name of the foreign key on the intermediate model,
-        the fourth argument is the name of the foreign key on the final model, and 
-        the fifth argument is the local key:*/
-
-        /*return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'a', 'b', 'c');
-         * select `questions`.*, `question_assignments`.`a`
-         * from `questions` inner join `question_assignments` on `question_assignments`.`id` = `questions`.`b`
-         * where `question_assignments`.`a` is null and `user_id` = 1)
-        */
-
-//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id', 'question_id');
-//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id', 'question_id');
-    }
-
-    /**
-     * Junction to assignments of questions to the exam
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function questionAssignments()
-    {
-        return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
-    }
-
-    /**
-     * Junction to assignments of question scores
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function questionScores()
-    {
-        return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');
-    }
-
-    public function students(){
-         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
-    }
-
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, 'exam_tag')->withTimestamps();
-    }
-
-    /**
-     * Associated user
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
-
     # ----------------------------------- Setters
 
     /**
@@ -637,6 +485,158 @@ MYSQL;
     {
         return $this->attributes['year'];
     }
+
+
+    #------------------------------------------------------ foreign keys
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function assignment()
+    {
+        return $this->getAssignmentRoot();
+        //hasOne(Assignment::class);
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
+    /**
+     * Classes (kumis) taking the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function classes()
+    {
+        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
+    }
+
+    /**
+     * Associated elements and their subtask numbers
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function elementAssignments()
+    {
+        return $this->belongsToMany('App\Element', 'element_assignments')
+            ->withPivot('subtask')
+            ->withTimestamps();
+    }
+
+    /**
+     * Elements comprising the exam
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function elements()
+    {
+        return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function gradingTimes()
+    {
+        return $this->hasMany(GradingTime::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function gradeAssignments()
+    {
+        return $this->hasMany(GradeAssignment::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function items()
+    {
+        return $this->hasManyThrough(Item::class, Assignment::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function itemScores()
+    {
+        return $this->hasMany(ItemScore::class);
+    }
+
+    /**
+     * Classes (kumis) taking the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function kumis()
+    {
+        return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
+    }
+
+    public function notes()
+    {
+        return $this->belongsToMany(Note::class, 'exam_note')->withTimestamps();
+    }
+
+    /**
+     * Junction to all questions associated with the exam
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function questions()
+    {
+        return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
+
+
+        /*The third argument is the name of the foreign key on the intermediate model,
+        the fourth argument is the name of the foreign key on the final model, and 
+        the fifth argument is the local key:*/
+
+        /*return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'a', 'b', 'c');
+         * select `questions`.*, `question_assignments`.`a`
+         * from `questions` inner join `question_assignments` on `question_assignments`.`id` = `questions`.`b`
+         * where `question_assignments`.`a` is null and `user_id` = 1)
+        */
+
+//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id', 'question_id');
+//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id', 'question_id');
+    }
+
+    /**
+     * Junction to assignments of questions to the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function questionAssignments()
+    {
+        return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
+    }
+
+    /**
+     * Junction to assignments of question scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function questionScores()
+    {
+        return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');
+    }
+
+    public function students(){
+         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'exam_tag')->withTimestamps();
+    }
+
+    /**
+     * Associated user
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
 
 }
 

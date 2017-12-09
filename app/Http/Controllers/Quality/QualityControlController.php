@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Report;
+namespace App\Http\Controllers\Quality;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Time\IGradingStatsRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -96,19 +97,21 @@ class QualityControlController extends Controller
     }
 
     /**
+     * This is for the original
+     *
      * Returns the page with quality control tools for the given exam
      * @param Exam $exam
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Exam $exam)
+    public function index( Exam $exam )
     {
 //        $this->featureInDevelopment();
 
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
-        $scoreStatsDao = app()->make('App\Repositories\Score\IScoreStatisticsRepository');
-        $gradingTimeStatsDao = app()->make('App\Repositories\Time\IGradingStatsRepository');
+        $scoreStatsDao = app()->make(IScoreStatisticsRepository::class);
+        $gradingTimeStatsDao = app()->make(IGradingStatsRepository::class);
 
         $gradingTimeStats = $gradingTimeStatsDao->get_grading_time_stats($exam->id);
 
@@ -120,5 +123,53 @@ class QualityControlController extends Controller
         ]);
     }
 
-    //
+    /**
+     * This will return the data for the quality control panel
+     * in response to a get request
+     *      quality/exam/{exam}
+     *
+     * Data includes: total exam score, grading time, graded order, grading datetime
+     *
+     *
+     * $out = [
+     * 'totalScore' => '',
+     * 'gradingTime' => '',
+     * 'gradedOrder' => '',
+     * 'gradedDatetime' => '',
+     * 'studentId' => '',
+     * 'examId' => '',
+     * 'kumiIds' => []
+     * ];
+     *
+     *
+     * @param Exam $exam
+     * @return array
+     */
+    public function show( Exam $exam )
+    {
+        $out = [];
+        //We get them by unique id since this goes through the
+        //kumi table.
+        $students = collect($exam->getAllAssociatedStudents())->unique('id');
+
+        foreach ( $students as $student ) {
+            $gt = $student->getGradingTimeOnExam($exam);
+//$kumiIds = collect($student->kumis()->where('exam_id', $exam)->get())->pluck('id');
+
+            $out[] = [
+                'totalScore' => $student->getTotalScoreOnExam($exam),
+                'gradingTime' => $gt->seconds,
+                'gradedOrder' => '',
+                'gradedDatetime' => $gt->updated_at,
+                'studentId' => $student->id,
+                'examId' => $exam->id,
+                'kumiIds' => []
+            ];
+
+        }
+        return $out;
+
+    }
+
+
 }

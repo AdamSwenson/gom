@@ -65,6 +65,7 @@ import tags from './modules/tags'
 import rosterDisplay from './modules/roster/display'
 
 import itemScores from './modules/scores/itemscores';
+import quality from './modules/quality/quality';
 import stats from './modules/scores/scoresForStats';
 
 //grade assignments
@@ -113,30 +114,28 @@ const debug = process.env.NODE_ENV !== 'production';
         activeexam,
         activestudent,
         comments,
-        escores,
         exams,
-        items,
+        gradeAssignments,
         grades,
-        // orderings,
-        qscores,
-        questions,
-        settings,
-        students,
-        times,
-        visibility,
-
+        items,
         itemScores,
         kumi,
         notes,
+        quality,
         requests,
         roster,
         rosterDisplay,
+        settings,
         stats,
+        students,
         tags,
-        //student table
+        times,
+        visibility,
 
-        gradeAssignments
-
+        //older
+        escores,
+        qscores,
+        questions,
     }
 
 // }

@@ -13,7 +13,7 @@ use Carbon\Carbon;
 
 class StudentTest extends \TestCase
 {
-public $expiration_date;
+    public $expiration_date;
     protected $object;
     protected $student;
     protected $exam;
@@ -39,14 +39,13 @@ public $expiration_date;
      * an access key for the $this->student which expires tomorrow
      *
      */
-    public function createAccessKeyRecordForTest($expired=false)
+    public function createAccessKeyRecordForTest( $expired = false )
     {
         //setup
         $this->expiration_date = ($expired ? Carbon::yesterday() : Carbon::tomorrow());
 
         $a = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
-        if (!is_null($a))
-        {
+        if ( !is_null($a) ) {
             $a->delete();
         }
 
@@ -78,7 +77,7 @@ public $expiration_date;
         $student = factory(Student::class)->create();
         $result = $student->hasBeenGraded($examId);
         $this->assertFalse($result);
-            }
+    }
 
     /**
      * @test
@@ -98,7 +97,7 @@ MYSQL;
 
         $values = ['qaId' => $qa->id, 'sid' => $student->id];
         \DB::insert($query, $values);
-        
+
         $this->assertTrue($student->hasBeenGraded($examId));
     }
 
@@ -145,14 +144,37 @@ MYSQL;
         $this->assertTrue($this->expiration_date->eq($result));
     }
 
+    /** @test */
+    public function getGradingTimeOnExam()
+    {
+        $gradingTime = factory(GradingTime::class)->create();
+        $student = Student::find($gradingTime->student_id);
+        $exam = $gradingTime->exam;
+
+        //call
+        $result = $student->getGradingTimeOnExam($exam);
+        $this->assertInstanceOf(GradingTime::class, $result, 'Returns grading time object');
+
+        $this->assertEquals($gradingTime->seconds, $result->seconds, "Returns the expected grading time object");
+    }
 
 #-------- foreign keys
 
+    /** @test */
+    public function gradingTimes()
+    {
+        $gradingTime = factory(GradingTime::class)->create();
+        $student = Student::find($gradingTime->student_id);
+
+        //call
+        foreach ( $student->gradingTimes as $g ) {
+            $this->assertInstanceOf(GradingTime::class, $g);
+        };
+    }
 
     public function testsKumis()
     {
-        foreach ($this->student->kumis as $r)
-        {
+        foreach ( $this->student->kumis as $r ) {
             $this->assertInstanceOf('App\Kumi', $r);
         }
     }

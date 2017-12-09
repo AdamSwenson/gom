@@ -86,68 +86,6 @@ class Student extends BaseModel
         return $this->getStudentFName() . ' ' . $this->getStudentLName();
     }
 
-
-//    /**
-//     * Returns the student_identifier attribute
-//     * Uses laravel convention for getter so will be called if
-//     * someone tries to get directly with $student->student_identifier
-//     * @return string
-//     */
-//    public function getStudentIdentifierAttribute()
-//    {
-//        return $this->attributes['student_identifier'];
-////        return $this->getAttribute('student_identifier');
-//    }
-//
-//    /**
-//     * Returns the first_name attribute
-//     * Uses laravel convention for getter so will be called if
-//     * someone tries to get directly with $student->first_name
-//     * @return string
-//     */
-//    public function getFirstNameAttribute()
-//    {
-//        return $this->attributes['first_name'];
-////        return $this->getAttribute('first_name');
-//    }
-//
-//    /**
-//     * Returns the last_name attribute
-//     * Uses laravel convention for getter so will be called if
-//     * someone tries to get directly with $student->
-//     * @return string
-//     */
-//    public function getLastNameAttribute()
-//    {
-//        return $this->attributes['last_name'];
-////        return $this->getAttribute('last_name');
-//    }
-
-//    /**
-//     * Returns the decrypted student email address
-//     * Uses laravel convention for getter so will be called if
-//     * someone tries to get directly with $student->email
-//     * @return string
-//     */
-//    public function getEmailAttribute()
-//    {
-//        return $this->attributes['email'];
-////        return $this->getAttribute('email');
-//    }
-
-//    /**
-//     * Sets student_identifier attribute.
-//     * Uses laravel convention for setter so will be called if
-//     * someone tries to set directly with $student->student_identifier
-//     * @param string $studentId
-//     */
-//    public function setStudentIdentifierAttribute($studentId)
-//    {
-//        $studentId = trim($studentId);
-//        $this->attributes['student_identifier'] = $studentId;
-////        $this->setAttribute('student_identifier', $studentId);
-//    }
-
     /**
      * Sets the first_name attribute
      *
@@ -212,7 +150,6 @@ class Student extends BaseModel
 //        return null;
     }
 
-
     /**
      * Sets the user-given identifying number for the student.
      * Alias for the laravel convention using setter
@@ -225,7 +162,6 @@ class Student extends BaseModel
 //        $this->attributes['student_identifier'] = $studentId;
         //$this->attributes['student_identifier'] = Crypt::encrypt($studentId);
     }
-
 
     /**
      * Sets the student's first name
@@ -273,7 +209,6 @@ class Student extends BaseModel
 //        return $this->attributes['last_name'];
     }
 
-
     /**
      * Returns the student's email address.
      * @return mixed
@@ -290,7 +225,6 @@ class Student extends BaseModel
 //        return null;
     }
 
-
     /**
      * Change email address for student.
      * NB., does not save the change. So update needs to be independently called.
@@ -303,7 +237,6 @@ class Student extends BaseModel
 //        $this->attributes['email'] = $email;
 //        $this->attributes['email'] = Crypt::encrypt($email);
     }
-
 
 
 #------------------------- Access to complicated properties
@@ -320,6 +253,62 @@ class Student extends BaseModel
         $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
 
         return $ak ? $ak->getEmailSent() : false;
+    }
+
+    /**
+     * Returns the date feedback will begin no longer being available to the student
+     * @param integer $examId
+     * @return bool|Carbon
+     */
+    public function getFeedbackAccessExpirationDate( $examId )
+    {
+        $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
+
+        return $ak ? $ak->getExpirationDate() : false;
+    }
+
+
+    /**
+     * Returns true if feedback has been created and access to the feedback
+     * has not expired.
+     *
+     * @param integer $examId
+     * @return bool
+     */
+    public function isFeedbackAvailable( $examId )
+    {
+        $expirationDate = $this->getFeedbackAccessExpirationDate($examId);
+        if ( !is_null($expirationDate) ) {
+            if ( Carbon::now()->lte($expirationDate) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns the student's total score on the given exam
+     * @param Exam $exam
+     * @return mixed
+     */
+    public function getTotalScoreOnExam( Exam $exam )
+    {
+        $scores = ItemScore::where('student_id', $this->attributes['id'])
+            ->where('exam_id', $exam->id)
+            ->get();
+        return collect($scores)->sum('score');
+    }
+
+
+    /**
+     * Returns the total seconds spent grading the exam
+     * @param Exam $exam
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getGradingTimeOnExam(Exam $exam  )
+    {
+        return $this->gradingTimes()->where('exam_id', $exam->id)->first();
     }
 
     /**
@@ -347,46 +336,14 @@ MYSQL;
         return false;
     }
 
+# -------- foreign keys
     /**
-     * Returns true if feedback has been created and access to the feedback
-     * has not expired.
-     *
-     * @param integer $examId
-     * @return bool
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function isFeedbackAvailable( $examId )
+    public function gradingTimes(  )
     {
-        $expirationDate = $this->getFeedbackAccessExpirationDate($examId);
-        if ( !is_null($expirationDate) ) {
-            if ( Carbon::now()->lte($expirationDate) ) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->hasMany(GradingTime::class);
     }
-
-    public function getTotalScoreOnExam( Exam $exam )
-    {
-        $scores = ItemScore::where('student_id', $this->attributes['id'])
-            ->where('exam_id', $exam->id)
-            ->get();
-        return collect($scores)->sum('score');
-    }
-
-    /**
-     * Returns the date feedback will begin no longer being available to the student
-     * @param integer $examId
-     * @return bool|Carbon
-     */
-    public function getFeedbackAccessExpirationDate( $examId )
-    {
-        $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
-
-        return $ak ? $ak->getExpirationDate() : false;
-    }
-
-#-------- foreign keys
 
     /**
      * Junction for classes (kumi)
@@ -411,6 +368,10 @@ MYSQL;
         return $this->hasMany(ItemScore::class);
     }
 
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'student_tag')->withTimestamps();
@@ -426,3 +387,65 @@ MYSQL;
     }
 
 }
+
+
+//    /**
+//     * Returns the student_identifier attribute
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->student_identifier
+//     * @return string
+//     */
+//    public function getStudentIdentifierAttribute()
+//    {
+//        return $this->attributes['student_identifier'];
+////        return $this->getAttribute('student_identifier');
+//    }
+//
+//    /**
+//     * Returns the first_name attribute
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->first_name
+//     * @return string
+//     */
+//    public function getFirstNameAttribute()
+//    {
+//        return $this->attributes['first_name'];
+////        return $this->getAttribute('first_name');
+//    }
+//
+//    /**
+//     * Returns the last_name attribute
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->
+//     * @return string
+//     */
+//    public function getLastNameAttribute()
+//    {
+//        return $this->attributes['last_name'];
+////        return $this->getAttribute('last_name');
+//    }
+
+//    /**
+//     * Returns the decrypted student email address
+//     * Uses laravel convention for getter so will be called if
+//     * someone tries to get directly with $student->email
+//     * @return string
+//     */
+//    public function getEmailAttribute()
+//    {
+//        return $this->attributes['email'];
+////        return $this->getAttribute('email');
+//    }
+
+//    /**
+//     * Sets student_identifier attribute.
+//     * Uses laravel convention for setter so will be called if
+//     * someone tries to set directly with $student->student_identifier
+//     * @param string $studentId
+//     */
+//    public function setStudentIdentifierAttribute($studentId)
+//    {
+//        $studentId = trim($studentId);
+//        $this->attributes['student_identifier'] = $studentId;
+////        $this->setAttribute('student_identifier', $studentId);
+//    }

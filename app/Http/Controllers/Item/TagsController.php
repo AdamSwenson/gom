@@ -55,7 +55,8 @@ class TagsController extends Controller
      */
     public function associateTagWithExam( Exam $exam, Tag $tag )
     {
-        $exam->tags()->attach($tag->id);
+        $tagId = $tag->id;
+        $exam->tags()->attach($tagId);
         $exam->save();
 
         return $this->sendAjaxSuccess();
