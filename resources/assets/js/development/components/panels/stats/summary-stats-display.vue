@@ -7,7 +7,7 @@
             <div slot="label">Average</div>
             <div slot="value">{{meanDisplay}}</div>
         </stat-display-table-row>
-            
+
         <stat-display-table-row>
             <div slot="label">Median</div>
             <div slot="value">{{medianDisplay}}</div>

@@ -23,7 +23,6 @@
             <kumi-tabs></kumi-tabs>
         </div>
 
-
         <div id="student-table-area"
              class="panel-block"
         >
@@ -51,19 +50,36 @@
              class="panel-block"
              v-show="fileButtonVisible"
         >
-            <p class="control">
-                <input id="file-input"
-                       class="input is-primary is-fullwidth"
-                       type="file"
-                       v-on:change.prevent="processFile"
-                />
-            </p>
+            <!--<p class="control">-->
+            <!--<input id="file-input"-->
+            <!--class="input is-primary is-fullwidth"-->
+            <!--type="file"-->
+            <!--v-on:change.prevent="processFile"-->
+            <!--/>-->
+
+            <div class="control">
+                <div class="file is-info">
+                    <label class="file-label">
+                        <input id="file-input"
+                               class="file-input"
+                               type="file"
+                               name="student-file-upload"
+                               v-on:change.prevent="processFile"
+                        >
+                        <span class="file-cta">
+                            <span class="file-icon"><i class="fa fa-upload"></i></span>
+                            <span class="file-label">Choose a file…</span>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <kumi-selector
-                injectable-class="panel-block"
-        >
+        <kumi-selector injectable-class="panel-block" >
             <label class="label" slot="label"> {{ kumiSelectorLabel }}</label>
         </kumi-selector>
 
@@ -75,7 +91,6 @@
         </div>
 
     </div>
-
 
 
 </template>
