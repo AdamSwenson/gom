@@ -1,56 +1,48 @@
 <template>
     <div class="stats-summary ">
 
+        <table class="table is-narrow">
 
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">Average</div>
             <div slot="value">{{meanDisplay}}</div>
-        </stat-display>
-
-
-        <stat-display>
+        </stat-display-table-row>
+            
+        <stat-display-table-row>
             <div slot="label">Median</div>
             <div slot="value">{{medianDisplay}}</div>
-        </stat-display>
+        </stat-display-table-row>
 
-
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">SD</div>
             <div slot="value">{{sdDisplay}}</div>
-        </stat-display>
+        </stat-display-table-row>
 
-
-
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">Count</div>
             <div slot="value">{{countDisplay}}</div>
-        </stat-display>
+        </stat-display-table-row>
 
-
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">Max</div>
             <div slot="value">{{maxDisplay}}</div>
-        </stat-display>
+        </stat-display-table-row>
 
-
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">Min</div>
             <div slot="value">{{minDisplay}}</div>
-        </stat-display>
+        </stat-display-table-row>
 
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">25th</div>
             <div slot="value">{{percentile25Display}}</div>
-        </stat-display>
+        </stat-display-table-row>
 
-        <stat-display>
+        <stat-display-table-row>
             <div slot="label">75th</div>
             <div slot="value">{{percentile75Display}}</div>
-        </stat-display>
-
-
-
-
+        </stat-display-table-row>
+        </table>
     </div>
 
 
@@ -65,6 +57,7 @@
 <script>
 
     import statDisplay from './stat-display-columns.vue';
+    import StatDisplayTableRow from "./stat-display-table-row.vue";
 
     export default {
 
@@ -76,6 +69,7 @@
         ],
 
         components: {
+            StatDisplayTableRow,
             'stat-display': statDisplay
         },
 

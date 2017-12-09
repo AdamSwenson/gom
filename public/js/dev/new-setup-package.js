@@ -53551,13 +53551,76 @@ var _statDisplayColumns = __webpack_require__(69);
 
 var _statDisplayColumns2 = _interopRequireDefault(_statDisplayColumns);
 
+var _statDisplayTableRow = __webpack_require__(122);
+
+var _statDisplayTableRow2 = _interopRequireDefault(_statDisplayTableRow);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 exports.default = {
 
     props: ['name', 'id', 'mean', 'median', 'sd', 'min', 'max', 'number', 'isLoading', 'percentile25', 'percentile75', 'name'],
 
     components: {
+        StatDisplayTableRow: _statDisplayTableRow2.default,
         'stat-display': _statDisplayColumns2.default
     },
 
@@ -53635,70 +53698,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 /* 279 */
@@ -85755,7 +85755,9 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "stats-summary "
-  }, [_c('stat-display', [_c('div', {
+  }, [_c('table', {
+    staticClass: "table is-narrow"
+  }, [_c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85765,7 +85767,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.meanDisplay))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.meanDisplay))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85775,7 +85777,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.medianDisplay))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.medianDisplay))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85785,7 +85787,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.sdDisplay))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.sdDisplay))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85795,7 +85797,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.countDisplay))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.countDisplay))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85805,7 +85807,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.maxDisplay))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.maxDisplay))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85815,7 +85817,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.minDisplay))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.minDisplay))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85825,7 +85827,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.percentile25Display))])]), _vm._v(" "), _c('stat-display', [_c('div', {
+  }, [_vm._v(_vm._s(_vm.percentile25Display))])]), _vm._v(" "), _c('stat-display-table-row', [_c('div', {
     attrs: {
       "slot": "label"
     },
@@ -85835,7 +85837,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "value"
     },
     slot: "value"
-  }, [_vm._v(_vm._s(_vm.percentile75Display))])])], 1)
+  }, [_vm._v(_vm._s(_vm.percentile75Display))])])], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
