@@ -79,10 +79,6 @@ describe( "history-panel  ", () => {
 
     describe( " loads into expected default state for testing ", () => {
 
-        it( " test has been set up properly ", () => {
-            expect( store.getters.getItemBySerialNumber() ).toBe( item );
-        } );
-
         it( " has serial number from route ", () => {
             expect( wrapper.vm.serialNumber ).toBe( item.serialNumber );
         } );
@@ -97,32 +93,32 @@ describe( "history-panel  ", () => {
     describe( " displays exam names upon loading async   ", () => {
         let expected = {};
 
-        it( " displays the expected comment text when the displayed valence value changes ", () => {
-            let exam = {
-                created_at: "2017-11-10 09:57:27",
-                id: 5,
-                locked: false,
-                name: "Repudiandae et.",
-                previously_released: false,
-                released: false,
-                term: "Quia.",
-                updated_at: "2017-11-10 09:57:27",
-                user_id: 1,
-                year: "2017",
-            };
-            moxios.wait( function () {
-                let request = moxios.requests.mostRecent()
-                request.respondWith( {
-                    status: 200,
-                    response: [ exam ]
-                } ).then( function () {
-
-                    //should see
-                    see( exam.name, '.exam-list' );
-
-                } );
-            } )
-        } )
+        // it( " displays the expected comment text when the displayed valence value changes ", () => {
+        //     let exam = {
+        //         created_at: "2017-11-10 09:57:27",
+        //         id: 5,
+        //         locked: false,
+        //         name: "Repudiandae et.",
+        //         previously_released: false,
+        //         released: false,
+        //         term: "Quia.",
+        //         updated_at: "2017-11-10 09:57:27",
+        //         user_id: 1,
+        //         year: "2017",
+        //     };
+        //     moxios.wait( function () {
+        //         let request = moxios.requests.mostRecent();
+        //         request.respondWith( {
+        //             status: 200,
+        //             response: [ exam ]
+        //         } ).then( function () {
+        //
+        //             //should see
+        //             see( exam.name, '.exam-list' );
+        //
+        //         } );
+        //     } )
+        // } )
     } );
 } );
 

@@ -6,14 +6,14 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
+import { see } from '../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed } from '../helpers/assertions';
 
-import Item from "./../../../../resources/assets/js/models/Item";
-import Comment from "./../../../../resources/assets/js/models/Comment";
-import Payload from "./../../../../resources/assets/js/models/Payload";
-import * as mTypes from "./../../../../resources/assets/js/store/mutation-types";
-import * as gTypes from "./../../../../resources/assets/js/store/getter-types";
+import Item from "../../../resources/assets/js/models/Item";
+import Comment from "../../../resources/assets/js/models/Comment";
+import Payload from "../../../resources/assets/js/models/Payload";
+import * as mTypes from "../../../resources/assets/js/store/mutation-types";
+import * as gTypes from "../../../resources/assets/js/store/getter-types";
 
 
 const localVue = createLocalVue();
@@ -23,7 +23,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/exam-stats-panel.vue" );
+var Component = require( "../../../resources/assets/js/development/components/panels/exam-stats-panel.vue" );
 
 
 describe( "stats-panel for exam  ", () => {
@@ -65,7 +65,6 @@ describe( "stats-panel for exam  ", () => {
 
         $route.params.serialNumber = item.serialNumber;
 
-
         wrapper = shallow( Component, {
             store, localVue,
             stubs: [ 'router-link', 'router-view' ],
@@ -82,11 +81,6 @@ describe( "stats-panel for exam  ", () => {
     } )
 
     describe( " loads into expected default state for testing ", () => {
-
-        it( " test store has been set up properly ", () => {
-            expect( store.getters.getItemBySerialNumber() ).toBe( item );
-        } );
-
 
         it( 'displays the expected component div on first load', () => {
             expect( wrapper.find( '.exam-stats-panel' ).isEmpty() ).toBe( false );

@@ -41,12 +41,13 @@ describe( "time-stats  ", () => {
         routeSerialNumber = item.serialNumber;
 
         // import and pass your custom axios instance to this method
-        moxios.install()
+        moxios.install();
 
         getters = {
             getItemBySerialNumber: ( v ) => ( v ) => {
                 return item;
             },
+
             [ gTypes.getItemCount ]: ( v ) => ( v ) => {
             },
 
@@ -66,7 +67,6 @@ describe( "time-stats  ", () => {
 
         $route.params.serialNumber = item.serialNumber;
 
-
         wrapper = shallow( Component, {
             store, localVue,
             stubs: [ 'router-link', 'router-view' ],
@@ -79,8 +79,8 @@ describe( "time-stats  ", () => {
 
     afterEach( function () {
         // import and pass your custom axios instance to this method
-        moxios.uninstall()
-    } )
+        moxios.uninstall();
+    } );
 
     describe( " loads into expected default state for testing ", () => {
 
@@ -126,14 +126,15 @@ describe( "time-stats  ", () => {
             };
 
             item.numberStudents = 34;
-            item.numberGraded =0
+            item.numberGraded =0;
 
             moxios.wait( function () {
-                let request = moxios.requests.mostRecent()
+                let request = moxios.requests.mostRecent();
                 request.respondWith( {
                     status: 200,
                     response: [ data ]
-                } ).then( function () {
+                } )
+                    .then( function () {
                     //elapsed time
                     see( wrapper, data.elapsedSeconds, componentDivIdentifier );
                     //average time
@@ -141,7 +142,7 @@ describe( "time-stats  ", () => {
                     //remaining time
                     see(wrapper, item.numberRemaining * data.averageSeconds);
                 } );
-            } )
-        } )
+            } );
+        } );
     } );
 } );

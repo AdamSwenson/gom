@@ -81,9 +81,9 @@
     import termInput from './detail/term-input.vue';
     import yearInput from './detail/year-input.vue';
     import InputAndSelector from "./detail/input-and-selector.vue";
-    import FamilyInput from "./detail/family-input";
-    import DescriptionInput from "./detail/description-input";
-    import PublicNameInput from "./detail/public-name-input";
+    import FamilyInput from "./detail/family-input.vue";
+    import DescriptionInput from "./detail/description-input.vue";
+    import PublicNameInput from "./detail/public-name-input.vue";
 
     export default {
         components: {

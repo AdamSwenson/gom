@@ -74,7 +74,7 @@
 
     import loadingIndicator from '../../helpers/loading-indicator.vue';
     import statDisplay from './stat-display-columns.vue';
-    import StatDisplayTableRow from "./stat-display-table-row";
+    import StatDisplayTableRow from "./stat-display-table-row.vue";
 
     export default {
 

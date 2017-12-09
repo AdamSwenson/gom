@@ -91,6 +91,24 @@ describe( " exam-detail-panel ", () => {
     } );
 
 
+    //
+    // describe( " loading indicator  ", () => {
+    //
+    //     it( " loading indicator displays and time-list is hidden when isTimeLoading is true  ", () => {
+    //         wrapper.vm.isTimeLoading = true;
+    //         wrapper.update();
+    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( true );
+    //         expect( wrapper.contains( '.time-list' ) ).toBe( false );
+    //     });
+    //
+    //     it( " loading indicator is hidden and time-list is visibile when isTimeLoading is false  ", () => {
+    //         //not loading; should see list of exams
+    //         wrapper.vm.isTimeLoading = false;
+    //         wrapper.update();
+    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
+    //         expect( wrapper.contains( '.time-list' ) ).toBe( true );
+    //     } );
+    // } );
 
     describe( " displays expected data after loading async   ", () => {
         let expected = {};
@@ -102,7 +120,7 @@ describe( " exam-detail-panel ", () => {
             };
 
             moxios.wait( function () {
-                let request = moxios.requests.mostRecent()
+                let request = moxios.requests.mostRecent();
                 request.respondWith( {
                     status: 200,
                     response: [ data ]

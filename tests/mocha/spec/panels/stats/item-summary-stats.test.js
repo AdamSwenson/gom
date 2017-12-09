@@ -100,6 +100,7 @@ describe( "item-summary-stats  ", () => {
                 percentile75: "591",
                 standardDeviation: 234.50274533308
             };
+
             wrapper.setProps( {
                 item: item,
                 scope: 'exam'

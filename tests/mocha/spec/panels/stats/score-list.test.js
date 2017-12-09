@@ -80,10 +80,6 @@ describe( "score-list   ", () => {
 
     describe( " loads into expected default state for testing ", () => {
 
-        it( " test store has been set up properly ", () => {
-            expect( store.getters.getItemBySerialNumber() ).toBe( item );
-        } );
-
         it( 'displays the expected component div on first load', () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivId );
         } );

@@ -4,6 +4,9 @@ let faker = require( 'faker' );
 //
 import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
+
+import moxios from 'moxios';
+
 //Dependencies
 //import * as items from '../../../../../resources/assets/js/store/modules/items';
 

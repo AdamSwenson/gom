@@ -27,7 +27,7 @@ localVue.use( Vuex )
 var Component = require( "../../../../../resources/assets/js/development/components/panels/detail/input-and-selector.vue" );
 
 
-describe.only( " input-and-selector  ", function () {
+describe( " input-and-selector  ", function () {
     let componentDivId = '.input-and-selector';
     let getters;
     let mutations;
@@ -43,16 +43,17 @@ describe.only( " input-and-selector  ", function () {
     let getterStub;
     let item;
     let itemProp;
+
     beforeEach( function () {
         inputValue = "2018";
         itemProp = 'year';
 
         item = new Exam();
-        item[itemProp] = inputValue;
+        item[ itemProp ] = inputValue;
 
         getterStub = sinon.stub();
-getterStub.returns(item);
-        getters = {getItemBySerialNumber : getterStub};
+        getterStub.returns( item );
+        getters = { getItemBySerialNumber: getterStub };
         mutationStub = sinon.spy();
         mutations = { [ mTypes.updateItem ]: mutationStub };
         store = new Vuex.Store( {
@@ -73,21 +74,9 @@ getterStub.returns(item);
 
 
     describe( " loads into expected default state for testing ", () => {
-
         it( 'displays the expected component div on first load', () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivId );
         } );
-
-        // 244276932
-        //
-        // 800 711 4555
-        // 800 527 0531 fax
-
-
-
-
-
-
     } );
 
     describe( " displays the values given in props correctly  ", () => {
@@ -100,7 +89,9 @@ getterStub.returns(item);
 
         it( " displays the expected input value  ", () => {
             wrapper.update();
-            let e = wrapper.find( 'input[name="ias-input"]' );
+            let e = wrapper.find( '.ias-input' );
+
+            // let e = wrapper.find( 'input[name="ias-input"]' );
             expect( e.element.value ).toBe( inputValue );
         } );
     } );
@@ -133,7 +124,7 @@ getterStub.returns(item);
         beforeEach( () => {
             expect( wrapper.find( 'option' ).isEmpty() ).toBe( false );
 
-             //trigger the selection
+            //trigger the selection
             let option = wrapper.findAll( 'option' ).at( testIndex );
             // window.console.log( 'input-and-selector.test', '', 103, option );
 
@@ -150,7 +141,6 @@ getterStub.returns(item);
             expect( mutationStub.args[ 0 ][ 1 ].updateProp ).toBe( itemProp );
             expect( mutationStub.args[ 0 ][ 1 ].updateVal ).toBe( testOption );
         } );
-
 
 
         // it( "updates the property on the instance", () => {
