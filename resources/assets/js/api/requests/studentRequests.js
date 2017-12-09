@@ -128,7 +128,7 @@ const readinessTester = ( student, kumi, tries = 10 ) => {
             //     if ( check( student, kumi ) ) i = tries;
             // }, ID_WAIT_DELAY );
         }
-        reject(Error("Failed to load student or kumi id"));
+        reject( Error( "Failed to load student or kumi id" ) );
     } );
 };
 
@@ -192,7 +192,6 @@ module.exports = {
         return window.axios
             .patch( Routes.updateStudent( student ), student )
             .then( ( response ) => {
-                // window.console.log( 'studentRequests', 'updateStudent', 28, response );
             } )
             .catch( function ( error ) {
                 window.console.log( 'studentRequests', 'ERROR', 39, error );
@@ -208,7 +207,6 @@ module.exports = {
      * @returns {Promise}
      */
     createStudent: ( store, student ) => {
-        // if ( student && student.isNew() ) {
         let toSend = {
             ...student,
             requestVersion: REQUEST_VERSION,
@@ -236,48 +234,56 @@ module.exports = {
      * @returns {Promise}
      */
     associateStudent: ( store, student, kumi ) => {
-        return new Promise( ( resolve, reject ) => {
+        let p = new Promise( function ( resolve, reject ) {
+            //handles the actual request so that we can deal
+            //with the need to wait for an id
+            let makeRequest = ( route ) => {
+                let out = out == { requestVersion: REQUEST_VERSION, };
+                return window.axios
+                    .post( route, out )
+                    .then( ( response ) => {
+                        resolve();
+                    } )
+                    .catch( function ( error ) {
+                        //todo add response handling
+                        window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
+                        // errorHandling( error );
+                    } );
+            };
+        } );
 
-
-                //handles the actual request so that we can deal
-                //with the need to wait for an id
-                let makeRequest = ( route ) => {
-                    let out = out == { requestVersion: REQUEST_VERSION, };
-                    return window.axios
-                        .post( route, out )
-                        .then( ( response ) => {
-                            resolve();
-                        } )
-                        .catch( function ( error ) {
-                            //todo add response handling
-                            window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
-                            // errorHandling( error );
-                        } );
-                };
-
-                //dev This is the part I was working on for GOM-266
-            // return readinessTester(student, kumi)
-            //     .then( function(student, kumi){
-            //         window.console.log( 'studentRequests', 'ready', 256,student, kumi );
-            //     return makeRequest( Routes.associateStudent( student, kumi ) );
-            // });
-
-
-            //Check whether both the kumi and student have their ids
-                if ( kumi.id === -1 || student.id === -1 ) {
-                    //if either of them are not yet set, wait for a bit
-                    //todo Rewrite this to use promises
-                    setTimeout( function () {
-                        return makeRequest( Routes.associateStudent( student, kumi ) );
-                    }, ID_WAIT_DELAY );
-                } else {
-                    //The ids are good to go, so we can just send it
-                    return makeRequest( Routes.associateStudent( student, kumi ) );
-                }
-            }
-        );
-    // });
+        return p.then( function () {
+            return new Promise( function ( resolve, reject ) {
+                return makeRequest( Routes.associateStudent( student, kumi ) );
+                resolve();
+            } );
+        } );
     },
+
+
+    //dev This is the part I was working on for GOM-266
+    // return readinessTester(student, kumi)
+    //     .then( function(student, kumi){
+    //         window.console.log( 'studentRequests', 'ready', 256,student, kumi );
+    //     return makeRequest( Routes.associateStudent( student, kumi ) );
+    // });
+
+
+    // //Check whether both the kumi and student have their ids
+    //     if ( kumi.id === -1 || student.id === -1 ) {
+    //         //if either of them are not yet set, wait for a bit
+    //         //todo Rewrite this to use promises
+    //         setTimeout( function () {
+    //             return makeRequest( Routes.associateStudent( student, kumi ) );
+    //         }, ID_WAIT_DELAY );
+    //     } else {
+    //         //The ids are good to go, so we can just send it
+    //         return makeRequest( Routes.associateStudent( student, kumi ) );
+    //     }
+    // }
+
+    // });
+
 
     /**
      * Remove the association between the student, class, and exam
@@ -318,8 +324,6 @@ module.exports = {
      * @param student
      */
     anonymizeStudents: ( store, exam ) => {
-        // let route = `${ROSTER_BASE_ROUTE}/anon/{exam.id}`;
-
         return window.axios
             .post( Routes.anonymizeStudents( exam ) )
             .then( ( response ) => {

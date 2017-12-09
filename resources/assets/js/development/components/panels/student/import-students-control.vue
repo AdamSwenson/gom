@@ -86,7 +86,7 @@
             },
 
             notifyParentImportComplete: function () {
-                return this.$emit( this.importComplete );
+                return this.$emit( this.events.importComplete );
             }
 
         },

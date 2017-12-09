@@ -113,7 +113,6 @@ module.exports = {
 
             let kumi = [];
             kumi = kumi.concat(getters.getDisplayedKumis);
-            window.console.log( 'roster', '', 115, kumi);
             kumi = kumi.concat(getters.getSelectedKumis);
 
             //If no kumi is selected and it is displaying all
@@ -126,7 +125,6 @@ module.exports = {
                 // commit( mTypes.associateStudentWithKumi, payload );
             }
 
-            window.console.log( 'roster', 'd', 117,kumi );
             return p.then( () => {
                 return new Promise( ( resolve, reject ) => {
                     _.forEach(kumi, function(k){

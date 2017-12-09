@@ -64,12 +64,12 @@ import {
 
 
 const setSyncDone = ( store ) => {
-    window.console.log( 'apiPlugin', 'setSyncDone', 49, );
+    // window.console.log( 'apiPlugin', 'setSyncDone', 49, );
     store.commit( mTypes.stopRequestSuccess );
 };
 
 const setSyncStarting = ( store ) => {
-    window.console.log( 'apiPlugin', 'setSyncStarting', 53, );
+    // window.console.log( 'apiPlugin', 'setSyncStarting', 53, );
     store.commit( mTypes.startRequest );
 };
 
@@ -169,7 +169,7 @@ export default function ( store ) {
                 //on update calls, the object might not have been assembled.
                 //so we need to try to get the item from the index too
                 // let item = _.isObject( payload.obj ) ? payload.obj : store.getters.getItemByIndex( payload.index );
-                window.console.log( 'apiPlugin', 'updateItem', 128, item, payload );
+                // window.console.log( 'apiPlugin', 'updateItem', 128, item, payload );
                 if ( item instanceof Exam ) {
                     updateExam( store, item );
                 }
@@ -206,7 +206,7 @@ export default function ( store ) {
 
             // ******************** Comments
             case mTypes.updateComment:
-                window.console.log( 'apiPlugin', 'calling update comment', 140, item );
+                // window.console.log( 'apiPlugin', 'calling update comment', 140, item );
                 updateComment( store, item );
                 break;
 
@@ -250,7 +250,7 @@ export default function ( store ) {
                 break;
 
             case mTypes.updateNote:
-                window.console.log( 'apiPlugin', 'payload', 271, payload );
+                // window.console.log( 'apiPlugin', 'payload', 271, payload );
                 //make a copy so vuex won't be mad
                 //that we are altering the properties
                 // of a watched object outside
@@ -291,14 +291,14 @@ export default function ( store ) {
                 break;
 
             case 'removeStudentFromRoster':
-                window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
+                // window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
                 var kumi = store.getters.getSelectedKumi;
                 var student = payload.obj;
                 disassociateStudent( store, student, kumi );
                 break;
 
             case 'deleteStudent':
-                window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
+                // window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
                 destroyStudent( store, payload.obj );
                 break;
 
@@ -311,12 +311,12 @@ export default function ( store ) {
 
             // ******************** Tags
             case mTypes.createTag :
-                window.console.log( 'apiPlugin', mTypes.createTag, 299, );
+                // window.console.log( 'apiPlugin', mTypes.createTag, 299, );
                 createTagRequest( store, payload.obj );
                 break;
 
             case mTypes.updateTag:
-                window.console.log( 'apiPlugin', mTypes.updateTag, 'payload', 271, payload );
+                // window.console.log( 'apiPlugin', mTypes.updateTag, 'payload', 271, payload );
                 //make a copy so vuex won't be mad
                 //that we are altering the properties
                 // of a watched object outside
@@ -331,12 +331,12 @@ export default function ( store ) {
                 break;
 
             case mTypes.associateTag:
-                window.console.log( 'apiPlugin', mTypes.associateTag, 323, payload );
+                // window.console.log( 'apiPlugin', mTypes.associateTag, 323, payload );
                 associateTagRequest( store, payload.tag, payload.obj );
                 break;
 
             case mTypes.disassociateTag:
-                window.console.log( 'apiPlugin', mTypes.disassociateTag, 323, );
+                // window.console.log( 'apiPlugin', mTypes.disassociateTag, 323, );
                 disassociateTagRequest( store, payload.tag, payload.obj );
                 break;
 
