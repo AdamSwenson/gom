@@ -209,8 +209,20 @@ const actions = {
                 commit( 'toggleKumi', pl )
             }
         } );
+    },
 
-    }
+    /**
+     * Removes all associations between an exam and a kumi.
+     * Also removes all student associations with the kumi
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     */
+    removeKumi({ state, dispatch, commit, getters }, payload){}
+
 };
 
 

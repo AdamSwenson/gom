@@ -37736,7 +37736,7 @@ module.exports = {
 
         var examData = JSON.parse(document.getElementById(EXAM_JSON_NAME).getAttribute('data'));
 
-        window.console.log('JsonReaders', 'loadData', 46, state, objectData, examData, orderData);
+        // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
 
         //assume everything is there, just load directly
         var exam = _Exam2.default.factory(examData);
@@ -37753,7 +37753,7 @@ module.exports = {
         //load in the order data
         processItemOrderFromJson(state, orderData);
 
-        window.console.log('JsonReaders', 'setupOnMount', 87, 'READY');
+        // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
     }), _defineProperty(_mutations, 'initializeItemStore', function initializeItemStore(state) {
         return new Promise(function (resolve, reject) {
             var exam = new _Exam2.default();
@@ -37783,19 +37783,19 @@ module.exports = {
     }), _defineProperty(_mutations, 'directLoadOrderFromJson', function directLoadOrderFromJson(state, payload) {
         return new Promise(function (resolve, reject) {
 
-            window.console.log('items', 'directLoadOrderFromJson', 328, state, payload);
+            // window.console.log( 'items', 'directLoadOrderFromJson', 328, state, payload );
 
             // if ( ! _.isUndefined( payload.obj) ) {
 
             _.forEach(payload.obj, function (d, i) {
-                window.console.log('directLoadOrderFromJson', '', 34, d, i);
+                // window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
 
-                window.console.log('items', 'iii', 335, d);
+                // window.console.log( 'items', 'iii', 335, d );
                 var item = function (state, d) {
                     return (0, _itemHelpers.getItem)(state, d.itemId);
                 }(state, d);
-                window.console.log('directLoadOrderFromJson', 'state', 259, state);
-                window.console.log('directLoadOrderFromJson', 'item', 259, item);
+                // window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
+                // window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
                 //if the parent is null, these are top level
                 //and should be added as children of the exam.
                 //if the parent is null, we add the exam instead
@@ -37807,9 +37807,10 @@ module.exports = {
                 var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
                 // let index = d.itemOrder;
 
-                window.console.log('items', 'direct load itemNode', 256, itemNode);
-                window.console.log('items', 'direct load item', 256, item);
-                window.console.log('items', 'direct load parentNode', 256, parentNode);
+                // window.console.log( 'items', 'direct load itemNode', 256, itemNode );
+                // window.console.log( 'items', 'direct load item', 256, item );
+                // window.console.log( 'items', 'direct load parentNode', 256, parentNode );
+
 
                 //if an index was specified, splice it in at the index
                 //                 if ( !_.isUndefined( index ) ) {
@@ -37843,7 +37844,7 @@ module.exports = {
             //Check and see if the server gave us data to start off with.
             //Grab any preloaded data from the div on the page where the server would've put it
             var examData = JSON.parse(document.getElementById(EXAM_JSON_NAME).getAttribute('data'));
-            window.console.log('actions', 'parseExamData', 103, examData);
+            // window.console.log( 'actions', 'parseExamData', 103, examData );
 
             //there was exam data, load an exam from it
             if (typeof examData != 'undefined') {
@@ -37854,7 +37855,7 @@ module.exports = {
                 examData.index = 0;
 
                 var examSerialNumber = getters.currentExam; //items.items[ 0 ].serialNumber;
-                window.console.log('actions', 'esn', 117, examSerialNumber);
+                // window.console.log( 'actions', 'esn', 117, examSerialNumber );
 
                 _Exam2.default.fillableProps.forEach(function (prop) {
                     // window.console.log( 'actions', 'prop', 119, prop, examData[ prop ] );
@@ -37896,7 +37897,7 @@ module.exports = {
             //Check and see if the server gave us data to start off with.
             //Grab any pre loaded data from the div on the page where the server would've put it
             var data = JSON.parse(document.getElementById(ITEM_OBJECT_JSON_NAME).getAttribute('data'));
-            window.console.log('actions', 'parseItemObjectData', 128, data);
+            // window.console.log( 'actions', 'parseItemObjectData', 128, data );
             if (data.length > 0) {
                 var pl = _Payload2.default.factory({ obj: data, mutateSilently: true });
                 commit('directLoadObjectsFromJson', pl);
@@ -37932,7 +37933,7 @@ module.exports = {
             //The data needs to be in determinate order for this to work
             var data = JSON.parse(document.getElementById(ITEM_ORDER_JSON_NAME).getAttribute('data'));
 
-            window.console.log('actions', 'parseItemORDERData', 128, data, getters);
+            // window.console.log( 'actions', 'parseItemORDERData', 128, data, getters );
             // if ( data.length > 0 ) {
             var pl = _Payload2.default.factory({ obj: data, mutateSilently: true });
             commit('directLoadOrderFromJson', pl);
@@ -37959,7 +37960,7 @@ module.exports = {
 
 
             var items = getters[gTypes.getAllItems];
-            window.console.log('JsonReaders', 'processTagsOutOfLoadedItems', 317, items);
+            // window.console.log( 'JsonReaders', 'processTagsOutOfLoadedItems', 317, items);
             _.forEach(items, function (item) {
                 dispatch('processItemTags', item);
             });
@@ -51618,13 +51619,64 @@ var _Kumi = __webpack_require__(24);
 
 var _Kumi2 = _interopRequireDefault(_Kumi);
 
+var _editKumiControl = __webpack_require__(865);
+
+var _editKumiControl2 = _interopRequireDefault(_editKumiControl);
+
+var _newKumiControl = __webpack_require__(870);
+
+var _newKumiControl2 = _interopRequireDefault(_newKumiControl);
+
+var _showAllKumiControl = __webpack_require__(875);
+
+var _showAllKumiControl2 = _interopRequireDefault(_showAllKumiControl);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 
     props: [],
 
     components: {
+        ShowAllKumiControl: _showAllKumiControl2.default,
+        NewKumiControl: _newKumiControl2.default,
+        EditKumiControl: _editKumiControl2.default,
         'kumi-name': _kumiNameField2.default
     },
 
@@ -51632,7 +51684,7 @@ exports.default = {
         return {
             defaults: {},
 
-            isAllTabVisible: false,
+            isAllTabVisible: true,
 
             //Whether the kumi properties are editable
             isEditable: false
@@ -51659,7 +51711,7 @@ exports.default = {
         },
 
         handleKumiSelection: function handleKumiSelection(kumi) {
-            window.console.log('kumi-tabs', 'handleKumiSelection', 151, kumi);
+            // window.console.log( 'kumi-tabs', 'handleKumiSelection', 151, kumi );
             //This could be accidentally called when the area
             //is open for editing.
             //Thus we filter any such calls out
@@ -51669,90 +51721,17 @@ exports.default = {
         },
 
         isActive: function isActive(kumi) {
-            window.console.log('kumi-tabs', 'isActive', 118, kumi, this.displayedKumis);
             //                return this.$store.getters.isKumiDisplayed(kumi);
             return this.displayedKumis.indexOf(kumi) !== -1;
-        },
-
-        newKumi: function newKumi(evt) {
-            //should open a pane for creating or editing kumi
-            var kumi = new _Kumi2.default(); //completely empty
-            this.$store.commit('addKumi', _Payload2.default.factory({ obj: kumi }));
-            //toggle open the edit fields if not already displayed
-            if (!this.isEditable) this.isEditable = true;
         },
 
         toggleEditable: function toggleEditable() {
             this.isEditable = !this.isEditable;
         }
 
-    },
+    }
 
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 /* 268 */
@@ -54089,6 +54068,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
 
 exports.default = {
 
@@ -55380,20 +55360,25 @@ var _studentFileImporter = __webpack_require__(137);
 
 var _studentFileImporter2 = _interopRequireDefault(_studentFileImporter);
 
+var _importStudentsControl = __webpack_require__(855);
+
+var _importStudentsControl2 = _interopRequireDefault(_importStudentsControl);
+
+var _addStudentControl = __webpack_require__(860);
+
+var _addStudentControl2 = _interopRequireDefault(_addStudentControl);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//ajax stuff
-//    import { loadExamKumi } from '../../../api/requests/kumiRequests';
-//    import { loadAllStudents } from '../../../api/requests/studentRequests';
-
 
 exports.default = {
 
     props: [],
 
     components: {
+        AddStudentControl: _addStudentControl2.default,
+        ImportStudentsControl: _importStudentsControl2.default,
         'kumi-name': _kumiNameField2.default,
         'kumi-selector': _kumiSelector2.default,
         'student-table': _studentTable2.default,
@@ -55459,35 +55444,14 @@ exports.default = {
             this.kumiSelectorLabel = evt;
         },
 
-        // ----------------------- Operations on students or kumis
-        addStudent: function addStudent() {
-            window.console.log('students-panel', 'addStudent', 190);
-            //create a new student, which will add an empty row
-            var s = new _Student2.default();
-            //Push the student into local storage and create
-            //a new student on the server.
-            //This also will associate with the currently selected
-            //kumi
-            var pl = _Payload2.default.factory({ obj: s, student: s });
-            this.$store.dispatch(aTypes.handleNewStudentStorageAndAssociation, pl);
+        handleAddStudentComplete: function handleAddStudentComplete() {
+            window.console.log('students-panel', 'handleAddStudentComplete', 223);
         },
 
-        processFile: function processFile(evt) {
-            var f = document.getElementById('file-input');
-            var file = f.files[0];
-
-            //processFile gets called once
-            //as indicated by this line only printing once
-            window.console.log('students-panel', 'processFile', 112, evt, f, file);
-
-            //but then it seems this line gets called twice....
-            //since all the messages for importStudentsFromFile
-            //display twice
-            this.$store.dispatch('importStudentsFromFile', file);
-
-            window.console.log('students-panel', 'processFile', 332, 'after the dispatch has weirdly fired twice');
-            //finally, reset the attached file
-            f.value = '';
+        /**
+         * Handler for the event emitted by the import button
+         */
+        handleImportComplete: function handleImportComplete() {
             this.toggleFileButtonVisibility();
         },
 
@@ -55501,178 +55465,6 @@ exports.default = {
             return _.kebabCase(name) + '-' + this.serialNumber;
         }
 
-        //            newKumi: function ( evt ) {
-        //                //should open a pane for creating or editing kumi
-        //                let kumi = new Kumi(); //completely empty
-        //                this.$store.commit( 'addKumi', Payload.factory( { obj: kumi } ) );
-        //                //toggle open the edit fields if not already displayed
-        //                if ( !this.isEditable ) this.isEditable = true;
-        //
-        //            },
-        //
-        //            toggleEditable: function () {
-        //                this.isEditable = !this.isEditable;
-        //            },
-
-        // ------------------------ Control display of tools
-        //BUTTONS
-        //when these get clicked
-        //the rows get told to display a checkbox for being
-        //selected for the operation
-        //            toggleDeleteControls: function () {
-        //                window.console.log( 'student-row', 'deleteStudent', 187, this );
-        //                this.$emit( 'toggle-checkbox-delete' );
-        //                //clear everything and reset display
-        //                this.closeAllOperationAreas();
-        //                //if delete was already showing, then clicking delete is effectively
-        //                //the same as clicking cancel. So we can just stop.
-        //                if ( this.showDeleteOperationArea ) return true;
-        //                //If no operation was selected or another operation  was open,
-        //                //we show the delete area
-        //                this.showDeleteOperationArea = !this.showDeleteOperationArea;
-        //                this.showConfirmationButtons = !this.showConfirmationbuttons;
-        //                this.pendingOperation = 'delete';
-        //                //get the addition buttons out of the way
-        //                this.additionButtonsVisible = !this.additionButtonsVisible;
-        //            },
-
-        //            toggleKumiList: function () {
-        //            },
-
-        /**
-         * @deprecated
-         */
-        //            toggleRemoveControls: function () {
-        //                window.console.log( 'student-row', 'toggleRemoveControls', 191 );
-        //                this.$emit( 'toggle-checkbox-remove' );
-        //                //clear everything and reset display
-        //                this.closeAllOperationAreas();
-        //                //if remove was already showing, then clicking remove is effectively
-        //                //the same as clicking cancel. So we can just stop.
-        //                if ( this.showRemoveOperationArea ) return true;
-        //                //If no operation was selected or another operation  was open,
-        //                //we show the remove area
-        //                this.showRemoveOperationArea = !this.showRemoveOperationArea;
-        //                this.showConfirmationButtons = !this.showConfirmationbuttons;
-        //                this.pendingOperation = 'remove';
-        //                //get the addition buttons out of the way
-        //                this.additionButtonsVisible = !this.additionButtonsVisible;
-        //            },
-
-        /**
-         * @deprecated
-         */
-        //            toggleMoveControls: function () {
-        //                window.console.log( 'student-row', 'toggleMoveControls', 195 );
-        //                this.$emit( 'toggle-checkbox-move' );
-        //                //clear everything and reset display
-        //                this.closeAllOperationAreas();
-        //                //if move was already showing, then clicking move is effectively
-        //                //the same as clicking cancel. So we can just stop.
-        //                if ( this.showMoveOperationArea ) return true;
-        //                //If no operation was selected or another operation  was open,
-        //                //we show the move area
-        //                this.showMoveOperationArea = !this.showMoveOperationArea;
-        //                this.showConfirmationButtons = !this.showConfirmationbuttons;
-        //                //show kumi selector
-        //                this.kumiSelectorVisible = !this.kumiSelectorVisible;
-        //                this.pendingOperation = 'move';
-        //                //get the addition buttons out of the way
-        //                this.additionButtonsVisible = !this.additionButtonsVisible;
-        //            },
-
-
-        //            /**
-        //             * @deprecated
-        //             * Clears and closes all operations areas.
-        //             * Reopens any areas that are open by default
-        //             */
-        //            closeAllOperationAreas: function () {
-        //                //clear previous selections
-        //                this.selectedStudents = [];
-        //                //close all operations areas
-        //                this.showMoveOperationArea = false;
-        //                this.showRemoveOperationArea = false;
-        //                this.showDeleteOperationArea = false;
-        //                this.showConfirmationButtons = false;
-        //                this.pendingOperation = false;
-        //                this.kumiSelectorVisible = false;
-        //                //open stuff that is visible by default
-        //                this.additionButtonsVisible = true;
-        //                this.operationsButtonsVisible = true;
-        //            },
-        //
-
-        // ----------------------------------- Events
-
-        //            /**
-        //             * Called when confirm is clicked
-        //             */
-        //            handleConfirmation: function () {
-        //                window.console.log( 'students-panel', 'handleConfirmation', 340, this.pendingOperation, this.selectedStudents );
-        //                //display any warnings
-        //
-        //                _.forEach( this.selectedStudents, ( student ) => {
-        //                    //dispatch action
-        //                    switch ( this.pendingOperation ) {
-        //                        case 'move':
-        //                            var me = this;
-        //                            let ksn = this.displayedKumis[ 0 ];
-        //                            let kumi = me.$store.getters.getSelectedKumi;
-        //
-        ////                            _.forEach( this.displayedKumis, ( ksn ) => {
-        ////                                let kumi = me.$store.getters.getKumiBySerialNumber( ksn );
-        //                            window.console.log( 'students-panel', 'kumi', 401, kumi, this.selectedKumi );
-        //                            if ( _.isUndefined( kumi ) ) return false;
-        //                            let pl = Payload.factory( { kumi: kumi, student: student } );
-        //                            window.console.log( 'students-panel', 'pl', 403, pl );
-        //                            me.$store.commit( mTypes.associateStudentWithKumi, pl );
-        ////                            } );
-        //                            break;
-        //                        case 'remove':
-        //                            this.$store.commit( 'removeStudentFromRoster', Payload.factory( { obj: student } ) );
-        //                            break;
-        //                        case 'delete':
-        //                            this.$store.commit( 'deleteStudent', Payload.factory( { obj: student } ) );
-        //
-        //                            break;
-        //                    }
-        //                } );
-
-        //                //if successful clear and
-        //                //close up everything
-        //                this.closeAllOperationAreas();
-        //            },
-        //
-        //            /**
-        //             * Called when cancel is clicked
-        //             */
-        //            handleCancellation: function () {
-        //                //close up everything
-        //                this.closeAllOperationAreas();
-        //            },
-
-        //            handleKumiSelectionEvent: function ( payload ) {
-        //                window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
-        //
-        //                this.displayedKumis.push( payload.serialNumber );
-        //                window.console.log( 'students-panel', 'handleKumiSelectionEvent', 427, this.displayedKumis );
-        //            },
-
-        // ----------------------------------- Styling and attributes
-
-
-    },
-
-    events: {
-        //            'please-close-student-operations': function () {
-        //                this.closeAllOperationAreas();
-        //            },
-        //
-
-        //            'kumi-selected': function ( payload ) {
-        //                window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
-        //            }
     }
 
 };
@@ -55680,21 +55472,6 @@ exports.default = {
 
 
 //components
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -62991,6 +62768,24 @@ var actions = {
                 commit('toggleKumi', pl);
             }
         });
+    },
+
+
+    /**
+     * Removes all associations between an exam and a kumi.
+     * Also removes all student associations with the kumi
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     */
+    removeKumi: function removeKumi(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
     }
 };
 
@@ -87674,9 +87469,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._m(1)]) : _vm._e(), _vm._v(" "), _c('div', {
     staticClass: "panel-tabs"
-  }, [_c('span', {
-    staticClass: "is-pulled-left"
-  }, [_vm._v("Groups")]), _vm._v(" "), _c('kumi-tabs')], 1), _vm._v(" "), _c('div', {
+  }, [_c('kumi-tabs')], 1), _vm._v(" "), _c('div', {
     staticClass: "panel-block",
     attrs: {
       "id": "student-table-area"
@@ -87692,27 +87485,26 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.additionButtonsVisible),
       expression: "additionButtonsVisible"
     }],
-    staticClass: "panel-block",
-    attrs: {
-      "id": "addition-buttons-area"
-    }
-  }, [_c('button', {
-    staticClass: "button is-primary is-outlined is-fullwidth",
-    attrs: {
-      "id": "new-student-button"
-    },
+    staticClass: "addition-buttons-area panel-block"
+  }, [_c('div', {
+    staticClass: "field is-grouped is-fullwidth"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('add-student-control', {
     on: {
-      "click": _vm.addStudent
+      "add-student-complete": _vm.handleAddStudentComplete
     }
-  }, [_vm._v("Add student\n        ")]), _vm._v(" "), _c('button', {
-    staticClass: "button is-primary is-outlined is-fullwidth",
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('button', {
+    staticClass: "button is-primary is-outlined ",
     attrs: {
       "id": "add-students-button"
     },
     on: {
       "click": _vm.toggleFileButtonVisibility
     }
-  }, [_vm._v("\n            Import students\n        ")])]), _vm._v(" "), _c('div', {
+  }, [_vm._v("Import students\n                ")])])])]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -87723,26 +87515,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "file-input-area"
     }
-  }, [_c('div', {
-    staticClass: "control"
-  }, [_c('div', {
-    staticClass: "file is-info"
-  }, [_c('label', {
-    staticClass: "file-label"
-  }, [_c('input', {
-    staticClass: "file-input",
-    attrs: {
-      "id": "file-input",
-      "type": "file",
-      "name": "student-file-upload"
-    },
+  }, [_c('import-students-control', {
     on: {
-      "change": function($event) {
-        $event.preventDefault();
-        _vm.processFile($event)
-      }
+      "student-import-complete": _vm.handleImportComplete
     }
-  }), _vm._v(" "), _vm._m(2)])])])]), _vm._v(" "), _c('kumi-selector', {
+  })], 1), _vm._v(" "), _c('kumi-selector', {
     attrs: {
       "injectable-class": "panel-block"
     }
@@ -87786,16 +87563,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('i', {
     staticClass: "fa fa-search"
   })])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "file-cta"
-  }, [_c('span', {
-    staticClass: "file-icon"
-  }, [_c('i', {
-    staticClass: "fa fa-upload"
-  })]), _vm._v(" "), _c('span', {
-    staticClass: "file-label"
-  }, [_vm._v("Choose a file…")])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -89431,14 +89198,15 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
-    staticClass: "kumi-tabs is-boxed"
-  }, [(_vm.isAllTabVisible) ? _c('a', {
-    class: [_vm.isActive(-1) ? 'is-active' : ''],
-    on: {
-      "click": _vm.showAllKumi
+  return _c('div', {
+    staticClass: "kumi-tabs tabs is-boxed"
+  }, [_c('show-all-kumi-control', {
+    attrs: {
+      "type": "tab",
+      "is-active": _vm.isActive(-1),
+      "is-visible": _vm.isAllTabVisible
     }
-  }, [_vm._v("All")]) : _vm._e(), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
+  }), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
     return _c('a', {
       key: kumi.serialNumber,
       class: [_vm.isActive(kumi) ? 'is-active' : ''],
@@ -89451,70 +89219,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "serialNumber": kumi.serialNumber
       }
-    })], 1) : _c('span', {
-      staticClass: "is-small"
-    }, [_vm._v("\n                " + _vm._s(kumi.name) + "\n        ")])])
-  }), _vm._v(" "), _c('a', {
-    staticClass: "button-tab"
-  }, [_c('button', {
-    staticClass: "button is-outlined is-small",
+    })], 1) : _c('span', [_vm._v(_vm._s(kumi.name))])])
+  }), _vm._v(" "), _c('new-kumi-control', {
     attrs: {
-      "id": "new-kumi-button"
+      "type": "tab"
+    }
+  }), _vm._v(" "), _c('edit-kumi-control', {
+    attrs: {
+      "type": "tab",
+      "is-editable": _vm.isEditable
     },
     on: {
-      "click": _vm.newKumi
+      "toggle-kumi-editable": _vm.toggleEditable
     }
-  }, [_vm._m(0), _vm._v(" "), _c('span', {
-    staticClass: "is-small"
-  }, [_vm._v("New")]), _vm._v(" "), _c('span', {
-    staticClass: "sr-only"
-  }, [_vm._v("New group button")])])]), _vm._v(" "), _c('a', {
-    staticClass: "button-tab"
-  }, [_c('button', {
-    staticClass: "button is-outlined is-small",
-    attrs: {
-      "id": "edit-kumi-button"
-    },
-    on: {
-      "click": _vm.toggleEditable
-    }
-  }, [(_vm.isEditable) ? _c('span', [_vm._m(1), _vm._v(" "), _c('span', {
-    staticClass: "is-small"
-  }, [_vm._v("Edit")]), _vm._v(" "), _c('span', {
-    staticClass: "sr-only"
-  }, [_vm._v("Edit button in selected state")])]) : _c('span', [_vm._m(2), _vm._v(" "), _c('span', {
-    staticClass: "is-small"
-  }, [_vm._v("Edit")]), _vm._v(" "), _c('span', {
-    staticClass: "sr-only"
-  }, [_vm._v("Edit button in unselected state")])])])])], 2)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-plus",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-check-circle-o ",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon"
-  }, [_c('i', {
-    staticClass: "fa fa-pencil",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
+  })], 2)
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -95439,6 +95158,1047 @@ exports.clearImmediate = clearImmediate;
 __webpack_require__(190);
 module.exports = __webpack_require__(191);
 
+
+/***/ }),
+/* 853 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            buttonLabel: 'Choose a file to import students from',
+
+            events: {
+                importComplete: 'studentImportComplete',
+                importError: ''
+            },
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+        styling: function styling() {
+            return 'is-info';
+        }
+    },
+
+    methods: {
+
+        processFile: function processFile() {
+            var me = this;
+            var p = new Promise(function (resolve, reject) {
+
+                var f = document.getElementById('file-input');
+                var file = f.files[0];
+
+                //processFile gets called once
+                //as indicated by this line only printing once
+                // window.console.log( 'students-panel', 'processFile', 112, evt, f, file );
+
+                //but then it seems this line gets called twice....
+                //since all the messages for importStudentsFromFile
+                //display twice
+                me.$store.dispatch('importStudentsFromFile', file);
+
+                // window.console.log( 'students-panel', 'processFile', 332, 'after the dispatch has weirdly fired twice' );
+                //finally, reset the attached file
+                f.value = '';
+                resolve();
+            });
+
+            p.then(function () {
+                me.notifyParentImportComplete();
+            });
+
+            p.catch(function () {
+                //todo
+            });
+        },
+
+        notifyParentImportComplete: function notifyParentImportComplete() {
+            return this.$emit(this.importComplete);
+        }
+
+    }
+
+};
+
+/***/ }),
+/* 854 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 855 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(857)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(853),
+  /* template */
+  __webpack_require__(856),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/student/import-students-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] import-students-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6f12580a", Component.options)
+  } else {
+    hotAPI.reload("data-v-6f12580a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 856 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "import-students-control file ",
+    class: _vm.styling
+  }, [_c('label', {
+    staticClass: "file-label"
+  }, [_c('input', {
+    staticClass: "file-input",
+    attrs: {
+      "id": "file-input",
+      "type": "file",
+      "name": "student-file-upload"
+    },
+    on: {
+      "change": function($event) {
+        $event.preventDefault();
+        _vm.processFile($event)
+      }
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "file-cta"
+  }, [_vm._m(0), _vm._v(" "), _c('span', {
+    staticClass: "file-label"
+  }, [_vm._v(_vm._s(_vm.buttonLabel))])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "file-icon"
+  }, [_c('i', {
+    staticClass: "fa fa-upload"
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-6f12580a", module.exports)
+  }
+}
+
+/***/ }),
+/* 857 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(854);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("6e5db79e", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6f12580a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./import-students-control.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6f12580a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./import-students-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 858 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Student = __webpack_require__(25);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Kumi = __webpack_require__(24);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _mutationTypes = __webpack_require__(1);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            buttonLabel: 'New student',
+            helpText: '',
+
+            events: {
+                addStudentCalled: 'addStudentCalled',
+                addStudentComplete: 'addStudentComplete'
+            },
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+        styling: function styling() {
+            return "is-primary is-outlined is-fullwidth";
+        }
+    },
+
+    methods: {
+
+        addStudent: function addStudent() {
+            var me = this;
+            me.notifyStart();
+            var p = new Promise(function (resolve, reject) {
+                window.console.log('students-panel', 'addStudent', 190);
+                //create a new student, which will add an empty row
+                var s = new _Student2.default();
+                //Push the student into local storage and create
+                //a new student on the server.
+                //This also will associate with the currently selected
+                //kumi
+                var pl = _Payload2.default.factory({ obj: s, student: s });
+                me.$store.dispatch(aTypes.handleNewStudentStorageAndAssociation, pl);
+                resolve();
+            });
+
+            p.then(function () {
+                me.notifyComplete();
+            });
+
+            p.catch(function () {
+                //todo
+            });
+        },
+
+        notifyComplete: function notifyComplete() {
+            return this.$emit(this.events.addStudentComplete);
+        },
+
+        notifyStart: function notifyStart() {
+            return this.$emit(this.events.addStudentCalled);
+        }
+
+    }
+
+};
+
+/***/ }),
+/* 859 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 860 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(862)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(858),
+  /* template */
+  __webpack_require__(861),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/student/add-student-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] add-student-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-09c048d9", Component.options)
+  } else {
+    hotAPI.reload("data-v-09c048d9", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 861 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button add-student-control",
+    class: _vm.styling,
+    on: {
+      "click": _vm.addStudent
+    }
+  }, [_vm._v("\n    " + _vm._s(_vm.buttonLabel) + "\n")])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-09c048d9", module.exports)
+  }
+}
+
+/***/ }),
+/* 862 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(859);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("61e8f076", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-09c048d9\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-student-control.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-09c048d9\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-student-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 863 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['isEditable', 'type', 'isActive', 'isVisible'],
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+
+        styling: function styling() {
+            var out = '';
+            switch (this.type) {
+                case 'tab':
+                    out += ' tab ';
+                    break;
+                case 'button':
+                    out += ' button ';
+                    out += 'is-outlined is-primary';
+                    break;
+            }
+
+            if (this.isActive) out += ' is-active ';
+
+            return out;
+        }
+    },
+
+    methods: {
+        toggleEditable: function toggleEditable() {
+            this.$emit('toggleKumiEditable');
+        }
+
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 864 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 865 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(867)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(863),
+  /* template */
+  __webpack_require__(866),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/kumi/edit-kumi-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] edit-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0df78692", Component.options)
+  } else {
+    hotAPI.reload("data-v-0df78692", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 866 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "edit-kumi-button button is-outlined ",
+    on: {
+      "click": _vm.toggleEditable
+    }
+  }, [(_vm.isEditable) ? _c('span', [_vm._m(0), _vm._v(" "), _c('span', {}, [_vm._v("Edit")]), _vm._v(" "), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("Edit button in selected state")])]) : _c('span', [_vm._m(1), _vm._v(" "), _c('span', {}, [_vm._v("Edit")]), _vm._v(" "), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("Edit button in unselected state")])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-check-circle-o ",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-pencil",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-0df78692", module.exports)
+  }
+}
+
+/***/ }),
+/* 867 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(864);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("04d48efe", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0df78692\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./edit-kumi-control.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0df78692\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./edit-kumi-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 868 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Payload = __webpack_require__(2);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(24);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['type', 'isVisible'],
+
+    components: {},
+
+    data: function data() {
+        return {
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+        styling: function styling() {
+
+            var out = '';
+            switch (this.type) {
+                case 'tab':
+                    out += ' tab ';
+                    break;
+                case 'button':
+                    out += ' button ';
+                    out += 'is-outlined is-primary';
+                    break;
+            }
+
+            return out;
+        }
+    },
+
+    methods: {
+
+        newKumi: function newKumi(evt) {
+            //should open a pane for creating or editing kumi
+            var kumi = new _Kumi2.default(); //completely empty
+            this.$store.commit('addKumi', _Payload2.default.factory({ obj: kumi }));
+            //toggle open the edit fields if not already displayed
+            this.notifyParent();
+        },
+
+        /**
+         * Let's any listening parent know that
+         * the new kumi processes have been called
+         */
+        notifyParent: function notifyParent() {
+            return this.$emit('showKumiEditFields');
+        }
+    }
+
+};
+
+/***/ }),
+/* 869 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 870 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(872)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(868),
+  /* template */
+  __webpack_require__(871),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/kumi/new-kumi-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] new-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-85c9aecc", Component.options)
+  } else {
+    hotAPI.reload("data-v-85c9aecc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 871 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button new-kumi-control",
+    class: _vm.styling,
+    on: {
+      "click": _vm.newKumi
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', {}, [_vm._v("Create")]), _vm._v(" "), _c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v("Create new group button")])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon"
+  }, [_c('i', {
+    staticClass: "fa fa-plus",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-85c9aecc", module.exports)
+  }
+}
+
+/***/ }),
+/* 872 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(869);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("629e5535", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85c9aecc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./new-kumi-control.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85c9aecc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./new-kumi-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 873 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+exports.default = {
+
+    props: ['type', 'isActive', 'isVisible'],
+
+    components: {},
+
+    data: function data() {
+        return {
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+
+        styling: function styling() {
+            var out = '';
+            switch (this.type) {
+                case 'tab':
+                    out += ' tab ';
+                    break;
+                case 'button':
+                    out += ' button ';
+                    out += 'is-outlined is-primary';
+                    break;
+            }
+
+            if (this.isActive) out += ' is-active ';
+
+            return out;
+        }
+    },
+
+    methods: {
+        showAllKumi: function showAllKumi() {
+            this.$store.commit('clearDisplayedKumis');
+        }
+
+    }
+
+};
+
+/***/ }),
+/* 874 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 875 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(877)
+}
+var Component = __webpack_require__(5)(
+  /* script */
+  __webpack_require__(873),
+  /* template */
+  __webpack_require__(876),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/panels/kumi/show-all-kumi-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] show-all-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-efe9dfaa", Component.options)
+  } else {
+    hotAPI.reload("data-v-efe9dfaa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 876 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return (_vm.isVisible) ? _c('a', {
+    class: _vm.styling,
+    on: {
+      "click": _vm.showAllKumi
+    }
+  }, [_vm._v("All")]) : _vm._e()
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-efe9dfaa", module.exports)
+  }
+}
+
+/***/ }),
+/* 877 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(874);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("12bcaaec", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-efe9dfaa\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./show-all-kumi-control.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-efe9dfaa\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./show-all-kumi-control.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

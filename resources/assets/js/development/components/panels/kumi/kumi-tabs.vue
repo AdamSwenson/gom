@@ -1,9 +1,11 @@
 <template>
-    <p class="kumi-tabs is-boxed">
-        <a v-if="isAllTabVisible"
-           v-on:click="showAllKumi"
-           v-bind:class="[isActive(-1) ? 'is-active' : '' ]"
-        >All</a>
+    <div class="kumi-tabs tabs is-boxed">
+
+        <show-all-kumi-control type="tab"
+                               :is-active="isActive(-1)"
+                               :is-visible="isAllTabVisible"
+        ></show-all-kumi-control>
+
 
         <a v-for="kumi in kumis"
            v-bind:key="kumi.serialNumber"
@@ -14,44 +16,17 @@
                     <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
             </span>
 
-            <span v-else
-            class="is-small">
-                    {{ kumi.name }}
-            </span>
+            <span v-else >{{ kumi.name }}</span>
         </a>
 
+        <new-kumi-control type="tab"></new-kumi-control>
 
-        <a class="button-tab">
-            <button id="new-kumi-button"
-                    class="button is-outlined is-small"
-                    v-on:click="newKumi"
-            >
-                <span class="icon is-small"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                <span class="is-small">New</span>
-                <span class="sr-only">New group button</span>
-            </button>
-        </a>
+        <edit-kumi-control type="tab"
+                           :is-editable="isEditable"
+                           v-on:toggle-kumi-editable="toggleEditable"
+        ></edit-kumi-control>
 
-        <a class="button-tab">
-            <button id="edit-kumi-button"
-                    class="button is-outlined is-small"
-                    v-on:click="toggleEditable"
-            >
-                <span v-if="isEditable">
-                    <span class="icon is-small"><i class="fa fa-check-circle-o " aria-hidden="true"></i></span>
-                    <span class="is-small">Edit</span>
-                    <span class="sr-only">Edit button in selected state</span>
-                </span>
-
-                <span v-else>
-                    <span class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></span>
-                    <span class="is-small">Edit</span>
-                    <span class="sr-only">Edit button in unselected state</span>
-                </span>
-
-            </button>
-        </a>
-    </p>
+    </div>
 </template>
 
 <style lang="scss">
@@ -62,6 +37,9 @@
     import KumiNameField from '../../input/kumi-name-field.vue';
     import Payload from "../../../../models/Payload";
     import Kumi from "../../../../models/Kumi";
+    import EditKumiControl from "./edit-kumi-control.vue";
+    import NewKumiControl from "./new-kumi-control.vue";
+    import ShowAllKumiControl from "./show-all-kumi-control.vue";
 
 
     export default {
@@ -69,6 +47,9 @@
         props: [],
 
         components: {
+            ShowAllKumiControl,
+            NewKumiControl,
+            EditKumiControl,
             'kumi-name': KumiNameField,
         },
 
@@ -76,7 +57,7 @@
             return {
                 defaults: {},
 
-                isAllTabVisible: false,
+                isAllTabVisible: true,
 
                 //Whether the kumi properties are editable
                 isEditable: false,
@@ -104,7 +85,7 @@
             },
 
             handleKumiSelection: function ( kumi ) {
-                window.console.log( 'kumi-tabs', 'handleKumiSelection', 151, kumi );
+                // window.console.log( 'kumi-tabs', 'handleKumiSelection', 151, kumi );
                 //This could be accidentally called when the area
                 //is open for editing.
                 //Thus we filter any such calls out
@@ -115,20 +96,10 @@
             },
 
             isActive: function ( kumi ) {
-                window.console.log( 'kumi-tabs', 'isActive', 118, kumi, this.displayedKumis);
 //                return this.$store.getters.isKumiDisplayed(kumi);
                 return this.displayedKumis.indexOf( kumi ) !== -1;
             },
 
-
-            newKumi: function ( evt ) {
-                //should open a pane for creating or editing kumi
-                let kumi = new Kumi(); //completely empty
-                this.$store.commit( 'addKumi', Payload.factory( { obj: kumi } ) );
-                //toggle open the edit fields if not already displayed
-                if ( !this.isEditable ) this.isEditable = true;
-
-            },
 
             toggleEditable: function () {
                 this.isEditable = !this.isEditable;
@@ -137,11 +108,5 @@
 
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>

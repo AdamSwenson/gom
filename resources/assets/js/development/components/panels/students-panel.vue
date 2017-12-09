@@ -19,67 +19,52 @@
         </div>
 
         <div class="panel-tabs">
-            <span class="is-pulled-left">Groups</span>
+
             <kumi-tabs></kumi-tabs>
+
         </div>
 
         <div id="student-table-area"
              class="panel-block"
         >
+
             <student-table :students="students"></student-table>
+
         </div>
 
-        <div id="addition-buttons-area"
-             class="panel-block"
+
+        <div class="addition-buttons-area panel-block"
              v-show="additionButtonsVisible"
         >
-            <button id="new-student-button"
-                    class="button is-primary is-outlined is-fullwidth"
-                    v-on:click="addStudent"
-            >Add student
-            </button>
+            <div class="field is-grouped is-fullwidth">
+                <p class="control">
+                    <add-student-control
+                             v-on:add-student-complete="handleAddStudentComplete"
+                    ></add-student-control>
+                </p>
 
-            <button id="add-students-button"
-                    class="button is-primary is-outlined is-fullwidth"
-                    v-on:click="toggleFileButtonVisibility">
-                Import students
-            </button>
+                <div class="control">
+                    <button id="add-students-button"
+                            class="button is-primary is-outlined "
+                            v-on:click="toggleFileButtonVisibility"
+                    >Import students
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div id="file-input-area"
              class="panel-block"
              v-show="fileButtonVisible"
         >
-            <!--<p class="control">-->
-            <!--<input id="file-input"-->
-            <!--class="input is-primary is-fullwidth"-->
-            <!--type="file"-->
-            <!--v-on:change.prevent="processFile"-->
-            <!--/>-->
 
-            <div class="control">
-                <div class="file is-info">
-                    <label class="file-label">
-                        <input id="file-input"
-                               class="file-input"
-                               type="file"
-                               name="student-file-upload"
-                               v-on:change.prevent="processFile"
-                        >
-                        <span class="file-cta">
-                            <span class="file-icon"><i class="fa fa-upload"></i></span>
-                            <span class="file-label">Choose a file…</span>
-                        </span>
-
-                    </label>
-
-                </div>
-
-            </div>
+            <import-students-control
+                    v-on:student-import-complete="handleImportComplete"
+            ></import-students-control>
 
         </div>
 
-        <kumi-selector injectable-class="panel-block" >
+        <kumi-selector injectable-class="panel-block">
             <label class="label" slot="label"> {{ kumiSelectorLabel }}</label>
         </kumi-selector>
 
@@ -131,10 +116,8 @@
     import StudentActionButtons from './student/student-action-buttons.vue';
     //File importing stuff
     import FileImporter from '../../../store/modules/roster/studentFileImporter';
-
-    //ajax stuff
-    //    import { loadExamKumi } from '../../../api/requests/kumiRequests';
-    //    import { loadAllStudents } from '../../../api/requests/studentRequests';
+    import ImportStudentsControl from "./student/import-students-control.vue";
+    import AddStudentControl from "./student/add-student-control.vue";
 
 
     export default {
@@ -142,6 +125,8 @@
         props: [],
 
         components: {
+            AddStudentControl,
+            ImportStudentsControl,
             'kumi-name': KumiNameField,
             'kumi-selector': KumiSelector,
             'student-table': StudentTable,
@@ -209,37 +194,18 @@
                 this.kumiSelectorLabel = evt;
             },
 
-// ----------------------- Operations on students or kumis
-            addStudent: function () {
-                window.console.log( 'students-panel', 'addStudent', 190, );
-                //create a new student, which will add an empty row
-                let s = new Student();
-                //Push the student into local storage and create
-                //a new student on the server.
-                //This also will associate with the currently selected
-                //kumi
-                let pl = Payload.factory( { obj: s, student: s } );
-                this.$store.dispatch( aTypes.handleNewStudentStorageAndAssociation, pl );
+
+            handleAddStudentComplete: function () {
+                window.console.log( 'students-panel', 'handleAddStudentComplete', 223, );
             },
 
-            processFile: function ( evt ) {
-                let f = document.getElementById( 'file-input' );
-                let file = f.files[ 0 ];
-
-                //processFile gets called once
-                //as indicated by this line only printing once
-                window.console.log( 'students-panel', 'processFile', 112, evt, f, file );
-
-                //but then it seems this line gets called twice....
-                //since all the messages for importStudentsFromFile
-                //display twice
-                this.$store.dispatch( 'importStudentsFromFile', file );
-
-                window.console.log( 'students-panel', 'processFile', 332, 'after the dispatch has weirdly fired twice' );
-                //finally, reset the attached file
-                f.value = '';
+            /**
+             * Handler for the event emitted by the import button
+             */
+            handleImportComplete: function () {
                 this.toggleFileButtonVisibility();
             },
+
 
             toggleFileButtonVisibility: function () {
                 this.fileButtonVisible = !this.fileButtonVisible;
@@ -251,179 +217,9 @@
                 return _.kebabCase( name ) + '-' + this.serialNumber;
             }
 
-//            newKumi: function ( evt ) {
-//                //should open a pane for creating or editing kumi
-//                let kumi = new Kumi(); //completely empty
-//                this.$store.commit( 'addKumi', Payload.factory( { obj: kumi } ) );
-//                //toggle open the edit fields if not already displayed
-//                if ( !this.isEditable ) this.isEditable = true;
-//
-//            },
-//
-//            toggleEditable: function () {
-//                this.isEditable = !this.isEditable;
-//            },
-
-// ------------------------ Control display of tools
-            //BUTTONS
-            //when these get clicked
-            //the rows get told to display a checkbox for being
-            //selected for the operation
-//            toggleDeleteControls: function () {
-//                window.console.log( 'student-row', 'deleteStudent', 187, this );
-//                this.$emit( 'toggle-checkbox-delete' );
-//                //clear everything and reset display
-//                this.closeAllOperationAreas();
-//                //if delete was already showing, then clicking delete is effectively
-//                //the same as clicking cancel. So we can just stop.
-//                if ( this.showDeleteOperationArea ) return true;
-//                //If no operation was selected or another operation  was open,
-//                //we show the delete area
-//                this.showDeleteOperationArea = !this.showDeleteOperationArea;
-//                this.showConfirmationButtons = !this.showConfirmationbuttons;
-//                this.pendingOperation = 'delete';
-//                //get the addition buttons out of the way
-//                this.additionButtonsVisible = !this.additionButtonsVisible;
-//            },
-
-//            toggleKumiList: function () {
-//            },
-
-            /**
-             * @deprecated
-             */
-//            toggleRemoveControls: function () {
-//                window.console.log( 'student-row', 'toggleRemoveControls', 191 );
-//                this.$emit( 'toggle-checkbox-remove' );
-//                //clear everything and reset display
-//                this.closeAllOperationAreas();
-//                //if remove was already showing, then clicking remove is effectively
-//                //the same as clicking cancel. So we can just stop.
-//                if ( this.showRemoveOperationArea ) return true;
-//                //If no operation was selected or another operation  was open,
-//                //we show the remove area
-//                this.showRemoveOperationArea = !this.showRemoveOperationArea;
-//                this.showConfirmationButtons = !this.showConfirmationbuttons;
-//                this.pendingOperation = 'remove';
-//                //get the addition buttons out of the way
-//                this.additionButtonsVisible = !this.additionButtonsVisible;
-//            },
-
-            /**
-             * @deprecated
-             */
-//            toggleMoveControls: function () {
-//                window.console.log( 'student-row', 'toggleMoveControls', 195 );
-//                this.$emit( 'toggle-checkbox-move' );
-//                //clear everything and reset display
-//                this.closeAllOperationAreas();
-//                //if move was already showing, then clicking move is effectively
-//                //the same as clicking cancel. So we can just stop.
-//                if ( this.showMoveOperationArea ) return true;
-//                //If no operation was selected or another operation  was open,
-//                //we show the move area
-//                this.showMoveOperationArea = !this.showMoveOperationArea;
-//                this.showConfirmationButtons = !this.showConfirmationbuttons;
-//                //show kumi selector
-//                this.kumiSelectorVisible = !this.kumiSelectorVisible;
-//                this.pendingOperation = 'move';
-//                //get the addition buttons out of the way
-//                this.additionButtonsVisible = !this.additionButtonsVisible;
-//            },
-
-
-//            /**
-//             * @deprecated
-//             * Clears and closes all operations areas.
-//             * Reopens any areas that are open by default
-//             */
-//            closeAllOperationAreas: function () {
-//                //clear previous selections
-//                this.selectedStudents = [];
-//                //close all operations areas
-//                this.showMoveOperationArea = false;
-//                this.showRemoveOperationArea = false;
-//                this.showDeleteOperationArea = false;
-//                this.showConfirmationButtons = false;
-//                this.pendingOperation = false;
-//                this.kumiSelectorVisible = false;
-//                //open stuff that is visible by default
-//                this.additionButtonsVisible = true;
-//                this.operationsButtonsVisible = true;
-//            },
-//
-
-// ----------------------------------- Events
-
-//            /**
-//             * Called when confirm is clicked
-//             */
-//            handleConfirmation: function () {
-//                window.console.log( 'students-panel', 'handleConfirmation', 340, this.pendingOperation, this.selectedStudents );
-//                //display any warnings
-//
-//                _.forEach( this.selectedStudents, ( student ) => {
-//                    //dispatch action
-//                    switch ( this.pendingOperation ) {
-//                        case 'move':
-//                            var me = this;
-//                            let ksn = this.displayedKumis[ 0 ];
-//                            let kumi = me.$store.getters.getSelectedKumi;
-//
-////                            _.forEach( this.displayedKumis, ( ksn ) => {
-////                                let kumi = me.$store.getters.getKumiBySerialNumber( ksn );
-//                            window.console.log( 'students-panel', 'kumi', 401, kumi, this.selectedKumi );
-//                            if ( _.isUndefined( kumi ) ) return false;
-//                            let pl = Payload.factory( { kumi: kumi, student: student } );
-//                            window.console.log( 'students-panel', 'pl', 403, pl );
-//                            me.$store.commit( mTypes.associateStudentWithKumi, pl );
-////                            } );
-//                            break;
-//                        case 'remove':
-//                            this.$store.commit( 'removeStudentFromRoster', Payload.factory( { obj: student } ) );
-//                            break;
-//                        case 'delete':
-//                            this.$store.commit( 'deleteStudent', Payload.factory( { obj: student } ) );
-//
-//                            break;
-//                    }
-//                } );
-
-//                //if successful clear and
-//                //close up everything
-//                this.closeAllOperationAreas();
-//            },
-//
-//            /**
-//             * Called when cancel is clicked
-//             */
-//            handleCancellation: function () {
-//                //close up everything
-//                this.closeAllOperationAreas();
-//            },
-
-//            handleKumiSelectionEvent: function ( payload ) {
-//                window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
-//
-//                this.displayedKumis.push( payload.serialNumber );
-//                window.console.log( 'students-panel', 'handleKumiSelectionEvent', 427, this.displayedKumis );
-//            },
-
-// ----------------------------------- Styling and attributes
-
 
         },
 
-        events: {
-//            'please-close-student-operations': function () {
-//                this.closeAllOperationAreas();
-//            },
-//
-
-//            'kumi-selected': function ( payload ) {
-//                window.console.log( 'students-panel', 'caught: kumi-selected', 433, payload );
-//            }
-        }
 
     }
 </script>

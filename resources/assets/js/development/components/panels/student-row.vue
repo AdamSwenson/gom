@@ -19,6 +19,7 @@
                            v-bind:id="getInputId('firstName')"
                     />
                 </div>
+
                 <div class="field">
                     <input type="text"
                            class="input"

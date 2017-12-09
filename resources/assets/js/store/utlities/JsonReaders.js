@@ -90,7 +90,7 @@ module.exports = {
             let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
 
 
-            window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+            // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
 
             //assume everything is there, just load directly
             let exam = Exam.factory( examData );
@@ -107,7 +107,7 @@ module.exports = {
             //load in the order data
             processItemOrderFromJson( state, orderData );
 
-            window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
+            // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
         },
 
 
@@ -145,19 +145,19 @@ module.exports = {
         directLoadOrderFromJson: ( state, payload ) => {
             return new Promise( ( resolve, reject ) => {
 
-                window.console.log( 'items', 'directLoadOrderFromJson', 328, state, payload );
+                // window.console.log( 'items', 'directLoadOrderFromJson', 328, state, payload );
 
                 // if ( ! _.isUndefined( payload.obj) ) {
 
                 _.forEach( payload.obj, function ( d, i ) {
-                    window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
+                    // window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
 
-                    window.console.log( 'items', 'iii', 335, d );
+                    // window.console.log( 'items', 'iii', 335, d );
                     let item = (( state, d ) => {
                         return getItem( state, d.itemId )
                     })( state, d );
-                    window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
-                    window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
+                    // window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
+                    // window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
                     //if the parent is null, these are top level
                     //and should be added as children of the exam.
                     //if the parent is null, we add the exam instead
@@ -169,9 +169,9 @@ module.exports = {
                     let itemNode = new Node( item.serialNumber, parentNode.data );
                     // let index = d.itemOrder;
 
-                    window.console.log( 'items', 'direct load itemNode', 256, itemNode );
-                    window.console.log( 'items', 'direct load item', 256, item );
-                    window.console.log( 'items', 'direct load parentNode', 256, parentNode );
+                    // window.console.log( 'items', 'direct load itemNode', 256, itemNode );
+                    // window.console.log( 'items', 'direct load item', 256, item );
+                    // window.console.log( 'items', 'direct load parentNode', 256, parentNode );
 
 
 //if an index was specified, splice it in at the index
@@ -209,7 +209,7 @@ module.exports = {
             //Check and see if the server gave us data to start off with.
             //Grab any preloaded data from the div on the page where the server would've put it
             let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
-            window.console.log( 'actions', 'parseExamData', 103, examData );
+            // window.console.log( 'actions', 'parseExamData', 103, examData );
 
             //there was exam data, load an exam from it
             if ( typeof examData != 'undefined' ) {
@@ -220,7 +220,7 @@ module.exports = {
                 examData.index = 0;
 
                 let examSerialNumber = getters.currentExam; //items.items[ 0 ].serialNumber;
-                window.console.log( 'actions', 'esn', 117, examSerialNumber );
+                // window.console.log( 'actions', 'esn', 117, examSerialNumber );
 
                 Exam.fillableProps.forEach(
                     ( prop ) => {
@@ -258,7 +258,7 @@ module.exports = {
             //Check and see if the server gave us data to start off with.
             //Grab any pre loaded data from the div on the page where the server would've put it
             let data = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
-            window.console.log( 'actions', 'parseItemObjectData', 128, data );
+            // window.console.log( 'actions', 'parseItemObjectData', 128, data );
             if ( data.length > 0 ) {
                 let pl = Payload.factory( { obj: data, mutateSilently: true } );
                 commit( 'directLoadObjectsFromJson', pl );
@@ -289,7 +289,7 @@ module.exports = {
             //The data needs to be in determinate order for this to work
             let data = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
 
-            window.console.log( 'actions', 'parseItemORDERData', 128, data, getters );
+            // window.console.log( 'actions', 'parseItemORDERData', 128, data, getters );
             // if ( data.length > 0 ) {
             let pl = Payload.factory( { obj: data, mutateSilently: true } );
             commit( 'directLoadOrderFromJson', pl );
@@ -311,7 +311,7 @@ module.exports = {
         processTagsOutOfLoadedItems: ( { state, commit, dispatch, getters } ) => {
 
             let items = getters[gTypes.getAllItems];
-            window.console.log( 'JsonReaders', 'processTagsOutOfLoadedItems', 317, items);
+            // window.console.log( 'JsonReaders', 'processTagsOutOfLoadedItems', 317, items);
             _.forEach(items, function(item){
                 dispatch( 'processItemTags', item );
             });
