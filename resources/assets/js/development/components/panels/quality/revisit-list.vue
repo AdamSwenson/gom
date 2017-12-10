@@ -1,6 +1,6 @@
 <template>
     <div class="revisit-list ">
-        <h3>Exams to revisit</h3>
+        <p class="subtitle">Exams to revisit</p>
         <ul id="revisitList" class="list-group">
             <li v-for="studentId in toRevisit">
                 {{ studentId }}

@@ -96291,10 +96291,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
-//
-//
-//
 
 
 /*
@@ -96455,17 +96451,16 @@ module.exports = Component.exports
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "mainBodyLocator",
     attrs: {
       "id": "quality-control-panel"
     }
   }, [_c('div', {
+    staticClass: "box"
+  }, [_vm._m(0), _vm._v(" "), _c('div', {
     staticClass: "tile is-ancestor"
   }, [_c('div', {
     staticClass: "tile is-parent is-vertical"
   }, [_c('div', {
-    staticClass: "tile is-child"
-  }, [_vm._m(0), _vm._v(" "), _c('div', {
     staticClass: "tile is-child"
   }, [_c('div', {
     staticClass: "tile is-parent"
@@ -96475,7 +96470,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "to-revisit": _vm.toRevisit
     }
-  })], 1)])])]), _vm._v(" "), _c('div', {
+  })], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "tile is-child box"
   }, [_c('grade-order-chart', {
     attrs: {
@@ -96502,10 +96497,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "chart-clicked": _vm.chartClickHandler
     }
-  })], 1)])])])
+  })], 1)])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "tile is-child"
+    staticClass: "top-area "
   }, [_c('p', {
     staticClass: "title"
   }, [_c('span', {
@@ -96515,15 +96510,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v("\n                        Quality Control\n                    ")]), _vm._v(" "), _c('p', {
+  })]), _vm._v("\n            Quality Control\n        ")]), _vm._v(" "), _c('p', {
     staticClass: "subtitle"
-  }, [_vm._v("\n                        Catch grading errors before your students do\n                    ")]), _vm._v(" "), _c('h4', [_vm._v("Please note: The tools on this page are still under development. ")])])
+  }, [_vm._v("\n            Catch grading errors before your students do\n        ")]), _vm._v(" "), _c('h4', [_vm._v("Please note: The tools on this page are still under development. ")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "tile is-child box"
   }, [_c('div', {
-    staticClass: "panel-body has-text-justified"
-  }, [_c('p', [_vm._v("Grading is boring and hard. Mistakes are both inevitable and consequential. A\n                                    struggling\n                                    student who\n                                    gets\n                                    a D instead of the C she deserves might lose financial aid and drop out of\n                                    college. At\n                                    the same\n                                    time, it\n                                    is difficult to do any real quality control without expending an unreasonable\n                                    amount of\n                                    time and\n                                    effort.")]), _vm._v(" "), _c('p', [_vm._v("We are working on algorithms to better identify potential grading errors. In the\n                                    meantime, here are\n                                    some\n                                    representations of your grading process which can help you visually identify\n                                    potential\n                                    problems. Use\n                                    them to identify exams to quickly glance over and double-check your work.")]), _vm._v(" "), _c('p', [_vm._v("Clicking on exams in the following charts adds them to the list of exams on the\n                                    right. ")])])])
+    staticClass: "intro-text has-text-justified"
+  }, [_c('p', [_vm._v("Grading is boring and hard. Mistakes are both inevitable and consequential. A\n                                struggling\n                                student who\n                                gets\n                                a D instead of the C she deserves might lose financial aid and drop out of\n                                college. At\n                                the same\n                                time, it\n                                is difficult to do any real quality control without expending an unreasonable\n                                amount of\n                                time and\n                                effort.")]), _vm._v(" "), _c('p', [_vm._v("We are working on algorithms to better identify potential grading errors. In the\n                                meantime, here are\n                                some\n                                representations of your grading process which can help you visually identify\n                                potential\n                                problems. Use\n                                them to identify exams to quickly glance over and double-check your work.")]), _vm._v(" "), _c('p', [_vm._v("Clicking on exams in the following charts adds them to the list of exams on the\n                                right. ")])])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -97333,7 +97328,9 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "revisit-list "
-  }, [_c('h3', [_vm._v("Exams to revisit")]), _vm._v(" "), _c('ul', {
+  }, [_c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v("Exams to revisit")]), _vm._v(" "), _c('ul', {
     staticClass: "list-group",
     attrs: {
       "id": "revisitList"

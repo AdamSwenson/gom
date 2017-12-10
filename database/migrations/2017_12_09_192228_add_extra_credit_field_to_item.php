@@ -17,7 +17,7 @@ class AddExtraCreditFieldToItem extends Migration
             $table->boolean('is_extra_credit')
                 ->nullable();
         });
-    
+
     }
 
     /**

@@ -1,7 +1,19 @@
 <template>
 
-    <div id="quality-control-panel"
-         class="mainBodyLocator">
+    <div id="quality-control-panel">
+        <div class="box">
+        <div class="top-area ">
+            <p class="title">
+                <span class="icon"><i class="fa fa-rocket" aria-hidden="true"></i></span>
+                Quality Control
+            </p>
+
+            <p class="subtitle">
+                Catch grading errors before your students do
+            </p>
+
+            <h4>Please note: The tools on this page are still under development. </h4>
+        </div>
 
         <div class="tile is-ancestor">
 
@@ -9,54 +21,38 @@
 
                 <div class="tile is-child">
 
-                    <div class="tile is-child">
-                        <p class="title">
-                            <span class="icon"><i class="fa fa-rocket" aria-hidden="true"></i></span>
-                            Quality Control
-                        </p>
+                    <div class="tile is-parent">
 
-                        <p class="subtitle">
-                            Catch grading errors before your students do
-                        </p>
+                        <div class="tile is-child box">
 
-                        <h4>Please note: The tools on this page are still under development. </h4>
-                    </div>
-
-                    <div class="tile is-child">
-
-                        <div class="tile is-parent">
-
-                            <div class="tile is-child box">
-
-                                <div class="panel-body has-text-justified">
-                                    <p>Grading is boring and hard. Mistakes are both inevitable and consequential. A
-                                        struggling
-                                        student who
-                                        gets
-                                        a D instead of the C she deserves might lose financial aid and drop out of
-                                        college. At
-                                        the same
-                                        time, it
-                                        is difficult to do any real quality control without expending an unreasonable
-                                        amount of
-                                        time and
-                                        effort.</p>
-                                    <p>We are working on algorithms to better identify potential grading errors. In the
-                                        meantime, here are
-                                        some
-                                        representations of your grading process which can help you visually identify
-                                        potential
-                                        problems. Use
-                                        them to identify exams to quickly glance over and double-check your work.</p>
-                                    <p>Clicking on exams in the following charts adds them to the list of exams on the
-                                        right. </p>
-                                </div>
-
+                            <div class="intro-text has-text-justified">
+                                <p>Grading is boring and hard. Mistakes are both inevitable and consequential. A
+                                    struggling
+                                    student who
+                                    gets
+                                    a D instead of the C she deserves might lose financial aid and drop out of
+                                    college. At
+                                    the same
+                                    time, it
+                                    is difficult to do any real quality control without expending an unreasonable
+                                    amount of
+                                    time and
+                                    effort.</p>
+                                <p>We are working on algorithms to better identify potential grading errors. In the
+                                    meantime, here are
+                                    some
+                                    representations of your grading process which can help you visually identify
+                                    potential
+                                    problems. Use
+                                    them to identify exams to quickly glance over and double-check your work.</p>
+                                <p>Clicking on exams in the following charts adds them to the list of exams on the
+                                    right. </p>
                             </div>
 
-                            <div class="tile is-child box">
-                                <revisit-list :to-revisit="toRevisit"></revisit-list>
-                            </div>
+                        </div>
+
+                        <div class="tile is-child box">
+                            <revisit-list :to-revisit="toRevisit"></revisit-list>
                         </div>
                     </div>
                 </div>
@@ -82,7 +78,7 @@
             </div>
         </div>
 
-
+        </div>
     </div>
 
 
