@@ -3,21 +3,20 @@
     <div id="scoresOrderArea">
         <div class="quality-description ">
 
-            <p class="h3">Framing effects</p>
-            <p>If you read several very good exams and then one average exam1, the average exam1 may seem worse
-                than it is. Or vice-versa.</p>
-            <p> Each bar in the following chart represents an exam1. The exams are arranged in the order they were
-                graded. The first exam1 you graded is on the left. The last exam1 is on the right.</p>
+            <p class="subtitle">Framing effects</p>
+            <p>If you read several very good exams and then one average exam, the average exam may seem worse than it
+                is. Or vice-versa.</p>
+
+            <p> Each bar in the following chart represents an exam. The exams are arranged in the order they were
+                graded. The first exam you graded is on the left. The last exam is on the right.</p>
 
             <p>Look for sudden peaks and valleys. That is, exams with scores much higher or lower than their
                 predecessors. These may be worth taking a quick look at. </p>
 
         </div>
 
-        <div class="chart-area level">
-            <div class="level-item">
-                <div id="scoresGradedOrderBar"></div>
-            </div>
+        <div class="chart-area ">
+            <div id="scoresGradedOrderBar"></div>
         </div>
     </div>
 
@@ -38,14 +37,23 @@
 
         data: function () {
             return {
+
+                 options : {
+                    title: "Scores by order graded",
+                    height: 600,
+                    bar: { groupWidth: "90%" },
+                    legend: { position: "top" },
+                },
                 defaults: {}
             }
         },
 
         computed: {
-            preparedData : function (  ) {
+            //todo make sure sorting into correct order
+            preparedData: function () {
                 var scoreTime = [];
-                if(_.isUndefined(this.qcData)) return scoreTime;
+                if ( _.isUndefined( this.qcData ) || _.isNull( this.qcData ) ) return scoreTime;
+
                 for (var i = 0; i < this.qcData.length; i++) {
                     scoreTime.push( [
                         'g',
@@ -75,14 +83,8 @@
                 data.addColumn( 'number', 'times' );
                 data.addRows( this.preparedData );
 
-                var options = {
-                    title: "Scores by graded order",
-                    height: 600,
-                    bar: { groupWidth: "90%" },
-                    legend: { position: "top" },
-                };
                 var chart = new GoogleCharts.api.visualization.ColumnChart( document.getElementById( "scoresGradedOrderBar" ) );
-                chart.draw( data, options );
+                chart.draw( data, this.options );
 
                 function clickHandler() {
                     me.chartClickHandler( chart );
@@ -152,10 +154,16 @@
                 google.visualization.events.addListener( chart, 'select', clickHandler );
             },
 
-            chartClickHandler: function (  ) {
-                window.console.log( 'grade-order-chart', 'chartClickHandler', 155, );
-            }
 
+            chartClickHandler: function ( chart ) {
+                let selection = chart.getSelection();
+                let rowNum = selection[ 0 ].row;
+                if ( !_.isUndefined( this.qcData ) ) {
+                    let selectedData = this.qcData[ rowNum ];
+                    // window.console.log( 'time-score-scatter', 'chartClickHandler', 128, selectedData);
+                    return this.$emit( 'chart-clicked', selectedData );
+                }
+            }
         },
 
         directives: {},

@@ -2,54 +2,89 @@
 
     <div id="quality-control-panel"
          class="mainBodyLocator">
-        <p class="title"><span class="icon"><i class="fa fa-rocket" aria-hidden="true"></i></span> Quality Control</p>
-        <p class="subtitle">
-            <>Catch grading errors before your students do
-        </p>
 
-        <h4>Please note: The tools on this page are still under development. </h4>
+        <div class="tile is-ancestor">
 
-        <div class="box">
+            <div class="tile is-parent is-vertical">
 
-            <div class="panel-body has-text-justified">
-                <p>Grading is boring and hard. Mistakes are both inevitable and consequential. A struggling student who
-                    gets
-                    a D instead of the C she deserves might lose financial aid and drop out of college. At the same
-                    time, it
-                    is difficult to do any real quality control without expending an unreasonable amount of time and
-                    effort.</p>
-                <p>We are working on algorithms to better identify potential grading errors. In the meantime, here are
-                    some
-                    representations of your grading process which can help you visually identify potential problems. Use
-                    them to identify exams to quickly glance over and double-check your work.</p>
-                <p>Clicking on exams in the following charts adds them to the list of exams on the right. </p>
-            </div>
+                <div class="tile is-child">
 
+                    <div class="tile is-child">
+                        <p class="title">
+                            <span class="icon"><i class="fa fa-rocket" aria-hidden="true"></i></span>
+                            Quality Control
+                        </p>
 
-            <div class="tile is-ancestor">
-                <div class="tile is-parent is-vertical">
-                    <div class="tile box">
-                        <grade-order-chart :qc-data="qcData"></grade-order-chart>
+                        <p class="subtitle">
+                            Catch grading errors before your students do
+                        </p>
+
+                        <h4>Please note: The tools on this page are still under development. </h4>
                     </div>
 
-                    <div class="tile box">
-                        <grading-time-hist :qc-data="qcData"></grading-time-hist>
-                    </div>
+                    <div class="tile is-child">
 
-                    <div class="tile box">
-                        <time-score-scatter :qc-data="qcData"></time-score-scatter>
-                    </div>
+                        <div class="tile is-parent">
 
-                    <div class="tile box">
-                        <revisit-list :to-revisit="toRevisit"></revisit-list>
+                            <div class="tile is-child box">
+
+                                <div class="panel-body has-text-justified">
+                                    <p>Grading is boring and hard. Mistakes are both inevitable and consequential. A
+                                        struggling
+                                        student who
+                                        gets
+                                        a D instead of the C she deserves might lose financial aid and drop out of
+                                        college. At
+                                        the same
+                                        time, it
+                                        is difficult to do any real quality control without expending an unreasonable
+                                        amount of
+                                        time and
+                                        effort.</p>
+                                    <p>We are working on algorithms to better identify potential grading errors. In the
+                                        meantime, here are
+                                        some
+                                        representations of your grading process which can help you visually identify
+                                        potential
+                                        problems. Use
+                                        them to identify exams to quickly glance over and double-check your work.</p>
+                                    <p>Clicking on exams in the following charts adds them to the list of exams on the
+                                        right. </p>
+                                </div>
+
+                            </div>
+
+                            <div class="tile is-child box">
+                                <revisit-list :to-revisit="toRevisit"></revisit-list>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <div class="tile is-child box">
+                    <grade-order-chart :qc-data="qcData"
+                                       v-on:chart-clicked="chartClickHandler"
+                    ></grade-order-chart>
+                </div>
+
+                <div class="tile is-child box">
+                    <grading-time-hist :qc-data="qcData"
+                                       v-on:chart-clicked="chartClickHandler"
+                    ></grading-time-hist>
+                </div>
+
+                <div class="tile is-child box">
+                    <time-score-scatter :qc-data="qcData"
+                                        v-on:chart-clicked="chartClickHandler"
+                    ></time-score-scatter>
+                </div>
+
             </div>
-
-
         </div>
 
+
     </div>
+
 
 </template>
 
@@ -137,18 +172,10 @@
              * TODO Make bar change color when clicked.
              * @param chart
              */
-            chartClickHandler: function ( chart ) {
-                var me = this;
-                var selection = chart.getSelection();
-                for (var i = 0; i < selection.length; i++) {
-                    var item = selection[ i ];
-                    if ( item.row != null && item.column != null ) {
-                        var selectedData = scoresAndTimesAll[ item.row ];
-                        me.addStudentToList( selectedData[ 4 ], selectedData[ 3 ] );
-                        //item.row.color = 'red';
-                        window.console.log( 'click happened', selectedData );
-                    }
-                }
+            chartClickHandler: function ( qcDatum ) {
+                window.console.log( 'quality-control-panel', 'chartClickHandler', 149, qcDatum );
+
+                this.addStudentToList( qcDatum );
             },
 
             /**
@@ -156,8 +183,8 @@
              * @param studentName
              * @param studentIdentifier
              */
-            addStudentToList: function ( studentId ) {
-                this.toRevisit.push(studentId);
+            addStudentToList: function ( qcDatum ) {
+                this.toRevisit.push( qcDatum.studentId );
                 // var listItem = "<li class='list-group-item'>" + studentName + " (id: " + studentIdentifier + ") [Link to comments] [Link to grading] <span class='text-right'><span class='toRemove glyphicon glyphicon-remove'></span></span></li>";
                 // $( "#revisitList" ).append( listItem );
                 // $( ".toRemove" ).on( 'click', function () {

@@ -96260,6 +96260,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /*
@@ -96331,18 +96366,10 @@ exports.default = {
          * TODO Make bar change color when clicked.
          * @param chart
          */
-        chartClickHandler: function chartClickHandler(chart) {
-            var me = this;
-            var selection = chart.getSelection();
-            for (var i = 0; i < selection.length; i++) {
-                var item = selection[i];
-                if (item.row != null && item.column != null) {
-                    var selectedData = scoresAndTimesAll[item.row];
-                    me.addStudentToList(selectedData[4], selectedData[3]);
-                    //item.row.color = 'red';
-                    window.console.log('click happened', selectedData);
-                }
-            }
+        chartClickHandler: function chartClickHandler(qcDatum) {
+            window.console.log('quality-control-panel', 'chartClickHandler', 149, qcDatum);
+
+            this.addStudentToList(qcDatum);
         },
 
         /**
@@ -96350,8 +96377,8 @@ exports.default = {
          * @param studentName
          * @param studentIdentifier
          */
-        addStudentToList: function addStudentToList(studentId) {
-            this.toRevisit.push(studentId);
+        addStudentToList: function addStudentToList(qcDatum) {
+            this.toRevisit.push(qcDatum.studentId);
             // var listItem = "<li class='list-group-item'>" + studentName + " (id: " + studentIdentifier + ") [Link to comments] [Link to grading] <span class='text-right'><span class='toRemove glyphicon glyphicon-remove'></span></span></li>";
             // $( "#revisitList" ).append( listItem );
             // $( ".toRemove" ).on( 'click', function () {
@@ -96432,41 +96459,54 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "quality-control-panel"
     }
-  }, [_vm._m(0), _vm._v(" "), _c('p', {
-    staticClass: "subtitle"
-  }, [_vm._v("\n        <>Catch grading errors before your students do\n    ")]), _vm._v(" "), _c('h4', [_vm._v("Please note: The tools on this page are still under development. ")]), _vm._v(" "), _c('div', {
-    staticClass: "box"
-  }, [_vm._m(1), _vm._v(" "), _c('div', {
+  }, [_c('div', {
     staticClass: "tile is-ancestor"
   }, [_c('div', {
     staticClass: "tile is-parent is-vertical"
   }, [_c('div', {
-    staticClass: "tile box"
-  }, [_c('grade-order-chart', {
-    attrs: {
-      "qc-data": _vm.qcData
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    staticClass: "tile box"
-  }, [_c('grading-time-hist', {
-    attrs: {
-      "qc-data": _vm.qcData
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    staticClass: "tile box"
-  }, [_c('time-score-scatter', {
-    attrs: {
-      "qc-data": _vm.qcData
-    }
-  })], 1), _vm._v(" "), _c('div', {
-    staticClass: "tile box"
+    staticClass: "tile is-child"
+  }, [_vm._m(0), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child"
+  }, [_c('div', {
+    staticClass: "tile is-parent"
+  }, [_vm._m(1), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child box"
   }, [_c('revisit-list', {
     attrs: {
       "to-revisit": _vm.toRevisit
     }
-  })], 1)])])])])
+  })], 1)])])]), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('grade-order-chart', {
+    attrs: {
+      "qc-data": _vm.qcData
+    },
+    on: {
+      "chart-clicked": _vm.chartClickHandler
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('grading-time-hist', {
+    attrs: {
+      "qc-data": _vm.qcData
+    },
+    on: {
+      "chart-clicked": _vm.chartClickHandler
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('time-score-scatter', {
+    attrs: {
+      "qc-data": _vm.qcData
+    },
+    on: {
+      "chart-clicked": _vm.chartClickHandler
+    }
+  })], 1)])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
+  return _c('div', {
+    staticClass: "tile is-child"
+  }, [_c('p', {
     staticClass: "title"
   }, [_c('span', {
     staticClass: "icon"
@@ -96475,11 +96515,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" Quality Control")])
+  })]), _vm._v("\n                        Quality Control\n                    ")]), _vm._v(" "), _c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v("\n                        Catch grading errors before your students do\n                    ")]), _vm._v(" "), _c('h4', [_vm._v("Please note: The tools on this page are still under development. ")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
+    staticClass: "tile is-child box"
+  }, [_c('div', {
     staticClass: "panel-body has-text-justified"
-  }, [_c('p', [_vm._v("Grading is boring and hard. Mistakes are both inevitable and consequential. A struggling student who\n                gets\n                a D instead of the C she deserves might lose financial aid and drop out of college. At the same\n                time, it\n                is difficult to do any real quality control without expending an unreasonable amount of time and\n                effort.")]), _vm._v(" "), _c('p', [_vm._v("We are working on algorithms to better identify potential grading errors. In the meantime, here are\n                some\n                representations of your grading process which can help you visually identify potential problems. Use\n                them to identify exams to quickly glance over and double-check your work.")]), _vm._v(" "), _c('p', [_vm._v("Clicking on exams in the following charts adds them to the list of exams on the right. ")])])
+  }, [_c('p', [_vm._v("Grading is boring and hard. Mistakes are both inevitable and consequential. A\n                                    struggling\n                                    student who\n                                    gets\n                                    a D instead of the C she deserves might lose financial aid and drop out of\n                                    college. At\n                                    the same\n                                    time, it\n                                    is difficult to do any real quality control without expending an unreasonable\n                                    amount of\n                                    time and\n                                    effort.")]), _vm._v(" "), _c('p', [_vm._v("We are working on algorithms to better identify potential grading errors. In the\n                                    meantime, here are\n                                    some\n                                    representations of your grading process which can help you visually identify\n                                    potential\n                                    problems. Use\n                                    them to identify exams to quickly glance over and double-check your work.")]), _vm._v(" "), _c('p', [_vm._v("Clicking on exams in the following charts adds them to the list of exams on the\n                                    right. ")])])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -96536,14 +96580,23 @@ exports.default = {
 
     data: function data() {
         return {
+
+            options: {
+                title: "Scores by order graded",
+                height: 600,
+                bar: { groupWidth: "90%" },
+                legend: { position: "top" }
+            },
             defaults: {}
         };
     },
 
     computed: {
+        //todo make sure sorting into correct order
         preparedData: function preparedData() {
             var scoreTime = [];
-            if (_.isUndefined(this.qcData)) return scoreTime;
+            if (_.isUndefined(this.qcData) || _.isNull(this.qcData)) return scoreTime;
+
             for (var i = 0; i < this.qcData.length; i++) {
                 scoreTime.push(['g', this.qcData[i].totalScore, this.qcData[i].gradingTime]);
             }
@@ -96568,14 +96621,8 @@ exports.default = {
             data.addColumn('number', 'times');
             data.addRows(this.preparedData);
 
-            var options = {
-                title: "Scores by graded order",
-                height: 600,
-                bar: { groupWidth: "90%" },
-                legend: { position: "top" }
-            };
             var chart = new _googleCharts.GoogleCharts.api.visualization.ColumnChart(document.getElementById("scoresGradedOrderBar"));
-            chart.draw(data, options);
+            chart.draw(data, this.options);
 
             function clickHandler() {
                 me.chartClickHandler(chart);
@@ -96644,10 +96691,15 @@ exports.default = {
             google.visualization.events.addListener(chart, 'select', clickHandler);
         },
 
-        chartClickHandler: function chartClickHandler() {
-            window.console.log('grade-order-chart', 'chartClickHandler', 155);
+        chartClickHandler: function chartClickHandler(chart) {
+            var selection = chart.getSelection();
+            var rowNum = selection[0].row;
+            if (!_.isUndefined(this.qcData)) {
+                var selectedData = this.qcData[rowNum];
+                // window.console.log( 'time-score-scatter', 'chartClickHandler', 128, selectedData);
+                return this.$emit('chart-clicked', selectedData);
+            }
         }
-
     },
 
     directives: {},
@@ -96664,7 +96716,6 @@ exports.default = {
         });
     }
 }; //
-//
 //
 //
 //
@@ -96714,6 +96765,14 @@ exports.default = {
 
     data: function data() {
         return {
+
+            options: {
+                title: 'Grading times distribution',
+                vAxis: { title: 'Number of exams' },
+                hAxis: { title: 'Minutes spent grading' },
+                legend: { position: 'top' }
+            },
+
             defaults: {}
         };
     },
@@ -96723,7 +96782,7 @@ exports.default = {
             //todo make sure is actually sorted properly
             var byMinutes = [];
 
-            if (_.isUndefined(this.qcData)) return byMinutes;
+            if (_.isUndefined(this.qcData) || _.isNull(this.qcData)) return byMinutes;
 
             var timesGradedOrder = this.qcData;
 
@@ -96744,35 +96803,31 @@ exports.default = {
          */
         draw: function draw() {
             var me = this;
-            // var byMinutes = [];
-            // for (var i = 0; i < timesGradedOrder.length; i++) {
-            //     var minutes = timesGradedOrder[ i ][ 1 ] / 60;
-            //     byMinutes.push( [ minutes ] )
-            // }
-            //
             var data = new _googleCharts.GoogleCharts.api.visualization.DataTable();
 
             // Declare columns
             data.addColumn('number', 'time');
             data.addRows(this.preparedData);
 
-            var options = {
-                title: 'Grading times distribution',
-                vAxis: { title: 'Number of exams' },
-                hAxis: { title: 'Minutes spent grading' },
-                legend: { position: 'top' }
-            };
-
             var chart = new _googleCharts.GoogleCharts.api.visualization.Histogram(document.getElementById('gradingTimeHistogram'));
-            chart.draw(data, options);
+            chart.draw(data, this.options);
 
             function clickHandler() {
                 me.chartClickHandler(chart);
             }
 
             _googleCharts.GoogleCharts.api.visualization.events.addListener(chart, 'select', clickHandler);
-        }
+        },
 
+        chartClickHandler: function chartClickHandler(chart) {
+            var selection = chart.getSelection();
+            var rowNum = selection[0].row;
+            if (!_.isUndefined(this.qcData)) {
+                var selectedData = this.qcData[rowNum];
+                // window.console.log( 'time-score-scatter', 'chartClickHandler', 128, selectedData);
+                return this.$emit('chart-clicked', selectedData);
+            }
+        }
     },
 
     directives: {},
@@ -96789,7 +96844,6 @@ exports.default = {
         });
     }
 }; //
-//
 //
 //
 //
@@ -96848,19 +96902,21 @@ Object.defineProperty(exports, "__esModule", {
 
 exports.default = {
 
-    props: [],
+    props: ['toRevisit'],
 
     components: {},
 
     data: function data() {
         return {
+
             defaults: {}
         };
     },
 
     computed: {
-        toRevisit: function toRevisit() {
-            return [];
+        revisitList: function revisitList() {
+            if (_.isUndefined(this.toRevisit)) return [];
+            return this.toRevisit;
         }
     },
 
@@ -96894,47 +96950,7 @@ exports.default = {
 
     data: function data() {
         return {
-            defaults: {}
-        };
-    },
-
-    computed: {
-        preparedData: function preparedData() {
-            var scoreTime = [];
-
-            if (_.isUndefined(this.qcData)) return scoreTime;
-
-            var scoresAndTimes = this.qcData;
-
-            for (var i = 0; i < scoresAndTimes.length; i++) {
-                scoreTime.push([scoresAndTimes[i].totalScore, scoresAndTimes[i].gradingTime]);
-            }
-            return scoreTime;
-        }
-    },
-
-    methods: {
-
-        /**
-         * Draws a scatterplot of time grading vs. score with R squared value
-         */
-        draw: function draw() {
-            var scoresAndTimes = this.qcData;
-            var me = this;
-            var scoreTime = [];
-            for (var i = 0; i < scoresAndTimes.length; i++) {
-                scoreTime.push([scoresAndTimes[i].totalScore, scoresAndTimes[i].gradingTime]);
-            }
-
-            var data = new _googleCharts.GoogleCharts.api.visualization.DataTable();
-
-            // Declare columns
-            data.addColumn('number', 'score');
-            data.addColumn('number', 'Grading time');
-
-            data.addRows(this.preparedData);
-
-            var options = {
+            options: {
                 title: "Scores vs. Grading time",
                 width: 600,
                 height: 400,
@@ -96950,17 +96966,59 @@ exports.default = {
                         visibleInLegend: true
                     }
                 }
-            };
+            },
+            defaults: {}
+        };
+    },
+
+    computed: {
+        preparedData: function preparedData() {
+            var scoreTime = [];
+
+            if (_.isUndefined(this.qcData) || _.isNull(this.qcData)) return scoreTime;
+
+            for (var i = 0; i < this.qcData.length; i++) {
+                scoreTime.push([this.qcData[i].totalScore, this.qcData[i].gradingTime]);
+            }
+            return scoreTime;
+        }
+    },
+
+    methods: {
+
+        /**
+         * Draws a scatterplot of time grading vs. score with R squared value
+         */
+        draw: function draw() {
+            var me = this;
+
+            var data = new _googleCharts.GoogleCharts.api.visualization.DataTable();
+
+            // Declare columns
+            data.addColumn('number', 'score');
+            data.addColumn('number', 'Grading time');
+
+            data.addRows(this.preparedData);
+
             var chart = new _googleCharts.GoogleCharts.api.visualization.ScatterChart(document.getElementById("timeScoreScatter"));
-            chart.draw(data, options);
+            chart.draw(data, this.options);
 
             function clickHandler() {
                 me.chartClickHandler(chart);
             }
 
             _googleCharts.GoogleCharts.api.visualization.events.addListener(chart, 'select', clickHandler);
-        }
+        },
 
+        chartClickHandler: function chartClickHandler(chart) {
+            var selection = chart.getSelection();
+            var rowNum = selection[0].row;
+            if (!_.isUndefined(this.qcData)) {
+                var selectedData = this.qcData[rowNum];
+                // window.console.log( 'time-score-scatter', 'chartClickHandler', 128, selectedData);
+                return this.$emit('chart-clicked', selectedData);
+            }
+        }
     },
 
     directives: {},
@@ -96977,12 +97035,6 @@ exports.default = {
         });
     }
 }; //
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -97257,16 +97309,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "quality-description "
   }, [_c('p', {
-    staticClass: "h3"
-  }, [_vm._v("Framing effects")]), _vm._v(" "), _c('p', [_vm._v("If you read several very good exams and then one average exam1, the average exam1 may seem worse\n            than it is. Or vice-versa.")]), _vm._v(" "), _c('p', [_vm._v(" Each bar in the following chart represents an exam1. The exams are arranged in the order they were\n            graded. The first exam1 you graded is on the left. The last exam1 is on the right.")]), _vm._v(" "), _c('p', [_vm._v("Look for sudden peaks and valleys. That is, exams with scores much higher or lower than their\n            predecessors. These may be worth taking a quick look at. ")])]), _vm._v(" "), _c('div', {
-    staticClass: "chart-area level"
-  }, [_c('div', {
-    staticClass: "level-item"
+    staticClass: "subtitle"
+  }, [_vm._v("Framing effects")]), _vm._v(" "), _c('p', [_vm._v("If you read several very good exams and then one average exam, the average exam may seem worse than it\n            is. Or vice-versa.")]), _vm._v(" "), _c('p', [_vm._v(" Each bar in the following chart represents an exam. The exams are arranged in the order they were\n            graded. The first exam you graded is on the left. The last exam is on the right.")]), _vm._v(" "), _c('p', [_vm._v("Look for sudden peaks and valleys. That is, exams with scores much higher or lower than their\n            predecessors. These may be worth taking a quick look at. ")])]), _vm._v(" "), _c('div', {
+    staticClass: "chart-area "
   }, [_c('div', {
     attrs: {
       "id": "scoresGradedOrderBar"
     }
-  })])])])
+  })])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -97288,8 +97338,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "revisitList"
     }
-  }, _vm._l((_vm.toRevisit), function(exam) {
-    return _c('li')
+  }, _vm._l((_vm.toRevisit), function(studentId) {
+    return _c('li', [_vm._v("\n            " + _vm._s(studentId) + "\n        ")])
   })), _vm._v(" "), _c('p', [_vm._v("(Make sure you copy this list and paste it into a document; it won't be saved after you leave this\n        page)")])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -97311,15 +97361,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "grading-time-hist"
   }, [_c('div', {
     staticClass: "quality-description "
-  }, [_c('p', [_vm._v("In many disciplines, there will tend to be a rough positive correlation between exam1 quality and\n            grading time (i.e., better students tend to write more than less good students). Howevever, this\n            will not always be the case. It thus may help to look for outliers by grading time alone. The\n            following chart is a simple histogram of the amount of time spent grading exams. The number of\n            exams\n            taking the amount of time a particular bin is on the vertical axis. You may want to revisit\n            exams in\n            the extreme left and right bins.")])]), _vm._v(" "), _c('div', {
-    staticClass: "chart-area level"
-  }, [_c('div', {
-    staticClass: "level-item"
+  }, [_c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v("Grading time histogram")]), _vm._v(" "), _c('p', [_vm._v("In many disciplines, there will tend to be a rough positive correlation between exam quality and grading\n            time (i.e., better students tend to write more than less good students).")]), _vm._v(" "), _c('p', [_vm._v("However, this will not always be the case. It thus may help to look for outliers by grading time alone.\n            The following chart is a simple histogram of the amount of time spent grading exams. The number of exams\n            taking the amount of time a particular bin is on the vertical axis. You may want to revisit exams in the\n            extreme left and right bins.")])]), _vm._v(" "), _c('div', {
+    staticClass: "chart-area "
   }, [_c('div', {
     attrs: {
       "id": "gradingTimeHistogram"
     }
-  })])])])
+  })])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -97343,16 +97393,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "quality-description "
   }, [_c('p', {
-    staticClass: "h3"
-  }, [_vm._v("Grading time")]), _vm._v(" "), _c('p', [_vm._v("To help keep you motivated, the gradeomatic recorded how long you spent grading each exam1. You\n            can\n            use this data to help with quality control.")]), _vm._v(" "), _c('p', [_vm._v("For example, you might have spent twice as long on one B- exam1 than on other B- exams because you\n            were tired or losing focus on the task. Similarly, spending a lot less time on an exam1 might be\n            a\n            sign that you were rushing.")]), _vm._v(" "), _c('p', [_vm._v("The following chart plots the time spent grading each exam1 against it's total score. You might\n            want\n            to pay particular attention to outliers in the upper left quadrent (high score; graded fast) and\n            lower right quadrent (low score; graded slow).")])]), _vm._v(" "), _c('div', {
-    staticClass: "chart-area level"
-  }, [_c('div', {
-    staticClass: "level-item"
+    staticClass: "subtitle"
+  }, [_vm._v("Time - score scatterplot")]), _vm._v(" "), _c('p', [_vm._v("To help keep you motivated, the gradeomatic recorded how long you spent grading each exam. You can use\n            this data to help with quality control.")]), _vm._v(" "), _c('p', [_vm._v("For example, you might have spent twice as long on one B- exam than on other B- exams because you were\n            tired or losing focus on the task. Similarly, spending a lot less time on an exam might be a sign that\n            you were rushing.")]), _vm._v(" "), _c('p', [_vm._v("The following chart plots the time spent grading each exam against it's total score. You might want to\n            pay particular attention to outliers in the upper left quadrant (high score; graded fast) and lower\n            right quadrant (low score; graded slow).")])]), _vm._v(" "), _c('div', {
+    staticClass: "chart-area "
   }, [_c('div', {
     attrs: {
       "id": "timeScoreScatter"
     }
-  })])])])
+  })])])
 }]}
 module.exports.render._withStripped = true
 if (false) {

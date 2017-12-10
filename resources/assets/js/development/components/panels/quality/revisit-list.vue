@@ -2,8 +2,8 @@
     <div class="revisit-list ">
         <h3>Exams to revisit</h3>
         <ul id="revisitList" class="list-group">
-            <li v-for="exam in toRevisit">
-
+            <li v-for="studentId in toRevisit">
+                {{ studentId }}
             </li>
         </ul>
 
@@ -21,19 +21,21 @@
 <script>
     export default {
 
-        props: [],
+        props: ['toRevisit'],
 
         components: {},
 
         data: function () {
             return {
+
                 defaults: {}
             }
         },
 
         computed: {
-            toRevisit: function () {
-                return [];
+            revisitList: function () {
+                if(_.isUndefined(this.toRevisit)) return [];
+                return this.toRevisit;
             }
         },
 
