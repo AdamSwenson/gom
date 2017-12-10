@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Time;
 
+use App\GradingTime;
 use App\Http\Controllers\Controller;
+
 use App\Repositories\Time\IGradingTimeRepository;
-use Illuminate\Http\Request;
 
-use App\Http\Requests;
-
-use App\Http\Requests\GradingRequest;
+use App\Http\Requests\Grading\GradingTimeRequest; //old gom
+use App\Http\Requests\GradingRequest; // new gom
 
 use App\Exam;
+use App\Student;
 
 /**
  * This handles all api requests having to do with grading time.
@@ -29,10 +30,14 @@ class TimeController extends Controller
     {
         $this->middleware('auth');
         $this->dao = $dao = app()->make(IGradingTimeRepository::class);
-
     }
 
-    public function getGradingTime( Exam $exam )
+    /**
+     * Returns all grading times for an exam
+     * @param Exam $exam
+     * @return array
+     */
+    public function getGradingTimes( Exam $exam )
     {
         $c = collect($exam->gradingTimes);
 
@@ -46,6 +51,7 @@ class TimeController extends Controller
     }
 
     /**
+     * OLDER VERSION
      * Record or add to the time spent grade a particular student's exam
      * @param Exam $exam
      * @param GradingRequest $request
@@ -62,4 +68,32 @@ class TimeController extends Controller
             return $time;
         }
     }
+
+// ---------------------------- New grading
+
+    /**
+     * @param Exam $exam
+     * @param Student $student
+     * @param GradingTimeRequest $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function update( Exam $exam, Student $student, GradingTimeRequest $request )
+    {
+        $gt = GradingTime::where('student_id', $student->id)->where('exam_id', $exam->id)->firstOrCreate();
+        $gt->seconds = $request->input('time');
+        return $this->sendAjaxSuccess();
+    }
+
+    /**
+     * @param Exam $exam
+     * @param Student $student
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function show( Exam $exam, Student $student )
+    {
+        return GradingTime::where('student_id', $student->id)->where('exam_id', $exam->id)->firstOrCreate();
+    }
+
+
 }

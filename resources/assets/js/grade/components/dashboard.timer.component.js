@@ -104,7 +104,7 @@ module.exports = {
          * Returns in seconds
          * @returns Number
          */
-        currentExamTime: function () {
+        seconds: function () {
             return this.store.getActiveStudentGradingTime( );
         },
 

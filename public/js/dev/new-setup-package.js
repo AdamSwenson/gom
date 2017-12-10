@@ -256,6 +256,8 @@ var disassociateTag = exports.disassociateTag = 'disassociateTag';
 var updateGradeCutoffs = exports.updateGradeCutoffs = 'updateGradeCutoffs';
 var loadTotalScores = exports.loadTotalScores = 'loadTotalScores';
 
+// ------------------------------ New grading
+
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -30336,6 +30338,8 @@ var Student = function (_IModel) {
         //to store these on the student.
         _this.score = null;
         _this.grade = null;
+
+        _this.gradingTime;
         return _this;
     }
 
@@ -30462,30 +30466,16 @@ var Student = function (_IModel) {
 
         /* *************************** Names ************* */
 
-        //
-        // get firstName() {
-        //     return this._firstName
-        // };
-        //
-        // set firstName( val ) {
-        //     this._firstName = val;
-        // }
-        //
-        // /**
-        //  * Getter for last name
-        //  */
-        // get lastName() {
-        //     return this._lastName;
-        // };
-        //
-        // /**
-        //  * Setter for last name
-        //  * @param val
-        //  */
-        // set lastName( val ) {
-        //     this._lastName = val;
-        // };
-
+    }, {
+        key: 'nameLastFirst',
+        get: function get() {
+            return this.lastName + ', ' + this.firstName;
+        }
+    }, {
+        key: 'nameFirstLast',
+        get: function get() {
+            return this.firstName + ' ' + this.lastName;
+        }
 
         /* *************************** Identifier *********** */
         /**
@@ -30503,14 +30493,6 @@ var Student = function (_IModel) {
         }
 
         /* *************************** Email ****************** */
-        // get email() {
-        //     return this._email;
-        // }
-        //
-        // set email( address ) {
-        //     this._email = address;
-        // }
-
 
         //
         // static get fillable(){
@@ -30562,7 +30544,7 @@ var Student = function (_IModel) {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'firstName', 'lastName', 'studentIdentifier', 'email'];
+            return ['id', 'index', 'firstName', 'lastName', 'studentIdentifier', 'email', 'gradingTime'];
         }
     }, {
         key: 'aliasMap',
@@ -30573,7 +30555,8 @@ var Student = function (_IModel) {
                 student_identifier: 'studentIdentifier',
                 last_name: 'lastName',
                 first_name: 'firstName',
-                student_id: 'id'
+                student_id: 'id',
+                seconds: 'gradingTime'
             };
         }
     }]);
@@ -34675,6 +34658,21 @@ module.exports = {
             return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    getStudentGradingTime: function getStudentGradingTime(exam, student) {
+        var to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+        return window.axios.get(to).then(function (response) {
+            return response.data;
+        });
+    },
+
+    setStudentGradingTime: function setStudentGradingTime(exam, student, time) {
+        var out = { time: time };
+        var to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+        return window.axios.post(to, time).then(function (response) {
+            return response.data;
         });
     }
 
@@ -56765,6 +56763,14 @@ exports.default = function (store) {
 
         switch (type) {
 
+            // ******************** NEW GRADING STUFF!
+            case ngmTypes.setActiveStudentTime:
+
+                break;
+
+            // ******************** END NEW GRADING STUFF
+
+
             // ******************** Items
             /**
              * This mutation type indicates that we are supposed to ask
@@ -56997,6 +57003,10 @@ var mTypes = _interopRequireWildcard(_mutationTypes);
 var _getterTypes = __webpack_require__(6);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(905);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
 var _Payload = __webpack_require__(2);
 
@@ -97718,6 +97728,140 @@ exports.default = {
     mutations: mutations,
     state: state
 };
+
+/***/ }),
+/* 905 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+/**
+ * https://vuex.vuejs.org/en/mutations.html
+ * It is a commonly seen pattern to use constants for mutation types in various Flux implementations. This allow the code to take advantage of tooling like linters, and putting all constants in a single file allows your collaborators to get an at-a-glance view of what mutations are possible in the entire application:
+ Whether to use constants is largely a preference - it can be helpful in large projects with many developers, but it's totally optional if you don't like them.
+
+ * @type {string}
+ */
+
+// ------------------------------ New grading
+
+
+//active exam
+var setActiveExam = exports.setActiveExam = 'setActiveExam';
+var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
+var updateActiveExamProp = exports.updateActiveExamProp = 'updateActiveExamProp';
+
+//activestudent
+var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
+var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
+var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
+var startExamTimer = exports.startExamTimer = 'startExamTimer';
+var stopExamTimer = exports.stopExamTimer = 'stopExamTimer';
+
+//preferences for grading
+var toggleStudentNameVisibility = exports.toggleStudentNameVisibility = 'toggleStudentNameVisibility';
+
+//-------------===================================================
+
+//comments
+var setElementComment = exports.setElementComment = 'setElementComment';
+var loadElementComments = exports.loadElementComments = 'loadElementComments';
+var loadStockComments = exports.loadStockComments = 'loadStockComments';
+
+//exams
+var addExam = exports.addExam = 'addExam';
+
+var addIndexMapping = exports.addIndexMapping = 'addIndexMapping';
+var loadExams = exports.loadExams = 'loadExams';
+
+//escores
+var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var setElementScore = exports.setElementScore = 'setElementScore';
+
+//kumi
+var addKumi = exports.addKumi = 'addKumi';
+var associateStudentWithKumi = exports.associateStudentWithKumi = 'associateStudentWithKumi';
+var updateKumi = exports.updateKumi = 'updateKumi';
+var updateSelectedKumi = exports.updateSelectedKumi = 'updateSelectedKumi';
+
+//grades
+var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
+var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
+var setGrade = exports.setGrade = 'setGrade';
+
+//qscores                                                            ;
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var removeQuestionScore = exports.removeQuestionScore = 'removeQuestionScore';
+
+//questions                                                          ;
+var setMaxQuestionScore = exports.setMaxQuestionScore = 'setMaxQuestionScore';
+var removeMaxQuestionScore = exports.removeMaxQuestionScore = 'removeMaxQuestionScore';
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores'      ;
+var setQuestion = exports.setQuestion = 'setQuestion';
+var removeQuestion = exports.removeQuestion = 'removeQuestion';
+var setNumberQuestions = exports.setNumberQuestions = 'setNumberQuestions';
+
+//students
+var setStudent = exports.setStudent = 'setStudent';
+var removeStudent = exports.removeStudent = 'toggleRemoveControls';
+//dev
+var updateStudent = exports.updateStudent = 'updateStudent';
+var addStudentToRoster = exports.addStudentToRoster = 'addStudentToRoster';
+
+//times
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var setGradingTime = exports.setGradingTime = 'setGradingTime';
+var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
+var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
+
+var setExam = exports.setExam = 'setExam';
+
+//items
+var addNewItem = exports.addNewItem = 'addNewItem';
+var setItem = exports.setItem = 'setItem';
+var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
+var loadItems = exports.loadItems = 'loadItems';
+var updateOrder = exports.updateOrder = 'updateOrder';
+
+//item.order
+var insertNodeIntoOrder = exports.insertNodeIntoOrder = 'insertNodeIntoOrder';
+var removeNodeFromOrder = exports.removeNodeFromOrder = 'removeNodeFromOrder';
+
+var updateItemName = exports.updateItemName = 'updateItemName';
+var updateItem = exports.updateItem = 'updateItem';
+var updateItemSilently = exports.updateItemSilently = 'updateItemSilently';
+var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
+// export const updateItemNameByIndex = 'updateItemNameByIndex'
+
+var updateComment = exports.updateComment = 'updateComment';
+
+//item settings
+var showItemSettings = exports.showItemSettings = 'showItemSettings';
+var hideItemSettings = exports.hideItemSettings = 'hideItemSettings';
+var toggleExamSettings = exports.toggleExamSettings = 'toggleExamSettings';
+
+//Initialization
+var loadInitialData = exports.loadInitialData = 'loadInitialData';
+
+//requests
+var startRequest = exports.startRequest = 'startRequest';
+var stopRequestSuccess = exports.stopRequestSuccess = 'stopRequestSuccess';
+var stopRequestError = exports.stopRequestError = 'stopRequestError';
+
+//scores
+var setItemScore = exports.setItemScore = 'setItemScore';
+var removeItemScore = exports.removeItemScore = 'removeItemScore';
+
+//ments
+var updateGradeCutoffs = exports.updateGradeCutoffs = 'updateGradeCutoffs';
+var loadTotalScores = exports.loadTotalScores = 'loadTotalScores';
 
 /***/ })
 /******/ ]);

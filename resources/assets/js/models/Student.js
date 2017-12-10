@@ -21,6 +21,8 @@ export default class Student extends IModel{
         //to store these on the student.
         this.score = null;
         this.grade = null;
+
+        this.gradingTime;
     }
 
     /* ************************* Server stuff ****************** */
@@ -58,7 +60,8 @@ export default class Student extends IModel{
             'firstName',
             'lastName',
             'studentIdentifier',
-            'email'
+            'email',
+            'gradingTime'
         ];
     }
 
@@ -70,6 +73,7 @@ export default class Student extends IModel{
             last_name: 'lastName',
             first_name: 'firstName',
             student_id: 'id',
+            seconds : 'gradingTime'
         };
 
     }
@@ -156,29 +160,14 @@ export default class Student extends IModel{
 
     /* *************************** Names ************* */
 
-    //
-    // get firstName() {
-    //     return this._firstName
-    // };
-    //
-    // set firstName( val ) {
-    //     this._firstName = val;
-    // }
-    //
-    // /**
-    //  * Getter for last name
-    //  */
-    // get lastName() {
-    //     return this._lastName;
-    // };
-    //
-    // /**
-    //  * Setter for last name
-    //  * @param val
-    //  */
-    // set lastName( val ) {
-    //     this._lastName = val;
-    // };
+    get nameLastFirst(){
+        return this.lastName + ', ' + this.firstName;
+    }
+
+    get nameFirstLast(){
+        return this.firstName + ' ' + this.lastName;
+    }
+
 
 
     /* *************************** Identifier *********** */
@@ -196,13 +185,6 @@ export default class Student extends IModel{
 
 
     /* *************************** Email ****************** */
-    // get email() {
-    //     return this._email;
-    // }
-    //
-    // set email( address ) {
-    //     this._email = address;
-    // }
 
 
     //

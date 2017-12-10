@@ -14,6 +14,7 @@
 /* ---------------------------- Authentication and registration ------------------------------------------------------*/
 
 use App\Http\Controllers\Item\KumiController;
+use App\Http\Controllers\Time\TimeController;
 
 Route::auth();
 //temp until convert everything to use the post
@@ -146,7 +147,7 @@ Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
 /* ---------------------------------------------- Time --------------------------------------------------------- */
 Route::post('grade/exam/{exam}/time', 'Time\TimeController@recordTime');
-Route::get('time/exam/{exam}', 'Time\TimeController@getGradingTime');
+Route::get('time/exam/{exam}', 'Time\TimeController@getGradingTimes');
 
 
 /* ---------------------------------------------- Testing ----------------------------------------------------------- */
@@ -257,3 +258,6 @@ Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
 
 Route::resource('dev/tags', 'Item\TagsController');
 
+// ====================================== NEW GRADING
+Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
+Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@post');

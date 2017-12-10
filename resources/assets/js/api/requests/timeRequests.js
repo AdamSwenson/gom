@@ -40,5 +40,24 @@ module.exports = {
             } );
     },
 
+    getStudentGradingTime: ( exam, student ) => {
+        let to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+        return window.axios
+            .get( to )
+            .then( function ( response ) {
+                return response.data;
+            } );
+    },
+
+    setStudentGradingTime: ( exam, student, time ) => {
+        let out = { time: time };
+        let to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+        return window.axios
+            .post( to, time )
+            .then( function ( response ) {
+                return response.data;
+            } );
+
+    }
 
 };

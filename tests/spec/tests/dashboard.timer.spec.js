@@ -224,10 +224,10 @@ describe( "dashboard-timer tests | ", function () {
 
             } );
 
-            it( "currentExamTime ", function () {
+            it( "seconds ", function () {
                 let component = Helper.getComponent( this );
                 //check
-                expect( component.currentExamTime ).toBe( this.testTime );
+                expect( component.seconds ).toBe( this.testTime );
             } );
 
             it( "currentExamTimeDisplay", function () {

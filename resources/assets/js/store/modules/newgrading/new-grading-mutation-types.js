@@ -9,6 +9,8 @@
  * @type {string}
  */
 
+// ------------------------------ New grading
+
 
 //active exam
 export const setActiveExam = 'setActiveExam';
@@ -19,10 +21,14 @@ export const updateActiveExamProp = 'updateActiveExamProp'
 export const setActiveStudent = 'setActiveStudent'
 export const clearActiveStudent = 'clearActiveStudent'
 export const setActiveStudentTime = 'setActiveStudentTime'
+export const startExamTimer = 'startExamTimer';
+export const stopExamTimer = 'stopExamTimer';
+
+//preferences for grading
+export const toggleStudentNameVisibility = 'toggleStudentNameVisibility';
 
 
-
-
+//-------------===================================================
 
 //comments
 export const setElementComment = 'setElementComment';
@@ -100,11 +106,6 @@ export const setItemNameByIndex = 'setItemNameByIndex';
 
 export const updateComment = 'updateComment';
 
-//settings
-export const toggleDeleteButtonVisibility = 'toggleDeleteButtonVisibility';
-export const toggleReorderMode = 'toggleReorderMode';
-export const toggleSampleFeedback = 'toggleSampleFeedback';
-
 //item settings
 export const showItemSettings = 'showItemSettings';
 export const hideItemSettings = 'hideItemSettings';
@@ -113,10 +114,6 @@ export const toggleExamSettings = 'toggleExamSettings';
 //Initialization
 export const loadInitialData = 'loadInitialData';
 
-//notes
-export const updateNote = 'updateNote';
-export const destroyNote = 'destroyNote';
-export const createNote = 'createNote';
 
 
 //requests
@@ -128,18 +125,8 @@ export const stopRequestError = 'stopRequestError';
 export const setItemScore = 'setItemScore';
 export const removeItemScore = 'removeItemScore';
 
-
-//tags
-export const updateTag = 'updateTag';
-export const destroyTag = 'destroyTag';
-export const createTag = 'createTag';
-export const associateTag = 'associateTag';
-export const disassociateTag = 'disassociateTag';
-
-//Grade assignments
+//ments
 export const updateGradeCutoffs = 'updateGradeCutoffs';
 export const loadTotalScores = 'loadTotalScores';
 
 
-
-// ------------------------------ New grading
