@@ -4,7 +4,7 @@
  *
  * Created by adam on 1/12/17.
  */
-
+import Vue from 'vue';
 import * as mTypes from './new-grading-mutation-types';
 import * as aTypes from './new-grading-action-types';
 import * as gTypes from './new-grading-getter-types';
@@ -17,7 +17,7 @@ const state = {
      * Exam object representing the current exam being
      * worked on, graded, reported, etc
      */
-    activeExam: null,
+    activeExam : null,
 
 };
 
@@ -41,7 +41,6 @@ const mutations = {
      * @param payload
      */
     [ mTypes.updateActiveExamProp ]: ( state, payload ) => {
-        window.console.log( 'activeexam', '', 58, state, payload );
         if ( state.activeExam !== null ) {
             if ( Payload.checkIfPayload( payload ) && typeof payload.updateProp !== 'undefined' ) {
                 let { updateProp, updateVal } = payload;
@@ -80,18 +79,16 @@ const actions = {
      * @param commit
      * @param payload
      */
-    [ aTypes.setExamAsActive]( { state, commit }, payload ) {
+    [ aTypes.setExamAsActive]( { state, commit }, exam ) {
         let obj;
         //check and see if an exam object has already been passed in
-        if ( payload instanceof Exam ) {
-            payload = Payload.factory( { obj: payload } );
+        if ( exam instanceof Exam ) {
+            let payload = Payload.factory( { obj: exam } );
+            //Save the object
+            commit( mTypes.setActiveExam, payload );
         }
 
-        //create the payload with the object
-        // let pl = Payload.factory( {obj: obj} );
 
-        //Save the object
-        commit( mTypes.setActiveExam, payload );
     },
 
     /**
@@ -109,12 +106,12 @@ const actions = {
 const getters = {
 
     /**
-     * Returns the exam currently being used or false if none set
+     * Returns the exam currently being used
      * @param state
      * @returns {*}
      */
     [gTypes.getActiveExam] : ( state ) => {
-        return typeof state.activeExam != 'undefined' && state.activeExam ? state.activeExam : false;
+        return state.activeExam;
     }
 };
 

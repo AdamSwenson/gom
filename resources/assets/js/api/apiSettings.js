@@ -43,6 +43,8 @@ export const Routes = {
         return 'dev/exam/' + exam.id;
     },
 
+    getExam: (examId) =>{ return 'dev/exam/' + examId; },
+
     // ------------------------- Kumi
     associateKumi: ( kumi, exam ) => {
         return KUMI_BASE_ROUTE + '/' + kumi.id + 'exam/' + exam.id + '/new';

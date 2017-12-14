@@ -59,3 +59,5 @@ export const incrementGradingTime = 'incrementGradingTime';
 export const loadGradingTimes = 'loadGradingTimes';
 
 
+export const startExamTimer = 'startExamTimer';
+export const stopExamTimer = 'stopExamTimer';

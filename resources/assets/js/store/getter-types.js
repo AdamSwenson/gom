@@ -7,13 +7,20 @@
 //Exam
 export const getExamId = 'getExamId'
 export const isActive = 'isActive'
-export const getNumberGraded = 'getNumberGraded'
-export const getTotalExams = 'getTotalExams'
 export const getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent'
 export const getActiveStudentGradingTime = 'getActiveStudentGradingTime'
 export const getCommentTextForActiveStudent = 'getCommentTextForActiveStudent'
 export const getExamGradeForActiveStudent = 'getExamGradeForActiveStudent'
 export const getElementScoreForActiveStudent = 'getElementScoreForActiveStudent'
+
+
+/* ================================================================
+   ================== DASHBOARDS AND COUNTS   =====================
+   ================================================================ */
+export const getTotalNumberOfExamsToGrade = 'getTotalNumberOfExamsToGrade';
+export const getNumberGraded = 'getNumberGraded';
+export const getTotalExams = 'getTotalExams'
+export const getNumberUngraded = 'getNumberUngraded';
 
 // ================================================================
 // ==================================== EXAMS =====================
@@ -26,7 +33,7 @@ export const getActiveExamObj = 'getActiveExamObj'
 // ==================================== ITEMS =====================
 // ================================================================
 
- /**
+/**
  * Returns list of items objects
  * @param state
  * @param getters
@@ -46,7 +53,7 @@ export const getAllIndexesList = 'getAllIndexesList'
  */
 export const getAllItemsList = 'getAllItemsList'
 
- /**
+/**
  * Returns the item object. See original for
  * parameters
  * @type {string}
@@ -125,10 +132,31 @@ export const getSortedIds = 'getSortedIds'
 
 
 /* ================================================================
+   ================== GRADE ASSIGNMENTS       =====================
+   ================================================================ */
+export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
+export const getGradeAssignments = 'getGradeAssignments';
+export const getGradeAssignmentsInSortedList = 'getGradeAssignmentsInSortedList';
+export const getTotalScores = 'getTotalScores';
+export const getGradeFrequencies = 'getGradeFrequencies';
+export const getGradeAssignmentForScore = 'getGradeAssignmentForScore';
+export const getMaxPossibleScore = 'getMaxPossibleScore';
+export const getInconsistentCutOffs = 'getInconsistentCutOffs';
+export const getListOfGradeValues = 'getListOfGradeValues';
+
+
+/* ================================================================
    ==================================== NOTES =====================
    ================================================================ */
 export const getNotesForItem = 'getNotesForItem';
 export const getNoteBySerialNumber = 'getNoteBySerialNumber';
+
+
+/* ================================================================
+   ================== ROSTER                  =====================
+   ================================================================ */
+export const getStudentsFromRoster = 'getStudentsFromRoster';
+export const getStudentFromRosterBySerialNumber = 'getStudentFromRosterBySerialNumber';
 
 // ================================================================
 // ==================================== TAGS  =====================
@@ -137,16 +165,3 @@ export const getTagBySerialNumber = 'getTagBySerialNumber';
 export const getAllTags = 'getAllTags';
 export const getTagsForObject = 'getTagsForObject';
 export const getTagById = 'getTagById';
-
-/* ================================================================
-   ================== GRADE ASSIGNMENTS       =====================
-   ================================================================ */
-export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
-export const getGradeAssignments = 'getGradeAssignments';
-export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
-export const getTotalScores = 'getTotalScores';
-export const getGradeFrequencies = 'getGradeFrequencies';
-export const getGradeAssignmentForScore = 'getGradeAssignmentForScore';
-export const getMaxPossibleScore = 'getMaxPossibleScore';
-export const getInconsistentCutOffs = 'getInconsistentCutOffs';
-export const getListOfGradeValues = 'getListOfGradeValues';

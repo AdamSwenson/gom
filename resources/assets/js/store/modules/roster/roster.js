@@ -35,6 +35,10 @@ module.exports = {
             // Student.factory( { lastName: 'Jillson', firstName: 'Smithy' } )
         ],
 
+        sortedBy: 'lastName',
+
+        sortAsc: true
+
     },
 
     mutations: {
@@ -45,10 +49,18 @@ module.exports = {
          * @param state
          * @param payload
          */
-        [mTypes.addStudentToRoster]: ( state, payload ) => {
+        [ mTypes.addStudentToRoster ]: ( state, payload ) => {
             Payload.checkIfPayload( payload );
             let student = payload.obj;
             state.roster.push( student );
+        },
+
+        setSortedBy : (state, payload)=>{
+            state.sortedBy = payload.updateVal;
+        },
+
+        toggleSortAscending: ( state ) => {
+          state.sortAsc = ! state.sortAsc;
         },
 
         /**
@@ -104,7 +116,7 @@ module.exports = {
          * @param getters
          * @param payload
          */
-        [aTypes.handleNewStudentStorageAndAssociation] : ( { state, dispatch, commit, getters }, payload ) => {
+        [ aTypes.handleNewStudentStorageAndAssociation ]: ( { state, dispatch, commit, getters }, payload ) => {
             let p = new Promise( ( resolve, reject ) => {
                 commit( mTypes.addStudentToRoster, payload );
                 resolve();
@@ -112,28 +124,28 @@ module.exports = {
 
 
             let kumi = [];
-            kumi = kumi.concat(getters.getDisplayedKumis);
-            kumi = kumi.concat(getters.getSelectedKumis);
+            kumi = kumi.concat( getters.getDisplayedKumis );
+            kumi = kumi.concat( getters.getSelectedKumis );
 
             //If no kumi is selected and it is displaying all
             //the student won't be associated.
             //So we check if the list is still empty
             //and if so, use the root kumi
-            if(kumi.length === 0) {
+            if ( kumi.length === 0 ) {
                 //and associate it with the student before the others
-                kumi.push(getters.getRootKumi);
+                kumi.push( getters.getRootKumi );
                 // commit( mTypes.associateStudentWithKumi, payload );
             }
 
             return p.then( () => {
                 return new Promise( ( resolve, reject ) => {
-                    _.forEach(kumi, function(k){
+                    _.forEach( kumi, function ( k ) {
                         payload.kumi = k;
                         //Create an association between the newly created
                         //student and the currently selected kumi, both
                         //locally and on server
                         commit( mTypes.associateStudentWithKumi, payload );
-                    });
+                    } );
                     resolve();
                 } );
             } );
@@ -144,7 +156,7 @@ module.exports = {
 
     getters: {
 
-        getStudentsFromRoster: ( state, getters, rootState ) => {
+        [ gTypes.getStudentsFromRoster ]: ( state, getters, rootState ) => {
             return state.roster;
         },
 
@@ -170,40 +182,33 @@ module.exports = {
 
         },
 
-        //
-        // /**
-        //  * Returns the student object with the specified database id.
-        //  * NB, may fail if called before the student has been stored in
-        //  * the db.
-        //  *
-        //  * @returns {*}
-        //  */
-        // getStudentFromRosterById: ( state, getters, rootState, studentId ) => {
-        //     return (function ( state, studentId ) {
-        //         var r = state.roster.filter( function ( i ) {
-        //             if ( i.id === studentId ) {
-        //                 return i;
-        //             }
-        //         } );
-        //         return r[ 0 ];
-        //     })( state, studentId )
-        // },
-        //
-        // /**
-        //  * Returns the student object with the user specified identifier.
-        //  * @todo This may not be unique. What to do?
-        //  * @todo Make the characteristics of the identifier as arbitrary as possible
-        //  */
-        // getStudentFromRosterByIdentifier: ( state, getters, rootState, identifier ) => {
-        //     return (function ( state, identifier ) {
-        //         var r = state.roster.filter( function ( i ) {
-        //             if ( i.identifier === identifier ) {
-        //                 return i;
-        //             }
-        //         } );
-        //         return r[ 0 ];
-        //     })( state, identifier )
-        // },
+
+        getSortAsc: (state)=>{
+            return state.sortAsc;
+        },
+
+        getSortedBy: ( state, getters, rootState ) => {
+            return state.sortedBy;
+        },
+
+        getSortedStudents: ( state, getters, rootState ) => {
+
+            return (function ( state, getters ) {
+                //sort the students by the given property
+                let sorted = _.sortBy( getters[ gTypes.getStudentsFromRoster ], [ function ( o ) {
+                    return o[ getters.getSortedBy ];
+                } ] );
+
+                // window.console.log( 'roster', 'sorted', 202, sorted, getters.getSortAsc);
+                //they will be ascending when they initially come out
+                if ( getters.getSortAsc ) return sorted;
+
+                //if they need to be descending, reverse the list and return it
+                return _.reverse( sorted );
+            })( state, getters )
+
+        },
+
 
         /**
          * Returns the number of students state.roster
@@ -213,11 +218,48 @@ module.exports = {
          * @param rootState
          * @returns {Number}
          */
-        [gTypes.getStudentCount] : ( state, getters, rootState ) => {
-            return state.roster.length;
-        },
+        [ gTypes.getStudentCount ]:
+            ( state, getters, rootState ) => {
+                return state.roster.length;
+            },
 
 
     }
-};
+}
+;
+
+//
+// /**
+//  * Returns the student object with the specified database id.
+//  * NB, may fail if called before the student has been stored in
+//  * the db.
+//  *
+//  * @returns {*}
+//  */
+// getStudentFromRosterById: ( state, getters, rootState, studentId ) => {
+//     return (function ( state, studentId ) {
+//         var r = state.roster.filter( function ( i ) {
+//             if ( i.id === studentId ) {
+//                 return i;
+//             }
+//         } );
+//         return r[ 0 ];
+//     })( state, studentId )
+// },
+//
+// /**
+//  * Returns the student object with the user specified identifier.
+//  * @todo This may not be unique. What to do?
+//  * @todo Make the characteristics of the identifier as arbitrary as possible
+//  */
+// getStudentFromRosterByIdentifier: ( state, getters, rootState, identifier ) => {
+//     return (function ( state, identifier ) {
+//         var r = state.roster.filter( function ( i ) {
+//             if ( i.identifier === identifier ) {
+//                 return i;
+//             }
+//         } );
+//         return r[ 0 ];
+//     })( state, identifier )
+// },
 

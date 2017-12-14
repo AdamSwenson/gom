@@ -1,20 +1,18 @@
 <template>
-    <table class="table table-fixed table-hover" id="studentRoster">
+    <table class="table is-narrow is-striped" id="gradingRoster">
         <thead>
         <tr>
-            <th class="col-xs-6"
-                id="nameHeader"
+            <th id="nameHeader"
                 title="Sort by name"
                 v-on:click="sortRosterBy('studentName')"
-            >Name
-            </th>
-            <th class="col-xs-4"
+            >Name</th>
+            <th class=""
                 id="idHeader"
                 v-on:click="sortRosterBy('studentIdentifier')"
                 title="Sort by ID"
             >ID
             </th>
-            <th class="col-xs-2"
+            <th class=""
                 id="gradeHeader"
                 title="Sort by grade"
                 v-on:click="sortRosterBy()"
@@ -24,6 +22,7 @@
 
         </thead>
         <tbody id="studentRosterBody">
+
         <tr v-for="s in students"
             v-on:click="handleStudentRowClick(s.studentIndex)"
             v-bind:class="{ 'unalteredStudentRow': isUnalteredStyle(s.studentIndex),'activeStudentRow': isActiveStyle(s.studentIndex),'gradedStudentRow': isGradedStyle(s.studentIndex) }"

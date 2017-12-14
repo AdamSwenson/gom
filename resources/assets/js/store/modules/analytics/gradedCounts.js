@@ -8,8 +8,9 @@
  * graded
  */
 
-import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
+import * as mTypes from '../../mutation-types'
+import * as aTypes from '../../action-types'
+import * as gTypes from '../../getter-types';
 
 const getForExam = ( state, serialNumber ) => {
     return (function ( state, serialNumber ) {
@@ -24,9 +25,9 @@ const getForExam = ( state, serialNumber ) => {
 
 
 const countObj = {
-    serialNumber,
-    totalExams,
-    examGraded
+    serialNumber :"",
+    totalExams: '',
+    examGraded: ''
 };
 
 const state = {
@@ -44,15 +45,29 @@ const actions = {};
 
 const getters = {
 
-    getTotalNumberOfExamsToGrade: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
+    [ gTypes.getTotalNumberOfExamsToGrade ]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
         let stats = getForExam( state, serialNumber );
         return stats.totalExams;
     },
 
-    getNumberGraded: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
+    [ gTypes.getNumberGraded ]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
         let stats = getForExam( state, serialNumber );
         return stats.examsGraded;
-    }
+    },
+
+    /**
+     * Number of exams remaining to be graded
+     */
+    [ gTypes.getNumberUngraded ]: ( state, getters, rootState ) => {
+        // if ( ! _.isUndefined(this.totalExams) && _.isUndefined( this.gradedExams) ) {
+        try {
+            let remaining = getters[ gTypes.getTotalNumberOfExamsToGrade ] - getters[ gTypes.getNumberGraded ];
+            return remaining;
+        } catch (err){
+            return '';
+        }
+    },
+
 
 };
 

@@ -5,13 +5,15 @@
  */
 
 import Item from './Item'
+import IModel from "./IModel";
 
 /**
  * Originally just a transporation class. Now evolving to
  * handle the myriad different ways objects can be identified
  */
-export default class Payload {
+export default class Payload extends IModel{
     constructor() {
+        super();
         //the object's db id
         this._id;
         //the index value of the object

@@ -1,24 +1,20 @@
 <template>
     <div id="dashboardCounts" class="">
-
         <!-- graded / remaining counters -->
         <p>Graded: <span id="graded">{{ gradedExams }}</span> | Remaining: <span
                 id="remaining">{{ remainingExams }}</span>
         </p>
 
-
     </div>
 </template>
 
 <script>
+    import * as gTypes from '../../../../store/getter-types';
 
 
     module.exports = {
 
-
-        components: {
-            FinishButton
-        },
+        components: {},
 
         props: [
             /** The url that the user should be redirected to
@@ -27,30 +23,17 @@
         ],
 
         data: function () {
-            return {
-                store: store
-            }
+            return {}
         },
 
         computed: {
-            /**
-             * Button will not display unless remaining is 0
-             * @returns {string}
-             */
-            buttonStyle: function () {
-                if ( this.remainingExams != 0 ) {
 
-                    return "display:none";
-                } else if ( this.remainingExams == 0 ) {
-                    return '';
-                }
-            },
             /* --------------- # exams ------------- */
             /**
              * Number of exams already graded
              */
             gradedExams: function () {
-                return this.store.getNumberGraded();
+                return this.$store.getters[ gTypes.getNumberGraded ];
             },
 
             /**
@@ -58,14 +41,14 @@
              * @returns {number|Number}
              */
             totalExams: function () {
-                return this.store.getTotalExams();
+                return this.$store.getters[ gTypes.getTotalNumberOfExamsToGrade ];
             },
 
             /**
              * Number of exams remaining to be graded
              */
             remainingExams: function () {
-                if ( (typeof this.totalExams != 'undefined') && typeof this.gradedExams != 'undefined' ) {
+                if ( ! _.isUndefined(this.totalExams) && _.isUndefined( this.gradedExams) ) {
                     let remaining = this.totalExams - this.gradedExams;
                     return remaining;
                 }

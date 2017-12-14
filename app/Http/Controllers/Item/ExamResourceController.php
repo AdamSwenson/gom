@@ -58,13 +58,15 @@ class ExamResourceController extends Controller
 
     /**
      * Display the specified resource.
-     *
+     * This seems weird but the route will
+     * include the exam's id, thus this is the way
+     * we get the full object from the server
      * @param  \App\Exam  $exam
      * @return \Illuminate\Http\Response
      */
     public function show(Exam $exam)
     {
-        //
+        return $exam;
     }
 
     /**

@@ -9,7 +9,6 @@
 // ================================================================
 export const areStudentNamesVisible = 'areStudentNamesVisible';
 
-export const isTimerRunning = 'isTimerRunning';
 
 //Grading a student's exam
 export const getExamId = 'getExamId'
@@ -17,10 +16,15 @@ export const isActive = 'isActive'
 export const getNumberGraded = 'getNumberGraded'
 export const getTotalExams = 'getTotalExams'
 export const getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent'
-export const getActiveStudentGradingTime = 'getActiveStudentGradingTime'
 export const getCommentTextForActiveStudent = 'getCommentTextForActiveStudent'
 export const getExamGradeForActiveStudent = 'getExamGradeForActiveStudent'
 export const getElementScoreForActiveStudent = 'getElementScoreForActiveStudent'
+
+//time
+export const getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew'
+export const isTimerRunning = 'isTimerRunning';
+export const getActiveStudent = 'getActiveStudentNew';
+
 
 // ================================================================
 // ==================================== EXAMS =====================

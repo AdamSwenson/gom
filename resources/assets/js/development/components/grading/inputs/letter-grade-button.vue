@@ -111,6 +111,21 @@
         },
 
         methods: {
+            /**
+             * Save the question score
+             * obj.questionIndex
+             * obj.questionNumber
+             * obj.score
+             * @param obj
+             */
+            'letter-grade-selected': function ( obj ) {
+                window.console.log( 'gradeVue', 'letter-grade-selected', obj );
+                this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
+                //save to server
+
+                this.$broadcast( 'letter-grade-selected', obj );
+            },
+
 
             /**
              * Calculates the question score from the standard grades and max score

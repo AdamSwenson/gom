@@ -25,8 +25,8 @@ const mutations = {
 const actions = {};
 
 const getters = {
-    [mTypes.areStudentNamesVisibile] : ( state, getters ) => {
-        return this.isBlind;
+    [gTypes.areStudentNamesVisibile] : ( state, getters ) => {
+        return state.isBlind;
     }
 };
 

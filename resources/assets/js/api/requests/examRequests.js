@@ -76,5 +76,25 @@ module.exports = {
             } );
     },
 
+    /**
+     * Gets the full exam object from the server.
+     * Returns a populated exam object
+     * @param examId
+     * @returns {Promise<T> | *}
+     */
+    loadExam: ( examId ) => {
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
 
+        return window.axios
+            .get( Routes.getExam( examId ), out )
+            .then( ( response ) => {
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
+    }
 }

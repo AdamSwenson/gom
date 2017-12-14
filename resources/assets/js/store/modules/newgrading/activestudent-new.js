@@ -16,6 +16,8 @@ import * as gTypes from './new-grading-getter-types';
 import Student from '../../../models/Student';
 import Payload from '../../../models/Payload';
 
+import PayloadTime from '../../../models/PayloadTime';
+
 import { getStudentGradingTime } from '../../../api/requests/timeRequests';
 
 const state = {
@@ -26,13 +28,6 @@ const state = {
      */
     activeStudent: null,
 
-    /**
-     * whether or not the timer is running.
-     * This allows a parent or distant relative
-     * to tell the dashboard-timer to start or stop the
-     * time by altering this
-     */
-    timerRunning: false,
 
 };
 
@@ -44,25 +39,16 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [ mTypes.setActiveStudent ]: ( state, rootState, payload ) => {
-        Payload.checkIfPayload( payload );
-        state.activeStudent = payload.obj;
+    [ mTypes.setActiveStudent ]: ( state, payload ) => {
+        window.console.log( 'activestudent-new', '', 48, payload );
+        Vue.set( state, 'activeStudent', payload.obj );
     },
 
 
-    [ mTypes.setActiveStudentTime ]: ( state, rootState, payload ) => {
-        Payload.checkIfPayload( payload );
-        Vue.set( state.activeStudent, 'gradingTime', payload.num );
+    [ mTypes.setActiveStudentTime ]: ( state, payloadTime ) => {
+        // Payload.checkIfPayload( payload );
+        Vue.set( state.activeStudent, 'gradingTime', payloadTime.time );
     },
-
-    [mTypes.startExamTimer]: (state)=>{
-        state.timerRunning = true;
-    },
-
-    [mTypes.stopExamTimer]: (state)=>{
-state.timeRunning = false;
-    },
-
 
 
 };
@@ -70,45 +56,22 @@ state.timeRunning = false;
 const actions = {
 
     /**
-     * Updates the stored time for the currently selected student
+     * Increases the stored time for the student by the specified amount
      * @param state
-     * @param rootState
-     * @param payload integer
+     * @param payload.studentIndex
+     * @param payload.timeToAdd
      */
-    [ aTypes.setTime ]( { state, commit }, time ) {
-        commit( mTypes.setActiveStudentTime, Payload.factory( { num: payload } ) )
+    [ aTypes.incrementGradingTime ]: ( { dispatch, commit, getters }, amount ) => {
+        let prevTime = getters[ gTypes.getActiveStudentGradingTime ];
+        if ( _.isUndefined( prevTime ) ) prevTime = 0;
+        let newTime = prevTime += amount;
+        let exam = getters[ gTypes.getActiveExam ];
+        let student = getters[ gTypes.getActiveStudent ];
+        let pl = PayloadTime.factory( { exam: exam, student: student, time: newTime } );
+        // dispatch( aTypes.setTime, pl );
+        commit( mTypes.setActiveStudentTime, pl );
 
     },
-
-    /**
-     * Update the state with the indicated student
-     * as activeStudent.
-     * This is the main action which should be called externally.
-     * Most of the other actions are called by this.
-     *
-     * @param state
-     * @param student
-     * @param rootState
-     */
-    [ aTypes.setStudentAsActive ]( { dispatch, commit, getters }, student ) {
-        return new Promise( function ( resolve, reject ) {
-            //Really should've received a Student object.
-            //this is the happiest of paths
-            if ( student instanceof Student ) {
-                //call the mutation
-                commit( mTypes.setActiveStudent, Payload.factory( { obj: student } ) );
-
-
-                //check if the student already has grading time
-                //todo
-
-                //if not, load it from server
-                // let p = getStudentGradingTime()
-
-            }
-        } );
-    },
-
 
     /**
      * This is the omnibus handler for resetting
@@ -131,6 +94,42 @@ const actions = {
     },
 
 
+    /**
+     * Update the state with the indicated student
+     * as activeStudent.
+     * This is the main action which should be called externally.
+     * Most of the other actions are called by this.
+     *
+     * @param state
+     * @param student
+     * @param rootState
+     */
+    [ aTypes.setStudentAsActive ]( { dispatch, commit, getters }, student ) {
+        // return new Promise( function ( resolve, reject ) {
+        let pl = Payload.factory( { obj: student, mutateSilently: true } );
+
+        //call the mutation
+        commit( mTypes.setActiveStudent, pl );
+
+        //todo dev start the timer?
+
+
+        // } );
+    },
+
+
+    /**
+     * Updates the stored time for the currently selected student
+     * @param state
+     * @param rootState
+     * @param payload integer
+     */
+    [ aTypes.setTime ]( { state, commit }, time ) {
+        // commit( mTypes.setActiveStudentTime, Payload.factory( { num: time } ) );
+
+    },
+
+
 };
 
 const getters = {
@@ -144,13 +143,11 @@ const getters = {
         return state.activeStudent;
     },
 
-    [gTypes.isTimerRunning]: (state)=>{
-        return state.timerRunning;
+
+    [ gTypes.getActiveStudentGradingTime ]: ( state, getters ) => {
+        let s = getters[ gTypes.getActiveStudent ];
+        if ( !_.isUndefined( s ) && !_.isNull( s ) ) return s.gradingTime;
     }
-    //
-    // [ gTypes.getActiveStudentGradingTime ]: ( state, getters ) => {
-    //     return state.activeStudent.gradingTime;
-    // }
 
 
 };

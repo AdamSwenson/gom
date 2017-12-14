@@ -7,7 +7,7 @@
        v-on="handleFinishClick"
     >
         <span class="icon">
-            <i class="fa fa-save" aria-hidden="true"><i> Save & Finish </span>
+            <i class="fa fa-save" aria-hidden="true"> Save & Finish </i></span>
     </a>
 </template>
 
@@ -28,11 +28,15 @@
             }
         },
 
-        computed: {},
+        computed: {
+            isFinishButtonVisible : function (  ) {
+                return false;
+            }
+        },
 
         methods: {
             handleFinishClick: function () {
-
+                window.console.log( 'finish-button', 'handleFinishClick', 39, );
             }
         },
 

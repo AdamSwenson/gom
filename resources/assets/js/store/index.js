@@ -71,8 +71,15 @@ import stats from './modules/scores/scoresForStats';
 //grade assignments
 import gradeAssignments from './modules/grades/gradeAssignments';
 
+//new grading
+import newactivestudent from './modules/newgrading/activestudent-new';
+import newactiveexam from './modules/newgrading/activeexam-new';
+import gradingPreferences from './modules/newgrading/preferences';
+
+//timer
+import timerNew from './modules/newgrading/timer-new';
+
 //api
-import requests from './modules/api/requests';
 
 
 // import orderings from './modules/items.order';
@@ -111,8 +118,12 @@ const debug = process.env.NODE_ENV !== 'production';
     plugins: [ apiPlugin, websocketPlugin ],
 
     modules: {
-        activeexam,
-        activestudent,
+        newactiveexam,
+        newactivestudent,
+        gradingPreferences,
+        timerNew,
+
+
         comments,
         exams,
         gradeAssignments,
@@ -122,7 +133,6 @@ const debug = process.env.NODE_ENV !== 'production';
         kumi,
         notes,
         quality,
-        requests,
         roster,
         rosterDisplay,
         settings,
@@ -132,7 +142,9 @@ const debug = process.env.NODE_ENV !== 'production';
         times,
         visibility,
 
-        //older
+        //old version of gom
+        activeexam,
+        activestudent,
         escores,
         qscores,
         questions,

@@ -184,6 +184,7 @@ Route::post('comments/{item}', 'Item\CommentController@store');
 //new exam controller
 Route::get('dev/exams', 'Item\ExamResourceController@index');
 Route::put('dev/exam/{exam}', 'Item\ExamResourceController@update');
+Route::get('dev/exam/{exam}', 'Item\ExamResourceController@show');
 
 //new student controller for intrinsic props of student objects
 Route::resource('dev/students', 'Item\StudentResourceController');
@@ -259,5 +260,7 @@ Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
 Route::resource('dev/tags', 'Item\TagsController');
 
 // ====================================== NEW GRADING
+Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
+
 Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
 Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@post');

@@ -90,10 +90,30 @@
         },
 
         methods: {
+
+            /**
+             * Handles the request to store question score on the server
+             * Accompanying object should contain:
+             *      obj.questionAssignmentId: Db id of the question assignment
+             *      obj.questionIndex: Index of the question whose score needs updating
+             *      obj.studentIndex: Index of the student to record grades for.
+             *          This is here to avoid a race condition
+             * @param questionScoreRequestObj
+             */
+            'store-question-score-request': function ( questionScoreRequestObj ) {
+                window.console.log( 'gradeVue', 'caught store-question-score-request', questionScoreRequestObj );
+                let score = this.store.getQuestionScoreForActiveStudent(questionScoreRequestObj.questionIndex);
+                if( score == '' || score == null){
+                    this.deleteScore(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionAssignmentId);
+                }else{
+                    this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId )
+                }
+            },
+
             handleLetterGradeSelect: function ( gradeAssignment ) {
                 //set score
                 this.score = gradeAssignment.calcValue;
-            }
+
         },
 
 

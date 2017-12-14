@@ -159,6 +159,33 @@
         },
 
         methods: {
+            /**
+             * Handles the request to store comment text on the server
+             * Accompanying object should contain:
+             *      obj.elementIndex: Index of the element whose score needs updating
+             */
+            storeCommentTextRequest : function ( commentRequestObj ) {
+                window.console.log( 'gradeVue', 'store-comment-text-request', commentRequestObj );
+                let commentText = this.store.getStoredCommentText(commentRequestObj.studentIndex, commentRequestObj.elementIndex)
+                this.saveCommentWithTime(commentRequestObj.studentIndex, commentRequestObj.elementId, commentText);
+            },
+
+
+            /**
+             * Handles the request to store element score on the server
+             * Accompanying object should contain:
+             *      obj.elementIndex: Index of the element whose score needs updating
+             */
+            storeElementScoreRequest: function ( elementScoreRequestObj ) {
+                window.console.log( 'gradeVue', 'caught store-element-score-request', elementScoreRequestObj );
+                let elementId = elementScoreRequestObj.elementId;
+                let studentIndex = elementScoreRequestObj.studentIndex
+                //store on server
+                this.saveElementScoreWithTime(studentIndex, elementId, elementScoreRequestObj.score)
+            },
+
+
+
 
             /* ------------------ Display manipulation ------------------------------ */
             /**

@@ -1,14 +1,10 @@
 <template>
 
-    <tr id="{{ rowIdString }}"
+    <tr v-bind:id="rowIdString"
         class="studentListItem "
         v-on:click="handleRowClick"
         v-bind:class="{ 'unalteredStudentRow': isUnaltered, 'activeStudentRow': isActiveStudent, 'gradedStudentRow': isGraded }"
-        data-index="{{ studentIndex }}"
-        data-fName="{{ firstName }}"
-        data-lName="{{ lastName }}"
-        data-sid="{{ studentId }}"
-        data-student-identifier="{{ studentIdentifier }}">
+
         <td class="col-xs-6"
             id="studentName{{ studentIndex }}">{{ studentName }}</td>
         <td class="col-xs-4"
@@ -24,6 +20,7 @@ module.exports = {
     template: require( '../templates/student-list-item.template.html' ),
 
     props: [
+        'student',
         'studentIndex',
         // 'firstName',
         // 'lastName',
@@ -33,11 +30,6 @@ module.exports = {
 
     data: function () {
         return {
-
-            /**
-             * The data repository store shared by everyone
-             */
-            store: store,
 
             sortAsc: true,
 
