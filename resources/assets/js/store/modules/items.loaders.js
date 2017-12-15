@@ -54,49 +54,49 @@ const processItemObjectFromJson = function ( state, objectData ) {
 
 const mutations = {
     /** This is what gets run when the root instance is mounted for the setup page */
-    [ mTypes.loadInitialData ]: ( state, payload ) => {
-        return new Promise( function ( resolve, reject ) {
-
-            // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-            let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
-
-            let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
-
-            let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
-
-
-            // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
-
-            //assume everything is there, just load directly
-            let exam = Exam.factory( examData );
-
-            //set it in items
-            state.items[ 0 ] = exam;
-
-            //initialize the order store
-            state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-
-            //load in the item objects
-            processItemObjectFromJson( state, objectData );
-
-            //load in the order data
-            processItemOrderFromJson( state, orderData );
-
-            resolve();
-        } );
-        // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
-    },
-
-
-    //todo move to more appropriate location once working
-    initializeItemStore: ( state ) => {
-        return new Promise( function ( resolve, reject ) {
-            let exam = new Exam();
-            state.items[ 0 ] = exam;
-            state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-            resolve();
-        } );
-    },
+    // [ mTypes.loadInitialData ]: ( state, payload ) => {
+    //     return new Promise( function ( resolve, reject ) {
+    //
+    //         // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
+    //         let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
+    //
+    //         let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
+    //
+    //         let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
+    //
+    //
+    //         // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+    //
+    //         //assume everything is there, just load directly
+    //         let exam = Exam.factory( examData );
+    //
+    //         //set it in items
+    //         state.items[ 0 ] = exam;
+    //
+    //         //initialize the order store
+    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+    //
+    //         //load in the item objects
+    //         processItemObjectFromJson( state, objectData );
+    //
+    //         //load in the order data
+    //         processItemOrderFromJson( state, orderData );
+    //
+    //         resolve();
+    //     } );
+    //     // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
+    // },
+    //
+    //
+    // //todo move to more appropriate location once working
+    // initializeItemStore: ( state ) => {
+    //     return new Promise( function ( resolve, reject ) {
+    //         let exam = new Exam();
+    //         state.items[ 0 ] = exam;
+    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+    //         resolve();
+    //     } );
+    // },
 
     saveItemsFromServer: ( state, payload ) => {
         processItemObjectFromJson( state, payload.obj );

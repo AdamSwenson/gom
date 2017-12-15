@@ -31,7 +31,7 @@ localVue.use( Vuex )
 var Component = require( "../../../../../resources/assets/js/development/components/grading/dashboard/dashboard-timer.vue" );
 
 
-describe.only( " dashboard-timer ", () => {
+describe( " dashboard-timer ", () => {
     let componentDivIdentifier = '#dashboard-timer';
 
     let getters;

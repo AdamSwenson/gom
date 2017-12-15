@@ -17,7 +17,11 @@ export const setActiveStudentTime = 'setActiveStudentTime';
 
 //comments
 export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
-export const storeCommentText = 'storeCommentText';
+export const storeCommentText = 'storeCommentTextNew';
+
+//scores
+// export const storeItemScore = 'storeItemScore';
+
 
 //exams
 export const addNewExam = 'addNewExam';
@@ -29,6 +33,9 @@ export const loadExamGrades = 'loadExamGrades';
 export const loadStandardGrades = 'loadStandardGrades';
 export const updateExamGrade = 'updateExamGrade';
 
+
+
+
 //grade assignments
 export const updateCutoff = 'updateCutoff';
 export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
@@ -36,17 +43,14 @@ export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServe
 
 
 //questions
-export const loadMaxQuestionScores = 'loadMaxQuestionScores';
-export const loadQuestions = 'loadQuestions';
-export const loadNumberQuestions = 'loadNumberQuestions';
-export const addQuestion = 'addQuestion';
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores';
+// export const loadQuestions = 'loadQuestions';
+// export const loadNumberQuestions = 'loadNumberQuestions';
+// export const addQuestion = 'addQuestion';
+//
+// //roster and kumi
+// export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';
 
-//roster and kumi
-export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';
-
-//scores
-export const loadItemScores ='loadItemScores';
-export const setItemScore = 'setItemScore';
 
 //students
 export const loadStudents = 'loadStudents';

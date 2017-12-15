@@ -44,6 +44,9 @@ export const loadInitialData = 'loadInitialData';
 
 
 //scores
+export const updateScore = 'updateScore';
+export const updateText = 'updateText';
+
 export const setItemScore = 'setItemScore';
 export const removeItemScore = 'removeItemScore';
 

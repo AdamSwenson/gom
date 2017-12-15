@@ -1,11 +1,11 @@
 <template>
     <div class="tabs">
-        <ul >
-            <li v-for="route, i in questionRoutes" style=""
-                role="presentation" class=""
+        <ul>
+            <li v-for="r in questionRoutes"
+                role="presentation" class="grading-nav-link"
             >
-                <router-link v-bind:to="route">
-                    <a class="grading-question-nav"> Q{{i}} </a>
+                <router-link v-bind:to="r.route">
+                    <a class="grading-question-nav"> Q{{r.number}} </a>
                 </router-link>
             </li>
         </ul>
@@ -29,28 +29,48 @@
             }
         },
 
-        asyncComputed:{
-            questions : function (  ) {
+        asyncComputed: {
+            questions: function () {
                 // return [];
-                   return this.$store.getters.getQuestionLevelItems;
+                return this.$store.getters.getQuestionLevelItems;
             },
 
-            questionRoutes : function (  ) {
-                if(_.isUndefined(this.questions) || _.isNull(this.questions)) return [];
-                let root = '/grading/question/';
+
+            questionNumbers: function () {
+                if ( _.isUndefined( this.questions ) || _.isNull( this.questions ) || this.questions.length === 0 ) return [];
+
+                let r = [];
+                for (let i = 0; i <= this.questions.length; i++) {
+
+                                // r.push( { number: i, route: this.getRoute(this.questions[i].serialNumber) } );
+
+                    r.push( i );
+                }
+                return r;
+            },
+
+            questionRoutes: function () {
+                if ( _.isUndefined( this.questions ) || _.isNull( this.questions ) || this.questions.length === 0 ) return [];
+
                 let routes = [];
-                for(let i=1; i<= this.questions.length; i++){
-                    routes.push(root + i);
+                for (let i = 0; i <= this.questions.length; i++) {
+                    let q = this.questions[ i ];
+                    if ( q ) {
+                        routes.push( { number: i, route: this.getRoute(q.serialNumber) } );
+                     }
                 }
                 return routes;
             }
 
         },
-        computed: {
+        computed: {},
 
+        methods: {
+            getRoute: function ( serialNumber ) {
+                let root = '/grading-questions/';
+                return root + serialNumber;
+            }
         },
-
-        methods: {},
 
         directives: {},
 

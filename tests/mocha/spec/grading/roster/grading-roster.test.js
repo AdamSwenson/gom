@@ -30,7 +30,7 @@ localVue.use( Vuex )
 var Component = require( "../../../../../resources/assets/js/development/components/grading/roster/grading-roster.vue" );
 
 
-describe.only( " grading-roster ", () => {
+describe( " grading-roster ", () => {
     let componentDivIdentifier = '#grading-roster';
 
     let getters;

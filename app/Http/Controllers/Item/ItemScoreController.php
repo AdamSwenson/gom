@@ -39,6 +39,25 @@ class ItemScoreController extends Controller
     }
 
 
+    public function saveScore( Exam $exam, Item $item, Student $student, $request )
+    {
+        $score = ItemScore::firstOrCreate([
+            'exam_id' => $exam->id,
+            'student_id' => $student->id,
+            'item_id' => $item->id
+        ]);
+
+        //Now, whether old or new, we set the data
+        //properties
+        $score->score = $request->input('score');
+        $score->comment_text = $request->input('commentText');
+        //and finally save
+        $score->save();
+
+        return $this->sendAjaxSuccess();
+    }
+
+
     /**
      * Create a new store object or update an existing one
      * @param ItemScoreRequest $request

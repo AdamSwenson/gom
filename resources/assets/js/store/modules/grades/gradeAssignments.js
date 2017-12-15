@@ -276,7 +276,7 @@ const getters = {
     },
 
     [ gTypes.getGradeAssignmentsInSortedList ]: ( state, getters, rootState ) => {
-        return sortGradeAssignments( state.gradeAssignments );
+        return sortGradeAssignments( getters[gTypes.getGradeAssignments] );
     },
 
     /**

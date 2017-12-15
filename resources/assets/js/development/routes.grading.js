@@ -1,16 +1,15 @@
 import Vue from 'vue'
 //Panes (main container for edit tools)
-import questionPanel from './components/grade/panels/question-panel';
+import questionPanel from './components/grading/panels/question-panel.vue';
 Vue.component( 'grading-question-panel', questionPanel );
 
-export const routes = [
+module.exports =  [
 
 
 //grading
     {
-        name: 'grading-questions',
-        path: '/grading/question/:questionlNumber',
+        path: '/grading-questions/:serialNumber',
         components: { questionPanelArea: questionPanel },
-        props: { questionPanelArea: true } //{default: true}
+        props:  true  //{default: true}
     }, //props: (route) => {return route.index;}},
 ];

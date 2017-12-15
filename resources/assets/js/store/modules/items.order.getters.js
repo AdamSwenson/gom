@@ -133,17 +133,50 @@ module.exports = {
         return state.itemMap.data;
     },
 
+    /**
+     * Returns item objects which have only the exam
+     * as a parent.
+     * DOES NOT RETURN NODES
+     * @param state
+     * @param getters
+     * @returns {Array}
+     */
     getQuestionLevelItems: ( state, getters ) => {
         let items = [];
         if ( state.itemMap.children ) {
             _.forEach( state.itemMap.children, function ( node ) {
                 items.push( getters[ gTypes.getItemBySerialNumber ]( node.data ) );
-
             } );
         }
         return items;
-    }
+    },
 
+    /**
+     * Given an item object, this first looks up the
+     * related node and then returns item objects for
+     * each of its children.
+     * DOES NOT RETURN NODES
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param item
+     * @returns {function(*)}
+     */
+    getItemChildren: ( state, getters, rootState, item ) => ( item ) => {
+
+        let kids = [];
+        let node = getters[ gTypes.getItemNodeFromOrder ]( item.serialNumber );
+
+        if ( node.children.length > 0 ) {
+            _.forEach( node.children, function ( child ) {
+                if(child.data){
+                    let o = getters[ gTypes.getItemBySerialNumber]( child.data ) ;
+                    kids.push( o );
+                }
+            } );
+        }
+        return kids;
+    }
 
 
 };

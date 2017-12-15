@@ -221,7 +221,7 @@ Route::resource('dev/notes', 'Item\NotesController');
 Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
 Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
 Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
-Route::post('dev/scores', 'Item\ItemScoreController@store');
+Route::post('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@saveScore');
 
 Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreController@getTotalScoresForExam');
 

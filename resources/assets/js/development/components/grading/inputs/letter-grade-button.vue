@@ -25,6 +25,7 @@
 <script>
 
     import gTypes from '../../../../store/getter-types';
+
     module.exports = {
 
         props: [
@@ -39,7 +40,7 @@
 
         data: function () {
             return {
-                displayedGrade : '-',
+                displayedGrade: '-',
                 defaults: {
                     displayedGrade: 'Letter grade',
                     gradeValue: null
@@ -49,22 +50,31 @@
 
         watch: {
             displayedGrade: function ( gradeAssignment ) {
-                window.console.log( 'handle', index, gradeValue, letterGrade );
 
-                //The letter grade
-                this.$emit( 'selected', gradeAssignment );
+                // //The letter grade
+                // this.$emit( 'selected', gradeAssignment );
 
                 //Display tooltip explaining the calculation
-              //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
+                //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
 
             },
 
 
-            score : function ( newScore ) {
-                this.displayedGrade = this.$store.getters[gTypes.getGradeAssignmentForScore];
+            score: function ( newScore ) {
+                this.displayedGrade = this.$store.getters[ gTypes.getGradeAssignmentForScore ];
             }
         },
+        asyncComputed: {
+            /**
+             * Json of grades with keys displayValue and calcValue
+             * @returns {{}}
+             */
+            gradeAssignments: function () {
+                return this.$store.getters.getGradeAssignmentsInSortedList;
+                // return this.store.getGrades();
+            },
 
+        },
         computed: {
             //
             // /**
@@ -81,14 +91,6 @@
             //     return this.calcLetter( this.maxScore, this.score );
             // },
 
-            /**
-             * Json of grades with keys displayValue and calcValue
-             * @returns {{}}
-             */
-            gradeAssignments: function () {
-                return this.$store.getters[gTypes.getGradeAssignmentsInSortedList];
-                // return this.store.getGrades();
-            },
 
             /**
              * The maximum possible score for the question
@@ -104,27 +106,27 @@
              * @returns {string}
              */
             scoreString: function () {
-                return this.score ? this.score.toFixed( 2 ): '';
+                return this.score ? this.score.toFixed( 2 ) : '';
             },
 
 
         },
 
         methods: {
-            /**
-             * Save the question score
-             * obj.questionIndex
-             * obj.questionNumber
-             * obj.score
-             * @param obj
-             */
-            'letter-grade-selected': function ( obj ) {
-                window.console.log( 'gradeVue', 'letter-grade-selected', obj );
-                this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
-                //save to server
-
-                this.$broadcast( 'letter-grade-selected', obj );
-            },
+            // /**
+            //  * Save the question score
+            //  * obj.questionIndex
+            //  * obj.questionNumber
+            //  * obj.score
+            //  * @param obj
+            //  */
+            // 'letter-grade-selected': function ( obj ) {
+            //     window.console.log( 'gradeVue', 'letter-grade-selected', obj );
+            //     this.store.storeQuestionScoreForActiveStudent( obj.questionIndex, obj.score );
+            //     //save to server
+            //
+            //     this.$broadcast( 'letter-grade-selected', obj );
+            // },
 
 
             /**
@@ -190,7 +192,7 @@
 
                 //todo reenable
                 //Display tooltip explaining the calculation
-            //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
+                //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
             },
 
             /**

@@ -14,30 +14,23 @@ import Item from '../../models/Item'
 import { errorHandling } from '../responseHandlers';
 
 const route = 'dev/scores';
-
+const makeRoute = ( exam, item, student ) => {
+    return route + '/'
+    exam.id + '/' + item.id + '/' + student.id;
+};
 module.exports = {
-    saveScore: (score) =>{
-        let to = route;
+    saveScore: ( exam, item, student, score ) => {
+        let to = makeRoute(exam, item, student, score);
         let out = {
-            requestVersion: REQUEST_VERSION
+            requestVersion: REQUEST_VERSION,
+        score
         };
 
-       return window.axios
-            .post( to )
+        return window.axios
+            .post( to, out )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getExamScoreRequest', 28, response );
-                // _.forEach( response.data, function ( e ) {
-                _.forEach( response.data, function ( r ) {
-                    // window.console.log( 'examRequests', 'r', 29, r);
-                    // let exam = Exam.factory( { r } );
-                    // exam.id = r.id;
-                    // exam.name = r.name;
-                    // exam.term = r.term;
-                    // let payload = Payload.factory( { obj: exam, mutateSilently: true } );
-                    // store.commit( mTypes.addExam, payload );
-                } );
-                // });
-            } )
+             } )
             .catch( function ( error ) {
                 errorHandling( error );
             } );
@@ -50,7 +43,7 @@ module.exports = {
         };
 
         return window.axios
-            .get( Routes.getExamScoreRequest(exam) )
+            .get( Routes.getExamScoreRequest( exam ) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getExamScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {
@@ -73,8 +66,8 @@ module.exports = {
 
     getStudentScoreRequest: ( student ) => {
 
-       return  window.axios
-            .get( Routes.getStudentScoreRequest(student) )
+        return window.axios
+            .get( Routes.getStudentScoreRequest( student ) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getStudentScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {
@@ -96,8 +89,8 @@ module.exports = {
 
     getItemScoreRequest: ( item ) => {
 
-      return   window.axios
-            .get( Routes.getItemScoreRequest(item))
+        return window.axios
+            .get( Routes.getItemScoreRequest( item ) )
             .then( ( response ) => {
                 window.console.log( 'scoreRequests---getItemScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {

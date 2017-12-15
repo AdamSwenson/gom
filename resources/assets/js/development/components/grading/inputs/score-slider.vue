@@ -17,6 +17,9 @@
 </style>
 
 <script>
+    var Slider = require( "../../../../libraries/bootstrap-slider-modified.js" );
+
+
     export default {
 
         props: ['item'],
@@ -25,7 +28,14 @@
 
         data: function () {
             return {
-                defaults: {}
+                defaults: {
+                    settings: {
+                        sliderStep: 0.25,
+                        valenceCutoffs: [ 0, 3.25, 6.75, 10 ],
+                        valenceLabels: [ "Missing", "Poor", "Fair", "Excellent" ],
+                        valenceLabelPositions: [ 0, 33, 67, 100 ]
+                    }
+                }
             }
         },
 

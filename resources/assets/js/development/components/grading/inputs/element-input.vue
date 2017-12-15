@@ -1,25 +1,16 @@
 <template>
     <div class=" elementPanel">
 
-        <h5 class="elementTitle">{{ elementTitle }}</h5>
+        <h5 class="elementTitle">{{ title }}</h5>
 
         <div class="tile is-ancestor">
             <div class="tile is-parent is-vertical">
                 <div class="tile is-child sliderContainer">
                     <div class="tile is-child">
                         <!-- comment area -->
-                        <div class="field">
-                            <label></label>
-                            <div class="control">
-                    <textarea class="textarea"
-                              rows="4"
-                              name="{{ commentAreaId  }}"
-                              placeholder="No score for this element"
-                              v-model="commentText"
-                    ></textarea>
-                            </div>
-                            <p class="help"></p>
-                        </div>
+                        <comment-text :item="item"></comment-text>
+
+
                     </div>
                 </div>
             </div>
@@ -27,8 +18,7 @@
     </div>
 </template>
 <script>
-    var Slider = require( "../../libraries/bootstrap-slider-modified.js" );
-
+import CommentText from './comment-text.vue';
     module.exports = {
 
 
@@ -84,25 +74,25 @@
                 return $( '#' + this.commentAreaId );
             },
 
-            /**
-             * The current value of the text area
-             */
-            commentText: {
-                cache: false,
-                get: function () {
-                    //setting this to just this.elementScore prevents missing from displaying comment.
-                    //when element score was 0.
-                    //Also led to custom comments being deleted when moved to missing
-                    if ( this.elementScore != null )
-                    // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
-                        return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
-                },
-                set: function ( text ) {
-                    this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
-                    //send to the db
-                    this.notifyStoreCommentText();
-                }
-            },
+            // /**
+            //  * The current value of the text area
+            //  */
+            // commentText: {
+            //     cache: false,
+            //     get: function () {
+            //         //setting this to just this.elementScore prevents missing from displaying comment.
+            //         //when element score was 0.
+            //         //Also led to custom comments being deleted when moved to missing
+            //         if ( this.elementScore != null )
+            //         // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
+            //             return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+            //     },
+            //     set: function ( text ) {
+            //         this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
+            //         //send to the db
+            //         this.notifyStoreCommentText();
+            //     }
+            // },
 
 
             /**
@@ -137,7 +127,7 @@
              * Returns the string of the element's description to be displayed on the page
              * @returns {string}
              */
-            elementTitle: function () {
+            title: function () {
                 return "Element #" + this.elementNumber + ": " + this.elementName;
             },
 

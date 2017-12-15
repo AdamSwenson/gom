@@ -137,12 +137,12 @@ export const getSortedIds = 'getSortedIds'
 /* ================================================================
    ================== GRADE ASSIGNMENTS       =====================
    ================================================================ */
-export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
-export const getGradeAssignments = 'getGradeAssignments';
-export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
-export const getTotalScores = 'getTotalScores';
-export const getGradeFrequencies = 'getGradeFrequencies';
-export const getGradeAssignmentForScore = 'getGradeAssignmentForScore';
-export const getMaxPossibleScore = 'getMaxPossibleScore';
-export const getInconsistentCutOffs = 'getInconsistentCutOffs';
-export const getListOfGradeValues = 'getListOfGradeValues';
+// export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
+// export const getGradeAssignments = 'getGradeAssignments';
+// export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
+// export const getTotalScores = 'getTotalScores';
+// export const getGradeFrequencies = 'getGradeFrequencies';
+// export const getGradeAssignmentForScore = 'getGradeAssignmentForScore';
+// export const getMaxPossibleScore = 'getMaxPossibleScore';
+// export const getInconsistentCutOffs = 'getInconsistentCutOffs';
+// export const getListOfGradeValues = 'getListOfGradeValues';
