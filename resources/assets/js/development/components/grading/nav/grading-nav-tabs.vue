@@ -1,6 +1,6 @@
 <template>
     <div class="tabs">
-        <ul v-bind:id="id">
+        <ul >
             <li v-for="route, i in questionRoutes" style=""
                 role="presentation" class=""
             >
@@ -29,12 +29,14 @@
             }
         },
 
-        computed: {
+        asyncComputed:{
             questions : function (  ) {
-
+                // return [];
+                   return this.$store.getters.getQuestionLevelItems;
             },
 
             questionRoutes : function (  ) {
+                if(_.isUndefined(this.questions) || _.isNull(this.questions)) return [];
                 let root = '/grading/question/';
                 let routes = [];
                 for(let i=1; i<= this.questions.length; i++){
@@ -42,6 +44,10 @@
                 }
                 return routes;
             }
+
+        },
+        computed: {
+
         },
 
         methods: {},

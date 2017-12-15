@@ -15,6 +15,7 @@ use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
 use App\Jobs\AsyncStorage\UpdateAllStoredNumGraded;
 use App\Jobs\AsyncStorage\UpdateStoredExamStats;
 use App\Jobs\AsyncStorage\UpdateStoredNumGraded;
+use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Grade\GradeFactory;
 use App\Repositories\Grade\IGradeAssignmentRepository;
@@ -38,18 +39,34 @@ use JavaScript;
 class NewGradingController extends Controller
 {
 
-    public function __construct()
+    /**
+     * @var IAssignmentRepository
+     */
+    private $assignmentRepository;
+
+    public function __construct( IAssignmentRepository $assignmentRepository)
     {
         $this->middleware('auth');
+        $this->assignmentRepository = $assignmentRepository;
     }
 
 
     /**
      * Returns the new dev grading page
      * @param Exam $exam
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Exam $exam){
 return view('development.newgrading', ['exam' => $exam]);
+    }
+
+    public function getItems(Exam $exam){
+        $out = $this->assignmentRepository->getItemOrderForClient($exam);
+
+        //The returned array  will have the keys
+        //  'itemObjects'
+        //  'itemOrder'
+        return $out;
     }
 
 

@@ -1,32 +1,5 @@
 <template>
     <div id="dashboard-timer">
-        <div class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <span class="icon" aria-hidden="true">
-                        <i class="fa fa-tachometer">Statistics</i>
-                    </span>
-                </div>
-            </div>
-
-            <div class="level-right">
-                <div class="level-item">
-
-                    <a id="time-button"
-                       class="button is-fullwidth"
-                       title="Toggle timer"
-                       v-bind:class="buttonStyling"
-                       v-on:click="toggleTimer"
-                    >
-                        <span class="icon">
-                            <i v-if="! isRunning" class="fa play" aria-hidden="true"></i>
-                            <i v-if="isRunning" class="fa pause" aria-hidden="true"></i>
-                       </span> {{buttonLabel}}
-                    </a>
-                </div>
-
-            </div>
-        </div>
 
         <table class="table is-narrow">
             <tr>
@@ -50,6 +23,24 @@
             </tr>
 
         </table>
+
+        <p class="field">
+            <a id="time-button"
+               class="button is-fullwidth"
+               title="Toggle timer"
+               v-bind:class="buttonStyling"
+               v-on:click="toggleTimer"
+            >
+                        <span class="icon is-small">
+                            <i v-if="! isRunning" class="fa fa-play" aria-hidden="true"></i>
+
+                            <i v-if="isRunning" class="fa fa-pause" aria-hidden="true"></i>
+                       </span>
+                <span> {{buttonLabel}} </span>
+            </a>
+
+        </p>
+
     </div>
 
 </template>
@@ -286,7 +277,7 @@
              * This is bound to the timer button
              */
             toggleTimer: function () {
-                if( ! this.isStudentSelected ) return false;
+                if ( !this.isStudentSelected ) return false;
                 if ( this.isRunning ) {
                     //stop the timer if now is running
                     this.stopTimer();

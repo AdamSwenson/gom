@@ -37447,8 +37447,6 @@ module.exports = {
 "use strict";
 
 
-var _mutations;
-
 var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
@@ -37492,8 +37490,6 @@ var _NodeTools = __webpack_require__(51);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * Created by adam on 6/22/17.
@@ -37549,106 +37545,128 @@ var processItemObjectFromJson = function processItemObjectFromJson(state, object
 };
 
 module.exports = {
-    mutations: (_mutations = {}, _defineProperty(_mutations, mTypes.loadInitialData, function (state, payload) {
-        return new Promise(function (resolve, reject) {
+    mutations: {
 
-            // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-            var objectData = JSON.parse(document.getElementById(ITEM_OBJECT_JSON_NAME).getAttribute('data'));
+        /**
+         * These are actions which different parts of the gom
+         * call to when they initialize.
+         *
+         */
+        // /** This is what gets run when the root instance is mounted for the setup page */
+        // [ mTypes.loadInitialData ]: ( state, payload ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //
+        //         // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
+        //         let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
+        //
+        //         let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
+        //
+        //         let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
+        //
+        //
+        //         // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+        //
+        //         //assume everything is there, just load directly
+        //         let exam = Exam.factory( examData );
+        //
+        //         //set it in items
+        //         state.items[ 0 ] = exam;
+        //
+        //         //initialize the order store
+        //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+        //
+        //         //load in the item objects
+        //         processItemObjectFromJson( state, objectData );
+        //
+        //         //load in the order data
+        //         processItemOrderFromJson( state, orderData );
+        //
+        //         resolve();
+        //     } );
+        //     // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
+        // },
+        //
+        //
+        // //todo move to more appropriate location once working
+        // initializeItemStore: ( state ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //         let exam = new Exam();
+        //         state.items[ 0 ] = exam;
+        //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+        //         resolve();
+        //     } );
+        // },
 
-            var orderData = JSON.parse(document.getElementById(ITEM_ORDER_JSON_NAME).getAttribute('data'));
+        directLoadObjectsFromJson: function directLoadObjectsFromJson(state, payload) {
+            return new Promise(function (resolve, reject) {
+                window.console.log('items', 'directLoadObjectsFromJson', 278, payload);
+                // if ( typeof payload.obj !== 'undefined' ) {
+                _.forEach(payload.obj, function (d, i) {
+                    var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
+                    // state.items.push(item);
+                    //     //set it in the items list without calling the api listener
+                    state.commit(mTypes.setItem, _Payload2.default.factory({
+                        obj: item,
+                        mutateSilently: true
+                    }));
 
-            var examData = JSON.parse(document.getElementById(EXAM_JSON_NAME).getAttribute('data'));
-
-            // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
-
-            //assume everything is there, just load directly
-            var exam = _Exam2.default.factory(examData);
-
-            //set it in items
-            state.items[0] = exam;
-
-            //initialize the order store
-            state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
-
-            //load in the item objects
-            processItemObjectFromJson(state, objectData);
-
-            //load in the order data
-            processItemOrderFromJson(state, orderData);
-
-            resolve();
-        });
-        // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
-    }), _defineProperty(_mutations, 'initializeItemStore', function initializeItemStore(state) {
-        return new Promise(function (resolve, reject) {
-            var exam = new _Exam2.default();
-            state.items[0] = exam;
-            state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
-            resolve();
-        });
-    }), _defineProperty(_mutations, 'directLoadObjectsFromJson', function directLoadObjectsFromJson(state, rootState, payload) {
-        return new Promise(function (resolve, reject) {
-            // window.console.log( 'items', 'directLoadObjectsFromJson', 278, payload );
-            // if ( typeof payload.obj !== 'undefined' ) {
-            _.forEach(payload.obj, function (d, i) {
-                var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
-                // state.items.push(item);
-                //     //set it in the items list without calling the api listener
-                state.commit(mTypes.setItem, _Payload2.default.factory({
-                    obj: item,
-                    mutateSilently: true
-                }));
-
-                //handle any tags
-                state.dispatch('processItemTags', item);
-            });
-            resolve();
-            // }
-        });
-    }), _defineProperty(_mutations, 'directLoadOrderFromJson', function directLoadOrderFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {
-            _.forEach(payload.obj, function (d, i) {
-                // window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
-
-                // window.console.log( 'items', 'iii', 335, d );
-                var item = function (state, d) {
-                    return (0, _itemHelpers.getItem)(state, d.itemId);
-                }(state, d);
-                // window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
-                // window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
-                //if the parent is null, these are top level
-                //and should be added as children of the exam.
-                //if the parent is null, we add the exam instead
-                var parentNode = d.parentId === null ? state.itemMap : function (state, d) {
-                    var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
-                    return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
-                }(state, d);
-
-                var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
-                // let index = d.itemOrder;
-
-                // window.console.log( 'items', 'direct load itemNode', 256, itemNode );
-                // window.console.log( 'items', 'direct load item', 256, item );
-                // window.console.log( 'items', 'direct load parentNode', 256, parentNode );
-
-
-                //if an index was specified, splice it in at the index
-                //                 if ( !_.isUndefined( index ) ) {
-                //                     parentNode.children.splice( index, 0, itemNode );
-                //                 }
-                //                 else {
-                //otherwise just push it on the end
-                parentNode.children.push(itemNode);
-
+                    //handle any tags
+                    state.dispatch('processItemTags', item);
+                });
+                resolve();
                 // }
             });
-            resolve();
-        });
-    }), _defineProperty(_mutations, 'directLoadStudentsFromJson', function directLoadStudentsFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {});
-    }), _defineProperty(_mutations, 'directLoadScoresFromJson', function directLoadScoresFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {});
-    }), _mutations),
+        },
+
+        directLoadOrderFromJson: function directLoadOrderFromJson(state, payload) {
+            return new Promise(function (resolve, reject) {
+                _.forEach(payload.obj, function (d, i) {
+                    // window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
+
+                    // window.console.log( 'items', 'iii', 335, d );
+                    var item = function (state, d) {
+                        return (0, _itemHelpers.getItem)(state, d.itemId);
+                    }(state, d);
+                    // window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
+                    // window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
+                    //if the parent is null, these are top level
+                    //and should be added as children of the exam.
+                    //if the parent is null, we add the exam instead
+                    var parentNode = d.parentId === null ? state.itemMap : function (state, d) {
+                        var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
+                        return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
+                    }(state, d);
+
+                    var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
+                    // let index = d.itemOrder;
+
+                    // window.console.log( 'items', 'direct load itemNode', 256, itemNode );
+                    // window.console.log( 'items', 'direct load item', 256, item );
+                    // window.console.log( 'items', 'direct load parentNode', 256, parentNode );
+
+
+                    //if an index was specified, splice it in at the index
+                    //                 if ( !_.isUndefined( index ) ) {
+                    //                     parentNode.children.splice( index, 0, itemNode );
+                    //                 }
+                    //                 else {
+                    //otherwise just push it on the end
+                    parentNode.children.push(itemNode);
+
+                    // }
+                });
+                resolve();
+            });
+        },
+
+        directLoadStudentsFromJson: function directLoadStudentsFromJson(state, payload) {
+            return new Promise(function (resolve, reject) {});
+        },
+
+        directLoadScoresFromJson: function directLoadScoresFromJson(state, payload) {
+            return new Promise(function (resolve, reject) {});
+        }
+    },
 
     actions: {
 
@@ -54476,10 +54494,6 @@ var _JsonReaders = __webpack_require__(139);
 
 var _JsonReaders2 = _interopRequireDefault(_JsonReaders);
 
-var _apiHelpers = __webpack_require__(63);
-
-var _itemHelpers = __webpack_require__(140);
-
 var _items = __webpack_require__(285);
 
 var _items2 = _interopRequireDefault(_items);
@@ -54487,6 +54501,10 @@ var _items2 = _interopRequireDefault(_items);
 var _items3 = __webpack_require__(290);
 
 var _items4 = _interopRequireDefault(_items3);
+
+var _items5 = __webpack_require__(957);
+
+var _items6 = _interopRequireDefault(_items5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -54608,7 +54626,7 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
     }(state);
 }), _extends2));
 
-var actions = _extends({}, _items2.default.actions, _items4.default.actions, _JsonReaders2.default.actions, (_extends3 = {}, _defineProperty(_extends3, aTypes.createItem, function (_ref, parentSN) {
+var actions = _extends({}, _items2.default.actions, _items4.default.actions, _JsonReaders2.default.actions, _items6.default.actions, (_extends3 = {}, _defineProperty(_extends3, aTypes.createItem, function (_ref, parentSN) {
     var state = _ref.state,
         commit = _ref.commit,
         dispatch = _ref.dispatch,
@@ -54710,16 +54728,24 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
     //remove from objects
 }), _defineProperty(_extends3, aTypes.deleteItem, function () {}), _extends3));
 
-// const getters = Object.assign( {}, getters_both, Objects.getters, orderGetters); //Orderings.getters ); //, ...g};
-// Object.assign(getters, orderGetters);//
-// const getters = { ...getters_both, ...Orderings.getters, ...Objects.getters };
+var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, _JsonReaders2.default.mutations, _items6.default.mutations, {
 
-// };
+    initializeItemStorage: function initializeItemStorage(store, payload) {
 
-// const actions = { ...actions_both, ...Objects.actions, ...Orderings.actions }; //Orderings.actions );
-//require( './items.obj.actions' );
+        return new Promise(function (resolve, reject) {
 
-var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, _JsonReaders2.default.mutations);
+            var exam = payload.obj;
+
+            //set it in items
+            state.items[0] = exam;
+
+            //initialize the order store
+            state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
+            resolve();
+        });
+    }
+
+});
 //Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 exports.default = {
@@ -55717,24 +55743,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var _ = window._ = __webpack_require__(25);
 var Vue = __webpack_require__(18);
 
-// const  getNode = (state, serialNumber) => {
-//     return (function ( state, serialNumber ) {
-//         let callback = function ( node ) {
-//             if ( !callback.found ) callback.found = [];
-//             // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-//             if ( node.data === serialNumber ) {
-//                 callback.found.push( node );
-//                 // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-//                 return true;
-//             }
-//             return false;
-//         };
-//         traverseDF( state.itemMap, callback );
-//         let result = callback.found[ 0 ];
-//         return result;
-//     })( state, serialNumber )
-// }
-
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
     return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
 }), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, rootState, serialNumber) {
@@ -55816,6 +55824,14 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
     return state.itemMap;
 }), _defineProperty(_module$exports, 'getRootNodeSerialNumber', function getRootNodeSerialNumber(state, getters, rootState) {
     return state.itemMap.data;
+}), _defineProperty(_module$exports, 'getQuestionLevelItems', function getQuestionLevelItems(state, getters) {
+    var items = [];
+    if (state.itemMap.children) {
+        _.forEach(state.itemMap.children, function (node) {
+            items.push(getters[gTypes.getItemBySerialNumber](node.data));
+        });
+    }
+    return items;
 }), _module$exports);
 
 /***/ }),
@@ -55872,8 +55888,6 @@ var _itemsOrder6 = _interopRequireDefault(_itemsOrder5);
 var _itemsOrder7 = __webpack_require__(292);
 
 var _itemsOrder8 = _interopRequireDefault(_itemsOrder7);
-
-var _NodeTools = __webpack_require__(51);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55945,390 +55959,6 @@ exports.default = {
     getters: _itemsOrder6.default,
     mutations: _itemsOrder2.default,
     state: _itemsOrder8.default
-    // {
-    //     itemMap: new Node( 0, 0 ),
-    //
-    //     /*
-    //      * What we want to have is the ability to store nested
-    //      * tuples which map the item to a position on an exam
-    //      * (which is itself formally an item).
-    //      * order : {
-    //      *      0 : {
-    //      *          id: null,
-    //      *          children: {
-    //      *              0 : {
-    //      *                      id: null.
-    //      *                      children: {}
-    //      *                 }
-    //      *          }
-    //      *      }
-    //      }
-    //      *
-    //      * */
-    //     //the first value in the array is the item's id
-    //     //the second value is an array of children
-    //     // orderMap: new Map(),
-    //     // orderList: [],
-    //     //
-    //     // order: {
-    //     //     0: {
-    //     //         id: null,
-    //     //         children: {
-    //     //             0: {
-    //     //                 id: null,
-    //     //                 children: {}
-    //     //             }
-    //     //         }
-    //     //     }
-    //     // }
-    //     // orderMap: new Map(),
-    //     // order: {}
-    //
-    // };
-
-    // {
-    //         insert: ( state, payload ) => {
-    //             let { index, obj, parent } = payload;
-    //
-    //             //type check
-    //             if ( !parent instanceof Node ) return false;
-    //             if ( !obj instanceof Node ) return false;
-    //
-    //             //if an index was specified, splice it in at the index
-    //             if ( !_.isUndefined( index ) ) {
-    //                 return parent.children.splice( index, 0, obj );
-    //             }
-    //             //otherwise just push it on the end
-    //             return parent.children.push( obj );
-    //
-    //         },
-    //
-    //
-    //         remove: ( state, payload ) => {
-    //             let { obj, parent } = payload;
-    //             //Merge its children into its parent's children
-    //             parent.children.concat( obj.children );
-    //             //delete the node
-    //             let idx = parent.children.indexOf( obj );
-    //             parent.children.splice( idx, 1 );
-    //         },
-    //
-    //         /*
-    //          // addMappedItem: ( state, idx, toAdd ) => {
-    //          //     state.orderMap.set( idx, toAdd );
-    //          // },
-    //
-    //          //these should probably be methods on node
-    //          //or maybe not since that would make it harder
-    //          //to remove a child without also removing its
-    //          //children (if we want that to be an option)
-    //          //         addChild: ( state, idx, idToAdd ) => {
-    //          //             let child = [ idToAdd, [] ];
-    //          //             let itm = orderList[ 0 ];
-    //          //             //idx is a tuple stored as an array
-    //          //             for (let i = 0; i < idx.length; i++) {
-    //          //                 itm = itm[ 1 ][ i ]
-    //          //             }
-    //          //             let children = itm[ 1 ];
-    //          //             children.push( child );
-    //          //             Vue.set( itm, 1, children );
-    //          //             //
-    //          //             //
-    //          //             // let item = getItemFromList(state.orderList,  idx);
-    //          //             // if (! _.isEmpty(item)){
-    //          //             //     let maxIndex = _.last( Object.keys(item.children));
-    //          //             //     item.children
-    //          //             // }
-    //          //
-    //          //             // let item = getItemFromOrder(state.order,  idx);
-    //          // // if (! _.isEmpty(item)){
-    //          // //     let maxIndex = _.last( Object.keys(item.children));
-    //          // //     item.children
-    //          // // }
-    //          //
-    //          //         },
-    //          //
-    //          //         addParent: ( state, existing, toAdd ) => {
-    //          //
-    //          //         //
-    //          //         },
-    //          // addOlderSibling: ( state, existing, toAdd ) => {
-    //          // },
-    //          // addYoungerSibling: ( state, existing, toAdd ) => {
-    //          // },
-    //          */
-    // //
-    //     }
-    // ;
-
-
-    // {
-    //
-    //     [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-    //         let { index, obj, id, parent } = payload;
-    //
-    //         //Sort out whether obj and parent are nodes or items
-    //         let toAddSerialNumber = getSerialNumber(obj);
-    //         let parentSerialNumber = getSerialNumber(parent)
-    //             let n = new Node(toAddSerialNumber, parentSerialNumber );
-    //
-    //         let f = function ( currentNode ) {
-    //             if ( currentNode.data === parentSerialNumber ) {
-    //                 let pl = Payload.factory( { index: index, obj: n, parent: currentNode } );
-    //
-    //                 commit( 'insert', pl );
-    //                 return false;
-    //             }
-    //             return true;
-    //         }
-    //
-    //         traverseDF( state.itemMap, f );
-    //
-    //     },
-    //
-    //     [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-    //         let {serialNumber} = payload;
-    //         // let  serialNumber = getSerialNumber(payload);
-    //         let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-    //         let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
-    //         let pl = Payload.factory( { obj: toRemove, parent: parent } );
-    //         commit( 'remove', pl );
-    //     },
-    //
-    // };
-    //r{
-    //
-    //     /**
-    //      * Returns the children array of
-    //      * the exam stored as itemMap. It includes the exam
-    //      * @param state
-    //      * @param getters
-    //      * @returns {Node}
-    //      */
-    //     [gTypes.getItemMapCopy]: ( state, getters ) => {
-    //         return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
-    //     },
-    //
-    //     [gTypes.getItemNodeFromOrder]: ( state, getters, serialNumber ) => {
-    //         return (function ( state, serialNumber ) {
-    //             let callback = function ( node ) {
-    //                 if ( !callback.found ) callback.found = [];
-    //                 // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-    //                 if ( node.data === serialNumber ) {
-    //                     callback.found.push( node );
-    //                     // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-    //                     return true;
-    //                 }
-    //                 return false;
-    //             };
-    //             traverseBF( state.itemMap, callback );
-    //             let result = callback.found[ 0 ];
-    //             return result;
-    //         })( state, serialNumber )
-    //     },
-    //
-    //     /**
-    //      * Find the number of parents the node has
-    //      * @param state
-    //      * @param getters
-    //      * @param serialNumber
-    //      */
-    //     [gTypes.getHeightOfNode]: ( state, getters, serialNumber ) => {
-    //         let level = 0;
-    //
-    //         return (function recurse( serialNumber ) {
-    //             // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-    //             //look up the node whose serial number we've just  been handed.
-    //             let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-    //             //break condition is that we've hit the exam
-    //             //which is of course the only item which is its
-    //             //own parent
-    //             if (node.parent === node.data) return level;
-    //             //Otherwise, increment the level counter
-    //             // and re-run on the parent
-    //             level += 1;
-    //             return recurse(node.parent);
-    //         })( serialNumber );
-    //     },
-    //
-    //
-    //
-    //     /**
-    //      * Find the index position of the node in its parent's children array
-    //      * @param state
-    //      * @param getters
-    //      * @param serialNumber
-    //      */
-    //     [gTypes.getDepthOfNode]: ( state, getters, serialNumber ) => {
-    //         //look up the node whose serial number we've just  been handed.
-    //         let node = getters[gTypes.getItemNodeFromOrder](state, getters, serialNumber);
-    //         let parent = getters[gTypes.getItemNodeFromOrder](state, getters, node.parent);
-    //         if(parent){
-    //             for(let index=0; index<parent.children.length; index++){
-    //                 if(parent.children[index] === node){
-    //                     return index;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //
-    // };
-
-
-    // /**
-    //  * Given a serial number, returns true if that serial number is
-    //  * in the tree and false otherwise.
-    //  * @param state
-    //  * @param getters
-    //  */
-    // containsSerialNumber: ( state, getters ) => ( serialNumber ) => {
-    //     //todo
-    // },
-    //
-    // /**
-    //  * Looks up the serial number of the item which is
-    //  * occupying the position identified by the index.
-    //  * @param index
-    //  */
-    // getItemSerialNumberFromIndex: ( state, getters ) => ( index ) => {
-    //     //remove the payload wrapper if necessary
-    //     if ( Payload.checkIfPayload( index ) ) {
-    //         index = index.index;
-    //     }
-    //
-    //     //if this is a single member array, we can treat
-    //     //it like a numeric input under the older system
-    //     if ( _.isArray( index ) && index.length === 1 ) {
-    //         index = index[ 0 ];
-    //     }
-    //
-    //     //Now we're ready to deal with the input
-    //     return function ( state, index ) {
-    //         //There are two cases to consider
-    //         //We deal first with the easy case in which the index
-    //         //is a number or string representation of a number
-    //         //and not a composite
-    //         if ( !_.isArray( index ) ) {
-    //             //if was just a string or integer this is fine
-    //             //also if the input was an array with only one item
-    //             var r = state.orderings.filter( function ( i ) {
-    //                 if ( i.index === index ) {
-    //                     return i;
-    //                 }
-    //             } );
-    //             return r[ 0 ];
-    //         }
-    //
-    //         else {
-    //             //we need to do something different
-    //             //because it is an array
-    //             if ( _.isArray( index ) ) {
-    //                 let idx = index.join( '-' );
-    //             }
-    //
-    //         }
-    //
-    //     }( state, index );
-    //
-    // },
-    //
-    // /**
-    //  * Given an item's permanent unique identifier, it returns
-    //  * up the item's location
-    //  * @param serialNumber
-    //  */
-    // getIndexFromItemSerialNumber: ( state, getters ) => ( serialNumber ) => {
-    //     let callback = ( node ) => {
-    //         if ( node.serialNumber === serialNumber ) {
-    //             return node;
-    //         }
-    //     }
-    //     // this is a recurse and immediately-invoking function
-    //     (function recurse( currentNode ) {
-    //         // step 2
-    //         for (var i = 0, length = currentNode.children.length; i < length; i++) {
-    //             // step 3
-    //             recurse( currentNode.children[ i ] );
-    //         }
-    //
-    //         // step 4
-    //         callback( currentNode );
-    //
-    //         // step 1
-    //     })( this._root );
-    //
-    // },
-    //
-    // getAllNodesAtLevel: ( state, getters ) => ( level ) => {
-    //     if ( level === 0 ) {
-    //         //special case because 0,0 is the exam
-    //         //so we need to subtract 1
-    //     } else {
-    //         //All other cases we can just return the count
-    //     }
-    //
-    // },
-    //
-    // /**
-    //  * Returns the total number of items at the specified
-    //  * level.
-    //  * Level 0 : Questions
-    //  * Level 1 : Elements
-    //  * ...
-    //  * @param state
-    //  * @param getters
-    //  */
-    // getCountOfLevel: ( state, getters ) => ( level ) => {
-    //     if ( level === 0 ) {
-    //         //special case because 0,0 is the exam
-    //         //so we need to subtract 1
-    //     } else {
-    //         //All other cases we can just return the count
-    //     }
-    //
-    // },
-    //
-    //
-    // getMappedItem: ( state, getters ) => ( idx ) => {
-    //     return state.orderMap.get( idx );
-    // },
-    //
-    // // getItemFromOrder: ( state, getters ) => ( idx ) => {
-    // //     let itm = state.order[ 0 ];
-    // //     //idx is a tuple stored as an array
-    // //     for (let i = 0; i < idx.length; i++) {
-    // //         itm = itm.children[ i ]
-    // //     }
-    // //     return itm;
-    // // },
-    //
-    // getItemByIdx: ( state, getters ) => ( idx ) => {
-    //     let stringKey = Item.buildKeyFromIdx( idx );
-    //
-    //     return function ( state, idx ) {
-    //         var r = state.items.filter( function ( i ) {
-    //             if ( i.idxStore === stringKey ) {
-    //                 return i;
-    //             }
-    //             return r[ 0 ];
-    //         } )
-    //     };
-    // },
-    //
-    //
-    // getSiblingsAndChildrenByIdx: ( state, getters ) => ( idx ) => {
-    //     let stringKey = Item.buildKeyFromIdx( idx );
-    //
-    //     return function ( state, idx ) {
-    //         var r = state.items.filter( function ( i ) {
-    //             if ( _.startsWith( stringKey, idx ) ) {
-    //                 return i;
-    //             }
-    //             return r[ 0 ];
-    //         } )
-    //     }
-    // }
-
 };
 
 /***/ }),
@@ -98558,6 +98188,214 @@ exports.default = {
     getters: getters,
     actions: actions,
     mutations: mutations
+};
+
+/***/ }),
+/* 956 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _apiSettings = __webpack_require__(20);
+
+var _responseHandlers = __webpack_require__(45);
+
+module.exports = {
+
+    getItemsForExam: function getItemsForExam(exam) {
+        var to = 'items/exam/' + exam.id;
+
+        return window.axios.get(to).then(function (response) {
+            // //The returned array  will have the keys
+            //             //  'itemObjects'
+            //             //  'itemOrder'
+
+            return response.data;
+        }).catch(function () {});
+    }
+
+};
+
+/***/ }),
+/* 957 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations;
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Node = __webpack_require__(38);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(51);
+
+var _itemHelpers = __webpack_require__(140);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(10);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _itemRequests = __webpack_require__(956);
+
+var _itemRequests2 = _interopRequireDefault(_itemRequests);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var processItemOrderFromJson = function processItemOrderFromJson(state, orderData) {
+
+    _.forEach(orderData, function (d, i) {
+        var item = function (state, d) {
+            return (0, _itemHelpers.getItem)(state, d.itemId);
+        }(state, d);
+        //if the parent is null it is the exam, and we can skip
+        if (d.parentId === null) return true;
+
+        // these are top level
+        //and should be added as children of the exam.
+        //if the parent is null, we add the exam instead
+        //todo this must be fixed since an item could have the same id as an exam
+        var parentNode = d.parentId === state.items[0].id ? state.itemMap : function (state, d) {
+            var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
+            return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
+        }(state, d);
+
+        var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
+
+        //if an index was specified, splice it in at the index
+        //                 if ( !_.isUndefined( index ) ) {
+        //                     parentNode.children.splice( index, 0, itemNode );
+        //                 }
+        //                 else {
+        //otherwise just push it on the end
+        parentNode.children.push(itemNode);
+    });
+};
+
+var processItemObjectFromJson = function processItemObjectFromJson(state, objectData) {
+    _.forEach(objectData, function (d, i) {
+        var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
+        item.loadCommentsFromJson(d.comments);
+        state.items.push(item);
+    });
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadInitialData, function (state, payload) {
+    return new Promise(function (resolve, reject) {
+
+        // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
+        var objectData = JSON.parse(document.getElementById(ITEM_OBJECT_JSON_NAME).getAttribute('data'));
+
+        var orderData = JSON.parse(document.getElementById(ITEM_ORDER_JSON_NAME).getAttribute('data'));
+
+        var examData = JSON.parse(document.getElementById(EXAM_JSON_NAME).getAttribute('data'));
+
+        // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+
+        //assume everything is there, just load directly
+        var exam = _Exam2.default.factory(examData);
+
+        //set it in items
+        state.items[0] = exam;
+
+        //initialize the order store
+        state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
+
+        //load in the item objects
+        processItemObjectFromJson(state, objectData);
+
+        //load in the order data
+        processItemOrderFromJson(state, orderData);
+
+        resolve();
+    });
+    // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
+}), _defineProperty(_mutations, 'initializeItemStore', function initializeItemStore(state) {
+    return new Promise(function (resolve, reject) {
+        var exam = new _Exam2.default();
+        state.items[0] = exam;
+        state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
+        resolve();
+    });
+}), _defineProperty(_mutations, 'saveItemsFromServer', function saveItemsFromServer(state, payload) {
+    processItemObjectFromJson(state, payload.obj);
+}), _defineProperty(_mutations, 'saveOrderFromServer', function saveOrderFromServer(state, payload) {
+
+    processItemOrderFromJson(state, payload.obj);
+}), _mutations);
+
+var actions = {
+
+    loadItemsFromServer: function loadItemsFromServer(_ref, exam) {
+        var state = _ref.state,
+            commit = _ref.commit,
+            dispatch = _ref.dispatch,
+            getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+
+            //ahem. initialize the store
+            commit('initializeItemStorage', _Payload2.default.factory({ obj: exam }));
+
+            //The returned array  will have the keys
+            //  'itemObjects'
+            //  'itemOrder'
+            var p = _itemRequests2.default.getItemsForExam(exam);
+            p.then(function (data) {
+
+                //save the item objects
+                commit('saveItemsFromServer', _Payload2.default.factory({
+                    obj: data.itemObjects,
+                    mutateSilently: true
+                }));
+
+                //store their ordering
+                commit('saveOrderFromServer', _Payload2.default.factory({
+                    obj: data.itemOrder,
+                    mutateSilently: true
+                }));
+
+                resolve();
+            });
+        });
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    mutations: mutations
+
 };
 
 /***/ })

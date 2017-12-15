@@ -180,7 +180,7 @@ Route::resource('items', 'Item\ItemController'); //,
 Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
 
 Route::post('comments/{item}', 'Item\CommentController@store');
-
+Route::get('items/exam/{exam}', 'Grading\NewGradingController@getItems');
 //new exam controller
 Route::get('dev/exams', 'Item\ExamResourceController@index');
 Route::put('dev/exam/{exam}', 'Item\ExamResourceController@update');

@@ -14,25 +14,7 @@ import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 import Exam from '../../models/Exam'
 import Node from '../../models/Node'
-import { traverseDF, traverseBF, getSerialNumber , getNode} from '../../models/NodeTools'
-
-// const  getNode = (state, serialNumber) => {
-//     return (function ( state, serialNumber ) {
-//         let callback = function ( node ) {
-//             if ( !callback.found ) callback.found = [];
-//             // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-//             if ( node.data === serialNumber ) {
-//                 callback.found.push( node );
-//                 // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-//                 return true;
-//             }
-//             return false;
-//         };
-//         traverseDF( state.itemMap, callback );
-//         let result = callback.found[ 0 ];
-//         return result;
-//     })( state, serialNumber )
-// }
+import { traverseDF, traverseBF, getSerialNumber, getNode } from '../../models/NodeTools'
 
 module.exports = {
 
@@ -43,7 +25,7 @@ module.exports = {
      * @param getters
      * @returns {Node}
      */
-    [gTypes.getItemMapCopy]: ( state, getters ) => {
+    [ gTypes.getItemMapCopy ]: ( state, getters ) => {
         return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
     },
 
@@ -55,7 +37,7 @@ module.exports = {
      * @param rootState
      * @param serialNumber
      */
-    [gTypes.getItemNodeFromOrder]: ( state, getters,   rootState, serialNumber) => ( serialNumber ) => {
+    [ gTypes.getItemNodeFromOrder ]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
 
         return (function ( state, serialNumber ) {
             let callback = function ( node ) {
@@ -82,9 +64,9 @@ module.exports = {
      * @param getters
      * @param serialNumber
      */
-    [gTypes.getHeightOfNode]: ( state, getters,  rootState, serialNumber ) => (serialNumber) => {
+    [ gTypes.getHeightOfNode ]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
         // return 1;
-    // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
+        // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
         return (function ( state, serialNumber ) {
 
             let level = 0;
@@ -101,8 +83,8 @@ module.exports = {
                 }
             }
             return level;
-        })(state, serialNumber);
-                //
+        })( state, serialNumber );
+        //
         //
         // return (function recurse( serialNumber ) {
         //     // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
@@ -125,12 +107,12 @@ module.exports = {
      * @param getters
      * @param serialNumber
      */
-    [gTypes.getDepthOfNode]: ( state, getters,   rootState,  serialNumber ) => (serialNumber) =>{
+    [ gTypes.getDepthOfNode ]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
         //look up the node whose serial number we've just  been handed.
-        let node = getNode(state, serialNumber);
+        let node = getNode( state, serialNumber );
 //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
         if ( node ) {
-            let parent = getNode(state,  node.parent);
+            let parent = getNode( state, node.parent );
             // let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
             if ( parent ) {
                 for (let index = 0; index < parent.children.length; index++) {
@@ -143,12 +125,23 @@ module.exports = {
         return 0;
     },
 
-    getRootNode: (state, getters, rootState) => {
+    getRootNode: ( state, getters, rootState ) => {
         return state.itemMap;
     },
 
-    getRootNodeSerialNumber: (state, getters,rootState) =>{
+    getRootNodeSerialNumber: ( state, getters, rootState ) => {
         return state.itemMap.data;
+    },
+
+    getQuestionLevelItems: ( state, getters ) => {
+        let items = [];
+        if ( state.itemMap.children ) {
+            _.forEach( state.itemMap.children, function ( node ) {
+                items.push( getters[ gTypes.getItemBySerialNumber ]( node.data ) );
+
+            } );
+        }
+        return items;
     }
 
 
