@@ -15,7 +15,10 @@ import { errorHandling } from '../responseHandlers';
 
 const route = 'dev/scores';
 
-module.exports = {
+/** We don't want to hit the server every second. This is how many requests to skip */
+const RECORD_EVERY = 30;
+
+    module.exports = {
 
     /**
      * Gets all item scores for the exam without identifying
@@ -50,13 +53,15 @@ module.exports = {
     },
 
     setStudentGradingTime: ( exam, student, time ) => {
-        let out = { time: time };
-        let to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
-        return window.axios
-            .post( to, time )
-            .then( function ( response ) {
-                return response.data;
-            } );
+        if(time % RECORD_EVERY === 0) {
+            let out = { time: time };
+            let to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+            return window.axios
+                .post( to, out )
+                .then( function ( response ) {
+                    return response.data;
+                } );
+        }
 
     }
 

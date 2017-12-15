@@ -80,8 +80,10 @@ class TimeController extends Controller
      */
     public function update( Exam $exam, Student $student, GradingTimeRequest $request )
     {
-        $gt = GradingTime::where('student_id', $student->id)->where('exam_id', $exam->id)->firstOrCreate();
+        $in = ['student_id' => $student->id, 'exam_id' => $exam->id];
+        $gt = GradingTime::firstOrCreate($in);
         $gt->seconds = $request->input('time');
+        $gt->save();
         return $this->sendAjaxSuccess();
     }
 
@@ -92,7 +94,8 @@ class TimeController extends Controller
      */
     public function show( Exam $exam, Student $student )
     {
-        return GradingTime::where('student_id', $student->id)->where('exam_id', $exam->id)->firstOrCreate();
+        $in = ['student_id' => $student->id, 'exam_id' => $exam->id];
+        return GradingTime::firstOrCreate($in);
     }
 
 

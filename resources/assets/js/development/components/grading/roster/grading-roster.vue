@@ -7,8 +7,21 @@
         </div>
 
         <div class="panel-heading">
-            <student-name-visibility></student-name-visibility>
-            <active-student-area></active-student-area>
+            <div class="level">
+                <div class="level-left">
+
+                    <div class="level-item">
+                        <student-name-visibility></student-name-visibility>
+                    </div>
+                </div>
+                <div class="level-right">
+
+                    <div class="level-item">
+                        <active-student-area></active-student-area>
+                    </div>
+
+                </div>
+            </div>
         </div>
         <div class="panel-block">
             <student-search-bar></student-search-bar>
@@ -20,6 +33,7 @@
                id="nameHeader"
                title="Sort by name"
                v-on:click="sortRosterBy('lastName')"
+               v-if="studentNamesVisible"
             >Name</a>
 
             <a class="isActiveClass('identifier')"
@@ -54,8 +68,10 @@
            v-on:click="handleRowSelection(student)"
         >
             <span class="panel-icon">
-                <i class="fa fa-book"></i>
-            </span> <span class="student-name">{{ student.nameLastFirst }}</span> <span class="student-identifier ">{{ student.identifier }}</span>
+                <i class="fa fa-user"></i>
+            </span>
+            <span class="student-name" v-if="studentNamesVisible">{{ student.nameLastFirst }}</span>
+            <span class="student-identifier ">{{ student.identifier }}</span>
         </a>
     </nav>
 

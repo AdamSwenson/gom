@@ -31,22 +31,22 @@
         <table class="table is-narrow">
             <tr>
                 <th>Time This Exam</th>
-                <td>{{ currentExamTimeDisplay }}</td>
+                <td class="current-exam-time">{{ currentExamTimeDisplay }}</td>
             </tr>
 
             <tr>
                 <th>Average Time</th>
-                <td>{{ averageTimeDisplay }}</td>
+                <td class="average-exam-time">{{ averageTimeDisplay }}</td>
             </tr>
 
             <tr>
                 <th>Total Time</th>
-                <td>{{ totalTimeDisplay }}</td>
+                <td class="total-grading-time">{{ totalTimeDisplay }}</td>
             </tr>
 
             <tr>
                 <th>Time Remaining</th>
-                <td>{{ remainingTimeDisplay }}</td>
+                <td class="remaining-grading-time">{{ remainingTimeDisplay }}</td>
             </tr>
 
         </table>
@@ -133,7 +133,7 @@
 
             /* --------------- button ------------- */
             buttonLabel: function () {
-                if (  this.isRunning ) {
+                if ( this.isRunning ) {
                     return this.defaults.button.label.running;
                 }
                 return this.defaults.button.label.paused;
@@ -170,6 +170,18 @@
                 return this.$store.getters[ nggTypes.isTimerRunning ];
             },
 
+            /**
+             * Whether a student has been selected for
+             * grading. This is primarily used to ensure that
+             * we don't call for the timer to start unless a student
+             * is selected.
+             */
+            isStudentSelected: function () {
+                let s = this.$store.getters[ nggTypes.getActiveStudent ];
+                if ( !_.isUndefined( s ) && !_.isNull( s ) ) return true;
+                return false;
+            },
+
 
             /**
              * Returns estimated time remaining in seconds
@@ -177,7 +189,7 @@
              * @returns Number
              */
             remainingTime: function () {
-                let remainingExams = this.$store.getters[gTypes.getNumberUngraded];
+                let remainingExams = this.$store.getters[ gTypes.getNumberUngraded ];
                 let estTime = this.averageTime * remainingExams;
                 // let timeRemaining = estTime - this.totalTime;
                 return estTime;
@@ -214,7 +226,7 @@
              */
             totalTime: function () {
                 return this.$store.getters.getTotalGradingTime;
-             },
+            },
 
             /**
              * The total time spent grading
@@ -258,7 +270,7 @@
              * on timer start
              */
             startTimer: function () {
-                this.$store.dispatch(aTypes.startExamTimer);
+                this.$store.dispatch( aTypes.startExamTimer );
             },
 
             /**
@@ -266,7 +278,7 @@
              * on timer stop
              */
             stopTimer: function () {
-                this.$store.dispatch(aTypes.stopExamTimer);
+                this.$store.dispatch( aTypes.stopExamTimer );
             },
 
             /**
@@ -274,6 +286,7 @@
              * This is bound to the timer button
              */
             toggleTimer: function () {
+                if( ! this.isStudentSelected ) return false;
                 if ( this.isRunning ) {
                     //stop the timer if now is running
                     this.stopTimer();

@@ -46,14 +46,26 @@
              * The name of the student currently being graded
              */
             studentName: function () {
-                return ! _.isNull( this.activeStudent ) ? this.activeStudent.nameFirstLast : '';
+                if ( _.isNull( this.activeStudent ) ) return '';
+                if ( this.studentNamesVisible ) return '';
+                return this.activeStudent.nameFirstLast;
             },
 
             /**
              * The identifier of the student currently being graded
              */
             studentIdentifier: function () {
-                return ! _.isNull(this.activeStudent ) ? this.activeStudent.studentIdentifier : '';},
-        }
+                return !_.isNull( this.activeStudent ) ? this.activeStudent.studentIdentifier : '';
+            },
+
+
+            /**
+             * Whether to show student names
+             * false is blind grading.
+             */
+            studentNamesVisible: function () {
+                return this.$store.getters[ gTypes.areStudentNamesVisible ];
+            },
+        },
     };
 </script>

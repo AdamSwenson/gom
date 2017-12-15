@@ -43,6 +43,13 @@ import { updateComment } from '../api/requests/commentRequests';
 //exams
 import { updateExam }from '../api/requests/examRequests';
 
+import {updateGradeAssignment} from '../api/requests/gradeAssignmentRequests';
+
+
+import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
+
+import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
+
 import {
     createStudent,
     destroyStudent,
@@ -50,11 +57,6 @@ import {
     associateStudent,
     disassociateStudent
 } from '../api/requests/studentRequests';
-import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
-
-import {updateGradeAssignment} from '../api/requests/gradeAssignmentRequests';
-
-import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
 
 import {
     createTagRequest,
@@ -64,6 +66,9 @@ import {
     disassociateTagRequest
 } from '../api/requests/tagRequests'
 
+import {
+    setStudentGradingTime
+} from '../api/requests/timeRequests';
 
 const setSyncDone = ( store ) => {
     // window.console.log( 'apiPlugin', 'setSyncDone', 49, );
@@ -123,8 +128,7 @@ export default function ( store ) {
 
             // ******************** NEW GRADING STUFF!
             case ngmTypes.setActiveStudentTime:
-
-
+                setStudentGradingTime(payload.exam, payload.student, payload.time);
                 break;
 
 
@@ -355,7 +359,7 @@ export default function ( store ) {
                 break;
 
 
-
+                // ************ Times
 
 
             default:

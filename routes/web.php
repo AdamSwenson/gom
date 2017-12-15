@@ -263,4 +263,4 @@ Route::resource('dev/tags', 'Item\TagsController');
 Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
 
 Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
-Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@post');
+Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@update');

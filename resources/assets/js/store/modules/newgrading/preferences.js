@@ -11,13 +11,13 @@ import Payload from '../../../models/Payload'
 
 const state = {
     /** Whether student names are visible during grading */
-    isBlind: false,
+    areStudentNamesVisible: true,
 
 };
 
 const mutations = {
     [ mTypes.toggleStudentNameVisibility ]: ( state ) => {
-        state.isBlind = !state.isBlind;
+        state.areStudentNamesVisible = !state.areStudentNamesVisible;
     },
 
 };
@@ -25,8 +25,8 @@ const mutations = {
 const actions = {};
 
 const getters = {
-    [gTypes.areStudentNamesVisibile] : ( state, getters ) => {
-        return state.isBlind;
+    [gTypes.areStudentNamesVisible] : ( state, getters ) => {
+        return state.areStudentNamesVisible;
     }
 };
 

@@ -34623,6 +34623,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  */
 var route = 'dev/scores';
 
+/** We don't want to hit the server every second. This is how many requests to skip */
+var RECORD_EVERY = 30;
+
 module.exports = {
 
     /**
@@ -34652,11 +34655,13 @@ module.exports = {
     },
 
     setStudentGradingTime: function setStudentGradingTime(exam, student, time) {
-        var out = { time: time };
-        var to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
-        return window.axios.post(to, time).then(function (response) {
-            return response.data;
-        });
+        if (time % RECORD_EVERY === 0) {
+            var out = { time: time };
+            var to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+            return window.axios.post(to, out).then(function (response) {
+                return response.data;
+            });
+        }
     }
 
 };
@@ -51089,7 +51094,7 @@ exports.default = function (store) {
 
             // ******************** NEW GRADING STUFF!
             case ngmTypes.setActiveStudentTime:
-
+                (0, _timeRequests.setStudentGradingTime)(payload.exam, payload.student, payload.time);
                 break;
 
             // ******************** END NEW GRADING STUFF
@@ -51305,6 +51310,9 @@ exports.default = function (store) {
                 (0, _tagRequests.disassociateTagRequest)(store, payload.tag, payload.obj);
                 break;
 
+            // ************ Times
+
+
             default:
 
         }
@@ -51350,15 +51358,17 @@ var _commentRequests = __webpack_require__(131);
 
 var _examRequests = __webpack_require__(125);
 
-var _studentRequests = __webpack_require__(136);
+var _gradeAssignmentRequests = __webpack_require__(132);
 
 var _kumiRequests = __webpack_require__(133);
 
-var _gradeAssignmentRequests = __webpack_require__(132);
-
 var _noteRequests = __webpack_require__(95);
 
+var _studentRequests = __webpack_require__(136);
+
 var _tagRequests = __webpack_require__(77);
+
+var _timeRequests = __webpack_require__(96);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -75502,8 +75512,8 @@ exports.default = {
         return {
 
             icons: {
-                namesVisible: 'fa fa-space-shuttle',
-                namesBlind: 'fa fa-rocket'
+                namesVisible: 'fa fa-user',
+                namesBlind: 'fa fa-user-secret'
             },
 
             srText: {
@@ -75530,11 +75540,15 @@ exports.default = {
 
     methods: {
         toggleNameVisibility: function toggleNameVisibility() {
+            window.console.log('student-name-visibility', 'toggleNameVisibility', 69);
             this.$store.commit(ngmTypes.toggleStudentNameVisibility);
         }
 
     }
 }; //
+//
+//
+//
 //
 //
 //
@@ -75825,6 +75839,18 @@ module.exports = {
         },
 
         /**
+         * Whether a student has been selected for
+         * grading. This is primarily used to ensure that
+         * we don't call for the timer to start unless a student
+         * is selected.
+         */
+        isStudentSelected: function isStudentSelected() {
+            var s = this.$store.getters[nggTypes.getActiveStudent];
+            if (!_.isUndefined(s) && !_.isNull(s)) return true;
+            return false;
+        },
+
+        /**
          * Returns estimated time remaining in seconds
          * TODO Strip outliers to make more accurate
          * @returns Number
@@ -75925,6 +75951,7 @@ module.exports = {
          * This is bound to the timer button
          */
         toggleTimer: function toggleTimer() {
+            if (!this.isStudentSelected) return false;
             if (this.isRunning) {
                 //stop the timer if now is running
                 this.stopTimer();
@@ -76536,7 +76563,9 @@ module.exports = {
          * The name of the student currently being graded
          */
         studentName: function studentName() {
-            return !_.isNull(this.activeStudent) ? this.activeStudent.nameFirstLast : '';
+            if (_.isNull(this.activeStudent)) return '';
+            if (this.studentNamesVisible) return '';
+            return this.activeStudent.nameFirstLast;
         },
 
         /**
@@ -76544,6 +76573,14 @@ module.exports = {
          */
         studentIdentifier: function studentIdentifier() {
             return !_.isNull(this.activeStudent) ? this.activeStudent.studentIdentifier : '';
+        },
+
+        /**
+         * Whether to show student names
+         * false is blind grading.
+         */
+        studentNamesVisible: function studentNamesVisible() {
+            return this.$store.getters[gTypes.areStudentNamesVisible];
         }
     }
 }; //
@@ -77187,7 +77224,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }) : _vm._e()]), _vm._v(" " + _vm._s(_vm.buttonLabel) + "\n                ")])])])]), _vm._v(" "), _c('table', {
     staticClass: "table is-narrow"
-  }, [_c('tr', [_c('th', [_vm._v("Time This Exam")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.currentExamTimeDisplay))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Average Time")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.averageTimeDisplay))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Total Time")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.totalTimeDisplay))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Time Remaining")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.remainingTimeDisplay))])])])])
+  }, [_c('tr', [_c('th', [_vm._v("Time This Exam")]), _vm._v(" "), _c('td', {
+    staticClass: "current-exam-time"
+  }, [_vm._v(_vm._s(_vm.currentExamTimeDisplay))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Average Time")]), _vm._v(" "), _c('td', {
+    staticClass: "average-exam-time"
+  }, [_vm._v(_vm._s(_vm.averageTimeDisplay))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Total Time")]), _vm._v(" "), _c('td', {
+    staticClass: "total-grading-time"
+  }, [_vm._v(_vm._s(_vm.totalTimeDisplay))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Time Remaining")]), _vm._v(" "), _c('td', {
+    staticClass: "remaining-grading-time"
+  }, [_vm._v(_vm._s(_vm.remainingTimeDisplay))])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "level-left"
@@ -77219,7 +77264,7 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('a', {
-    staticClass: "button is-primary",
+    staticClass: "button is-primary is-small",
     attrs: {
       "id": "nameVisibilityControl",
       "title": "Click to hide or show student names"
@@ -77232,7 +77277,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v(_vm._s(_vm.srText.nameVisibility))]), _vm._v(" "), _c('span', {
     staticClass: "icon is-small"
   }, [(!_vm.isBlind) ? _c('i', {
-    staticClass: "fa fa-pencil",
+    staticClass: "fa fa-user",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }) : _vm._e(), _vm._v(" "), (_vm.isBlind) ? _c('i', {
+    staticClass: "fa fa-user-secret",
     attrs: {
       "aria-hidden": "true"
     }
@@ -77861,6 +77911,22 @@ module.exports = {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 945 */
@@ -77916,11 +77982,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "panel-block"
   }, [_c('finish-button')], 1), _vm._v(" "), _c('div', {
     staticClass: "panel-heading"
-  }, [_c('student-name-visibility'), _vm._v(" "), _c('active-student-area')], 1), _vm._v(" "), _c('div', {
+  }, [_c('div', {
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('student-name-visibility')], 1)]), _vm._v(" "), _c('div', {
+    staticClass: "level-right"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('active-student-area')], 1)])])]), _vm._v(" "), _c('div', {
     staticClass: "panel-block"
   }, [_c('student-search-bar')], 1), _vm._v(" "), _c('p', {
     staticClass: "panel-tabs "
-  }, [_c('a', {
+  }, [(_vm.studentNamesVisible) ? _c('a', {
     staticClass: "isActiveClass('name')",
     attrs: {
       "id": "nameHeader",
@@ -77931,7 +78007,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.sortRosterBy('lastName')
       }
     }
-  }, [_vm._v("Name")]), _vm._v(" "), _c('a', {
+  }, [_vm._v("Name")]) : _vm._e(), _vm._v(" "), _c('a', {
     staticClass: "isActiveClass('identifier')",
     attrs: {
       "id": "idHeader",
@@ -77977,9 +78053,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           _vm.handleRowSelection(student)
         }
       }
-    }, [_vm._m(0, true), _vm._v(" "), _c('span', {
+    }, [_vm._m(0, true), _vm._v(" "), (_vm.studentNamesVisible) ? _c('span', {
       staticClass: "student-name"
-    }, [_vm._v(_vm._s(student.nameLastFirst))]), _vm._v(" "), _c('span', {
+    }, [_vm._v(_vm._s(student.nameLastFirst))]) : _vm._e(), _vm._v(" "), _c('span', {
       staticClass: "student-identifier "
     }, [_vm._v(_vm._s(student.identifier))])])
   })], 2)
@@ -77987,7 +78063,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('span', {
     staticClass: "panel-icon"
   }, [_c('i', {
-    staticClass: "fa fa-book"
+    staticClass: "fa fa-user"
   })])
 }]}
 module.exports.render._withStripped = true
@@ -78574,18 +78650,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var state = {
     /** Whether student names are visible during grading */
-    isBlind: false
+    areStudentNamesVisible: true
 
 };
 
 var mutations = _defineProperty({}, mTypes.toggleStudentNameVisibility, function (state) {
-    state.isBlind = !state.isBlind;
+    state.areStudentNamesVisible = !state.areStudentNamesVisible;
 });
 
 var actions = {};
 
-var getters = _defineProperty({}, gTypes.areStudentNamesVisibile, function (state, getters) {
-    return state.isBlind;
+var getters = _defineProperty({}, gTypes.areStudentNamesVisible, function (state, getters) {
+    return state.areStudentNamesVisible;
 });
 
 exports.default = {

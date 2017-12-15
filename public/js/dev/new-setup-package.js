@@ -34623,6 +34623,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  */
 var route = 'dev/scores';
 
+/** We don't want to hit the server every second. This is how many requests to skip */
+var RECORD_EVERY = 30;
+
 module.exports = {
 
     /**
@@ -34652,11 +34655,13 @@ module.exports = {
     },
 
     setStudentGradingTime: function setStudentGradingTime(exam, student, time) {
-        var out = { time: time };
-        var to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
-        return window.axios.post(to, time).then(function (response) {
-            return response.data;
-        });
+        if (time % RECORD_EVERY === 0) {
+            var out = { time: time };
+            var to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
+            return window.axios.post(to, out).then(function (response) {
+                return response.data;
+            });
+        }
     }
 
 };
@@ -51089,7 +51094,7 @@ exports.default = function (store) {
 
             // ******************** NEW GRADING STUFF!
             case ngmTypes.setActiveStudentTime:
-
+                (0, _timeRequests.setStudentGradingTime)(payload.exam, payload.student, payload.time);
                 break;
 
             // ******************** END NEW GRADING STUFF
@@ -51305,6 +51310,9 @@ exports.default = function (store) {
                 (0, _tagRequests.disassociateTagRequest)(store, payload.tag, payload.obj);
                 break;
 
+            // ************ Times
+
+
             default:
 
         }
@@ -51350,15 +51358,17 @@ var _commentRequests = __webpack_require__(131);
 
 var _examRequests = __webpack_require__(125);
 
-var _studentRequests = __webpack_require__(136);
+var _gradeAssignmentRequests = __webpack_require__(132);
 
 var _kumiRequests = __webpack_require__(133);
 
-var _gradeAssignmentRequests = __webpack_require__(132);
-
 var _noteRequests = __webpack_require__(95);
 
+var _studentRequests = __webpack_require__(136);
+
 var _tagRequests = __webpack_require__(77);
+
+var _timeRequests = __webpack_require__(96);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -98428,18 +98438,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var state = {
     /** Whether student names are visible during grading */
-    isBlind: false
+    areStudentNamesVisible: true
 
 };
 
 var mutations = _defineProperty({}, mTypes.toggleStudentNameVisibility, function (state) {
-    state.isBlind = !state.isBlind;
+    state.areStudentNamesVisible = !state.areStudentNamesVisible;
 });
 
 var actions = {};
 
-var getters = _defineProperty({}, gTypes.areStudentNamesVisibile, function (state, getters) {
-    return state.isBlind;
+var getters = _defineProperty({}, gTypes.areStudentNamesVisible, function (state, getters) {
+    return state.areStudentNamesVisible;
 });
 
 exports.default = {

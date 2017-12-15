@@ -4,12 +4,8 @@ let faker = require( 'faker' );
 
 //Dependencies
 import * as gTypes from "../../../../../../resources/assets/js/store/modules/newgrading/new-grading-getter-types";
-
 import * as mTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-mutation-types';
 import * as aTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-action-types';
-
-import Exam from '../../../../../../resources/assets/js/models/Exam';
-import Payload from '../../../../../../resources/assets/js/models/Payload';
 
 import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
@@ -20,18 +16,7 @@ let obj = Component.default;
 let { getters, actions, mutations, state } = obj;
 
 
-//
-// export const makeState = () => {
-//     return { timerRunning: false };
-// };
-
-
-describe.only( "timer-new  | ", function () {
-    // let state;
-    let rootState;
-    let payload;
-    let mutationPayload;
-    let exam;
+describe( "timer-new  | ", function () {
 
     beforeEach( function () {
 

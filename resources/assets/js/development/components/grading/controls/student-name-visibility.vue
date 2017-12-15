@@ -1,13 +1,16 @@
 <template>
 
-            <a class="button is-primary"
+            <a class="button is-primary is-small"
                id="nameVisibilityControl"
                title="Click to hide or show student names"
                v-on:click="toggleNameVisibility"
             >  <span class="sr-only">{{ srText.nameVisibility }}</span>
 
                 <span class="icon is-small">
-                            <i v-if="!isBlind" class="fa fa-pencil" aria-hidden="true"></i>
+                            <i v-if="!isBlind" class="fa fa-user" aria-hidden="true"></i>
+
+
+                            <i v-if="isBlind" class="fa fa-user-secret" aria-hidden="true"></i>
                         </span>
 
                 <!--<i v-if="isBlind"  class="fa fa-space-shuttle"></i>-->
@@ -38,8 +41,8 @@
             return {
 
                 icons: {
-                    namesVisible: 'fa fa-space-shuttle',
-                    namesBlind: 'fa fa-rocket'
+                    namesVisible: 'fa fa-user',
+                    namesBlind: 'fa fa-user-secret'
                 },
 
                 srText: {
@@ -66,6 +69,7 @@
 
         methods: {
             toggleNameVisibility: function () {
+                window.console.log( 'student-name-visibility', 'toggleNameVisibility', 69, );
                 this.$store.commit( ngmTypes.toggleStudentNameVisibility );
             },
 
