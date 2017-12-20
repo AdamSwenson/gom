@@ -7,7 +7,7 @@ export default class ItemScore  {
         this.examId;
         this.itemId;
         this.studentId;
-        this.score;
+        this.score = null;
         this.commentText;
     }
 

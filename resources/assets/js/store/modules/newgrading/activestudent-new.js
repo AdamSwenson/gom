@@ -65,7 +65,7 @@ const actions = {
         let prevTime = getters[ gTypes.getActiveStudentGradingTime ];
         if ( _.isUndefined( prevTime ) ) prevTime = 0;
         let newTime = prevTime += amount;
-        let exam = getters[ gTypes.getActiveExam ];
+        let exam = getters[ gTypes.getActiveExamNew ];
         let student = getters[ gTypes.getActiveStudent ];
         let pl = PayloadTime.factory( { exam: exam, student: student, time: newTime } );
         // dispatch( aTypes.setTime, pl );

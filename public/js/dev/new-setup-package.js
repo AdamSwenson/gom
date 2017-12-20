@@ -32528,7 +32528,7 @@ var getActiveStudent = exports.getActiveStudent = 'getActiveStudentNew';
 // ================================================================
 var getExam = exports.getExam = 'getExam';
 var getAllExams = exports.getAllExams = 'getAllExams';
-var getActiveExam = exports.getActiveExam = 'getActiveExam';
+var getActiveExam = exports.getActiveExam = 'getActiveExamNew';
 
 // ================================================================
 // ==================================== ITEMS =====================
@@ -41875,11 +41875,27 @@ module.exports = function spread(callback) {
 "use strict";
 
 
-var _getterTypes = __webpack_require__(6);
+var _newGradingGetterTypes = __webpack_require__(53);
 
-var _getterTypes2 = _interopRequireDefault(_getterTypes);
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(49);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _itemLetterGradeHelpers = __webpack_require__(996);
+
+var _GradeAssignment = __webpack_require__(138);
+
+var _GradeAssignment2 = _interopRequireDefault(_GradeAssignment);
+
+var _PayloadScore = __webpack_require__(971);
+
+var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 module.exports = {
 
@@ -41889,66 +41905,114 @@ module.exports = {
      *
      * @returns {*}
      */
-    'score', 'grades'],
+    'score', 'item'],
 
     data: function data() {
         return {
-            displayedGrade: '-',
+            ignoreChange: false,
+            selectedGradeAssignment: null,
             defaults: {
-                displayedGrade: 'Letter grade',
+                // displayedGrade: 'Letter grade',
                 gradeValue: null
             }
         };
     },
 
     watch: {
-        displayedGrade: function displayedGrade(gradeAssignment) {
 
-            // //The letter grade
-            // this.$emit( 'selected', gradeAssignment );
+        //When this is used, the letter grade
+        //displayed on the button should track the
+        //value of the score
+        score: function score(newValue) {
+            window.console.log('letter-grade-button', 'score', 66, newValue);
 
-            //Display tooltip explaining the calculation
-            //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
-
+            //we don't want the change in score to trigger the
+            //update score since that would be both duplicative and
+            //potentially override a more fine-grained score.
+            //So we set a flag
+            // this.ignoreChanges = true;
+            //
+            // //     //update the inferred letter grade
+            // this.selectedGradeAssignment = calculateGradeAssignmentFromItemScore( newValue, this.maxScore );
+            //
+            // //Don't forget to reset the flag
+            // this.ignoreChanges = false;
         },
 
-        score: function score(newScore) {
-            this.displayedGrade = this.$store.getters[_getterTypes2.default.getGradeAssignmentForScore];
+        //This is the value that clicking the button will change
+        //so we watch it in order to call mutations on the score
+        selectedGradeAssignment: function selectedGradeAssignment(gradeAssignment, oldAssign) {
+
+            if (this.ignoreChanges) return true;
+
+            var score = (0, _itemLetterGradeHelpers.calculateItemScoreFromLetterGrade)(gradeAssignment, this.maxScore);
+
+            var pl = _PayloadScore2.default.factory({
+                exam: this.exam,
+                item: this.item,
+                student: this.student,
+                score: score
+            });
+            this.$store.commit(ngmTypes.updateScore, pl);
+
+            // //
+            // //     //Display tooltip explaining the calculation
+            // //     //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
+            // //
         }
+
     },
     asyncComputed: {
+        exam: function exam() {
+            var e = this.$store.getters[nggTypes.getActiveExam];
+            return !_.isUndefined(e) ? e : '';
+        },
+
+        student: function student() {
+            var s = this.$store.getters[nggTypes.getActiveStudent];
+            return !_.isUndefined(s) ? s : '';
+        }
+    },
+    computed: {
+
         /**
          * Json of grades with keys displayValue and calcValue
          * @returns {{}}
          */
         gradeAssignments: function gradeAssignments() {
-            return this.$store.getters.getGradeAssignmentsInSortedList;
-            // return this.store.getGrades();
-        }
 
-    },
-    computed: {
-        //
-        // /**
-        //  * The value displayed on the button
-        //  * @returns {*}
-        //  */
-        // displayedGrade: function () {
-        //     if ( (typeof this.score === "undefined") || (this.score === null) || (this.score == '') ) {
-        //         //display 'Letter grade' if score not set
-        //         return this.defaults.displayedGrade;
-        //     }
-        //
-        //     //display the inferred letter grade
-        //     return this.calcLetter( this.maxScore, this.score );
-        // },
+            return _GradeAssignment2.default.defaults;
+            //this should be reenabled if we allow this component
+            //to be used for entire exams
+            // return this.$store.getters.getGradeAssignmentsInSortedList;
+        },
 
+        /**
+         * The value displayed on the button
+         * @returns {*}
+         */
+        displayedLetterGrade: function displayedLetterGrade() {
+            // if ( !_.isNull( this.displayedGradeAssignment ) && this.displayedGradeAssignment !== '-' )
+            return this.displayedGradeAssignment.displayValue;
+        },
+
+        displayedGradeValue: function displayedGradeValue() {
+            // if ( !_.isNull( this.displayedGradeAssignment ) && this.displayedGradeAssignment !== '-' )
+            return this.displayedGradeAssignment.calcValue;
+        },
+
+        displayedGradeAssignment: function displayedGradeAssignment() {
+            if (_.isUndefined(this.score) || _.isNull(this.score)) return null;
+            return (0, _itemLetterGradeHelpers.calculateGradeAssignmentFromItemScore)(this.score, this.maxScore);
+        },
 
         /**
          * The maximum possible score for the question
          * @returns {*}
          */
         maxScore: function maxScore() {
+            if (_.isUndefined(this.item) || _.isNull(this.item)) return null;
+
             return Number(this.item.maxScore);
         },
 
@@ -41957,176 +42021,115 @@ module.exports = {
          * @returns {string}
          */
         scoreString: function scoreString() {
+            if (_.isUndefined(this.score) || _.isNull(this.score)) return '';
             return this.score ? this.score.toFixed(2) : '';
         }
 
     },
 
-    methods: {
-        // /**
-        //  * Save the question score
-        //  * obj.questionIndex
-        //  * obj.questionNumber
-        //  * obj.score
-        //  * @param obj
-        //  */
-        // 'letter-grade-selected': function ( obj ) {
-        //     window.console.log( 'gradeVue', 'letter-grade-selected', obj );
-        //     this.store.storeQuestionScoreForActiveStudent( obj.questionIndex, obj.score );
-        //     //save to server
-        //
-        //     this.$broadcast( 'letter-grade-selected', obj );
-        // },
+    methods: {}
+
+};
+
+//
+// /**
+//  * Calculates the question score from the standard grades and max score
+//  * @param gradeValue
+//  * @param maxScore
+//  * @returns {number}
+//  */
+// calcGrade: function ( gradeValue, maxScore ) {
+//     gradeValue = Number( gradeValue );
+//     maxScore = Number( maxScore );
+//     let result = (gradeValue * .01) * maxScore;
+//     return this.roundToTwo( result );
+// },
+
+// /**
+//  * Reverse calculates the letter grade to display
+//  * based on the total score.
+//  * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
+//  * @param totalScore
+//  * @param maxScore
+//  */
+// calcLetter: function ( maxScore, totalScore ) {
+//     totalScore = Number( totalScore );
+//     maxScore = Number( maxScore );
+//
+//     let pctOfTotal = maxScore / totalScore;
+//     //multiple by 100 to more easily compare with grades list
+//     pctOfTotal = Math.round( pctOfTotal * 100 );
+//     let grade = 'Letter grade';
+//
+//     // window.console.log( maxScore, totalScore, pctOfTotal );
+//     for (let i = 0; i < this.gradeAssignments.length; i++) {
+//         let cutOff = Number( this.gradeAssignments[ i ].calcValue );
+//         if ( pctOfTotal >= cutOff ) {
+//             grade = this.gradeAssignments[ i ].displayValue;
+//             break;
+//         }
+//     }
+//     return grade;
+// },
+//
+// /**
+//  * Updates score by clicking on letter grade.
+//  * Also displays tooltip explaining the calculation to the user
+//  *
+//  * Decided not to update the button text at this time because
+//  * would have to store the value both locally and on the server.
+//  *
+//  * @param dthis The this context of the event handler
+//  */
+// handleLetterGradeClick: function ( index ) {
+//     //The numeric value of the letter grade selected
+//     let gradeValue = this.gradeAssignments[ index ].calcValue;
+//     let letterGrade = this.gradeAssignments[ index ].displayValue;
+//     this.score = calcGrade( gradeValue, this.maxScore );
+//     // let letterGrade = this.calcLetter( this.maxScore, this.score );
+//
+//     window.console.log( 'handle', index, gradeValue, letterGrade );
+//     //The letter grade
+//     // this.displayedGrade = this.grades[ index ].displayValue;
+//     // this.notifyLetterGradeSelection();
+//
+//     let pl = PayloadScore.factory( {
+//         exam: this.exam,
+//         item: this.item,
+//         student: this.student,
+//         score: this.score
+//     } )
+//     this.$store.commit( ngmTypes.updateScore, pl );
+//
+//
+//     //todo reenable
+//     //Display tooltip explaining the calculation
+//     //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
+// },
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
-        /**
-         * Calculates the question score from the standard grades and max score
-         * @param gradeValue
-         * @param maxScore
-         * @returns {number}
-         */
-        calcGrade: function calcGrade(gradeValue, maxScore) {
-            gradeValue = Number(gradeValue);
-            maxScore = Number(maxScore);
-            var result = gradeValue * .01 * maxScore;
-            return this.roundToTwo(result);
-        },
-
-        /**
-         * Reverse calculates the letter grade to display
-         * based on the total score.
-         * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
-         * @param totalScore
-         * @param maxScore
-         */
-        calcLetter: function calcLetter(maxScore, totalScore) {
-            totalScore = Number(totalScore);
-            maxScore = Number(maxScore);
-
-            var pctOfTotal = maxScore / totalScore;
-            //multiple by 100 to more easily compare with grades list
-            pctOfTotal = Math.round(pctOfTotal * 100);
-            var grade = 'Letter grade';
-
-            // window.console.log( maxScore, totalScore, pctOfTotal );
-            for (var i = 0; i < this.grades.length; i++) {
-                var cutOff = Number(this.grades[i].calcValue);
-                if (pctOfTotal >= cutOff) {
-                    grade = this.grades[i].displayValue;
-                    break;
-                }
-            }
-            return grade;
-        },
-
-        /**
-         * Updates score by clicking on letter grade.
-         * Also displays tooltip explaining the calculation to the user
-         *
-         * Decided not to update the button text at this time because
-         * would have to store the value both locally and on the server.
-         *
-         * @param dthis The this context of the event handler
-         */
-        handleLetterGradeClick: function handleLetterGradeClick(index) {
-            //The numeric value of the letter grade selected
-            var gradeValue = this.grades[index].calcValue;
-            var letterGrade = this.grades[index].displayValue;
-            this.score = this.calcGrade(gradeValue, this.maxScore);
-            //            let letterGrade = this.calcLetter( this.maxScore, this.score );
-
-            window.console.log('handle', index, gradeValue, letterGrade);
-            //The letter grade
-            // this.displayedGrade = this.grades[ index ].displayValue;
-            this.notifyLetterGradeSelection();
-
-            //todo reenable
-            //Display tooltip explaining the calculation
-            //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
-        },
-
-        /**
-         * Handles rounding of the score
-         * Cf http://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-         * @param num
-         * @returns {number}
-         */
-        roundToTwo: function roundToTwo(num) {
-            return +(Math.round(num + "e+2") + "e-2");
-        },
-
-        /**
-         * Creates a tooltip over the score box explaining the calculation done
-         * by selecting the letter grade for the question. The tooltip should
-         * automatically disappear upon clicking elsewhere on the page.
-         * @param targetId String id of the score div to attach to
-         * @param letterGrade String representation of the grade (e.g., 'A')
-         * @param integerGrade Integer Value of the grade as an integer between 0 and 100
-         * @param maxScore Integer Maximum score possible on the question
-         */
-        showGradePopOver: function showGradePopOver(gradeAssignment) {
-            //What the tooltip will attach to
-            var $target = this.$el;
-
-            //The decimal to be used in the displayed calculation message
-            var floatGrade = Number(gradeAssignment.calcValue * 0.01).toFixed(2);
-
-            //The resulting total to be displayed in the calculation message
-            var total = this.scoreString; //Number( floatGrade * maxScore ).toFixed( 2 );
-
-            //The message to display
-            var message = "<p class='gradeToolTip'>" + letterGrade + " = " + integerGrade + "%<br/>" + maxScore + " * " + floatGrade + " = " + total + "</p>";
-
-            //Make sure any previously attached tooltip is gone
-            $target.tooltip('destroy');
-
-            //Add a tooltip to the body and show it
-            //Note: attached to body so won't float away on screen resize
-            $target.tooltip({
-                animation: true,
-                container: 'body',
-                html: true,
-                trigger: 'manual',
-                title: message
-            }).tooltip('show');
-
-            //Wait briefly for the tooltip to initialize and display
-            setTimeout(function () {
-                //Attach a handler to the body to destroy the tooltip when the user clicks elsewhere.
-                $('body').on('click.tt', function () {
-                    $target.tooltip('destroy');
-                    //Then remove the event handler so other tooltips will fire
-                    $('body').off('click.tt');
-                });
-            }, 10);
-        }
-
-    }
-
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+// import gTypes from '../../../../store/getter-types';
 
 /***/ }),
 /* 211 */
@@ -42143,6 +42146,10 @@ var _PayloadScore = __webpack_require__(971);
 
 var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
 
+var _GradeAssignment = __webpack_require__(138);
+
+var _GradeAssignment2 = _interopRequireDefault(_GradeAssignment);
+
 var _newGradingMutationTypes = __webpack_require__(49);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
@@ -42158,6 +42165,8 @@ var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 var _getterTypes = __webpack_require__(6);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _itemLetterGradeHelpers = __webpack_require__(996);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -42188,6 +42197,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+
+
+var jQuery = __webpack_require__(839);
+window.jQuery = jQuery;
+__webpack_require__(982);
 
 module.exports = {
 
@@ -42215,11 +42232,27 @@ module.exports = {
         };
     },
 
+    watch: {
+        score: function score(newVal, oldVal) {
+            if (_.isUndefined(newVal) || _.isUndefined(oldVal)) return false;
+            if (newVal === oldVal) return false;
+
+            //
+            // this.showGradePopOver( this.displayedGradeAssignment, this.maxScore, newVal );
+        }
+    },
+
     asyncComputed: {},
 
     computed: {
+
+        displayedGradeAssignment: function displayedGradeAssignment() {
+            if (_.isUndefined(this.score) || _.isNull(this.score)) return null;
+            return (0, _itemLetterGradeHelpers.calculateGradeAssignmentFromItemScore)(this.score, this.maxScore);
+        },
+
         exam: function exam() {
-            return this.$store.getters[gTypes.getActiveExamObj];
+            return this.$store.getters[nggTypes.getActiveExam];
         },
 
         maxScore: function maxScore() {
@@ -42236,11 +42269,22 @@ module.exports = {
          */
         score: {
             get: function get() {
-                if (_.isUndefined(this.item) || _.isUndefined(this.student)) return '';
+                if (!this.isReady()) return '';
+
+                var me = this;
+
+                if (!this.isReady()) return '';
                 var qs = this.$store.getters.getItemScoreObject(this.item.id, this.student.id);
-                if (qs != null) {
+
+                if (!_.isUndefined(qs) && !_.isNull(qs)) return qs.score;
+
+                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
+
+                return p.then(function () {
+                    qs = me.$store.getters.getItemScoreObject(me.item.id, me.student.id);
+                    // window.console.log( 'score-slider', 'get', 79, qs );
                     return qs.score;
-                }
+                });
             },
 
             /**
@@ -42259,18 +42303,75 @@ module.exports = {
                     exam: this.exam,
                     item: this.item,
                     student: this.student,
-                    score: score
+                    //we need the score object so that the comment text
+                    //will be included in the request to the server
+                    scoreObject: this.scoreObject
                 });
                 this.$store.commit(ngmTypes.updateScore, pl);
             }
+        },
+
+        scoreObject: function scoreObject() {
+            return this.$store.getters.getItemScoreObject(this.item.id, this.student.id);
         }
+
     },
 
     methods: {
+        isReady: function isReady() {
+            if (_.isUndefined(this.item) || _.isNull(this.item) || _.isUndefined(this.student) || _.isNull(this.student)) return false;
+            return true;
+        },
 
         handleLetterGradeSelect: function handleLetterGradeSelect(gradeAssignment) {
             //set score
             this.score = gradeAssignment.calcValue;
+        },
+
+        /**
+         * Creates a tooltip over the score box explaining the calculation done
+         * by selecting the letter grade for the question. The tooltip should
+         * automatically disappear upon clicking elsewhere on the page.
+         * @param targetId String id of the score div to attach to
+         * @param letterGrade String representation of the grade (e.g., 'A')
+         * @param integerGrade Integer Value of the grade as an integer between 0 and 100
+         * @param maxScore Integer Maximum score possible on the question
+         */
+        showGradePopOver: function showGradePopOver(gradeAssignment, maxScore, score) {
+
+            var $target = jQuery(this.$el);
+            var integerGrade = gradeAssignment.calcValue;
+            var letterGrade = gradeAssignment.displayValue;
+            //The decimal to be used in the displayed calculation message
+            var floatGrade = Number(gradeAssignment.calcValue * 0.01).toFixed(2);
+            //The resulting total to be displayed in the calculation message
+            var total = Number(score).toFixed(2); //Number( floatGrade * maxScore ).toFixed( 2 );
+
+            //The message to display
+            var message = "<p class='gradeToolTip'>" + letterGrade + " = " + integerGrade + "%<br/>" + maxScore + " * " + floatGrade + " = " + total + "</p>";
+
+            //Make sure any previously attached tooltip is gone
+            $target.tooltip('destroy');
+
+            //Add a tooltip to the body and show it
+            //Note: attached to body so won't float away on screen resize
+            $target.tooltip({
+                animation: true,
+                container: 'body',
+                html: true,
+                trigger: 'manual',
+                title: message
+            }).tooltip('show');
+
+            //Wait briefly for the tooltip to initialize and display
+            setTimeout(function () {
+                //Attach a handler to the body to destroy the tooltip when the user clicks elsewhere.
+                jQuery('body').on('click.tt', function () {
+                    $target.tooltip('destroy');
+                    //Then remove the event handler so other tooltips will fire
+                    jQuery('body').off('click.tt');
+                });
+            }, 10);
         }
     }
 
@@ -42286,6 +42387,8 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _components;
 
 var _newGradingMutationTypes = __webpack_require__(49);
 
@@ -42303,6 +42406,10 @@ var _getterTypes = __webpack_require__(6);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
+var _elementInput = __webpack_require__(980);
+
+var _elementInput2 = _interopRequireDefault(_elementInput);
+
 var _questionScore = __webpack_require__(582);
 
 var _questionScore2 = _interopRequireDefault(_questionScore);
@@ -42311,11 +42418,28 @@ var _commentText = __webpack_require__(968);
 
 var _commentText2 = _interopRequireDefault(_commentText);
 
+var _scoreSlider = __webpack_require__(976);
+
+var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-// import ElementInput from '../inputs/element-input.vue';
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -42368,12 +42492,13 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 
 exports.default = {
+    // name: 'qp',
 
-    components: {
-        // ElementInput,
+    components: (_components = {
+        ElementInput: _elementInput2.default,
         CommentText: _commentText2.default,
-        QuestionScore: _questionScore2.default
-    },
+        ScoreSlider: _scoreSlider2.default
+    }, _defineProperty(_components, 'CommentText', _commentText2.default), _defineProperty(_components, 'QuestionScore', _questionScore2.default), _components),
 
     data: function data() {
         return {
@@ -42421,7 +42546,7 @@ exports.default = {
         },
 
         isElementsEmpty: function isElementsEmpty() {
-            return true;
+            return this.elements.length === 0;
         }
 
     },
@@ -51574,6 +51699,14 @@ exports.default = function (store) {
                 (0, _timeRequests.setStudentGradingTime)(payload.exam, payload.student, payload.time);
                 break;
 
+            case ngmTypes.updateScore:
+                (0, _scoreRequests.saveItemScoreRequest)(payload.exam, payload.item, payload.student, payload.score);
+                break;
+
+            case ngmTypes.updateText:
+                (0, _scoreRequests.saveCommentTextRequest)(payload.exam, payload.item, payload.student, payload.text);
+                brea;
+
             // ******************** END NEW GRADING STUFF
 
 
@@ -51841,6 +51974,8 @@ var _kumiRequests = __webpack_require__(134);
 
 var _noteRequests = __webpack_require__(100);
 
+var _scoreRequests = __webpack_require__(997);
+
 var _studentRequests = __webpack_require__(137);
 
 var _tagRequests = __webpack_require__(80);
@@ -51876,10 +52011,31 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 window._ = __webpack_require__(24);
 
+//item
+
+
 //comments
 
 
 //exams
+
+
+//grades
+
+
+//kumi
+
+
+//notes
+
+
+//students
+
+
+//tags
+
+
+//Time
 
 
 var setSyncDone = function setSyncDone(store) {
@@ -57107,7 +57263,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.incrementGradingT
     var prevTime = getters[gTypes.getActiveStudentGradingTime];
     if (_.isUndefined(prevTime)) prevTime = 0;
     var newTime = prevTime += amount;
-    var exam = getters[gTypes.getActiveExam];
+    var exam = getters[gTypes.getActiveExamNew];
     var student = getters[gTypes.getActiveStudent];
     var pl = _PayloadTime2.default.factory({ exam: exam, student: student, time: newTime });
     // dispatch( aTypes.setTime, pl );
@@ -58699,6 +58855,17 @@ module.exports = {
                 return r[0];
             }(state, serialNumber);
         };
+    }), _defineProperty(_getters, 'getStudentFromRosterById', function getStudentFromRosterById(state, getters, rootState, id) {
+        return function (id) {
+            return function (state, id) {
+                var r = state.roster.filter(function (i) {
+                    if (i.id === id) {
+                        return i;
+                    }
+                });
+                return r[0];
+            }(state, id);
+        };
     }), _defineProperty(_getters, 'getSortAsc', function getSortAsc(state) {
         return state.sortAsc;
     }), _defineProperty(_getters, 'getSortedBy', function getSortedBy(state, getters, rootState) {
@@ -58768,9 +58935,9 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.itemScoreGetter = undefined;
+exports.create = exports.isSameValence = exports.getValence = exports.itemScoreGetter = undefined;
 
-var _mutations;
+var _mutations, _actions;
 
 var _vue = __webpack_require__(15);
 
@@ -58795,6 +58962,10 @@ var aTypes = _interopRequireWildcard(_actionTypes);
 var _newGradingActionTypes = __webpack_require__(52);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _scoreRequests = __webpack_require__(997);
+
+var _scoreRequests2 = _interopRequireDefault(_scoreRequests);
 
 var _PayloadScore = __webpack_require__(971);
 
@@ -58836,6 +59007,70 @@ var itemScoreGetter = exports.itemScoreGetter = function itemScoreGetter(state, 
     }(state, itemId, studentId);
 };
 
+/**
+ * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
+ * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
+ *
+ * @param score
+ * @returns {number}
+ */
+var getValence = exports.getValence = function getValence(score) {
+
+    var settings = {
+        sliderStep: 0.25,
+        valenceCutoffs: [0, 3.25, 6.75, 10],
+        valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+        valenceLabelPositions: [0, 33, 67, 100]
+    };
+    var me = this;
+    if (score === null) throw new Error("cannot get valence for null");
+    if (score < 0 || score > settings.valenceCutoffs[settings.valenceCutoffs.length - 1]) throw new Error("cannot get valence. value out of range");
+
+    var valence = 0;
+    //start at the second largest value in the cutoffs.
+    for (var j = settings.valenceCutoffs.length - 2; j >= 0; j--) {
+        if (score > settings.valenceCutoffs[j]) {
+            //if the score is greater than the second largest cutoff value, then it belongs
+            //to the highest valence and so on.
+            valence = j + 1;
+            break;
+        }
+    }
+    //return the set valence. If made it all the way to 0, the default will be returned.
+    return valence;
+};
+
+/**
+ * Check whether the old and new scores have the same valence.
+ * If they are, return true.
+ * If not or if oldScore wasn't set, return false
+ * @param oldScore
+ * @param newScore
+ * @returns {boolean}
+ */
+var isSameValence = exports.isSameValence = function isSameValence(oldScore, newScore) {
+    //if there was no old score, return false
+    if (typeof oldScore == 'undefined' || oldScore == null) {
+        return false;
+    }
+    //check old and new are the same
+    if (getValence(newScore) != getValence(oldScore)) {
+        return false;
+    }
+    return true;
+};
+
+var create = exports.create = function create(state, exam, item, student) {
+    var obj = _ItemScore2.default.factory({
+        examId: exam.id,
+        itemId: item.id,
+        studentId: student.id
+    });
+    //add it to storage
+    state.scores.push(obj);
+    return obj;
+};
+
 var state = {
 
     //Array of Score objects
@@ -58846,25 +59081,22 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.updateSco
     //check whether we already have the object
     var obj = itemScoreGetter(state, payload.item.id, payload.student.id);
     if (_.isUndefined(obj)) {
-        obj = _ItemScore2.default.factory({
-            examId: payload.exam.id,
-            itemId: payload.item.id,
-            studentId: payload.student.id
-        });
-        //add it to storage
-        state.scores.push(obj);
+        obj = create(state, payload.exam, payload.item, payload.student);
     }
+    var score = payload.score;
     //update the object
-    _vue2.default.set(obj, 'score', payload.score);
+    _vue2.default.set(obj, 'score', score);
 }), _defineProperty(_mutations, ngmTypes.updateText, function (state, payload) {
     //check whether we already have the object
     var obj = itemScoreGetter(state, payload.item.id, payload.student.id);
     if (_.isUndefined(obj)) {
-        obj = _ItemScore2.default.factory({
-            examId: payload.exam.id,
-            itemId: payload.item.id,
-            studentId: payload.student.id
-        });
+        obj = create(state, payload.exam, payload.item, payload.student);
+        //
+        // obj = ItemScore.factory({
+        //     examId:  payload.exam.id,
+        //     itemId: payload.item.id,
+        //     studentId : payload.student.id
+        // });
 
         // obj = new Score( payload.exam.id, payload.item.id, payload.student.id );
         //add it to storage
@@ -58874,32 +59106,102 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.updateSco
     _vue2.default.set(obj, 'commentText', payload.text);
 }), _mutations);
 
-var actions = {
+var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.storeItemScore, function (_ref, item, student, score) {
+    var state = _ref.state,
+        dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    //store the score
+    var pl = _PayloadScore2.default.factory({
+        exam: getters[gTypes.getActiveExamObj],
+        item: item,
+        student: student,
+        score: score
+    });
+
+    commit(ngmTypes.updateScore, pl);
+    /**
+     //  * update comment text and save to DB.
+     //  * Only replace text if the score has changed valence regions
+     //  */
+    // if ( !this.isSameValence( this.score, this.elementScore ) ) {
+    //     //Score is in a new valence region.
+    //     //So let's plug in the appropriate comment text and save to DB
+    //     //
+    //     //Dear Adam, make sure you read the doc for storeCommentText before fucking with
+    //     //anything in these lines
+    //     this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
     //
-    // [ngaTypes.storeCommentText] : ( { state, dispatch, commit, getters }, item, student, text ) => {
-    //
-    //     let pl = PayloadScore.factory( {
-    //         exam: getters[ gTypes.getActiveExamObj ],
-    //         item: item,
-    //         student: student,
-    //         text: text
-    //     } )
-    //
-    //     commit( ngmTypes.updateText, pl );
-    // },
-    //
-    // [ngaTypes.storeItemScore] : ( { state, dispatch, commit, getters }, item, student, score ) => {
-    //
-    //     let pl = PayloadScore.factory( {
-    //         exam: getters[ gTypes.getActiveExamObj ],
-    //         item: item,
-    //         student: student,
-    //         score: score
-    //     } )
-    //
-    //     commit( ngmTypes.updateScore, pl );
+    // } else {
+    //     // Score is in the same valence region.
+    //     // Jump straight to saving without changing the elementComment
+    //     // Fear not. Changes directly to the comment text will be handled elsewhere.
     // }
-};
+    //
+    // // If using bell curve (standardScoring), element score affects
+    // // the total question score, so update
+    // // if ( Roster.standardScoring ) {
+    // //     //  updateStandardScores();
+    // // }
+
+    //decide what to do about the comment
+}), _defineProperty(_actions, 'initializeItemScore', function initializeItemScore(_ref2, _ref3) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+    var exam = _ref3.exam,
+        item = _ref3.item,
+        student = _ref3.student;
+
+    var me = undefined;
+    return new Promise(function (resolve, reject) {
+        // window.console.log( 'itemscores', '', 193, exam, item, student);
+        commit(ngmTypes.updateScore, _PayloadScore2.default.factory({ exam: exam, item: item, student: student, mutateSilently: true }));
+        //create( state, exam, item, student );
+        resolve();
+    });
+}), _defineProperty(_actions, 'loadScoresFromServer', function loadScoresFromServer(_ref4, exam) {
+    var state = _ref4.state,
+        dispatch = _ref4.dispatch,
+        commit = _ref4.commit,
+        getters = _ref4.getters;
+
+    var me = undefined;
+    return new Promise(function (resolve, reject) {
+        // window.console.log( 'itemscores', '', 193, exam, item, student);
+        var p = _scoreRequests2.default.getAllScoresForExamRequest(exam);
+
+        p.then(function (data) {
+            _.forEach(data, function (d) {
+                var item = getters[gTypes.getItemById](d.item_id);
+                var student = getters.getStudentFromRosterById(d.student_id);
+                var score = parseFloat(d.score);
+
+                //record the score (this will initialize the object too)
+                commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    score: score,
+                    mutateSilently: true
+                }));
+
+                //record the comment text
+                commit(ngmTypes.updateText, _PayloadScore2.default.factory({
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    text: d.comment_text,
+                    mutateSilently: true
+                }));
+            });
+
+            resolve();
+        });
+    });
+}), _actions);
 
 var getters = {
 
@@ -58954,15 +59256,10 @@ var getters = {
      * @returns {function(*=, *=)}
      */
     getItemScoreObject: function getItemScoreObject(state, getters, rootState, itemId, studentId) {
-        return itemScoreGetter(state, itemId, studentId);
-        // (function ( state, itemId, studentId ) {
-        //     var r = state.scores.filter( function ( i ) {
-        //         if ( i.itemId === itemId  && i.studentId === studentId) {
-        //             return i;
-        //         }
-        //     } );
-        //     return r[ 0 ];
-        // })( state, itemId, studentId )
+        return function (itemId, studentId) {
+            // window.console.log( 'itemscores', '', 241, itemId, studentId );
+            return itemScoreGetter(state, itemId, studentId);
+        };
     }
 };
 
@@ -69571,18 +69868,19 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "questionScoreForm "
-  }, [_c('letter-grade-button', {
+  }, [_c('div', {
+    staticClass: "field has-addons"
+  }, [_c('label', {
+    staticClass: "label questionScoreLabel"
+  }, [_vm._v("Score:")]), _vm._v(" "), _c('letter-grade-button', {
     attrs: {
-      "item": _vm.item
+      "item": _vm.item,
+      "score": _vm.score
     },
     on: {
       "selected": _vm.handleLetterGradeSelect
     }
-  }), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('label', {
-    staticClass: "label questionScoreLabel"
-  }, [_vm._v("Score:")]), _vm._v(" "), _c('div', {
+  }), _vm._v(" "), _c('p', {
     staticClass: "control"
   }, [_c('input', {
     directives: [{
@@ -69607,7 +69905,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.score = $event.target.value
       }
     }
-  }), _vm._v(" / " + _vm._s(_vm.maxScore) + "\n        ")])])], 1)
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('a', {
+    staticClass: "button is-static"
+  }, [_vm._v("/ " + _vm._s(_vm.maxScore))])])], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -70239,21 +70541,19 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "field",
+  return _c('p', {
+    staticClass: "control",
     attrs: {
       "id": "letterGradeArea"
     }
-  }, [_c('div', {
-    staticClass: "control"
   }, [_c('span', {
     staticClass: "select"
   }, [_c('select', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.displayedGrade),
-      expression: "displayedGrade"
+      value: (_vm.selectedGradeAssignment),
+      expression: "selectedGradeAssignment"
     }],
     staticClass: "letterGradeList",
     on: {
@@ -70264,7 +70564,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           var val = "_value" in o ? o._value : o.value;
           return val
         });
-        _vm.displayedGrade = $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+        _vm.selectedGradeAssignment = $event.target.multiple ? $$selectedVal : $$selectedVal[0]
       }
     }
   }, [_c('option', {
@@ -70275,12 +70575,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v(" - ")]), _vm._v(" "), _vm._l((_vm.gradeAssignments), function(ga) {
     return _c('option', {
-      key: ga.serialNumber,
+      key: ga.displayValue,
       domProps: {
         "value": ga
       }
     }, [_vm._v(_vm._s(ga.displayValue))])
-  })], 2)])])])
+  })], 2)])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -70352,7 +70652,7 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: " questionPanel",
+    staticClass: " questionPanel box",
     attrs: {
       "id": "questionPanel"
     }
@@ -70368,7 +70668,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level-left"
   }, [_c('div', {
     staticClass: "level-item"
-  }), _vm._v(" "), _c('h4', {}, [_vm._v("Question #" + _vm._s(_vm.number) + ": \"" + _vm._s(_vm.name) + "\"")])]), _vm._v(" "), _c('div', {
+  }, [_c('h4', {}, [_vm._v("#" + _vm._s(_vm.number) + ": \"" + _vm._s(_vm.name) + "\"")])])]), _vm._v(" "), _c('div', {
     staticClass: "level-right"
   }, [_c('div', {
     staticClass: "level-item"
@@ -70382,11 +70682,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "item": _vm.item,
       "student": _vm.student
     }
-  })], 1), _vm._v(" "), _c('div', {
+  }), _vm._v(" "), _c('div', {
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('score-slider', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  })], 1)])])], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "tile is-child "
-  }, [(!_vm.isElementsEmpty) ? _c('div') : _vm._e(), _vm._v(" "), (_vm.isElementsEmpty) ? _c('div', {
+  }, [(!_vm.isElementsEmpty) ? _c('div', _vm._l((_vm.elements), function(item) {
+    return _c('element-input', {
+      key: item.serialNumber,
+      attrs: {
+        "item": item,
+        "student": _vm.student
+      }
+    })
+  })) : _vm._e(), _vm._v(" "), (_vm.isElementsEmpty) ? _c('div', {
     staticClass: " noElementsDiv "
-  }, [_c('i', [_vm._v("No elements for this question")])]) : _vm._e()])])])])
+  }, [_c('i', [_vm._v("No elements for this question")])]) : _vm._e()])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -99211,9 +99530,9 @@ exports.default = {
          * The current value of the text area
          */
         commentText: {
-            cache: false,
+            // cache: false,
             get: function get() {
-                if (_.isUndefined(this.item) || _.isUndefined(this.student)) return '';
+                if (!this.isReady()) return '';
 
                 var so = this.$store.getters.getItemScoreObject(this.item.id, this.student.id);
                 if (!_.isUndefined(so)) return so.commentText;
@@ -99242,7 +99561,26 @@ exports.default = {
 
     },
 
-    methods: {},
+    methods: {
+        isReady: function isReady() {
+            if (_.isUndefined(this.item) || _.isNull(this.item) || _.isUndefined(this.student) || _.isNull(this.student)) return false;
+            return true;
+        },
+        /**
+         * Prevent user from entering text into comment area
+         */
+        commentAreaDisable: function commentAreaDisable() {
+            this.commentSelector.setAttribute('readonly', 'true');
+        },
+
+        /**
+         * Allow user to enter text into comment area
+         */
+        commentAreaEnable: function commentAreaEnable() {
+            this.commentSelector.removeAttribute('readonly');
+        }
+
+    },
 
     directives: {},
 
@@ -99438,7 +99776,10 @@ var PayloadScore = function (_Payload) {
         _this.item;
         _this.student;
         _this.score;
+
+        /** Text of the associated comment */
         _this.text;
+
         return _this;
     }
 
@@ -99451,7 +99792,7 @@ var PayloadScore = function (_Payload) {
     }, {
         key: "fillableProps",
         get: function get() {
-            return ['exam', 'item', 'student', 'score', 'text'];
+            return ['exam', 'item', 'mutateSilently', 'student', 'score', 'text'];
         }
     }]);
 
@@ -99492,7 +99833,7 @@ var ItemScore = function () {
         this.examId;
         this.itemId;
         this.studentId;
-        this.score;
+        this.score = null;
         this.commentText;
     }
 
@@ -99522,6 +99863,5014 @@ var ItemScore = function () {
 }();
 
 exports.default = ItemScore;
+
+/***/ }),
+/* 973 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _PayloadScore = __webpack_require__(971);
+
+var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
+
+var _newGradingMutationTypes = __webpack_require__(49);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(52);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(53);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+var jQuery = __webpack_require__(839);
+window.jQuery = jQuery;
+__webpack_require__(982);
+var Slider = __webpack_require__(974);
+
+exports.default = {
+
+    props: ['item'],
+
+    components: {},
+
+    data: function data() {
+        return {
+
+            settings: {
+                sliderStep: 0.25,
+                valenceCutoffs: [0, 3.25, 6.75, 10],
+                valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+                valenceLabelPositions: [0, 33, 67, 100]
+            },
+            defaults: {}
+        };
+    },
+
+    computed: {
+        exam: function exam() {
+            return this.$store.getters[gTypes.getActiveExamObj];
+        },
+        student: function student() {
+            var s = this.$store.getters[nggTypes.getActiveStudent];
+            return !_.isUndefined(s) ? s : '';
+        },
+
+        /**
+         * Returns the string id of the slider element
+         * @returns {string}
+         */
+        sliderId: function sliderId() {
+            if (this.item) {
+                return "slider" + this.item.serialNumber;
+            }
+        },
+
+        /**
+         * Returns the jQuery selector for the slider element
+         * @returns {*|jQuery|HTMLElement}
+         */
+        sliderSelector: function sliderSelector() {
+            return document.getElementById(this.sliderId);
+            // return this.$el;
+            //return $( '#' + this.sliderId );
+        },
+
+        score: {
+            get: function get() {
+                var me = this;
+
+                if (!this.isReady()) return '';
+                var qs = this.$store.getters.getItemScoreObject(this.item.id, this.student.id);
+
+                if (!_.isUndefined(qs) && !_.isNull(qs)) return qs.score;
+
+                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
+
+                return p.then(function () {
+                    qs = me.$store.getters.getItemScoreObject(me.item.id, me.student.id);
+                    // window.console.log( 'score-slider', 'get', 79, qs );
+                    return qs.score;
+                });
+            },
+
+            /**
+             * Update the score in the shared data object and send
+             * a request for someone else to record it to the server.
+             *
+             * Note that we use the 'lazy' parameter in the template so that
+             * this only syncs once the change event has fired. That prevents
+             * us from sending two different requests for a two digit score.
+             *
+             * @param score
+             */
+            set: function set(score) {
+
+                var pl = _PayloadScore2.default.factory({
+                    exam: this.exam,
+                    item: this.item,
+                    student: this.student,
+                    score: score
+                });
+                this.$store.commit(ngmTypes.updateScore, pl);
+            }
+        }
+    },
+
+    methods: {
+        isReady: function isReady() {
+            if (_.isUndefined(this.item) || _.isNull(this.item) || _.isUndefined(this.student) || _.isNull(this.student)) return false;
+            return true;
+        },
+
+        /**
+         * Called when an element slider stops movement. Updates element
+         * score and text (if necessary), then saves score, text and time
+         * @param slideEvt
+         * @param data
+         * @param Roster
+         * @param callback
+         */
+        handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
+            window.console.log('score-slider', 'handleElementSliderStopEvent', 114, slideEvt);
+            //store the new element score in the data object
+            this.score = slideEvt.value;
+
+            if (typeof callback != 'undefined') {
+                return callback();
+            }
+        },
+
+        setSliderScore: function setSliderScore() {
+            this.$el.slider('setValue', this.score);
+            //            this.sliderSelector.slider( 'refresh' );
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {
+        var me = this;
+        var mySlider = new Slider(this.$el, {
+            tooltip: 'show',
+            //value: this.elementScore,
+            step: this.settings.sliderStep,
+            ticks: this.settings.valenceCutoffs,
+            ticks_labels: this.settings.valenceLabels,
+            ticks_position: this.settings.valenceLabels
+            // id: Counter()
+        });
+
+        /* ----------------- slider listeners --------------- */
+        /* When an element slider stops movement,
+         update element score and text (if necessary),
+         then save score, text and time
+         *  */
+        jQuery(this.$el).on('slideStop', function (slideEvt) {
+            me.handleElementSliderStopEvent(slideEvt);
+        });
+    }
+};
+
+/***/ }),
+/* 974 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*! =========================================================
+ * bootstrap-slider.js
+ *
+ * Maintainers:
+ *		Kyle Kemp
+ *			- Twitter: @seiyria
+ *			- Github:  seiyria
+ *		Rohit Kalkur
+ *			- Twitter: @Rovolutionary
+ *			- Github:  rovolution
+ *
+ * =========================================================
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================= */
+
+/**
+ * Bridget makes jQuery widgets
+ * v1.0.1
+ * MIT license
+ */
+
+(function (root, factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(839)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        var jQuery;
+        try {
+            jQuery = require("jquery");
+        } catch (err) {
+            jQuery = null;
+        }
+        module.exports = factory(jQuery);
+    } else {
+        root.Slider = factory(root.jQuery);
+    }
+})(undefined, function ($) {
+    // Reference to Slider constructor
+    var Slider;
+
+    (function ($) {
+
+        'use strict';
+
+        // -------------------------- utils -------------------------- //
+
+        var slice = Array.prototype.slice;
+
+        function noop() {}
+
+        // -------------------------- definition -------------------------- //
+
+        function defineBridget($) {
+
+            // bail if no jQuery
+            if (!$) {
+                return;
+            }
+
+            // -------------------------- addOptionMethod -------------------------- //
+
+            /**
+             * adds option method -> $().plugin('option', {...})
+             * @param {Function} PluginClass - constructor class
+             */
+            function addOptionMethod(PluginClass) {
+                // don't overwrite original option method
+                if (PluginClass.prototype.option) {
+                    return;
+                }
+
+                // option setter
+                PluginClass.prototype.option = function (opts) {
+                    // bail out if not an object
+                    if (!$.isPlainObject(opts)) {
+                        return;
+                    }
+                    this.options = $.extend(true, this.options, opts);
+                };
+            }
+
+            // -------------------------- plugin bridge -------------------------- //
+
+            // helper function for logging errors
+            // $.error breaks jQuery chaining
+            var logError = typeof console === 'undefined' ? noop : function (message) {
+                console.error(message);
+            };
+
+            /**
+             * jQuery plugin bridge, access methods like $elem.plugin('method')
+             * @param {String} namespace - plugin name
+             * @param {Function} PluginClass - constructor class
+             */
+            function bridge(namespace, PluginClass) {
+                // add to jQuery fn namespace
+                $.fn[namespace] = function (options) {
+                    if (typeof options === 'string') {
+                        // call plugin method when first argument is a string
+                        // get arguments for method
+                        var args = slice.call(arguments, 1);
+
+                        for (var i = 0, len = this.length; i < len; i++) {
+                            var elem = this[i];
+                            var instance = $.data(elem, namespace);
+                            if (!instance) {
+                                logError("cannot call methods on " + namespace + " prior to initialization; " + "attempted to call '" + options + "'");
+                                continue;
+                            }
+                            if (!$.isFunction(instance[options]) || options.charAt(0) === '_') {
+                                logError("no such method '" + options + "' for " + namespace + " instance");
+                                continue;
+                            }
+
+                            // trigger method with arguments
+                            var returnValue = instance[options].apply(instance, args);
+
+                            // break look and return first value if provided
+                            if (returnValue !== undefined && returnValue !== instance) {
+                                return returnValue;
+                            }
+                        }
+                        // return this if no return value
+                        return this;
+                    } else {
+                        var objects = this.map(function () {
+                            var instance = $.data(this, namespace);
+                            if (instance) {
+                                // apply options & init
+                                instance.option(options);
+                                instance._init();
+                            } else {
+                                // initialize new instance
+                                instance = new PluginClass(this, options);
+                                $.data(this, namespace, instance);
+                            }
+                            return $(this);
+                        });
+
+                        if (!objects || objects.length > 1) {
+                            return objects;
+                        } else {
+                            return objects[0];
+                        }
+                    }
+                };
+            }
+
+            // -------------------------- bridget -------------------------- //
+
+            /**
+             * converts a Prototypical class into a proper jQuery plugin
+             *   the class must have a ._init method
+             * @param {String} namespace - plugin name, used in $().pluginName
+             * @param {Function} PluginClass - constructor class
+             */
+            $.bridget = function (namespace, PluginClass) {
+                addOptionMethod(PluginClass);
+                bridge(namespace, PluginClass);
+            };
+
+            return $.bridget;
+        }
+
+        // get jquery from browser global
+        defineBridget($);
+    })($);
+
+    /*************************************************
+      BOOTSTRAP-SLIDER SOURCE CODE
+      **************************************************/
+
+    (function ($) {
+
+        var ErrorMsgs = {
+            formatInvalidInputErrorMsg: function formatInvalidInputErrorMsg(input) {
+                return "Invalid input value '" + input + "' passed in";
+            },
+            callingContextNotSliderInstance: "Calling context element does not have instance of Slider bound to it. Check your code to make sure the JQuery object returned from the call to the slider() initializer is calling the method"
+        };
+
+        var SliderScale = {
+            linear: {
+                toValue: function toValue(percentage) {
+                    var rawValue = percentage / 100 * (this.options.max - this.options.min);
+                    if (this.options.ticks_positions.length > 0) {
+                        var minv,
+                            maxv,
+                            minp,
+                            maxp = 0;
+                        for (var i = 0; i < this.options.ticks_positions.length; i++) {
+                            if (percentage <= this.options.ticks_positions[i]) {
+                                minv = i > 0 ? this.options.ticks[i - 1] : 0;
+                                minp = i > 0 ? this.options.ticks_positions[i - 1] : 0;
+                                maxv = this.options.ticks[i];
+                                maxp = this.options.ticks_positions[i];
+
+                                break;
+                            }
+                        }
+                        if (i > 0) {
+                            var partialPercentage = (percentage - minp) / (maxp - minp);
+                            rawValue = minv + partialPercentage * (maxv - minv);
+                        }
+                    }
+
+                    var value = this.options.min + Math.round(rawValue / this.options.step) * this.options.step;
+                    if (value < this.options.min) {
+                        return this.options.min;
+                    } else if (value > this.options.max) {
+                        return this.options.max;
+                    } else {
+                        return value;
+                    }
+                },
+                toPercentage: function toPercentage(value) {
+                    if (this.options.max === this.options.min) {
+                        return 0;
+                    }
+
+                    if (this.options.ticks_positions.length > 0) {
+                        var minv,
+                            maxv,
+                            minp,
+                            maxp = 0;
+                        for (var i = 0; i < this.options.ticks.length; i++) {
+                            if (value <= this.options.ticks[i]) {
+                                minv = i > 0 ? this.options.ticks[i - 1] : 0;
+                                minp = i > 0 ? this.options.ticks_positions[i - 1] : 0;
+                                maxv = this.options.ticks[i];
+                                maxp = this.options.ticks_positions[i];
+
+                                break;
+                            }
+                        }
+                        if (i > 0) {
+                            var partialPercentage = (value - minv) / (maxv - minv);
+                            return minp + partialPercentage * (maxp - minp);
+                        }
+                    }
+
+                    return 100 * (value - this.options.min) / (this.options.max - this.options.min);
+                }
+            },
+
+            logarithmic: {
+                /* Based on http://stackoverflow.com/questions/846221/logarithmic-slider */
+                toValue: function toValue(percentage) {
+                    var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
+                    var max = Math.log(this.options.max);
+                    var value = Math.exp(min + (max - min) * percentage / 100);
+                    value = this.options.min + Math.round((value - this.options.min) / this.options.step) * this.options.step;
+                    /* Rounding to the nearest step could exceed the min or
+                     * max, so clip to those values. */
+                    if (value < this.options.min) {
+                        return this.options.min;
+                    } else if (value > this.options.max) {
+                        return this.options.max;
+                    } else {
+                        return value;
+                    }
+                },
+                toPercentage: function toPercentage(value) {
+                    if (this.options.max === this.options.min) {
+                        return 0;
+                    } else {
+                        var max = Math.log(this.options.max);
+                        var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
+                        var v = value === 0 ? 0 : Math.log(value);
+                        return 100 * (v - min) / (max - min);
+                    }
+                }
+            }
+        };
+
+        /*************************************************
+          CONSTRUCTOR
+          **************************************************/
+        Slider = function Slider(element, options) {
+            try {
+                createNewSlider.call(this, element, options);
+            } catch (e) {
+                // window.console.log( e );
+            }
+            return this;
+        };
+
+        function createNewSlider(element, options) {
+
+            /*
+             The internal state object is used to store data about the current 'state' of slider.
+              This includes values such as the `value`, `enabled`, etc...
+             */
+            this._state = {
+                value: null,
+                enabled: null,
+                offset: null,
+                size: null,
+                percentage: null,
+                inDrag: null,
+                over: null
+            };
+
+            if (typeof element === "string") {
+                this.element = document.querySelector(element);
+            } else if (element instanceof HTMLElement) {
+                this.element = element;
+            }
+
+            /*************************************************
+              Process Options
+              **************************************************/
+            options = options ? options : {};
+            var optionTypes = Object.keys(this.defaultOptions);
+
+            for (var i = 0; i < optionTypes.length; i++) {
+                var optName = optionTypes[i];
+
+                // First check if an option was passed in via the constructor
+                var val = options[optName];
+                // If no data attrib, then check data atrributes
+                val = typeof val !== 'undefined' ? val : getDataAttrib(this.element, optName);
+                // Finally, if nothing was specified, use the defaults
+                val = val !== null ? val : this.defaultOptions[optName];
+
+                // Set all options on the instance of the Slider
+                if (!this.options) {
+                    this.options = {};
+                }
+                this.options[optName] = val;
+            }
+
+            /*
+             Validate `tooltip_position` against 'orientation`
+             - if `tooltip_position` is incompatible with orientation, swith it to a default compatible with specified `orientation`
+             -- default for "vertical" -> "right"
+             -- default for "horizontal" -> "left"
+             */
+            if (this.options.orientation === "vertical" && (this.options.tooltip_position === "top" || this.options.tooltip_position === "bottom")) {
+
+                this.options.tooltip_position = "right";
+            } else if (this.options.orientation === "horizontal" && (this.options.tooltip_position === "left" || this.options.tooltip_position === "right")) {
+
+                this.options.tooltip_position = "top";
+            }
+
+            function getDataAttrib(element, optName) {
+                var dataName = "data-slider-" + optName.replace(/_/g, '-');
+                var dataValString = element.getAttribute(dataName);
+
+                try {
+                    return JSON.parse(dataValString);
+                } catch (err) {
+                    return dataValString;
+                }
+            }
+
+            /*************************************************
+              Create Markup
+              **************************************************/
+
+            var origWidth = this.element.style.width;
+            var updateSlider = false;
+            var parent = this.element.parentNode;
+            var sliderTrackSelection;
+            var sliderTrackLow, sliderTrackHigh;
+            var sliderMinHandle;
+            var sliderMaxHandle;
+
+            if (this.sliderElem) {
+                updateSlider = true;
+            } else {
+                /* Create elements needed for slider */
+                this.sliderElem = document.createElement("div");
+                this.sliderElem.className = "slider";
+
+                /* Create slider track elements */
+                var sliderTrack = document.createElement("div");
+                sliderTrack.className = "slider-track";
+
+                sliderTrackLow = document.createElement("div");
+                sliderTrackLow.className = "slider-track-low";
+
+                sliderTrackSelection = document.createElement("div");
+                sliderTrackSelection.className = "slider-selection";
+
+                sliderTrackHigh = document.createElement("div");
+                sliderTrackHigh.className = "slider-track-high";
+
+                sliderMinHandle = document.createElement("div");
+                sliderMinHandle.className = "slider-handle min-slider-handle";
+
+                sliderMaxHandle = document.createElement("div");
+                sliderMaxHandle.className = "slider-handle max-slider-handle";
+
+                sliderTrack.appendChild(sliderTrackLow);
+                sliderTrack.appendChild(sliderTrackSelection);
+                sliderTrack.appendChild(sliderTrackHigh);
+
+                /* Create ticks */
+                this.ticks = [];
+                if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+                    for (i = 0; i < this.options.ticks.length; i++) {
+                        var tick = document.createElement('div');
+                        tick.className = 'slider-tick';
+
+                        this.ticks.push(tick);
+                        sliderTrack.appendChild(tick);
+                    }
+
+                    sliderTrackSelection.className += " tick-slider-selection";
+                }
+
+                sliderTrack.appendChild(sliderMinHandle);
+                sliderTrack.appendChild(sliderMaxHandle);
+
+                this.tickLabels = [];
+                if (Array.isArray(this.options.ticks_labels) && this.options.ticks_labels.length > 0) {
+                    this.tickLabelContainer = document.createElement('div');
+                    this.tickLabelContainer.className = 'slider-tick-label-container';
+
+                    for (i = 0; i < this.options.ticks_labels.length; i++) {
+                        var label = document.createElement('div');
+                        label.className = 'slider-tick-label';
+                        label.innerHTML = this.options.ticks_labels[i];
+
+                        this.tickLabels.push(label);
+                        this.tickLabelContainer.appendChild(label);
+                    }
+                }
+
+                var createAndAppendTooltipSubElements = function createAndAppendTooltipSubElements(tooltipElem) {
+                    var arrow = document.createElement("div");
+                    arrow.className = "tooltip-arrow";
+
+                    var inner = document.createElement("div");
+                    inner.className = "tooltip-inner";
+
+                    tooltipElem.appendChild(arrow);
+                    tooltipElem.appendChild(inner);
+                };
+
+                /* Create tooltip elements */
+                var sliderTooltip = document.createElement("div");
+                sliderTooltip.className = "tooltip tooltip-main";
+                createAndAppendTooltipSubElements(sliderTooltip);
+
+                var sliderTooltipMin = document.createElement("div");
+                sliderTooltipMin.className = "tooltip tooltip-min";
+                createAndAppendTooltipSubElements(sliderTooltipMin);
+
+                var sliderTooltipMax = document.createElement("div");
+                sliderTooltipMax.className = "tooltip tooltip-max";
+                createAndAppendTooltipSubElements(sliderTooltipMax);
+
+                /* Append components_help to sliderElem */
+                this.sliderElem.appendChild(sliderTrack);
+                this.sliderElem.appendChild(sliderTooltip);
+                this.sliderElem.appendChild(sliderTooltipMin);
+                this.sliderElem.appendChild(sliderTooltipMax);
+
+                if (this.tickLabelContainer) {
+                    this.sliderElem.appendChild(this.tickLabelContainer);
+                }
+
+                /* Append slider element to parent container, right before the original <input> element */
+                parent.insertBefore(this.sliderElem, this.element);
+
+                /* Hide original <input> element */
+                this.element.style.display = "none";
+            }
+            /* If JQuery exists, cache JQ references */
+            if ($) {
+                this.$element = $(this.element);
+                this.$sliderElem = $(this.sliderElem);
+            }
+
+            /*************************************************
+              AsyncStorage
+              **************************************************/
+            this.eventToCallbackMap = {};
+            this.sliderElem.id = this.options.id;
+
+            this.touchCapable = 'ontouchstart' in window || window.DocumentTouch && document instanceof window.DocumentTouch;
+
+            this.tooltip = this.sliderElem.querySelector('.tooltip-main');
+            this.tooltipInner = this.tooltip.querySelector('.tooltip-inner');
+
+            this.tooltip_min = this.sliderElem.querySelector('.tooltip-min');
+            this.tooltipInner_min = this.tooltip_min.querySelector('.tooltip-inner');
+
+            this.tooltip_max = this.sliderElem.querySelector('.tooltip-max');
+            this.tooltipInner_max = this.tooltip_max.querySelector('.tooltip-inner');
+
+            if (SliderScale[this.options.scale]) {
+                this.options.scale = SliderScale[this.options.scale];
+            }
+
+            if (updateSlider === true) {
+                // Reset classes
+                this._removeClass(this.sliderElem, 'slider-horizontal');
+                this._removeClass(this.sliderElem, 'slider-vertical');
+                this._removeClass(this.tooltip, 'hide');
+                this._removeClass(this.tooltip_min, 'hide');
+                this._removeClass(this.tooltip_max, 'hide');
+
+                // Undo existing inline styles for track
+                ["left", "top", "width", "height"].forEach(function (prop) {
+                    this._removeProperty(this.trackLow, prop);
+                    this._removeProperty(this.trackSelection, prop);
+                    this._removeProperty(this.trackHigh, prop);
+                }, this);
+
+                // Undo inline styles on handles
+                [this.handle1, this.handle2].forEach(function (handle) {
+                    this._removeProperty(handle, 'left');
+                    this._removeProperty(handle, 'top');
+                }, this);
+
+                // Undo inline styles and classes on tooltips
+                [this.tooltip, this.tooltip_min, this.tooltip_max].forEach(function (tooltip) {
+                    this._removeProperty(tooltip, 'left');
+                    this._removeProperty(tooltip, 'top');
+                    this._removeProperty(tooltip, 'margin-left');
+                    this._removeProperty(tooltip, 'margin-top');
+
+                    this._removeClass(tooltip, 'right');
+                    this._removeClass(tooltip, 'top');
+                }, this);
+            }
+
+            if (this.options.orientation === 'vertical') {
+                this._addClass(this.sliderElem, 'slider-vertical');
+                this.stylePos = 'top';
+                this.mousePos = 'pageY';
+                this.sizePos = 'offsetHeight';
+            } else {
+                this._addClass(this.sliderElem, 'slider-horizontal');
+                this.sliderElem.style.width = origWidth;
+                this.options.orientation = 'horizontal';
+                this.stylePos = 'left';
+                this.mousePos = 'pageX';
+                this.sizePos = 'offsetWidth';
+            }
+            this._setTooltipPosition();
+            /* In case ticks are specified, overwrite the min and max bounds */
+            if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+                this.options.max = Math.max.apply(Math, this.options.ticks);
+                this.options.min = Math.min.apply(Math, this.options.ticks);
+            }
+
+            if (Array.isArray(this.options.value)) {
+                this.options.range = true;
+                this._state.value = this.options.value;
+            } else if (this.options.range) {
+                // User wants a range, but value is not an array
+                this._state.value = [this.options.value, this.options.max];
+            } else {
+                this._state.value = this.options.value;
+            }
+
+            this.trackLow = sliderTrackLow || this.trackLow;
+            this.trackSelection = sliderTrackSelection || this.trackSelection;
+            this.trackHigh = sliderTrackHigh || this.trackHigh;
+
+            if (this.options.selection === 'none') {
+                this._addClass(this.trackLow, 'hide');
+                this._addClass(this.trackSelection, 'hide');
+                this._addClass(this.trackHigh, 'hide');
+            }
+
+            this.handle1 = sliderMinHandle || this.handle1;
+            this.handle2 = sliderMaxHandle || this.handle2;
+
+            if (updateSlider === true) {
+                // Reset classes
+                this._removeClass(this.handle1, 'round triangle');
+                this._removeClass(this.handle2, 'round triangle hide');
+
+                for (i = 0; i < this.ticks.length; i++) {
+                    this._removeClass(this.ticks[i], 'round triangle hide');
+                }
+            }
+
+            var availableHandleModifiers = ['round', 'triangle', 'custom'];
+            var isValidHandleType = availableHandleModifiers.indexOf(this.options.handle) !== -1;
+            if (isValidHandleType) {
+                this._addClass(this.handle1, this.options.handle);
+                this._addClass(this.handle2, this.options.handle);
+
+                for (i = 0; i < this.ticks.length; i++) {
+                    this._addClass(this.ticks[i], this.options.handle);
+                }
+            }
+
+            this._state.offset = this._offset(this.sliderElem);
+            this._state.size = this.sliderElem[this.sizePos];
+            this.setValue(this._state.value);
+
+            /******************************************
+              Bind Event Listeners
+              ******************************************/
+
+            // Bind keyboard handlers
+            this.handle1Keydown = this._keydown.bind(this, 0);
+            this.handle1.addEventListener("keydown", this.handle1Keydown, false);
+
+            this.handle2Keydown = this._keydown.bind(this, 1);
+            this.handle2.addEventListener("keydown", this.handle2Keydown, false);
+
+            this.mousedown = this._mousedown.bind(this);
+            if (this.touchCapable) {
+                // Bind touch handlers
+                this.sliderElem.addEventListener("touchstart", this.mousedown, false);
+            }
+            this.sliderElem.addEventListener("mousedown", this.mousedown, false);
+
+            // Bind tooltip-related handlers
+            if (this.options.tooltip === 'hide') {
+                this._addClass(this.tooltip, 'hide');
+                this._addClass(this.tooltip_min, 'hide');
+                this._addClass(this.tooltip_max, 'hide');
+            } else if (this.options.tooltip === 'always') {
+                this._showTooltip();
+                this._alwaysShowTooltip = true;
+            } else {
+                this.showTooltip = this._showTooltip.bind(this);
+                this.hideTooltip = this._hideTooltip.bind(this);
+
+                this.sliderElem.addEventListener("mouseenter", this.showTooltip, false);
+                this.sliderElem.addEventListener("mouseleave", this.hideTooltip, false);
+
+                this.handle1.addEventListener("focus", this.showTooltip, false);
+                this.handle1.addEventListener("blur", this.hideTooltip, false);
+
+                this.handle2.addEventListener("focus", this.showTooltip, false);
+                this.handle2.addEventListener("blur", this.hideTooltip, false);
+            }
+
+            if (this.options.enabled) {
+                this.enable();
+            } else {
+                this.disable();
+            }
+        }
+
+        /*************************************************
+          INSTANCE PROPERTIES/METHODS
+          - Any methods bound to the prototype are considered
+         part of the plugin's `public` interface
+          **************************************************/
+        Slider.prototype = {
+            _init: function _init() {}, // NOTE: Must exist to support bridget
+
+            constructor: Slider,
+
+            defaultOptions: {
+                id: "",
+                min: 0,
+                max: 10,
+                step: 1,
+                precision: 0,
+                orientation: 'horizontal',
+                value: 5,
+                range: false,
+                selection: 'before',
+                tooltip: 'show',
+                tooltip_split: false,
+                handle: 'round',
+                reversed: false,
+                enabled: true,
+                formatter: function formatter(val) {
+                    if (Array.isArray(val)) {
+                        return val[0] + " : " + val[1];
+                    } else {
+                        return val;
+                    }
+                },
+                natural_arrow_keys: false,
+                ticks: [],
+                ticks_positions: [],
+                ticks_labels: [],
+                ticks_snap_bounds: 0,
+                scale: 'linear',
+                focus: false,
+                tooltip_position: null
+            },
+
+            getElement: function getElement() {
+                return this.sliderElem;
+            },
+
+            getValue: function getValue() {
+                if (this.options.range) {
+                    return this._state.value;
+                } else {
+                    //MODIFIED BY ADAM (31 May 2016)
+                    if (this._state === null || this._state.value === null) {
+                        return 0;
+                    }
+                    //END MOD
+                    return this._state.value[0];
+                }
+            },
+
+            setValue: function setValue(val, triggerSlideEvent, triggerChangeEvent) {
+                //MODIFIED BY ADAM (31 May 2016)
+                if (!val || val === null) {
+                    //END MOD
+                    val = 0;
+                }
+                var oldValue = this.getValue();
+                this._state.value = this._validateInputValue(val);
+                var applyPrecision = this._applyPrecision.bind(this);
+
+                if (this.options.range) {
+                    this._state.value[0] = applyPrecision(this._state.value[0]);
+                    this._state.value[1] = applyPrecision(this._state.value[1]);
+
+                    this._state.value[0] = Math.max(this.options.min, Math.min(this.options.max, this._state.value[0]));
+                    this._state.value[1] = Math.max(this.options.min, Math.min(this.options.max, this._state.value[1]));
+                } else {
+                    this._state.value = applyPrecision(this._state.value);
+                    this._state.value = [Math.max(this.options.min, Math.min(this.options.max, this._state.value))];
+                    this._addClass(this.handle2, 'hide');
+                    if (this.options.selection === 'after') {
+                        this._state.value[1] = this.options.max;
+                    } else {
+                        this._state.value[1] = this.options.min;
+                    }
+                }
+
+                if (this.options.max > this.options.min) {
+                    this._state.percentage = [this._toPercentage(this._state.value[0]), this._toPercentage(this._state.value[1]), this.options.step * 100 / (this.options.max - this.options.min)];
+                } else {
+                    this._state.percentage = [0, 0, 100];
+                }
+
+                this._layout();
+                var newValue = this.options.range ? this._state.value : this._state.value[0];
+
+                if (triggerSlideEvent === true) {
+                    this._trigger('slide', newValue);
+                }
+                if (oldValue !== newValue && triggerChangeEvent === true) {
+                    this._trigger('change', {
+                        oldValue: oldValue,
+                        newValue: newValue
+                    });
+                }
+                this._setDataVal(newValue);
+
+                return this;
+            },
+
+            destroy: function destroy() {
+                // Remove event handlers on slider elements
+                this._removeSliderEventHandlers();
+
+                // Remove the slider from the DOM
+                this.sliderElem.parentNode.removeChild(this.sliderElem);
+                /* Show original <input> element */
+                this.element.style.display = "";
+
+                // Clear out custom event bindings
+                this._cleanUpEventCallbacksMap();
+
+                // Remove data values
+                this.element.removeAttribute("data");
+
+                // Remove JQuery handlers/data
+                if ($) {
+                    this._unbindJQueryEventHandlers();
+                    this.$element.removeData('slider');
+                }
+            },
+
+            disable: function disable() {
+                this._state.enabled = false;
+                this.handle1.removeAttribute("tabindex");
+                this.handle2.removeAttribute("tabindex");
+                this._addClass(this.sliderElem, 'slider-disabled');
+                this._trigger('slideDisabled');
+
+                return this;
+            },
+
+            enable: function enable() {
+                this._state.enabled = true;
+                this.handle1.setAttribute("tabindex", 0);
+                this.handle2.setAttribute("tabindex", 0);
+                this._removeClass(this.sliderElem, 'slider-disabled');
+                this._trigger('slideEnabled');
+
+                return this;
+            },
+
+            toggle: function toggle() {
+                if (this._state.enabled) {
+                    this.disable();
+                } else {
+                    this.enable();
+                }
+                return this;
+            },
+
+            isEnabled: function isEnabled() {
+                return this._state.enabled;
+            },
+
+            on: function on(evt, callback) {
+                this._bindNonQueryEventHandler(evt, callback);
+                return this;
+            },
+
+            off: function off(evt, callback) {
+                if ($) {
+                    this.$element.off(evt, callback);
+                    this.$sliderElem.off(evt, callback);
+                } else {
+                    this._unbindNonQueryEventHandler(evt, callback);
+                }
+            },
+
+            getAttribute: function getAttribute(attribute) {
+                if (attribute) {
+                    return this.options[attribute];
+                } else {
+                    return this.options;
+                }
+            },
+
+            setAttribute: function setAttribute(attribute, value) {
+                this.options[attribute] = value;
+                return this;
+            },
+
+            refresh: function refresh() {
+                this._removeSliderEventHandlers();
+                createNewSlider.call(this, this.element, this.options);
+                if ($) {
+                    // Bind new instance of slider to the element
+                    $.data(this.element, 'slider', this);
+                }
+                return this;
+            },
+
+            relayout: function relayout() {
+                this._layout();
+                return this;
+            },
+
+            /******************************+
+              HELPERS
+              - Any method that is not part of the public interface.
+             - Place it underneath this comment block and write its signature like so:
+              _fnName : function() {...}
+              ********************************/
+            _removeSliderEventHandlers: function _removeSliderEventHandlers() {
+                // Remove event listeners from handle1
+                this.handle1.removeEventListener("keydown", this.handle1Keydown, false);
+                this.handle1.removeEventListener("focus", this.showTooltip, false);
+                this.handle1.removeEventListener("blur", this.hideTooltip, false);
+
+                // Remove event listeners from handle2
+                this.handle2.removeEventListener("keydown", this.handle2Keydown, false);
+                this.handle2.removeEventListener("focus", this.handle2Keydown, false);
+                this.handle2.removeEventListener("blur", this.handle2Keydown, false);
+
+                // Remove event listeners from sliderElem
+                this.sliderElem.removeEventListener("mouseenter", this.showTooltip, false);
+                this.sliderElem.removeEventListener("mouseleave", this.hideTooltip, false);
+                this.sliderElem.removeEventListener("touchstart", this.mousedown, false);
+                this.sliderElem.removeEventListener("mousedown", this.mousedown, false);
+            },
+            _bindNonQueryEventHandler: function _bindNonQueryEventHandler(evt, callback) {
+                if (this.eventToCallbackMap[evt] === undefined) {
+                    this.eventToCallbackMap[evt] = [];
+                }
+                this.eventToCallbackMap[evt].push(callback);
+            },
+            _unbindNonQueryEventHandler: function _unbindNonQueryEventHandler(evt, callback) {
+                var callbacks = this.eventToCallbackMap[evt];
+                if (callbacks !== undefined) {
+                    for (var i = 0; i < callbacks.length; i++) {
+                        if (callbacks[i] === callback) {
+                            callbacks.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            },
+            _cleanUpEventCallbacksMap: function _cleanUpEventCallbacksMap() {
+                var eventNames = Object.keys(this.eventToCallbackMap);
+                for (var i = 0; i < eventNames.length; i++) {
+                    var eventName = eventNames[i];
+                    this.eventToCallbackMap[eventName] = null;
+                }
+            },
+            _showTooltip: function _showTooltip() {
+                if (this.options.tooltip_split === false) {
+                    this._addClass(this.tooltip, 'in');
+                    this.tooltip_min.style.display = 'none';
+                    this.tooltip_max.style.display = 'none';
+                } else {
+                    this._addClass(this.tooltip_min, 'in');
+                    this._addClass(this.tooltip_max, 'in');
+                    this.tooltip.style.display = 'none';
+                }
+                this._state.over = true;
+            },
+            _hideTooltip: function _hideTooltip() {
+                if (this._state.inDrag === false && this.alwaysShowTooltip !== true) {
+                    this._removeClass(this.tooltip, 'in');
+                    this._removeClass(this.tooltip_min, 'in');
+                    this._removeClass(this.tooltip_max, 'in');
+                }
+                this._state.over = false;
+            },
+            _layout: function _layout() {
+                var positionPercentages;
+
+                if (this.options.reversed) {
+                    positionPercentages = [100 - this._state.percentage[0], this.options.range ? 100 - this._state.percentage[1] : this._state.percentage[1]];
+                } else {
+                    positionPercentages = [this._state.percentage[0], this._state.percentage[1]];
+                }
+
+                this.handle1.style[this.stylePos] = positionPercentages[0] + '%';
+                this.handle2.style[this.stylePos] = positionPercentages[1] + '%';
+
+                /* Position ticks and labels */
+                if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+                    var maxTickValue = Math.max.apply(Math, this.options.ticks);
+                    var minTickValue = Math.min.apply(Math, this.options.ticks);
+
+                    var styleSize = this.options.orientation === 'vertical' ? 'height' : 'width';
+                    var styleMargin = this.options.orientation === 'vertical' ? 'marginTop' : 'marginLeft';
+                    //var labelSize = this._state.size / (this.options.ticks.length - 1);
+                    var labelSize = 230 / (this.options.ticks.length - 1); // hack sets the length to always == size set in CSS
+                    if (this.tickLabelContainer) {
+                        var extraMargin = 0;
+                        if (this.options.ticks_positions.length === 0) {
+                            this.tickLabelContainer.style[styleMargin] = -labelSize / 2 + 'px';
+                            extraMargin = this.tickLabelContainer.offsetHeight;
+                        } else {
+                            /* Chidren are position absolute, calculate height by finding the max offsetHeight of a child */
+                            for (i = 0; i < this.tickLabelContainer.childNodes.length; i++) {
+                                if (this.tickLabelContainer.childNodes[i].offsetHeight > extraMargin) {
+                                    extraMargin = this.tickLabelContainer.childNodes[i].offsetHeight;
+                                }
+                            }
+                        }
+                        if (this.options.orientation === 'horizontal') {
+                            this.sliderElem.style.marginBottom = extraMargin + 'px';
+                        }
+                    }
+                    for (var i = 0; i < this.options.ticks.length; i++) {
+
+                        var percentage = this.options.ticks_positions[i] || 100 * (this.options.ticks[i] - minTickValue) / (maxTickValue - minTickValue);
+
+                        this.ticks[i].style[this.stylePos] = percentage + '%';
+
+                        /* Set class labels to denote whether ticks are in the selection */
+                        this._removeClass(this.ticks[i], 'in-selection');
+                        if (!this.options.range) {
+                            if (this.options.selection === 'after' && percentage >= positionPercentages[0]) {
+                                this._addClass(this.ticks[i], 'in-selection');
+                            } else if (this.options.selection === 'before' && percentage <= positionPercentages[0]) {
+                                this._addClass(this.ticks[i], 'in-selection');
+                            }
+                        } else if (percentage >= positionPercentages[0] && percentage <= positionPercentages[1]) {
+                            this._addClass(this.ticks[i], 'in-selection');
+                        }
+
+                        if (this.tickLabels[i]) {
+                            this.tickLabels[i].style[styleSize] = labelSize + 'px';
+
+                            if (this.options.ticks_positions[i] !== undefined) {
+                                this.tickLabels[i].style.position = 'absolute';
+                                this.tickLabels[i].style[this.stylePos] = this.options.ticks_positions[i] + '%';
+                                this.tickLabels[i].style[styleMargin] = -labelSize / 2 + 'px';
+                            }
+                        }
+                    }
+                }
+
+                var formattedTooltipVal;
+
+                if (this.options.range) {
+                    formattedTooltipVal = this.options.formatter(this._state.value);
+                    this._setText(this.tooltipInner, formattedTooltipVal);
+                    this.tooltip.style[this.stylePos] = (positionPercentages[1] + positionPercentages[0]) / 2 + '%';
+
+                    if (this.options.orientation === 'vertical') {
+                        this._css(this.tooltip, 'margin-top', -this.tooltip.offsetHeight / 2 + 'px');
+                    } else {
+                        this._css(this.tooltip, 'margin-left', -this.tooltip.offsetWidth / 2 + 'px');
+                    }
+
+                    if (this.options.orientation === 'vertical') {
+                        this._css(this.tooltip, 'margin-top', -this.tooltip.offsetHeight / 2 + 'px');
+                    } else {
+                        this._css(this.tooltip, 'margin-left', -this.tooltip.offsetWidth / 2 + 'px');
+                    }
+
+                    var innerTooltipMinText = this.options.formatter(this._state.value[0]);
+                    this._setText(this.tooltipInner_min, innerTooltipMinText);
+
+                    var innerTooltipMaxText = this.options.formatter(this._state.value[1]);
+                    this._setText(this.tooltipInner_max, innerTooltipMaxText);
+
+                    this.tooltip_min.style[this.stylePos] = positionPercentages[0] + '%';
+
+                    if (this.options.orientation === 'vertical') {
+                        this._css(this.tooltip_min, 'margin-top', -this.tooltip_min.offsetHeight / 2 + 'px');
+                    } else {
+                        this._css(this.tooltip_min, 'margin-left', -this.tooltip_min.offsetWidth / 2 + 'px');
+                    }
+
+                    this.tooltip_max.style[this.stylePos] = positionPercentages[1] + '%';
+
+                    if (this.options.orientation === 'vertical') {
+                        this._css(this.tooltip_max, 'margin-top', -this.tooltip_max.offsetHeight / 2 + 'px');
+                    } else {
+                        this._css(this.tooltip_max, 'margin-left', -this.tooltip_max.offsetWidth / 2 + 'px');
+                    }
+                } else {
+                    formattedTooltipVal = this.options.formatter(this._state.value[0]);
+                    this._setText(this.tooltipInner, formattedTooltipVal);
+
+                    this.tooltip.style[this.stylePos] = positionPercentages[0] + '%';
+                    if (this.options.orientation === 'vertical') {
+                        this._css(this.tooltip, 'margin-top', -this.tooltip.offsetHeight / 2 + 'px');
+                    } else {
+                        this._css(this.tooltip, 'margin-left', -this.tooltip.offsetWidth / 2 + 'px');
+                    }
+                }
+
+                if (this.options.orientation === 'vertical') {
+                    this.trackLow.style.top = '0';
+                    this.trackLow.style.height = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+
+                    this.trackSelection.style.top = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+                    this.trackSelection.style.height = Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+
+                    this.trackHigh.style.bottom = '0';
+                    this.trackHigh.style.height = 100 - Math.min(positionPercentages[0], positionPercentages[1]) - Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+                } else {
+                    this.trackLow.style.left = '0';
+                    this.trackLow.style.width = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+
+                    this.trackSelection.style.left = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+                    this.trackSelection.style.width = Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+
+                    this.trackHigh.style.right = '0';
+                    this.trackHigh.style.width = 100 - Math.min(positionPercentages[0], positionPercentages[1]) - Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+
+                    var offset_min = this.tooltip_min.getBoundingClientRect();
+                    var offset_max = this.tooltip_max.getBoundingClientRect();
+
+                    if (offset_min.right > offset_max.left) {
+                        this._removeClass(this.tooltip_max, 'top');
+                        this._addClass(this.tooltip_max, 'bottom');
+                        this.tooltip_max.style.top = 18 + 'px';
+                    } else {
+                        this._removeClass(this.tooltip_max, 'bottom');
+                        this._addClass(this.tooltip_max, 'top');
+                        this.tooltip_max.style.top = this.tooltip_min.style.top;
+                    }
+                }
+            },
+            _removeProperty: function _removeProperty(element, prop) {
+                if (element.style.removeProperty) {
+                    element.style.removeProperty(prop);
+                } else {
+                    element.style.removeAttribute(prop);
+                }
+            },
+            _mousedown: function _mousedown(ev) {
+                if (!this._state.enabled) {
+                    return false;
+                }
+
+                this._state.offset = this._offset(this.sliderElem);
+                this._state.size = this.sliderElem[this.sizePos];
+
+                var percentage = this._getPercentage(ev);
+
+                if (this.options.range) {
+                    var diff1 = Math.abs(this._state.percentage[0] - percentage);
+                    var diff2 = Math.abs(this._state.percentage[1] - percentage);
+                    this._state.dragged = diff1 < diff2 ? 0 : 1;
+                } else {
+                    this._state.dragged = 0;
+                }
+
+                this._state.percentage[this._state.dragged] = percentage;
+                this._layout();
+
+                if (this.touchCapable) {
+                    document.removeEventListener("touchmove", this.mousemove, false);
+                    document.removeEventListener("touchend", this.mouseup, false);
+                }
+
+                if (this.mousemove) {
+                    document.removeEventListener("mousemove", this.mousemove, false);
+                }
+                if (this.mouseup) {
+                    document.removeEventListener("mouseup", this.mouseup, false);
+                }
+
+                this.mousemove = this._mousemove.bind(this);
+                this.mouseup = this._mouseup.bind(this);
+
+                if (this.touchCapable) {
+                    // Touch: Bind touch events:
+                    document.addEventListener("touchmove", this.mousemove, false);
+                    document.addEventListener("touchend", this.mouseup, false);
+                }
+                // Bind mouse events:
+                document.addEventListener("mousemove", this.mousemove, false);
+                document.addEventListener("mouseup", this.mouseup, false);
+
+                this._state.inDrag = true;
+                var newValue = this._calculateValue();
+
+                this._trigger('slideStart', newValue);
+
+                this._setDataVal(newValue);
+                this.setValue(newValue, false, true);
+
+                this._pauseEvent(ev);
+
+                if (this.options.focus) {
+                    this._triggerFocusOnHandle(this._state.dragged);
+                }
+
+                return true;
+            },
+            _triggerFocusOnHandle: function _triggerFocusOnHandle(handleIdx) {
+                if (handleIdx === 0) {
+                    this.handle1.focus();
+                }
+                if (handleIdx === 1) {
+                    this.handle2.focus();
+                }
+            },
+            _keydown: function _keydown(handleIdx, ev) {
+                if (!this._state.enabled) {
+                    return false;
+                }
+
+                var dir;
+                switch (ev.keyCode) {
+                    case 37: // left
+                    case 40:
+                        // down
+                        dir = -1;
+                        break;
+                    case 39: // right
+                    case 38:
+                        // up
+                        dir = 1;
+                        break;
+                }
+                if (!dir) {
+                    return;
+                }
+
+                // use natural arrow keys instead of from min to max
+                if (this.options.natural_arrow_keys) {
+                    var ifVerticalAndNotReversed = this.options.orientation === 'vertical' && !this.options.reversed;
+                    var ifHorizontalAndReversed = this.options.orientation === 'horizontal' && this.options.reversed;
+
+                    if (ifVerticalAndNotReversed || ifHorizontalAndReversed) {
+                        dir = -dir;
+                    }
+                }
+
+                var val = this._state.value[handleIdx] + dir * this.options.step;
+                if (this.options.range) {
+                    val = [!handleIdx ? val : this._state.value[0], handleIdx ? val : this._state.value[1]];
+                }
+
+                this._trigger('slideStart', val);
+                this._setDataVal(val);
+                this.setValue(val, true, true);
+
+                this._setDataVal(val);
+                this._trigger('slideStop', val);
+                this._layout();
+
+                this._pauseEvent(ev);
+
+                return false;
+            },
+            _pauseEvent: function _pauseEvent(ev) {
+                if (ev.stopPropagation) {
+                    ev.stopPropagation();
+                }
+                if (ev.preventDefault) {
+                    ev.preventDefault();
+                }
+                ev.cancelBubble = true;
+                ev.returnValue = false;
+            },
+            _mousemove: function _mousemove(ev) {
+                if (!this._state.enabled) {
+                    return false;
+                }
+
+                var percentage = this._getPercentage(ev);
+                this._adjustPercentageForRangeSliders(percentage);
+                this._state.percentage[this._state.dragged] = percentage;
+                this._layout();
+
+                var val = this._calculateValue(true);
+                this.setValue(val, true, true);
+
+                return false;
+            },
+            _adjustPercentageForRangeSliders: function _adjustPercentageForRangeSliders(percentage) {
+                if (this.options.range) {
+                    var precision = this._getNumDigitsAfterDecimalPlace(percentage);
+                    precision = precision ? precision - 1 : 0;
+                    var percentageWithAdjustedPrecision = this._applyToFixedAndParseFloat(percentage, precision);
+                    if (this._state.dragged === 0 && this._applyToFixedAndParseFloat(this._state.percentage[1], precision) < percentageWithAdjustedPrecision) {
+                        this._state.percentage[0] = this._state.percentage[1];
+                        this._state.dragged = 1;
+                    } else if (this._state.dragged === 1 && this._applyToFixedAndParseFloat(this._state.percentage[0], precision) > percentageWithAdjustedPrecision) {
+                        this._state.percentage[1] = this._state.percentage[0];
+                        this._state.dragged = 0;
+                    }
+                }
+            },
+            _mouseup: function _mouseup() {
+                if (!this._state.enabled) {
+                    return false;
+                }
+                if (this.touchCapable) {
+                    // Touch: Unbind touch event handlers:
+                    document.removeEventListener("touchmove", this.mousemove, false);
+                    document.removeEventListener("touchend", this.mouseup, false);
+                }
+                // Unbind mouse event handlers:
+                document.removeEventListener("mousemove", this.mousemove, false);
+                document.removeEventListener("mouseup", this.mouseup, false);
+
+                this._state.inDrag = false;
+                if (this._state.over === false) {
+                    this._hideTooltip();
+                }
+                var val = this._calculateValue(true);
+
+                this._layout();
+                this._setDataVal(val);
+                this._trigger('slideStop', val);
+
+                return false;
+            },
+            _calculateValue: function _calculateValue(snapToClosestTick) {
+                var val;
+                if (this.options.range) {
+                    val = [this.options.min, this.options.max];
+                    if (this._state.percentage[0] !== 0) {
+                        val[0] = this._toValue(this._state.percentage[0]);
+                        val[0] = this._applyPrecision(val[0]);
+                    }
+                    if (this._state.percentage[1] !== 100) {
+                        val[1] = this._toValue(this._state.percentage[1]);
+                        val[1] = this._applyPrecision(val[1]);
+                    }
+                } else {
+                    val = this._toValue(this._state.percentage[0]);
+                    val = parseFloat(val);
+                    val = this._applyPrecision(val);
+                }
+
+                if (snapToClosestTick) {
+                    var min = [val, Infinity];
+                    for (var i = 0; i < this.options.ticks.length; i++) {
+                        var diff = Math.abs(this.options.ticks[i] - val);
+                        if (diff <= min[1]) {
+                            min = [this.options.ticks[i], diff];
+                        }
+                    }
+                    if (min[1] <= this.options.ticks_snap_bounds) {
+                        return min[0];
+                    }
+                }
+
+                return val;
+            },
+            _applyPrecision: function _applyPrecision(val) {
+                var precision = this.options.precision || this._getNumDigitsAfterDecimalPlace(this.options.step);
+                return this._applyToFixedAndParseFloat(val, precision);
+            },
+            _getNumDigitsAfterDecimalPlace: function _getNumDigitsAfterDecimalPlace(num) {
+                var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+                if (!match) {
+                    return 0;
+                }
+                return Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0));
+            },
+            _applyToFixedAndParseFloat: function _applyToFixedAndParseFloat(num, toFixedInput) {
+                var truncatedNum = num.toFixed(toFixedInput);
+                return parseFloat(truncatedNum);
+            },
+            /*
+             Credits to Mike Samuel for the following method!
+             Source: http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
+             */
+            _getPercentage: function _getPercentage(ev) {
+                if (this.touchCapable && (ev.type === 'touchstart' || ev.type === 'touchmove')) {
+                    ev = ev.touches[0];
+                }
+
+                var eventPosition = ev[this.mousePos];
+                var sliderOffset = this._state.offset[this.stylePos];
+                var distanceToSlide = eventPosition - sliderOffset;
+                // Calculate what percent of the length the slider handle has slid
+                var percentage = distanceToSlide / this._state.size * 100;
+                percentage = Math.round(percentage / this._state.percentage[2]) * this._state.percentage[2];
+                if (this.options.reversed) {
+                    percentage = 100 - percentage;
+                }
+
+                // Make sure the percent is within the bounds of the slider.
+                // 0% corresponds to the 'min' value of the slide
+                // 100% corresponds to the 'max' value of the slide
+                return Math.max(0, Math.min(100, percentage));
+            },
+            _validateInputValue: function _validateInputValue(val) {
+                if (typeof val === 'number') {
+                    return val;
+                } else if (Array.isArray(val)) {
+                    this._validateArray(val);
+                    return val;
+                } else {
+                    throw new Error(ErrorMsgs.formatInvalidInputErrorMsg(val));
+                }
+            },
+            _validateArray: function _validateArray(val) {
+                for (var i = 0; i < val.length; i++) {
+                    var input = val[i];
+                    if (typeof input !== 'number') {
+                        throw new Error(ErrorMsgs.formatInvalidInputErrorMsg(input));
+                    }
+                }
+            },
+            _setDataVal: function _setDataVal(val) {
+                this.element.setAttribute('data-value', val);
+                this.element.setAttribute('value', val);
+                this.element.value = val;
+            },
+            _trigger: function _trigger(evt, val) {
+                val = val || val === 0 ? val : undefined;
+
+                var callbackFnArray = this.eventToCallbackMap[evt];
+                if (callbackFnArray && callbackFnArray.length) {
+                    for (var i = 0; i < callbackFnArray.length; i++) {
+                        var callbackFn = callbackFnArray[i];
+                        callbackFn(val);
+                    }
+                }
+
+                /* If JQuery exists, trigger JQuery events */
+                if ($) {
+                    this._triggerJQueryEvent(evt, val);
+                }
+            },
+            _triggerJQueryEvent: function _triggerJQueryEvent(evt, val) {
+                var eventData = {
+                    type: evt,
+                    value: val
+                };
+                this.$element.trigger(eventData);
+                this.$sliderElem.trigger(eventData);
+            },
+            _unbindJQueryEventHandlers: function _unbindJQueryEventHandlers() {
+                this.$element.off();
+                this.$sliderElem.off();
+            },
+            _setText: function _setText(element, text) {
+                if (typeof element.innerText !== "undefined") {
+                    element.innerText = text;
+                } else if (typeof element.textContent !== "undefined") {
+                    element.textContent = text;
+                }
+            },
+            _removeClass: function _removeClass(element, classString) {
+                var classes = classString.split(" ");
+                var newClasses = element.className;
+
+                for (var i = 0; i < classes.length; i++) {
+                    var classTag = classes[i];
+                    var regex = new RegExp("(?:\\s|^)" + classTag + "(?:\\s|$)");
+                    newClasses = newClasses.replace(regex, " ");
+                }
+
+                element.className = newClasses.trim();
+            },
+            _addClass: function _addClass(element, classString) {
+                var classes = classString.split(" ");
+                var newClasses = element.className;
+
+                for (var i = 0; i < classes.length; i++) {
+                    var classTag = classes[i];
+                    var regex = new RegExp("(?:\\s|^)" + classTag + "(?:\\s|$)");
+                    var ifClassExists = regex.test(newClasses);
+
+                    if (!ifClassExists) {
+                        newClasses += " " + classTag;
+                    }
+                }
+
+                element.className = newClasses.trim();
+            },
+            _offsetLeft: function _offsetLeft(obj) {
+                return obj.getBoundingClientRect().left;
+            },
+            _offsetTop: function _offsetTop(obj) {
+                var offsetTop = obj.offsetTop;
+                while ((obj = obj.offsetParent) && !isNaN(obj.offsetTop)) {
+                    offsetTop += obj.offsetTop;
+                }
+                return offsetTop;
+            },
+            _offset: function _offset(obj) {
+                return {
+                    left: this._offsetLeft(obj),
+                    top: this._offsetTop(obj)
+                };
+            },
+            _css: function _css(elementRef, styleName, value) {
+                if ($) {
+                    $.style(elementRef, styleName, value);
+                } else {
+                    var style = styleName.replace(/^-ms-/, "ms-").replace(/-([\da-z])/gi, function (all, letter) {
+                        return letter.toUpperCase();
+                    });
+                    elementRef.style[style] = value;
+                }
+            },
+            _toValue: function _toValue(percentage) {
+                return this.options.scale.toValue.apply(this, [percentage]);
+            },
+            _toPercentage: function _toPercentage(value) {
+                return this.options.scale.toPercentage.apply(this, [value]);
+            },
+            _setTooltipPosition: function _setTooltipPosition() {
+                var tooltips = [this.tooltip, this.tooltip_min, this.tooltip_max];
+                if (this.options.orientation === 'vertical') {
+                    var tooltipPos = this.options.tooltip_position || 'right';
+                    var oppositeSide = tooltipPos === 'left' ? 'right' : 'left';
+                    tooltips.forEach(function (tooltip) {
+                        this._addClass(tooltip, tooltipPos);
+                        tooltip.style[oppositeSide] = '100%';
+                    }.bind(this));
+                } else if (this.options.tooltip_position === 'bottom') {
+                    tooltips.forEach(function (tooltip) {
+                        this._addClass(tooltip, 'bottom');
+                        tooltip.style.top = 22 + 'px';
+                    }.bind(this));
+                } else {
+                    tooltips.forEach(function (tooltip) {
+                        this._addClass(tooltip, 'top');
+                        tooltip.style.top = -this.tooltip.outerHeight - 14 + 'px';
+                    }.bind(this));
+                }
+            }
+        };
+
+        /*********************************
+          Attach to global namespace
+          *********************************/
+        if ($) {
+            var namespace = $.fn.slider ? 'bootstrapSlider' : 'slider';
+            $.bridget(namespace, Slider);
+        }
+    })($);
+
+    return Slider;
+});
+
+/***/ }),
+/* 975 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 976 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(978)
+}
+var Component = __webpack_require__(4)(
+  /* script */
+  __webpack_require__(973),
+  /* template */
+  __webpack_require__(977),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/grading/inputs/score-slider.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] score-slider.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-9b9f4e2e", Component.options)
+  } else {
+    hotAPI.reload("data-v-9b9f4e2e", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 977 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.score),
+      expression: "score"
+    }],
+    staticClass: "slider",
+    attrs: {
+      "id": _vm.sliderId,
+      "type": "text"
+    },
+    domProps: {
+      "value": (_vm.score)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.score = $event.target.value
+      }
+    }
+  })
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-9b9f4e2e", module.exports)
+  }
+}
+
+/***/ }),
+/* 978 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(975);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("c0e89702", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b9f4e2e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./score-slider.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b9f4e2e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./score-slider.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 979 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _newGradingMutationTypes = __webpack_require__(49);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(52);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(53);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _commentText = __webpack_require__(968);
+
+var _commentText2 = _interopRequireDefault(_commentText);
+
+var _scoreSlider = __webpack_require__(976);
+
+var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+module.exports = {
+
+    components: { CommentText: _commentText2.default, ScoreSlider: _scoreSlider2.default },
+
+    props: ['item', 'student'],
+
+    data: function data() {
+        return {
+
+            /**
+             * Whether the current comment text is customized (as opposed to stock).
+             * When this is true, moving the slider should not change the text.
+             */
+            isCustom: false,
+
+            settings: {
+                sliderStep: 0.25,
+                valenceCutoffs: [0, 3.25, 6.75, 10],
+                valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+                valenceLabelPositions: [0, 33, 67, 100]
+            }
+        };
+    },
+
+    computed: {
+        /**
+         * Returns the string of the element's description to be displayed on the page
+         * @returns {string}
+         */
+        title: function title() {
+            return this.item.name;
+        },
+
+        /**
+         * Shortcut to where the active student is stored
+         * @returns {module.exports.computed.activeStudent|null|*}
+         */
+        activeStudent: function activeStudent() {
+            return this.$store.getters[nmgTypes.getActiveStudent];
+        },
+        /**
+         * The valence corresponding to the currently set element score
+         * @returns {*}
+         */
+        currentValence: function currentValence() {
+            //return false if no element score set
+            if (typeof this.elementScore == 'undefined' || this.elementScore == null) {
+                return false;
+            }
+
+            return this.getValence(this.elementScore);
+        },
+
+        /**
+         * The current value of the slider
+         */
+        elementScore: {
+            // cache: false,
+            get: function get() {
+                if (!this.isReady()) return '';
+
+                var qs = this.$store.getters.getItemScoreObject(this.item.id, this.student.id);
+                if (qs != null) {
+                    return qs.score;
+                }
+                //     // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
+                //     return this.store.getElementScoreForActiveStudent( this.elementIndex );
+            },
+            set: function set(score) {
+                //     this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
+                //     this.notifyStoreElementScore( score )
+            }
+        }
+
+        // /**
+        //  * Returns the string id of the comment area
+        //  * @returns {string}
+        //  */
+        // commentAreaId: function () {
+        //     return "commentQ" + this.questionNumber + "E" + this.elementNumber;
+        // },
+        //
+        // /**
+        //  * Returns the jQuery selector for the comment area
+        //  * @returns {*|jQuery|HTMLElement}
+        //  */
+        // commentSelector: function () {
+        //     return $( '#' + this.commentAreaId );
+        // },
+
+        // /**
+        //  * The current value of the text area
+        //  */
+        // commentText: {
+        //     cache: false,
+        //     get: function () {
+        //         //setting this to just this.elementScore prevents missing from displaying comment.
+        //         //when element score was 0.
+        //         //Also led to custom comments being deleted when moved to missing
+        //         if ( this.elementScore != null )
+        //         // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
+        //             return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+        //     },
+        //     set: function ( text ) {
+        //         this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
+        //         //send to the db
+        //         this.notifyStoreCommentText();
+        //     }
+        // },
+
+
+    },
+
+    methods: {
+        isReady: function isReady() {
+            if (_.isUndefined(this.item) || _.isNull(this.item) || _.isUndefined(this.student) || _.isNull(this.student)) return false;
+            return true;
+        },
+
+        // /**
+        //  * Handles the request to store comment text on the server
+        //  * Accompanying object should contain:
+        //  *      obj.elementIndex: Index of the element whose score needs updating
+        //  */
+        // storeCommentTextRequest : function ( commentRequestObj ) {
+        //     window.console.log( 'gradeVue', 'store-comment-text-request', commentRequestObj );
+        //     let commentText = this.store.getStoredCommentText(commentRequestObj.studentIndex, commentRequestObj.elementIndex)
+        //     this.saveCommentWithTime(commentRequestObj.studentIndex, commentRequestObj.elementId, commentText);
+        // },
+        //
+        //
+        // /**
+        //  * Handles the request to store element score on the server
+        //  * Accompanying object should contain:
+        //  *      obj.elementIndex: Index of the element whose score needs updating
+        //  */
+        // storeElementScoreRequest: function ( elementScoreRequestObj ) {
+        //     window.console.log( 'gradeVue', 'caught store-element-score-request', elementScoreRequestObj );
+        //     let elementId = elementScoreRequestObj.elementId;
+        //     let studentIndex = elementScoreRequestObj.studentIndex
+        //     //store on server
+        //     this.saveElementScoreWithTime(studentIndex, elementId, elementScoreRequestObj.score)
+        // },
+        //
+        //
+        //
+
+        /* ------------------ Display manipulation ------------------------------ */
+        // /**
+        //  * Sets the comment area to empty (user should see the place holder).
+        //  * Usually used to clear out any text that might be left from other users
+        //  */
+        // commentAreaEmpty: function () {
+        //     this.commentText = '';
+        // },
+
+
+        // /**
+        //  * Updates the displayed comment to match the current slider value.
+        //  * TODO Add a test for the potential corner cases making the default null creates
+        //  */
+        // commentAreaUpdate: function () {
+        //     if ( this.elementScore === null ) {
+        //         // clear any text that might have been left over from another user
+        //         // this.commentAreaEmpty();
+        //         // if NULL, disable comment text area until a slider is moved.
+        //         // this is so that the user doesn't enter custom text, move the slider,
+        //         // and then see their custom text irreversibly wiped out.
+        //         this.commentAreaDisable();
+        //     } else {
+        //         // It has already been scored, so the comment text will be retrieved and set.
+        //         //no need for it to remain read only
+        //         this.commentAreaEnable();
+        //     }
+        // },
+
+        /* ------------------------------- Valence helpers -------------------------------- */
+        /**
+         * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
+         * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
+         *
+         * @param score
+         * @returns {number}
+         */
+        getValence: function getValence(score) {
+            var me = this;
+            if (score === null) throw new Error("cannot get valence for null");
+            if (score < 0 || score > me.settings.valenceCutoffs[me.settings.valenceCutoffs.length - 1]) throw new Error("cannot get valence. value out of range");
+
+            var valence = 0;
+            //start at the second largest value in the cutoffs.
+            for (var j = me.settings.valenceCutoffs.length - 2; j >= 0; j--) {
+                if (score > me.settings.valenceCutoffs[j]) {
+                    //if the score is greater than the second largest cutoff value, then it belongs
+                    //to the highest valence and so on.
+                    valence = j + 1;
+                    break;
+                }
+            }
+            //return the set valence. If made it all the way to 0, the default will be returned.
+            return valence;
+        },
+
+        /**
+         * Check whether the old and new scores have the same valence.
+         * If they are, return true.
+         * If not or if oldScore wasn't set, return false
+         * @param oldScore
+         * @param newScore
+         * @returns {boolean}
+         */
+        isSameValence: function isSameValence(oldScore, newScore) {
+            //if there was no old score, return false
+            if (typeof oldScore == 'undefined' || oldScore == null) {
+                return false;
+            }
+            //check old and new are the same
+            if (this.getValence(newScore) != this.getValence(oldScore)) {
+                return false;
+            }
+            return true;
+        },
+
+        /**
+         * Called when an element slider stops movement. Updates element
+         * score and text (if necessary), then saves score, text and time
+         * @param slideEvt
+         * @param data
+         * @param Roster
+         * @param callback
+         */
+        handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
+            //get the existing score
+            // var oldScore = this.store.getElementScoreForActiveStudent( this.elementIndex );
+            // //store the new element score in the data object
+            // this.elementScore = slideEvt.value;
+            //
+            // /**
+            //  * update comment text and save to DB.
+            //  * Only replace text if the score has changed valence regions
+            //  */
+            // if ( !this.isSameValence( oldScore, this.elementScore ) ) {
+            //     //Score is in a new valence region.
+            //     //So let's plug in the appropriate comment text and save to DB
+            //     //
+            //     //Dear Adam, make sure you read the doc for storeCommentText before fucking with
+            //     //anything in these lines
+            //     this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+            //
+            // } else {
+            //     // Score is in the same valence region.
+            //     // Jump straight to saving without changing the elementComment
+            //     // Fear not. Changes directly to the comment text will be handled elsewhere.
+            // }
+            //
+            // // If using bell curve (standardScoring), element score affects
+            // the total question score, so update
+            // if ( Roster.standardScoring ) {
+            //     //  updateStandardScores();
+            // }
+
+            // if ( typeof callback != 'undefined' ) {
+            //     return callback();
+            // }
+
+        },
+
+        setSliderScore: function setSliderScore() {
+            // this.sliderSelector.slider( 'setValue', this.elementScore );
+            //            this.sliderSelector.slider( 'refresh' );
+        },
+
+        /**
+         * Requests that the grading timer be started, if paused
+         */
+        notifyStartTimer: function notifyStartTimer() {
+            // this.$dispatch( 'start-timer-request', this.elementIndex );
+        }
+
+    },
+
+    ready: function ready() {
+        var me = this;
+
+        // initialize slider
+        $('#' + this.sliderId).slider({
+            tooltip: 'show',
+            //value: this.elementScore,
+            step: this.settings.sliderStep,
+            ticks: this.settings.valenceCutoffs,
+            ticks_labels: this.settings.valenceLabels,
+            ticks_position: this.settings.valenceLabels
+            // id: Counter()
+        });
+
+        /* ----------------- slider listeners --------------- */
+        /* When an element slider stops movement,
+         update element score and text (if necessary),
+         then save score, text and time
+         *  */
+        this.sliderSelector.on('slideStop', function (slideEvt) {
+            // me.handleElementSliderStopEvent( slideEvt );
+            // me.notifySlideEvent();
+        });
+
+        // window.console.log('input ready', 'elementIndex', this.elementIndex);
+    }
+};
+
+/***/ }),
+/* 980 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(4)(
+  /* script */
+  __webpack_require__(979),
+  /* template */
+  __webpack_require__(981),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/grading/inputs/element-input.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] element-input.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-158082c8", Component.options)
+  } else {
+    hotAPI.reload("data-v-158082c8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 981 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: " elementPanel box"
+  }, [_c('h5', {
+    staticClass: "elementTitle"
+  }, [_vm._v(_vm._s(_vm.title))]), _vm._v(" "), _c('comment-text', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  }), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('label'), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('score-slider', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  })], 1)])], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-158082c8", module.exports)
+  }
+}
+
+/***/ }),
+/* 982 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
+__webpack_require__(994)
+__webpack_require__(984)
+__webpack_require__(985)
+__webpack_require__(986)
+__webpack_require__(987)
+__webpack_require__(988)
+__webpack_require__(989)
+__webpack_require__(993)
+__webpack_require__(990)
+__webpack_require__(991)
+__webpack_require__(992)
+__webpack_require__(983)
+
+/***/ }),
+/* 983 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: affix.js v3.3.7
+ * http://getbootstrap.com/javascript/#affix
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // AFFIX CLASS DEFINITION
+  // ======================
+
+  var Affix = function (element, options) {
+    this.options = $.extend({}, Affix.DEFAULTS, options)
+
+    this.$target = $(this.options.target)
+      .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
+      .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
+
+    this.$element     = $(element)
+    this.affixed      = null
+    this.unpin        = null
+    this.pinnedOffset = null
+
+    this.checkPosition()
+  }
+
+  Affix.VERSION  = '3.3.7'
+
+  Affix.RESET    = 'affix affix-top affix-bottom'
+
+  Affix.DEFAULTS = {
+    offset: 0,
+    target: window
+  }
+
+  Affix.prototype.getState = function (scrollHeight, height, offsetTop, offsetBottom) {
+    var scrollTop    = this.$target.scrollTop()
+    var position     = this.$element.offset()
+    var targetHeight = this.$target.height()
+
+    if (offsetTop != null && this.affixed == 'top') return scrollTop < offsetTop ? 'top' : false
+
+    if (this.affixed == 'bottom') {
+      if (offsetTop != null) return (scrollTop + this.unpin <= position.top) ? false : 'bottom'
+      return (scrollTop + targetHeight <= scrollHeight - offsetBottom) ? false : 'bottom'
+    }
+
+    var initializing   = this.affixed == null
+    var colliderTop    = initializing ? scrollTop : position.top
+    var colliderHeight = initializing ? targetHeight : height
+
+    if (offsetTop != null && scrollTop <= offsetTop) return 'top'
+    if (offsetBottom != null && (colliderTop + colliderHeight >= scrollHeight - offsetBottom)) return 'bottom'
+
+    return false
+  }
+
+  Affix.prototype.getPinnedOffset = function () {
+    if (this.pinnedOffset) return this.pinnedOffset
+    this.$element.removeClass(Affix.RESET).addClass('affix')
+    var scrollTop = this.$target.scrollTop()
+    var position  = this.$element.offset()
+    return (this.pinnedOffset = position.top - scrollTop)
+  }
+
+  Affix.prototype.checkPositionWithEventLoop = function () {
+    setTimeout($.proxy(this.checkPosition, this), 1)
+  }
+
+  Affix.prototype.checkPosition = function () {
+    if (!this.$element.is(':visible')) return
+
+    var height       = this.$element.height()
+    var offset       = this.options.offset
+    var offsetTop    = offset.top
+    var offsetBottom = offset.bottom
+    var scrollHeight = Math.max($(document).height(), $(document.body).height())
+
+    if (typeof offset != 'object')         offsetBottom = offsetTop = offset
+    if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
+    if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
+
+    var affix = this.getState(scrollHeight, height, offsetTop, offsetBottom)
+
+    if (this.affixed != affix) {
+      if (this.unpin != null) this.$element.css('top', '')
+
+      var affixType = 'affix' + (affix ? '-' + affix : '')
+      var e         = $.Event(affixType + '.bs.affix')
+
+      this.$element.trigger(e)
+
+      if (e.isDefaultPrevented()) return
+
+      this.affixed = affix
+      this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
+
+      this.$element
+        .removeClass(Affix.RESET)
+        .addClass(affixType)
+        .trigger(affixType.replace('affix', 'affixed') + '.bs.affix')
+    }
+
+    if (affix == 'bottom') {
+      this.$element.offset({
+        top: scrollHeight - height - offsetBottom
+      })
+    }
+  }
+
+
+  // AFFIX PLUGIN DEFINITION
+  // =======================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.affix')
+      var options = typeof option == 'object' && option
+
+      if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.affix
+
+  $.fn.affix             = Plugin
+  $.fn.affix.Constructor = Affix
+
+
+  // AFFIX NO CONFLICT
+  // =================
+
+  $.fn.affix.noConflict = function () {
+    $.fn.affix = old
+    return this
+  }
+
+
+  // AFFIX DATA-API
+  // ==============
+
+  $(window).on('load', function () {
+    $('[data-spy="affix"]').each(function () {
+      var $spy = $(this)
+      var data = $spy.data()
+
+      data.offset = data.offset || {}
+
+      if (data.offsetBottom != null) data.offset.bottom = data.offsetBottom
+      if (data.offsetTop    != null) data.offset.top    = data.offsetTop
+
+      Plugin.call($spy, data)
+    })
+  })
+
+}(jQuery);
+
+
+/***/ }),
+/* 984 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: alert.js v3.3.7
+ * http://getbootstrap.com/javascript/#alerts
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // ALERT CLASS DEFINITION
+  // ======================
+
+  var dismiss = '[data-dismiss="alert"]'
+  var Alert   = function (el) {
+    $(el).on('click', dismiss, this.close)
+  }
+
+  Alert.VERSION = '3.3.7'
+
+  Alert.TRANSITION_DURATION = 150
+
+  Alert.prototype.close = function (e) {
+    var $this    = $(this)
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = $(selector === '#' ? [] : selector)
+
+    if (e) e.preventDefault()
+
+    if (!$parent.length) {
+      $parent = $this.closest('.alert')
+    }
+
+    $parent.trigger(e = $.Event('close.bs.alert'))
+
+    if (e.isDefaultPrevented()) return
+
+    $parent.removeClass('in')
+
+    function removeElement() {
+      // detach from parent, fire event then clean up data
+      $parent.detach().trigger('closed.bs.alert').remove()
+    }
+
+    $.support.transition && $parent.hasClass('fade') ?
+      $parent
+        .one('bsTransitionEnd', removeElement)
+        .emulateTransitionEnd(Alert.TRANSITION_DURATION) :
+      removeElement()
+  }
+
+
+  // ALERT PLUGIN DEFINITION
+  // =======================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.alert')
+
+      if (!data) $this.data('bs.alert', (data = new Alert(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.alert
+
+  $.fn.alert             = Plugin
+  $.fn.alert.Constructor = Alert
+
+
+  // ALERT NO CONFLICT
+  // =================
+
+  $.fn.alert.noConflict = function () {
+    $.fn.alert = old
+    return this
+  }
+
+
+  // ALERT DATA-API
+  // ==============
+
+  $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
+
+}(jQuery);
+
+
+/***/ }),
+/* 985 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: button.js v3.3.7
+ * http://getbootstrap.com/javascript/#buttons
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // BUTTON PUBLIC CLASS DEFINITION
+  // ==============================
+
+  var Button = function (element, options) {
+    this.$element  = $(element)
+    this.options   = $.extend({}, Button.DEFAULTS, options)
+    this.isLoading = false
+  }
+
+  Button.VERSION  = '3.3.7'
+
+  Button.DEFAULTS = {
+    loadingText: 'loading...'
+  }
+
+  Button.prototype.setState = function (state) {
+    var d    = 'disabled'
+    var $el  = this.$element
+    var val  = $el.is('input') ? 'val' : 'html'
+    var data = $el.data()
+
+    state += 'Text'
+
+    if (data.resetText == null) $el.data('resetText', $el[val]())
+
+    // push to event loop to allow forms to submit
+    setTimeout($.proxy(function () {
+      $el[val](data[state] == null ? this.options[state] : data[state])
+
+      if (state == 'loadingText') {
+        this.isLoading = true
+        $el.addClass(d).attr(d, d).prop(d, true)
+      } else if (this.isLoading) {
+        this.isLoading = false
+        $el.removeClass(d).removeAttr(d).prop(d, false)
+      }
+    }, this), 0)
+  }
+
+  Button.prototype.toggle = function () {
+    var changed = true
+    var $parent = this.$element.closest('[data-toggle="buttons"]')
+
+    if ($parent.length) {
+      var $input = this.$element.find('input')
+      if ($input.prop('type') == 'radio') {
+        if ($input.prop('checked')) changed = false
+        $parent.find('.active').removeClass('active')
+        this.$element.addClass('active')
+      } else if ($input.prop('type') == 'checkbox') {
+        if (($input.prop('checked')) !== this.$element.hasClass('active')) changed = false
+        this.$element.toggleClass('active')
+      }
+      $input.prop('checked', this.$element.hasClass('active'))
+      if (changed) $input.trigger('change')
+    } else {
+      this.$element.attr('aria-pressed', !this.$element.hasClass('active'))
+      this.$element.toggleClass('active')
+    }
+  }
+
+
+  // BUTTON PLUGIN DEFINITION
+  // ========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.button')
+      var options = typeof option == 'object' && option
+
+      if (!data) $this.data('bs.button', (data = new Button(this, options)))
+
+      if (option == 'toggle') data.toggle()
+      else if (option) data.setState(option)
+    })
+  }
+
+  var old = $.fn.button
+
+  $.fn.button             = Plugin
+  $.fn.button.Constructor = Button
+
+
+  // BUTTON NO CONFLICT
+  // ==================
+
+  $.fn.button.noConflict = function () {
+    $.fn.button = old
+    return this
+  }
+
+
+  // BUTTON DATA-API
+  // ===============
+
+  $(document)
+    .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
+      var $btn = $(e.target).closest('.btn')
+      Plugin.call($btn, 'toggle')
+      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
+        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
+        e.preventDefault()
+        // The target component still receive the focus
+        if ($btn.is('input,button')) $btn.trigger('focus')
+        else $btn.find('input:visible,button:visible').first().trigger('focus')
+      }
+    })
+    .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
+      $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
+    })
+
+}(jQuery);
+
+
+/***/ }),
+/* 986 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: carousel.js v3.3.7
+ * http://getbootstrap.com/javascript/#carousel
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CAROUSEL CLASS DEFINITION
+  // =========================
+
+  var Carousel = function (element, options) {
+    this.$element    = $(element)
+    this.$indicators = this.$element.find('.carousel-indicators')
+    this.options     = options
+    this.paused      = null
+    this.sliding     = null
+    this.interval    = null
+    this.$active     = null
+    this.$items      = null
+
+    this.options.keyboard && this.$element.on('keydown.bs.carousel', $.proxy(this.keydown, this))
+
+    this.options.pause == 'hover' && !('ontouchstart' in document.documentElement) && this.$element
+      .on('mouseenter.bs.carousel', $.proxy(this.pause, this))
+      .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
+  }
+
+  Carousel.VERSION  = '3.3.7'
+
+  Carousel.TRANSITION_DURATION = 600
+
+  Carousel.DEFAULTS = {
+    interval: 5000,
+    pause: 'hover',
+    wrap: true,
+    keyboard: true
+  }
+
+  Carousel.prototype.keydown = function (e) {
+    if (/input|textarea/i.test(e.target.tagName)) return
+    switch (e.which) {
+      case 37: this.prev(); break
+      case 39: this.next(); break
+      default: return
+    }
+
+    e.preventDefault()
+  }
+
+  Carousel.prototype.cycle = function (e) {
+    e || (this.paused = false)
+
+    this.interval && clearInterval(this.interval)
+
+    this.options.interval
+      && !this.paused
+      && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
+
+    return this
+  }
+
+  Carousel.prototype.getItemIndex = function (item) {
+    this.$items = item.parent().children('.item')
+    return this.$items.index(item || this.$active)
+  }
+
+  Carousel.prototype.getItemForDirection = function (direction, active) {
+    var activeIndex = this.getItemIndex(active)
+    var willWrap = (direction == 'prev' && activeIndex === 0)
+                || (direction == 'next' && activeIndex == (this.$items.length - 1))
+    if (willWrap && !this.options.wrap) return active
+    var delta = direction == 'prev' ? -1 : 1
+    var itemIndex = (activeIndex + delta) % this.$items.length
+    return this.$items.eq(itemIndex)
+  }
+
+  Carousel.prototype.to = function (pos) {
+    var that        = this
+    var activeIndex = this.getItemIndex(this.$active = this.$element.find('.item.active'))
+
+    if (pos > (this.$items.length - 1) || pos < 0) return
+
+    if (this.sliding)       return this.$element.one('slid.bs.carousel', function () { that.to(pos) }) // yes, "slid"
+    if (activeIndex == pos) return this.pause().cycle()
+
+    return this.slide(pos > activeIndex ? 'next' : 'prev', this.$items.eq(pos))
+  }
+
+  Carousel.prototype.pause = function (e) {
+    e || (this.paused = true)
+
+    if (this.$element.find('.next, .prev').length && $.support.transition) {
+      this.$element.trigger($.support.transition.end)
+      this.cycle(true)
+    }
+
+    this.interval = clearInterval(this.interval)
+
+    return this
+  }
+
+  Carousel.prototype.next = function () {
+    if (this.sliding) return
+    return this.slide('next')
+  }
+
+  Carousel.prototype.prev = function () {
+    if (this.sliding) return
+    return this.slide('prev')
+  }
+
+  Carousel.prototype.slide = function (type, next) {
+    var $active   = this.$element.find('.item.active')
+    var $next     = next || this.getItemForDirection(type, $active)
+    var isCycling = this.interval
+    var direction = type == 'next' ? 'left' : 'right'
+    var that      = this
+
+    if ($next.hasClass('active')) return (this.sliding = false)
+
+    var relatedTarget = $next[0]
+    var slideEvent = $.Event('slide.bs.carousel', {
+      relatedTarget: relatedTarget,
+      direction: direction
+    })
+    this.$element.trigger(slideEvent)
+    if (slideEvent.isDefaultPrevented()) return
+
+    this.sliding = true
+
+    isCycling && this.pause()
+
+    if (this.$indicators.length) {
+      this.$indicators.find('.active').removeClass('active')
+      var $nextIndicator = $(this.$indicators.children()[this.getItemIndex($next)])
+      $nextIndicator && $nextIndicator.addClass('active')
+    }
+
+    var slidEvent = $.Event('slid.bs.carousel', { relatedTarget: relatedTarget, direction: direction }) // yes, "slid"
+    if ($.support.transition && this.$element.hasClass('slide')) {
+      $next.addClass(type)
+      $next[0].offsetWidth // force reflow
+      $active.addClass(direction)
+      $next.addClass(direction)
+      $active
+        .one('bsTransitionEnd', function () {
+          $next.removeClass([type, direction].join(' ')).addClass('active')
+          $active.removeClass(['active', direction].join(' '))
+          that.sliding = false
+          setTimeout(function () {
+            that.$element.trigger(slidEvent)
+          }, 0)
+        })
+        .emulateTransitionEnd(Carousel.TRANSITION_DURATION)
+    } else {
+      $active.removeClass('active')
+      $next.addClass('active')
+      this.sliding = false
+      this.$element.trigger(slidEvent)
+    }
+
+    isCycling && this.cycle()
+
+    return this
+  }
+
+
+  // CAROUSEL PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.carousel')
+      var options = $.extend({}, Carousel.DEFAULTS, $this.data(), typeof option == 'object' && option)
+      var action  = typeof option == 'string' ? option : options.slide
+
+      if (!data) $this.data('bs.carousel', (data = new Carousel(this, options)))
+      if (typeof option == 'number') data.to(option)
+      else if (action) data[action]()
+      else if (options.interval) data.pause().cycle()
+    })
+  }
+
+  var old = $.fn.carousel
+
+  $.fn.carousel             = Plugin
+  $.fn.carousel.Constructor = Carousel
+
+
+  // CAROUSEL NO CONFLICT
+  // ====================
+
+  $.fn.carousel.noConflict = function () {
+    $.fn.carousel = old
+    return this
+  }
+
+
+  // CAROUSEL DATA-API
+  // =================
+
+  var clickHandler = function (e) {
+    var href
+    var $this   = $(this)
+    var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) // strip for ie7
+    if (!$target.hasClass('carousel')) return
+    var options = $.extend({}, $target.data(), $this.data())
+    var slideIndex = $this.attr('data-slide-to')
+    if (slideIndex) options.interval = false
+
+    Plugin.call($target, options)
+
+    if (slideIndex) {
+      $target.data('bs.carousel').to(slideIndex)
+    }
+
+    e.preventDefault()
+  }
+
+  $(document)
+    .on('click.bs.carousel.data-api', '[data-slide]', clickHandler)
+    .on('click.bs.carousel.data-api', '[data-slide-to]', clickHandler)
+
+  $(window).on('load', function () {
+    $('[data-ride="carousel"]').each(function () {
+      var $carousel = $(this)
+      Plugin.call($carousel, $carousel.data())
+    })
+  })
+
+}(jQuery);
+
+
+/***/ }),
+/* 987 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: collapse.js v3.3.7
+ * http://getbootstrap.com/javascript/#collapse
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+/* jshint latedef: false */
+
++function ($) {
+  'use strict';
+
+  // COLLAPSE PUBLIC CLASS DEFINITION
+  // ================================
+
+  var Collapse = function (element, options) {
+    this.$element      = $(element)
+    this.options       = $.extend({}, Collapse.DEFAULTS, options)
+    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
+                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
+    this.transitioning = null
+
+    if (this.options.parent) {
+      this.$parent = this.getParent()
+    } else {
+      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
+    }
+
+    if (this.options.toggle) this.toggle()
+  }
+
+  Collapse.VERSION  = '3.3.7'
+
+  Collapse.TRANSITION_DURATION = 350
+
+  Collapse.DEFAULTS = {
+    toggle: true
+  }
+
+  Collapse.prototype.dimension = function () {
+    var hasWidth = this.$element.hasClass('width')
+    return hasWidth ? 'width' : 'height'
+  }
+
+  Collapse.prototype.show = function () {
+    if (this.transitioning || this.$element.hasClass('in')) return
+
+    var activesData
+    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
+
+    if (actives && actives.length) {
+      activesData = actives.data('bs.collapse')
+      if (activesData && activesData.transitioning) return
+    }
+
+    var startEvent = $.Event('show.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    if (actives && actives.length) {
+      Plugin.call(actives, 'hide')
+      activesData || actives.data('bs.collapse', null)
+    }
+
+    var dimension = this.dimension()
+
+    this.$element
+      .removeClass('collapse')
+      .addClass('collapsing')[dimension](0)
+      .attr('aria-expanded', true)
+
+    this.$trigger
+      .removeClass('collapsed')
+      .attr('aria-expanded', true)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse in')[dimension]('')
+      this.transitioning = 0
+      this.$element
+        .trigger('shown.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
+
+    this.$element
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
+  }
+
+  Collapse.prototype.hide = function () {
+    if (this.transitioning || !this.$element.hasClass('in')) return
+
+    var startEvent = $.Event('hide.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    var dimension = this.dimension()
+
+    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
+
+    this.$element
+      .addClass('collapsing')
+      .removeClass('collapse in')
+      .attr('aria-expanded', false)
+
+    this.$trigger
+      .addClass('collapsed')
+      .attr('aria-expanded', false)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.transitioning = 0
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse')
+        .trigger('hidden.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    this.$element
+      [dimension](0)
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
+  }
+
+  Collapse.prototype.toggle = function () {
+    this[this.$element.hasClass('in') ? 'hide' : 'show']()
+  }
+
+  Collapse.prototype.getParent = function () {
+    return $(this.options.parent)
+      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
+      .each($.proxy(function (i, element) {
+        var $element = $(element)
+        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
+      }, this))
+      .end()
+  }
+
+  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
+    var isOpen = $element.hasClass('in')
+
+    $element.attr('aria-expanded', isOpen)
+    $trigger
+      .toggleClass('collapsed', !isOpen)
+      .attr('aria-expanded', isOpen)
+  }
+
+  function getTargetFromTrigger($trigger) {
+    var href
+    var target = $trigger.attr('data-target')
+      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+
+    return $(target)
+  }
+
+
+  // COLLAPSE PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.collapse')
+      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
+
+      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
+      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.collapse
+
+  $.fn.collapse             = Plugin
+  $.fn.collapse.Constructor = Collapse
+
+
+  // COLLAPSE NO CONFLICT
+  // ====================
+
+  $.fn.collapse.noConflict = function () {
+    $.fn.collapse = old
+    return this
+  }
+
+
+  // COLLAPSE DATA-API
+  // =================
+
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+    var $this   = $(this)
+
+    if (!$this.attr('data-target')) e.preventDefault()
+
+    var $target = getTargetFromTrigger($this)
+    var data    = $target.data('bs.collapse')
+    var option  = data ? 'toggle' : $this.data()
+
+    Plugin.call($target, option)
+  })
+
+}(jQuery);
+
+
+/***/ }),
+/* 988 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: dropdown.js v3.3.7
+ * http://getbootstrap.com/javascript/#dropdowns
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // DROPDOWN CLASS DEFINITION
+  // =========================
+
+  var backdrop = '.dropdown-backdrop'
+  var toggle   = '[data-toggle="dropdown"]'
+  var Dropdown = function (element) {
+    $(element).on('click.bs.dropdown', this.toggle)
+  }
+
+  Dropdown.VERSION = '3.3.7'
+
+  function getParent($this) {
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = selector && $(selector)
+
+    return $parent && $parent.length ? $parent : $this.parent()
+  }
+
+  function clearMenus(e) {
+    if (e && e.which === 3) return
+    $(backdrop).remove()
+    $(toggle).each(function () {
+      var $this         = $(this)
+      var $parent       = getParent($this)
+      var relatedTarget = { relatedTarget: this }
+
+      if (!$parent.hasClass('open')) return
+
+      if (e && e.type == 'click' && /input|textarea/i.test(e.target.tagName) && $.contains($parent[0], e.target)) return
+
+      $parent.trigger(e = $.Event('hide.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this.attr('aria-expanded', 'false')
+      $parent.removeClass('open').trigger($.Event('hidden.bs.dropdown', relatedTarget))
+    })
+  }
+
+  Dropdown.prototype.toggle = function (e) {
+    var $this = $(this)
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+
+    if (!isActive) {
+      if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
+        // if mobile we use a backdrop because click events don't delegate
+        $(document.createElement('div'))
+          .addClass('dropdown-backdrop')
+          .insertAfter($(this))
+          .on('click', clearMenus)
+      }
+
+      var relatedTarget = { relatedTarget: this }
+      $parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this
+        .trigger('focus')
+        .attr('aria-expanded', 'true')
+
+      $parent
+        .toggleClass('open')
+        .trigger($.Event('shown.bs.dropdown', relatedTarget))
+    }
+
+    return false
+  }
+
+  Dropdown.prototype.keydown = function (e) {
+    if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
+
+    var $this = $(this)
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    if (!isActive && e.which != 27 || isActive && e.which == 27) {
+      if (e.which == 27) $parent.find(toggle).trigger('focus')
+      return $this.trigger('click')
+    }
+
+    var desc = ' li:not(.disabled):visible a'
+    var $items = $parent.find('.dropdown-menu' + desc)
+
+    if (!$items.length) return
+
+    var index = $items.index(e.target)
+
+    if (e.which == 38 && index > 0)                 index--         // up
+    if (e.which == 40 && index < $items.length - 1) index++         // down
+    if (!~index)                                    index = 0
+
+    $items.eq(index).trigger('focus')
+  }
+
+
+  // DROPDOWN PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.dropdown')
+
+      if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.dropdown
+
+  $.fn.dropdown             = Plugin
+  $.fn.dropdown.Constructor = Dropdown
+
+
+  // DROPDOWN NO CONFLICT
+  // ====================
+
+  $.fn.dropdown.noConflict = function () {
+    $.fn.dropdown = old
+    return this
+  }
+
+
+  // APPLY TO STANDARD DROPDOWN ELEMENTS
+  // ===================================
+
+  $(document)
+    .on('click.bs.dropdown.data-api', clearMenus)
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
+
+}(jQuery);
+
+
+/***/ }),
+/* 989 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: modal.js v3.3.7
+ * http://getbootstrap.com/javascript/#modals
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // MODAL CLASS DEFINITION
+  // ======================
+
+  var Modal = function (element, options) {
+    this.options             = options
+    this.$body               = $(document.body)
+    this.$element            = $(element)
+    this.$dialog             = this.$element.find('.modal-dialog')
+    this.$backdrop           = null
+    this.isShown             = null
+    this.originalBodyPad     = null
+    this.scrollbarWidth      = 0
+    this.ignoreBackdropClick = false
+
+    if (this.options.remote) {
+      this.$element
+        .find('.modal-content')
+        .load(this.options.remote, $.proxy(function () {
+          this.$element.trigger('loaded.bs.modal')
+        }, this))
+    }
+  }
+
+  Modal.VERSION  = '3.3.7'
+
+  Modal.TRANSITION_DURATION = 300
+  Modal.BACKDROP_TRANSITION_DURATION = 150
+
+  Modal.DEFAULTS = {
+    backdrop: true,
+    keyboard: true,
+    show: true
+  }
+
+  Modal.prototype.toggle = function (_relatedTarget) {
+    return this.isShown ? this.hide() : this.show(_relatedTarget)
+  }
+
+  Modal.prototype.show = function (_relatedTarget) {
+    var that = this
+    var e    = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
+
+    this.$element.trigger(e)
+
+    if (this.isShown || e.isDefaultPrevented()) return
+
+    this.isShown = true
+
+    this.checkScrollbar()
+    this.setScrollbar()
+    this.$body.addClass('modal-open')
+
+    this.escape()
+    this.resize()
+
+    this.$element.on('click.dismiss.bs.modal', '[data-dismiss="modal"]', $.proxy(this.hide, this))
+
+    this.$dialog.on('mousedown.dismiss.bs.modal', function () {
+      that.$element.one('mouseup.dismiss.bs.modal', function (e) {
+        if ($(e.target).is(that.$element)) that.ignoreBackdropClick = true
+      })
+    })
+
+    this.backdrop(function () {
+      var transition = $.support.transition && that.$element.hasClass('fade')
+
+      if (!that.$element.parent().length) {
+        that.$element.appendTo(that.$body) // don't move modals dom position
+      }
+
+      that.$element
+        .show()
+        .scrollTop(0)
+
+      that.adjustDialog()
+
+      if (transition) {
+        that.$element[0].offsetWidth // force reflow
+      }
+
+      that.$element.addClass('in')
+
+      that.enforceFocus()
+
+      var e = $.Event('shown.bs.modal', { relatedTarget: _relatedTarget })
+
+      transition ?
+        that.$dialog // wait for modal to slide in
+          .one('bsTransitionEnd', function () {
+            that.$element.trigger('focus').trigger(e)
+          })
+          .emulateTransitionEnd(Modal.TRANSITION_DURATION) :
+        that.$element.trigger('focus').trigger(e)
+    })
+  }
+
+  Modal.prototype.hide = function (e) {
+    if (e) e.preventDefault()
+
+    e = $.Event('hide.bs.modal')
+
+    this.$element.trigger(e)
+
+    if (!this.isShown || e.isDefaultPrevented()) return
+
+    this.isShown = false
+
+    this.escape()
+    this.resize()
+
+    $(document).off('focusin.bs.modal')
+
+    this.$element
+      .removeClass('in')
+      .off('click.dismiss.bs.modal')
+      .off('mouseup.dismiss.bs.modal')
+
+    this.$dialog.off('mousedown.dismiss.bs.modal')
+
+    $.support.transition && this.$element.hasClass('fade') ?
+      this.$element
+        .one('bsTransitionEnd', $.proxy(this.hideModal, this))
+        .emulateTransitionEnd(Modal.TRANSITION_DURATION) :
+      this.hideModal()
+  }
+
+  Modal.prototype.enforceFocus = function () {
+    $(document)
+      .off('focusin.bs.modal') // guard against infinite focus loop
+      .on('focusin.bs.modal', $.proxy(function (e) {
+        if (document !== e.target &&
+            this.$element[0] !== e.target &&
+            !this.$element.has(e.target).length) {
+          this.$element.trigger('focus')
+        }
+      }, this))
+  }
+
+  Modal.prototype.escape = function () {
+    if (this.isShown && this.options.keyboard) {
+      this.$element.on('keydown.dismiss.bs.modal', $.proxy(function (e) {
+        e.which == 27 && this.hide()
+      }, this))
+    } else if (!this.isShown) {
+      this.$element.off('keydown.dismiss.bs.modal')
+    }
+  }
+
+  Modal.prototype.resize = function () {
+    if (this.isShown) {
+      $(window).on('resize.bs.modal', $.proxy(this.handleUpdate, this))
+    } else {
+      $(window).off('resize.bs.modal')
+    }
+  }
+
+  Modal.prototype.hideModal = function () {
+    var that = this
+    this.$element.hide()
+    this.backdrop(function () {
+      that.$body.removeClass('modal-open')
+      that.resetAdjustments()
+      that.resetScrollbar()
+      that.$element.trigger('hidden.bs.modal')
+    })
+  }
+
+  Modal.prototype.removeBackdrop = function () {
+    this.$backdrop && this.$backdrop.remove()
+    this.$backdrop = null
+  }
+
+  Modal.prototype.backdrop = function (callback) {
+    var that = this
+    var animate = this.$element.hasClass('fade') ? 'fade' : ''
+
+    if (this.isShown && this.options.backdrop) {
+      var doAnimate = $.support.transition && animate
+
+      this.$backdrop = $(document.createElement('div'))
+        .addClass('modal-backdrop ' + animate)
+        .appendTo(this.$body)
+
+      this.$element.on('click.dismiss.bs.modal', $.proxy(function (e) {
+        if (this.ignoreBackdropClick) {
+          this.ignoreBackdropClick = false
+          return
+        }
+        if (e.target !== e.currentTarget) return
+        this.options.backdrop == 'static'
+          ? this.$element[0].focus()
+          : this.hide()
+      }, this))
+
+      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
+
+      this.$backdrop.addClass('in')
+
+      if (!callback) return
+
+      doAnimate ?
+        this.$backdrop
+          .one('bsTransitionEnd', callback)
+          .emulateTransitionEnd(Modal.BACKDROP_TRANSITION_DURATION) :
+        callback()
+
+    } else if (!this.isShown && this.$backdrop) {
+      this.$backdrop.removeClass('in')
+
+      var callbackRemove = function () {
+        that.removeBackdrop()
+        callback && callback()
+      }
+      $.support.transition && this.$element.hasClass('fade') ?
+        this.$backdrop
+          .one('bsTransitionEnd', callbackRemove)
+          .emulateTransitionEnd(Modal.BACKDROP_TRANSITION_DURATION) :
+        callbackRemove()
+
+    } else if (callback) {
+      callback()
+    }
+  }
+
+  // these following methods are used to handle overflowing modals
+
+  Modal.prototype.handleUpdate = function () {
+    this.adjustDialog()
+  }
+
+  Modal.prototype.adjustDialog = function () {
+    var modalIsOverflowing = this.$element[0].scrollHeight > document.documentElement.clientHeight
+
+    this.$element.css({
+      paddingLeft:  !this.bodyIsOverflowing && modalIsOverflowing ? this.scrollbarWidth : '',
+      paddingRight: this.bodyIsOverflowing && !modalIsOverflowing ? this.scrollbarWidth : ''
+    })
+  }
+
+  Modal.prototype.resetAdjustments = function () {
+    this.$element.css({
+      paddingLeft: '',
+      paddingRight: ''
+    })
+  }
+
+  Modal.prototype.checkScrollbar = function () {
+    var fullWindowWidth = window.innerWidth
+    if (!fullWindowWidth) { // workaround for missing window.innerWidth in IE8
+      var documentElementRect = document.documentElement.getBoundingClientRect()
+      fullWindowWidth = documentElementRect.right - Math.abs(documentElementRect.left)
+    }
+    this.bodyIsOverflowing = document.body.clientWidth < fullWindowWidth
+    this.scrollbarWidth = this.measureScrollbar()
+  }
+
+  Modal.prototype.setScrollbar = function () {
+    var bodyPad = parseInt((this.$body.css('padding-right') || 0), 10)
+    this.originalBodyPad = document.body.style.paddingRight || ''
+    if (this.bodyIsOverflowing) this.$body.css('padding-right', bodyPad + this.scrollbarWidth)
+  }
+
+  Modal.prototype.resetScrollbar = function () {
+    this.$body.css('padding-right', this.originalBodyPad)
+  }
+
+  Modal.prototype.measureScrollbar = function () { // thx walsh
+    var scrollDiv = document.createElement('div')
+    scrollDiv.className = 'modal-scrollbar-measure'
+    this.$body.append(scrollDiv)
+    var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
+    this.$body[0].removeChild(scrollDiv)
+    return scrollbarWidth
+  }
+
+
+  // MODAL PLUGIN DEFINITION
+  // =======================
+
+  function Plugin(option, _relatedTarget) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.modal')
+      var options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option == 'object' && option)
+
+      if (!data) $this.data('bs.modal', (data = new Modal(this, options)))
+      if (typeof option == 'string') data[option](_relatedTarget)
+      else if (options.show) data.show(_relatedTarget)
+    })
+  }
+
+  var old = $.fn.modal
+
+  $.fn.modal             = Plugin
+  $.fn.modal.Constructor = Modal
+
+
+  // MODAL NO CONFLICT
+  // =================
+
+  $.fn.modal.noConflict = function () {
+    $.fn.modal = old
+    return this
+  }
+
+
+  // MODAL DATA-API
+  // ==============
+
+  $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
+    var $this   = $(this)
+    var href    = $this.attr('href')
+    var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7
+    var option  = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
+
+    if ($this.is('a')) e.preventDefault()
+
+    $target.one('show.bs.modal', function (showEvent) {
+      if (showEvent.isDefaultPrevented()) return // only register focus restorer if modal will actually get shown
+      $target.one('hidden.bs.modal', function () {
+        $this.is(':visible') && $this.trigger('focus')
+      })
+    })
+    Plugin.call($target, option, this)
+  })
+
+}(jQuery);
+
+
+/***/ }),
+/* 990 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: popover.js v3.3.7
+ * http://getbootstrap.com/javascript/#popovers
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // POPOVER PUBLIC CLASS DEFINITION
+  // ===============================
+
+  var Popover = function (element, options) {
+    this.init('popover', element, options)
+  }
+
+  if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
+
+  Popover.VERSION  = '3.3.7'
+
+  Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    placement: 'right',
+    trigger: 'click',
+    content: '',
+    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+  })
+
+
+  // NOTE: POPOVER EXTENDS tooltip.js
+  // ================================
+
+  Popover.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype)
+
+  Popover.prototype.constructor = Popover
+
+  Popover.prototype.getDefaults = function () {
+    return Popover.DEFAULTS
+  }
+
+  Popover.prototype.setContent = function () {
+    var $tip    = this.tip()
+    var title   = this.getTitle()
+    var content = this.getContent()
+
+    $tip.find('.popover-title')[this.options.html ? 'html' : 'text'](title)
+    $tip.find('.popover-content').children().detach().end()[ // we use append for html objects to maintain js events
+      this.options.html ? (typeof content == 'string' ? 'html' : 'append') : 'text'
+    ](content)
+
+    $tip.removeClass('fade top bottom left right in')
+
+    // IE8 doesn't accept hiding via the `:empty` pseudo selector, we have to do
+    // this manually by checking the contents.
+    if (!$tip.find('.popover-title').html()) $tip.find('.popover-title').hide()
+  }
+
+  Popover.prototype.hasContent = function () {
+    return this.getTitle() || this.getContent()
+  }
+
+  Popover.prototype.getContent = function () {
+    var $e = this.$element
+    var o  = this.options
+
+    return $e.attr('data-content')
+      || (typeof o.content == 'function' ?
+            o.content.call($e[0]) :
+            o.content)
+  }
+
+  Popover.prototype.arrow = function () {
+    return (this.$arrow = this.$arrow || this.tip().find('.arrow'))
+  }
+
+
+  // POPOVER PLUGIN DEFINITION
+  // =========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.popover')
+      var options = typeof option == 'object' && option
+
+      if (!data && /destroy|hide/.test(option)) return
+      if (!data) $this.data('bs.popover', (data = new Popover(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.popover
+
+  $.fn.popover             = Plugin
+  $.fn.popover.Constructor = Popover
+
+
+  // POPOVER NO CONFLICT
+  // ===================
+
+  $.fn.popover.noConflict = function () {
+    $.fn.popover = old
+    return this
+  }
+
+}(jQuery);
+
+
+/***/ }),
+/* 991 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: scrollspy.js v3.3.7
+ * http://getbootstrap.com/javascript/#scrollspy
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // SCROLLSPY CLASS DEFINITION
+  // ==========================
+
+  function ScrollSpy(element, options) {
+    this.$body          = $(document.body)
+    this.$scrollElement = $(element).is(document.body) ? $(window) : $(element)
+    this.options        = $.extend({}, ScrollSpy.DEFAULTS, options)
+    this.selector       = (this.options.target || '') + ' .nav li > a'
+    this.offsets        = []
+    this.targets        = []
+    this.activeTarget   = null
+    this.scrollHeight   = 0
+
+    this.$scrollElement.on('scroll.bs.scrollspy', $.proxy(this.process, this))
+    this.refresh()
+    this.process()
+  }
+
+  ScrollSpy.VERSION  = '3.3.7'
+
+  ScrollSpy.DEFAULTS = {
+    offset: 10
+  }
+
+  ScrollSpy.prototype.getScrollHeight = function () {
+    return this.$scrollElement[0].scrollHeight || Math.max(this.$body[0].scrollHeight, document.documentElement.scrollHeight)
+  }
+
+  ScrollSpy.prototype.refresh = function () {
+    var that          = this
+    var offsetMethod  = 'offset'
+    var offsetBase    = 0
+
+    this.offsets      = []
+    this.targets      = []
+    this.scrollHeight = this.getScrollHeight()
+
+    if (!$.isWindow(this.$scrollElement[0])) {
+      offsetMethod = 'position'
+      offsetBase   = this.$scrollElement.scrollTop()
+    }
+
+    this.$body
+      .find(this.selector)
+      .map(function () {
+        var $el   = $(this)
+        var href  = $el.data('target') || $el.attr('href')
+        var $href = /^#./.test(href) && $(href)
+
+        return ($href
+          && $href.length
+          && $href.is(':visible')
+          && [[$href[offsetMethod]().top + offsetBase, href]]) || null
+      })
+      .sort(function (a, b) { return a[0] - b[0] })
+      .each(function () {
+        that.offsets.push(this[0])
+        that.targets.push(this[1])
+      })
+  }
+
+  ScrollSpy.prototype.process = function () {
+    var scrollTop    = this.$scrollElement.scrollTop() + this.options.offset
+    var scrollHeight = this.getScrollHeight()
+    var maxScroll    = this.options.offset + scrollHeight - this.$scrollElement.height()
+    var offsets      = this.offsets
+    var targets      = this.targets
+    var activeTarget = this.activeTarget
+    var i
+
+    if (this.scrollHeight != scrollHeight) {
+      this.refresh()
+    }
+
+    if (scrollTop >= maxScroll) {
+      return activeTarget != (i = targets[targets.length - 1]) && this.activate(i)
+    }
+
+    if (activeTarget && scrollTop < offsets[0]) {
+      this.activeTarget = null
+      return this.clear()
+    }
+
+    for (i = offsets.length; i--;) {
+      activeTarget != targets[i]
+        && scrollTop >= offsets[i]
+        && (offsets[i + 1] === undefined || scrollTop < offsets[i + 1])
+        && this.activate(targets[i])
+    }
+  }
+
+  ScrollSpy.prototype.activate = function (target) {
+    this.activeTarget = target
+
+    this.clear()
+
+    var selector = this.selector +
+      '[data-target="' + target + '"],' +
+      this.selector + '[href="' + target + '"]'
+
+    var active = $(selector)
+      .parents('li')
+      .addClass('active')
+
+    if (active.parent('.dropdown-menu').length) {
+      active = active
+        .closest('li.dropdown')
+        .addClass('active')
+    }
+
+    active.trigger('activate.bs.scrollspy')
+  }
+
+  ScrollSpy.prototype.clear = function () {
+    $(this.selector)
+      .parentsUntil(this.options.target, '.active')
+      .removeClass('active')
+  }
+
+
+  // SCROLLSPY PLUGIN DEFINITION
+  // ===========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.scrollspy')
+      var options = typeof option == 'object' && option
+
+      if (!data) $this.data('bs.scrollspy', (data = new ScrollSpy(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.scrollspy
+
+  $.fn.scrollspy             = Plugin
+  $.fn.scrollspy.Constructor = ScrollSpy
+
+
+  // SCROLLSPY NO CONFLICT
+  // =====================
+
+  $.fn.scrollspy.noConflict = function () {
+    $.fn.scrollspy = old
+    return this
+  }
+
+
+  // SCROLLSPY DATA-API
+  // ==================
+
+  $(window).on('load.bs.scrollspy.data-api', function () {
+    $('[data-spy="scroll"]').each(function () {
+      var $spy = $(this)
+      Plugin.call($spy, $spy.data())
+    })
+  })
+
+}(jQuery);
+
+
+/***/ }),
+/* 992 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: tab.js v3.3.7
+ * http://getbootstrap.com/javascript/#tabs
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // TAB CLASS DEFINITION
+  // ====================
+
+  var Tab = function (element) {
+    // jscs:disable requireDollarBeforejQueryAssignment
+    this.element = $(element)
+    // jscs:enable requireDollarBeforejQueryAssignment
+  }
+
+  Tab.VERSION = '3.3.7'
+
+  Tab.TRANSITION_DURATION = 150
+
+  Tab.prototype.show = function () {
+    var $this    = this.element
+    var $ul      = $this.closest('ul:not(.dropdown-menu)')
+    var selector = $this.data('target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    if ($this.parent('li').hasClass('active')) return
+
+    var $previous = $ul.find('.active:last a')
+    var hideEvent = $.Event('hide.bs.tab', {
+      relatedTarget: $this[0]
+    })
+    var showEvent = $.Event('show.bs.tab', {
+      relatedTarget: $previous[0]
+    })
+
+    $previous.trigger(hideEvent)
+    $this.trigger(showEvent)
+
+    if (showEvent.isDefaultPrevented() || hideEvent.isDefaultPrevented()) return
+
+    var $target = $(selector)
+
+    this.activate($this.closest('li'), $ul)
+    this.activate($target, $target.parent(), function () {
+      $previous.trigger({
+        type: 'hidden.bs.tab',
+        relatedTarget: $this[0]
+      })
+      $this.trigger({
+        type: 'shown.bs.tab',
+        relatedTarget: $previous[0]
+      })
+    })
+  }
+
+  Tab.prototype.activate = function (element, container, callback) {
+    var $active    = container.find('> .active')
+    var transition = callback
+      && $.support.transition
+      && ($active.length && $active.hasClass('fade') || !!container.find('> .fade').length)
+
+    function next() {
+      $active
+        .removeClass('active')
+        .find('> .dropdown-menu > .active')
+          .removeClass('active')
+        .end()
+        .find('[data-toggle="tab"]')
+          .attr('aria-expanded', false)
+
+      element
+        .addClass('active')
+        .find('[data-toggle="tab"]')
+          .attr('aria-expanded', true)
+
+      if (transition) {
+        element[0].offsetWidth // reflow for transition
+        element.addClass('in')
+      } else {
+        element.removeClass('fade')
+      }
+
+      if (element.parent('.dropdown-menu').length) {
+        element
+          .closest('li.dropdown')
+            .addClass('active')
+          .end()
+          .find('[data-toggle="tab"]')
+            .attr('aria-expanded', true)
+      }
+
+      callback && callback()
+    }
+
+    $active.length && transition ?
+      $active
+        .one('bsTransitionEnd', next)
+        .emulateTransitionEnd(Tab.TRANSITION_DURATION) :
+      next()
+
+    $active.removeClass('in')
+  }
+
+
+  // TAB PLUGIN DEFINITION
+  // =====================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.tab')
+
+      if (!data) $this.data('bs.tab', (data = new Tab(this)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.tab
+
+  $.fn.tab             = Plugin
+  $.fn.tab.Constructor = Tab
+
+
+  // TAB NO CONFLICT
+  // ===============
+
+  $.fn.tab.noConflict = function () {
+    $.fn.tab = old
+    return this
+  }
+
+
+  // TAB DATA-API
+  // ============
+
+  var clickHandler = function (e) {
+    e.preventDefault()
+    Plugin.call($(this), 'show')
+  }
+
+  $(document)
+    .on('click.bs.tab.data-api', '[data-toggle="tab"]', clickHandler)
+    .on('click.bs.tab.data-api', '[data-toggle="pill"]', clickHandler)
+
+}(jQuery);
+
+
+/***/ }),
+/* 993 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: tooltip.js v3.3.7
+ * http://getbootstrap.com/javascript/#tooltip
+ * Inspired by the original jQuery.tipsy by Jason Frame
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // TOOLTIP PUBLIC CLASS DEFINITION
+  // ===============================
+
+  var Tooltip = function (element, options) {
+    this.type       = null
+    this.options    = null
+    this.enabled    = null
+    this.timeout    = null
+    this.hoverState = null
+    this.$element   = null
+    this.inState    = null
+
+    this.init('tooltip', element, options)
+  }
+
+  Tooltip.VERSION  = '3.3.7'
+
+  Tooltip.TRANSITION_DURATION = 150
+
+  Tooltip.DEFAULTS = {
+    animation: true,
+    placement: 'top',
+    selector: false,
+    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+    trigger: 'hover focus',
+    title: '',
+    delay: 0,
+    html: false,
+    container: false,
+    viewport: {
+      selector: 'body',
+      padding: 0
+    }
+  }
+
+  Tooltip.prototype.init = function (type, element, options) {
+    this.enabled   = true
+    this.type      = type
+    this.$element  = $(element)
+    this.options   = this.getOptions(options)
+    this.$viewport = this.options.viewport && $($.isFunction(this.options.viewport) ? this.options.viewport.call(this, this.$element) : (this.options.viewport.selector || this.options.viewport))
+    this.inState   = { click: false, hover: false, focus: false }
+
+    if (this.$element[0] instanceof document.constructor && !this.options.selector) {
+      throw new Error('`selector` option must be specified when initializing ' + this.type + ' on the window.document object!')
+    }
+
+    var triggers = this.options.trigger.split(' ')
+
+    for (var i = triggers.length; i--;) {
+      var trigger = triggers[i]
+
+      if (trigger == 'click') {
+        this.$element.on('click.' + this.type, this.options.selector, $.proxy(this.toggle, this))
+      } else if (trigger != 'manual') {
+        var eventIn  = trigger == 'hover' ? 'mouseenter' : 'focusin'
+        var eventOut = trigger == 'hover' ? 'mouseleave' : 'focusout'
+
+        this.$element.on(eventIn  + '.' + this.type, this.options.selector, $.proxy(this.enter, this))
+        this.$element.on(eventOut + '.' + this.type, this.options.selector, $.proxy(this.leave, this))
+      }
+    }
+
+    this.options.selector ?
+      (this._options = $.extend({}, this.options, { trigger: 'manual', selector: '' })) :
+      this.fixTitle()
+  }
+
+  Tooltip.prototype.getDefaults = function () {
+    return Tooltip.DEFAULTS
+  }
+
+  Tooltip.prototype.getOptions = function (options) {
+    options = $.extend({}, this.getDefaults(), this.$element.data(), options)
+
+    if (options.delay && typeof options.delay == 'number') {
+      options.delay = {
+        show: options.delay,
+        hide: options.delay
+      }
+    }
+
+    return options
+  }
+
+  Tooltip.prototype.getDelegateOptions = function () {
+    var options  = {}
+    var defaults = this.getDefaults()
+
+    this._options && $.each(this._options, function (key, value) {
+      if (defaults[key] != value) options[key] = value
+    })
+
+    return options
+  }
+
+  Tooltip.prototype.enter = function (obj) {
+    var self = obj instanceof this.constructor ?
+      obj : $(obj.currentTarget).data('bs.' + this.type)
+
+    if (!self) {
+      self = new this.constructor(obj.currentTarget, this.getDelegateOptions())
+      $(obj.currentTarget).data('bs.' + this.type, self)
+    }
+
+    if (obj instanceof $.Event) {
+      self.inState[obj.type == 'focusin' ? 'focus' : 'hover'] = true
+    }
+
+    if (self.tip().hasClass('in') || self.hoverState == 'in') {
+      self.hoverState = 'in'
+      return
+    }
+
+    clearTimeout(self.timeout)
+
+    self.hoverState = 'in'
+
+    if (!self.options.delay || !self.options.delay.show) return self.show()
+
+    self.timeout = setTimeout(function () {
+      if (self.hoverState == 'in') self.show()
+    }, self.options.delay.show)
+  }
+
+  Tooltip.prototype.isInStateTrue = function () {
+    for (var key in this.inState) {
+      if (this.inState[key]) return true
+    }
+
+    return false
+  }
+
+  Tooltip.prototype.leave = function (obj) {
+    var self = obj instanceof this.constructor ?
+      obj : $(obj.currentTarget).data('bs.' + this.type)
+
+    if (!self) {
+      self = new this.constructor(obj.currentTarget, this.getDelegateOptions())
+      $(obj.currentTarget).data('bs.' + this.type, self)
+    }
+
+    if (obj instanceof $.Event) {
+      self.inState[obj.type == 'focusout' ? 'focus' : 'hover'] = false
+    }
+
+    if (self.isInStateTrue()) return
+
+    clearTimeout(self.timeout)
+
+    self.hoverState = 'out'
+
+    if (!self.options.delay || !self.options.delay.hide) return self.hide()
+
+    self.timeout = setTimeout(function () {
+      if (self.hoverState == 'out') self.hide()
+    }, self.options.delay.hide)
+  }
+
+  Tooltip.prototype.show = function () {
+    var e = $.Event('show.bs.' + this.type)
+
+    if (this.hasContent() && this.enabled) {
+      this.$element.trigger(e)
+
+      var inDom = $.contains(this.$element[0].ownerDocument.documentElement, this.$element[0])
+      if (e.isDefaultPrevented() || !inDom) return
+      var that = this
+
+      var $tip = this.tip()
+
+      var tipId = this.getUID(this.type)
+
+      this.setContent()
+      $tip.attr('id', tipId)
+      this.$element.attr('aria-describedby', tipId)
+
+      if (this.options.animation) $tip.addClass('fade')
+
+      var placement = typeof this.options.placement == 'function' ?
+        this.options.placement.call(this, $tip[0], this.$element[0]) :
+        this.options.placement
+
+      var autoToken = /\s?auto?\s?/i
+      var autoPlace = autoToken.test(placement)
+      if (autoPlace) placement = placement.replace(autoToken, '') || 'top'
+
+      $tip
+        .detach()
+        .css({ top: 0, left: 0, display: 'block' })
+        .addClass(placement)
+        .data('bs.' + this.type, this)
+
+      this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
+      this.$element.trigger('inserted.bs.' + this.type)
+
+      var pos          = this.getPosition()
+      var actualWidth  = $tip[0].offsetWidth
+      var actualHeight = $tip[0].offsetHeight
+
+      if (autoPlace) {
+        var orgPlacement = placement
+        var viewportDim = this.getPosition(this.$viewport)
+
+        placement = placement == 'bottom' && pos.bottom + actualHeight > viewportDim.bottom ? 'top'    :
+                    placement == 'top'    && pos.top    - actualHeight < viewportDim.top    ? 'bottom' :
+                    placement == 'right'  && pos.right  + actualWidth  > viewportDim.width  ? 'left'   :
+                    placement == 'left'   && pos.left   - actualWidth  < viewportDim.left   ? 'right'  :
+                    placement
+
+        $tip
+          .removeClass(orgPlacement)
+          .addClass(placement)
+      }
+
+      var calculatedOffset = this.getCalculatedOffset(placement, pos, actualWidth, actualHeight)
+
+      this.applyPlacement(calculatedOffset, placement)
+
+      var complete = function () {
+        var prevHoverState = that.hoverState
+        that.$element.trigger('shown.bs.' + that.type)
+        that.hoverState = null
+
+        if (prevHoverState == 'out') that.leave(that)
+      }
+
+      $.support.transition && this.$tip.hasClass('fade') ?
+        $tip
+          .one('bsTransitionEnd', complete)
+          .emulateTransitionEnd(Tooltip.TRANSITION_DURATION) :
+        complete()
+    }
+  }
+
+  Tooltip.prototype.applyPlacement = function (offset, placement) {
+    var $tip   = this.tip()
+    var width  = $tip[0].offsetWidth
+    var height = $tip[0].offsetHeight
+
+    // manually read margins because getBoundingClientRect includes difference
+    var marginTop = parseInt($tip.css('margin-top'), 10)
+    var marginLeft = parseInt($tip.css('margin-left'), 10)
+
+    // we must check for NaN for ie 8/9
+    if (isNaN(marginTop))  marginTop  = 0
+    if (isNaN(marginLeft)) marginLeft = 0
+
+    offset.top  += marginTop
+    offset.left += marginLeft
+
+    // $.fn.offset doesn't round pixel values
+    // so we use setOffset directly with our own function B-0
+    $.offset.setOffset($tip[0], $.extend({
+      using: function (props) {
+        $tip.css({
+          top: Math.round(props.top),
+          left: Math.round(props.left)
+        })
+      }
+    }, offset), 0)
+
+    $tip.addClass('in')
+
+    // check to see if placing tip in new offset caused the tip to resize itself
+    var actualWidth  = $tip[0].offsetWidth
+    var actualHeight = $tip[0].offsetHeight
+
+    if (placement == 'top' && actualHeight != height) {
+      offset.top = offset.top + height - actualHeight
+    }
+
+    var delta = this.getViewportAdjustedDelta(placement, offset, actualWidth, actualHeight)
+
+    if (delta.left) offset.left += delta.left
+    else offset.top += delta.top
+
+    var isVertical          = /top|bottom/.test(placement)
+    var arrowDelta          = isVertical ? delta.left * 2 - width + actualWidth : delta.top * 2 - height + actualHeight
+    var arrowOffsetPosition = isVertical ? 'offsetWidth' : 'offsetHeight'
+
+    $tip.offset(offset)
+    this.replaceArrow(arrowDelta, $tip[0][arrowOffsetPosition], isVertical)
+  }
+
+  Tooltip.prototype.replaceArrow = function (delta, dimension, isVertical) {
+    this.arrow()
+      .css(isVertical ? 'left' : 'top', 50 * (1 - delta / dimension) + '%')
+      .css(isVertical ? 'top' : 'left', '')
+  }
+
+  Tooltip.prototype.setContent = function () {
+    var $tip  = this.tip()
+    var title = this.getTitle()
+
+    $tip.find('.tooltip-inner')[this.options.html ? 'html' : 'text'](title)
+    $tip.removeClass('fade in top bottom left right')
+  }
+
+  Tooltip.prototype.hide = function (callback) {
+    var that = this
+    var $tip = $(this.$tip)
+    var e    = $.Event('hide.bs.' + this.type)
+
+    function complete() {
+      if (that.hoverState != 'in') $tip.detach()
+      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+        that.$element
+          .removeAttr('aria-describedby')
+          .trigger('hidden.bs.' + that.type)
+      }
+      callback && callback()
+    }
+
+    this.$element.trigger(e)
+
+    if (e.isDefaultPrevented()) return
+
+    $tip.removeClass('in')
+
+    $.support.transition && $tip.hasClass('fade') ?
+      $tip
+        .one('bsTransitionEnd', complete)
+        .emulateTransitionEnd(Tooltip.TRANSITION_DURATION) :
+      complete()
+
+    this.hoverState = null
+
+    return this
+  }
+
+  Tooltip.prototype.fixTitle = function () {
+    var $e = this.$element
+    if ($e.attr('title') || typeof $e.attr('data-original-title') != 'string') {
+      $e.attr('data-original-title', $e.attr('title') || '').attr('title', '')
+    }
+  }
+
+  Tooltip.prototype.hasContent = function () {
+    return this.getTitle()
+  }
+
+  Tooltip.prototype.getPosition = function ($element) {
+    $element   = $element || this.$element
+
+    var el     = $element[0]
+    var isBody = el.tagName == 'BODY'
+
+    var elRect    = el.getBoundingClientRect()
+    if (elRect.width == null) {
+      // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
+      elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
+    }
+    var isSvg = window.SVGElement && el instanceof window.SVGElement
+    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
+    // See https://github.com/twbs/bootstrap/issues/20280
+    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
+    var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
+    var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
+
+    return $.extend({}, elRect, scroll, outerDims, elOffset)
+  }
+
+  Tooltip.prototype.getCalculatedOffset = function (placement, pos, actualWidth, actualHeight) {
+    return placement == 'bottom' ? { top: pos.top + pos.height,   left: pos.left + pos.width / 2 - actualWidth / 2 } :
+           placement == 'top'    ? { top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2 } :
+           placement == 'left'   ? { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth } :
+        /* placement == 'right' */ { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width }
+
+  }
+
+  Tooltip.prototype.getViewportAdjustedDelta = function (placement, pos, actualWidth, actualHeight) {
+    var delta = { top: 0, left: 0 }
+    if (!this.$viewport) return delta
+
+    var viewportPadding = this.options.viewport && this.options.viewport.padding || 0
+    var viewportDimensions = this.getPosition(this.$viewport)
+
+    if (/right|left/.test(placement)) {
+      var topEdgeOffset    = pos.top - viewportPadding - viewportDimensions.scroll
+      var bottomEdgeOffset = pos.top + viewportPadding - viewportDimensions.scroll + actualHeight
+      if (topEdgeOffset < viewportDimensions.top) { // top overflow
+        delta.top = viewportDimensions.top - topEdgeOffset
+      } else if (bottomEdgeOffset > viewportDimensions.top + viewportDimensions.height) { // bottom overflow
+        delta.top = viewportDimensions.top + viewportDimensions.height - bottomEdgeOffset
+      }
+    } else {
+      var leftEdgeOffset  = pos.left - viewportPadding
+      var rightEdgeOffset = pos.left + viewportPadding + actualWidth
+      if (leftEdgeOffset < viewportDimensions.left) { // left overflow
+        delta.left = viewportDimensions.left - leftEdgeOffset
+      } else if (rightEdgeOffset > viewportDimensions.right) { // right overflow
+        delta.left = viewportDimensions.left + viewportDimensions.width - rightEdgeOffset
+      }
+    }
+
+    return delta
+  }
+
+  Tooltip.prototype.getTitle = function () {
+    var title
+    var $e = this.$element
+    var o  = this.options
+
+    title = $e.attr('data-original-title')
+      || (typeof o.title == 'function' ? o.title.call($e[0]) :  o.title)
+
+    return title
+  }
+
+  Tooltip.prototype.getUID = function (prefix) {
+    do prefix += ~~(Math.random() * 1000000)
+    while (document.getElementById(prefix))
+    return prefix
+  }
+
+  Tooltip.prototype.tip = function () {
+    if (!this.$tip) {
+      this.$tip = $(this.options.template)
+      if (this.$tip.length != 1) {
+        throw new Error(this.type + ' `template` option must consist of exactly 1 top-level element!')
+      }
+    }
+    return this.$tip
+  }
+
+  Tooltip.prototype.arrow = function () {
+    return (this.$arrow = this.$arrow || this.tip().find('.tooltip-arrow'))
+  }
+
+  Tooltip.prototype.enable = function () {
+    this.enabled = true
+  }
+
+  Tooltip.prototype.disable = function () {
+    this.enabled = false
+  }
+
+  Tooltip.prototype.toggleEnabled = function () {
+    this.enabled = !this.enabled
+  }
+
+  Tooltip.prototype.toggle = function (e) {
+    var self = this
+    if (e) {
+      self = $(e.currentTarget).data('bs.' + this.type)
+      if (!self) {
+        self = new this.constructor(e.currentTarget, this.getDelegateOptions())
+        $(e.currentTarget).data('bs.' + this.type, self)
+      }
+    }
+
+    if (e) {
+      self.inState.click = !self.inState.click
+      if (self.isInStateTrue()) self.enter(self)
+      else self.leave(self)
+    } else {
+      self.tip().hasClass('in') ? self.leave(self) : self.enter(self)
+    }
+  }
+
+  Tooltip.prototype.destroy = function () {
+    var that = this
+    clearTimeout(this.timeout)
+    this.hide(function () {
+      that.$element.off('.' + that.type).removeData('bs.' + that.type)
+      if (that.$tip) {
+        that.$tip.detach()
+      }
+      that.$tip = null
+      that.$arrow = null
+      that.$viewport = null
+      that.$element = null
+    })
+  }
+
+
+  // TOOLTIP PLUGIN DEFINITION
+  // =========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.tooltip')
+      var options = typeof option == 'object' && option
+
+      if (!data && /destroy|hide/.test(option)) return
+      if (!data) $this.data('bs.tooltip', (data = new Tooltip(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.tooltip
+
+  $.fn.tooltip             = Plugin
+  $.fn.tooltip.Constructor = Tooltip
+
+
+  // TOOLTIP NO CONFLICT
+  // ===================
+
+  $.fn.tooltip.noConflict = function () {
+    $.fn.tooltip = old
+    return this
+  }
+
+}(jQuery);
+
+
+/***/ }),
+/* 994 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: transition.js v3.3.7
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // ============================================================
+
+  function transitionEnd() {
+    var el = document.createElement('bootstrap')
+
+    var transEndEventNames = {
+      WebkitTransition : 'webkitTransitionEnd',
+      MozTransition    : 'transitionend',
+      OTransition      : 'oTransitionEnd otransitionend',
+      transition       : 'transitionend'
+    }
+
+    for (var name in transEndEventNames) {
+      if (el.style[name] !== undefined) {
+        return { end: transEndEventNames[name] }
+      }
+    }
+
+    return false // explicit for ie8 (  ._.)
+  }
+
+  // http://blog.alexmaccaw.com/css-transitions
+  $.fn.emulateTransitionEnd = function (duration) {
+    var called = false
+    var $el = this
+    $(this).one('bsTransitionEnd', function () { called = true })
+    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+    setTimeout(callback, duration)
+    return this
+  }
+
+  $(function () {
+    $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
+  })
+
+}(jQuery);
+
+
+/***/ }),
+/* 995 */,
+/* 996 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.roundToTwo = undefined;
+exports.calculateGradeAssignmentFromItemScore = calculateGradeAssignmentFromItemScore;
+exports.calculateItemScoreFromLetterGrade = calculateItemScoreFromLetterGrade;
+
+var _GradeAssignment = __webpack_require__(138);
+
+var _GradeAssignment2 = _interopRequireDefault(_GradeAssignment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// /**
+//  * Reverse calculates the letter grade to display
+//  * based on the total score.
+//  * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
+//  * @param totalScore
+//  * @param maxScore
+//  */
+// export const calculateLetterGradeFromScore = function ( gradeAssignments, maxScore, totalScore ) {
+//     totalScore = Number( totalScore );
+//     maxScore = Number( maxScore );
+//
+//     let pctOfTotal = maxScore / totalScore;
+//     //multiple by 100 to more easily compare with grades list
+//     pctOfTotal = Math.round( pctOfTotal * 100 );
+//     let grade = 'Letter grade';
+//
+//     // window.console.log( maxScore, totalScore, pctOfTotal );
+//     for (let i = 0; i < gradeAssignments.length; i++) {
+//         let cutOff = Number( gradeAssignments[ i ].calcValue );
+//         if ( pctOfTotal >= cutOff ) {
+//             grade = gradeAssignments[ i ].displayValue;
+//             break;
+//         }
+//     }
+//     return grade;
+// };
+
+/**
+ * Since some users may want to assign item scores via
+ * letter grades, this calculates the appropriate grade assignment
+ *
+ * When given an item score, this returns the appropriate grade assignment
+ * so that we can extract the display value for things like the letter
+ * grade button
+ *
+ *
+ * NB This is not for use with total exam scores. Those use cases
+ * are handled by the grade assignment modules in the store.
+ *
+ * @param score
+ * @param maxScore
+ * @returns {GradeAssignment}
+ */
+function calculateGradeAssignmentFromItemScore(score, maxScore) {
+    return function (score, maxScore) {
+        score = Number(score);
+        maxScore = Number(maxScore);
+        var gradeAssignments = _GradeAssignment2.default.defaults;
+        var gradeAssignment = '';
+
+        //determine what percent of the potential max score
+        //our score represents
+        var pctOfTotal = score / maxScore;
+
+        for (var i = 0; i < gradeAssignments.length; i++) {
+            var cutOff = Number(gradeAssignments[i].minScore);
+            //cutOff right now assumes that this is out of 100,
+            //so we need adjust it for the maxScore which might be
+            //different. The easiest way to do this is just to
+            //assume that the min score represents the minimum percentage
+            cutOff = cutOff / maxScore;
+            if (pctOfTotal >= cutOff) {
+                gradeAssignment = gradeAssignments[i];
+                break;
+            }
+        }
+        return gradeAssignment;
+    }(score, maxScore);
+} /**
+   * Functions for use in calculating
+   * scores and their letter grade equivalents
+   * for individual items, since some users may
+   * prefer that way of determining a score.
+   *
+   * NB, these do not use the centrally set up grade assignments
+   * since those are for total exam scores
+   */
+
+;
+
+/**
+ * When given a grade assignment and the maximum possible score for
+ * an item, this returns a numerical score
+ *
+ * NB This is not for use with total exam scores. Those use cases
+ * are handled by the grade assignment modules in the store.
+
+ * @param gradeValue
+ * @param maxScore
+ * @returns {number}
+ */
+function calculateItemScoreFromLetterGrade(gradeAssignment, maxScore) {
+    var gradeValue = Number(gradeAssignment.calcValue);
+    maxScore = Number(maxScore);
+    var result = gradeValue * .01 * maxScore;
+    return roundToTwo(result);
+};
+
+/**
+ * Handles rounding of the score
+ * Cf http://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
+ * @param num
+ * @returns {number}
+ */
+var roundToTwo = exports.roundToTwo = function roundToTwo(num) {
+    return +(Math.round(num + "e+2") + "e-2");
+};
+
+/***/ }),
+/* 997 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _apiSettings = __webpack_require__(20);
+
+var _actionTypes = __webpack_require__(3);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _responseHandlers = __webpack_require__(38);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 7/7/17.
+ */
+var route = 'dev/scores';
+
+var makeRoute = function makeRoute(exam, item, student) {
+    return route + '/' + exam.id + '/' + item.id + '/' + student.id;
+};
+
+module.exports = {
+    /**
+     * Requests that a score be saved for the item.
+     * Does not update comment text.
+     * That needs to be handled separately.
+     * @param exam
+     * @param item
+     * @param student
+     * @param scoreObject
+     * @returns {Promise<T> | *}
+     */
+    saveItemScoreRequest: function saveItemScoreRequest(exam, item, student, score) {
+        var to = makeRoute(exam, item, student);
+
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION,
+            score: score
+        };
+
+        return window.axios.post(to, out).then(function (response) {
+            window.console.log('scoreRequests---saveItemScoreRequest', 28, response);
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    /**
+     * Requests that comment text be saved for the item
+     * Does not update the score. That must be handled
+     * separately.
+     *
+     * @param exam
+     * @param item
+     * @param student
+     * @param scoreObject
+     * @returns {Promise<T> | *}
+     */
+    saveCommentTextRequest: function saveCommentTextRequest(exam, item, student, text) {
+        var to = makeRoute(exam, item, student);
+
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION,
+            commentText: text
+        };
+
+        return window.axios.post(to, out).then(function (response) {
+            window.console.log('scoreRequests---saveCommentTextRequest', 28, response);
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    /**
+     * Gets all item scores for all students on the exam
+     * @param exam
+     * @returns {Promise<T> | *}
+     */
+    getAllScoresForExamRequest: function getAllScoresForExamRequest(exam) {
+        // let to = route + '/exam/' + exam.id;
+        var out = {
+            requestVersion: _apiSettings.REQUEST_VERSION
+        };
+
+        return window.axios.get(_apiSettings.Routes.getExamScoreRequest(exam)).then(function (response) {
+            // window.console.log( 'scoreRequests---getExamScoreRequest', 28, response );
+            return response.data;
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    /**
+     * Gets all scores for the student, regardless of exam
+     * or item
+     * @param student
+     * @returns {Promise<T> | *}
+     */
+    getStudentScoreRequest: function getStudentScoreRequest(student) {
+
+        return window.axios.get(_apiSettings.Routes.getStudentScoreRequest(student)).then(function (response) {
+            window.console.log('scoreRequests---getStudentScoreRequest', 28, response);
+            return response.data;
+            // _.forEach( response.data, function ( e ) {
+            _.forEach(response.data, function (r) {
+                // window.console.log( 'examRequests', 'r', 29, r);
+                // let exam = Exam.factory( { r } );
+                // exam.id = r.id;
+                // exam.name = r.name;
+                // exam.term = r.term;
+                // let payload = Payload.factory( { obj: exam, mutateSilently: true } );
+                // store.commit( mTypes.addExam, payload );
+            });
+            // });
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    getItemScoreRequest: function getItemScoreRequest(item) {
+
+        return window.axios.get(_apiSettings.Routes.getItemScoreRequest(item)).then(function (response) {
+            window.console.log('scoreRequests---getItemScoreRequest', 28, response);
+            // _.forEach( response.data, function ( e ) {
+            _.forEach(response.data, function (r) {
+                // window.console.log( 'examRequests', 'r', 29, r);
+                // let exam = Exam.factory( { r } );
+                // exam.id = r.id;
+                // exam.name = r.name;
+                // exam.term = r.term;
+                // let payload = Payload.factory( { obj: exam, mutateSilently: true } );
+                // store.commit( mTypes.addExam, payload );
+            });
+            // });
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    }
+};
 
 /***/ })
 /******/ ]);

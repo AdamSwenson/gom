@@ -14,13 +14,17 @@ export default class PayloadScore extends Payload {
         this.item;
         this.student;
         this.score;
+
+        /** Text of the associated comment */
         this.text;
+
     }
 
     static get fillableProps() {
         return [
             'exam',
             'item',
+            'mutateSilently',
             'student',
             'score',
             'text'

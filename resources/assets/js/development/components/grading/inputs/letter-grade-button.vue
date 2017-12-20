@@ -1,30 +1,36 @@
 <template>
     <!-- Single button -->
-    <div id="letterGradeArea"
-         class="field">
 
-        <div class="control">
+    <p id="letterGradeArea" class="control">
             <span class="select">
                 <select class="letterGradeList"
-                        v-model="displayedGrade"
+                        v-model="selectedGradeAssignment"
                 >
                     <option disabled value="" class="title-option"> - </option>
 
                     <option
                             v-for="ga in gradeAssignments"
-                            :key="ga.serialNumber"
+                            :key="ga.displayValue"
                             v-bind:value="ga"
-                    >{{ ga.displayValue }}</option>
+                    >{{ ga.displayValue  }}</option>
 
                 </select>
             </span>
-        </div>
-    </div>
+    </p>
 
 </template>
 <script>
 
-    import gTypes from '../../../../store/getter-types';
+    // import gTypes from '../../../../store/getter-types';
+    import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
+    import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
+
+    import {
+        calculateGradeAssignmentFromItemScore,
+        calculateItemScoreFromLetterGrade
+    } from '../../../../store/modules/scores/itemLetterGradeHelpers';
+    import GradeAssignment from '../../../../models/GradeAssignment';
+    import PayloadScore from '../../../../models/PayloadScore';
 
     module.exports = {
 
@@ -35,68 +41,116 @@
              * @returns {*}
              */
             'score',
-            'grades'
+            'item'
         ],
 
         data: function () {
             return {
-                displayedGrade: '-',
+                ignoreChange: false,
+                selectedGradeAssignment: null,
                 defaults: {
-                    displayedGrade: 'Letter grade',
+                    // displayedGrade: 'Letter grade',
                     gradeValue: null
                 }
             };
         },
 
         watch: {
-            displayedGrade: function ( gradeAssignment ) {
 
-                // //The letter grade
-                // this.$emit( 'selected', gradeAssignment );
+            //When this is used, the letter grade
+            //displayed on the button should track the
+            //value of the score
+            score: function ( newValue ) {
+                window.console.log( 'letter-grade-button', 'score', 66, newValue );
 
-                //Display tooltip explaining the calculation
-                //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
+                //we don't want the change in score to trigger the
+                //update score since that would be both duplicative and
+                //potentially override a more fine-grained score.
+                //So we set a flag
+                // this.ignoreChanges = true;
+                //
+                // //     //update the inferred letter grade
+                // this.selectedGradeAssignment = calculateGradeAssignmentFromItemScore( newValue, this.maxScore );
+                //
+                // //Don't forget to reset the flag
+                // this.ignoreChanges = false;
+            },
 
+            //This is the value that clicking the button will change
+            //so we watch it in order to call mutations on the score
+            selectedGradeAssignment: function ( gradeAssignment , oldAssign) {
+
+                if ( this.ignoreChanges ) return true;
+
+                let score = calculateItemScoreFromLetterGrade( gradeAssignment, this.maxScore );
+
+                let pl = PayloadScore.factory( {
+                    exam: this.exam,
+                    item: this.item,
+                    student: this.student,
+                    score: score
+                } )
+                this.$store.commit( ngmTypes.updateScore, pl );
+
+                // //
+                // //     //Display tooltip explaining the calculation
+                // //     //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
+                // //
             },
 
 
-            score: function ( newScore ) {
-                this.displayedGrade = this.$store.getters[ gTypes.getGradeAssignmentForScore ];
-            }
         },
         asyncComputed: {
+            exam: function () {
+                let e = this.$store.getters[ nggTypes.getActiveExam ];
+                return !_.isUndefined( e ) ? e : '';
+            },
+
+            student: function () {
+                let s = this.$store.getters[ nggTypes.getActiveStudent ];
+                return !_.isUndefined( s ) ? s : '';
+            },
+        },
+        computed: {
+
             /**
              * Json of grades with keys displayValue and calcValue
              * @returns {{}}
              */
             gradeAssignments: function () {
-                return this.$store.getters.getGradeAssignmentsInSortedList;
-                // return this.store.getGrades();
+
+                return GradeAssignment.defaults;
+                //this should be reenabled if we allow this component
+                //to be used for entire exams
+                // return this.$store.getters.getGradeAssignmentsInSortedList;
             },
 
-        },
-        computed: {
-            //
-            // /**
-            //  * The value displayed on the button
-            //  * @returns {*}
-            //  */
-            // displayedGrade: function () {
-            //     if ( (typeof this.score === "undefined") || (this.score === null) || (this.score == '') ) {
-            //         //display 'Letter grade' if score not set
-            //         return this.defaults.displayedGrade;
-            //     }
-            //
-            //     //display the inferred letter grade
-            //     return this.calcLetter( this.maxScore, this.score );
-            // },
+            /**
+             * The value displayed on the button
+             * @returns {*}
+             */
+            displayedLetterGrade: function () {
+                // if ( !_.isNull( this.displayedGradeAssignment ) && this.displayedGradeAssignment !== '-' )
+                return this.displayedGradeAssignment.displayValue;
+            },
 
+            displayedGradeValue: function () {
+                // if ( !_.isNull( this.displayedGradeAssignment ) && this.displayedGradeAssignment !== '-' )
+                return this.displayedGradeAssignment.calcValue;
+            },
+
+            displayedGradeAssignment: function () {
+                if ( _.isUndefined( this.score ) || _.isNull( this.score ) ) return null;
+                return calculateGradeAssignmentFromItemScore( this.score, this.maxScore );
+            },
 
             /**
              * The maximum possible score for the question
              * @returns {*}
              */
             maxScore: function () {
+                if ( _.isUndefined( this.item ) || _.isNull( this.item ) ) return null;
+
                 return Number( this.item.maxScore );
             },
 
@@ -106,154 +160,93 @@
              * @returns {string}
              */
             scoreString: function () {
+                if ( _.isUndefined( this.score ) || _.isNull( this.score ) ) return ''
                 return this.score ? this.score.toFixed( 2 ) : '';
             },
-
 
         },
 
         methods: {
-            // /**
-            //  * Save the question score
-            //  * obj.questionIndex
-            //  * obj.questionNumber
-            //  * obj.score
-            //  * @param obj
-            //  */
-            // 'letter-grade-selected': function ( obj ) {
-            //     window.console.log( 'gradeVue', 'letter-grade-selected', obj );
-            //     this.store.storeQuestionScoreForActiveStudent( obj.questionIndex, obj.score );
-            //     //save to server
-            //
-            //     this.$broadcast( 'letter-grade-selected', obj );
-            // },
-
-
-            /**
-             * Calculates the question score from the standard grades and max score
-             * @param gradeValue
-             * @param maxScore
-             * @returns {number}
-             */
-            calcGrade: function ( gradeValue, maxScore ) {
-                gradeValue = Number( gradeValue );
-                maxScore = Number( maxScore );
-                let result = (gradeValue * .01) * maxScore;
-                return this.roundToTwo( result );
-            },
-
-            /**
-             * Reverse calculates the letter grade to display
-             * based on the total score.
-             * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
-             * @param totalScore
-             * @param maxScore
-             */
-            calcLetter: function ( maxScore, totalScore ) {
-                totalScore = Number( totalScore );
-                maxScore = Number( maxScore );
-
-                let pctOfTotal = maxScore / totalScore;
-                //multiple by 100 to more easily compare with grades list
-                pctOfTotal = Math.round( pctOfTotal * 100 );
-                let grade = 'Letter grade';
-
-                // window.console.log( maxScore, totalScore, pctOfTotal );
-                for (let i = 0; i < this.grades.length; i++) {
-                    let cutOff = Number( this.grades[ i ].calcValue );
-                    if ( pctOfTotal >= cutOff ) {
-                        grade = this.grades[ i ].displayValue;
-                        break;
-                    }
-                }
-                return grade;
-            },
-
-            /**
-             * Updates score by clicking on letter grade.
-             * Also displays tooltip explaining the calculation to the user
-             *
-             * Decided not to update the button text at this time because
-             * would have to store the value both locally and on the server.
-             *
-             * @param dthis The this context of the event handler
-             */
-            handleLetterGradeClick: function ( index ) {
-                //The numeric value of the letter grade selected
-                let gradeValue = this.grades[ index ].calcValue;
-                let letterGrade = this.grades[ index ].displayValue;
-                this.score = this.calcGrade( gradeValue, this.maxScore );
-//            let letterGrade = this.calcLetter( this.maxScore, this.score );
-
-                window.console.log( 'handle', index, gradeValue, letterGrade );
-                //The letter grade
-                // this.displayedGrade = this.grades[ index ].displayValue;
-                this.notifyLetterGradeSelection();
-
-                //todo reenable
-                //Display tooltip explaining the calculation
-                //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
-            },
-
-            /**
-             * Handles rounding of the score
-             * Cf http://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-             * @param num
-             * @returns {number}
-             */
-            roundToTwo: function ( num ) {
-                return +(Math.round( num + "e+2" ) + "e-2");
-            },
-
-            /**
-             * Creates a tooltip over the score box explaining the calculation done
-             * by selecting the letter grade for the question. The tooltip should
-             * automatically disappear upon clicking elsewhere on the page.
-             * @param targetId String id of the score div to attach to
-             * @param letterGrade String representation of the grade (e.g., 'A')
-             * @param integerGrade Integer Value of the grade as an integer between 0 and 100
-             * @param maxScore Integer Maximum score possible on the question
-             */
-            showGradePopOver: function ( gradeAssignment ) {
-                //What the tooltip will attach to
-                var $target = this.$el;
-
-                //The decimal to be used in the displayed calculation message
-                var floatGrade = Number( gradeAssignment.calcValue * 0.01 ).toFixed( 2 );
-
-                //The resulting total to be displayed in the calculation message
-                var total = this.scoreString; //Number( floatGrade * maxScore ).toFixed( 2 );
-
-                //The message to display
-                var message = "<p class='gradeToolTip'>" + letterGrade + " = " + integerGrade + "%<br/>" +
-                    maxScore + " * " + floatGrade + " = " + total + "</p>";
-
-                //Make sure any previously attached tooltip is gone
-                $target.tooltip( 'destroy' );
-
-                //Add a tooltip to the body and show it
-                //Note: attached to body so won't float away on screen resize
-                $target.tooltip( {
-                    animation: true,
-                    container: 'body',
-                    html: true,
-                    trigger: 'manual',
-                    title: message
-                } ).tooltip( 'show' );
-
-                //Wait briefly for the tooltip to initialize and display
-                setTimeout( function () {
-                    //Attach a handler to the body to destroy the tooltip when the user clicks elsewhere.
-                    $( 'body' ).on( 'click.tt', function () {
-                        $target.tooltip( 'destroy' );
-                        //Then remove the event handler so other tooltips will fire
-                        $( 'body' ).off( 'click.tt' );
-                    } );
-                }, 10 );
-
-            },
 
         },
 
     };
+
+
+    //
+    // /**
+    //  * Calculates the question score from the standard grades and max score
+    //  * @param gradeValue
+    //  * @param maxScore
+    //  * @returns {number}
+    //  */
+    // calcGrade: function ( gradeValue, maxScore ) {
+    //     gradeValue = Number( gradeValue );
+    //     maxScore = Number( maxScore );
+    //     let result = (gradeValue * .01) * maxScore;
+    //     return this.roundToTwo( result );
+    // },
+
+    // /**
+    //  * Reverse calculates the letter grade to display
+    //  * based on the total score.
+    //  * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
+    //  * @param totalScore
+    //  * @param maxScore
+    //  */
+    // calcLetter: function ( maxScore, totalScore ) {
+    //     totalScore = Number( totalScore );
+    //     maxScore = Number( maxScore );
+    //
+    //     let pctOfTotal = maxScore / totalScore;
+    //     //multiple by 100 to more easily compare with grades list
+    //     pctOfTotal = Math.round( pctOfTotal * 100 );
+    //     let grade = 'Letter grade';
+    //
+    //     // window.console.log( maxScore, totalScore, pctOfTotal );
+    //     for (let i = 0; i < this.gradeAssignments.length; i++) {
+    //         let cutOff = Number( this.gradeAssignments[ i ].calcValue );
+    //         if ( pctOfTotal >= cutOff ) {
+    //             grade = this.gradeAssignments[ i ].displayValue;
+    //             break;
+    //         }
+    //     }
+    //     return grade;
+    // },
+    //
+    // /**
+    //  * Updates score by clicking on letter grade.
+    //  * Also displays tooltip explaining the calculation to the user
+    //  *
+    //  * Decided not to update the button text at this time because
+    //  * would have to store the value both locally and on the server.
+    //  *
+    //  * @param dthis The this context of the event handler
+    //  */
+    // handleLetterGradeClick: function ( index ) {
+    //     //The numeric value of the letter grade selected
+    //     let gradeValue = this.gradeAssignments[ index ].calcValue;
+    //     let letterGrade = this.gradeAssignments[ index ].displayValue;
+    //     this.score = calcGrade( gradeValue, this.maxScore );
+    //     // let letterGrade = this.calcLetter( this.maxScore, this.score );
+    //
+    //     window.console.log( 'handle', index, gradeValue, letterGrade );
+    //     //The letter grade
+    //     // this.displayedGrade = this.grades[ index ].displayValue;
+    //     // this.notifyLetterGradeSelection();
+    //
+    //     let pl = PayloadScore.factory( {
+    //         exam: this.exam,
+    //         item: this.item,
+    //         student: this.student,
+    //         score: this.score
+    //     } )
+    //     this.$store.commit( ngmTypes.updateScore, pl );
+    //
+    //
+    //     //todo reenable
+    //     //Display tooltip explaining the calculation
+    //     //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
+    // },
+
 </script>

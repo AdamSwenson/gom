@@ -182,6 +182,27 @@ module.exports = {
 
         },
 
+        /**
+         * Returns a student object by the model's database id
+         * Can be used after the model has been synced with or
+         * loaded from the db.
+         * @returns {*}
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param serialNumber
+         */
+        getStudentFromRosterById: ( state, getters, rootState, id ) => ( id ) => {
+            return (function ( state, id ) {
+                var r = state.roster.filter( function ( i ) {
+                    if ( i.id === id ) {
+                        return i;
+                    }
+                } );
+                return r[ 0 ];
+            })( state, id )
+
+        },
 
         getSortAsc: (state)=>{
             return state.sortAsc;

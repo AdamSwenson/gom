@@ -6,7 +6,7 @@
 
 @section('otherCss')
     <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
-    <script src="{{asset('js/grade-exam1-data.js')}}"></script>
+    <script src="{{asset('js/grade-exam-data.js')}}"></script>
 @endsection
 
 @section('body')

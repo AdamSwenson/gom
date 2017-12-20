@@ -1,34 +1,44 @@
 <template>
-    <div class=" elementPanel">
+    <div class=" elementPanel box">
 
         <h5 class="elementTitle">{{ title }}</h5>
 
-        <div class="tile is-ancestor">
-            <div class="tile is-parent is-vertical">
-                <div class="tile is-child sliderContainer">
-                    <div class="tile is-child">
-                        <!-- comment area -->
-                        <comment-text :item="item"></comment-text>
-
-
-                    </div>
-                </div>
+        <comment-text :item="item" :student="student"></comment-text>
+        <div class="field">
+            <label></label>
+            <div class="control">
+                <score-slider :item="item" :student="student"></score-slider>
             </div>
         </div>
+        <!--<div class="tile is-ancestor">-->
+            <!--<div class="tile is-parent is-vertical">-->
+                <!--<div class="tile is-child sliderContainer">-->
+                    <!--<div class="tile is-child">-->
+                        <!--&lt;!&ndash; comment area &ndash;&gt;-->
+                        <!--<comment-text :item="item"></comment-text>-->
+
+
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
     </div>
 </template>
 <script>
-import CommentText from './comment-text.vue';
+    import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
+    import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
+    import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
+    import * as gTypes from '../../../../store/getter-types';
+
+    import CommentText from './comment-text.vue';
+    import ScoreSlider from './score-slider.vue';
     module.exports = {
 
+        components : { CommentText, ScoreSlider},
 
         props: [
             'item',
-            'elementNumber',
-            'elementIndex',
-            'elementId',
-            'elementName',
-            'questionNumber'
+'student'
         ],
 
         data: function () {
@@ -51,28 +61,71 @@ import CommentText from './comment-text.vue';
 
         computed: {
             /**
+             * Returns the string of the element's description to be displayed on the page
+             * @returns {string}
+             */
+            title: function (  ) {
+              return this.item.name;
+            },
+
+            /**
              * Shortcut to where the active student is stored
              * @returns {module.exports.computed.activeStudent|null|*}
              */
             activeStudent: function () {
-                return this.store.getActiveStudentIndex();
+                return this.$store.getters[nmgTypes.getActiveStudent];
+            },
+            /**
+             * The valence corresponding to the currently set element score
+             * @returns {*}
+             */
+            currentValence: function () {
+                //return false if no element score set
+                if ( typeof this.elementScore == 'undefined' || this.elementScore == null ) {
+                    return false;
+                }
+
+                return this.getValence( this.elementScore );
             },
 
             /**
-             * Returns the string id of the comment area
-             * @returns {string}
+             * The current value of the slider
              */
-            commentAreaId: function () {
-                return "commentQ" + this.questionNumber + "E" + this.elementNumber;
+            elementScore: {
+                // cache: false,
+                get: function () {
+                    if(! this.isReady()) return '';
+
+                    let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
+                    if ( qs != null ) {
+                        return qs.score;
+                    }
+                //     // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
+                //     return this.store.getElementScoreForActiveStudent( this.elementIndex );
+                },
+                set: function ( score ) {
+                //     this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
+                //     this.notifyStoreElementScore( score )
+                }
             },
 
-            /**
-             * Returns the jQuery selector for the comment area
-             * @returns {*|jQuery|HTMLElement}
-             */
-            commentSelector: function () {
-                return $( '#' + this.commentAreaId );
-            },
+
+
+            // /**
+            //  * Returns the string id of the comment area
+            //  * @returns {string}
+            //  */
+            // commentAreaId: function () {
+            //     return "commentQ" + this.questionNumber + "E" + this.elementNumber;
+            // },
+            //
+            // /**
+            //  * Returns the jQuery selector for the comment area
+            //  * @returns {*|jQuery|HTMLElement}
+            //  */
+            // commentSelector: function () {
+            //     return $( '#' + this.commentAreaId );
+            // },
 
             // /**
             //  * The current value of the text area
@@ -95,129 +148,70 @@ import CommentText from './comment-text.vue';
             // },
 
 
-            /**
-             * The valence corresponding to the currently set element score
-             * @returns {*}
-             */
-            currentValence: function () {
-                //return false if no element score set
-                if ( typeof this.elementScore == 'undefined' || this.elementScore == null ) {
-                    return false;
-                }
-
-                return this.getValence( this.elementScore );
-            },
-
-            /**
-             * The current value of the slider
-             */
-            elementScore: {
-                cache: false,
-                get: function () {
-                    // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
-                    return this.store.getElementScoreForActiveStudent( this.elementIndex );
-                },
-                set: function ( score ) {
-                    this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
-                    this.notifyStoreElementScore( score )
-                }
-            },
-
-            /**
-             * Returns the string of the element's description to be displayed on the page
-             * @returns {string}
-             */
-            title: function () {
-                return "Element #" + this.elementNumber + ": " + this.elementName;
-            },
-
-            /**
-             * Returns the string id of the slider element
-             * @returns {string}
-             */
-            sliderId: function () {
-                return "sliderQ" + this.questionNumber + "E" + this.elementNumber;
-            },
-
-            /**
-             * Returns the jQuery selector for the slider element
-             * @returns {*|jQuery|HTMLElement}
-             */
-            sliderSelector: function () {
-                return $( '#' + this.sliderId );
-            }
         },
 
         methods: {
-            /**
-             * Handles the request to store comment text on the server
-             * Accompanying object should contain:
-             *      obj.elementIndex: Index of the element whose score needs updating
-             */
-            storeCommentTextRequest : function ( commentRequestObj ) {
-                window.console.log( 'gradeVue', 'store-comment-text-request', commentRequestObj );
-                let commentText = this.store.getStoredCommentText(commentRequestObj.studentIndex, commentRequestObj.elementIndex)
-                this.saveCommentWithTime(commentRequestObj.studentIndex, commentRequestObj.elementId, commentText);
+            isReady: function (  ) {
+                if ( _.isUndefined( this.item ) || _.isNull(this.item) || _.isUndefined( this.student ) || _.isNull(this.student) ) return false;
+                return true;
             },
 
-
-            /**
-             * Handles the request to store element score on the server
-             * Accompanying object should contain:
-             *      obj.elementIndex: Index of the element whose score needs updating
-             */
-            storeElementScoreRequest: function ( elementScoreRequestObj ) {
-                window.console.log( 'gradeVue', 'caught store-element-score-request', elementScoreRequestObj );
-                let elementId = elementScoreRequestObj.elementId;
-                let studentIndex = elementScoreRequestObj.studentIndex
-                //store on server
-                this.saveElementScoreWithTime(studentIndex, elementId, elementScoreRequestObj.score)
-            },
-
-
-
+            // /**
+            //  * Handles the request to store comment text on the server
+            //  * Accompanying object should contain:
+            //  *      obj.elementIndex: Index of the element whose score needs updating
+            //  */
+            // storeCommentTextRequest : function ( commentRequestObj ) {
+            //     window.console.log( 'gradeVue', 'store-comment-text-request', commentRequestObj );
+            //     let commentText = this.store.getStoredCommentText(commentRequestObj.studentIndex, commentRequestObj.elementIndex)
+            //     this.saveCommentWithTime(commentRequestObj.studentIndex, commentRequestObj.elementId, commentText);
+            // },
+            //
+            //
+            // /**
+            //  * Handles the request to store element score on the server
+            //  * Accompanying object should contain:
+            //  *      obj.elementIndex: Index of the element whose score needs updating
+            //  */
+            // storeElementScoreRequest: function ( elementScoreRequestObj ) {
+            //     window.console.log( 'gradeVue', 'caught store-element-score-request', elementScoreRequestObj );
+            //     let elementId = elementScoreRequestObj.elementId;
+            //     let studentIndex = elementScoreRequestObj.studentIndex
+            //     //store on server
+            //     this.saveElementScoreWithTime(studentIndex, elementId, elementScoreRequestObj.score)
+            // },
+            //
+            //
+            //
 
             /* ------------------ Display manipulation ------------------------------ */
-            /**
-             * Sets the comment area to empty (user should see the place holder).
-             * Usually used to clear out any text that might be left from other users
-             */
-            commentAreaEmpty: function () {
-                this.commentText = '';
-            },
+            // /**
+            //  * Sets the comment area to empty (user should see the place holder).
+            //  * Usually used to clear out any text that might be left from other users
+            //  */
+            // commentAreaEmpty: function () {
+            //     this.commentText = '';
+            // },
 
-            /**
-             * Prevent user from entering text into comment area
-             */
-            commentAreaDisable: function () {
-                this.commentSelector.setAttribute( 'readonly', 'true' );
-            },
 
-            /**
-             * Allow user to enter text into comment area
-             */
-            commentAreaEnable: function () {
-                this.commentSelector.removeAttribute( 'readonly' );
-            },
-
-            /**
-             * Updates the displayed comment to match the current slider value.
-             * TODO Add a test for the potential corner cases making the default null creates
-             */
-            commentAreaUpdate: function () {
-                if ( this.elementScore === null ) {
-                    // clear any text that might have been left over from another user
-                    // this.commentAreaEmpty();
-                    // if NULL, disable comment text area until a slider is moved.
-                    // this is so that the user doesn't enter custom text, move the slider,
-                    // and then see their custom text irreversibly wiped out.
-                    this.commentAreaDisable();
-                } else {
-                    // It has already been scored, so the comment text will be retrieved and set.
-                    //no need for it to remain read only
-                    this.commentAreaEnable();
-                }
-            },
+            // /**
+            //  * Updates the displayed comment to match the current slider value.
+            //  * TODO Add a test for the potential corner cases making the default null creates
+            //  */
+            // commentAreaUpdate: function () {
+            //     if ( this.elementScore === null ) {
+            //         // clear any text that might have been left over from another user
+            //         // this.commentAreaEmpty();
+            //         // if NULL, disable comment text area until a slider is moved.
+            //         // this is so that the user doesn't enter custom text, move the slider,
+            //         // and then see their custom text irreversibly wiped out.
+            //         this.commentAreaDisable();
+            //     } else {
+            //         // It has already been scored, so the comment text will be retrieved and set.
+            //         //no need for it to remain read only
+            //         this.commentAreaEnable();
+            //     }
+            // },
 
             /* ------------------------------- Valence helpers -------------------------------- */
             /**
@@ -277,99 +271,55 @@ import CommentText from './comment-text.vue';
              */
             handleElementSliderStopEvent: function ( slideEvt, callback ) {
                 //get the existing score
-                var oldScore = this.store.getElementScoreForActiveStudent( this.elementIndex );
-                //store the new element score in the data object
-                this.elementScore = slideEvt.value;
-
-                /**
-                 * update comment text and save to DB.
-                 * Only replace text if the score has changed valence regions
-                 */
-                if ( !this.isSameValence( oldScore, this.elementScore ) ) {
-                    //Score is in a new valence region.
-                    //So let's plug in the appropriate comment text and save to DB
-                    //
-                    //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-                    //anything in these lines
-                    this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
-
-                } else {
-                    // Score is in the same valence region.
-                    // Jump straight to saving without changing the elementComment
-                    // Fear not. Changes directly to the comment text will be handled elsewhere.
-                }
-
-                // If using bell curve (standardScoring), element score affects
+                // var oldScore = this.store.getElementScoreForActiveStudent( this.elementIndex );
+                // //store the new element score in the data object
+                // this.elementScore = slideEvt.value;
+                //
+                // /**
+                //  * update comment text and save to DB.
+                //  * Only replace text if the score has changed valence regions
+                //  */
+                // if ( !this.isSameValence( oldScore, this.elementScore ) ) {
+                //     //Score is in a new valence region.
+                //     //So let's plug in the appropriate comment text and save to DB
+                //     //
+                //     //Dear Adam, make sure you read the doc for storeCommentText before fucking with
+                //     //anything in these lines
+                //     this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+                //
+                // } else {
+                //     // Score is in the same valence region.
+                //     // Jump straight to saving without changing the elementComment
+                //     // Fear not. Changes directly to the comment text will be handled elsewhere.
+                // }
+                //
+                // // If using bell curve (standardScoring), element score affects
                 // the total question score, so update
                 // if ( Roster.standardScoring ) {
                 //     //  updateStandardScores();
                 // }
 
-                if ( typeof callback != 'undefined' ) {
-                    return callback();
-                }
+                // if ( typeof callback != 'undefined' ) {
+                //     return callback();
+                // }
 
             },
 
             setSliderScore: function () {
-                this.sliderSelector.slider( 'setValue', this.elementScore );
+                // this.sliderSelector.slider( 'setValue', this.elementScore );
 //            this.sliderSelector.slider( 'refresh' );
             },
 
-            /* --------------------- Notifications to observers ---------------------- */
-            /**
-             * Requests that the db be updated with the element score.
-             * The element score is already stored in the shared storage object, so
-             * we just need to tell the observer which element needs updating.
-             */
-            notifyStoreElementScore: function ( score ) {
-                let request = new Requests.ElementScoreRequest( this.activeStudent, this.elementIndex, score, this.elementId );
-                this.$dispatch( 'store-element-score-request', request );
-            },
 
-            /**
-             * Requests that the db be updated with comment text
-             */
-            notifyStoreCommentText: function () {
-                let obj = new Requests.CommentRequest( this.activeStudent, this.elementIndex, this.elementId );
-                this.$dispatch( 'store-comment-text-request', obj );
-            },
 
             /**
              * Requests that the grading timer be started, if paused
              */
             notifyStartTimer: function () {
-                this.$dispatch( 'start-timer-request', this.elementIndex );
+                // this.$dispatch( 'start-timer-request', this.elementIndex );
             },
 
-            /**
-             * Notifies any listeners that a slide event has occurred
-             * @param slideEvent
-             */
-            notifySlideEvent: function ( slideEvent ) {
-                this.$dispatch( 'element-slider-stop-event', this.elementIndex );
-            }
 
-
-        },
-        events: {
-
-            /**
-             * Listens for a new student being selected. Responds by
-             * setting the slider and comment to the stored values (or
-             * default values, if not yet graded) for that
-             * student.
-             * @param elementIndex
-             * @param activeStudent
-             */
-            'student-select-event': function ( obj ) {
-                window.console.log( 'elementInput', 'caught student-select-event', obj );
-                //update the slider value
-                this.setSliderScore();
-                //return true just in case someone else is listening and
-                //needs to hear the event
-                return true;
-            }
         },
 
         ready: function () {
@@ -392,8 +342,8 @@ import CommentText from './comment-text.vue';
              then save score, text and time
              *  */
             this.sliderSelector.on( 'slideStop', function ( slideEvt ) {
-                me.handleElementSliderStopEvent( slideEvt );
-                me.notifySlideEvent();
+                // me.handleElementSliderStopEvent( slideEvt );
+                // me.notifySlideEvent();
             } );
 
             // window.console.log('input ready', 'elementIndex', this.elementIndex);

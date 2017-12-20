@@ -29,9 +29,9 @@ export const getActiveStudent = 'getActiveStudentNew';
 // ================================================================
 // ==================================== EXAMS =====================
 // ================================================================
-export const getExam = 'getExam'
-export const getAllExams = 'getAllExams'
-export const getActiveExam = 'getActiveExam'
+export const getExam = 'getExam';
+export const getAllExams = 'getAllExams';
+export const getActiveExam = 'getActiveExamNew';
 
 // ================================================================
 // ==================================== ITEMS =====================

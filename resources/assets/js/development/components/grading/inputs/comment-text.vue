@@ -43,9 +43,9 @@
              * The current value of the text area
              */
             commentText: {
-                cache: false,
+                // cache: false,
                 get: function () {
-                    if ( _.isUndefined( this.item ) || _.isUndefined( this.student ) ) return '';
+                    if(! this.isReady()) return '';
 
                     let so = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
                     if ( !_.isUndefined( so ) ) return so.commentText;
@@ -77,7 +77,26 @@
 
         },
 
-        methods: {},
+        methods: {
+            isReady: function (  ) {
+                if ( _.isUndefined( this.item ) || _.isNull(this.item) || _.isUndefined( this.student ) || _.isNull(this.student) ) return false;
+                return true;
+            },
+            /**
+             * Prevent user from entering text into comment area
+             */
+            commentAreaDisable: function () {
+                this.commentSelector.setAttribute( 'readonly', 'true' );
+            },
+
+            /**
+             * Allow user to enter text into comment area
+             */
+            commentAreaEnable: function () {
+                this.commentSelector.removeAttribute( 'readonly' );
+            },
+
+        },
 
         directives: {},
 

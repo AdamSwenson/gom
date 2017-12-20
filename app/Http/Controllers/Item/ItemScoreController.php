@@ -8,6 +8,7 @@ use App\Item;
 use App\Exam;
 use App\Student;
 use App\Models\NewGom\ItemScore;
+use Illuminate\Http\Request;
 
 /**
  * This is used for item score information
@@ -39,7 +40,7 @@ class ItemScoreController extends Controller
     }
 
 
-    public function saveScore( Exam $exam, Item $item, Student $student, $request )
+    public function saveScore( Exam $exam, Item $item, Student $student, Request $request )
     {
         $score = ItemScore::firstOrCreate([
             'exam_id' => $exam->id,
@@ -49,8 +50,17 @@ class ItemScoreController extends Controller
 
         //Now, whether old or new, we set the data
         //properties
-        $score->score = $request->input('score');
-        $score->comment_text = $request->input('commentText');
+        //The score and comment come in separately
+        //from different requests. So, we need to be careful
+        //not to inadvertently overwrite the score on a comment request
+        //or vice-versa.
+        if ( $request->has('score') ) {
+            $score->score = $request->input('score');
+        }
+        if ( $request->has('commentText') ) {
+            $score->comment_text = $request->input('commentText');
+        }
+
         //and finally save
         $score->save();
 

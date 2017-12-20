@@ -1,44 +1,58 @@
 <template>
     <div id="questionPanel"
-         class=" questionPanel">
+         class=" questionPanel box">
         <div class="tile is-ancestor">
             <div class="tile is-parent is-vertical ">
                 <div class="tile is-child">
                     <div class="level">
                         <div class="level-left">
-                            <div class="level-item"></div>
-                            <!-- question Name -->
-                            <h4 class="">Question #{{ number }}: "{{ name }}"</h4>
+                            <div class="level-item">
+                                <!-- question Name -->
+                                <h4 class="">#{{ number }}: "{{ name }}"</h4>
+                            </div>
                         </div>
                         <div class="level-right">
                             <div class="level-item">
-
                                 <!-- question Score -->
-                                <question-score :item="item" :student="student"></question-score>
+                                <question-score
+                                        :item="item"
+                                        :student="student"
+                                ></question-score>
 
                             </div>
                         </div>
                     </div>
 
                     <comment-text :item="item" :student="student"></comment-text>
-
-                </div>
-
-                <!-- element area holds all sliders and comments for this question -->
-                <div class="tile is-child ">
-                    <div v-if="!isElementsEmpty">
-                        <!--<element-input v-for="item in items"></element-input>-->
-                    </div>
-
-                    <!--add some text if no elements for this question -->
-                    <div class=" noElementsDiv "
-                         v-if="isElementsEmpty"
-                    >
-                        <i>No elements for this question</i>
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <score-slider :item="item" :student="student"></score-slider>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
             </div>
+
+        </div>
+
+        <!-- element area holds all sliders and comments for this question -->
+        <div class="tile is-child ">
+            <div v-if="!isElementsEmpty">
+                <element-input v-for="item in elements"
+                               v-bind:key="item.serialNumber"
+                               :item="item"
+                               :student="student"></element-input>
+            </div>
+
+            <!--add some text if no elements for this question -->
+            <div class=" noElementsDiv "
+                 v-if="isElementsEmpty"
+            >
+                <i>No elements for this question</i>
+            </div>
+
         </div>
     </div>
 
@@ -54,17 +68,22 @@
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
     import * as gTypes from '../../../../store/getter-types';
 
-    // import ElementInput from '../inputs/element-input.vue';
+    import ElementInput from '../inputs/element-input.vue';
     import QuestionScore from '../inputs/question-score.vue';
-    import CommentText from "../inputs/comment-text";
+    import CommentText from "../inputs/comment-text.vue";
+    import ScoreSlider from "../inputs/score-slider.vue";
+
 
     export default {
-
+        // name: 'qp',
 
         components: {
-            // ElementInput,
+            ElementInput,
             CommentText,
-            QuestionScore
+            ScoreSlider,
+            CommentText,
+            QuestionScore,
+
         },
 
         data: function () {
@@ -75,9 +94,7 @@
             }
         },
 
-        asyncComputed: {
-
-        },
+        asyncComputed: {},
 
         computed: {
             serialNumber: function () {
@@ -117,8 +134,9 @@
             },
 
             isElementsEmpty: function () {
-                return true;
+                return this.elements.length === 0;
             },
+
 
         },
 

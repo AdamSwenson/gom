@@ -7,10 +7,11 @@
 
                 <!-- Left column holds questions and sliders -->
                 <div id="questionAndSliderColumn"
-                     class="questionAndSliderColumn tile is-child"
+                     class="questionAndSliderColumn tile is-child box"
                 >
 
-                    <h4 id="selectPrompt">Select a student to begin grading</h4>
+                    <h4  v-if="! isQuestionAreaVisible"
+                         id="selectPrompt">Select a student to begin grading</h4>
 
                     <div id="questionArea"
                          v-show="isQuestionAreaVisible"
@@ -27,13 +28,13 @@
 
                 <!-- Right column holds Roster and Time info -->
                 <div id="rosterAndDashboardColumn"
-                     class="tile is-child rosterAndDashboardColumn">
+                     class="tile is-child rosterAndDashboardColumn box">
 
 
                     <div class="roster-column tile is-parent is-vertical">
                         <div class="tile is-child">
                             <span class="icon" aria-hidden="true">
-                        <i class="fa fa-tachometer"></i> <span>Statistics</span>
+                        <!--<i class="fa fa-tachometer"></i> <span>Statistics</span>-->
                     </span>
 
                             <!-- graded / remaining counters -->
@@ -103,7 +104,7 @@
                 examId: window.examId,
 
                 isFinishButtonVisible: false,
-                isQuestionAreaVisible: true,
+
                 defaults: {}
             }
         },
@@ -122,6 +123,11 @@
         computed: {
             examName: function () {
                 return this.exam ? this.exam.name : '';
+            },
+
+            isQuestionAreaVisible: function (  ) {
+                let s = this.$store.getters[ nggTypes.getActiveStudent ];
+                return !_.isUndefined( s ) && !_.isNull(s);
             }
 
         },
@@ -178,7 +184,10 @@
                                     .then( function () {
                                         let p = me.$store.dispatch( 'loadItemsFromServer', exam );
                                         p.then( function () {
-                                            resolve();
+                                            let p2 = me.$store.dispatch('loadScoresFromServer', exam);
+                                            p2.then(function(){
+                                                resolve();
+                                            });
                                         } );
                                     } );
                             } );

@@ -35,21 +35,27 @@ import Payload from '../models/Payload'
 import Exam from '../models/Exam'
 import Item from '../models/Item'
 
+//item
 import { createItem, updateItem, updateItemsOrder } from './requests'
 
 //comments
 import { updateComment } from '../api/requests/commentRequests';
 
 //exams
-import { updateExam }from '../api/requests/examRequests';
+import { updateExam } from '../api/requests/examRequests';
 
-import {updateGradeAssignment} from '../api/requests/gradeAssignmentRequests';
+//grades
+import { updateGradeAssignment } from '../api/requests/gradeAssignmentRequests';
 
-
+//kumi
 import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiRequests';
 
+//notes
 import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
 
+import { saveItemScoreRequest , saveCommentTextRequest } from '../api/requests/scoreRequests';
+
+//students
 import {
     createStudent,
     destroyStudent,
@@ -58,6 +64,7 @@ import {
     disassociateStudent
 } from '../api/requests/studentRequests';
 
+//tags
 import {
     createTagRequest,
     updateTagRequest,
@@ -66,6 +73,7 @@ import {
     disassociateTagRequest
 } from '../api/requests/tagRequests'
 
+//Time
 import {
     setStudentGradingTime
 } from '../api/requests/timeRequests';
@@ -128,13 +136,18 @@ export default function ( store ) {
 
             // ******************** NEW GRADING STUFF!
             case ngmTypes.setActiveStudentTime:
-                setStudentGradingTime(payload.exam, payload.student, payload.time);
+                setStudentGradingTime( payload.exam, payload.student, payload.time );
                 break;
 
+            case ngmTypes.updateScore:
+                saveItemScoreRequest( payload.exam, payload.item, payload.student, payload.score );
+                break;
 
+            case ngmTypes.updateText:
+               saveCommentTextRequest(payload.exam, payload.item, payload.student, payload.text);
+                brea;
 
             // ******************** END NEW GRADING STUFF
-
 
 
             // ******************** Items
@@ -231,7 +244,7 @@ export default function ( store ) {
 
             // ******************** Grades
             case mTypes.updateGradeCutoffs:
-                updateGradeAssignment(store, payload.exam, payload.obj);
+                updateGradeAssignment( store, payload.exam, payload.obj );
                 break;
 
 
@@ -284,7 +297,6 @@ export default function ( store ) {
 
 
             // ******************** Scores
-
 
 
             // ******************** Students
@@ -359,7 +371,7 @@ export default function ( store ) {
                 break;
 
 
-                // ************ Times
+            // ************ Times
 
 
             default:

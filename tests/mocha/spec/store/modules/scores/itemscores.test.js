@@ -46,7 +46,7 @@ const makeState = function () {
     };
 };
 
-describe.only( "itemscores | ", function () {
+describe( "itemscores | ", function () {
     let state;
     let testExam;
     let testItem;
