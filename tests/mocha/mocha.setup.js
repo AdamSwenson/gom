@@ -4,6 +4,8 @@ require('jsdom-global')();
 global.expect = require('expect');
 global._ = require( 'lodash' );
 
+global.sinon = require( 'sinon' );
+
 /**
  * API Methods
 
@@ -174,4 +176,4 @@ global._ = require( 'lodash' );
  semver
 
  */
-global.Faker = require('faker');
+global.faker = require( 'faker' );

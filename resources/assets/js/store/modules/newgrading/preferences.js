@@ -13,6 +13,14 @@ const state = {
     /** Whether student names are visible during grading */
     areStudentNamesVisible: true,
 
+    isLetterGradeButtonUsed : true,
+
+    shouldDynamicallyCollapseCommentAreas : true,
+
+    isSliderUsed : true,
+
+    isScoreDisplayed : true,
+
 };
 
 const mutations = {

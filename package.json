@@ -105,7 +105,7 @@
     "bootbox": "^4.4.0",
     "bootstrap": "^3.3.6",
     "bootstrap-sass": "^3.0.0",
-    "bootstrap-slider": "^6.0.13",
+    "bootstrap-slider": "^10.0.0",
     "bootstrap-toggle": "^2.2.1",
     "bootstrap-vue": "^0.10.1",
     "buble": "^0.15.2",

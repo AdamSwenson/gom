@@ -1,15 +1,13 @@
 <template>
-    <div class="field comment-text-area">
-        <label></label>
-        <div class="control">
-            <textarea class="textarea"
-                      rows="4"
+
+            <textarea class="textarea comment-text-area"
                       placeholder="No score for this element"
+                      v-bind:rows="numRows"
                       v-model="commentText"
+                      v-on:focus="maximize"
+                      v-on:blur="minimize"
             ></textarea>
-        </div>
-        <p class="help"></p>
-    </div>
+
 </template>
 
 <style lang="scss">
@@ -31,14 +29,21 @@
 
         data: function () {
             return {
-                defaults: {}
+                isMinimized: true,
+                defaults: {
+                    rows: {
+                        minimized: 2,
+                        maximized: 5
+                    }
+                }
             }
         },
 
         computed: {
             exam : function (  ) {
-              return this.$store.getters[ gTypes.getActiveExamObj ];
+              return this.$store.getters[ nggTypes.getActiveExam ];
             },
+
             /**
              * The current value of the text area
              */
@@ -46,9 +51,13 @@
                 // cache: false,
                 get: function () {
                     if(! this.isReady()) return '';
+                    let so = this.$store.getters[nggTypes.getItemScoreObject]({
+                        item: this.item,
+                        student: this.student
+                    });
 
-                    let so = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
-                    if ( !_.isUndefined( so ) ) return so.commentText;
+                    if ( !_.isUndefined( so ) ) return so.text;
+
                     return '';
 
 
@@ -62,18 +71,20 @@
                 },
                 set: function ( text ) {
 
-                    let pl = PayloadScore.factory( {
+                    let pl = {
                         exam: this.exam,
                         item: this.item,
                         student: this.student,
                         text: text
-                    } )
+                    };
 
-                    this.$store.commit( 'updateText', pl );
-
+                    this.$store.dispatch( ngaTypes.recordCommentText, pl );
                 }
             },
 
+            numRows: function (  ) {
+                return this.isMinimized ? this.defaults.rows.minimized : this.defaults.rows.maximized;
+            }
 
         },
 
@@ -95,6 +106,14 @@
             commentAreaEnable: function () {
                 this.commentSelector.removeAttribute( 'readonly' );
             },
+
+            maximize: function (  ) {
+                this.isMinimized = false;
+            },
+
+            minimize: function (  ) {
+                this.isMinimized = true;
+            }
 
         },
 

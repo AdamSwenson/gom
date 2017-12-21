@@ -1,27 +1,30 @@
 <template>
     <div class=" elementPanel box">
-
-        <h5 class="elementTitle">{{ title }}</h5>
-
-        <comment-text :item="item" :student="student"></comment-text>
-        <div class="field">
-            <label></label>
-            <div class="control">
-                <score-slider :item="item" :student="student"></score-slider>
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <!-- question Name -->
+                    <p class="elementTitle title is-4">{{ title }}</p>
+                </div>
             </div>
         </div>
-        <!--<div class="tile is-ancestor">-->
-            <!--<div class="tile is-parent is-vertical">-->
-                <!--<div class="tile is-child sliderContainer">-->
-                    <!--<div class="tile is-child">-->
-                        <!--&lt;!&ndash; comment area &ndash;&gt;-->
-                        <!--<comment-text :item="item"></comment-text>-->
 
+        <div class="field ">
+            <label></label>
+            <div class="control">
+        <comment-text :item="item" :student="student"></comment-text>
+            </div>
+            <p class="help"></p>
+        </div>
 
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <score-slider :item="item" :student="student"></score-slider>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 <script>
@@ -32,13 +35,14 @@
 
     import CommentText from './comment-text.vue';
     import ScoreSlider from './score-slider.vue';
+
     module.exports = {
 
-        components : { CommentText, ScoreSlider},
+        components: { CommentText, ScoreSlider },
 
         props: [
             'item',
-'student'
+            'student'
         ],
 
         data: function () {
@@ -64,8 +68,8 @@
              * Returns the string of the element's description to be displayed on the page
              * @returns {string}
              */
-            title: function (  ) {
-              return this.item.name;
+            title: function () {
+                return this.item.name;
             },
 
             /**
@@ -73,7 +77,7 @@
              * @returns {module.exports.computed.activeStudent|null|*}
              */
             activeStudent: function () {
-                return this.$store.getters[nmgTypes.getActiveStudent];
+                return this.$store.getters[ nmgTypes.getActiveStudent ];
             },
             /**
              * The valence corresponding to the currently set element score
@@ -85,7 +89,7 @@
                     return false;
                 }
 
-                return this.getValence( this.elementScore );
+                return this.getValenceForScore( this.elementScore );
             },
 
             /**
@@ -94,21 +98,20 @@
             elementScore: {
                 // cache: false,
                 get: function () {
-                    if(! this.isReady()) return '';
+                    if ( !this.isReady() ) return '';
 
                     let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
                     if ( qs != null ) {
                         return qs.score;
                     }
-                //     // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
-                //     return this.store.getElementScoreForActiveStudent( this.elementIndex );
+                    //     // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
+                    //     return this.store.getElementScoreForActiveStudent( this.elementIndex );
                 },
                 set: function ( score ) {
-                //     this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
-                //     this.notifyStoreElementScore( score )
+                    //     this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
+                    //     this.notifyStoreElementScore( score )
                 }
             },
-
 
 
             // /**
@@ -151,8 +154,8 @@
         },
 
         methods: {
-            isReady: function (  ) {
-                if ( _.isUndefined( this.item ) || _.isNull(this.item) || _.isUndefined( this.student ) || _.isNull(this.student) ) return false;
+            isReady: function () {
+                if ( _.isUndefined( this.item ) || _.isNull( this.item ) || _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
                 return true;
             },
 
@@ -309,7 +312,6 @@
                 // this.sliderSelector.slider( 'setValue', this.elementScore );
 //            this.sliderSelector.slider( 'refresh' );
             },
-
 
 
             /**

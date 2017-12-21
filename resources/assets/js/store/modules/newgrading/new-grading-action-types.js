@@ -17,10 +17,10 @@ export const setActiveStudentTime = 'setActiveStudentTime';
 
 //comments
 export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
-export const storeCommentText = 'storeCommentTextNew';
+export const recordCommentText = 'recordCommentTextNew';
 
 //scores
-// export const storeItemScore = 'storeItemScore';
+export const recordItemScore = 'recordItemScoreNew';
 
 
 //exams

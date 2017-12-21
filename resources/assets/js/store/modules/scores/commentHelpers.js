@@ -1,0 +1,112 @@
+/**
+ * Created by adam on 12/19/18.
+ * These are tools for handling the comments
+ * and scores
+ */
+
+
+/*
+ * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
+ * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
+ *
+ */
+export const sliderSettings = {
+    max: 10,
+    sliderStep: 0.25,
+    valenceCutoffs: [ 0, 3.25, 6.75, 10 ],
+    valenceLabels: [ "Missing", "Poor", "Fair", "Excellent" ],
+    valenceLabelPositions: [ 0, 33, 67, 100 ]
+};
+
+
+
+
+
+export const checkInRange = ( score, cutoffs ) => {
+    if ( score < cutoffs[0] ) throw new Error( "cannot get valence. value out of range" );
+    return true;
+}
+
+
+/**
+ * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
+ * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
+ *
+ * @param score
+ * @returns {number}
+ */
+export function getValenceForScore( score, maxScore ) {
+    if ( _.isNull( score ) ) throw new Error( "cannot get valence for null" );
+
+    //if the max score is set, we need to dynamically create
+    //the cutoffs. Otherwise we'll use the defaults from the slider settings
+    // We start by figuring out how far apart the
+    //cutoffs need to be by dividing max possible score by the number of labels
+    let numLabels = sliderSettings.valenceLabels.length;
+
+    let cutoffs = (!_.isUndefined( maxScore )) ? makeCutoffsFromMaxScore( maxScore, numLabels) : sliderSettings.valenceCutoffs;
+
+    if ( !checkInRange( score, cutoffs ) ) return null;
+
+    return getValenceIndex( score, cutoffs );
+};
+
+
+export const getValenceIndex = ( score, cutoffs ) => {
+    //now we can look up the valence
+    let valence = 0;
+    //start at the second largest value in the cutoffs.
+    for (let j = cutoffs.length - 2; j >= 0; j--) {
+        if ( score > cutoffs[ j ] ) {
+            //if the score is greater than the second largest cutoff value, then it belongs
+            //to the highest valence and so on.
+            valence = j + 1;
+            break;
+        }
+    }
+    //return the set valence. If made it all the way to 0, the default will be returned.
+    return valence;
+}
+
+
+/**
+ * Check whether the old and new scores have the same valence.
+ * If they are, return true.
+ * If not or if oldScore wasn't set, return false
+ * @param oldScore
+ * @param newScore
+ * @returns {boolean}
+ */
+export function isSameValence( oldScore, newScore, maxScore ) {
+    //if there was no old score, return false
+    if ( typeof oldScore == 'undefined' || oldScore == null ) {
+        return false;
+    }
+    if ( getValenceForScore( newScore, maxScore ) != getValenceForScore( oldScore, maxScore ) ) {
+        return false;
+    }
+    return true;
+
+};
+
+
+/**
+ * Returns a list of equally spaced cutoff values
+ * for the given number of labels.
+ *
+ * The first value will always be 0
+ *
+ * @param maxScore
+ * @param numLabels
+ * @returns {Array}
+ */
+export function makeCutoffsFromMaxScore( maxScore, numLabels ) {
+    let cutoffs = [];
+
+    let intervalVal = maxScore / numLabels;
+    //starting at 0 (for missing), we populate the list
+    for (let i = 0; i < maxScore; i += intervalVal) {
+        cutoffs.push( i );
+    }
+    return cutoffs;
+}

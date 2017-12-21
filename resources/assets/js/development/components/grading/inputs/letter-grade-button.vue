@@ -24,6 +24,8 @@
     // import gTypes from '../../../../store/getter-types';
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
     import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
+    import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
+
 
     import {
         calculateGradeAssignmentFromItemScore,
@@ -61,7 +63,6 @@
             //displayed on the button should track the
             //value of the score
             score: function ( newValue ) {
-                window.console.log( 'letter-grade-button', 'score', 66, newValue );
 
                 //we don't want the change in score to trigger the
                 //update score since that would be both duplicative and
@@ -83,19 +84,13 @@
                 if ( this.ignoreChanges ) return true;
 
                 let score = calculateItemScoreFromLetterGrade( gradeAssignment, this.maxScore );
-
-                let pl = PayloadScore.factory( {
+                let pl =  {
                     exam: this.exam,
                     item: this.item,
                     student: this.student,
                     score: score
-                } )
-                this.$store.commit( ngmTypes.updateScore, pl );
-
-                // //
-                // //     //Display tooltip explaining the calculation
-                // //     //  this.showGradePopOver( this.$el, this.displayedGrade.displayValue, this.displayedGrade.calcValue,  this.maxScore );
-                // //
+                };
+                this.$store.dispatch( ngaTypes.recordItemScore, pl );
             },
 
 

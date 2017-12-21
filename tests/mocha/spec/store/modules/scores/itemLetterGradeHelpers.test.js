@@ -16,7 +16,7 @@ import Exam from '../../../../../../resources/assets/js/models/Exam';
 import { calculateItemScoreFromLetterGrade, calculateGradeAssignmentFromItemScore } from '../../../../../../resources/assets/js/store/modules/scores/itemLetterGradeHelpers';
 
 
-describe.only( "itemLetterGradeHelpers | ", function () {
+describe( "itemLetterGradeHelpers | ", function () {
     let state;
     let testExam;
     let testItem;

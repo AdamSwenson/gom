@@ -108,19 +108,6 @@ export default class Item extends IModel {
     };
 
 
-    // /**
-    //  * Returns the next serial number.
-    //  * The first time this is called, it will return 1
-    //  * The actual value doesn't matter, only its uniqueness.
-    //  * @returns {number}
-    //  */
-    // static makeSerialNumber() {
-    //     if ( !Item.makeSerialNumber.count ) Item.makeSerialNumber.count = 0;
-    //     Item.makeSerialNumber.count += 1;
-    //     return Item.makeSerialNumber.count;
-    // }
-
-
     get idx() {
         return this.idxStore.split( separator );
     } //[ this.index,  this.depth];}

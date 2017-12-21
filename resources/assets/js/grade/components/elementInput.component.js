@@ -82,7 +82,7 @@ module.exports = {
                 //Also led to custom comments being deleted when moved to missing
                 if ( this.elementScore != null)
                 // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
-                    return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+                    return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValenceForScore( this.elementScore ) );
             },
             set: function ( text ) {
                 this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
@@ -102,7 +102,7 @@ module.exports = {
                 return false;
             }
 
-            return this.getValence( this.elementScore );
+            return this.getValenceForScore( this.elementScore );
         },
 
         /**

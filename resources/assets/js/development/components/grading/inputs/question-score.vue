@@ -2,7 +2,7 @@
 
     <div class="questionScoreForm ">
         <div class="field has-addons">
-            <label class="label questionScoreLabel">Score:</label>
+            <label class="label questionScoreLabel"></label>
 
             <letter-grade-button
                     :item="item"
@@ -118,17 +118,26 @@
 
                     let me = this;
 
-                    if ( !this.isReady() ) return '';
-                    let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
+                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
+                            item: me.item,
+                            student: me.student
+                        } );
 
                     if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) return qs.score;
 
-                    let p = this.$store.dispatch( 'initializeItemScore',
-                        { exam: this.exam, item: this.item, student: this.student } );
+                    let p = this.$store.dispatch( 'initializeItemScore', {
+                        exam: this.exam,
+                        item: this.item,
+                        student: this.student
+                    } );
 
                     return p.then( function () {
-                        qs = me.$store.getters.getItemScoreObject( me.item.id, me.student.id );
-                        // window.console.log( 'score-slider', 'get', 79, qs );
+                        qs = me.$store.getters[ nggTypes.getItemScoreObject ](
+                            {
+                                item: me.item,
+                                student: me.student
+                            } );
+
                         return qs.score;
                     } );
 
@@ -147,21 +156,19 @@
                  */
                 set: function ( score ) {
 
-                    let pl = PayloadScore.factory( {
+                    let pl = {
                         exam: this.exam,
                         item: this.item,
                         student: this.student,
-                        //we need the score object so that the comment text
-                        //will be included in the request to the server
-                        scoreObject: this.scoreObject
-                    } )
-                    this.$store.commit( ngmTypes.updateScore, pl );
+                        score: score
+                    };
+                    this.$store.dispatch( ngaTypes.recordItemScore, pl );
                 }
             },
 
 
-            scoreObject: function (  ) {
-                return this.$store.getters.getItemScoreObject( this.item.id, this.student.id);
+            scoreObject: function () {
+                return this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
             },
 
 
@@ -190,13 +197,13 @@
              */
             showGradePopOver: function ( gradeAssignment, maxScore, score ) {
 
-let $target = jQuery(this.$el);
+                let $target = jQuery( this.$el );
                 let integerGrade = gradeAssignment.calcValue;
                 let letterGrade = gradeAssignment.displayValue;
                 //The decimal to be used in the displayed calculation message
                 let floatGrade = Number( gradeAssignment.calcValue * 0.01 ).toFixed( 2 );
                 //The resulting total to be displayed in the calculation message
-                var total = Number(score).toFixed( 2 ); //Number( floatGrade * maxScore ).toFixed( 2 );
+                var total = Number( score ).toFixed( 2 ); //Number( floatGrade * maxScore ).toFixed( 2 );
 
                 //The message to display
                 var message = "<p class='gradeToolTip'>" + letterGrade + " = " + integerGrade + "%<br/>" +

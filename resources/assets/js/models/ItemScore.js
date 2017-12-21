@@ -9,6 +9,7 @@ export default class ItemScore  {
         this.studentId;
         this.score = null;
         this.commentText;
+        this.isCustomText = false;
     }
 
 
@@ -18,7 +19,8 @@ export default class ItemScore  {
             'itemId',
             'studentId',
             'score',
-            'commentText'
+            'commentText',
+            'isCustomText'
         ];
     }
 

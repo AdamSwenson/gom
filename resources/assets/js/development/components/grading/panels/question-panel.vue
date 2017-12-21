@@ -4,13 +4,15 @@
         <div class="tile is-ancestor">
             <div class="tile is-parent is-vertical ">
                 <div class="tile is-child">
+
                     <div class="level">
                         <div class="level-left">
                             <div class="level-item">
                                 <!-- question Name -->
-                                <h4 class="">#{{ number }}: "{{ name }}"</h4>
+                                <p v-bind:class="labelStyling">#{{ number }}: {{ name }}</p>
                             </div>
                         </div>
+
                         <div class="level-right">
                             <div class="level-item">
                                 <!-- question Score -->
@@ -23,13 +25,22 @@
                         </div>
                     </div>
 
-                    <comment-text :item="item" :student="student"></comment-text>
-                    <div class="level">
-                        <div class="level-left">
-                            <div class="level-item">
-                                <score-slider :item="item" :student="student"></score-slider>
-                            </div>
+                    <div class="field ">
+                        <label></label>
+                        <div class="control">
+                            <comment-text
+                                    :item="item"
+                                    :student="student"
+                            ></comment-text>
                         </div>
+                        <p class="help"></p>
+                    </div>
+
+                    <div class="level">
+                        <div class="level-item has-text-centered is-fullwidth">
+                            <score-slider :item="item" :student="student"></score-slider>
+                        </div>
+
                     </div>
 
                 </div>
@@ -39,11 +50,12 @@
 
         <!-- element area holds all sliders and comments for this question -->
         <div class="tile is-child ">
-            <div v-if="!isElementsEmpty">
-                <element-input v-for="item in elements"
-                               v-bind:key="item.serialNumber"
-                               :item="item"
-                               :student="student"></element-input>
+            <div v-if="!isElementsEmpty"
+                 v-for="item in elements">
+                <element-input
+                        v-bind:key="item.serialNumber"
+                        :item="item"
+                        :student="student"></element-input>
             </div>
 
             <!--add some text if no elements for this question -->
@@ -75,7 +87,6 @@
 
 
     export default {
-        // name: 'qp',
 
         components: {
             ElementInput,
@@ -131,6 +142,11 @@
                     return this.$store.getters.getItemChildren( this.item );
                 }
                 return [];
+            },
+
+            labelStyling: function (  ) {
+                let base = 'title is-';
+
             },
 
             isElementsEmpty: function () {

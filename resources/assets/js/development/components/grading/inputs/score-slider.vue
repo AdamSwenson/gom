@@ -1,7 +1,9 @@
 <template>
     <input v-bind:id="sliderId"
-           type="text"
+           type="number"
            class="slider"
+           min="0"
+           v-bind:max="maxScore"
            v-model="score"
     >
 
@@ -17,6 +19,7 @@
     var jQuery = require( 'jquery' );
     window.jQuery = jQuery;
     require( 'bootstrap' );
+    // var Slider = require("bootstrap-slider");
     var Slider = require( "../../../../libraries/bootstrap-slider-modified.js" );
 
     import PayloadScore from '../../../../models/PayloadScore';
@@ -25,6 +28,7 @@
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
     import * as gTypes from '../../../../store/getter-types';
 
+    import { sliderSettings, makeCutoffsFromMaxScore } from "../../../../store/modules/scores/commentHelpers";
 
     export default {
 
@@ -34,26 +38,42 @@
 
         data: function () {
             return {
-
-                settings: {
-                    sliderStep: 0.25,
-                    valenceCutoffs: [ 0, 3.25, 6.75, 10 ],
-                    valenceLabels: [ "Missing", "Poor", "Fair", "Excellent" ],
-                    valenceLabelPositions: [ 0, 33, 67, 100 ]
-                },
                 defaults: {}
             }
         },
 
         computed: {
             exam: function () {
-                return this.$store.getters[ gTypes.getActiveExamObj ];
+                return this.$store.getters[ nggTypes.getActiveExam ];
+            },
+
+            maxScore: function () {
+                return !_.isUndefined( this.item ) ? this.item.maxScore : sliderSettings.max;
             },
             student: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
                 return !_.isUndefined( s ) ? s : ''
             },
 
+            valenceCutoffs: function () {
+                if ( _.isUndefined( this.item ) || _.isUndefined( this.item.maxScore ) ) return sliderSettings.valenceCutoffs;
+
+                return makeCutoffsFromMaxScore( this.item.maxScore );
+            },
+
+            settings: function () {
+                return {
+                    tooltip: 'show',
+                    //value: this.elementScore,
+                    min: 0,
+                    max: this.maxScore,
+                    step: this.step,
+                    ticks: this.valenceCutoffs,
+                    ticks_labels: sliderSettings.valenceLabels,
+                    ticks_position: sliderSettings.valenceLabels
+                    // id: Counter()
+                }
+            },
 
             /**
              * Returns the string id of the slider element
@@ -67,7 +87,7 @@
             },
 
             /**
-             * Returns the jQuery selector for the slider element
+             * Returns the div  selector for the slider element
              * @returns {*|jQuery|HTMLElement}
              */
             sliderSelector: function () {
@@ -81,15 +101,16 @@
                     let me = this;
 
                     if ( !this.isReady() ) return '';
-                    let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
+                    // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
 
+                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( { item: me.item, student: me.student } );
                     if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) return qs.score;
 
                     let p = this.$store.dispatch( 'initializeItemScore',
-                        { exam: this.exam, item: this.item, student: this.student} );
+                        { exam: this.exam, item: this.item, student: this.student } );
 
                     return p.then( function () {
-                        qs = me.$store.getters.getItemScoreObject( me.item.id, me.student.id );
+                        qs = me.$store.getters[ nggTypes.getItemScoreObject ]( { item: me.item, student: me.student } );
                         // window.console.log( 'score-slider', 'get', 79, qs );
                         return qs.score;
                     } );
@@ -107,21 +128,25 @@
                  * @param score
                  */
                 set: function ( score ) {
-
-                    let pl = PayloadScore.factory( {
+                    let pl = {
                         exam: this.exam,
                         item: this.item,
                         student: this.student,
                         score: score
-                    } )
-                    this.$store.commit( ngmTypes.updateScore, pl );
+                    };
+                    this.$store.dispatch( ngaTypes.recordItemScore, pl );
                 }
             },
+
+            step: function () {
+                return sliderSettings.sliderStep;
+            }
         },
 
         methods: {
             isReady: function () {
-                if ( _.isUndefined( this.item ) || _.isNull( this.item ) || _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
+                if ( _.isUndefined( this.item ) || _.isNull( this.item ) ) return false;
+                if ( _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
                 return true;
             },
 
@@ -134,7 +159,7 @@
              * @param callback
              */
             handleElementSliderStopEvent: function ( slideEvt, callback ) {
-                window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
+                // window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
                 //store the new element score in the data object
                 this.score = slideEvt.value;
 
@@ -156,25 +181,18 @@
 
         mounted: function () {
             var me = this;
-            let mySlider = new Slider( this.$el, {
-                tooltip: 'show',
-                //value: this.elementScore,
-                step: this.settings.sliderStep,
-                ticks: this.settings.valenceCutoffs,
-                ticks_labels: this.settings.valenceLabels,
-                ticks_position: this.settings.valenceLabels
-                // id: Counter()
+            this.$nextTick( function () {
+                let mySlider = new Slider( this.$el, this.settings );
+
+                /* ----------------- slider listeners --------------- */
+                /* When an element slider stops movement,
+                 update element score and text (if necessary),
+                 then save score, text and time
+                 *  */
+                jQuery( this.$el ).on( 'slideStop', function ( slideEvt ) {
+                    me.handleElementSliderStopEvent( slideEvt );
+                } );
             } );
-
-            /* ----------------- slider listeners --------------- */
-            /* When an element slider stops movement,
-             update element score and text (if necessary),
-             then save score, text and time
-             *  */
-            jQuery(this.$el).on( 'slideStop', function ( slideEvt ) {
-                me.handleElementSliderStopEvent( slideEvt );
-               } );
-
         }
     }
 </script>

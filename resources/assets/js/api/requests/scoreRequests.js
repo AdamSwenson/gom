@@ -41,7 +41,7 @@ module.exports = {
         return window.axios
             .post( to, out )
             .then( ( response ) => {
-                window.console.log( 'scoreRequests---saveItemScoreRequest', 28, response );
+                // window.console.log( 'scoreRequests---saveItemScoreRequest', 28, response );
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -70,7 +70,7 @@ module.exports = {
         return window.axios
             .post( to, out )
             .then( ( response ) => {
-                window.console.log( 'scoreRequests---saveCommentTextRequest', 28, response );
+                // window.console.log( 'scoreRequests---saveCommentTextRequest', 28, response );
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -136,7 +136,7 @@ module.exports = {
         return window.axios
             .get( Routes.getItemScoreRequest( item ) )
             .then( ( response ) => {
-                window.console.log( 'scoreRequests---getItemScoreRequest', 28, response );
+                // window.console.log( 'scoreRequests---getItemScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {
                 _.forEach( response.data, function ( r ) {
                     // window.console.log( 'examRequests', 'r', 29, r);

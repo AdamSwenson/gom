@@ -145,7 +145,7 @@ export default function ( store ) {
 
             case ngmTypes.updateText:
                saveCommentTextRequest(payload.exam, payload.item, payload.student, payload.text);
-                brea;
+                break;
 
             // ******************** END NEW GRADING STUFF
 

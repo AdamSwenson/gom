@@ -2,10 +2,14 @@
     <div class="tabs">
         <ul>
             <li v-for="r in questionRoutes"
-                role="presentation" class="grading-nav-link"
+                role="presentation"
+                class="grading-nav-link"
+                v-bind:class="[selectedNumber === r.number ? activeClass : '']"
             >
                 <router-link v-bind:to="r.route">
-                    <a class="grading-question-nav"> Q{{r.number}} </a>
+                    <a class="grading-question-nav"
+                       v-on:click="handleClick(r.number)"
+                    > Q{{r.number}} </a>
                 </router-link>
             </li>
         </ul>
@@ -25,6 +29,8 @@
 
         data: function () {
             return {
+                activeClass: 'is-active',
+                selectedNumber: 0, //assumes always initially shows the q0
                 defaults: {}
             }
         },
@@ -42,7 +48,7 @@
                 let r = [];
                 for (let i = 0; i <= this.questions.length; i++) {
 
-                                // r.push( { number: i, route: this.getRoute(this.questions[i].serialNumber) } );
+                    // r.push( { number: i, route: this.getRoute(this.questions[i].serialNumber) } );
 
                     r.push( i );
                 }
@@ -56,8 +62,8 @@
                 for (let i = 0; i <= this.questions.length; i++) {
                     let q = this.questions[ i ];
                     if ( q ) {
-                        routes.push( { number: i, route: this.getRoute(q.serialNumber) } );
-                     }
+                        routes.push( { number: i, route: this.getRoute( q.serialNumber ) } );
+                    }
                 }
                 return routes;
             }
@@ -66,6 +72,9 @@
         computed: {},
 
         methods: {
+            handleClick: function ( number ) {
+                this.selectedNumber = number;
+            },
             getRoute: function ( serialNumber ) {
                 let root = '/grading-questions/';
                 return root + serialNumber;

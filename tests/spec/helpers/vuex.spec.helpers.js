@@ -7,6 +7,7 @@ import Item from '../../../resources/assets/js/models/Item';
 import Exam from '../../../resources/assets/js/models/Exam';
 import Student from '../../../resources/assets/js/models/Student';
 import Question from '../../../resources/assets/js/models/Question';
+import ItemScore from '../../../resources/assets/js/models/ItemScore';
 
 
 let faker = require( 'faker' );
@@ -45,6 +46,16 @@ export const factories = {
         e.name = faker.company.bsNoun();
         e.text = faker.company.bsNoun();
         e.maxScore = faker.random.number();
+        return e;
+    },
+    
+    itemScoreFactory: (exam, item, student)=>{
+        let e = new ItemScore();
+        e.itemId =  _.isUndefined(item) ? faker.random.number() : item.id;
+        e.examId =  _.isUndefined(exam) ? faker.random.number() : item.id;
+        e.studentId =  _.isUndefined(student) ? faker.random.number() : student.id;
+        e.score = faker.random.number();
+        e.text = faker.company.bs();
         return e;
     },
 

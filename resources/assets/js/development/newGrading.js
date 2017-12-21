@@ -15,6 +15,9 @@ import Vue from 'vue'
 // Vue.use( BootstrapVue );
 // Vue.use( Sortable );
 
+// import questionPanel from '../development/components/grading/panels/question-panel.vue';
+// Vue.component('question-panel', questionPanel); //importing globally so can use recursively
+
 import AsyncComputed from 'vue-async-computed'
 Vue.use( AsyncComputed )
 

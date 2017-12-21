@@ -146,3 +146,8 @@ export const getSortedIds = 'getSortedIds'
 // export const getMaxPossibleScore = 'getMaxPossibleScore';
 // export const getInconsistentCutOffs = 'getInconsistentCutOffs';
 // export const getListOfGradeValues = 'getListOfGradeValues';
+
+/* ================================================================
+   ================== SCORES        =====================
+   ================================================================ */
+export const getItemScoreObject =  'getItemScoreObject';

@@ -33,7 +33,7 @@ localVue.use( Vuex )
 var Component = require( "../../../../../resources/assets/js/development/components/grading/inputs/letter-grade-button.vue" );
 
 
-describe.only( " letter-grade-button ", () => {
+describe( " letter-grade-button ", () => {
     let componentDivIdentifier = '#letterGradeArea';
 
     let getters;
