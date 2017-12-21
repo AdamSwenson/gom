@@ -45278,8 +45278,21 @@ exports.makeCutoffsFromMaxScore = makeCutoffsFromMaxScore;
 var sliderSettings = exports.sliderSettings = {
     max: 10,
     sliderStep: 0.25,
+    /**
+     * This gets passed to the slider's ticks option
+     * From the docs: Used to define the values of ticks.
+     * Tick marks are indicators to denote special values in the range.
+     * This option overwrites min and max options.
+     */
     valenceCutoffs: [0, 3.25, 6.75, 10],
+
     valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+
+    /**
+     * This gets passed to the sliders ticks_position option
+     * From the docs: Defines the positions of the tick values in percentages.
+     * The first value should always be 0, the last value should always be 100 percent.
+     * */
     valenceLabelPositions: [0, 33, 67, 100]
 };
 
@@ -45358,7 +45371,7 @@ function isSameValence(oldScore, newScore, maxScore) {
  */
 function makeCutoffsFromMaxScore(maxScore, numLabels) {
     var cutoffs = [];
-
+    //todo the max score needs to be the final value
     var intervalVal = maxScore / numLabels;
     //starting at 0 (for missing), we populate the list
     for (var i = 0; i < maxScore; i += intervalVal) {
@@ -48202,12 +48215,13 @@ module.exports = (_module$exports = {
             var newValenceName = _.lowerCase(_commentHelpers.sliderSettings.valenceLabels[newValenceIdx]);
             var comment = item.comments.get(newValenceName);
             // window.console.log( 'itemscores.actions', 'comment', 126,comment );
+
             //This needs to be stored / saved
             var pl2 = {
                 exam: exam,
                 item: item,
                 student: student,
-                text: comment.text
+                text: _.isUndefined(comment) ? '' : comment.text
             };
 
             //call the action to record the new comment
@@ -52800,380 +52814,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 223 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _newGradingMutationTypes = __webpack_require__(21);
-
-var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
-
-var _newGradingActionTypes = __webpack_require__(26);
-
-var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
-
-var _newGradingGetterTypes = __webpack_require__(24);
-
-var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _commentText = __webpack_require__(188);
-
-var _commentText2 = _interopRequireDefault(_commentText);
-
-var _scoreSlider = __webpack_require__(189);
-
-var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-module.exports = {
-
-    components: { CommentText: _commentText2.default, ScoreSlider: _scoreSlider2.default },
-
-    props: ['item', 'student'],
-
-    data: function data() {
-        return {
-
-            /**
-             * Whether the current comment text is customized (as opposed to stock).
-             * When this is true, moving the slider should not change the text.
-             */
-            isCustom: false,
-
-            settings: {
-                sliderStep: 0.25,
-                valenceCutoffs: [0, 3.25, 6.75, 10],
-                valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
-                valenceLabelPositions: [0, 33, 67, 100]
-            }
-        };
-    },
-
-    computed: {
-        /**
-         * Returns the string of the element's description to be displayed on the page
-         * @returns {string}
-         */
-        title: function title() {
-            return this.item.name;
-        },
-
-        /**
-         * Shortcut to where the active student is stored
-         * @returns {module.exports.computed.activeStudent|null|*}
-         */
-        activeStudent: function activeStudent() {
-            return this.$store.getters[nmgTypes.getActiveStudent];
-        },
-        /**
-         * The valence corresponding to the currently set element score
-         * @returns {*}
-         */
-        currentValence: function currentValence() {
-            //return false if no element score set
-            if (typeof this.elementScore == 'undefined' || this.elementScore == null) {
-                return false;
-            }
-
-            return this.getValenceForScore(this.elementScore);
-        },
-
-        /**
-         * The current value of the slider
-         */
-        elementScore: {
-            // cache: false,
-            get: function get() {
-                if (!this.isReady()) return '';
-
-                var qs = this.$store.getters.getItemScoreObject(this.item.id, this.student.id);
-                if (qs != null) {
-                    return qs.score;
-                }
-                //     // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
-                //     return this.store.getElementScoreForActiveStudent( this.elementIndex );
-            },
-            set: function set(score) {
-                //     this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
-                //     this.notifyStoreElementScore( score )
-            }
-        }
-
-        // /**
-        //  * Returns the string id of the comment area
-        //  * @returns {string}
-        //  */
-        // commentAreaId: function () {
-        //     return "commentQ" + this.questionNumber + "E" + this.elementNumber;
-        // },
-        //
-        // /**
-        //  * Returns the jQuery selector for the comment area
-        //  * @returns {*|jQuery|HTMLElement}
-        //  */
-        // commentSelector: function () {
-        //     return $( '#' + this.commentAreaId );
-        // },
-
-        // /**
-        //  * The current value of the text area
-        //  */
-        // commentText: {
-        //     cache: false,
-        //     get: function () {
-        //         //setting this to just this.elementScore prevents missing from displaying comment.
-        //         //when element score was 0.
-        //         //Also led to custom comments being deleted when moved to missing
-        //         if ( this.elementScore != null )
-        //         // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
-        //             return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
-        //     },
-        //     set: function ( text ) {
-        //         this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
-        //         //send to the db
-        //         this.notifyStoreCommentText();
-        //     }
-        // },
-
-
-    },
-
-    methods: {
-        isReady: function isReady() {
-            if (_.isUndefined(this.item) || _.isNull(this.item) || _.isUndefined(this.student) || _.isNull(this.student)) return false;
-            return true;
-        },
-
-        // /**
-        //  * Handles the request to store comment text on the server
-        //  * Accompanying object should contain:
-        //  *      obj.elementIndex: Index of the element whose score needs updating
-        //  */
-        // storeCommentTextRequest : function ( commentRequestObj ) {
-        //     window.console.log( 'gradeVue', 'store-comment-text-request', commentRequestObj );
-        //     let commentText = this.store.getStoredCommentText(commentRequestObj.studentIndex, commentRequestObj.elementIndex)
-        //     this.saveCommentWithTime(commentRequestObj.studentIndex, commentRequestObj.elementId, commentText);
-        // },
-        //
-        //
-        // /**
-        //  * Handles the request to store element score on the server
-        //  * Accompanying object should contain:
-        //  *      obj.elementIndex: Index of the element whose score needs updating
-        //  */
-        // storeElementScoreRequest: function ( elementScoreRequestObj ) {
-        //     window.console.log( 'gradeVue', 'caught store-element-score-request', elementScoreRequestObj );
-        //     let elementId = elementScoreRequestObj.elementId;
-        //     let studentIndex = elementScoreRequestObj.studentIndex
-        //     //store on server
-        //     this.saveElementScoreWithTime(studentIndex, elementId, elementScoreRequestObj.score)
-        // },
-        //
-        //
-        //
-
-        /* ------------------ Display manipulation ------------------------------ */
-        // /**
-        //  * Sets the comment area to empty (user should see the place holder).
-        //  * Usually used to clear out any text that might be left from other users
-        //  */
-        // commentAreaEmpty: function () {
-        //     this.commentText = '';
-        // },
-
-
-        // /**
-        //  * Updates the displayed comment to match the current slider value.
-        //  * TODO Add a test for the potential corner cases making the default null creates
-        //  */
-        // commentAreaUpdate: function () {
-        //     if ( this.elementScore === null ) {
-        //         // clear any text that might have been left over from another user
-        //         // this.commentAreaEmpty();
-        //         // if NULL, disable comment text area until a slider is moved.
-        //         // this is so that the user doesn't enter custom text, move the slider,
-        //         // and then see their custom text irreversibly wiped out.
-        //         this.commentAreaDisable();
-        //     } else {
-        //         // It has already been scored, so the comment text will be retrieved and set.
-        //         //no need for it to remain read only
-        //         this.commentAreaEnable();
-        //     }
-        // },
-
-        /* ------------------------------- Valence helpers -------------------------------- */
-        /**
-         * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
-         * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
-         *
-         * @param score
-         * @returns {number}
-         */
-        getValence: function getValence(score) {
-            var me = this;
-            if (score === null) throw new Error("cannot get valence for null");
-            if (score < 0 || score > me.settings.valenceCutoffs[me.settings.valenceCutoffs.length - 1]) throw new Error("cannot get valence. value out of range");
-
-            var valence = 0;
-            //start at the second largest value in the cutoffs.
-            for (var j = me.settings.valenceCutoffs.length - 2; j >= 0; j--) {
-                if (score > me.settings.valenceCutoffs[j]) {
-                    //if the score is greater than the second largest cutoff value, then it belongs
-                    //to the highest valence and so on.
-                    valence = j + 1;
-                    break;
-                }
-            }
-            //return the set valence. If made it all the way to 0, the default will be returned.
-            return valence;
-        },
-
-        /**
-         * Check whether the old and new scores have the same valence.
-         * If they are, return true.
-         * If not or if oldScore wasn't set, return false
-         * @param oldScore
-         * @param newScore
-         * @returns {boolean}
-         */
-        isSameValence: function isSameValence(oldScore, newScore) {
-            //if there was no old score, return false
-            if (typeof oldScore == 'undefined' || oldScore == null) {
-                return false;
-            }
-            //check old and new are the same
-            if (this.getValence(newScore) != this.getValence(oldScore)) {
-                return false;
-            }
-            return true;
-        },
-
-        /**
-         * Called when an element slider stops movement. Updates element
-         * score and text (if necessary), then saves score, text and time
-         * @param slideEvt
-         * @param data
-         * @param Roster
-         * @param callback
-         */
-        handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
-            //get the existing score
-            // var oldScore = this.store.getElementScoreForActiveStudent( this.elementIndex );
-            // //store the new element score in the data object
-            // this.elementScore = slideEvt.value;
-            //
-            // /**
-            //  * update comment text and save to DB.
-            //  * Only replace text if the score has changed valence regions
-            //  */
-            // if ( !this.isSameValence( oldScore, this.elementScore ) ) {
-            //     //Score is in a new valence region.
-            //     //So let's plug in the appropriate comment text and save to DB
-            //     //
-            //     //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-            //     //anything in these lines
-            //     this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
-            //
-            // } else {
-            //     // Score is in the same valence region.
-            //     // Jump straight to saving without changing the elementComment
-            //     // Fear not. Changes directly to the comment text will be handled elsewhere.
-            // }
-            //
-            // // If using bell curve (standardScoring), element score affects
-            // the total question score, so update
-            // if ( Roster.standardScoring ) {
-            //     //  updateStandardScores();
-            // }
-
-            // if ( typeof callback != 'undefined' ) {
-            //     return callback();
-            // }
-
-        },
-
-        setSliderScore: function setSliderScore() {
-            // this.sliderSelector.slider( 'setValue', this.elementScore );
-            //            this.sliderSelector.slider( 'refresh' );
-        },
-
-        /**
-         * Requests that the grading timer be started, if paused
-         */
-        notifyStartTimer: function notifyStartTimer() {
-            // this.$dispatch( 'start-timer-request', this.elementIndex );
-        }
-
-    },
-
-    ready: function ready() {
-        var me = this;
-
-        // initialize slider
-        $('#' + this.sliderId).slider({
-            tooltip: 'show',
-            //value: this.elementScore,
-            step: this.settings.sliderStep,
-            ticks: this.settings.valenceCutoffs,
-            ticks_labels: this.settings.valenceLabels,
-            ticks_position: this.settings.valenceLabels
-            // id: Counter()
-        });
-
-        /* ----------------- slider listeners --------------- */
-        /* When an element slider stops movement,
-         update element score and text (if necessary),
-         then save score, text and time
-         *  */
-        this.sliderSelector.on('slideStop', function (slideEvt) {
-            // me.handleElementSliderStopEvent( slideEvt );
-            // me.notifySlideEvent();
-        });
-
-        // window.console.log('input ready', 'elementIndex', this.elementIndex);
-    }
-};
-
-/***/ }),
+/* 223 */,
 /* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -53755,61 +53396,34 @@ exports.default = {
 
     data: function data() {
         return {
+            slider: false,
+
+            numberLabels: _commentHelpers.sliderSettings.valenceLabels.length,
+
             defaults: {}
         };
     },
+    watch: {
+        score: function score(newVal) {
+            if (this.slider) this.slider.setValue(newVal);
+        },
+        valenceCutoffs: function valenceCutoffs(newVal) {
+            var me = this;
+            //
+            // if (newVal.length === this.numberLabels ){
+            //     window.console.log( 'score-slider', 'valenceCutoffs', 51, newVal);
+            //     this.$nextTick( function () {
+            //         window.console.log( 'score-slider', 'nt', 53, );
+            //         this.createSlider();
+            //     } );
+
+            // }
+        }
+    },
 
     computed: {
-        exam: function exam() {
-            return this.$store.getters[nggTypes.getActiveExam];
-        },
-
         maxScore: function maxScore() {
             return !_.isUndefined(this.item) ? this.item.maxScore : _commentHelpers.sliderSettings.max;
-        },
-        student: function student() {
-            var s = this.$store.getters[nggTypes.getActiveStudent];
-            return !_.isUndefined(s) ? s : '';
-        },
-
-        valenceCutoffs: function valenceCutoffs() {
-            if (_.isUndefined(this.item) || _.isUndefined(this.item.maxScore)) return _commentHelpers.sliderSettings.valenceCutoffs;
-
-            return (0, _commentHelpers.makeCutoffsFromMaxScore)(this.item.maxScore);
-        },
-
-        settings: function settings() {
-            return {
-                tooltip: 'show',
-                //value: this.elementScore,
-                min: 0,
-                max: this.maxScore,
-                step: this.step,
-                ticks: this.valenceCutoffs,
-                ticks_labels: _commentHelpers.sliderSettings.valenceLabels,
-                ticks_position: _commentHelpers.sliderSettings.valenceLabels
-                // id: Counter()
-            };
-        },
-
-        /**
-         * Returns the string id of the slider element
-         * @returns {string}
-         */
-        sliderId: function sliderId() {
-            if (this.item) {
-                return "slider" + this.item.serialNumber;
-            }
-        },
-
-        /**
-         * Returns the div  selector for the slider element
-         * @returns {*|jQuery|HTMLElement}
-         */
-        sliderSelector: function sliderSelector() {
-            return document.getElementById(this.sliderId);
-            // return this.$el;
-            //return $( '#' + this.sliderId );
         },
 
         score: {
@@ -53819,14 +53433,26 @@ exports.default = {
                 if (!this.isReady()) return '';
                 // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
 
-                var qs = me.$store.getters[nggTypes.getItemScoreObject]({ item: me.item, student: me.student });
-                if (!_.isUndefined(qs) && !_.isNull(qs)) return qs.score;
+                var qs = me.$store.getters[nggTypes.getItemScoreObject]({
+                    item: me.item,
+                    student: me.student
+                });
+
+                if (!_.isUndefined(qs) && !_.isNull(qs)) {
+                    // if(me.slider) me.slider.setValue(qs.score);
+                    return qs.score;
+                }
 
                 var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
 
                 return p.then(function () {
-                    qs = me.$store.getters[nggTypes.getItemScoreObject]({ item: me.item, student: me.student });
+                    qs = me.$store.getters[nggTypes.getItemScoreObject]({
+                        item: me.item,
+                        student: me.student
+                    });
                     // window.console.log( 'score-slider', 'get', 79, qs );
+
+                    // if(me.slider) me.slider.setValue(qs.score);
                     return qs.score;
                 });
             },
@@ -53852,9 +53478,43 @@ exports.default = {
             }
         },
 
-        step: function step() {
-            return _commentHelpers.sliderSettings.sliderStep;
+        student: function student() {
+            var s = this.$store.getters[nggTypes.getActiveStudent];
+            return !_.isUndefined(s) ? s : '';
+        },
+
+        valenceCutoffs: function valenceCutoffs() {
+            if (_.isUndefined(this.item) || _.isUndefined(this.item.maxScore)) return [];
+            //sliderSettings.valenceCutoffs;
+
+            return (0, _commentHelpers.makeCutoffsFromMaxScore)(this.item.maxScore, this.numberLabels);
+        },
+
+        settings: function settings() {
+            return {
+                tooltip: 'show',
+                step: _commentHelpers.sliderSettings.sliderStep,
+                ticks: this.valenceCutoffs,
+                ticks_labels: _commentHelpers.sliderSettings.valenceLabels,
+                ticks_position: _commentHelpers.sliderSettings.valenceLabels
+                // id: Counter()
+            };
+        },
+
+        exam: function exam() {
+            return this.$store.getters[nggTypes.getActiveExam];
+        },
+
+        /**
+         * Returns the string id of the slider element
+         * @returns {string}
+         */
+        sliderId: function sliderId() {
+            if (this.item) {
+                return "slider" + this.item.serialNumber;
+            }
         }
+
     },
 
     methods: {
@@ -53882,9 +53542,30 @@ exports.default = {
             }
         },
 
-        setSliderScore: function setSliderScore() {
-            this.$el.slider('setValue', this.score);
-            //            this.sliderSelector.slider( 'refresh' );
+        setSliderScore: function setSliderScore(score) {
+            this.slider.setValue(score, { triggerSlideEvent: false });
+            // this.slider.refresh();
+        },
+
+        createSlider: function createSlider() {
+            var me = this;
+
+            //todo fix async loading of slider and remove this workaround
+            setTimeout(function () {
+                me.slider = new Slider(me.$el, me.settings);
+                me.setSliderScore(this.score);
+
+                // window.console.log( 'score-slider', 'createSlider', 193, mySlider.getValue() );
+
+                /* ----------------- slider listeners --------------- */
+                /* When an element slider stops movement,
+                 update element score and text (if necessary),
+                 then save score, text and time
+                 *  */
+                jQuery(me.$el).on('slideStop', function (slideEvt) {
+                    me.handleElementSliderStopEvent(slideEvt);
+                });
+            }, 2000);
         }
     },
 
@@ -53894,17 +53575,8 @@ exports.default = {
 
     mounted: function mounted() {
         var me = this;
-        this.$nextTick(function () {
-            var mySlider = new Slider(this.$el, this.settings);
-
-            /* ----------------- slider listeners --------------- */
-            /* When an element slider stops movement,
-             update element score and text (if necessary),
-             then save score, text and time
-             *  */
-            jQuery(this.$el).on('slideStop', function (slideEvt) {
-                me.handleElementSliderStopEvent(slideEvt);
-            });
+        me.$nextTick(function () {
+            me.createSlider();
         });
     }
 };
@@ -53938,9 +53610,9 @@ var _getterTypes = __webpack_require__(6);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _elementInput = __webpack_require__(612);
+var _itemInput = __webpack_require__(1004);
 
-var _elementInput2 = _interopRequireDefault(_elementInput);
+var _itemInput2 = _interopRequireDefault(_itemInput);
 
 var _questionScore = __webpack_require__(614);
 
@@ -53996,57 +53668,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 exports.default = {
 
     components: (_components = {
-        ElementInput: _elementInput2.default,
+        ItemInput: _itemInput2.default,
         CommentText: _commentText2.default,
         ScoreSlider: _scoreSlider2.default
     }, _defineProperty(_components, 'CommentText', _commentText2.default), _defineProperty(_components, 'QuestionScore', _questionScore2.default), _components),
 
     data: function data() {
         return {
-            // serialNumber: _.toInteger( this.$route.params.serialNumber ),
-
             defaults: {}
         };
     },
@@ -54068,28 +53700,32 @@ exports.default = {
             // return !_.isNull( this.item ) ? this.item.serialNumber : '';
         },
 
-        name: function name() {
-            // return this.item.name;
-            if (!_.isUndefined(this.item) && !_.isNull(this.item)) {
-                return this.item.name;
-            }
-            return '';
-        },
+        // name: function () {
+        //     // return this.item.name;
+        //     if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
+        //         return this.item.name
+        //     }
+        //     return '';
+        // },
+        //
         student: function student() {
             var s = this.$store.getters[nggTypes.getActiveStudent];
             return !_.isUndefined(s) ? s : '';
         },
 
-        //the associated elements
+        //the associated child items
         elements: function elements() {
+            var els = [];
             if (!_.isUndefined(this.item) && !_.isNull(this.item)) {
+                var level = 0;
+                // _.forEach( this.$store.getters.getItemChildren( this.item ), function ( item ) {
+                //     els.push( { level: 1, item: item } );
+                // } );
+
+
                 return this.$store.getters.getItemChildren(this.item);
             }
-            return [];
-        },
-
-        labelStyling: function labelStyling() {
-            var base = 'title is-';
+            return els;
         },
 
         isElementsEmpty: function isElementsEmpty() {
@@ -82344,46 +81980,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof="fun
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
 
 /***/ }),
-/* 612 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(223),
-  /* template */
-  __webpack_require__(663),
-  /* styles */
-  null,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/grading/inputs/element-input.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] element-input.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-158082c8", Component.options)
-  } else {
-    hotAPI.reload("data-v-158082c8", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 612 */,
 /* 613 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -84635,53 +84232,7 @@ if (false) {
 }
 
 /***/ }),
-/* 663 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: " elementPanel box"
-  }, [_c('div', {
-    staticClass: "level"
-  }, [_c('div', {
-    staticClass: "level-left"
-  }, [_c('div', {
-    staticClass: "level-item"
-  }, [_c('p', {
-    staticClass: "elementTitle title is-4"
-  }, [_vm._v(_vm._s(_vm.title))])])])]), _vm._v(" "), _c('div', {
-    staticClass: "field "
-  }, [_c('label'), _vm._v(" "), _c('div', {
-    staticClass: "control"
-  }, [_c('comment-text', {
-    attrs: {
-      "item": _vm.item,
-      "student": _vm.student
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    staticClass: "help"
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "level"
-  }, [_c('div', {
-    staticClass: "level-left"
-  }, [_c('div', {
-    staticClass: "level-item"
-  }, [_c('score-slider', {
-    attrs: {
-      "item": _vm.item,
-      "student": _vm.student
-    }
-  })], 1)])])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-158082c8", module.exports)
-  }
-}
-
-/***/ }),
+/* 663 */,
 /* 664 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -86327,56 +85878,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "tile is-parent is-vertical "
   }, [_c('div', {
     staticClass: "tile is-child"
-  }, [_c('div', {
-    staticClass: "level"
-  }, [_c('div', {
-    staticClass: "level-left"
-  }, [_c('div', {
-    staticClass: "level-item"
-  }, [_c('p', {
-    class: _vm.labelStyling
-  }, [_vm._v("#" + _vm._s(_vm.number) + ": " + _vm._s(_vm.name))])])]), _vm._v(" "), _c('div', {
-    staticClass: "level-right"
-  }, [_c('div', {
-    staticClass: "level-item"
-  }, [_c('question-score', {
+  }, [_c('item-input', {
     attrs: {
       "item": _vm.item,
-      "student": _vm.student
+      "level": 0
     }
-  })], 1)])]), _vm._v(" "), _c('div', {
-    staticClass: "field "
-  }, [_c('label'), _vm._v(" "), _c('div', {
-    staticClass: "control"
-  }, [_c('comment-text', {
-    attrs: {
-      "item": _vm.item,
-      "student": _vm.student
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    staticClass: "help"
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "level"
-  }, [_c('div', {
-    staticClass: "level-item has-text-centered is-fullwidth"
-  }, [_c('score-slider', {
-    attrs: {
-      "item": _vm.item,
-      "student": _vm.student
-    }
-  })], 1)])])])]), _vm._v(" "), _c('div', {
-    staticClass: "tile is-child "
-  }, [_vm._l((_vm.elements), function(item) {
-    return (!_vm.isElementsEmpty) ? _c('div', [_c('element-input', {
+  })], 1), _vm._v(" "), _vm._l((_vm.elements), function(item) {
+    return (!_vm.isElementsEmpty) ? _c('div', {
+      staticClass: "tile is-child "
+    }, [_c('item-input', {
       key: item.serialNumber,
       attrs: {
         "item": item,
-        "student": _vm.student
+        "level": 1
       }
     })], 1) : _vm._e()
   }), _vm._v(" "), (_vm.isElementsEmpty) ? _c('div', {
-    staticClass: " noElementsDiv "
-  }, [_c('i', [_vm._v("No elements for this question")])]) : _vm._e()], 2)])
+    staticClass: " noElementsDiv tile is-child "
+  }, [_c('i', [_vm._v("No elements for this question")])]) : _vm._e()], 2)])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -95319,6 +94838,308 @@ if(false) {
 __webpack_require__(198);
 module.exports = __webpack_require__(790);
 
+
+/***/ }),
+/* 1001 */,
+/* 1002 */,
+/* 1003 */,
+/* 1004 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1008)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1005),
+  /* template */
+  __webpack_require__(1007),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/grading/inputs/item-input.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] item-input.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3e51b03d", Component.options)
+  } else {
+    hotAPI.reload("data-v-3e51b03d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1005 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _components;
+
+var _newGradingMutationTypes = __webpack_require__(21);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(26);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(24);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _questionScore = __webpack_require__(614);
+
+var _questionScore2 = _interopRequireDefault(_questionScore);
+
+var _commentText = __webpack_require__(188);
+
+var _commentText2 = _interopRequireDefault(_commentText);
+
+var _scoreSlider = __webpack_require__(189);
+
+var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: ['item', 'level'],
+    components: (_components = {
+        CommentText: _commentText2.default,
+        ScoreSlider: _scoreSlider2.default
+    }, _defineProperty(_components, 'CommentText', _commentText2.default), _defineProperty(_components, 'QuestionScore', _questionScore2.default), _components),
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {
+        // serialNumber: function () {
+        //     return _.toInteger( this.$route.params.serialNumber );
+        // },
+        //
+        // number: function () {
+        //     return this.serialNumber;
+        //     // window.console.log( 'question-panel', 'number', 86, this.item);
+        //     // return !_.isNull( this.item ) ? this.item.serialNumber : '';
+        // },
+
+        name: function name() {
+            // return this.item.name;
+            if (!_.isUndefined(this.item) && !_.isNull(this.item)) {
+                return this.item.name;
+            }
+            return '';
+        },
+        student: function student() {
+            var s = this.$store.getters[nggTypes.getActiveStudent];
+            return !_.isUndefined(s) ? s : '';
+        },
+
+        /**
+         * Returns the styling for the heading, which
+         * is used to distinguish between parent and child
+         * items
+         * @returns {string}
+         */
+        labelStyling: function labelStyling() {
+            var base = 'title is-';
+            var heading = _.isUndefined(this.level) ? 3 : this.level + 3;
+            return base + heading;
+        }
+
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 1006 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1007 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: " questionPanel box",
+    attrs: {
+      "id": "element-input"
+    }
+  }, [_c('div', {
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('p', {
+    class: _vm.labelStyling
+  }, [_vm._v(_vm._s(_vm.name))])])]), _vm._v(" "), _c('div', {
+    staticClass: "level-right"
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_c('question-score', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  })], 1)])]), _vm._v(" "), _c('div', {
+    staticClass: "field "
+  }, [_c('label'), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('comment-text', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-item has-text-centered is-fullwidth"
+  }, [_c('score-slider', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  })], 1)])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-3e51b03d", module.exports)
+  }
+}
+
+/***/ }),
+/* 1008 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1006);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("1ed6133e", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3e51b03d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-input.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3e51b03d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-input.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

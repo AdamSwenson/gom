@@ -44,7 +44,7 @@ class NewGradingController extends Controller
      */
     private $assignmentRepository;
 
-    public function __construct( IAssignmentRepository $assignmentRepository)
+    public function __construct( IAssignmentRepository $assignmentRepository )
     {
         $this->middleware('auth');
         $this->assignmentRepository = $assignmentRepository;
@@ -56,11 +56,13 @@ class NewGradingController extends Controller
      * @param Exam $exam
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Exam $exam){
-return view('development.newgrading', ['exam' => $exam]);
+    public function show( Exam $exam )
+    {
+        return view('development.newgrading', ['exam' => $exam]);
     }
 
-    public function getItems(Exam $exam){
+    public function getItems( Exam $exam )
+    {
         $out = $this->assignmentRepository->getItemOrderForClient($exam);
 
         //The returned array  will have the keys

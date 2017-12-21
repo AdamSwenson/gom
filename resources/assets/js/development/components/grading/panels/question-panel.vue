@@ -3,71 +3,33 @@
          class=" questionPanel box">
         <div class="tile is-ancestor">
             <div class="tile is-parent is-vertical ">
+
                 <div class="tile is-child">
+                    <item-input :item="item"
+                                :level="0"
+                    ></item-input>
+                </div>
 
-                    <div class="level">
-                        <div class="level-left">
-                            <div class="level-item">
-                                <!-- question Name -->
-                                <p v-bind:class="labelStyling">#{{ number }}: {{ name }}</p>
-                            </div>
-                        </div>
+                <!-- element area holds all sliders and comments for this question -->
+                <div class="tile is-child "
+                     v-if="!isElementsEmpty"
+                     v-for="item in elements">
+                    <item-input
+                            v-bind:key="item.serialNumber"
+                            :item="item"
+                            :level="1"
+                    ></item-input>
+                </div>
 
-                        <div class="level-right">
-                            <div class="level-item">
-                                <!-- question Score -->
-                                <question-score
-                                        :item="item"
-                                        :student="student"
-                                ></question-score>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="field ">
-                        <label></label>
-                        <div class="control">
-                            <comment-text
-                                    :item="item"
-                                    :student="student"
-                            ></comment-text>
-                        </div>
-                        <p class="help"></p>
-                    </div>
-
-                    <div class="level">
-                        <div class="level-item has-text-centered is-fullwidth">
-                            <score-slider :item="item" :student="student"></score-slider>
-                        </div>
-
-                    </div>
-
+                <!--add some text if no elements for this question -->
+                <div class=" noElementsDiv tile is-child "
+                     v-if="isElementsEmpty"
+                >
+                    <i>No elements for this question</i>
                 </div>
             </div>
-
-        </div>
-
-        <!-- element area holds all sliders and comments for this question -->
-        <div class="tile is-child ">
-            <div v-if="!isElementsEmpty"
-                 v-for="item in elements">
-                <element-input
-                        v-bind:key="item.serialNumber"
-                        :item="item"
-                        :student="student"></element-input>
-            </div>
-
-            <!--add some text if no elements for this question -->
-            <div class=" noElementsDiv "
-                 v-if="isElementsEmpty"
-            >
-                <i>No elements for this question</i>
-            </div>
-
         </div>
     </div>
-
 </template>
 
 <style lang="scss">
@@ -80,7 +42,7 @@
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
     import * as gTypes from '../../../../store/getter-types';
 
-    import ElementInput from '../inputs/element-input.vue';
+    import ItemInput from '../inputs/item-input.vue';
     import QuestionScore from '../inputs/question-score.vue';
     import CommentText from "../inputs/comment-text.vue";
     import ScoreSlider from "../inputs/score-slider.vue";
@@ -89,18 +51,15 @@
     export default {
 
         components: {
-            ElementInput,
+            ItemInput,
             CommentText,
             ScoreSlider,
             CommentText,
             QuestionScore,
-
         },
 
         data: function () {
             return {
-                // serialNumber: _.toInteger( this.$route.params.serialNumber ),
-
                 defaults: {}
             }
         },
@@ -123,30 +82,33 @@
                 // return !_.isNull( this.item ) ? this.item.serialNumber : '';
             },
 
-            name: function () {
-                // return this.item.name;
-                if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
-                    return this.item.name
-                }
-                return '';
-            },
+            // name: function () {
+            //     // return this.item.name;
+            //     if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
+            //         return this.item.name
+            //     }
+            //     return '';
+            // },
+            //
             student: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
                 return !_.isUndefined( s ) ? s : ''
             },
 
 
-            //the associated elements
+            //the associated child items
             elements: function () {
+                let els = [];
                 if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
+                    let level = 0;
+                    // _.forEach( this.$store.getters.getItemChildren( this.item ), function ( item ) {
+                    //     els.push( { level: 1, item: item } );
+                    // } );
+
+
                     return this.$store.getters.getItemChildren( this.item );
                 }
-                return [];
-            },
-
-            labelStyling: function (  ) {
-                let base = 'title is-';
-
+                return els;
             },
 
             isElementsEmpty: function () {

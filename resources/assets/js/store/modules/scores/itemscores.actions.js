@@ -125,12 +125,13 @@ module.exports = {
                 let newValenceName = _.lowerCase(sliderSettings.valenceLabels[ newValenceIdx ]);
                 let comment = item.comments.get( newValenceName );
                 // window.console.log( 'itemscores.actions', 'comment', 126,comment );
+
                 //This needs to be stored / saved
                 let pl2 = {
                     exam: exam,
                     item: item,
                     student: student,
-                    text: comment.text
+                    text: _.isUndefined(comment) ? '' : comment.text
                 };
 
                 //call the action to record the new comment

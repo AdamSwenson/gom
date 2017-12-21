@@ -42,11 +42,20 @@ class ItemScoreController extends Controller
 
     public function saveScore( Exam $exam, Item $item, Student $student, Request $request )
     {
-        $score = ItemScore::firstOrCreate([
-            'exam_id' => $exam->id,
-            'student_id' => $student->id,
-            'item_id' => $item->id
-        ]);
+        $score = ItemScore::where('exam_id', $exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if ( !isset($score) ) {
+            //doing this explicitly since
+            //there's some problem when try the
+            //eloquent way
+            $score = new ItemScore();
+            $score->exam_id = $exam->id;
+            $score->item_id = $item->id;
+            $score->student_id = $student->id;
+        }
 
         //Now, whether old or new, we set the data
         //properties

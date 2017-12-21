@@ -38,62 +38,35 @@
 
         data: function () {
             return {
+                slider: false,
+
+                numberLabels: sliderSettings.valenceLabels.length,
+
                 defaults: {}
+            }
+        },
+        watch: {
+            score : function ( newVal ) {
+                if(this.slider) this.slider.setValue(newVal);
+
+            },
+            valenceCutoffs: function ( newVal ) {
+                var me = this;
+                //
+                // if (newVal.length === this.numberLabels ){
+                //     window.console.log( 'score-slider', 'valenceCutoffs', 51, newVal);
+                //     this.$nextTick( function () {
+                //         window.console.log( 'score-slider', 'nt', 53, );
+                //         this.createSlider();
+                //     } );
+
+                // }
             }
         },
 
         computed: {
-            exam: function () {
-                return this.$store.getters[ nggTypes.getActiveExam ];
-            },
-
             maxScore: function () {
                 return !_.isUndefined( this.item ) ? this.item.maxScore : sliderSettings.max;
-            },
-            student: function () {
-                let s = this.$store.getters[ nggTypes.getActiveStudent ];
-                return !_.isUndefined( s ) ? s : ''
-            },
-
-            valenceCutoffs: function () {
-                if ( _.isUndefined( this.item ) || _.isUndefined( this.item.maxScore ) ) return sliderSettings.valenceCutoffs;
-
-                return makeCutoffsFromMaxScore( this.item.maxScore );
-            },
-
-            settings: function () {
-                return {
-                    tooltip: 'show',
-                    //value: this.elementScore,
-                    min: 0,
-                    max: this.maxScore,
-                    step: this.step,
-                    ticks: this.valenceCutoffs,
-                    ticks_labels: sliderSettings.valenceLabels,
-                    ticks_position: sliderSettings.valenceLabels
-                    // id: Counter()
-                }
-            },
-
-            /**
-             * Returns the string id of the slider element
-             * @returns {string}
-             */
-            sliderId: function () {
-                if ( this.item ) {
-                    return "slider" + this.item.serialNumber;
-                }
-
-            },
-
-            /**
-             * Returns the div  selector for the slider element
-             * @returns {*|jQuery|HTMLElement}
-             */
-            sliderSelector: function () {
-                return document.getElementById( this.sliderId );
-                // return this.$el;
-                //return $( '#' + this.sliderId );
             },
 
             score: {
@@ -103,15 +76,27 @@
                     if ( !this.isReady() ) return '';
                     // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
 
-                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( { item: me.item, student: me.student } );
-                    if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) return qs.score;
+                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
+                        item: me.item,
+                        student: me.student
+                    } );
+
+                    if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) {
+                        // if(me.slider) me.slider.setValue(qs.score);
+                        return qs.score;
+                    }
 
                     let p = this.$store.dispatch( 'initializeItemScore',
                         { exam: this.exam, item: this.item, student: this.student } );
 
                     return p.then( function () {
-                        qs = me.$store.getters[ nggTypes.getItemScoreObject ]( { item: me.item, student: me.student } );
+                        qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
+                            item: me.item,
+                            student: me.student
+                        } );
                         // window.console.log( 'score-slider', 'get', 79, qs );
+
+                        // if(me.slider) me.slider.setValue(qs.score);
                         return qs.score;
                     } );
 
@@ -138,9 +123,43 @@
                 }
             },
 
-            step: function () {
-                return sliderSettings.sliderStep;
-            }
+            student: function () {
+                let s = this.$store.getters[ nggTypes.getActiveStudent ];
+                return !_.isUndefined( s ) ? s : ''
+            },
+
+            valenceCutoffs: function () {
+                if ( _.isUndefined( this.item ) || _.isUndefined( this.item.maxScore ) ) return [];
+                //sliderSettings.valenceCutoffs;
+
+                return makeCutoffsFromMaxScore( this.item.maxScore, this.numberLabels );
+            },
+
+            settings: function () {
+                return {
+                    tooltip: 'show',
+                    step: sliderSettings.sliderStep,
+                    ticks: this.valenceCutoffs,
+                    ticks_labels: sliderSettings.valenceLabels,
+                    ticks_position: sliderSettings.valenceLabels
+                    // id: Counter()
+                }
+            },
+
+            exam: function () {
+                return this.$store.getters[ nggTypes.getActiveExam ];
+            },
+
+            /**
+             * Returns the string id of the slider element
+             * @returns {string}
+             */
+            sliderId: function () {
+                if ( this.item ) {
+                    return "slider" + this.item.serialNumber;
+                }
+            },
+
         },
 
         methods: {
@@ -169,9 +188,31 @@
 
             },
 
-            setSliderScore: function () {
-                this.$el.slider( 'setValue', this.score );
-//            this.sliderSelector.slider( 'refresh' );
+            setSliderScore: function ( score ) {
+                this.slider.setValue( score, {triggerSlideEvent : false} );
+                // this.slider.refresh();
+            },
+
+            createSlider: function () {
+                let me = this;
+
+                //todo fix async loading of slider and remove this workaround
+                setTimeout( function () {
+                    me.slider = new Slider( me.$el, me.settings );
+                    me.setSliderScore( this.score );
+
+                    // window.console.log( 'score-slider', 'createSlider', 193, mySlider.getValue() );
+
+                    /* ----------------- slider listeners --------------- */
+                    /* When an element slider stops movement,
+                     update element score and text (if necessary),
+                     then save score, text and time
+                     *  */
+                    jQuery( me.$el ).on( 'slideStop', function ( slideEvt ) {
+                        me.handleElementSliderStopEvent( slideEvt );
+                    } );
+
+                }, 2000 );
             },
         },
 
@@ -180,19 +221,11 @@
         events: {},
 
         mounted: function () {
-            var me = this;
-            this.$nextTick( function () {
-                let mySlider = new Slider( this.$el, this.settings );
-
-                /* ----------------- slider listeners --------------- */
-                /* When an element slider stops movement,
-                 update element score and text (if necessary),
-                 then save score, text and time
-                 *  */
-                jQuery( this.$el ).on( 'slideStop', function ( slideEvt ) {
-                    me.handleElementSliderStopEvent( slideEvt );
-                } );
+            let me = this;
+            me.$nextTick( function () {
+                me.createSlider();
             } );
+
         }
     }
 </script>

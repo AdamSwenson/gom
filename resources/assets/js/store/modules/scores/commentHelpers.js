@@ -13,8 +13,22 @@
 export const sliderSettings = {
     max: 10,
     sliderStep: 0.25,
+    /**
+     * This gets passed to the slider's ticks option
+     * From the docs: Used to define the values of ticks.
+     * Tick marks are indicators to denote special values in the range.
+     * This option overwrites min and max options.
+     */
     valenceCutoffs: [ 0, 3.25, 6.75, 10 ],
+
+
     valenceLabels: [ "Missing", "Poor", "Fair", "Excellent" ],
+
+    /**
+     * This gets passed to the sliders ticks_position option
+     * From the docs: Defines the positions of the tick values in percentages.
+     * The first value should always be 0, the last value should always be 100 percent.
+     * */
     valenceLabelPositions: [ 0, 33, 67, 100 ]
 };
 
@@ -102,7 +116,7 @@ export function isSameValence( oldScore, newScore, maxScore ) {
  */
 export function makeCutoffsFromMaxScore( maxScore, numLabels ) {
     let cutoffs = [];
-
+//todo the max score needs to be the final value
     let intervalVal = maxScore / numLabels;
     //starting at 0 (for missing), we populate the list
     for (let i = 0; i < maxScore; i += intervalVal) {
