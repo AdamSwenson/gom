@@ -67,29 +67,22 @@
         asyncComputed: {},
 
         computed: {
+            /**
+             * The item's serial number, fetched from the route
+             * @returns {number | _.LoDashImplicitWrapper<number> | _.LoDashExplicitWrapper<number>}
+             */
             serialNumber: function () {
                 return _.toInteger( this.$route.params.serialNumber );
             },
 
+            /**
+             * Returns the item
+             * @returns {*}
+             */
             item: function () {
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
-
-            number: function () {
-                return this.serialNumber;
-                // window.console.log( 'question-panel', 'number', 86, this.item);
-                // return !_.isNull( this.item ) ? this.item.serialNumber : '';
-            },
-
-            // name: function () {
-            //     // return this.item.name;
-            //     if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
-            //         return this.item.name
-            //     }
-            //     return '';
-            // },
-            //
             student: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
                 return !_.isUndefined( s ) ? s : ''

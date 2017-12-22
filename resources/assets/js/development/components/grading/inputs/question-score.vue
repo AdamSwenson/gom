@@ -1,29 +1,28 @@
 <template>
 
-    <div class="questionScoreForm ">
-        <div class="field has-addons">
-            <label class="label questionScoreLabel"></label>
+    <div class="questionScoreForm field has-addons">
+        <label class="label questionScoreLabel"></label>
 
-            <letter-grade-button
-                    :item="item"
-                    :score="score"
-                    v-on:selected="handleLetterGradeSelect"
-            ></letter-grade-button>
+        <!--<letter-grade-button-->
+        <!--:item="item"-->
+        <!--:score="score"-->
+        <!--v-on:selected="handleLetterGradeSelect"-->
+        <!--&gt;</letter-grade-button>-->
 
 
-            <p class="control">
-                <input v-model="score" lazy
-                       class="input has-text-right questionScore"
-                       type="number"
-                       v-bind:min="minScore"
-                       v-bind:max="maxScore"
-                />
-            </p>
+        <p class="control">
+            <input v-model="score" lazy
+                   class="input has-text-right questionScore"
+                   type="number"
+                   v-bind:min="minScore"
+                   v-bind:max="maxScore"
+            />
+        </p>
 
-            <p class="control">
-                <a class="button is-static">/ {{ maxScore }}</a>
-            </p>
-        </div>
+        <p class="control">
+            <a class="button is-static">/ {{ maxScore }}</a>
+        </p>
+
     </div>
 </template>
 <script>
@@ -47,8 +46,12 @@
         calculateItemScoreFromLetterGrade
     } from '../../../../store/modules/scores/itemLetterGradeHelpers';
 
+    import scoreInputMixin from './scoreInputMixin';
 
-    module.exports = {
+    export default {
+        mixins: [
+            scoreInputMixin
+        ],
 
         components: { letterGradeButton },
 
@@ -90,81 +93,18 @@
         asyncComputed: {},
 
         computed: {
+            //maxScore , score, and exam are defined in the mixin
 
             displayedGradeAssignment: function () {
                 if ( _.isUndefined( this.score ) || _.isNull( this.score ) ) return null;
                 return calculateGradeAssignmentFromItemScore( this.score, this.maxScore );
             },
 
-            exam: function () {
-                return this.$store.getters[ nggTypes.getActiveExam ];
-            },
-
-            maxScore: function () {
-                if ( _.isUndefined( this.item ) ) return '';
-                return this.item.maxScore;
-            },
 
             minScore: function () {
                 return 0;
             },
 
-            /**
-             * The student's score for this question
-             */
-            score: {
-                get: function () {
-                    if ( !this.isReady() ) return '';
-
-                    let me = this;
-
-                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
-                            item: me.item,
-                            student: me.student
-                        } );
-
-                    if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) return qs.score;
-
-                    let p = this.$store.dispatch( 'initializeItemScore', {
-                        exam: this.exam,
-                        item: this.item,
-                        student: this.student
-                    } );
-
-                    return p.then( function () {
-                        qs = me.$store.getters[ nggTypes.getItemScoreObject ](
-                            {
-                                item: me.item,
-                                student: me.student
-                            } );
-
-                        return qs.score;
-                    } );
-
-                },
-
-
-                /**
-                 * Update the score in the shared data object and send
-                 * a request for someone else to record it to the server.
-                 *
-                 * Note that we use the 'lazy' parameter in the template so that
-                 * this only syncs once the change event has fired. That prevents
-                 * us from sending two different requests for a two digit score.
-                 *
-                 * @param score
-                 */
-                set: function ( score ) {
-
-                    let pl = {
-                        exam: this.exam,
-                        item: this.item,
-                        student: this.student,
-                        score: score
-                    };
-                    this.$store.dispatch( ngaTypes.recordItemScore, pl );
-                }
-            },
 
 
             scoreObject: function () {
@@ -175,15 +115,12 @@
         },
 
         methods: {
-            isReady: function () {
-                if ( _.isUndefined( this.item ) || _.isNull( this.item ) || _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
-                return true;
-            },
+
+            // isReady defined in mixin
 
             handleLetterGradeSelect: function ( gradeAssignment ) {
                 //set score
                 this.score = gradeAssignment.calcValue;
-
             },
 
             /**

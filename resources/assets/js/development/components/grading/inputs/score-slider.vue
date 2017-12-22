@@ -30,7 +30,12 @@
 
     import { sliderSettings, makeCutoffsFromMaxScore } from "../../../../store/modules/scores/commentHelpers";
 
+    import scoreInputMixin from './scoreInputMixin';
+
     export default {
+        mixins: [
+            scoreInputMixin
+        ],
 
         props: [ 'item' ],
 
@@ -65,63 +70,7 @@
         },
 
         computed: {
-            maxScore: function () {
-                return !_.isUndefined( this.item ) ? this.item.maxScore : sliderSettings.max;
-            },
-
-            score: {
-                get: function () {
-                    let me = this;
-
-                    if ( !this.isReady() ) return '';
-                    // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
-
-                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
-                        item: me.item,
-                        student: me.student
-                    } );
-
-                    if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) {
-                        // if(me.slider) me.slider.setValue(qs.score);
-                        return qs.score;
-                    }
-
-                    let p = this.$store.dispatch( 'initializeItemScore',
-                        { exam: this.exam, item: this.item, student: this.student } );
-
-                    return p.then( function () {
-                        qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
-                            item: me.item,
-                            student: me.student
-                        } );
-                        // window.console.log( 'score-slider', 'get', 79, qs );
-
-                        // if(me.slider) me.slider.setValue(qs.score);
-                        return qs.score;
-                    } );
-
-                },
-
-                /**
-                 * Update the score in the shared data object and send
-                 * a request for someone else to record it to the server.
-                 *
-                 * Note that we use the 'lazy' parameter in the template so that
-                 * this only syncs once the change event has fired. That prevents
-                 * us from sending two different requests for a two digit score.
-                 *
-                 * @param score
-                 */
-                set: function ( score ) {
-                    let pl = {
-                        exam: this.exam,
-                        item: this.item,
-                        student: this.student,
-                        score: score
-                    };
-                    this.$store.dispatch( ngaTypes.recordItemScore, pl );
-                }
-            },
+            //maxScore , score, and exam are defined in the mixin
 
             student: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
@@ -146,9 +95,6 @@
                 }
             },
 
-            exam: function () {
-                return this.$store.getters[ nggTypes.getActiveExam ];
-            },
 
             /**
              * Returns the string id of the slider element
@@ -163,11 +109,7 @@
         },
 
         methods: {
-            isReady: function () {
-                if ( _.isUndefined( this.item ) || _.isNull( this.item ) ) return false;
-                if ( _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
-                return true;
-            },
+            // isReady defined in mixin
 
             /**
              * Called when an element slider stops movement. Updates element

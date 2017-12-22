@@ -45371,12 +45371,20 @@ function isSameValence(oldScore, newScore, maxScore) {
  */
 function makeCutoffsFromMaxScore(maxScore, numLabels) {
     var cutoffs = [];
-    //todo the max score needs to be the final value
-    var intervalVal = maxScore / numLabels;
-    //starting at 0 (for missing), we populate the list
-    for (var i = 0; i < maxScore; i += intervalVal) {
-        cutoffs.push(i);
-    }
+
+    _.forEach(sliderSettings.valenceLabelPositions, function (vlp) {
+        cutoffs.push(vlp * .01 * maxScore);
+    });
+    //
+    // //todo the max score needs to be the final value
+    //     let intervalVal = maxScore / numLabels;
+    //     //starting at 0 (for missing), we populate the list
+    //     for (let i = 0; i < numLabels - 2; i += intervalVal) {
+    //         cutoffs.push( i );
+    //     }
+    //     //the final cutoff should always be the max score
+    //     cutoffs.push(maxScore);
+
     return cutoffs;
 }
 
@@ -52843,46 +52851,22 @@ var _PayloadScore = __webpack_require__(66);
 
 var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
 
+var _scoreInputMixin = __webpack_require__(1009);
+
+var _scoreInputMixin2 = _interopRequireDefault(_scoreInputMixin);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-// import gTypes from '../../../../store/getter-types';
 module.exports = {
+    mixins: [_scoreInputMixin2.default],
 
-    props: [
-    /**
-     * The assigned score for the question.
-     *
-     * @returns {*}
-     */
-    'score', 'item'],
+    props: ['item', 'student'],
 
     data: function data() {
         return {
+            defaultDisplay: '', //Select letter grade',
             ignoreChange: false,
             selectedGradeAssignment: null,
             defaults: {
@@ -52929,18 +52913,9 @@ module.exports = {
         }
 
     },
-    asyncComputed: {
-        exam: function exam() {
-            var e = this.$store.getters[nggTypes.getActiveExam];
-            return !_.isUndefined(e) ? e : '';
-        },
-
-        student: function student() {
-            var s = this.$store.getters[nggTypes.getActiveStudent];
-            return !_.isUndefined(s) ? s : '';
-        }
-    },
+    asyncComputed: {},
     computed: {
+        //maxScore , score, and exam are defined in the mixin
 
         /**
          * Json of grades with keys displayValue and calcValue
@@ -52974,16 +52949,6 @@ module.exports = {
         },
 
         /**
-         * The maximum possible score for the question
-         * @returns {*}
-         */
-        maxScore: function maxScore() {
-            if (_.isUndefined(this.item) || _.isNull(this.item)) return null;
-
-            return Number(this.item.maxScore);
-        },
-
-        /**
          * Converts the question score to a string for display
          * @returns {string}
          */
@@ -52998,81 +52963,36 @@ module.exports = {
 
 };
 
-//
-// /**
-//  * Calculates the question score from the standard grades and max score
-//  * @param gradeValue
-//  * @param maxScore
-//  * @returns {number}
-//  */
-// calcGrade: function ( gradeValue, maxScore ) {
-//     gradeValue = Number( gradeValue );
-//     maxScore = Number( maxScore );
-//     let result = (gradeValue * .01) * maxScore;
-//     return this.roundToTwo( result );
-// },
-
 // /**
 //  * Reverse calculates the letter grade to display
 //  * based on the total score.
 //  * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
 //  * @param totalScore
-//  * @param maxScore
-//  */
-// calcLetter: function ( maxScore, totalScore ) {
-//     totalScore = Number( totalScore );
-//     maxScore = Number( maxScore );
-//
-//     let pctOfTotal = maxScore / totalScore;
-//     //multiple by 100 to more easily compare with grades list
-//     pctOfTotal = Math.round( pctOfTotal * 100 );
-//     let grade = 'Letter grade';
-//
-//     // window.console.log( maxScore, totalScore, pctOfTotal );
-//     for (let i = 0; i < this.gradeAssignments.length; i++) {
-//         let cutOff = Number( this.gradeAssignments[ i ].calcValue );
-//         if ( pctOfTotal >= cutOff ) {
-//             grade = this.gradeAssignments[ i ].displayValue;
-//             break;
-//         }
-//     }
-//     return grade;
-// },
-//
-// /**
-//  * Updates score by clicking on letter grade.
-//  * Also displays tooltip explaining the calculation to the user
-//  *
-//  * Decided not to update the button text at this time because
-//  * would have to store the value both locally and on the server.
-//  *
-//  * @param dthis The this context of the event handler
-//  */
-// handleLetterGradeClick: function ( index ) {
-//     //The numeric value of the letter grade selected
-//     let gradeValue = this.gradeAssignments[ index ].calcValue;
-//     let letterGrade = this.gradeAssignments[ index ].displayValue;
-//     this.score = calcGrade( gradeValue, this.maxScore );
-//     // let letterGrade = this.calcLetter( this.maxScore, this.score );
-//
-//     window.console.log( 'handle', index, gradeValue, letterGrade );
-//     //The letter grade
-//     // this.displayedGrade = this.grades[ index ].displayValue;
-//     // this.notifyLetterGradeSelection();
-//
-//     let pl = PayloadScore.factory( {
-//         exam: this.exam,
-//         item: this.item,
-//         student: this.student,
-//         score: this.score
-//     } )
-//     this.$store.commit( ngmTypes.updateScore, pl );
 //
 //
-//     //todo reenable
-//     //Display tooltip explaining the calculation
-//     //    this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
-// },
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+// import gTypes from '../../../../store/getter-types';
 
 /***/ }),
 /* 225 */
@@ -53080,6 +53000,10 @@ module.exports = {
 
 "use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _letterGradeButton = __webpack_require__(613);
 
@@ -53111,11 +53035,14 @@ var gTypes = _interopRequireWildcard(_getterTypes);
 
 var _itemLetterGradeHelpers = __webpack_require__(146);
 
+var _scoreInputMixin = __webpack_require__(1009);
+
+var _scoreInputMixin2 = _interopRequireDefault(_scoreInputMixin);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
 //
 //
 //
@@ -53149,7 +53076,8 @@ var jQuery = __webpack_require__(100);
 window.jQuery = jQuery;
 __webpack_require__(152);
 
-module.exports = {
+exports.default = {
+    mixins: [_scoreInputMixin2.default],
 
     components: { letterGradeButton: _letterGradeButton2.default },
 
@@ -53188,77 +53116,15 @@ module.exports = {
     asyncComputed: {},
 
     computed: {
+        //maxScore , score, and exam are defined in the mixin
 
         displayedGradeAssignment: function displayedGradeAssignment() {
             if (_.isUndefined(this.score) || _.isNull(this.score)) return null;
             return (0, _itemLetterGradeHelpers.calculateGradeAssignmentFromItemScore)(this.score, this.maxScore);
         },
 
-        exam: function exam() {
-            return this.$store.getters[nggTypes.getActiveExam];
-        },
-
-        maxScore: function maxScore() {
-            if (_.isUndefined(this.item)) return '';
-            return this.item.maxScore;
-        },
-
         minScore: function minScore() {
             return 0;
-        },
-
-        /**
-         * The student's score for this question
-         */
-        score: {
-            get: function get() {
-                if (!this.isReady()) return '';
-
-                var me = this;
-
-                var qs = me.$store.getters[nggTypes.getItemScoreObject]({
-                    item: me.item,
-                    student: me.student
-                });
-
-                if (!_.isUndefined(qs) && !_.isNull(qs)) return qs.score;
-
-                var p = this.$store.dispatch('initializeItemScore', {
-                    exam: this.exam,
-                    item: this.item,
-                    student: this.student
-                });
-
-                return p.then(function () {
-                    qs = me.$store.getters[nggTypes.getItemScoreObject]({
-                        item: me.item,
-                        student: me.student
-                    });
-
-                    return qs.score;
-                });
-            },
-
-            /**
-             * Update the score in the shared data object and send
-             * a request for someone else to record it to the server.
-             *
-             * Note that we use the 'lazy' parameter in the template so that
-             * this only syncs once the change event has fired. That prevents
-             * us from sending two different requests for a two digit score.
-             *
-             * @param score
-             */
-            set: function set(score) {
-
-                var pl = {
-                    exam: this.exam,
-                    item: this.item,
-                    student: this.student,
-                    score: score
-                };
-                this.$store.dispatch(ngaTypes.recordItemScore, pl);
-            }
         },
 
         scoreObject: function scoreObject() {
@@ -53268,10 +53134,8 @@ module.exports = {
     },
 
     methods: {
-        isReady: function isReady() {
-            if (_.isUndefined(this.item) || _.isNull(this.item) || _.isUndefined(this.student) || _.isNull(this.student)) return false;
-            return true;
-        },
+
+        // isReady defined in mixin
 
         handleLetterGradeSelect: function handleLetterGradeSelect(gradeAssignment) {
             //set score
@@ -53360,6 +53224,10 @@ var gTypes = _interopRequireWildcard(_getterTypes);
 
 var _commentHelpers = __webpack_require__(105);
 
+var _scoreInputMixin = __webpack_require__(1009);
+
+var _scoreInputMixin2 = _interopRequireDefault(_scoreInputMixin);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -53389,6 +53257,7 @@ __webpack_require__(152);
 var Slider = __webpack_require__(291);
 
 exports.default = {
+    mixins: [_scoreInputMixin2.default],
 
     props: ['item'],
 
@@ -53422,61 +53291,7 @@ exports.default = {
     },
 
     computed: {
-        maxScore: function maxScore() {
-            return !_.isUndefined(this.item) ? this.item.maxScore : _commentHelpers.sliderSettings.max;
-        },
-
-        score: {
-            get: function get() {
-                var me = this;
-
-                if (!this.isReady()) return '';
-                // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
-
-                var qs = me.$store.getters[nggTypes.getItemScoreObject]({
-                    item: me.item,
-                    student: me.student
-                });
-
-                if (!_.isUndefined(qs) && !_.isNull(qs)) {
-                    // if(me.slider) me.slider.setValue(qs.score);
-                    return qs.score;
-                }
-
-                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
-
-                return p.then(function () {
-                    qs = me.$store.getters[nggTypes.getItemScoreObject]({
-                        item: me.item,
-                        student: me.student
-                    });
-                    // window.console.log( 'score-slider', 'get', 79, qs );
-
-                    // if(me.slider) me.slider.setValue(qs.score);
-                    return qs.score;
-                });
-            },
-
-            /**
-             * Update the score in the shared data object and send
-             * a request for someone else to record it to the server.
-             *
-             * Note that we use the 'lazy' parameter in the template so that
-             * this only syncs once the change event has fired. That prevents
-             * us from sending two different requests for a two digit score.
-             *
-             * @param score
-             */
-            set: function set(score) {
-                var pl = {
-                    exam: this.exam,
-                    item: this.item,
-                    student: this.student,
-                    score: score
-                };
-                this.$store.dispatch(ngaTypes.recordItemScore, pl);
-            }
-        },
+        //maxScore , score, and exam are defined in the mixin
 
         student: function student() {
             var s = this.$store.getters[nggTypes.getActiveStudent];
@@ -53501,10 +53316,6 @@ exports.default = {
             };
         },
 
-        exam: function exam() {
-            return this.$store.getters[nggTypes.getActiveExam];
-        },
-
         /**
          * Returns the string id of the slider element
          * @returns {string}
@@ -53518,11 +53329,7 @@ exports.default = {
     },
 
     methods: {
-        isReady: function isReady() {
-            if (_.isUndefined(this.item) || _.isNull(this.item)) return false;
-            if (_.isUndefined(this.student) || _.isNull(this.student)) return false;
-            return true;
-        },
+        // isReady defined in mixin
 
         /**
          * Called when an element slider stops movement. Updates element
@@ -53686,28 +53493,22 @@ exports.default = {
     asyncComputed: {},
 
     computed: {
+        /**
+         * The item's serial number, fetched from the route
+         * @returns {number | _.LoDashImplicitWrapper<number> | _.LoDashExplicitWrapper<number>}
+         */
         serialNumber: function serialNumber() {
             return _.toInteger(this.$route.params.serialNumber);
         },
 
+        /**
+         * Returns the item
+         * @returns {*}
+         */
         item: function item() {
             return this.$store.getters.getItemBySerialNumber(this.serialNumber);
         },
 
-        number: function number() {
-            return this.serialNumber;
-            // window.console.log( 'question-panel', 'number', 86, this.item);
-            // return !_.isNull( this.item ) ? this.item.serialNumber : '';
-        },
-
-        // name: function () {
-        //     // return this.item.name;
-        //     if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
-        //         return this.item.name
-        //     }
-        //     return '';
-        // },
-        //
         student: function student() {
             var s = this.$store.getters[nggTypes.getActiveStudent];
             return !_.isUndefined(s) ? s : '';
@@ -85083,19 +84884,9 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "questionScoreForm "
-  }, [_c('div', {
-    staticClass: "field has-addons"
+    staticClass: "questionScoreForm field has-addons"
   }, [_c('label', {
     staticClass: "label questionScoreLabel"
-  }), _vm._v(" "), _c('letter-grade-button', {
-    attrs: {
-      "item": _vm.item,
-      "score": _vm.score
-    },
-    on: {
-      "selected": _vm.handleLetterGradeSelect
-    }
   }), _vm._v(" "), _c('p', {
     staticClass: "control"
   }, [_c('input', {
@@ -85125,7 +84916,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "control"
   }, [_c('a', {
     staticClass: "button is-static"
-  }, [_vm._v("/ " + _vm._s(_vm.maxScore))])])], 1)])
+  }, [_vm._v("/ " + _vm._s(_vm.maxScore))])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -85789,7 +85580,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "disabled": "",
       "value": ""
     }
-  }, [_vm._v(" - ")]), _vm._v(" "), _vm._l((_vm.gradeAssignments), function(ga) {
+  }, [_vm._v(" " + _vm._s(_vm.defaultDisplay) + " ")]), _vm._v(" "), _vm._l((_vm.gradeAssignments), function(ga) {
     return _c('option', {
       key: ga.displayValue,
       domProps: {
@@ -94927,11 +94718,24 @@ var _scoreSlider = __webpack_require__(189);
 
 var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
 
+var _letterGradeButton = __webpack_require__(613);
+
+var _letterGradeButton2 = _interopRequireDefault(_letterGradeButton);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -94990,7 +94794,7 @@ exports.default = {
     components: (_components = {
         CommentText: _commentText2.default,
         ScoreSlider: _scoreSlider2.default
-    }, _defineProperty(_components, 'CommentText', _commentText2.default), _defineProperty(_components, 'QuestionScore', _questionScore2.default), _components),
+    }, _defineProperty(_components, 'CommentText', _commentText2.default), _defineProperty(_components, 'LetterGradeButton', _letterGradeButton2.default), _defineProperty(_components, 'QuestionScore', _questionScore2.default), _components),
 
     data: function data() {
         return {
@@ -94999,15 +94803,6 @@ exports.default = {
     },
 
     computed: {
-        // serialNumber: function () {
-        //     return _.toInteger( this.$route.params.serialNumber );
-        // },
-        //
-        // number: function () {
-        //     return this.serialNumber;
-        //     // window.console.log( 'question-panel', 'number', 86, this.item);
-        //     // return !_.isNull( this.item ) ? this.item.serialNumber : '';
-        // },
 
         name: function name() {
             // return this.item.name;
@@ -95080,12 +94875,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level-right"
   }, [_c('div', {
     staticClass: "level-item"
+  }, [_c('div', {
+    staticClass: "is-clearfix"
   }, [_c('question-score', {
     attrs: {
       "item": _vm.item,
       "student": _vm.student
     }
-  })], 1)])]), _vm._v(" "), _c('div', {
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "is-clearfix"
+  }, [_c('letter-grade-button', {
+    attrs: {
+      "item": _vm.item,
+      "student": _vm.student
+    }
+  })], 1)])])]), _vm._v(" "), _c('div', {
     staticClass: "field "
   }, [_c('label'), _vm._v(" "), _c('div', {
     staticClass: "control"
@@ -95140,6 +94944,114 @@ if(false) {
  // When the module is disposed, remove the <style> tags
  module.hot.dispose(function() { update(); });
 }
+
+/***/ }),
+/* 1009 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _newGradingGetterTypes = __webpack_require__(24);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(21);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(26);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+module.exports = {
+    computed: {
+        exam: function exam() {
+            var e = this.$store.getters[nggTypes.getActiveExam];
+            return !_.isUndefined(e) ? e : '';
+        },
+
+        /**
+         * The float score value for the
+         * student defined as this.student and
+         * item defined as this.item
+         */
+        score: {
+            get: function get() {
+                var me = this;
+
+                if (!this.isReady()) return '';
+                // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
+
+                var qs = me.$store.getters[nggTypes.getItemScoreObject]({
+                    item: me.item,
+                    student: me.student
+                });
+
+                if (!_.isUndefined(qs) && !_.isNull(qs)) {
+                    return qs.score;
+                }
+
+                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
+
+                return p.then(function () {
+                    qs = me.$store.getters[nggTypes.getItemScoreObject]({
+                        item: me.item,
+                        student: me.student
+                    });
+                    return qs.score;
+                });
+            },
+
+            /**
+             * Update the score in the shared data object and send
+             * a request for someone else to record it to the server.
+             *
+             * Note that we use the 'lazy' parameter in the template so that
+             * this only syncs once the change event has fired. That prevents
+             * us from sending two different requests for a two digit score.
+             *
+             * @param score
+             */
+            set: function set(score) {
+                var pl = {
+                    exam: this.exam,
+                    item: this.item,
+                    student: this.student,
+                    score: score
+                };
+                this.$store.dispatch(ngaTypes.recordItemScore, pl);
+            }
+        },
+
+        /**
+         * The maximum possible score for the question
+         * @returns {*}
+         */
+        maxScore: function maxScore() {
+            if (_.isUndefined(this.item) || _.isNull(this.item)) return null;
+
+            return Number(this.item.maxScore);
+        }
+
+    },
+
+    methods: {
+        isReady: function isReady() {
+            if (_.isUndefined(this.item) || _.isNull(this.item)) return false;
+            if (_.isUndefined(this.student) || _.isNull(this.student)) return false;
+            return true;
+        }
+    }
+}; /**
+    * These are common computed properties
+    * and methods shared by anything which
+    * can alter the score for an item
+    */
+
+// import gTypes from '../../../../store/getter-types';
 
 /***/ })
 /******/ ]);

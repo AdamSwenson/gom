@@ -116,11 +116,19 @@ export function isSameValence( oldScore, newScore, maxScore ) {
  */
 export function makeCutoffsFromMaxScore( maxScore, numLabels ) {
     let cutoffs = [];
-//todo the max score needs to be the final value
-    let intervalVal = maxScore / numLabels;
-    //starting at 0 (for missing), we populate the list
-    for (let i = 0; i < maxScore; i += intervalVal) {
-        cutoffs.push( i );
-    }
+
+    _.forEach(sliderSettings.valenceLabelPositions, function ( vlp ) {
+        cutoffs.push( (vlp * .01) * maxScore);
+    })
+//
+// //todo the max score needs to be the final value
+//     let intervalVal = maxScore / numLabels;
+//     //starting at 0 (for missing), we populate the list
+//     for (let i = 0; i < numLabels - 2; i += intervalVal) {
+//         cutoffs.push( i );
+//     }
+//     //the final cutoff should always be the max score
+//     cutoffs.push(maxScore);
+
     return cutoffs;
 }

@@ -23,7 +23,7 @@ import {
 } from '../../../../../../resources/assets/js/store/modules/scores/commentHelpers';
 
 
-describe( "commentHelpers | ", function () {
+describe.only( "commentHelpers | ", function () {
     let sliderScore;
 
 
@@ -34,7 +34,7 @@ describe( "commentHelpers | ", function () {
 
     describe( " makeCutoffsFromMaxScore", () => {
         it( " happy path ", () => {
-            let numberLabels = 20;
+            let numberLabels = sliderSettings.valenceLabels.length;
             let maxScore = 100;
             let expectedStep = maxScore / numberLabels;
 
@@ -43,7 +43,14 @@ describe( "commentHelpers | ", function () {
             //check
             expect( result.length ).toBe( numberLabels );
             expect( result[ 0 ]).toBe( 0 ) ;
-            expect( result[ 1 ] - result[ 0 ] ).toBe( expectedStep );
+            expect(result[numberLabels - 1]).toBe(maxScore);
+
+            let i = 0;
+            _.forEach(sliderSettings.valenceLabelPositions, function ( vlp ) {
+                expect(result[i]).toBe((vlp * .01) * maxScore);
+                i++;
+            });
+
         } );
     } );
 

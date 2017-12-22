@@ -12,11 +12,20 @@
 
             <div class="level-right">
                 <div class="level-item">
-                    <!-- question Score -->
-                    <question-score
-                            :item="item"
-                            :student="student"
-                    ></question-score>
+                    <div class="is-clearfix">
+                        <!-- question Score -->
+                        <question-score
+                                :item="item"
+                                :student="student"
+                        ></question-score>
+                    </div>
+
+                    <div class="is-clearfix">
+                        <letter-grade-button
+                                :item="item"
+                                :student="student"
+                        ></letter-grade-button>
+                    </div>
 
                 </div>
             </div>
@@ -60,6 +69,7 @@
     import QuestionScore from '../inputs/question-score.vue';
     import CommentText from "../inputs/comment-text.vue";
     import ScoreSlider from "../inputs/score-slider.vue";
+    import LetterGradeButton from "../inputs/letter-grade-button";
 
 
     export default {
@@ -68,6 +78,7 @@
             CommentText,
             ScoreSlider,
             CommentText,
+            LetterGradeButton,
             QuestionScore,
         },
 
@@ -79,15 +90,6 @@
 
 
         computed: {
-            // serialNumber: function () {
-            //     return _.toInteger( this.$route.params.serialNumber );
-            // },
-            //
-            // number: function () {
-            //     return this.serialNumber;
-            //     // window.console.log( 'question-panel', 'number', 86, this.item);
-            //     // return !_.isNull( this.item ) ? this.item.serialNumber : '';
-            // },
 
             name: function () {
                 // return this.item.name;
@@ -110,7 +112,7 @@
              */
             labelStyling: function () {
                 let base = 'title is-';
-                let heading = _.isUndefined(this.level) ? 3 :  this.level + 3;
+                let heading = _.isUndefined( this.level ) ? 3 : this.level + 3;
                 return base + heading;
             },
 
