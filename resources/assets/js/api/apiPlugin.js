@@ -53,7 +53,12 @@ import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiReque
 //notes
 import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
 
-import { saveItemScoreRequest , saveCommentTextRequest } from '../api/requests/scoreRequests';
+import {
+    saveItemScoreRequest,
+    saveCommentTextRequest,
+    resetCommentTextRequest,
+    resetItemScoreRequest
+} from '../api/requests/scoreRequests';
 
 //students
 import {
@@ -140,11 +145,19 @@ export default function ( store ) {
                 break;
 
             case ngmTypes.updateScore:
-                saveItemScoreRequest( payload.exam, payload.item, payload.student, payload.score );
+                if ( _.isNull( payload.score ) ) {
+                    resetItemScoreRequest( payload.exam, payload.item, payload.student );
+                } else {
+                    saveItemScoreRequest( payload.exam, payload.item, payload.student, payload.score );
+                }
                 break;
 
             case ngmTypes.updateText:
-               saveCommentTextRequest(payload.exam, payload.item, payload.student, payload.text);
+                if ( _.isNull( payload.text ) || payload.text === '' ) {
+                    resetCommentTextRequest( payload.exam, payload.item, payload.student );
+                } else {
+                    saveCommentTextRequest( payload.exam, payload.item, payload.student, payload.text );
+                }
                 break;
 
             // ******************** END NEW GRADING STUFF

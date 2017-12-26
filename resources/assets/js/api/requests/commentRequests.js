@@ -21,6 +21,12 @@ import { holdForIdLoading } from '../apiHelpers';
 
 module.exports = {
 
+    /**
+     * This is used during the setup process to handle
+     * updating the stock comments for an item
+     * @param store
+     * @param item
+     */
     updateComment: ( store , item ) => {
         window.console.log( 'apiPlugin-commentRequests', 'updateComment', 8 );
         let out = {

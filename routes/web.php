@@ -217,11 +217,18 @@ Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');
 Route::resource('dev/notes', 'Item\NotesController');
 
 
-//Scores
+/* =============================
+        Scores and comments
+   ============================= */
 Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
 Route::get('dev/scores/item/{item}', 'Item\ItemScoreController@itemScores');
 Route::get('dev/scores/exam/{exam}', 'Item\ItemScoreController@examScores');
+//for individual students (mostly used in grading)
+Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScores');
 Route::post('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@saveScore');
+Route::delete('dev/scores/{exam}/{item}/{student}/comment', 'Item\ItemScoreController@resetComment');
+Route::delete('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@resetScore');
+
 
 Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreController@getTotalScoresForExam');
 

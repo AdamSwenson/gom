@@ -96,6 +96,8 @@ export function isSameValence( oldScore, newScore, maxScore ) {
     if ( typeof oldScore == 'undefined' || oldScore == null ) {
         return false;
     }
+
+
     if ( getValenceForScore( newScore, maxScore ) != getValenceForScore( oldScore, maxScore ) ) {
         return false;
     }

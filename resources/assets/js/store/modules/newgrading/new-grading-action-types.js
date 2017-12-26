@@ -21,7 +21,7 @@ export const recordCommentText = 'recordCommentTextNew';
 
 //scores
 export const recordItemScore = 'recordItemScoreNew';
-
+export const resetItemScore = 'resetItemScore';
 
 //exams
 export const addNewExam = 'addNewExam';

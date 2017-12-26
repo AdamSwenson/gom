@@ -49,7 +49,9 @@
                         :student="student"
                 ></score-slider>
             </div>
-
+<div class="level-item">
+    <clear-score-button :item="item" :student="student"></clear-score-button>
+</div>
         </div>
 
     </div>
@@ -69,12 +71,14 @@
     import QuestionScore from '../inputs/question-score.vue';
     import CommentText from "../inputs/comment-text.vue";
     import ScoreSlider from "../inputs/score-slider.vue";
-    import LetterGradeButton from "../inputs/letter-grade-button";
+    import LetterGradeButton from "../inputs/letter-grade-button.vue";
+    import ClearScoreButton from "../inputs/clear-score-button.vue";
 
 
     export default {
         props: [ 'item', 'level' ],
         components: {
+            ClearScoreButton,
             CommentText,
             ScoreSlider,
             CommentText,

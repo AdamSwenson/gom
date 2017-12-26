@@ -178,4 +178,65 @@ module.exports = {
     },
 
 
+    /**
+     * This handles resetting an item score or comment
+     * to null. Normally this is used when the user accidentally
+     * assigns a score and does not want to erroneously give
+     * a missing comment (as would happen if the score was 0).
+     *
+     * Note that this operates basically the same as
+     * the update actions. The api plugin is
+     * responsible for recognizing the need to
+     * send a delete rather than an update request
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param item
+     * @param student
+     * @param score
+     */
+    [ ngaTypes.resetItemScore] : ( { state, dispatch, commit, getters }, { exam, item, student } ) => {
+        return new Promise( function ( resolve, reject ) {
+
+            let p1 = new Promise( function ( resolve, reject ) {
+                //get ready to store the score
+                let pl = PayloadScore.factory( {
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    score: null
+                } );
+
+                //note that the api plugin will be
+                //responsible for recognizing the need to
+                //send a delete rather than an update request
+                commit( ngmTypes.updateScore, pl );
+                resolve();
+            } );
+
+            p1.then( function () {
+                let oldScore = getters[ nggTypes.getItemScoreObject ]( { item: item, student: student } );
+
+                //if the text entered was custom, don't
+                //mess with it. We will only reset stock text
+                if ( oldScore.isCustomText ) return resolve();
+
+                //otherwise, reset stock text
+                //note that the api plugin will be
+                //responsible for recognizing the need to
+                //send a delete rather than an update request
+                let pl2 = PayloadScore.factory( {
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    text: ''
+                } );
+
+                commit( ngmTypes.updateText, pl2 );
+                resolve();
+            } );
+        } );
+    },
 };

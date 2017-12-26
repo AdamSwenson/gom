@@ -63,7 +63,7 @@ class ItemScoreController extends Controller
         //from different requests. So, we need to be careful
         //not to inadvertently overwrite the score on a comment request
         //or vice-versa.
-        if ( $request->has('score') ) {
+        if ( $request->has('score'))  {
             $score->score = $request->input('score');
         }
         if ( $request->has('commentText') ) {
@@ -76,6 +76,58 @@ class ItemScoreController extends Controller
         return $this->sendAjaxSuccess();
     }
 
+    /**
+     * Sets the item score to null and clears comment
+     * if that's requested.
+     *
+     * This is separate from save score because
+     * the logic required to work around the fact that request->has
+     * will return false if the value is an empty string
+     * or null would make the save score method needlessly confusing
+     *
+     * @param Exam $exam
+     * @param Item $item
+     * @param Student $student
+     */
+    public function resetScore(Exam $exam, Item $item, Student $student){
+        $score = ItemScore::where('exam_id', $exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+            $score->score = null;
+
+        //and finally save
+        $score->save();
+
+        return $this->sendAjaxSuccess();
+
+    }
+
+    /**
+     * Sets the comment text for a student on an
+     * item to null / empty string
+     * Does not affect the value set for the score
+     * @param Exam $exam
+     * @param Item $item
+     * @param Student $student
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function resetComment(Exam $exam, Item $item, Student $student){
+        $score = ItemScore::where('exam_id', $exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if($score){
+            $score->comment_text = null;
+
+            //and finally save
+            $score->save();
+        }
+
+        return $this->sendAjaxSuccess();
+    }
 
     /**
      * Create a new store object or update an existing one

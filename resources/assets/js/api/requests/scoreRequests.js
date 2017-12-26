@@ -19,7 +19,62 @@ const makeRoute = ( exam, item, student ) => {
     return route + '/' + exam.id + '/' + item.id + '/' + student.id;
 };
 
+
 module.exports = {
+
+    /**
+     * Requests that a student's score for an item be set to null
+     * @param exam
+     * @param item
+     * @param student
+     * @returns {Promise<T> | *}
+     */
+    resetItemScoreRequest: ( exam, item, student ) => {
+        let to = makeRoute( exam, item, student );
+
+        let out = {
+            requestVersion: REQUEST_VERSION,
+        };
+
+        return window.axios
+            .delete( to, out )
+            .then( ( response ) => {
+                // window.console.log( 'scoreRequests---resetItemScoreRequest', 28, response );
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+    },
+
+    /**
+     * Requests that comment text for a student on
+     * and item be set to an empty string
+     * Does not update the score. That must be handled
+     * separately.
+     *
+     * @param exam
+     * @param item
+     * @param student
+     * @returns {Promise<T> | *}
+     */
+    resetCommentTextRequest: ( exam, item, student ) => {
+        let to = makeRoute( exam, item, student );
+        to += '/comment';
+        let out = {
+            requestVersion: REQUEST_VERSION,
+        };
+
+        return window.axios
+            .delete( to, out )
+            .then( ( response ) => {
+                // window.console.log( 'scoreRequests---saveCommentTextRequest', 28, response );
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+    },
+
+
     /**
      * Requests that a score be saved for the item.
      * Does not update comment text.
@@ -35,7 +90,7 @@ module.exports = {
 
         let out = {
             requestVersion: REQUEST_VERSION,
-            score : score
+            score: score
         };
 
         return window.axios
@@ -47,6 +102,7 @@ module.exports = {
                 errorHandling( error );
             } );
     },
+
 
     /**
      * Requests that comment text be saved for the item
@@ -64,7 +120,7 @@ module.exports = {
 
         let out = {
             requestVersion: REQUEST_VERSION,
-            commentText : text
+            commentText: text
         };
 
         return window.axios
@@ -139,13 +195,6 @@ module.exports = {
                 // window.console.log( 'scoreRequests---getItemScoreRequest', 28, response );
                 // _.forEach( response.data, function ( e ) {
                 _.forEach( response.data, function ( r ) {
-                    // window.console.log( 'examRequests', 'r', 29, r);
-                    // let exam = Exam.factory( { r } );
-                    // exam.id = r.id;
-                    // exam.name = r.name;
-                    // exam.term = r.term;
-                    // let payload = Payload.factory( { obj: exam, mutateSilently: true } );
-                    // store.commit( mTypes.addExam, payload );
                 } );
                 // });
             } )

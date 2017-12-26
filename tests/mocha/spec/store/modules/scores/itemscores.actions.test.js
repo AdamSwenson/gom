@@ -197,7 +197,7 @@ describe.only( "itemscores | actions ", function () {
 
         } );
 
-        it( " updates the score and updates the comment text when the preexisting comment is stock (determined by the boolean isCustomText for now) ", (  ) => {
+        it( " updates the score and updates the comment text when the preexisting comment is stock (determined by the boolean isCustomText for now) ", () => {
             state = makeState();
             let itemScore = factories.itemScoreFactory();
             itemScore.score = 9;
@@ -263,6 +263,93 @@ describe.only( "itemscores | actions ", function () {
         } );
     } );
 
+    describe( description( ngaTypes.resetItemScore ), function () {
+        it( " resets the score to null and clears comment when comment is stock ", () => {
+            state = makeState();
+            testItem.isCustomText = false;
+
+            getters[ nggTypes.getItemScoreObject ] = sinon.stub();
+            getters[ nggTypes.getItemScoreObject ].returns( testItem );
+
+            let action = actions[ ngaTypes.resetItemScore ];
+
+            let expectedPayload = PayloadScore.factory( {
+                exam: testExam,
+                item: testItem,
+                student: testStudent,
+                score: null
+            } );
+
+            let ep2 = PayloadScore.factory( {
+                exam: testExam,
+                item: testItem,
+                student: testStudent,
+                text: ''
+            } );
+
+            let expectedMutations = [ {
+                type: ngmTypes.updateScore,
+                payload: expectedPayload
+            }, {
+                type: ngmTypes.updateText,
+                payload: ep2
+            }, ];
+
+            testAction( action, expectedPayload, state, expectedMutations, { verbose: false, getters: getters } );
+
+        } );
+
+        it( " resets the score to null but does not clear comment when comment is custom", () => {
+            state = makeState();
+            testItem.isCustomText = true;
+
+            getters[ nggTypes.getItemScoreObject ] = sinon.stub();
+            getters[ nggTypes.getItemScoreObject ].returns( testItem );
+
+            let action = actions[ ngaTypes.resetItemScore ];
+
+            let expectedPayload = PayloadScore.factory( {
+                exam: testExam,
+                item: testItem,
+                student: testStudent,
+                score: null
+            } );
+
+
+            let expectedMutations = [ {
+                type: ngmTypes.updateScore,
+                payload: expectedPayload
+            }, ];
+
+            testAction( action, expectedPayload, state, expectedMutations, { verbose: false, getters: getters } );
+
+        } );
+
+        it( " takes no action when the score is not set but the comment is ", () => {
+            state = makeState();
+            testItem.isCustomText = true;
+            testItem.score = null;
+
+            getters[ nggTypes.getItemScoreObject ] = sinon.stub();
+            getters[ nggTypes.getItemScoreObject ].returns( testItem );
+
+            let action = actions[ ngaTypes.resetItemScore ];
+
+            let expectedPayload = PayloadScore.factory( {
+                exam: testExam,
+                item: testItem,
+                student: testStudent,
+                score: null
+            } );
+
+
+            let expectedMutations = [  ];
+
+            testAction( action, expectedPayload, state, expectedMutations, { verbose: false, getters: getters } );
+        } );
+
+
+    } );
 
 } );
 
