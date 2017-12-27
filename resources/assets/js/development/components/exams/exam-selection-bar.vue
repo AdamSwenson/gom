@@ -3,8 +3,10 @@
         <nav class="level is-mobile">
             <!-- Left side -->
             <div class="level-left">
-                <!--<div class="level-item">-->
-                <!--</div>-->
+
+                <div class="level-item">
+                    <slot name="level-left"></slot>
+                </div>
             </div>
 
             <!-- Right side -->
@@ -24,7 +26,8 @@
 
                 <div class="level-item has-text-centered">
                     <grade-exam-button
-                            v-on:grade-exam-clicked="handleGradeExamClick"
+                            :exam="exam"
+
                     ></grade-exam-button>
                 </div>
 
@@ -49,16 +52,25 @@
         padding-right: 1em;
     }
 
+    .level-left {
+        p {
+            color: #DDDDDD;
+            margin-left: 1em;
+        }
+    }
+
 </style>
 
 <script>
     import gradeButton from './grade-exam-button.vue';
     import examSelectionModal from './exam-selection-modal.vue';
     import { Routes } from '../../../api/apiSettings';
+    import * as gTypes from '../../../store/getter-types';
 
     export default {
 
-        props: [],
+        //the currently active exam
+        props: [ 'exam' ],
 
         components: {
             'grade-exam-button': gradeButton,
@@ -75,15 +87,23 @@
 
         computed: {
 
+
             newExamPath: function () {
                 return window.routeRoot + '/' + Routes.commonBaseRoute;
             },
         },
 
         methods: {
-            handleGradeExamClick: function () {
-                window.console.log( 'exam-selection-bar', 'handleGradeExamClick', 85, );
-            },
+
+//
+//             handleGradeExamClick: function () {
+//                 //handle redirection
+//                 let route = window.routeRoot + '/' + Routes.gradeExam(this.examId);
+//                 //handle redirection
+// //                return this.$router.go( route );
+//                 return window.open( route, "_self" );
+//
+//             },
 
             handleChangeExam: function () {
                 this.toggleModal();

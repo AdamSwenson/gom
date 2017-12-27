@@ -476,10 +476,6 @@ var addExam = exports.addExam = 'addExam';
 var addIndexMapping = exports.addIndexMapping = 'addIndexMapping';
 var loadExams = exports.loadExams = 'loadExams';
 
-//escores
-var loadElementScores = exports.loadElementScores = 'loadElementScores';
-var setElementScore = exports.setElementScore = 'setElementScore';
-
 //kumi
 var addKumi = exports.addKumi = 'addKumi';
 var associateStudentWithKumi = exports.associateStudentWithKumi = 'associateStudentWithKumi';
@@ -491,10 +487,6 @@ var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
 var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
 var setGrade = exports.setGrade = 'setGrade';
 
-//qscores                                                            ;
-var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
-var removeQuestionScore = exports.removeQuestionScore = 'removeQuestionScore';
-
 //questions                                                          ;
 var setMaxQuestionScore = exports.setMaxQuestionScore = 'setMaxQuestionScore';
 var removeMaxQuestionScore = exports.removeMaxQuestionScore = 'removeMaxQuestionScore';
@@ -504,17 +496,10 @@ var removeQuestion = exports.removeQuestion = 'removeQuestion';
 var setNumberQuestions = exports.setNumberQuestions = 'setNumberQuestions';
 
 //students
-var setStudent = exports.setStudent = 'setStudent';
-var removeStudent = exports.removeStudent = 'toggleRemoveControls';
-//dev
-var updateStudent = exports.updateStudent = 'updateStudent';
 var addStudentToRoster = exports.addStudentToRoster = 'addStudentToRoster';
-
-//times
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-var setGradingTime = exports.setGradingTime = 'setGradingTime';
-var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
-var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
+var removeStudentFromRoster = exports.removeStudentFromRoster = 'removeStudentFromRoster';
+var deleteStudent = exports.deleteStudent = 'deleteStudent';
+var updateStudentInRoster = exports.updateStudentInRoster = 'updateStudentInRoster';
 
 var setExam = exports.setExam = 'setExam';
 
@@ -695,8 +680,6 @@ var createExam = exports.createExam = 'createExam';
 var updateExam = exports.updateExam = 'updateExam';
 var createItem = exports.createItem = 'createItem';
 
-var addStudent = exports.addStudent = 'addStudent';
-
 //activeexam
 var setActiveExam = exports.setActiveExam = 'setActiveExam';
 var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
@@ -717,11 +700,6 @@ var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
 var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
 var storeCommentText = exports.storeCommentText = 'storeCommentText';
 
-//escores
-var setElementScore = exports.setElementScore = 'setElementScore';
-var loadElementScores = exports.loadElementScores = 'loadElementScores';
-var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
-
 //exams
 var addNewExam = exports.addNewExam = 'addNewExam';
 var loadExams = exports.loadExams = 'loadExams';
@@ -734,11 +712,6 @@ var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
 //grade assignments
 var updateCutoff = exports.updateCutoff = 'updateCutoff';
 var loadGradeAssignmentsFromServerData = exports.loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
-
-//qscores
-var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
-var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
-var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
 
 //items
 var cloneItem = exports.cloneItem = 'cloneItem';
@@ -12871,6 +12844,7 @@ Object.defineProperty(exports, "__esModule", {
 
 //Not exported!
 var KUMI_BASE_ROUTE = 'dev/kumis';
+var GRADING_BASE_ROUTE = 'dev/grading';
 var NOTES_BASE_ROUTE = 'dev/notes';
 var ROSTER_BASE_ROUTE = 'dev/roster';
 var SCORE_BASE_ROUTE = 'dev/scores';
@@ -12911,6 +12885,10 @@ var Routes = exports.Routes = {
 
     getExam: function getExam(examId) {
         return 'dev/exam/' + examId;
+    },
+
+    gradeExam: function gradeExam(examId) {
+        return GRADING_BASE_ROUTE + '/' + examId;
     },
 
     // ------------------------- Kumi
@@ -47545,31 +47523,32 @@ var handleLoadResponse = function handleLoadResponse(store, response) {
     });
 };
 
-/**
- * We will want to update our object with info from
- * the server upon creation. This handles that.
- * @param store
- * @param item
- * @param response
- * @returns {Promise}
- */
-var handleCreateStudentResponse = function handleCreateStudentResponse(store, student, data) {
-    return new Promise(function (resolve, reject) {
-        var pl = _Payload2.default.factory({
-            obj: student,
-            //we are just adding the id
-            updateProp: 'id',
-            updateVal: data.id,
-            mutateSilently: true
-        });
-
-        // window.console.log( 'studentRequests', 'handleCreateStudentResponse', 49, pl, response, response['id'] );
-
-        store.commit('updateStudentInRoster', pl);
-
-        resolve(student);
-    });
-};
+// /**
+//  * We will want to update our object with info from
+//  * the server upon creation. This handles that.
+//  * @param store
+//  * @param item
+//  * @param response
+//  * @returns {Promise}
+//  */
+// const handleCreateStudentResponse = ( store, student, data ) => {
+//     return new Promise( function ( resolve, reject ) {
+//         let pl = Payload.factory( {
+//             obj: student,
+//             //we are just adding the id
+//             updateProp: 'id',
+//             updateVal: data.id,
+//             mutateSilently: true
+//         } );
+//
+//         // window.console.log( 'studentRequests', 'handleCreateStudentResponse', 49, pl, response, response['id'] );
+//
+//         store.commit( 'updateStudentInRoster', pl );
+//
+//         resolve( student );
+//     } );
+//
+// };
 
 /**
  * Checks whether both student and kumi have ids
@@ -47668,14 +47647,15 @@ module.exports = {
      * @param student
      * @returns {Promise}
      */
-    createStudent: function createStudent(store, student) {
+    createStudentRequest: function createStudentRequest(student) {
         var toSend = _extends({}, student, {
             requestVersion: _apiSettings.REQUEST_VERSION
         });
 
-        return window.axios.post(_apiSettings.Routes.createStudent(), toSend).then(function (response) {
+        return window.axios.post(_apiSettings.Routes.createStudent(student), toSend).then(function (response) {
             // window.console.log( 'studentRequests', 'createStudent', 28, response );
-            handleCreateStudentResponse(store, student, response.data);
+            return response.data;
+            //handleCreateStudentResponse( store, student, response.data );
         }).catch(function (error) {
             window.console.log('studentRequests', 'ERROR', 39, error);
             // errorHandling( error );
@@ -47691,27 +47671,17 @@ module.exports = {
      * @param kumi
      * @returns {Promise}
      */
-    associateStudent: function associateStudent(store, student, kumi) {
-        var p = new Promise(function (resolve, reject) {
-            //handles the actual request so that we can deal
-            //with the need to wait for an id
-            var makeRequest = function makeRequest(route) {
-                var out = out == { requestVersion: _apiSettings.REQUEST_VERSION };
-                return window.axios.post(route, out).then(function (response) {
-                    resolve();
-                }).catch(function (error) {
-                    //todo add response handling
-                    window.console.log('studentRequests -- associateStudent', 'ERROR', 39, error);
-                    // errorHandling( error );
-                });
-            };
-        });
+    associateStudentWithKumiRequest: function associateStudentWithKumiRequest(student, kumi) {
 
-        return p.then(function () {
-            return new Promise(function (resolve, reject) {
-                return makeRequest(_apiSettings.Routes.associateStudent(student, kumi));
-                resolve();
-            });
+        var route = _apiSettings.Routes.associateStudent(student, kumi);
+        window.console.log('studentRequests', 'associateStudentWithKumiRequest', 240, student, kumi);
+        var out = { requestVersion: _apiSettings.REQUEST_VERSION };
+        return window.axios.post(route, out).then(function (response) {
+            window.console.log('studentRequests', 'associate Student', 242, response);
+        }).catch(function (error) {
+            //todo add response handling
+            window.console.log('studentRequests -- associateStudent', 'ERROR', 39, error);
+            // errorHandling( error );
         });
     },
 
@@ -47753,7 +47723,7 @@ module.exports = {
      * @param store
      * @param student
      */
-    disassociateStudent: function disassociateStudent(store, student, kumi) {
+    disassociateStudent: function disassociateStudent(student, kumi) {
 
         return window.axios.post(_apiSettings.Routes.disassociateStudent(student, kumi)).then(function (response) {
             window.console.log('studentRequests', 'disassociateStudent', 214, response);
@@ -47969,6 +47939,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var _ = window._ = __webpack_require__(28);
 // const Vue = require( 'vue' );
 
+// commonNames[] is a list of the most common first names for students born between 1990-2000
+// It is used to scan a column and make a guess at which contains first names
+var commonNames = ['Michael', 'Christopher', 'Matthew', 'Joshua', 'Jacob', 'Nicholas', 'Jessica', 'Ashley', 'Emily', 'Sarah', 'Samantha', 'Amanda'];
+
 /**
  * [ separatorChar] defines the character that will be used to divide lines into fields
  * default: comma
@@ -48055,10 +48029,6 @@ var guessColumnDataByContent = function guessColumnDataByContent(students) {
 
     var numColumns = students[0].length;
     var foundColumns = [];
-
-    // commonNames[] is a list of the most common first names for students born between 1990-2000
-    // It is used to scan a column and make a guess at which contains first names
-    var commonNames = ['Michael', 'Christopher', 'Matthew', 'Joshua', 'Jacob', 'Nicholas', 'Jessica', 'Ashley', 'Emily', 'Sarah', 'Samantha', 'Amanda'];
 
     for (var i = startCol; i < numColumns; i++) {
         if (students[0][i].search(/@/) >= 0) {
@@ -48223,8 +48193,7 @@ module.exports = {
                 });
                 //Push the student into local storage and create
                 //a new student on the server
-                var pl = _Payload2.default.factory({ obj: s, student: s });
-                dispatch(aTypes.handleNewStudentStorageAndAssociation, pl);
+                dispatch(aTypes.handleNewStudentStorageAndAssociation, s);
             });
         };
 
@@ -62240,7 +62209,7 @@ exports.default = {
                 var me = this;
 
                 _.forEach(this.selectedStudents, function (student) {
-                    me.$store.commit('removeStudentFromRoster', _Payload2.default.factory({ obj: student }));
+                    me.$store.commit(mTypes.removeStudentFromRoster, _Payload2.default.factory({ obj: student }));
                 });
             }
         },
@@ -63527,12 +63496,13 @@ exports.default = function (store) {
              * NB This only associates. Thus the student
              * must have already been created on the server.
              */
-            case mTypes.associateStudentWithKumi:
-                //We use the currently selected kumi if one wasn't set
-                //in the payload
-                var kumi = !_.isUndefined(payload.kumi) ? payload.kumi : store.getters.getSelectedKumi;
-                (0, _studentRequests.associateStudent)(store, payload.student, kumi);
-                break;
+            // case mTypes.associateStudentWithKumi:
+            //     //We use the currently selected kumi if one wasn't set
+            //     //in the payload
+            //     var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
+            //     associateStudent( store, payload.student, kumi );
+            //     break;
+
 
             // ******************** Notes
             case mTypes.createNote:
@@ -63563,34 +63533,34 @@ exports.default = function (store) {
                 //the roster. So it only sends the request to create a new
                 //student. This does nothing to create an association with a kumi
                 //either on the server or locally.
-                setSyncStarting(store);
-                // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                var student = payload.obj;
-                //Requests the creation of a new student
-                (0, _studentRequests.createStudent)(store, student);
-                setSyncDone(store);
-                //Assigns them to a particular kumi
-                // var kumi = store.getters.getSelectedKumi;
-                // let p = associateStudent( store, student, kumi );
-                // p.then(()=>{
-                //
-                // })
+                // setSyncStarting( store );
+                // // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
+                // var student = payload.obj;
+                // //Requests the creation of a new student
+                // createStudentRequest( store, student );
+                // setSyncDone( store );
+                // //Assigns them to a particular kumi
+                // // var kumi = store.getters.getSelectedKumi;
+                // // let p = associateStudent( store, student, kumi );
+                // // p.then(()=>{
+                // //
+                // // })
 
                 break;
 
-            case 'removeStudentFromRoster':
+            case mTypes.removeStudentFromRoster:
                 // window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
                 var kumi = store.getters.getSelectedKumi;
                 var student = payload.obj;
-                (0, _studentRequests.disassociateStudent)(store, student, kumi);
+                (0, _studentRequests.disassociateStudent)(student, kumi);
                 break;
 
-            case 'deleteStudent':
+            case mTypes.deleteStudent:
                 // window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
                 (0, _studentRequests.destroyStudent)(store, payload.obj);
                 break;
 
-            case 'updateStudentInRoster':
+            case mTypes.updateStudentInRoster:
                 // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
                 (0, _studentRequests.updateStudent)(store, payload.obj);
                 break;
@@ -67605,13 +67575,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _mutationTypes = __webpack_require__(2);
+var _legacyMutationTypes = __webpack_require__(1017);
 
-var mTypes = _interopRequireWildcard(_mutationTypes);
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
 
-var _actionTypes = __webpack_require__(4);
+var _legacyActionTypes = __webpack_require__(1018);
 
-var aTypes = _interopRequireWildcard(_actionTypes);
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
 
 var _Payload = __webpack_require__(1);
 
@@ -67635,11 +67605,11 @@ var isEmpty = function isEmpty(state) {
     return true;
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadElementScores, function (state, rootState, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.loadElementScores, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
     //set the state to the payload's object
     state.elementScores = payload.obj;
-}), _defineProperty(_mutations, mTypes.setElementScore, function (state, rootState, payload) {
+}), _defineProperty(_mutations, lmTypes.setElementScore, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
     var studentIndex = payload.index;
     var elementIndex = payload.index2;
@@ -67648,7 +67618,7 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadElement
     state.elementScores[studentIndex][elementIndex] = score;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.setElementScore, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.setElementScore, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
     var studentIndex = payload.studentIndex,
@@ -67667,14 +67637,14 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.setElementScore, 
         num: score
     });
 
-    commit(mTypes.setElementScore, out);
-}), _defineProperty(_actions, aTypes.loadElementScores, function (_ref2, payload) {
+    commit(lmTypes.setElementScore, out);
+}), _defineProperty(_actions, laTypes.loadElementScores, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
 
     var pl = _Payload2.default.factory({ obj: payload });
-    commit(mTypes.loadElementScores, pl);
+    commit(lmTypes.loadElementScores, pl);
 }), _actions);
 
 var getters = {
@@ -70866,13 +70836,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _mutationTypes = __webpack_require__(2);
+var _legacyMutationTypes = __webpack_require__(1017);
 
-var mTypes = _interopRequireWildcard(_mutationTypes);
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
 
-var _actionTypes = __webpack_require__(4);
+var _legacyActionTypes = __webpack_require__(1018);
 
-var aTypes = _interopRequireWildcard(_actionTypes);
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
 
 var _Payload = __webpack_require__(1);
 
@@ -70885,6 +70855,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
                                                                                                                                                                                                                    * Created by adam on 10/7/16.
                                                                                                                                                                                                                    */
+
 
 var state = {
 
@@ -70905,7 +70876,7 @@ var isScoresEmpty = function isScoresEmpty(state) {
     return true;
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setQuestionScore, function (state, rootState, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setQuestionScore, function (state, rootState, payload) {
     // console.log( 'mutation.setQuestionScore', payload );
     _Payload2.default.checkIfPayload(payload);
 
@@ -70913,7 +70884,7 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setQuestion
     var questionIndex = payload.index2;
 
     state.questionScores[studentIndex][questionIndex] = payload.num;
-}), _defineProperty(_mutations, mTypes.removeQuestionScore, function (state, rootState, payload) {
+}), _defineProperty(_mutations, lmTypes.removeQuestionScore, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
 
     var studentIndex = payload.index;
@@ -70922,14 +70893,14 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setQuestion
     state.questionScores[studentIndex][questionIndex] = payload.num;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadQuestionScores, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadQuestionScores, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
     for (var i = 0; i < Object.keys(payload).length; i++) {
-        actions[aTypes.setQuestionScore]({ state: state, commit: commit }, payload[i]);
+        actions[laTypes.setQuestionScore]({ state: state, commit: commit }, payload[i]);
     }
-}), _defineProperty(_actions, aTypes.setQuestionScore, function (_ref2, payload) {
+}), _defineProperty(_actions, laTypes.setQuestionScore, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
@@ -70940,7 +70911,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadQuestionScore
     pl.index2 = payload.questionIndex;
     pl.num = payload.score;
 
-    commit(mTypes.setQuestionScore, pl);
+    commit(lmTypes.setQuestionScore, pl);
 }), _actions);
 
 var getters = {
@@ -71320,16 +71291,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = {
 
     state: {
-        selectedStudents: [],
 
         //The kumis by which we are filtering
         displayedKumis: [],
 
-        //selected for whatever reason
+        /** whether the kumi list is visible */
+        kumiSelectVisible: false,
+
+        /** Kumis which have been selected for whatever reason */
         selectedKumis: [],
 
-        //whether the kumi list is visible
-        kumiSelectVisible: false
+        /** The students whose rows have been selected */
+        selectedStudents: [],
+
+        /** The direction to sort the roster */
+        sortAsc: true,
+
+        /**
+         * The currently selected field by which
+         * the roster is sorted
+         */
+        sortedBy: 'lastName'
+
     },
 
     mutations: {
@@ -71405,6 +71388,23 @@ module.exports = {
         },
 
         /**
+         * Alters which field the list of students
+         * is sorted by
+         */
+        setSortedBy: function setSortedBy(state, payload) {
+            state.sortedBy = payload.updateVal;
+        },
+
+        /**
+         * Toggles between sorting the student list
+         * ascending and descending
+         * @param state
+         */
+        toggleSortAscending: function toggleSortAscending(state) {
+            state.sortAsc = !state.sortAsc;
+        },
+
+        /**
          * @deprecated
          * @param state
          * @param payload
@@ -71425,14 +71425,13 @@ module.exports = {
     actions: {},
 
     getters: {
-        /**
-         * Returns the root kumi object which attaches
-         * the exam to the students, i.e., the roster
-         * @param state
-         * @param getters
-         */
-        getRootKumi: function getRootKumi(state, getters) {
-            return _.take(getters.getKumis);
+
+        getSortAsc: function getSortAsc(state) {
+            return state.sortAsc;
+        },
+
+        getSortedBy: function getSortedBy(state, getters, rootState) {
+            return state.sortedBy;
         },
 
         getSelectedStudents: function getSelectedStudents(state, getters) {
@@ -71445,19 +71444,21 @@ module.exports = {
 
         getDisplayedKumis: function getDisplayedKumis(state, getters) {
             return state.displayedKumis;
-
-            // if ( state.displayedKumis.length === 0 ) {
-            //     return getters.getRootKumi;
-            //     //let k = _.take( getters.getKumis );
-            //     //    state.commit('toggleKumi', Payload.factory({obj: k}))
-            // } else {
-            //     return state.displayedKumis;
-            // }
         },
+
         isKumiSelectVisible: function isKumiSelectVisible(state, getters) {
             return state.kumiSelectVisible;
         },
 
+        /**
+         * Given a kumi object, this returns true if the kumi is
+         * among those selected. It returns false otherwise
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param kumi
+         * @returns {function(*)}
+         */
         isKumiDisplayed: function isKumiDisplayed(state, getters, rootState, kumi) {
             return function (kumi) {
                 return state.displayedKumis.filter(function (i) {
@@ -71470,8 +71471,9 @@ module.exports = {
     }
 }; /**
     * This holds data which determines the
-    * display state of the roster. That is,
-    * it contains the selected students or other
+    * display state of the roster.
+    *
+    * That is, it contains the selected students or other
     * properties which alter the display of the
     * rows in the student table
     *
@@ -71488,436 +71490,430 @@ module.exports = {
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
-var _vue = __webpack_require__(14);
+var _kumis = __webpack_require__(1014);
 
-var _vue2 = _interopRequireDefault(_vue);
+var _kumis2 = _interopRequireDefault(_kumis);
 
-var _mutationTypes = __webpack_require__(2);
+var _kumis3 = __webpack_require__(1015);
 
-var mTypes = _interopRequireWildcard(_mutationTypes);
+var _kumis4 = _interopRequireDefault(_kumis3);
 
-var _actionTypes = __webpack_require__(4);
+var _kumis5 = __webpack_require__(1016);
 
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Kumi = __webpack_require__(23);
-
-var _Kumi2 = _interopRequireDefault(_Kumi);
-
-var _Student = __webpack_require__(24);
-
-var _Student2 = _interopRequireDefault(_Student);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _kumis6 = _interopRequireDefault(_kumis5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * This handles kumi object storage and
-                                                                                                                                                                                                                   * the relationships between kumi and other
-                                                                                                                                                                                                                   * objects.
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * It does not handle the display properties
-                                                                                                                                                                                                                   * (e.g., which are selected for display). That
-                                                                                                                                                                                                                   * is handled in display.js
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * Created by adam on 7/11/17.
-                                                                                                                                                                                                                   */
-
+/**
+ * This handles kumi object storage and
+ * the relationships between kumi and other
+ * objects.
+ *
+ * It does not handle the display properties
+ * (e.g., which are selected for display). That
+ * is handled in display.js
+ *
+ *
+ * Created by adam on 7/11/17.
+ */
 
 var KUMIS_JSON_NAME = 'loadedKumis';
 
 var state = {
-    kumis: [],
+  kumis: [],
 
-    //holds objects with keys examId and kumiId
-    examKumiAssociations: [],
+  //holds objects with keys examId and kumiId
+  examKumiAssociations: [],
 
-    //holds objects with keys studentSN and kumiSN
-    studentKumiAssociations: [],
+  //holds objects with keys studentSN and kumiSN
+  studentKumiAssociations: [],
 
-    /**
-     * This is either null or a kumi object
-     * if it is null, we are supposed to show all kumi and students
-     * associated with the exam
-     */
-    selectedKumi: null
+  /**
+   * This is either null or a kumi object
+   * if it is null, we are supposed to show all kumi and students
+   * associated with the exam
+   */
+  selectedKumi: null
 };
-
-var filterExamAssociations = function filterExamAssociations(state, prop, val) {
-    return state.examKumiAssociations.filter(function (i) {
-        if (i[prop] === val) {
-            return i;
-        }
-    });
-};
-
-var filterStudentAssociations = function filterStudentAssociations(state, prop, val) {
-    return state.studentKumiAssociations.filter(function (i) {
-        if (i[prop] === val) {
-            return i;
-        }
-    });
-};
-
-var filterKumis = function filterKumis(state, prop, val) {
-    return state.kumis.filter(function (i) {
-        if (i[prop] === val) {
-            return i;
-        }
-    });
-};
-
-var _getKumiById = function _getKumiById(state, kumiId) {
-    var r = filterKumis(state, 'id', kumiId);
-    return r[0];
-};
-
-var _getKumiBySerialNumber = function _getKumiBySerialNumber(state, ksn) {
-    var r = filterKumis(state, 'serialNumber', ksn);
-    return r[0];
-};
-
-var processKumiFromJson = function processKumiFromJson(state, kumiData, exam) {
-    _.forEach(kumiData, function (d, i) {
-        //first make a kumi from the loaded data
-        var kumi = _Kumi2.default.factory({ d: d });
-        var pl = _Payload2.default.factory({
-            obj: kumi,
-            examId: exam.id,
-            kumiId: kumi.id,
-            mutateSilently: true
-        });
-
-        // push it into storage
-        // state.commit('addKumi', pl);
-        state.kumis.push(kumi);
-
-        if (i === 0) {
-            //set the first kumi as the one to display
-            //this needs to happen before associate exam is called
-            state.commit('toggleKumi', pl);
-        }
-
-        //Now associate the kumi with the exam
-        state.commit('associateExamWithKumi', pl);
-    });
-};
-
-var mutations = {
-
-    addKumi: function addKumi(state, payload) {
-        state.kumis.push(payload.obj);
-    },
-
-    /**
-     * Alter properties of a kumi
-     * @param state
-     * @param payload
-     */
-    updateKumi: function updateKumi(state, payload) {
-        _Payload2.default.checkIfPayload(payload);
-        var kumi = _getKumiBySerialNumber(state, payload.obj.serialNumber);
-        _vue2.default.set(kumi, payload.updateProp, payload.updateVal);
-        // let idx = state.kumis.indexOf( kumi );
-        // window.console.log( 'kumis', 'updateKumi', 50, state.kumis, idx, payload);
-        //
-        // Vue.set( state.kumis[idx], payload.updateProp, payload.updateVal );
-    },
-
-    /**
-     * Adds an exam to the list of exams the
-     * kumi is associated with
-     * @param examId
-     */
-    associateExamWithKumi: function associateExamWithKumi(state, payload) {
-        //todo Should check that not duplicating?
-        var examId = payload.examId;
-        var kumiId = payload.kumiId;
-        state.examKumiAssociations.push({ examId: examId, kumiId: kumiId });
-    },
-
-    /**
-     *
-     * @param examId
-     */
-    disassociateExamFromKumi: function disassociateExamFromKumi(state, payload) {
-        var examId = payload.examId;
-        var kumiId = payload.kumiId;
-        var r = filterExamAssociations(state, kumiId, examId);
-        var index = state.examKumiAssociations.indexOf(r[0]);
-        state.examKumiAssociations.splice(index, 1);
-    },
-
-    /**
-     * Creates a relationship between a student and a group (kumi)
-     *
-     * @param state
-     * @param kumiId
-     * @param studentId
-     */
-    associateStudentWithKumi: function associateStudentWithKumi(state, payload) {
-        var student = payload.student;
-        var kumi = payload.kumi;
-
-        //store on the student object
-        student.associatedKumis.push(kumi);
-        //Now, redundantly store it centrally
-        //Why? No idea.... Not even sure if anything uses
-        //the central store
-        // todo Should check that not duplicating?
-        state.studentKumiAssociations.push({
-            studentSerialNumber: student.serialNumber,
-            kumiSerialNumber: kumi.serialNumber
-        });
-    },
-
-    /**
-     * Removes the association between the student and a group
-     * @param studentId
-     */
-    disassociateStudentFromKumi: function disassociateStudentFromKumi(state, payload) {
-        var student = payload.student;
-        var kumi = payload.kumi;
-        var index = state.studentKumiAssociations.indexOf(r[0]);
-        state.studentKumiAssociations.splice(index, 1);
-        //remove kumi from array stored in student
-        student.associatedKumis.splice(student.associatedKumis.indexOf(kumi));
-    }
-
-};
-
-var actions = {
-    processKumiFromJson: function processKumiFromJson(_ref) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
-
-        var exam = getters.getCurrentExam;
-        var kumiData = JSON.parse(document.getElementById(KUMIS_JSON_NAME).getAttribute('data'));
-
-        _.forEach(kumiData, function (d, i) {
-            //first make a kumi from the loaded data and push it into storage
-            var kumi = _Kumi2.default.factory({ d: d });
-            //Now associate the kumi with the exam
-            var pl = _Payload2.default.factory({
-                obj: kumi,
-                kumi: kumi,
-                examId: exam.id,
-                kumiId: kumi.id,
-                mutateSilently: true
-            });
-            commit('addKumi', pl);
-            commit('associateExamWithKumi', pl);
-            if (i === 0) {
-                //set the first kumi as the one to display
-                commit('toggleKumi', pl);
-            }
-        });
-    },
-
-
-    /**
-     * Removes all associations between an exam and a kumi.
-     * Also removes all student associations with the kumi
-     *
-     * @param state
-     * @param dispatch
-     * @param commit
-     * @param getters
-     * @param payload
-     */
-    removeKumi: function removeKumi(_ref2, payload) {
-        var state = _ref2.state,
-            dispatch = _ref2.dispatch,
-            commit = _ref2.commit,
-            getters = _ref2.getters;
-    }
-};
-
-var getters = _defineProperty({
-    getKumiBySerialNumber: function getKumiBySerialNumber(state, getters, rootState, serialNumber) {
-        return function (serialNumber) {
-            return _getKumiBySerialNumber(state, serialNumber);
-        };
-    },
-
-    /**
-     * Looks up the client side representation of a Kumi object
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param serialNumber
-     */
-    getKumiById: function getKumiById(state, getters, rootState, kumiId) {
-        return function (kumiId) {
-            return _getKumiById(state, kumiId);
-        };
-    },
-
-    getKumis: function getKumis(state) {
-        return state.kumis;
-    },
-
-    /**
-     * Returns all kumis associated with the exam
-     * @param examId
-     */
-    getExamKumis: function getExamKumis(state, getters, rootState, examOrExamId) {
-        return function (examOrExamId) {
-            // return new Promise((resolve, reject)=>{
-
-            var exam = _.isUndefined(examOrExamId) ? undefined.$store.getters.currentExam : examOrExamId;
-
-            // let objId = examOrExamId;
-            var objId = exam.id;
-            var kumiIds = filterExamAssociations(state, objId);
-            // if ( !returnObjects ) return kumiIds;
-
-            var out = [];
-            _.forEach(kumiIds, function (i) {
-                var kumi = _getKumiById(state, i);
-                out.push(kumi);
-            });
-            // resolve(out);
-            return out;
-            // });
-        };
-    },
-
-    /**
-     * Returns all exams associated with the given kumi
-     */
-    getKumiExams: function getKumiExams(state, kumiOrKumiId) {
-        var returnObjects = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-        var objId = kumiOrKumiId;
-        var examIds = filterExamAssociations(state, objId);
-        if (!returnObjects) return examIds;
-        //todo return objects
-    },
-
-    //Remember students can belong to more than one kumi
-    getStudentsForKumi: function getStudentsForKumi(state, getters, rootState, kumiOrKumiId) {
-        return function (kumiOrKumiId) {
-            var kumi = kumiOrKumiId;
-            var studentSerialNumbers = filterStudentAssociations(state, 'serialNumber', kumi.serialNumber);
-            var out = [];
-            _.forEach(studentSerialNumbers, function (i) {
-                out.push(getters.getStudentFromRosterBySerialNumber(i));
-            });
-            return out;
-        };
-    },
-
-    /**
-     * Returns true if the specified student is in the
-     * presently displayed kumis or, if all kumis are selected.
-     * Returns false otherwise
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param studentOrStudentSN
-     * @returns {boolean}
-     */
-    isStudentInDisplayedKumi: function isStudentInDisplayedKumi(state, getters, rootState, studentOrStudentSN) {
-        return function (studentOrStudentSN) {
-            try {
-                var selectedKumis = getters.getDisplayedKumis;
-
-                //if the selected kumi is null or empty, then we are to
-                //display all kumi associated with the exam
-                if (_.isNull(selectedKumis) || selectedKumis.length === 0) return true;
-
-                var student = studentOrStudentSN instanceof _Student2.default ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
-
-                // if(student.associatedKumis.length===0) return false;
-
-                // window.console.log( 'kumis', '', 310, selectedKumis, student);
-                var a = false;
-                _.forEach(selectedKumis, function (kumi) {
-                    _.forEach(student.associatedKumis, function (k) {
-                        window.console.log('kumis', 'k', 316, kumi, k);
-                        if (kumi.serialNumber === k.serialNumber) a = true;
-                    });
-                    // if(filterStudentAssociations(student, 'serialNumber', kumi.serialNumber)) return true;
-                    // if ( student.associatedKumis.indexOf( kumi ) > -1 ) return true;
-                });
-
-                return a;
-            } catch (Error) {
-                window.console.log('kumis', 'isStudentInDisplayedKumi', 325, Error);
-                return false;
-            }
-        };
-    },
-
-    /**
-     * Returns true if the specified student is in the
-     * presently selected kumi or, if all kumis are selected.
-     * Returns false otherwise
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param studentOrStudentSN
-     * @returns {boolean}
-     */
-    isStudentInSelectedKumi: function isStudentInSelectedKumi(state, getters, rootState, studentOrStudentSN) {
-        return function (studentOrStudentSN) {
-            try {
-                var selectedKumis = getters.getSelectedKumis;
-
-                //if the selected kumi is null or empty, then we are to
-                //display all kumi associated with the exam
-                if (_.isNull(selectedKumis) || selectedKumis.length === 0) return true;
-
-                var student = studentOrStudentSN instanceof _Student2.default ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
-
-                _.forEach(selectedKumis, function (kumi) {
-                    if (student.associatedKumis.indexOf(kumi) > -1) return true;
-                });
-
-                return false;
-                //            return student.associatedKumis.indexOf( kumi ) > -1;
-                //     //if the selected kumi is null, then we are to
-                //     //display all kumi associated with the exam
-                //     if ( _.isNull( kumi ) ) return true;
-                //
-                //     //todo add support for student id
-                //     let student = studentOrStudentId;
-                //     let students = getters.getStudentsForKumi( kumi );
-                //     window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
-                //     if ( students.indexOf( student ) >= 0 ) return true;
-                //     return false;
-            } catch (Error) {
-                window.console.log('kumis', 'isStudentInSelectedKumi', 209, Error);
-                return false;
-            }
-        };
-    }
-
-}, gTypes.getKumiCount, function (state, getters, rootState) {
-    return _.size(state.kumis);
-});
 
 exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
+  actions: _kumis2.default,
+  getters: _kumis4.default,
+  mutations: _kumis6.default,
+  state: state
+
+  //
+  // const filterExamAssociations = ( state, prop, val ) => {
+  //     return state.examKumiAssociations.filter( ( i ) => {
+  //         if ( i[ prop ] === val ) {
+  //             return i;
+  //         }
+  //     } );
+  // };
+  //
+  //
+  // const filterStudentAssociations = ( state, prop, val ) => {
+  //     return state.studentKumiAssociations.filter( ( i ) => {
+  //         if ( i[ prop ] === val ) {
+  //             return i;
+  //         }
+  //     } );
+  // };
+  //
+  // const filterKumis = ( state, prop, val ) => {
+  //     return state.kumis.filter( ( i ) => {
+  //         if ( i[ prop ] === val ) {
+  //             return i;
+  //         }
+  //     } );
+  // };
+  //
+  // const getKumiById = ( state, kumiId ) => {
+  //     let r = filterKumis( state, 'id', kumiId );
+  //     return r[ 0 ];
+  // };
+  //
+  //
+  // const getKumiBySerialNumber = ( state, ksn ) => {
+  //     let r = filterKumis( state, 'serialNumber', ksn );
+  //     return r[ 0 ];
+  // };
+  //
+  // const processKumiFromJson = function ( state, kumiData, exam ) {
+  //     _.forEach( kumiData, function ( d, i ) {
+  //         //first make a kumi from the loaded data
+  //         let kumi = Kumi.factory( { d } );
+  //         let pl = Payload.factory( {
+  //             obj: kumi,
+  //             examId: exam.id,
+  //             kumiId: kumi.id,
+  //             mutateSilently: true
+  //         } );
+  //
+  //         // push it into storage
+  //         // state.commit('addKumi', pl);
+  //         state.kumis.push( kumi );
+  //
+  //         if ( i === 0 ) {
+  //             //set the first kumi as the one to display
+  //             //this needs to happen before associate exam is called
+  //             state.commit( 'toggleKumi', pl )
+  //         }
+  //
+  //         //Now associate the kumi with the exam
+  //         state.commit( 'associateExamWithKumi', pl );
+  //
+  //
+  //     } );
+  // };
+  //
+  // const mutations = {
+  //
+  //     addKumi: ( state, payload ) => {
+  //         state.kumis.push( payload.obj );
+  //     },
+  //
+  //     /**
+  //      * Alter properties of a kumi
+  //      * @param state
+  //      * @param payload
+  //      */
+  //     updateKumi: ( state, payload ) => {
+  //         Payload.checkIfPayload( payload );
+  //         let kumi = getKumiBySerialNumber( state, payload.obj.serialNumber );
+  //         Vue.set( kumi, payload.updateProp, payload.updateVal );
+  //         // let idx = state.kumis.indexOf( kumi );
+  //         // window.console.log( 'kumis', 'updateKumi', 50, state.kumis, idx, payload);
+  //         //
+  //         // Vue.set( state.kumis[idx], payload.updateProp, payload.updateVal );
+  //     },
+  //
+  //     /**
+  //      * Adds an exam to the list of exams the
+  //      * kumi is associated with
+  //      * @param examId
+  //      */
+  //     associateExamWithKumi: ( state, payload ) => {
+  // //todo Should check that not duplicating?
+  //         let examId = payload.examId;
+  //         let kumiId = payload.kumiId;
+  //         state.examKumiAssociations.push( { examId: examId, kumiId: kumiId } );
+  //     },
+  //
+  //     /**
+  //      *
+  //      * @param examId
+  //      */
+  //     disassociateExamFromKumi: ( state, payload ) => {
+  //         let examId = payload.examId;
+  //         let kumiId = payload.kumiId;
+  //         let r = filterExamAssociations( state, kumiId, examId );
+  //         let index = state.examKumiAssociations.indexOf( r[ 0 ] );
+  //         state.examKumiAssociations.splice( index, 1 );
+  //     },
+  //
+  //     /**
+  //      * Creates a relationship between a student and a group (kumi)
+  //      *
+  //      * @param state
+  //      * @param kumiId
+  //      * @param studentId
+  //      */
+  //     associateStudentWithKumi: ( state, payload ) => {
+  //         let student = payload.student;
+  //         let kumi = payload.kumi;
+  //
+  //         //store on the student object
+  //         student.associatedKumis.push( kumi );
+  //         //Now, redundantly store it centrally
+  //         //Why? No idea.... Not even sure if anything uses
+  //         //the central store
+  //         // todo Should check that not duplicating?
+  //         state.studentKumiAssociations.push( {
+  //             studentSerialNumber: student.serialNumber,
+  //             kumiSerialNumber: kumi.serialNumber
+  //         } );
+  //     },
+  //
+  //     /**
+  //      * Removes the association between the student and a group
+  //      * @param studentId
+  //      */
+  //     disassociateStudentFromKumi: ( state, payload ) => {
+  //         let student = payload.student;
+  //         let kumi = payload.kumi;
+  //         let index = state.studentKumiAssociations.indexOf( r[ 0 ] );
+  //         state.studentKumiAssociations.splice( index, 1 );
+  //         //remove kumi from array stored in student
+  //         student.associatedKumis.splice( student.associatedKumis.indexOf( kumi ) );
+  //     },
+  //
+  // };
+  //
+  // const actions = {
+  //     processKumiFromJson( { state, dispatch, commit, getters } ) {
+  //         let exam = getters.getCurrentExam;
+  //         let kumiData = JSON.parse( document.getElementById( KUMIS_JSON_NAME ).getAttribute( 'data' ) );
+  //
+  //         _.forEach( kumiData, function ( d, i ) {
+  //             //first make a kumi from the loaded data and push it into storage
+  //             let kumi = Kumi.factory( { d } );
+  //             //Now associate the kumi with the exam
+  //             let pl = Payload.factory( {
+  //                 obj: kumi,
+  //                 kumi: kumi,
+  //                 examId: exam.id,
+  //                 kumiId: kumi.id,
+  //                 mutateSilently: true
+  //             } );
+  //             commit( 'addKumi', pl );
+  //             commit( 'associateExamWithKumi', pl );
+  //             if ( i === 0 ) {
+  //                 //set the first kumi as the one to display
+  //                 commit( 'toggleKumi', pl )
+  //             }
+  //         } );
+  //     },
+  //
+  //     /**
+  //      * Removes all associations between an exam and a kumi.
+  //      * Also removes all student associations with the kumi
+  //      *
+  //      * @param state
+  //      * @param dispatch
+  //      * @param commit
+  //      * @param getters
+  //      * @param payload
+  //      */
+  //     removeKumi({ state, dispatch, commit, getters }, payload){}
+  //
+  // };
+  //
+  //
+  // const getters = {
+  //         getKumiBySerialNumber: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
+  //             return getKumiBySerialNumber( state, serialNumber );
+  //         },
+  //
+  //
+  //         /**
+  //          * Looks up the client side representation of a Kumi object
+  //          * @param state
+  //          * @param getters
+  //          * @param rootState
+  //          * @param serialNumber
+  //          */
+  //         getKumiById: ( state, getters, rootState, kumiId ) => ( kumiId ) => {
+  //             return getKumiById( state, kumiId );
+  //         },
+  //
+  //         getKumis: function ( state ) {
+  //             return state.kumis;
+  //         },
+  //
+  //         /**
+  //          * Returns all kumis associated with the exam
+  //          * @param examId
+  //          */
+  //         getExamKumis: ( state, getters, rootState, examOrExamId ) => ( examOrExamId ) => {
+  //             // return new Promise((resolve, reject)=>{
+  //
+  //             let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.currentExam : examOrExamId;
+  //
+  //             // let objId = examOrExamId;
+  //             let objId = exam.id;
+  //             let kumiIds = filterExamAssociations( state, objId );
+  //             // if ( !returnObjects ) return kumiIds;
+  //
+  //             let out = [];
+  //             _.forEach( kumiIds, ( i ) => {
+  //                 let kumi = getKumiById( state, i );
+  //                 out.push( kumi );
+  //             } );
+  //             // resolve(out);
+  //             return out;
+  //             // });
+  //         },
+  //
+  //         /**
+  //          * Returns all exams associated with the given kumi
+  //          */
+  //         getKumiExams: ( state, kumiOrKumiId, returnObjects = false ) => {
+  //             let objId = kumiOrKumiId;
+  //             let examIds = filterExamAssociations( state, objId );
+  //             if ( !returnObjects ) return examIds;
+  //             //todo return objects
+  //         },
+  //
+  //
+  //         //Remember students can belong to more than one kumi
+  //         getStudentsForKumi: ( state, getters, rootState, kumiOrKumiId ) => ( kumiOrKumiId ) => {
+  //             let kumi = kumiOrKumiId;
+  //             let studentSerialNumbers = filterStudentAssociations( state, 'serialNumber', kumi.serialNumber );
+  //             let out = [];
+  //             _.forEach( studentSerialNumbers, ( i ) => {
+  //                 out.push( getters.getStudentFromRosterBySerialNumber( i ) );
+  //             } );
+  //             return out;
+  //         },
+  //
+  //         /**
+  //          * Returns true if the specified student is in the
+  //          * presently displayed kumis or, if all kumis are selected.
+  //          * Returns false otherwise
+  //          * @param state
+  //          * @param getters
+  //          * @param rootState
+  //          * @param studentOrStudentSN
+  //          * @returns {boolean}
+  //          */
+  //         isStudentInDisplayedKumi: ( state, getters, rootState, studentOrStudentSN ) => ( studentOrStudentSN ) => {
+  //             try {
+  //                 let selectedKumis = getters.getDisplayedKumis;
+  //
+  //                 //if the selected kumi is null or empty, then we are to
+  //                 //display all kumi associated with the exam
+  //                 if ( _.isNull( selectedKumis ) || selectedKumis.length === 0 ) return true;
+  //
+  //                 let student = studentOrStudentSN instanceof Student ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber( studentOrStudentSN );
+  //
+  //                 // if(student.associatedKumis.length===0) return false;
+  //
+  //                 // window.console.log( 'kumis', '', 310, selectedKumis, student);
+  //                 let a = false;
+  //                 _.forEach( selectedKumis, function ( kumi ) {
+  //                    _.forEach(student.associatedKumis, function(k){
+  //                        window.console.log( 'kumis', 'k', 316, kumi, k);
+  //                        if(kumi.serialNumber === k.serialNumber)
+  //                            a= true;
+  //                    });
+  //                     // if(filterStudentAssociations(student, 'serialNumber', kumi.serialNumber)) return true;
+  //                     // if ( student.associatedKumis.indexOf( kumi ) > -1 ) return true;
+  //                 } );
+  //
+  //                 return a;
+  //
+  //             } catch (Error) {
+  //                 window.console.log( 'kumis', 'isStudentInDisplayedKumi', 325, Error );
+  //                       return false;
+  //             }
+  //         },
+  //
+  //
+  //         /**
+  //          * Returns true if the specified student is in the
+  //          * presently selected kumi or, if all kumis are selected.
+  //          * Returns false otherwise
+  //          * @param state
+  //          * @param getters
+  //          * @param rootState
+  //          * @param studentOrStudentSN
+  //          * @returns {boolean}
+  //          */
+  //         isStudentInSelectedKumi: ( state, getters, rootState, studentOrStudentSN ) => ( studentOrStudentSN ) => {
+  //             try {
+  //                 let selectedKumis = getters.getSelectedKumis;
+  //
+  //                 //if the selected kumi is null or empty, then we are to
+  //                 //display all kumi associated with the exam
+  //                 if ( _.isNull( selectedKumis ) || selectedKumis.length === 0 ) return true;
+  //
+  //                 let student = studentOrStudentSN instanceof Student ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber( studentOrStudentSN );
+  //
+  //                 _.forEach( selectedKumis, function ( kumi ) {
+  //                     if ( student.associatedKumis.indexOf( kumi ) > -1 ) return true;
+  //                 } );
+  //
+  //                 return false;
+  // //            return student.associatedKumis.indexOf( kumi ) > -1;
+  //                 //     //if the selected kumi is null, then we are to
+  //                 //     //display all kumi associated with the exam
+  //                 //     if ( _.isNull( kumi ) ) return true;
+  //                 //
+  //                 //     //todo add support for student id
+  //                 //     let student = studentOrStudentId;
+  //                 //     let students = getters.getStudentsForKumi( kumi );
+  //                 //     window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
+  //                 //     if ( students.indexOf( student ) >= 0 ) return true;
+  //                 //     return false;
+  //
+  //             } catch (Error) {
+  //                 window.console.log( 'kumis', 'isStudentInSelectedKumi', 209, Error );
+  //                       return false;
+  //             }
+  //         },
+  //
+  //
+  //     [gTypes.getKumiCount ]: ( state, getters, rootState) => {
+  //         return _.size( state.kumis );
+  //     }
+  //
+  //         // [gTypes.getKumiCountForExam ]: ( state, getters, rootState, examOrExamId ) => ( examOrExamId ) => {
+  //         //     return _.size(state.kumis);
+  //         //
+  //         //     let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.currentExam : examOrExamId;
+  //         //     let kumis = getters.getExamKumis(examOrExamId);
+  //         //     // let objId = exam.id;
+  //         //     // let kumiIds = filterExamAssociations( state, objId );
+  //         //
+  //         //     return _.size(kumis);
+  //         //
+  //         // }
+  //
+  //     }
+  // ;
+  //
+  //
+  // export default {
+  //     actions,
+  //     getters,
+  //     mutations,
+  //     state,
+  // }
+
 };
 
 /***/ }),
@@ -71927,225 +71923,55 @@ exports.default = {
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-var _mutations, _getters;
+var _roster = __webpack_require__(1011);
 
-var _vue = __webpack_require__(14);
+var _roster2 = _interopRequireDefault(_roster);
 
-var _vue2 = _interopRequireDefault(_vue);
+var _roster3 = __webpack_require__(1012);
 
-var _Student = __webpack_require__(24);
+var _roster4 = _interopRequireDefault(_roster3);
 
-var _Student2 = _interopRequireDefault(_Student);
+var _roster5 = __webpack_require__(1013);
 
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Kumi = __webpack_require__(23);
-
-var _Kumi2 = _interopRequireDefault(_Kumi);
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(4);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _studentFileImporter = __webpack_require__(147);
-
-var _studentFileImporter2 = _interopRequireDefault(_studentFileImporter);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _roster6 = _interopRequireDefault(_roster5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * This is the new version of students.
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * More precisely it is a list of students for a
-                                                                                                                                                                                                                   * given exam or item.
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * We may decide to keep the students store around
-                                                                                                                                                                                                                   * for things which require access to students outside
-                                                                                                                                                                                                                   * of an exam or item
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * Created by adam on 7/8/17.
-                                                                                                                                                                                                                   */
+/**
+ * This is the new version of students.
+ *
+ * More precisely, it is a list of students for a
+ * given exam or item.
+ *
+ * It does not handle the display properties
+ * (e.g., which are selected for display). That
+ * is handled in display.js
+ *
+ * We may decide to keep the students store around
+ * for things which require access to students outside
+ * of an exam or item
+ *
+ * Created by adam on 7/8/17.
+ */
 
+var state = {
+  /**
+   * List of student objects
+   * */
+  roster: []
 
-module.exports = {
-
-    state: {
-        /**
-         * List of student objects
-         * */
-        roster: [
-            // Student.factory( { lastName: 'Smith', firstName: 'Jill' } ),
-            // Student.factory( { lastName: 'Jillson', firstName: 'Smithy' } )
-        ],
-
-        sortedBy: 'lastName',
-
-        sortAsc: true
-
-    },
-
-    mutations: (_mutations = {}, _defineProperty(_mutations, mTypes.addStudentToRoster, function (state, payload) {
-        _Payload2.default.checkIfPayload(payload);
-        var student = payload.obj;
-        state.roster.push(student);
-    }), _defineProperty(_mutations, 'setSortedBy', function setSortedBy(state, payload) {
-        state.sortedBy = payload.updateVal;
-    }), _defineProperty(_mutations, 'toggleSortAscending', function toggleSortAscending(state) {
-        state.sortAsc = !state.sortAsc;
-    }), _defineProperty(_mutations, 'removeStudentFromRoster', function removeStudentFromRoster(state, payload) {
-        _Payload2.default.checkIfPayload(payload);
-        var student = payload.obj;
-        var idx = state.roster.indexOf(student);
-        state.roster.splice(idx, 1);
-    }), _defineProperty(_mutations, 'deleteStudent', function deleteStudent(state, payload) {
-        _Payload2.default.checkIfPayload(payload);
-        var student = payload.obj;
-        var idx = state.roster.indexOf(student);
-        state.roster.splice(idx, 1);
-    }), _defineProperty(_mutations, 'updateStudentInRoster', function updateStudentInRoster(state, payload) {
-        // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
-        _Payload2.default.checkIfPayload(payload);
-        var student = payload.obj;
-        var idx = state.roster.indexOf(student);
-
-        _vue2.default.set(state.roster[idx], payload.updateProp, payload.updateVal);
-    }), _mutations),
-
-    actions: _extends({}, _studentFileImporter2.default, _defineProperty({}, aTypes.handleNewStudentStorageAndAssociation, function (_ref, payload) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
-
-        var p = new Promise(function (resolve, reject) {
-            commit(mTypes.addStudentToRoster, payload);
-            resolve();
-        });
-
-        var kumi = [];
-        kumi = kumi.concat(getters.getDisplayedKumis);
-        kumi = kumi.concat(getters.getSelectedKumis);
-
-        //If no kumi is selected and it is displaying all
-        //the student won't be associated.
-        //So we check if the list is still empty
-        //and if so, use the root kumi
-        if (kumi.length === 0) {
-            //and associate it with the student before the others
-            kumi.push(getters.getRootKumi);
-            // commit( mTypes.associateStudentWithKumi, payload );
-        }
-
-        return p.then(function () {
-            return new Promise(function (resolve, reject) {
-                _.forEach(kumi, function (k) {
-                    payload.kumi = k;
-                    //Create an association between the newly created
-                    //student and the currently selected kumi, both
-                    //locally and on server
-                    commit(mTypes.associateStudentWithKumi, payload);
-                });
-                resolve();
-            });
-        });
-    })),
-
-    getters: (_getters = {}, _defineProperty(_getters, gTypes.getStudentsFromRoster, function (state, getters, rootState) {
-        return state.roster;
-    }), _defineProperty(_getters, 'getStudentFromRosterBySerialNumber', function getStudentFromRosterBySerialNumber(state, getters, rootState, serialNumber) {
-        return function (serialNumber) {
-            return function (state, serialNumber) {
-                var r = state.roster.filter(function (i) {
-                    if (i.serialNumber === serialNumber) {
-                        return i;
-                    }
-                });
-                return r[0];
-            }(state, serialNumber);
-        };
-    }), _defineProperty(_getters, 'getStudentFromRosterById', function getStudentFromRosterById(state, getters, rootState, id) {
-        return function (id) {
-            return function (state, id) {
-                var r = state.roster.filter(function (i) {
-                    if (i.id === id) {
-                        return i;
-                    }
-                });
-                return r[0];
-            }(state, id);
-        };
-    }), _defineProperty(_getters, 'getSortAsc', function getSortAsc(state) {
-        return state.sortAsc;
-    }), _defineProperty(_getters, 'getSortedBy', function getSortedBy(state, getters, rootState) {
-        return state.sortedBy;
-    }), _defineProperty(_getters, 'getSortedStudents', function getSortedStudents(state, getters, rootState) {
-
-        return function (state, getters) {
-            //sort the students by the given property
-            var sorted = _.sortBy(getters[gTypes.getStudentsFromRoster], [function (o) {
-                return o[getters.getSortedBy];
-            }]);
-
-            // window.console.log( 'roster', 'sorted', 202, sorted, getters.getSortAsc);
-            //they will be ascending when they initially come out
-            if (getters.getSortAsc) return sorted;
-
-            //if they need to be descending, reverse the list and return it
-            return _.reverse(sorted);
-        }(state, getters);
-    }), _defineProperty(_getters, gTypes.getStudentCount, function (state, getters, rootState) {
-        return state.roster.length;
-    }), _getters)
 };
 
-//
-// /**
-//  * Returns the student object with the specified database id.
-//  * NB, may fail if called before the student has been stored in
-//  * the db.
-//  *
-//  * @returns {*}
-//  */
-// getStudentFromRosterById: ( state, getters, rootState, studentId ) => {
-//     return (function ( state, studentId ) {
-//         var r = state.roster.filter( function ( i ) {
-//             if ( i.id === studentId ) {
-//                 return i;
-//             }
-//         } );
-//         return r[ 0 ];
-//     })( state, studentId )
-// },
-//
-// /**
-//  * Returns the student object with the user specified identifier.
-//  * @todo This may not be unique. What to do?
-//  * @todo Make the characteristics of the identifier as arbitrary as possible
-//  */
-// getStudentFromRosterByIdentifier: ( state, getters, rootState, identifier ) => {
-//     return (function ( state, identifier ) {
-//         var r = state.roster.filter( function ( i ) {
-//             if ( i.identifier === identifier ) {
-//                 return i;
-//             }
-//         } );
-//         return r[ 0 ];
-//     })( state, identifier )
-// },
+exports.default = {
+  actions: _roster2.default,
+  getters: _roster4.default,
+  mutations: _roster6.default,
+  state: state
+};
 
 /***/ }),
 /* 331 */
@@ -72830,9 +72656,13 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _actionTypes = __webpack_require__(4);
+var _legacyMutationTypes = __webpack_require__(1017);
 
-var aTypes = _interopRequireWildcard(_actionTypes);
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
+
+var _legacyActionTypes = __webpack_require__(1018);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -72861,23 +72691,23 @@ var state = {
     students: {}
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setStudent, function (state, rootState, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setStudent, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.students[payload.index] = payload.obj;
-}), _defineProperty(_mutations, mTypes.toggleRemoveControls, function (state, rootState, payload) {
+}), _defineProperty(_mutations, lmTypes.toggleRemoveControls, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
     delete state.students[payload.index];
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadStudents, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadStudents, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
 
     for (var i = 0; i < Object.keys(payload).length; i++) {
-        actions[aTypes.addStudent]({ state: state, commit: commit }, payload[i]);
+        actions[laTypes.addStudent]({ state: state, commit: commit }, payload[i]);
     }
-}), _defineProperty(_actions, aTypes.addStudent, function (_ref2, payload) {
+}), _defineProperty(_actions, laTypes.addStudent, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
@@ -72893,7 +72723,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadStudents, fun
         pl.id = student.id;
         pl.index = student.index;
         pl.obj = student;
-        commit(mTypes.setStudent, pl);
+        commit(lmTypes.setStudent, pl);
     }
 
     //todo error handling if a student wasn't returned
@@ -73256,9 +73086,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _mutationTypes = __webpack_require__(2);
+var _legacyMutationTypes = __webpack_require__(1017);
 
-var mTypes = _interopRequireWildcard(_mutationTypes);
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
 
 var _actionTypes = __webpack_require__(4);
 
@@ -73291,13 +73121,13 @@ var state = {
     examGradingTimes: {}
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setGradingTime, function (state, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setGradingTime, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.examGradingTimes[payload.index] = payload.num;
-}), _defineProperty(_mutations, mTypes.incrementGradingTime, function (state, payload) {
+}), _defineProperty(_mutations, lmTypes.incrementGradingTime, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.examGradingTimes[payload.index] += payload.num;
-}), _defineProperty(_mutations, mTypes.removeGradingTime, function (state, payload) {
+}), _defineProperty(_mutations, lmTypes.removeGradingTime, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
 
     var idx = -1;
@@ -73309,7 +73139,7 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setGradingT
         delete state.examGradingTimes[idx];
         // state.examGradingTimes.splice( idx, 1 );
     }
-}), _defineProperty(_mutations, mTypes.resetGradingTime, function (state, payload) {
+}), _defineProperty(_mutations, lmTypes.resetGradingTime, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.examGradingTimes[payload.index] = 0;
 }), _mutations);
@@ -95078,11 +94908,82 @@ var _examSelectionModal2 = _interopRequireDefault(_examSelectionModal);
 
 var _apiSettings = __webpack_require__(19);
 
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 
-    props: [],
+    //the currently active exam
+    props: ['exam'],
 
     components: {
         'grade-exam-button': _gradeExamButton2.default,
@@ -95105,9 +95006,16 @@ exports.default = {
     },
 
     methods: {
-        handleGradeExamClick: function handleGradeExamClick() {
-            window.console.log('exam-selection-bar', 'handleGradeExamClick', 85);
-        },
+
+        //
+        //             handleGradeExamClick: function () {
+        //                 //handle redirection
+        //                 let route = window.routeRoot + '/' + Routes.gradeExam(this.examId);
+        //                 //handle redirection
+        // //                return this.$router.go( route );
+        //                 return window.open( route, "_self" );
+        //
+        //             },
 
         handleChangeExam: function handleChangeExam() {
             this.toggleModal();
@@ -95142,59 +95050,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 /* 806 */
@@ -95486,25 +95342,12 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _apiSettings = __webpack_require__(19);
 
 exports.default = {
 
-    props: [],
+    props: ['exam'],
 
     components: {},
 
@@ -95514,12 +95357,19 @@ exports.default = {
         };
     },
 
-    computed: {},
+    computed: {
+        route: function route() {
+            return window.routeRoot + '/' + _apiSettings.Routes.gradeExam(this.exam.id);
+        }
+    },
 
     methods: {
         handleClick: function handleClick() {
+            //handle redirection
+            //                return this.$router.go( route );
+            return window.open(this.route, "_self");
+
             this.$emit('grade-currently-selected-exam');
-            //
         }
     },
 
@@ -95528,7 +95378,21 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 809 */
@@ -99876,7 +99740,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, "\n.exam-selection-bar {\n  padding-top: 1em;\n  padding-right: 1em;\n}\n", ""]);
+exports.push([module.i, "\n.exam-selection-bar {\n  padding-top: 1em;\n  padding-right: 1em;\n}\n.level-left p {\n  color: #DDDDDD;\n  margin-left: 1em;\n}\n", ""]);
 
 // exports
 
@@ -104486,7 +104350,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "examCardArea"
     }
-  }, [_c('exam-selection-bar'), _vm._v(" "), _c('exam-card', {
+  }, [_c('exam-selection-bar', {
+    attrs: {
+      "exam": _vm.exam
+    }
+  }), _vm._v(" "), _c('exam-card', {
     attrs: {
       "serial-number": _vm.examSerialNumber
     }
@@ -104589,7 +104457,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level is-mobile"
   }, [_c('div', {
     staticClass: "level-left"
-  }), _vm._v(" "), _c('div', {
+  }, [_c('div', {
+    staticClass: "level-item"
+  }, [_vm._t("level-left")], 2)]), _vm._v(" "), _c('div', {
     staticClass: "level-right"
   }, [_c('div', {
     staticClass: "level-item has-text-centered"
@@ -104608,8 +104478,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('span', [_vm._v("Change Exam")])])]), _vm._v(" "), _c('div', {
     staticClass: "level-item has-text-centered"
   }, [_c('grade-exam-button', {
-    on: {
-      "grade-exam-clicked": _vm.handleGradeExamClick
+    attrs: {
+      "exam": _vm.exam
     }
   })], 1)])]), _vm._v(" "), _c('exam-selection-modal', {
     attrs: {
@@ -105660,6 +105530,941 @@ if(false) {
 __webpack_require__(202);
 module.exports = __webpack_require__(800);
 
+
+/***/ }),
+/* 1011 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * This is the new version of students.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * More precisely it is a list of students for a
+                                                                                                                                                                                                                                                                   * given exam or item.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * We may decide to keep the students store around
+                                                                                                                                                                                                                                                                   * for things which require access to students outside
+                                                                                                                                                                                                                                                                   * of an exam or item
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * Created by adam on 7/8/17.
+                                                                                                                                                                                                                                                                   */
+
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _Student = __webpack_require__(24);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(4);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _studentFileImporter = __webpack_require__(147);
+
+var _studentFileImporter2 = _interopRequireDefault(_studentFileImporter);
+
+var _studentRequests = __webpack_require__(144);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+module.exports = _extends({}, _studentFileImporter2.default, _defineProperty({
+
+    /**
+     * Takes a newly created (but not yet saved) student object or
+     * creates a new student object from the payload,
+     * saves it to the db, and stores it in
+     * store.roster.
+     * Does not handle any associations with kumis
+     */
+    createStudent: function createStudent(_ref, newStudentObjectOrPayload) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+
+            var student = newStudentObjectOrPayload instanceof _Student2.default ? newStudentObjectOrPayload : _Student2.default.factory(newStudentObjectOrPayload);
+
+            //Start by saving the student object to the db
+            var p = (0, _studentRequests.createStudentRequest)(student);
+            //We will need to wait for this to resolve
+            //because we will need the student's db id for
+            //the next step
+            p.then(function (data) {
+                //update the id on our newly created student object
+                student.id = data.id;
+                var pl = _Payload2.default.factory({
+                    obj: student,
+                    mutateSilently: true
+                });
+
+                //quietly add the student to store
+                commit(mTypes.addStudentToRoster, pl);
+
+                //and we're done.
+                //we return the student object so other actions
+                //can use it
+                resolve(student);
+            });
+        });
+    }
+
+}, aTypes.handleNewStudentStorageAndAssociation, function (_ref2, newStudentObject) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+
+    return new Promise(function (resolve, reject) {
+        //Create a new student
+        //and save them to the db.
+        //We will need to wait for this to resolve
+        //because we will need the student's db id for
+        //the next step
+        var p = dispatch('createStudent', newStudentObject);
+
+        //Start by building a list of kumis that the student
+        //will need to be associated with
+        var kumis = [];
+        //all students need to be associated with the kumi
+        //connecting to the exam
+        kumis.push(getters.getRootKumi);
+        //get the kumis that are currently displayed and
+        //selected
+        kumis = kumis.concat(getters.getDisplayedKumis);
+        kumis = kumis.concat(getters.getSelectedKumis);
+
+        //once the promise has resolved, we have the student, with id,
+        //stored in our roster. We can now associate them with the kumis
+        p.then(function (student) {
+            _.forEach(kumis, function (k) {
+                //Create an association between the newly created
+                //student and the currently selected kumi, both
+                //locally and on server
+                var p2 = (0, _studentRequests.associateStudentWithKumiRequest)(student, k);
+                p2.then(function () {
+
+                    var pl = _Payload2.default.factory({
+                        student: student,
+                        kumi: k,
+                        mutateSilently: true
+                    });
+
+                    commit(mTypes.associateStudentWithKumi, pl);
+                });
+            });
+            //we're done, so resolve the
+            //outer promise
+            resolve();
+        });
+    });
+}));
+
+/***/ }),
+/* 1012 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _Student = __webpack_require__(24);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(4);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This is the new version of students.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * More precisely it is a list of students for a
+                                                                                                                                                                                                                   * given exam or item.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * We may decide to keep the students store around
+                                                                                                                                                                                                                   * for things which require access to students outside
+                                                                                                                                                                                                                   * of an exam or item
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 7/8/17.
+                                                                                                                                                                                                                   */
+
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getStudentsFromRoster, function (state, getters, rootState) {
+    return state.roster;
+}), _defineProperty(_module$exports, 'getStudentFromRosterBySerialNumber', function getStudentFromRosterBySerialNumber(state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+        return function (state, serialNumber) {
+            var r = state.roster.filter(function (i) {
+                if (i.serialNumber === serialNumber) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, serialNumber);
+    };
+}), _defineProperty(_module$exports, 'getStudentFromRosterById', function getStudentFromRosterById(state, getters, rootState, id) {
+    return function (id) {
+        return function (state, id) {
+            var r = state.roster.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, id);
+    };
+}), _defineProperty(_module$exports, 'getSortedStudents', function getSortedStudents(state, getters, rootState) {
+
+    return function (state, getters) {
+        //sort the students by the given property
+        var sorted = _.sortBy(getters[gTypes.getStudentsFromRoster], [function (o) {
+            //this getter is defined in display.js
+            return o[getters.getSortedBy];
+        }]);
+
+        // window.console.log( 'roster', 'sorted', 202, sorted, getters.getSortAsc);
+        //they will be ascending when they initially come out
+        if (getters.getSortAsc) return sorted;
+
+        //if they need to be descending, reverse the list and return it
+        return _.reverse(sorted);
+    }(state, getters);
+}), _defineProperty(_module$exports, gTypes.getStudentCount, function (state, getters, rootState) {
+    return state.roster.length;
+}), _module$exports);
+
+/***/ }),
+/* 1013 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _Student = __webpack_require__(24);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(4);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This is the new version of students.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * More precisely it is a list of students for a
+                                                                                                                                                                                                                   * given exam or item.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * We may decide to keep the students store around
+                                                                                                                                                                                                                   * for things which require access to students outside
+                                                                                                                                                                                                                   * of an exam or item
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 7/8/17.
+                                                                                                                                                                                                                   */
+
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addStudentToRoster, function (state, payload) {
+  _Payload2.default.checkIfPayload(payload);
+  var student = payload.obj;
+  state.roster.push(student);
+}), _defineProperty(_module$exports, mTypes.removeStudentFromRoster, function (state, payload) {
+  _Payload2.default.checkIfPayload(payload);
+  var student = payload.obj;
+  var idx = state.roster.indexOf(student);
+  state.roster.splice(idx, 1);
+}), _defineProperty(_module$exports, mTypes.deleteStudent, function (state, payload) {
+  _Payload2.default.checkIfPayload(payload);
+  var student = payload.obj;
+  var idx = state.roster.indexOf(student);
+  state.roster.splice(idx, 1);
+}), _defineProperty(_module$exports, mTypes.updateStudentInRoster, function (state, payload) {
+  // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
+  _Payload2.default.checkIfPayload(payload);
+  var student = payload.obj;
+  var idx = state.roster.indexOf(student);
+
+  _vue2.default.set(state.roster[idx], payload.updateProp, payload.updateVal);
+}), _module$exports);
+
+/***/ }),
+/* 1014 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(4);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _Student = __webpack_require__(24);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var KUMIS_JSON_NAME = 'loadedKumis'; /**
+                                      * This handles kumi object storage and
+                                      * the relationships between kumi and other
+                                      * objects.
+                                      *
+                                      * It does not handle the display properties
+                                      * (e.g., which are selected for display). That
+                                      * is handled in display.js
+                                      *
+                                      *
+                                      * Created by adam on 7/11/17.
+                                      */
+
+
+module.exports = {
+    processKumiFromJson: function processKumiFromJson(_ref) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        var exam = getters.getCurrentExam;
+        var kumiData = JSON.parse(document.getElementById(KUMIS_JSON_NAME).getAttribute('data'));
+
+        _.forEach(kumiData, function (d, i) {
+            //first make a kumi from the loaded data and push it into storage
+            var kumi = _Kumi2.default.factory({ d: d });
+            //Now associate the kumi with the exam
+            var pl = _Payload2.default.factory({
+                obj: kumi,
+                kumi: kumi,
+                examId: exam.id,
+                kumiId: kumi.id,
+                mutateSilently: true
+            });
+            commit('addKumi', pl);
+            commit('associateExamWithKumi', pl);
+            if (i === 0) {
+                //set the first kumi as the one to display
+                commit('toggleKumi', pl);
+            }
+        });
+    },
+
+
+    /**
+     * Removes all associations between an exam and a kumi.
+     * Also removes all student associations with the kumi
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     */
+    removeKumi: function removeKumi(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
+    }
+};
+
+/***/ }),
+/* 1015 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(4);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _Student = __webpack_require__(24);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This handles kumi object storage and
+                                                                                                                                                                                                                   * the relationships between kumi and other
+                                                                                                                                                                                                                   * objects.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * It does not handle the display properties
+                                                                                                                                                                                                                   * (e.g., which are selected for display). That
+                                                                                                                                                                                                                   * is handled in display.js
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 7/11/17.
+                                                                                                                                                                                                                   */
+
+
+var KUMIS_JSON_NAME = 'loadedKumis';
+
+var filterExamAssociations = function filterExamAssociations(state, prop, val) {
+    return state.examKumiAssociations.filter(function (i) {
+        if (i[prop] === val) {
+            return i;
+        }
+    });
+};
+
+var filterStudentAssociations = function filterStudentAssociations(state, prop, val) {
+    return state.studentKumiAssociations.filter(function (i) {
+        if (i[prop] === val) {
+            return i;
+        }
+    });
+};
+
+var filterKumis = function filterKumis(state, prop, val) {
+    return state.kumis.filter(function (i) {
+        if (i[prop] === val) {
+            return i;
+        }
+    });
+};
+
+var _getKumiById = function _getKumiById(state, kumiId) {
+    var r = filterKumis(state, 'id', kumiId);
+    return r[0];
+};
+
+var _getKumiBySerialNumber = function _getKumiBySerialNumber(state, ksn) {
+    var r = filterKumis(state, 'serialNumber', ksn);
+    return r[0];
+};
+
+var processKumiFromJson = function processKumiFromJson(state, kumiData, exam) {
+    _.forEach(kumiData, function (d, i) {
+        //first make a kumi from the loaded data
+        var kumi = _Kumi2.default.factory({ d: d });
+        var pl = _Payload2.default.factory({
+            obj: kumi,
+            examId: exam.id,
+            kumiId: kumi.id,
+            mutateSilently: true
+        });
+
+        // push it into storage
+        // state.commit('addKumi', pl);
+        state.kumis.push(kumi);
+
+        if (i === 0) {
+            //set the first kumi as the one to display
+            //this needs to happen before associate exam is called
+            state.commit('toggleKumi', pl);
+        }
+
+        //Now associate the kumi with the exam
+        state.commit('associateExamWithKumi', pl);
+    });
+};
+
+module.exports = _defineProperty({
+
+    getKumiBySerialNumber: function getKumiBySerialNumber(state, getters, rootState, serialNumber) {
+        return function (serialNumber) {
+            return _getKumiBySerialNumber(state, serialNumber);
+        };
+    },
+
+    /**
+     * Looks up the client side representation of a Kumi object
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param serialNumber
+     */
+    getKumiById: function getKumiById(state, getters, rootState, kumiId) {
+        return function (kumiId) {
+            return _getKumiById(state, kumiId);
+        };
+    },
+
+    getKumis: function getKumis(state) {
+        return state.kumis;
+    },
+
+    /**
+     * Returns all kumis associated with the exam
+     * @param examId
+     */
+    getExamKumis: function getExamKumis(state, getters, rootState, examOrExamId) {
+        return function (examOrExamId) {
+            // return new Promise((resolve, reject)=>{
+
+            var exam = _.isUndefined(examOrExamId) ? undefined.$store.getters.currentExam : examOrExamId;
+
+            // let objId = examOrExamId;
+            var objId = exam.id;
+            var kumiIds = filterExamAssociations(state, objId);
+            // if ( !returnObjects ) return kumiIds;
+
+            var out = [];
+            _.forEach(kumiIds, function (i) {
+                var kumi = _getKumiById(state, i);
+                out.push(kumi);
+            });
+            // resolve(out);
+            return out;
+            // });
+        };
+    },
+
+    /**
+     * Returns all exams associated with the given kumi
+     */
+    getKumiExams: function getKumiExams(state, kumiOrKumiId) {
+        var returnObjects = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+        var objId = kumiOrKumiId;
+        var examIds = filterExamAssociations(state, objId);
+        if (!returnObjects) return examIds;
+        //todo return objects
+    },
+
+    /**
+     * Returns the root kumi object which attaches
+     * the exam to the students, i.e., the roster
+     * @param state
+     * @param getters
+     */
+    getRootKumi: function getRootKumi(state, getters) {
+        return state.kumis[0];
+    },
+
+    //Remember students can belong to more than one kumi
+    getStudentsForKumi: function getStudentsForKumi(state, getters, rootState, kumiOrKumiId) {
+        return function (kumiOrKumiId) {
+            var kumi = kumiOrKumiId;
+            var studentSerialNumbers = filterStudentAssociations(state, 'serialNumber', kumi.serialNumber);
+            var out = [];
+            _.forEach(studentSerialNumbers, function (i) {
+                out.push(getters.getStudentFromRosterBySerialNumber(i));
+            });
+            return out;
+        };
+    },
+
+    /**
+     * Returns true if the specified student is in the
+     * presently displayed kumis or, if all kumis are selected.
+     * Returns false otherwise
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param studentOrStudentSN
+     * @returns {boolean}
+     */
+    isStudentInDisplayedKumi: function isStudentInDisplayedKumi(state, getters, rootState, studentOrStudentSN) {
+        return function (studentOrStudentSN) {
+            try {
+                var selectedKumis = getters.getDisplayedKumis;
+
+                //if the selected kumi is null or empty, then we are to
+                //display all kumi associated with the exam
+                if (_.isNull(selectedKumis) || selectedKumis.length === 0) return true;
+
+                var student = studentOrStudentSN instanceof _Student2.default ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
+
+                // if(student.associatedKumis.length===0) return false;
+
+                // window.console.log( 'kumis', '', 310, selectedKumis, student);
+                var a = false;
+                _.forEach(selectedKumis, function (kumi) {
+                    _.forEach(student.associatedKumis, function (k) {
+                        // window.console.log( 'kumis', 'k', 316, kumi, k );
+                        if (kumi.serialNumber === k.serialNumber) a = true;
+                    });
+                    // if(filterStudentAssociations(student, 'serialNumber', kumi.serialNumber)) return true;
+                    // if ( student.associatedKumis.indexOf( kumi ) > -1 ) return true;
+                });
+
+                return a;
+            } catch (Error) {
+                window.console.log('kumis', 'isStudentInDisplayedKumi', 325, Error);
+                return false;
+            }
+        };
+    },
+
+    /**
+     * Returns true if the specified student is in the
+     * presently selected kumi or, if all kumis are selected.
+     * Returns false otherwise
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param studentOrStudentSN
+     * @returns {boolean}
+     */
+    isStudentInSelectedKumi: function isStudentInSelectedKumi(state, getters, rootState, studentOrStudentSN) {
+        return function (studentOrStudentSN) {
+            try {
+                var selectedKumis = getters.getSelectedKumis;
+
+                //if the selected kumi is null or empty, then we are to
+                //display all kumi associated with the exam
+                if (_.isNull(selectedKumis) || selectedKumis.length === 0) return true;
+
+                var student = studentOrStudentSN instanceof _Student2.default ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
+
+                _.forEach(selectedKumis, function (kumi) {
+                    if (student.associatedKumis.indexOf(kumi) > -1) return true;
+                });
+
+                return false;
+                //            return student.associatedKumis.indexOf( kumi ) > -1;
+                //     //if the selected kumi is null, then we are to
+                //     //display all kumi associated with the exam
+                //     if ( _.isNull( kumi ) ) return true;
+                //
+                //     //todo add support for student id
+                //     let student = studentOrStudentId;
+                //     let students = getters.getStudentsForKumi( kumi );
+                //     window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
+                //     if ( students.indexOf( student ) >= 0 ) return true;
+                //     return false;
+            } catch (Error) {
+                window.console.log('kumis', 'isStudentInSelectedKumi', 209, Error);
+                return false;
+            }
+        };
+    }
+
+}, gTypes.getKumiCount, function (state, getters, rootState) {
+    return _.size(state.kumis);
+});
+
+/***/ }),
+/* 1016 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(4);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _Student = __webpack_require__(24);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var KUMIS_JSON_NAME = 'loadedKumis'; /**
+                                      * This handles kumi object storage and
+                                      * the relationships between kumi and other
+                                      * objects.
+                                      *
+                                      * It does not handle the display properties
+                                      * (e.g., which are selected for display). That
+                                      * is handled in display.js
+                                      *
+                                      *
+                                      * Created by adam on 7/11/17.
+                                      */
+
+
+module.exports = {
+
+  /**
+   * Adds a new kumi object to the list of kumis
+   * @param state
+   * @param payload
+   */
+  addKumi: function addKumi(state, payload) {
+    state.kumis.push(payload.obj);
+  },
+
+  /**
+   * Alter properties of a kumi
+   * @param state
+   * @param payload
+   */
+  updateKumi: function updateKumi(state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    var kumi = getKumiBySerialNumber(state, payload.obj.serialNumber);
+    _vue2.default.set(kumi, payload.updateProp, payload.updateVal);
+  },
+
+  /**
+   * Adds an exam to the list of exams the
+   * kumi is associated with
+   * @param examId
+   */
+  associateExamWithKumi: function associateExamWithKumi(state, payload) {
+    //todo Should check that not duplicating?
+    var examId = payload.examId;
+    var kumiId = payload.kumiId;
+    state.examKumiAssociations.push({ examId: examId, kumiId: kumiId });
+  },
+
+  /**
+   * Removes the association between a kumi and exam
+   * @param examId
+   */
+  disassociateExamFromKumi: function disassociateExamFromKumi(state, payload) {
+    var examId = payload.examId;
+    var kumiId = payload.kumiId;
+    var r = filterExamAssociations(state, kumiId, examId);
+    var index = state.examKumiAssociations.indexOf(r[0]);
+    state.examKumiAssociations.splice(index, 1);
+  },
+
+  /**
+   * Creates a relationship between a student and a group (kumi)
+   *
+   * @param state
+   * @param kumiId
+   * @param studentId
+   */
+  associateStudentWithKumi: function associateStudentWithKumi(state, payload) {
+    var student = payload.student;
+    var kumi = payload.kumi;
+
+    //store on the student object
+    student.associatedKumis.push(kumi);
+    //Now, redundantly store it centrally
+    //Why? No idea.... Not even sure if anything uses
+    //the central store
+    // todo Should check that not duplicating?
+    state.studentKumiAssociations.push({
+      studentSerialNumber: student.serialNumber,
+      kumiSerialNumber: kumi.serialNumber
+    });
+  },
+
+  /**
+   * Removes the association between the student and a group
+   * @param studentId
+   */
+  disassociateStudentFromKumi: function disassociateStudentFromKumi(state, payload) {
+    var student = payload.student;
+    var kumi = payload.kumi;
+    var index = state.studentKumiAssociations.indexOf(r[0]);
+    state.studentKumiAssociations.splice(index, 1);
+    //remove kumi from array stored in student
+    student.associatedKumis.splice(student.associatedKumis.indexOf(kumi));
+  }
+
+};
+
+/***/ }),
+/* 1017 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+/**
+ * THESE ARE MUTATIONS USED BY THE OLDER VERSION OF THE GOM
+ * AND NOT USED BY THE NEW VERSION
+ *
+ * https://vuex.vuejs.org/en/mutations.html
+ * It is a commonly seen pattern to use constants for mutation types in various Flux implementations. This allow the code to take advantage of tooling like linters, and putting all constants in a single file allows your collaborators to get an at-a-glance view of what mutations are possible in the entire application:
+ Whether to use constants is largely a preference - it can be helpful in large projects with many developers, but it's totally optional if you don't like them.
+
+ * @type {string}
+ */
+
+//escores
+var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var setElementScore = exports.setElementScore = 'setElementScore';
+
+//students
+var setStudent = exports.setStudent = 'setStudent';
+var removeStudent = exports.removeStudent = 'toggleRemoveControls';
+var updateStudent = exports.updateStudent = 'updateStudent';
+var toggleRemoveControls = exports.toggleRemoveControls = 'toggleRemoveControls2';
+
+//qscores                                                            ;
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var removeQuestionScore = exports.removeQuestionScore = 'removeQuestionScore';
+
+//times
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var setGradingTime = exports.setGradingTime = 'setGradingTime';
+var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
+var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
+
+/***/ }),
+/* 1018 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+
+//escores
+var setElementScore = exports.setElementScore = 'setElementScore';
+var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
+
+//qscores
+var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
+
+//students
+var addStudent = exports.addStudent = 'addStudentOld';
+//students
+var loadStudents = exports.loadStudents = 'loadStudentsOld';
 
 /***/ })
 /******/ ]);

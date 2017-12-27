@@ -40,6 +40,19 @@ class ItemScoreController extends Controller
     }
 
 
+    /**
+     * Saves the score or comment text for a student
+     * on an item to the db.
+     * Does not handle setting the comment text to null / empty string
+     * or setting the score to null. That's the job of resetScore
+     * and reset Comment
+     *
+     * @param Exam $exam
+     * @param Item $item
+     * @param Student $student
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
     public function saveScore( Exam $exam, Item $item, Student $student, Request $request )
     {
         $score = ItemScore::where('exam_id', $exam->id)
@@ -88,6 +101,7 @@ class ItemScoreController extends Controller
      * @param Exam $exam
      * @param Item $item
      * @param Student $student
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function resetScore(Exam $exam, Item $item, Student $student){
         $score = ItemScore::where('exam_id', $exam->id)

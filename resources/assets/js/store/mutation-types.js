@@ -21,9 +21,6 @@ export const clearActiveStudent = 'clearActiveStudent'
 export const setActiveStudentTime = 'setActiveStudentTime'
 
 
-
-
-
 //comments
 export const setElementComment = 'setElementComment';
 export const loadElementComments = 'loadElementComments'
@@ -36,9 +33,6 @@ export const addExam = 'addExam';
 export const addIndexMapping = 'addIndexMapping';
 export const loadExams = 'loadExams';
 
-//escores
-export const loadElementScores = 'loadElementScores';
-export const setElementScore = 'setElementScore';
 
 
 //kumi
@@ -52,9 +46,6 @@ export const loadExamGrades = 'loadExamGrades';
 export const loadStandardGrades = 'loadStandardGrades';
 export const setGrade = 'setGrade';
 
-//qscores                                                            ;
-export const setQuestionScore = 'setQuestionScore';
-export const removeQuestionScore = 'removeQuestionScore';
 
 //questions                                                          ;
 export const setMaxQuestionScore = 'setMaxQuestionScore';
@@ -65,17 +56,11 @@ export const removeQuestion = 'removeQuestion';
 export const setNumberQuestions = 'setNumberQuestions';
 
 //students
-export const setStudent = 'setStudent';
-export const removeStudent = 'toggleRemoveControls';
-//dev
-export const updateStudent = 'updateStudent';
 export const addStudentToRoster = 'addStudentToRoster';
+export const removeStudentFromRoster = 'removeStudentFromRoster';
+export const deleteStudent = 'deleteStudent';
+export const updateStudentInRoster = 'updateStudentInRoster';
 
-//times
-export const incrementGradingTime = 'incrementGradingTime';
-export const setGradingTime = 'setGradingTime';
-export const removeGradingTime = 'removeGradingTime';
-export const resetGradingTime = 'resetGradingTime';
 
 
 export const setExam = 'setExam';

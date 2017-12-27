@@ -1,6 +1,6 @@
 <template>
     <a class="button grade-exam-button is-success is-outlined"
-    v-on:click="handleClick"
+       v-on:click="handleClick"
     >
         <span class="icon is-small">
             <i class="fa fa-check" aria-hidden="true"></i>
@@ -14,9 +14,11 @@
 </style>
 
 <script>
+    import { Routes } from '../../../api/apiSettings';
+
     export default {
 
-        props: [],
+        props: [ 'exam' ],
 
         components: {},
 
@@ -26,12 +28,20 @@
             }
         },
 
-        computed: {},
+        computed: {
+            route: function () {
+                return window.routeRoot + '/' + Routes.gradeExam( this.exam.id );
+            }
+        },
 
         methods: {
-            handleClick: function (  ) {
-                this.$emit('grade-currently-selected-exam');
-                //
+            handleClick: function () {
+                //handle redirection
+//                return this.$router.go( route );
+                return window.open( this.route, "_self" );
+
+                this.$emit( 'grade-currently-selected-exam' );
+
             }
         },
 

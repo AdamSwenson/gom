@@ -1,8 +1,12 @@
 /**
  * This is the new version of students.
  *
- * More precisely it is a list of students for a
+ * More precisely, it is a list of students for a
  * given exam or item.
+ *
+ * It does not handle the display properties
+ * (e.g., which are selected for display). That
+ * is handled in display.js
  *
  * We may decide to keep the students store around
  * for things which require access to students outside
@@ -10,277 +14,23 @@
  *
  * Created by adam on 7/8/17.
  */
-import Vue from 'vue'
-import Student from '../../../models/Student'
-import Payload from '../../../models/Payload'
 
-import Kumi from '../../../models/Kumi'
+const state = {
+    /**
+     * List of student objects
+     * */
+    roster: [],
 
-import * as mTypes from '../../mutation-types'
-import * as aTypes from '../../action-types'
-import * as gTypes from '../../getter-types';
-
-import StudentImporter from './studentFileImporter'
+};
 
 
-module.exports = {
+import actions from './roster.actions';
+import getters from './roster.getters';
+import mutations from './roster.mutations';
 
-
-    state: {
-        /**
-         * List of student objects
-         * */
-        roster: [
-            // Student.factory( { lastName: 'Smith', firstName: 'Jill' } ),
-            // Student.factory( { lastName: 'Jillson', firstName: 'Smithy' } )
-        ],
-
-        sortedBy: 'lastName',
-
-        sortAsc: true
-
-    },
-
-    mutations: {
-
-        /**
-         * Adds or updates a student record in state.students.
-         * NB, this does not add it to the associated class
-         * @param state
-         * @param payload
-         */
-        [ mTypes.addStudentToRoster ]: ( state, payload ) => {
-            Payload.checkIfPayload( payload );
-            let student = payload.obj;
-            state.roster.push( student );
-        },
-
-        setSortedBy : (state, payload)=>{
-            state.sortedBy = payload.updateVal;
-        },
-
-        toggleSortAscending: ( state ) => {
-          state.sortAsc = ! state.sortAsc;
-        },
-
-        /**
-         * Disassociates a student from the roster
-         * Does not delete the student object
-         * (the difference is handled by apiPlugins detecting the different
-         * mutation)
-         *
-         * @param state
-         * @param payload
-         */
-        removeStudentFromRoster: ( state, payload ) => {
-            Payload.checkIfPayload( payload );
-            let student = payload.obj;
-            let idx = state.roster.indexOf( student );
-            state.roster.splice( idx, 1 );
-        },
-
-        /**
-         * Deletes a student from the database completely!!!
-         * @param state
-         * @param payload
-         */
-        deleteStudent: ( state, payload ) => {
-            Payload.checkIfPayload( payload );
-            let student = payload.obj;
-            let idx = state.roster.indexOf( student );
-            state.roster.splice( idx, 1 );
-        },
-
-
-        //This is to avoid confusion with updateStudent which
-        //the old version uses
-        updateStudentInRoster: ( state, payload ) => {
-            // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
-            Payload.checkIfPayload( payload );
-            let student = payload.obj;
-            let idx = state.roster.indexOf( student );
-
-            Vue.set( state.roster[ idx ], payload.updateProp, payload.updateVal );
-        },
-    },
-
-    actions: {
-        ...StudentImporter,
-        /**
-         * One stop shop for everything which happens when a new student
-         * object is created
-         *
-         * @param state
-         * @param dispatch
-         * @param commit
-         * @param getters
-         * @param payload
-         */
-        [ aTypes.handleNewStudentStorageAndAssociation ]: ( { state, dispatch, commit, getters }, payload ) => {
-            let p = new Promise( ( resolve, reject ) => {
-                commit( mTypes.addStudentToRoster, payload );
-                resolve();
-            } );
-
-
-            let kumi = [];
-            kumi = kumi.concat( getters.getDisplayedKumis );
-            kumi = kumi.concat( getters.getSelectedKumis );
-
-            //If no kumi is selected and it is displaying all
-            //the student won't be associated.
-            //So we check if the list is still empty
-            //and if so, use the root kumi
-            if ( kumi.length === 0 ) {
-                //and associate it with the student before the others
-                kumi.push( getters.getRootKumi );
-                // commit( mTypes.associateStudentWithKumi, payload );
-            }
-
-            return p.then( () => {
-                return new Promise( ( resolve, reject ) => {
-                    _.forEach( kumi, function ( k ) {
-                        payload.kumi = k;
-                        //Create an association between the newly created
-                        //student and the currently selected kumi, both
-                        //locally and on server
-                        commit( mTypes.associateStudentWithKumi, payload );
-                    } );
-                    resolve();
-                } );
-            } );
-        },
-
-
-    },
-
-    getters: {
-
-        [ gTypes.getStudentsFromRoster ]: ( state, getters, rootState ) => {
-            return state.roster;
-        },
-
-
-        /**
-         * Returns a student object by the model serial number.
-         * Can be used at any time.
-         * @returns {*}
-         * @param state
-         * @param getters
-         * @param rootState
-         * @param serialNumber
-         */
-        getStudentFromRosterBySerialNumber: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
-            return (function ( state, serialNumber ) {
-                var r = state.roster.filter( function ( i ) {
-                    if ( i.serialNumber === serialNumber ) {
-                        return i;
-                    }
-                } );
-                return r[ 0 ];
-            })( state, serialNumber )
-
-        },
-
-        /**
-         * Returns a student object by the model's database id
-         * Can be used after the model has been synced with or
-         * loaded from the db.
-         * @returns {*}
-         * @param state
-         * @param getters
-         * @param rootState
-         * @param serialNumber
-         */
-        getStudentFromRosterById: ( state, getters, rootState, id ) => ( id ) => {
-            return (function ( state, id ) {
-                var r = state.roster.filter( function ( i ) {
-                    if ( i.id === id ) {
-                        return i;
-                    }
-                } );
-                return r[ 0 ];
-            })( state, id )
-
-        },
-
-        getSortAsc: (state)=>{
-            return state.sortAsc;
-        },
-
-        getSortedBy: ( state, getters, rootState ) => {
-            return state.sortedBy;
-        },
-
-        getSortedStudents: ( state, getters, rootState ) => {
-
-            return (function ( state, getters ) {
-                //sort the students by the given property
-                let sorted = _.sortBy( getters[ gTypes.getStudentsFromRoster ], [ function ( o ) {
-                    return o[ getters.getSortedBy ];
-                } ] );
-
-                // window.console.log( 'roster', 'sorted', 202, sorted, getters.getSortAsc);
-                //they will be ascending when they initially come out
-                if ( getters.getSortAsc ) return sorted;
-
-                //if they need to be descending, reverse the list and return it
-                return _.reverse( sorted );
-            })( state, getters )
-
-        },
-
-
-        /**
-         * Returns the number of students state.roster
-         *
-         * @param state
-         * @param getters
-         * @param rootState
-         * @returns {Number}
-         */
-        [ gTypes.getStudentCount ]:
-            ( state, getters, rootState ) => {
-                return state.roster.length;
-            },
-
-
-    }
+export default {
+    actions,
+    getters,
+    mutations,
+    state
 }
-;
-
-//
-// /**
-//  * Returns the student object with the specified database id.
-//  * NB, may fail if called before the student has been stored in
-//  * the db.
-//  *
-//  * @returns {*}
-//  */
-// getStudentFromRosterById: ( state, getters, rootState, studentId ) => {
-//     return (function ( state, studentId ) {
-//         var r = state.roster.filter( function ( i ) {
-//             if ( i.id === studentId ) {
-//                 return i;
-//             }
-//         } );
-//         return r[ 0 ];
-//     })( state, studentId )
-// },
-//
-// /**
-//  * Returns the student object with the user specified identifier.
-//  * @todo This may not be unique. What to do?
-//  * @todo Make the characteristics of the identifier as arbitrary as possible
-//  */
-// getStudentFromRosterByIdentifier: ( state, getters, rootState, identifier ) => {
-//     return (function ( state, identifier ) {
-//         var r = state.roster.filter( function ( i ) {
-//             if ( i.identifier === identifier ) {
-//                 return i;
-//             }
-//         } );
-//         return r[ 0 ];
-//     })( state, identifier )
-// },
-

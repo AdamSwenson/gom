@@ -62,7 +62,7 @@ import {
 
 //students
 import {
-    createStudent,
+    createStudentRequest,
     destroyStudent,
     updateStudent,
     associateStudent,
@@ -280,12 +280,12 @@ export default function ( store ) {
              * NB This only associates. Thus the student
              * must have already been created on the server.
              */
-            case mTypes.associateStudentWithKumi:
-                //We use the currently selected kumi if one wasn't set
-                //in the payload
-                var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
-                associateStudent( store, payload.student, kumi );
-                break;
+            // case mTypes.associateStudentWithKumi:
+            //     //We use the currently selected kumi if one wasn't set
+            //     //in the payload
+            //     var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
+            //     associateStudent( store, payload.student, kumi );
+            //     break;
 
 
             // ******************** Notes
@@ -318,34 +318,34 @@ export default function ( store ) {
                 //the roster. So it only sends the request to create a new
                 //student. This does nothing to create an association with a kumi
                 //either on the server or locally.
-                setSyncStarting( store );
-                // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                var student = payload.obj;
-                //Requests the creation of a new student
-                createStudent( store, student );
-                setSyncDone( store );
-                //Assigns them to a particular kumi
-                // var kumi = store.getters.getSelectedKumi;
-                // let p = associateStudent( store, student, kumi );
-                // p.then(()=>{
-                //
-                // })
+                // setSyncStarting( store );
+                // // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
+                // var student = payload.obj;
+                // //Requests the creation of a new student
+                // createStudentRequest( store, student );
+                // setSyncDone( store );
+                // //Assigns them to a particular kumi
+                // // var kumi = store.getters.getSelectedKumi;
+                // // let p = associateStudent( store, student, kumi );
+                // // p.then(()=>{
+                // //
+                // // })
 
                 break;
 
-            case 'removeStudentFromRoster':
+            case mTypes.removeStudentFromRoster:
                 // window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
                 var kumi = store.getters.getSelectedKumi;
                 var student = payload.obj;
-                disassociateStudent( store, student, kumi );
+                disassociateStudent( student, kumi );
                 break;
 
-            case 'deleteStudent':
+            case mTypes.deleteStudent:
                 // window.console.log( 'apiPlugin', 'deleteStudent', 188, payload );
                 destroyStudent( store, payload.obj );
                 break;
 
-            case 'updateStudentInRoster':
+            case mTypes.updateStudentInRoster:
                 // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
                 updateStudent( store, payload.obj );
                 break;

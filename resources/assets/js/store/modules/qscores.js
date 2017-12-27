@@ -1,9 +1,8 @@
 /**
  * Created by adam on 10/7/16.
  */
-
-import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
+import * as lmTypes from '../legacy-mutation-types'
+import * as laTypes from '../legacy-action-types'
 import Payload from '../../models/Payload'
 
 const state = {
@@ -35,7 +34,7 @@ const mutations = {
      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
      * @param score
      */
-    [mTypes.setQuestionScore]: ( state, rootState, payload ) => {
+    [lmTypes.setQuestionScore]: ( state, rootState, payload ) => {
         // console.log( 'mutation.setQuestionScore', payload );
         Payload.checkIfPayload( payload );
 
@@ -51,7 +50,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.removeQuestionScore]: ( state, rootState, payload ) => {
+    [lmTypes.removeQuestionScore]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
 
         let studentIndex = payload.index;
@@ -69,9 +68,9 @@ const actions = {
      * Consumes an object of question scores and
      * populates the store with them.
      */
-    [aTypes.loadQuestionScores]: ( {state, commit}, payload ) => {
+    [laTypes.loadQuestionScores]: ( {state, commit}, payload ) => {
         for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
-            actions[ aTypes.setQuestionScore ]( {state, commit}, payload[ i ] );
+            actions[ laTypes.setQuestionScore ]( {state, commit}, payload[ i ] );
         }
     },
 
@@ -84,7 +83,7 @@ const actions = {
      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
      * @param score
      */
-    [aTypes.setQuestionScore]: ( {state, commit}, payload ) => {
+    [laTypes.setQuestionScore]: ( {state, commit}, payload ) => {
         //todo add checking
 
         let pl = new Payload();
@@ -92,7 +91,7 @@ const actions = {
         pl.index2 = payload.questionIndex;
         pl.num = payload.score;
 
-        commit( mTypes.setQuestionScore, pl );
+        commit( lmTypes.setQuestionScore, pl );
     },
 
 };

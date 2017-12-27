@@ -33,7 +33,7 @@ describe.only( "commentHelpers | ", function () {
 
 
     describe( " makeCutoffsFromMaxScore", () => {
-        it( " happy path ", () => {
+        it( " creates the expected values ", () => {
             let numberLabels = sliderSettings.valenceLabels.length;
             let maxScore = 100;
             let expectedStep = maxScore / numberLabels;
@@ -42,8 +42,8 @@ describe.only( "commentHelpers | ", function () {
 
             //check
             expect( result.length ).toBe( numberLabels );
-            expect( result[ 0 ]).toBe( 0 ) ;
-            expect(result[numberLabels - 1]).toBe(maxScore);
+            expect( result[ 0 ]).toBe( 0 ) ; //min score is 0
+            expect(result[numberLabels - 1]).toBe(maxScore); //max score is item max
 
             let i = 0;
             _.forEach(sliderSettings.valenceLabelPositions, function ( vlp ) {

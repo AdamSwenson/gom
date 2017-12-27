@@ -70,32 +70,32 @@ const handleLoadResponse = ( store, response ) => {
     } );
 };
 
-/**
- * We will want to update our object with info from
- * the server upon creation. This handles that.
- * @param store
- * @param item
- * @param response
- * @returns {Promise}
- */
-const handleCreateStudentResponse = ( store, student, data ) => {
-    return new Promise( function ( resolve, reject ) {
-        let pl = Payload.factory( {
-            obj: student,
-            //we are just adding the id
-            updateProp: 'id',
-            updateVal: data.id,
-            mutateSilently: true
-        } );
-
-        // window.console.log( 'studentRequests', 'handleCreateStudentResponse', 49, pl, response, response['id'] );
-
-        store.commit( 'updateStudentInRoster', pl );
-
-        resolve( student );
-    } );
-
-};
+// /**
+//  * We will want to update our object with info from
+//  * the server upon creation. This handles that.
+//  * @param store
+//  * @param item
+//  * @param response
+//  * @returns {Promise}
+//  */
+// const handleCreateStudentResponse = ( store, student, data ) => {
+//     return new Promise( function ( resolve, reject ) {
+//         let pl = Payload.factory( {
+//             obj: student,
+//             //we are just adding the id
+//             updateProp: 'id',
+//             updateVal: data.id,
+//             mutateSilently: true
+//         } );
+//
+//         // window.console.log( 'studentRequests', 'handleCreateStudentResponse', 49, pl, response, response['id'] );
+//
+//         store.commit( 'updateStudentInRoster', pl );
+//
+//         resolve( student );
+//     } );
+//
+// };
 
 /**
  * Checks whether both student and kumi have ids
@@ -206,17 +206,19 @@ module.exports = {
      * @param student
      * @returns {Promise}
      */
-    createStudent: ( store, student ) => {
+    createStudentRequest: ( student ) => {
         let toSend = {
             ...student,
             requestVersion: REQUEST_VERSION,
         };
 
+
         return window.axios
-            .post( Routes.createStudent(), toSend )
+            .post( Routes.createStudent(student), toSend )
             .then( ( response ) => {
                 // window.console.log( 'studentRequests', 'createStudent', 28, response );
-                handleCreateStudentResponse( store, student, response.data );
+                return response.data;
+                //handleCreateStudentResponse( store, student, response.data );
             } )
             .catch( function ( error ) {
                 window.console.log( 'studentRequests', 'ERROR', 39, error );
@@ -233,31 +235,21 @@ module.exports = {
      * @param kumi
      * @returns {Promise}
      */
-    associateStudent: ( store, student, kumi ) => {
-        let p = new Promise( function ( resolve, reject ) {
-            //handles the actual request so that we can deal
-            //with the need to wait for an id
-            let makeRequest = ( route ) => {
-                let out = out == { requestVersion: REQUEST_VERSION, };
-                return window.axios
-                    .post( route, out )
-                    .then( ( response ) => {
-                        resolve();
-                    } )
-                    .catch( function ( error ) {
-                        //todo add response handling
-                        window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
-                        // errorHandling( error );
-                    } );
-            };
-        } );
+    associateStudentWithKumiRequest: (  student, kumi ) => {
 
-        return p.then( function () {
-            return new Promise( function ( resolve, reject ) {
-                return makeRequest( Routes.associateStudent( student, kumi ) );
-                resolve();
+        let route = Routes.associateStudent( student, kumi ) ;
+        window.console.log( 'studentRequests', 'associateStudentWithKumiRequest', 240, student, kumi);
+        let out = { requestVersion: REQUEST_VERSION, };
+        return window.axios
+            .post( route, out )
+            .then( ( response ) => {
+                window.console.log( 'studentRequests', 'associate Student', 242, response );
+            } )
+            .catch( function ( error ) {
+                //todo add response handling
+                window.console.log( 'studentRequests -- associateStudent', 'ERROR', 39, error );
+                // errorHandling( error );
             } );
-        } );
     },
 
 
@@ -299,7 +291,7 @@ module.exports = {
      * @param store
      * @param student
      */
-    disassociateStudent: ( store, student, kumi ) => {
+    disassociateStudent: ( student, kumi ) => {
 
         return window.axios
             .post( Routes.disassociateStudent( student, kumi ) )

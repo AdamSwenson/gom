@@ -9,7 +9,7 @@
                 <!--<div class="column is-four-fifths ">-->
 
                     <div id="examCardArea" class="card">
-                        <exam-selection-bar></exam-selection-bar>
+                        <exam-selection-bar :exam="exam"></exam-selection-bar>
 
                         <exam-card
                                 :serial-number="examSerialNumber"

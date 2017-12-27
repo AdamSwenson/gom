@@ -200,16 +200,22 @@ Route::get('dev/grade-assignment/exam/{exam}', 'Grade\GradeAssignmentController@
 Route::post('dev/grade-assignment/{gradeassignment}', 'Grade\GradeAssignmentController@update');
 
 
-//History
+/* =============================
+        History
+   ============================= */
 Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
 
-//Kumi
+/* =============================
+        Kumi
+   ============================= */
 Route::resource('dev/kumis', 'Item\KumiController');
 Route::get('dev/kumis/exam/{exam}', 'Item\KumiController@loadExamKumi');
 Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKumi');
 
 
-//Notes
+/* =============================
+        Notes
+   ============================= */
 Route::post('dev/notes/item/{item}', 'Item\NotesController@store');
 Route::get('dev/notes/item/{item}', 'Item\NotesController@showForItem');
 Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
@@ -232,7 +238,10 @@ Route::delete('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@re
 
 Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreController@getTotalScoresForExam');
 
-//Stats (i.e., scores without identifying the student and statistical summaries )
+/* =============================
+        Stats
+        (i.e., scores without identifying the student and statistical summaries )
+   ============================= */
 Route::get('dev/stats/item/{item}', 'Item\ItemStatsController@itemScores');
 Route::get('dev/stats/exam/{exam}', 'Item\ItemStatsController@examScores');
 Route::get('dev/stats/summary/item/{item}', 'Item\ItemStatsController@itemSummary');
@@ -242,15 +251,21 @@ Route::get('dev/stats/summary/kumi/item/{item}', 'Item\ItemStatsController@itemS
 
 Route::get('dev/numgraded/exam/{exam}', 'Analytics\ExamCountsController@getExamCounts');
 
-//Quality control
+/* =============================
+        Quality control
+   ============================= */
 Route::get('quality/exam/{exam}', 'Quality\QualityControlController@show');
 
-//Students
+/* =============================
+        Students
+   ============================= */
 Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
 Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
 
 
-//Tags
+/* =============================
+        Tags
+   ============================= */
 //-- tag-item
 Route::post('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@associateTagWithItem');
 Route::delete('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@disassociateTagFromItem');
@@ -263,11 +278,14 @@ Route::get('dev/tags/exam/{exam}', 'Item\TagsController@showForExam');
 Route::post('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@associateTagWithStudent');
 Route::delete('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@disassociateTagFromStudent');
 Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
-
+//-- other
 Route::resource('dev/tags', 'Item\TagsController');
 
 // ====================================== NEW GRADING
 Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
 
+/* =============================
+        Time
+   ============================= */
 Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
 Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@update');

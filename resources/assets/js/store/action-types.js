@@ -9,8 +9,6 @@ export const createExam = 'createExam';
 export const updateExam = 'updateExam';
 export const createItem = 'createItem';
 
-export const addStudent = 'addStudent';
-
 //activeexam
 export const setActiveExam = 'setActiveExam';
 export const clearActiveExam = 'clearActiveExam';
@@ -31,11 +29,6 @@ export const clearActiveStudent = 'clearActiveStudent';
 export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
 export const storeCommentText = 'storeCommentText';
 
-//escores
-export const setElementScore = 'setElementScore';
-export const loadElementScores = 'loadElementScores';
-export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
-
 //exams
 export const addNewExam = 'addNewExam';
 export const loadExams = 'loadExams';
@@ -50,10 +43,6 @@ export const updateExamGrade = 'updateExamGrade';
 export const updateCutoff = 'updateCutoff';
 export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
 
-//qscores
-export const loadQuestionScores = 'loadQuestionScores';
-export const setQuestionScore = 'setQuestionScore';
-export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
 
 
 //items

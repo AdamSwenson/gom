@@ -1,56 +1,65 @@
 <template>
 
     <div id="gradeExamPage" class="container-flexible mainBodyLocator">
-        <p class="title">{{examName}}</p>
-        <div class="tile is-ancestor">
-            <div class="tile is-parent">
+        <div class="grading-main box">
 
-                <!-- Left column holds questions and sliders -->
-                <div id="questionAndSliderColumn"
-                     class="questionAndSliderColumn tile is-child box"
-                >
+            <exam-selection-bar :exam="exam">
+                <p slot="level-left"
+                   class="title">{{examName}}
+                </p>
+            </exam-selection-bar>
 
-                    <h4  v-if="! isQuestionAreaVisible"
-                         id="selectPrompt">Select a student to begin grading</h4>
 
-                    <div id="questionArea"
-                         v-show="isQuestionAreaVisible"
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+
+                    <!-- Left column holds questions and sliders -->
+                    <div id="questionAndSliderColumn"
+                         class="questionAndSliderColumn tile is-child box"
                     >
-                        <!-- Create one Question Tab for each question -->
-                        <grading-nav-tabs></grading-nav-tabs>
 
-                        <!-- question panel -->
-                        <router-view name="questionPanelArea"></router-view>
+                        <h4 v-if="! isQuestionAreaVisible"
+                            id="selectPrompt">Select a student to begin grading</h4>
 
+                        <div id="questionArea"
+                             v-show="isQuestionAreaVisible"
+                        >
+                            <!-- Create one Question Tab for each question -->
+                            <grading-nav-tabs></grading-nav-tabs>
+
+                            <!-- question panel -->
+                            <router-view name="questionPanelArea"></router-view>
+
+                        </div>
                     </div>
-                </div>
 
 
-                <!-- Right column holds Roster and Time info -->
-                <div id="rosterAndDashboardColumn"
-                     class="tile is-child rosterAndDashboardColumn box">
+                    <!-- Right column holds Roster and Time info -->
+                    <div id="rosterAndDashboardColumn"
+                         class="tile is-child rosterAndDashboardColumn box">
 
 
-                    <div class="roster-column tile is-parent is-vertical">
-                        <div class="tile is-child">
+                        <div class="roster-column tile is-parent is-vertical">
+                            <div class="tile is-child">
                             <span class="icon" aria-hidden="true">
                         <!--<i class="fa fa-tachometer"></i> <span>Statistics</span>-->
                     </span>
 
-                            <!-- graded / remaining counters -->
-                            <dashboard-counts></dashboard-counts>
-                            <dashboard-timer></dashboard-timer>
+                                <!-- graded / remaining counters -->
+                                <dashboard-counts></dashboard-counts>
+                                <dashboard-timer></dashboard-timer>
 
-                        </div>
+                            </div>
 
-                        <div class="tile is-child">
-                            <!-- student table shows the student roster -->
-                            <grading-roster></grading-roster>
-                            <a class="button">Hide graded</a>
+                            <div class="tile is-child">
+                                <!-- student table shows the student roster -->
+                                <grading-roster></grading-roster>
+                                <a class="button">Hide graded</a>
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
 
@@ -60,7 +69,19 @@
 </template>
 
 <style lang="scss">
+    @import '../../../../sass/development/newSetup';
 
+    #gradeExamPage {
+    }
+
+    .grading-main {
+        /*<!--background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
+        padding-left: 2px;
+        padding-right: 2px;
+        background-color: $main-background-color-gradient-limit;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
+
+    }
 </style>
 
 <script>
@@ -70,6 +91,7 @@
     import DashboardCounts from './dashboard/dashboard-counts.vue';
     import DashboardTimer from './dashboard/dashboard-timer.vue';
     import GradingRoster from './roster/grading-roster.vue';
+    import ExamSelectionBar from '../exams/exam-selection-bar.vue';
 
     import { loadExam } from '../../../api/requests/examRequests';
     import { loadExamKumi } from '../../../api/requests/kumiRequests';
@@ -92,6 +114,7 @@
             ActiveStudentArea,
             DashboardCounts,
             DashboardTimer,
+            ExamSelectionBar,
             // FinishButton,
             GradingNavTabs,
             GradingRoster,
@@ -125,9 +148,9 @@
                 return this.exam ? this.exam.name : '';
             },
 
-            isQuestionAreaVisible: function (  ) {
+            isQuestionAreaVisible: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
-                return !_.isUndefined( s ) && !_.isNull(s);
+                return !_.isUndefined( s ) && !_.isNull( s );
             }
 
         },
@@ -184,10 +207,10 @@
                                     .then( function () {
                                         let p = me.$store.dispatch( 'loadItemsFromServer', exam );
                                         p.then( function () {
-                                            let p2 = me.$store.dispatch('loadScoresFromServer', exam);
-                                            p2.then(function(){
+                                            let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
+                                            p2.then( function () {
                                                 resolve();
-                                            });
+                                            } );
                                         } );
                                     } );
                             } );

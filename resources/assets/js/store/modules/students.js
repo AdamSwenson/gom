@@ -13,7 +13,8 @@
 import Student from '../../models/Student'
 import Payload from '../../models/Payload'
 import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
+import * as lmTypes from '../legacy-mutation-types';
+import * as laTypes from '../legacy-action-types'
 
 
 const state = {
@@ -33,7 +34,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.setStudent]: ( state, rootState, payload ) => {
+    [lmTypes.setStudent]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
         state.students[ payload.index ] = payload.obj;
     },
@@ -44,7 +45,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.toggleRemoveControls]: ( state, rootState, payload ) => {
+    [lmTypes.toggleRemoveControls]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
         delete state.students[ payload.index ];
     }
@@ -60,10 +61,10 @@ const actions = {
      * @param state
      * @param payload
      */
-    [aTypes.loadStudents]: ( {state, commit}, payload ) => {
+    [laTypes.loadStudents]: ( {state, commit}, payload ) => {
 
         for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
-            actions[ aTypes.addStudent ]( {state, commit}, payload[ i ] );
+            actions[ laTypes.addStudent ]( {state, commit}, payload[ i ] );
         }
     },
 
@@ -73,7 +74,7 @@ const actions = {
      * @param commit
      * @param payload
      */
-    [aTypes.addStudent]: ( {state, commit}, payload ) => {
+    [laTypes.addStudent]: ( {state, commit}, payload ) => {
         /*
          create a student object out of the payload.
          the factory will not require any properties to
@@ -86,7 +87,7 @@ const actions = {
             pl.id = student.id;
             pl.index = student.index;
             pl.obj = student;
-            commit( mTypes.setStudent, pl );
+            commit( lmTypes.setStudent, pl );
         }
 
 //todo error handling if a student wasn't returned

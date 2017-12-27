@@ -4,6 +4,7 @@
 
 //Not exported!
 const KUMI_BASE_ROUTE = 'dev/kumis';
+const GRADING_BASE_ROUTE = 'dev/grading';
 const NOTES_BASE_ROUTE = 'dev/notes';
 const ROSTER_BASE_ROUTE = 'dev/roster';
 const SCORE_BASE_ROUTE = 'dev/scores';
@@ -44,6 +45,8 @@ export const Routes = {
     },
 
     getExam: (examId) =>{ return 'dev/exam/' + examId; },
+
+    gradeExam: (examId) => { return GRADING_BASE_ROUTE + '/' + examId; },
 
     // ------------------------- Kumi
     associateKumi: ( kumi, exam ) => {

@@ -1,5 +1,5 @@
-import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
+import * as lmTypes from '../legacy-mutation-types'
+import * as laTypes from '../legacy-action-types'
 import Payload from '../../models/Payload'
 
 const state = {
@@ -22,7 +22,7 @@ const mutations = {
      * @param rootState
      * @param studentElementScores
      */
-        [mTypes.loadElementScores](state, rootState, payload)
+        [lmTypes.loadElementScores](state, rootState, payload)
     {
         Payload.checkIfPayload(payload);
         //set the state to the payload's object
@@ -35,7 +35,7 @@ const mutations = {
      * @param elementIndex
      * @param score
      */
-        [mTypes.setElementScore](state, rootState, payload)
+        [lmTypes.setElementScore](state, rootState, payload)
     {
         Payload.checkIfPayload(payload);
         let studentIndex = payload.index;
@@ -54,7 +54,7 @@ const actions = {
      * @param elementIndex
      * @param score
      */
-        [aTypes.setElementScore]({state, commit}, payload)
+        [laTypes.setElementScore]({state, commit}, payload)
     {
 
         let {studentIndex, elementIndex, score} = payload;
@@ -71,7 +71,7 @@ const actions = {
             num: score
         });
 
-        commit(mTypes.setElementScore, out);
+        commit(lmTypes.setElementScore, out);
     },
 
     /**
@@ -81,11 +81,11 @@ const actions = {
      * @param rootState
      * @param studentElementScores
      */
-        [aTypes.loadElementScores]({state, commit}, payload)
+        [laTypes.loadElementScores]({state, commit}, payload)
     {
 
         let pl = Payload.factory({obj: payload});
-        commit(mTypes.loadElementScores, pl);
+        commit(lmTypes.loadElementScores, pl);
     },
 };
 

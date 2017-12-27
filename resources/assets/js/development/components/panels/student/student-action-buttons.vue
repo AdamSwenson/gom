@@ -281,7 +281,7 @@
                     let me = this;
 
                     _.forEach( this.selectedStudents, function ( student ) {
-                        me.$store.commit( 'removeStudentFromRoster', Payload.factory( { obj: student } ) );
+                        me.$store.commit( mTypes.removeStudentFromRoster, Payload.factory( { obj: student } ) );
                     } );
                 }
             },

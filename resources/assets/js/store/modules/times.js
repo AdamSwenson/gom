@@ -1,7 +1,7 @@
 /**
  * Created by adam on 10/7/16.
  */
-import * as mTypes from '../mutation-types'
+import * as lmTypes from '../legacy-mutation-types';
 import * as aTypes from '../action-types'
 import Payload from '../../models/Payload'
 
@@ -27,7 +27,7 @@ const mutations = {
      * Overwrites any existing stored time.
      * @param examGradingTimes JSON object
      */
-    [mTypes.setGradingTime]: ( state, payload ) => {
+    [lmTypes.setGradingTime]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         state.examGradingTimes[ payload.index ] = payload.num;
     },
@@ -38,7 +38,7 @@ const mutations = {
      * @param payload.studentIndex
      * @param payload.timeToAdd
      */
-    [mTypes.incrementGradingTime]: ( state, payload ) => {
+    [lmTypes.incrementGradingTime]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         state.examGradingTimes[ payload.index ] += payload.num;
     },
@@ -48,7 +48,7 @@ const mutations = {
      *
      * @param examGradingTimes JSON object
      */
-    [ mTypes.removeGradingTime ]: ( state, payload ) => {
+    [ lmTypes.removeGradingTime ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
 
         let idx = -1;
@@ -65,7 +65,7 @@ const mutations = {
     /**
      * Sets the grading time for a student index to 0
      */
-    [ mTypes.resetGradingTime ]: ( state, payload ) => {
+    [ lmTypes.resetGradingTime ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         state.examGradingTimes[ payload.index ] = 0;
     }

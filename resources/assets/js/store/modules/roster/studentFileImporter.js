@@ -16,6 +16,15 @@ import Student from '../../../models/Student'
 import Kumi from '../../../models/Kumi'
 
 
+// commonNames[] is a list of the most common first names for students born between 1990-2000
+// It is used to scan a column and make a guess at which contains first names
+const commonNames = [
+    'Michael', 'Christopher', 'Matthew',
+    'Joshua', 'Jacob', 'Nicholas',
+    'Jessica', 'Ashley', 'Emily',
+    'Sarah', 'Samantha', 'Amanda'
+];
+
 /**
  * [ separatorChar] defines the character that will be used to divide lines into fields
  * default: comma
@@ -98,17 +107,6 @@ const guessColumnDataByContent = function ( students, columns = {
 
     var numColumns = students[ 0 ].length;
     var foundColumns = [];
-
-
-    // commonNames[] is a list of the most common first names for students born between 1990-2000
-    // It is used to scan a column and make a guess at which contains first names
-    var commonNames = [
-        'Michael', 'Christopher', 'Matthew',
-        'Joshua', 'Jacob', 'Nicholas',
-        'Jessica', 'Ashley', 'Emily',
-        'Sarah', 'Samantha', 'Amanda'
-    ];
-
 
     for (var i = startCol; i < numColumns; i++) {
         if ( students[ 0 ][ i ].search( /@/ ) >= 0 ) {
@@ -275,8 +273,7 @@ module.exports = {
                 } );
                 //Push the student into local storage and create
                 //a new student on the server
-                let pl = Payload.factory( { obj: s, student: s } )
-                dispatch(aTypes.handleNewStudentStorageAndAssociation, pl );
+                dispatch(aTypes.handleNewStudentStorageAndAssociation, s );
             } );
 
         };

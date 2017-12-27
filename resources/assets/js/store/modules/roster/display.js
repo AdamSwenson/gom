@@ -1,7 +1,8 @@
 /**
  * This holds data which determines the
- * display state of the roster. That is,
- * it contains the selected students or other
+ * display state of the roster.
+ *
+ * That is, it contains the selected students or other
  * properties which alter the display of the
  * rows in the student table
  *
@@ -18,16 +19,30 @@ module.exports = {
 
 
     state: {
-        selectedStudents: [],
 
         //The kumis by which we are filtering
         displayedKumis: [],
 
-        //selected for whatever reason
+
+        /** whether the kumi list is visible */
+        kumiSelectVisible: false,
+
+        /** Kumis which have been selected for whatever reason */
         selectedKumis: [],
 
-        //whether the kumi list is visible
-        kumiSelectVisible: false
+        /** The students whose rows have been selected */
+        selectedStudents: [],
+
+        /** The direction to sort the roster */
+        sortAsc: true,
+
+        /**
+         * The currently selected field by which
+         * the roster is sorted
+         */
+        sortedBy: 'lastName',
+
+
     },
 
     mutations: {
@@ -102,6 +117,26 @@ module.exports = {
             state.selectedStudents = [];
         },
 
+
+        /**
+         * Alters which field the list of students
+         * is sorted by
+         */
+        setSortedBy: ( state, payload ) => {
+            state.sortedBy = payload.updateVal;
+        },
+
+        /**
+         * Toggles between sorting the student list
+         * ascending and descending
+         * @param state
+         */
+        toggleSortAscending: ( state ) => {
+            state.sortAsc = !state.sortAsc;
+        },
+
+
+
         /**
          * @deprecated
          * @param state
@@ -124,14 +159,13 @@ module.exports = {
     actions: {},
 
     getters: {
-        /**
-         * Returns the root kumi object which attaches
-         * the exam to the students, i.e., the roster
-         * @param state
-         * @param getters
-         */
-        getRootKumi: function ( state, getters ) {
-            return _.take( getters.getKumis );
+
+        getSortAsc: ( state ) => {
+            return state.sortAsc;
+        },
+
+        getSortedBy: ( state, getters, rootState ) => {
+            return state.sortedBy;
         },
 
         getSelectedStudents: function ( state, getters, ) {
@@ -144,20 +178,21 @@ module.exports = {
 
         getDisplayedKumis: function ( state, getters ) {
             return state.displayedKumis;
-
-            // if ( state.displayedKumis.length === 0 ) {
-            //     return getters.getRootKumi;
-            //     //let k = _.take( getters.getKumis );
-            //     //    state.commit('toggleKumi', Payload.factory({obj: k}))
-            // } else {
-            //     return state.displayedKumis;
-            // }
-
         },
+
         isKumiSelectVisible: function ( state, getters ) {
             return state.kumiSelectVisible;
         },
 
+        /**
+         * Given a kumi object, this returns true if the kumi is
+         * among those selected. It returns false otherwise
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param kumi
+         * @returns {function(*)}
+         */
         isKumiDisplayed: ( state, getters, rootState, kumi ) => ( kumi ) => {
             return state.displayedKumis.filter( ( i ) => {
                 if ( i.serialNumber === kumi.serialNumber ) {
