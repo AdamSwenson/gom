@@ -16,12 +16,12 @@ export const setActiveStudentTime = 'setActiveStudentTime';
 
 
 //comments
-export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
 export const recordCommentText = 'recordCommentTextNew';
 
 //scores
 export const recordItemScore = 'recordItemScoreNew';
 export const resetItemScore = 'resetItemScore';
+export const loadScoresFromServer = 'loadScoresFromServer';
 
 //exams
 export const addNewExam = 'addNewExam';
@@ -57,11 +57,7 @@ export const loadStudents = 'loadStudents';
 
 
 //times
-export const storeGradingTime = 'storeGradingTime';
-export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-export const incrementGradingTime = 'incrementGradingTime';
-export const loadGradingTimes = 'loadGradingTimes';
-
-
+export const loadTimesFromServer ='loadTimesFromServer';
 export const startExamTimer = 'startExamTimer';
 export const stopExamTimer = 'stopExamTimer';
+export const incrementGradingTime = 'incrementGradingTime';

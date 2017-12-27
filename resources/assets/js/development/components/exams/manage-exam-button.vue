@@ -3,7 +3,7 @@
        v-on:click="handleClick"
     >
         <span class="icon is-small">
-            <i class="fa fa-check" aria-hidden="true"></i>
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
         </span>
         <span>{{ label }}</span>
     </a>
@@ -14,6 +14,10 @@
 </style>
 
 <script>
+    /**
+     * This is the button which takes the user
+     * back to the setup / management page
+     */
     import { Routes } from '../../../api/apiSettings';
 
     export default {
@@ -24,14 +28,14 @@
 
         data: function () {
             return {
-                label : 'Grade it!',
+                label: 'Manage exam',
                 defaults: {}
             }
         },
 
         computed: {
             route: function () {
-                return window.routeRoot + '/' + Routes.gradeExam( this.exam.id );
+                return window.routeRoot + '/' + Routes.setupExam( this.exam );
             }
         },
 
@@ -40,17 +44,8 @@
                 //handle redirection
 //                return this.$router.go( route );
                 return window.open( this.route, "_self" );
-
-                this.$emit( 'grade-currently-selected-exam' );
-
             }
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>

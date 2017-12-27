@@ -53,3 +53,5 @@ export const removeItemScore = 'removeItemScore';
 export const loadTotalScores = 'loadTotalScores';
 
 
+//time
+export const updateStudentGradingTime = 'updateStudentGradingTime';

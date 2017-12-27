@@ -18,10 +18,10 @@ const route = 'dev/scores';
 /** We don't want to hit the server every second. This is how many requests to skip */
 const RECORD_EVERY = 30;
 
-    module.exports = {
+module.exports = {
 
     /**
-     * Gets all item scores for the exam without identifying
+     * Gets all item scores for the exam with identifying
      * student information
      * @param exam
      * @returns {Promise.<T>|*}
@@ -43,6 +43,16 @@ const RECORD_EVERY = 30;
             } );
     },
 
+    getAllGradingTimes: ( exam ) => {
+        let to = 'dev/time/exam/' + exam.id;
+        return window.axios
+            .get( to )
+            .then( function ( response ) {
+                return response.data.gradingTimes;
+            } );
+
+    },
+
     getStudentGradingTime: ( exam, student ) => {
         let to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
         return window.axios
@@ -53,7 +63,7 @@ const RECORD_EVERY = 30;
     },
 
     setStudentGradingTime: ( exam, student, time ) => {
-        if(time % RECORD_EVERY === 0) {
+        if ( time % RECORD_EVERY === 0 ) {
             let out = { time: time };
             let to = 'dev/time/exam/' + exam.id + '/student/' + student.id;
             return window.axios

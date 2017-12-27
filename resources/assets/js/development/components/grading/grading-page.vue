@@ -3,7 +3,10 @@
     <div id="gradeExamPage" class="container-flexible mainBodyLocator">
         <div class="grading-main box">
 
-            <exam-selection-bar :exam="exam">
+            <exam-selection-bar
+                    :exam="exam"
+                    page-type="grade"
+            >
                 <p slot="level-left"
                    class="title">{{examName}}
                 </p>
@@ -209,7 +212,11 @@
                                         p.then( function () {
                                             let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
                                             p2.then( function () {
-                                                resolve();
+                                                let p3 = me.$store.dispatch(ngaTypes.loadTimesFromServer, exam);
+                                                p3.then(function(){
+                                                    resolve();
+                                                });
+
                                             } );
                                         } );
                                     } );

@@ -79,11 +79,3 @@ export const setItemScore = 'setItemScore';
 //students
 export const loadStudents = 'loadStudents';
 
-
-//times
-export const storeGradingTime = 'storeGradingTime';
-export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-export const incrementGradingTime = 'incrementGradingTime';
-export const loadGradingTimes = 'loadGradingTimes';
-
-

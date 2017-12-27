@@ -18,3 +18,9 @@ export const addStudent = 'addStudentOld';
 //students
 export const loadStudents = 'loadStudentsOld';
 
+//times
+export const storeGradingTime = 'storeGradingTime';
+export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+export const incrementGradingTime = 'incrementGradingTime';
+
+export const loadGradingTimes = 'loadGradingTimes';

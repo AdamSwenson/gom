@@ -13,17 +13,18 @@ export const areStudentNamesVisible = 'areStudentNamesVisible';
 //Grading a student's exam
 export const getExamId = 'getExamId'
 export const isActive = 'isActive'
-export const getNumberGraded = 'getNumberGraded'
-export const getTotalExams = 'getTotalExams'
+
+//counts
+export const getNumberGraded = 'getNumberGradedNew'
+export const getTotalExams = 'getTotalExamsNew'
+export const getNumberExamsRemaining = 'getNumberExamsRemainingNew'
+export const getAllItemScores = 'getAllItemScores';
+
 export const getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent'
 export const getCommentTextForActiveStudent = 'getCommentTextForActiveStudent'
 export const getExamGradeForActiveStudent = 'getExamGradeForActiveStudent'
 export const getElementScoreForActiveStudent = 'getElementScoreForActiveStudent'
 
-//time
-export const getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew'
-export const isTimerRunning = 'isTimerRunning';
-export const getActiveStudent = 'getActiveStudentNew';
 
 
 // ================================================================
@@ -45,16 +46,7 @@ export const getActiveExam = 'getActiveExamNew';
  * @returns []
  */
 export const getAllItems = 'getAllItems'
-
 export const getAllIndexesList = 'getAllIndexesList'
-
-/**
- * Return list of Item objects
- * @param state
- * @param getters
- * @param payload
- * @returns []
- */
 export const getAllItemsList = 'getAllItemsList'
 
  /**
@@ -151,3 +143,13 @@ export const getSortedIds = 'getSortedIds'
    ================== SCORES        =====================
    ================================================================ */
 export const getItemScoreObject =  'getItemScoreObject';
+
+/* ================================================================
+   ================== TIMES        =====================
+   ================================================================ */
+export const getTotalGradingTime = 'getTotalGradingTimeNew';
+export const getAverageGradingTime = 'getAverageGradingTimeNew';
+export const getRemainingGradingTime = 'getRemainingGradingTimeNew';
+export const getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew'
+export const isTimerRunning = 'isTimerRunning';
+export const getActiveStudent = 'getActiveStudentNew';

@@ -22,6 +22,7 @@ export const getNumberGraded = 'getNumberGraded';
 export const getTotalExams = 'getTotalExams'
 export const getNumberUngraded = 'getNumberUngraded';
 
+
 // ================================================================
 // ==================================== EXAMS =====================
 // ================================================================
@@ -165,3 +166,5 @@ export const getTagBySerialNumber = 'getTagBySerialNumber';
 export const getAllTags = 'getAllTags';
 export const getTagsForObject = 'getTagsForObject';
 export const getTagById = 'getTagById';
+
+

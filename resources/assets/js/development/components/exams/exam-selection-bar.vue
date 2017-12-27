@@ -12,34 +12,28 @@
             <!-- Right side -->
             <div class="level-right">
                 <div class="level-item has-text-centered">
-                    <a class="button is-primary is-outlined" v-on:click="handleNewExamClick">
-                        <span>New exam</span>
-                    </a>
+                    <create-exam-button></create-exam-button>
                 </div>
 
                 <div class="level-item has-text-centered">
-                    <a class="button is-warning is-outlined"
-                       v-on:click="handleChangeExam">
-                        <span>Change Exam</span>
-                    </a>
+                    <select-exam-button></select-exam-button>
                 </div>
 
                 <div class="level-item has-text-centered">
                     <grade-exam-button
+                            v-if="pageType === 'setup'"
                             :exam="exam"
-
                     ></grade-exam-button>
+
+                    <manage-exam-button
+                            v-if="pageType === 'grade'"
+                            :exam="exam"
+                    ></manage-exam-button>
                 </div>
 
             </div>
 
         </nav>
-
-        <exam-selection-modal
-                :isVisible="showModal"
-                v-on:toggle-modal="toggleModal"
-                v-on:exam-selected="handleExamSelection"
-        ></exam-selection-modal>
 
     </div>
 
@@ -50,15 +44,15 @@
     .exam-selection-bar {
         padding-top: 1em;
         padding-right: 1em;
-    }
+        padding-bottom: 1em;
 
-    .level-left {
-        p {
-            color: #DDDDDD;
-            margin-left: 1em;
+        .level-left {
+            p {
+                color: #DDDDDD;
+                margin-left: 1em;
+            }
         }
     }
-
 </style>
 
 <script>
@@ -66,13 +60,19 @@
     import examSelectionModal from './exam-selection-modal.vue';
     import { Routes } from '../../../api/apiSettings';
     import * as gTypes from '../../../store/getter-types';
+    import CreateExamButton from "./create-exam-button";
+    import SelectExamButton from "./select-exam-button";
+    import ManageExamButton from "./manage-exam-button";
 
     export default {
 
         //the currently active exam
-        props: [ 'exam' ],
+        props: [ 'exam' , 'pageType'],
 
         components: {
+            ManageExamButton,
+            SelectExamButton,
+            CreateExamButton,
             'grade-exam-button': gradeButton,
             'exam-selection-modal': examSelectionModal
 
@@ -86,52 +86,10 @@
         },
 
         computed: {
-
-
-            newExamPath: function () {
-                return window.routeRoot + '/' + Routes.commonBaseRoute;
-            },
         },
 
         methods: {
 
-//
-//             handleGradeExamClick: function () {
-//                 //handle redirection
-//                 let route = window.routeRoot + '/' + Routes.gradeExam(this.examId);
-//                 //handle redirection
-// //                return this.$router.go( route );
-//                 return window.open( route, "_self" );
-//
-//             },
-
-            handleChangeExam: function () {
-                this.toggleModal();
-            },
-
-
-            handleNewExamClick: function () {
-                //handle redirection
-                let route = window.routeRoot + '/' + Routes.commonBaseRoute;
-                //handle redirection
-//                return this.$router.go( route );
-                return window.open( route, "_self" );
-            },
-
-            handleExamSelection: function ( examObject ) {
-                window.console.log( 'exam-selection-bar', 'handleExamSelection', 98, examObject );
-                this.toggleModal();
-                let route = window.routeRoot + '/' + Routes.setupExam( examObject );
-                //handle redirection
-//                return this.$router.go( route );
-
-                return window.open( route, "_self" );
-//                return window.axios.get( Routes.setupExam( examObject ) );
-            },
-
-            toggleModal: function () {
-                this.showModal = !this.showModal;
-            }
         },
 
         directives: {},

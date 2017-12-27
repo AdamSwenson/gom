@@ -37,6 +37,13 @@ module.exports = {
             })( state, studentId )
         },
 
+    /**
+     * Returns all the item scores currently
+     * in store
+     */
+    [nggTypes.getAllItemScores] : ( state, getters, rootState ) => {
+        return state.scores;
+    },
 
     /**
      * Returns the score object for the given item

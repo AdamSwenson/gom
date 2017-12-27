@@ -78,7 +78,8 @@ import gradingPreferences from './modules/newgrading/preferences';
 
 //timer
 import timerNew from './modules/newgrading/timer-new';
-
+import gradingTimesNew from './modules/newgrading/grading-times-new';
+import gradingCountsNew from './modules/newgrading/grading-counts-new';
 //api
 
 
@@ -122,6 +123,8 @@ const debug = process.env.NODE_ENV !== 'production';
         newactivestudent,
         gradingPreferences,
         timerNew,
+        gradingTimesNew,
+        gradingCountsNew,
 
 
         comments,

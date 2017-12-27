@@ -1,10 +1,10 @@
 /**
  * Created by adam on 10/7/16.
  */
-import * as mTypes from './new-grading-mutation-types';
-import * as aTypes from './new-grading-action-types';
+import * as ngmTypes from './new-grading-mutation-types';
+import * as ngaTypes from './new-grading-action-types';
 import Payload from '../../../models/Payload'
-import * as gTypes from "./new-grading-getter-types";
+import * as nggTypes from "./new-grading-getter-types";
 
 
 const state = {
@@ -22,11 +22,11 @@ const state = {
 
 const mutations = {
 
-    [ mTypes.startExamTimer ]: ( state ) => {
+    [ ngmTypes.startExamTimer ]: ( state ) => {
         state.timerRunning = true;
     },
 
-    [ mTypes.stopExamTimer ]: ( state ) => {
+    [ ngmTypes.stopExamTimer ]: ( state ) => {
         state.timerRunning = false;
     },
 };
@@ -43,31 +43,31 @@ const actions = {
      * @param commit
      * @param getters
      */
-    [ aTypes.startExamTimer ]: ( { dispatch, commit, getters } ) => {
+    [ ngaTypes.startExamTimer ]: ( { dispatch, commit, getters } ) => {
         var me = this;
 
         //if no student is active, don't start
-        if ( getters[gTypes.isTimerRunning]) return;
+        if ( getters[nggTypes.isTimerRunning]) return;
 
         clearInterval( timer );
 
         //change state
-        commit(mTypes.startExamTimer);
+        commit(ngmTypes.startExamTimer);
 
         // set a new timer to fire every second.
         timer = setInterval( function () {
             //increment the time
             //tell store to record it
-            dispatch( aTypes.incrementGradingTime, 1 );
+            dispatch( ngaTypes.incrementGradingTime, 1 );
         }, 1000 );
 
     },
 
-    [ aTypes.stopExamTimer ]: ( { dispatch, commit, getters } ) =>{
+    [ ngaTypes.stopExamTimer ]: ( { dispatch, commit, getters } ) =>{
         clearInterval( timer );
 
         //change state
-        commit(mTypes.stopExamTimer);
+        commit(ngmTypes.stopExamTimer);
     },
 
 
@@ -80,7 +80,7 @@ const getters = {
      * @param state
      * @returns {boolean}
      */
-    [ gTypes.isTimerRunning ]: ( state ) => {
+    [ nggTypes.isTimerRunning ]: ( state ) => {
         return state.timerRunning;
     }
 

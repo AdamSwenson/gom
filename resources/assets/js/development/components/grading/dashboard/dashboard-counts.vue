@@ -10,7 +10,7 @@
 
 <script>
     import * as gTypes from '../../../../store/getter-types';
-
+    import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
 
     module.exports = {
 
@@ -33,7 +33,8 @@
              * Number of exams already graded
              */
             gradedExams: function () {
-                return this.$store.getters[ gTypes.getNumberGraded ];
+                let n = this.$store.getters[ nggTypes.getNumberGraded ];
+                return !_.isUndefined( n ) ? n : '';
             },
 
             /**
@@ -41,18 +42,17 @@
              * @returns {number|Number}
              */
             totalExams: function () {
-                return this.$store.getters[ gTypes.getTotalNumberOfExamsToGrade ];
+                let n = this.$store.getters[ nggTypes.getTotalExams ];
+                return !_.isUndefined( n ) ? n : '';
             },
 
             /**
              * Number of exams remaining to be graded
              */
             remainingExams: function () {
-                if ( ! _.isUndefined(this.totalExams) && _.isUndefined( this.gradedExams) ) {
-                    let remaining = this.totalExams - this.gradedExams;
-                    return remaining;
-                }
-                return '';
+                let n = this.$store.getters[ nggTypes.getNumberExamsRemaining ];
+                return !_.isUndefined( n ) ? n : '';
+
             },
 
         },

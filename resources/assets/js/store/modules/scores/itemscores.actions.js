@@ -29,7 +29,7 @@ module.exports = {
         } );
     },
 
-    loadScoresFromServer: ( { state, dispatch, commit, getters }, exam ) => {
+    [ngaTypes.loadScoresFromServer]: ( { state, dispatch, commit, getters }, exam ) => {
         let me = this;
         return new Promise( function ( resolve, reject ) {
             // window.console.log( 'itemscores', '', 193, exam, item, student);

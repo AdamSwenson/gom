@@ -1,161 +1,139 @@
 /**
  * Created by adam on 10/7/16.
  */
-import * as mTypes from './new-grading-mutation-types';
-import * as aTypes from './new-grading-action-types';
-import Payload from '../../models/Payload'
+import Vue from 'vue';
+import * as ngmTypes from './new-grading-mutation-types';
+import * as ngaTypes from './new-grading-action-types';
+import * as nggTypes from './new-grading-getter-types';
+import * as gTypes from '../../getter-types';
+import * as mTypes from '../../mutation-types';
+
+import Payload from '../../../models/Payload';
+import PayloadTime from '../../../models/PayloadTime';
+import timeRequests from "../../../api/requests/timeRequests";
+import * as lmTypes from "../../legacy-mutation-types";
+import * as laTypes from "../../legacy-action-types";
 
 
-const state = {
-    /**
-     * Key-value store of grading times .
-     *
-     * Each record has the studentIndex as the key and
-     * the gradingTime as the value.
-     * That is:
-     *     { studentIndex : gradingTime, }
-     * Or, if you prefer
-     *      examGradingTimes[ studentIndex] = gradingTime
-     */
-    examGradingTimes: {},
-};
 
 
 const mutations = {
-    // /**
-    //  * Set stored time for student.
-    //  * Overwrites any existing stored time.
-    //  * @param examGradingTimes JSON object
-    //  */
-    // [mTypes.setGradingTime]: ( state, payload ) => {
-    //     Payload.checkIfPayload( payload );
-    //     state.examGradingTimes[ payload.index ] = payload.num;
-    // },
-    //
-    // // /**
-    // //  * Increases the stored time for the student by the specified amount
-    // //  * @param state
-    // //  * @param payload.studentIndex
-    // //  * @param payload.timeToAdd
-    // //  */
-    // // [mTypes.incrementGradingTime]: ( state, payload ) => {
-    // //     Payload.checkIfPayload( payload );
-    // //     state.examGradingTimes[ payload.index ] += payload.num;
-    // // },
-    //
-    // /**
-    //  * Removes a grading time data object
-    //  *
-    //  * @param examGradingTimes JSON object
-    //  */
-    // [ mTypes.removeGradingTime ]: ( state, payload ) => {
-    //     Payload.checkIfPayload( payload );
-    //
-    //     let idx = -1;
-    //     if ( payload instanceof Payload ) {
-    //         idx = payload.index;
-    //     }
-    //
-    //     if ( idx > -1 ) {
-    //         delete state.examGradingTimes[ idx ];
-    //         // state.examGradingTimes.splice( idx, 1 );
-    //     }
-    // },
-    //
-    // /**
-    //  * Sets the grading time for a student index to 0
-    //  */
-    // [ mTypes.resetGradingTime ]: ( state, payload ) => {
-    //     Payload.checkIfPayload( payload );
-    //     state.examGradingTimes[ payload.index ] = 0;
-    // }
+
+    /**
+     * Sets the value in payload as the new grading time for the student
+     * @param state
+     * @param payload
+     */
+    [ ngmTypes.updateStudentGradingTime ]: ( state, payload ) => {
+        Vue.set( payload.student, 'gradingTime', payload.time );
+    }
 };
 
 const actions = {
-    //
-    // /**
-    //  * Sets the grading time data from the server
-    //  * @param examGradingTimes JSON object
-    //  */
-    // [aTypes.loadGradingTimes]: ( {state, commit}, payload ) => {
-    //     if ( payload.length > 1 ) {
-    //         for ( let i = 0; i < payload.length; i++ ) {
-    //             actions[ aTypes.storeGradingTime ]( state, commit, payload );
-    //         }
-    //     }
-    // },
-    //
-    //
-    // /**
-    //  * Todo Add ability to look up by student index or student id
-    //  * TODO Add handling for an unset index
-    //  * Stores a new time for the student.
-    //  * Overwrites any existing value.
-    //  * Original: data.this.examGradingTimes[ Roster.activeStudent ];
-    //  */
-    // [aTypes.storeGradingTime]: ( {state, commit}, payload ) => {
-    //     //type checking
-    //     if ( typeof(payload.studentIndex) != 'undefined' && typeof(payload.timeToAdd) != 'undefined' ) {
-    //
-    //         //todo add sanitation and checks
-    //         let studentIndex = payload.studentIndex;
-    //         let timeToAdd = payload.timeToAdd;
-    //
-    //         //add processing from other allowed input configs
-    //
-    //
-    //         let pl = Payload.factory( {index: studentIndex, num: timeToAdd} );
-    //         commit( mTypes.setGradingTime, pl );
-    //     }
-    // },
-    //
-    //
-    // /**
-    //  * Increases the stored time for a student by the specified
-    //  * amount.
-    //  * Original: data.this.examGradingTimes[ Roster.activeStudent ];
-    //  * state.examGradingTimes[ state.activeStudentIndex ] += payload.timeToAdd;
-    //  */
-    // [aTypes.incrementGradingTime]: ( {state, commit}, payload ) => {
-    //
-    //     let pl = Payload.factory(
-    //         {
-    //             index: payload.studentIndex,
-    //             num: payload.timeToAdd
-    //         } );
-    //
-    //     commit( mTypes.incrementGradingTime, pl );
-    // },
 
+
+    /**
+     * Increases the stored time for a student by the specified
+     * amount.
+     * Original: data.this.examGradingTimes[ Roster.activeStudent ];
+     * state.examGradingTimes[ state.activeStudentIndex ] += payload.timeToAdd;
+     */
+    [ ngaTypes.incrementGradingTime ]: ( { state, dispatch, commit, getters }, amount ) => {
+        let student = getters[ nggTypes.getActiveStudent ];
+        let exam = getters[ nggTypes.getActiveExam ];
+
+        let newTime = amount + student.gradingTime;
+
+        commit( ngmTypes.updateStudentGradingTime, PayloadTime.factory( {
+            student: student,
+            exam: exam,
+            time: newTime
+        } ) );
+    },
+
+    [ ngaTypes.loadTimesFromServer ]: ( { state, dispatch, commit, getters }, exam ) => {
+        let me = this;
+        return new Promise( function ( resolve, reject ) {
+            // window.console.log( 'itemscores', '', 193, exam, item, student);
+            let p = timeRequests.getAllGradingTimes( exam );
+
+            p.then( function ( data ) {
+                _.forEach( data, function ( d ) {
+                    let student = getters.getStudentFromRosterById( d.student_id );
+                    let time = parseFloat( d.seconds );
+
+                    //record the score (this will initialize the object too)
+                    commit( mTypes.updateStudentInRoster, Payload.factory( {
+                        obj: student,
+                        exam: exam,
+                        updateProp: 'gradingTime',
+                        updateVal: time,
+                        mutateSilently: true
+                    } ) );
+
+                } );
+
+                resolve();
+            } );
+        } )
+    }
 };
 
 const getters = {
-    // /**
-    //  * Returns the total amount of time spent grading in seconds
-    //  * @returns {number}
-    //  */
-    // getTotalGradingTime: ( state, getters ) => {
-    //     var totalTime = 0;
-    //     for ( var i = 0; i < Object.keys( state.examGradingTimes ).length; i++ ) {
-    //         totalTime += state.examGradingTimes[ i ];
-    //     }
-    //     return totalTime;
-    // },
-    //
-    // /**
-    //  * Original: data.this.examGradingTimes[ Roster.activeStudent ]
-    //  * @param activeStudent
-    //  * @returns {*}
-    //  */
-    // getStudentGradingTime: ( state, getters, studentIndex ) => {
-    //     return state.examGradingTimes[ studentIndex ];
-    // },
+    /**
+     * Returns the total amount of time spent grading in seconds
+     * @returns {number}
+     */
+    [ nggTypes.getTotalGradingTime ]: ( state, getters, rootState ) => {
+        let total = 0;
+        let students = getters[ gTypes.getStudentsFromRoster ];
+        if ( _.isUndefined( students ) ) return total;
+        _.forEach( students, function ( s ) {
+            total += s.gradingTime;
+        } );
+        return total;
+    },
+
+    /**
+     * Returns the average number of seconds spent grading a student's
+     * work
+     *
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {number}
+     */
+    [ nggTypes.getAverageGradingTime ]: ( state, getters, rootState ) => {
+        let storedNum = getters[ nggTypes.getNumberGraded ];
+        let totalTime = getters[ nggTypes.getTotalGradingTime ];
+        //avoid dividing by 0
+        let numGraded = storedNum == 0 ? 1 : storedNum;
+        var avgTime = totalTime / numGraded;
+        return avgTime;
+    },
+
+    /**
+     * Returns the estimated number of seconds remaining
+     * for grading the whole exam.
+     * This is computed from the average time and the number
+     * of exams remaining.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {number}
+     */
+    [ nggTypes.getRemainingGradingTime ]: ( state, getters, rootState ) => {
+        let remainingExams = getters[ nggTypes.getNumberExamsRemaining ];
+        let avgTime = getters[ nggTypes.getAverageGradingTime ];
+        let estTime = avgTime * remainingExams;
+        return estTime;
+    },
+
 
 };
 
 
 export default {
-    state,
     getters,
     actions,
     mutations

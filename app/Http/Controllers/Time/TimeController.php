@@ -43,6 +43,7 @@ class TimeController extends Controller
 
         $out = [
             'examId' => $exam,
+            'gradingTimes' => $c,
             'elapsedSeconds' => $c->sum('seconds'),
             'averageSeconds' => $c->average('seconds')
         ];

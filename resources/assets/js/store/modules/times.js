@@ -3,6 +3,7 @@
  */
 import * as lmTypes from '../legacy-mutation-types';
 import * as aTypes from '../action-types'
+import * as laTypes from '../legacy-action-types'
 import Payload from '../../models/Payload'
 
 
@@ -77,7 +78,7 @@ const actions = {
      * Sets the grading time data from the server
      * @param examGradingTimes JSON object
      */
-    [aTypes.loadGradingTimes]: ( {state, commit}, payload ) => {
+    [laTypes.loadGradingTimes]: ( {state, commit}, payload ) => {
         if ( payload.length > 1 ) {
             for ( let i = 0; i < payload.length; i++ ) {
                 actions[ aTypes.storeGradingTime ]( state, commit, payload );
@@ -93,7 +94,7 @@ const actions = {
      * Overwrites any existing value.
      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
      */
-    [aTypes.storeGradingTime]: ( {state, commit}, payload ) => {
+    [laTypes.storeGradingTime]: ( {state, commit}, payload ) => {
         //type checking
         if ( typeof(payload.studentIndex) != 'undefined' && typeof(payload.timeToAdd) != 'undefined' ) {
 
@@ -116,7 +117,7 @@ const actions = {
      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
      * state.examGradingTimes[ state.activeStudentIndex ] += payload.timeToAdd;
      */
-    [aTypes.incrementGradingTime]: ( {state, commit}, payload ) => {
+    [laTypes.incrementGradingTime]: ( {state, commit}, payload ) => {
 
         let pl = Payload.factory(
             {
@@ -124,7 +125,7 @@ const actions = {
                 num: payload.timeToAdd
             } );
 
-        commit( mTypes.incrementGradingTime, pl );
+        commit( lmTypes.incrementGradingTime, pl );
     },
 
 };

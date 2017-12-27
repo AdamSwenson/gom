@@ -289,3 +289,4 @@ Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
    ============================= */
 Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
 Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@update');
+Route::get('dev/time/exam/{exam}', 'Time\TimeController@getGradingTimes');

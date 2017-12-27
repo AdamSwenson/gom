@@ -346,8 +346,8 @@ export default function ( store ) {
                 break;
 
             case mTypes.updateStudentInRoster:
-                // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
-                updateStudent( store, payload.obj );
+                     // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
+                    updateStudent( store, payload.obj );
                 break;
 
 
@@ -386,7 +386,10 @@ export default function ( store ) {
 
             // ************ Times
 
+            case ngmTypes.updateStudentGradingTime:
+                    setStudentGradingTime(payload.exam, payload.student, payload.time);
 
+                    break;
             default:
 
         }

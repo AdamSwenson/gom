@@ -36,7 +36,7 @@ describe.only( "itemscores | getters ", function () {
             let payload = { item: { id: testObj.itemId }, student: { id: testObj.studentId } };
 
             return (function(){
-                let result = getters[ nggTypes.getItemScoreObject ]( state, {}, {}, payload );
+                let result = (function(){ return getters[ nggTypes.getItemScoreObject ]( state, {}, {}, payload );})();
                 expect( result.examId ).toBe( testObj.examId );
                 expect( result.itemId ).toBe( testObj.itemId );
                 expect( result.studentId ).toBe( testObj.studentId );

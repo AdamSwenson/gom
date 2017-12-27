@@ -50,7 +50,7 @@
 <script>
 
     import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
-    import * as aTypes from '../../../../store/modules/newgrading/new-grading-action-types';
+    import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
 
     import * as gTypes from '../../../../store/getter-types';
@@ -105,11 +105,12 @@
              * @returns Number
              */
             averageTime: function () {
-                //avoid dividing by 0
-                let storedNum = this.numberGraded;
-                let numGraded = storedNum == 0 ? 1 : storedNum;
-                var avgTime = this.totalTime / numGraded;
-                return avgTime;
+                return this.$store.getters[ nggTypes.getAverageGradingTime ];
+                // //avoid dividing by 0
+                // let storedNum = this.numberGraded;
+                // let numGraded = storedNum == 0 ? 1 : storedNum;
+                // var avgTime = this.totalTime / numGraded;
+                // return avgTime;
             },
 
             /**
@@ -151,7 +152,7 @@
              * Number of exams already graded
              */
             numberGraded: function () {
-                return this.$store.getters[ gTypes.getNumberGraded ];
+                return this.$store.getters[ nggTypes.getNumberGraded ];
             },
 
             /**
@@ -180,10 +181,11 @@
              * @returns Number
              */
             remainingTime: function () {
-                let remainingExams = this.$store.getters[ gTypes.getNumberUngraded ];
-                let estTime = this.averageTime * remainingExams;
-                // let timeRemaining = estTime - this.totalTime;
-                return estTime;
+                return this.$store.getters[nggTypes.getRemainingGradingTime];
+                // let remainingExams = this.$store.getters[ gTypes.getNumberUngraded ];
+                // let estTime = this.averageTime * remainingExams;
+                // // let timeRemaining = estTime - this.totalTime;
+                // return estTime;
             },
 
             /**
@@ -216,7 +218,7 @@
              * @returns Number
              */
             totalTime: function () {
-                return this.$store.getters.getTotalGradingTime;
+                return this.$store.getters[nggTypes.getTotalGradingTime];
             },
 
             /**
@@ -261,7 +263,7 @@
              * on timer start
              */
             startTimer: function () {
-                this.$store.dispatch( aTypes.startExamTimer );
+                this.$store.dispatch( ngaTypes.startExamTimer );
             },
 
             /**
@@ -269,7 +271,7 @@
              * on timer stop
              */
             stopTimer: function () {
-                this.$store.dispatch( aTypes.stopExamTimer );
+                this.$store.dispatch( ngaTypes.stopExamTimer );
             },
 
             /**

@@ -746,12 +746,6 @@ var setItemScore = exports.setItemScore = 'setItemScore';
 //students
 var loadStudents = exports.loadStudents = 'loadStudents';
 
-//times
-var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
-var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
-
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
@@ -13152,6 +13146,9 @@ var removeItemScore = exports.removeItemScore = 'removeItemScore';
 
 var loadTotalScores = exports.loadTotalScores = 'loadTotalScores';
 
+//time
+var updateStudentGradingTime = exports.updateStudentGradingTime = 'updateStudentGradingTime';
+
 /***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -13174,17 +13171,17 @@ var areStudentNamesVisible = exports.areStudentNamesVisible = 'areStudentNamesVi
 //Grading a student's exam
 var getExamId = exports.getExamId = 'getExamId';
 var isActive = exports.isActive = 'isActive';
-var getNumberGraded = exports.getNumberGraded = 'getNumberGraded';
-var getTotalExams = exports.getTotalExams = 'getTotalExams';
+
+//counts
+var getNumberGraded = exports.getNumberGraded = 'getNumberGradedNew';
+var getTotalExams = exports.getTotalExams = 'getTotalExamsNew';
+var getNumberExamsRemaining = exports.getNumberExamsRemaining = 'getNumberExamsRemainingNew';
+var getAllItemScores = exports.getAllItemScores = 'getAllItemScores';
+
 var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent';
 var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = 'getCommentTextForActiveStudent';
 var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = 'getExamGradeForActiveStudent';
 var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 'getElementScoreForActiveStudent';
-
-//time
-var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew';
-var isTimerRunning = exports.isTimerRunning = 'isTimerRunning';
-var getActiveStudent = exports.getActiveStudent = 'getActiveStudentNew';
 
 // ================================================================
 // ==================================== EXAMS =====================
@@ -13205,16 +13202,7 @@ var getActiveExam = exports.getActiveExam = 'getActiveExamNew';
 * @returns []
 */
 var getAllItems = exports.getAllItems = 'getAllItems';
-
 var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
-
-/**
- * Return list of Item objects
- * @param state
- * @param getters
- * @param payload
- * @returns []
- */
 var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
 
 /**
@@ -13311,6 +13299,16 @@ var getSortedIds = exports.getSortedIds = 'getSortedIds';
    ================== SCORES        =====================
    ================================================================ */
 var getItemScoreObject = exports.getItemScoreObject = 'getItemScoreObject';
+
+/* ================================================================
+   ================== TIMES        =====================
+   ================================================================ */
+var getTotalGradingTime = exports.getTotalGradingTime = 'getTotalGradingTimeNew';
+var getAverageGradingTime = exports.getAverageGradingTime = 'getAverageGradingTimeNew';
+var getRemainingGradingTime = exports.getRemainingGradingTime = 'getRemainingGradingTimeNew';
+var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew';
+var isTimerRunning = exports.isTimerRunning = 'isTimerRunning';
+var getActiveStudent = exports.getActiveStudent = 'getActiveStudentNew';
 
 /***/ }),
 /* 23 */
@@ -13677,12 +13675,12 @@ var resetActiveStudent = exports.resetActiveStudent = 'resetActiveStudent';
 var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
 
 //comments
-var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
 var recordCommentText = exports.recordCommentText = 'recordCommentTextNew';
 
 //scores
 var recordItemScore = exports.recordItemScore = 'recordItemScoreNew';
 var resetItemScore = exports.resetItemScore = 'resetItemScore';
+var loadScoresFromServer = exports.loadScoresFromServer = 'loadScoresFromServer';
 
 //exams
 var addNewExam = exports.addNewExam = 'addNewExam';
@@ -13711,13 +13709,10 @@ var loadGradeAssignmentsFromServerData = exports.loadGradeAssignmentsFromServerD
 var loadStudents = exports.loadStudents = 'loadStudents';
 
 //times
-var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
-var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
-
+var loadTimesFromServer = exports.loadTimesFromServer = 'loadTimesFromServer';
 var startExamTimer = exports.startExamTimer = 'startExamTimer';
 var stopExamTimer = exports.stopExamTimer = 'stopExamTimer';
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
 
 /***/ }),
 /* 26 */
@@ -34389,7 +34384,7 @@ var RECORD_EVERY = 30;
 module.exports = {
 
     /**
-     * Gets all item scores for the exam without identifying
+     * Gets all item scores for the exam with identifying
      * student information
      * @param exam
      * @returns {Promise.<T>|*}
@@ -34404,6 +34399,13 @@ module.exports = {
             return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    getAllGradingTimes: function getAllGradingTimes(exam) {
+        var to = 'dev/time/exam/' + exam.id;
+        return window.axios.get(to).then(function (response) {
+            return response.data.gradingTimes;
         });
     },
 
@@ -48457,50 +48459,48 @@ module.exports = (_module$exports = {
             commit(ngmTypes.updateScore, _PayloadScore2.default.factory({ exam: exam, item: item, student: student, mutateSilently: true }));
             resolve();
         });
-    },
-
-    loadScoresFromServer: function loadScoresFromServer(_ref3, exam) {
-        var state = _ref3.state,
-            dispatch = _ref3.dispatch,
-            commit = _ref3.commit,
-            getters = _ref3.getters;
-
-        var me = undefined;
-        return new Promise(function (resolve, reject) {
-            // window.console.log( 'itemscores', '', 193, exam, item, student);
-            var p = _scoreRequests2.default.getAllScoresForExamRequest(exam);
-
-            p.then(function (data) {
-                _.forEach(data, function (d) {
-                    var item = getters[gTypes.getItemById](d.item_id);
-                    var student = getters.getStudentFromRosterById(d.student_id);
-                    var score = parseFloat(d.score);
-
-                    //record the score (this will initialize the object too)
-                    commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
-                        exam: exam,
-                        item: item,
-                        student: student,
-                        score: score,
-                        mutateSilently: true
-                    }));
-
-                    //record the comment text
-                    commit(ngmTypes.updateText, _PayloadScore2.default.factory({
-                        exam: exam,
-                        item: item,
-                        student: student,
-                        text: d.comment_text,
-                        mutateSilently: true
-                    }));
-                });
-
-                resolve();
-            });
-        });
     }
 
-}, _defineProperty(_module$exports, ngaTypes.recordItemScore, function (_ref4, _ref5) {
+}, _defineProperty(_module$exports, ngaTypes.loadScoresFromServer, function (_ref3, exam) {
+    var state = _ref3.state,
+        dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
+
+    var me = undefined;
+    return new Promise(function (resolve, reject) {
+        // window.console.log( 'itemscores', '', 193, exam, item, student);
+        var p = _scoreRequests2.default.getAllScoresForExamRequest(exam);
+
+        p.then(function (data) {
+            _.forEach(data, function (d) {
+                var item = getters[gTypes.getItemById](d.item_id);
+                var student = getters.getStudentFromRosterById(d.student_id);
+                var score = parseFloat(d.score);
+
+                //record the score (this will initialize the object too)
+                commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    score: score,
+                    mutateSilently: true
+                }));
+
+                //record the comment text
+                commit(ngmTypes.updateText, _PayloadScore2.default.factory({
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    text: d.comment_text,
+                    mutateSilently: true
+                }));
+            });
+
+            resolve();
+        });
+    });
+}), _defineProperty(_module$exports, ngaTypes.recordItemScore, function (_ref4, _ref5) {
     var state = _ref4.state,
         dispatch = _ref4.dispatch,
         commit = _ref4.commit,
@@ -48652,6 +48652,8 @@ module.exports = (_module$exports = {
 "use strict";
 
 
+var _module$exports;
+
 var _newGradingGetterTypes = __webpack_require__(22);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
@@ -48662,7 +48664,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-module.exports = _defineProperty({
+module.exports = (_module$exports = {
 
     getExamScores: function getExamScores(state, getters, rootState, examId) {
         return function (examId) {
@@ -48703,7 +48705,9 @@ module.exports = _defineProperty({
         };
     }
 
-}, nggTypes.getItemScoreObject, function (state, getters, rootState, pl) {
+}, _defineProperty(_module$exports, nggTypes.getAllItemScores, function (state, getters, rootState) {
+    return state.scores;
+}), _defineProperty(_module$exports, nggTypes.getItemScoreObject, function (state, getters, rootState, pl) {
     return function (pl) {
         var item = pl.item,
             student = pl.student;
@@ -48714,7 +48718,7 @@ module.exports = _defineProperty({
             }
         }(state, item, student);
     };
-});
+}), _module$exports);
 
 /***/ }),
 /* 151 */
@@ -63598,7 +63602,10 @@ exports.default = function (store) {
 
             // ************ Times
 
+            case ngmTypes.updateStudentGradingTime:
+                (0, _timeRequests.setStudentGradingTime)(payload.exam, payload.student, payload.time);
 
+                break;
             default:
 
         }
@@ -66954,6 +66961,14 @@ var _timerNew = __webpack_require__(323);
 
 var _timerNew2 = _interopRequireDefault(_timerNew);
 
+var _gradingTimesNew = __webpack_require__(1019);
+
+var _gradingTimesNew2 = _interopRequireDefault(_gradingTimesNew);
+
+var _gradingCountsNew = __webpack_require__(1020);
+
+var _gradingCountsNew2 = _interopRequireDefault(_gradingCountsNew);
+
 var _apiPlugin = __webpack_require__(289);
 
 var _apiPlugin2 = _interopRequireDefault(_apiPlugin);
@@ -67053,6 +67068,8 @@ exports.default = new _vuex2.default.Store({
     newactivestudent: _activestudentNew2.default,
     gradingPreferences: _preferences2.default,
     timerNew: _timerNew2.default,
+    gradingTimesNew: _gradingTimesNew2.default,
+    gradingCountsNew: _gradingCountsNew2.default,
 
     comments: _comments2.default,
     exams: _exams2.default,
@@ -70582,11 +70599,11 @@ var _mutations, _actions;
 
 var _newGradingMutationTypes = __webpack_require__(21);
 
-var mTypes = _interopRequireWildcard(_newGradingMutationTypes);
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
 var _newGradingActionTypes = __webpack_require__(25);
 
-var aTypes = _interopRequireWildcard(_newGradingActionTypes);
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
 var _Payload = __webpack_require__(1);
 
@@ -70594,7 +70611,7 @@ var _Payload2 = _interopRequireDefault(_Payload);
 
 var _newGradingGetterTypes = __webpack_require__(22);
 
-var gTypes = _interopRequireWildcard(_newGradingGetterTypes);
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -70617,15 +70634,15 @@ var state = {
 
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.startExamTimer, function (state) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.startExamTimer, function (state) {
     state.timerRunning = true;
-}), _defineProperty(_mutations, mTypes.stopExamTimer, function (state) {
+}), _defineProperty(_mutations, ngmTypes.stopExamTimer, function (state) {
     state.timerRunning = false;
 }), _mutations);
 
 var timer = void 0;
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.startExamTimer, function (_ref) {
+var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.startExamTimer, function (_ref) {
     var dispatch = _ref.dispatch,
         commit = _ref.commit,
         getters = _ref.getters;
@@ -70633,20 +70650,20 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.startExamTimer, f
     var me = undefined;
 
     //if no student is active, don't start
-    if (getters[gTypes.isTimerRunning]) return;
+    if (getters[nggTypes.isTimerRunning]) return;
 
     clearInterval(timer);
 
     //change state
-    commit(mTypes.startExamTimer);
+    commit(ngmTypes.startExamTimer);
 
     // set a new timer to fire every second.
     timer = setInterval(function () {
         //increment the time
         //tell store to record it
-        dispatch(aTypes.incrementGradingTime, 1);
+        dispatch(ngaTypes.incrementGradingTime, 1);
     }, 1000);
-}), _defineProperty(_actions, aTypes.stopExamTimer, function (_ref2) {
+}), _defineProperty(_actions, ngaTypes.stopExamTimer, function (_ref2) {
     var dispatch = _ref2.dispatch,
         commit = _ref2.commit,
         getters = _ref2.getters;
@@ -70654,10 +70671,10 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.startExamTimer, f
     clearInterval(timer);
 
     //change state
-    commit(mTypes.stopExamTimer);
+    commit(ngmTypes.stopExamTimer);
 }), _actions);
 
-var getters = _defineProperty({}, gTypes.isTimerRunning, function (state) {
+var getters = _defineProperty({}, nggTypes.isTimerRunning, function (state) {
     return state.timerRunning;
 });
 
@@ -73094,6 +73111,10 @@ var _actionTypes = __webpack_require__(4);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
+var _legacyActionTypes = __webpack_require__(1018);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
+
 var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
@@ -73144,7 +73165,7 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setGrading
     state.examGradingTimes[payload.index] = 0;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradingTimes, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadGradingTimes, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
@@ -73153,7 +73174,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradingTimes,
             actions[aTypes.storeGradingTime](state, commit, payload);
         }
     }
-}), _defineProperty(_actions, aTypes.storeGradingTime, function (_ref2, payload) {
+}), _defineProperty(_actions, laTypes.storeGradingTime, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
@@ -73170,7 +73191,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradingTimes,
         var pl = _Payload2.default.factory({ index: studentIndex, num: timeToAdd });
         commit(mTypes.setGradingTime, pl);
     }
-}), _defineProperty(_actions, aTypes.incrementGradingTime, function (_ref3, payload) {
+}), _defineProperty(_actions, laTypes.incrementGradingTime, function (_ref3, payload) {
     var state = _ref3.state,
         commit = _ref3.commit;
 
@@ -73180,7 +73201,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradingTimes,
         num: payload.timeToAdd
     });
 
-    commit(mTypes.incrementGradingTime, pl);
+    commit(lmTypes.incrementGradingTime, pl);
 }), _actions);
 
 var getters = {
@@ -94912,80 +94933,31 @@ var _getterTypes = __webpack_require__(6);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
+var _createExamButton = __webpack_require__(1023);
+
+var _createExamButton2 = _interopRequireDefault(_createExamButton);
+
+var _selectExamButton = __webpack_require__(1028);
+
+var _selectExamButton2 = _interopRequireDefault(_selectExamButton);
+
+var _manageExamButton = __webpack_require__(1033);
+
+var _manageExamButton2 = _interopRequireDefault(_manageExamButton);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 exports.default = {
 
     //the currently active exam
-    props: ['exam'],
+    props: ['exam', 'pageType'],
 
     components: {
+        ManageExamButton: _manageExamButton2.default,
+        SelectExamButton: _selectExamButton2.default,
+        CreateExamButton: _createExamButton2.default,
         'grade-exam-button': _gradeExamButton2.default,
         'exam-selection-modal': _examSelectionModal2.default
 
@@ -94998,59 +94970,72 @@ exports.default = {
         };
     },
 
-    computed: {
+    computed: {},
 
-        newExamPath: function newExamPath() {
-            return window.routeRoot + '/' + _apiSettings.Routes.commonBaseRoute;
-        }
-    },
-
-    methods: {
-
-        //
-        //             handleGradeExamClick: function () {
-        //                 //handle redirection
-        //                 let route = window.routeRoot + '/' + Routes.gradeExam(this.examId);
-        //                 //handle redirection
-        // //                return this.$router.go( route );
-        //                 return window.open( route, "_self" );
-        //
-        //             },
-
-        handleChangeExam: function handleChangeExam() {
-            this.toggleModal();
-        },
-
-        handleNewExamClick: function handleNewExamClick() {
-            //handle redirection
-            var route = window.routeRoot + '/' + _apiSettings.Routes.commonBaseRoute;
-            //handle redirection
-            //                return this.$router.go( route );
-            return window.open(route, "_self");
-        },
-
-        handleExamSelection: function handleExamSelection(examObject) {
-            window.console.log('exam-selection-bar', 'handleExamSelection', 98, examObject);
-            this.toggleModal();
-            var route = window.routeRoot + '/' + _apiSettings.Routes.setupExam(examObject);
-            //handle redirection
-            //                return this.$router.go( route );
-
-            return window.open(route, "_self");
-            //                return window.axios.get( Routes.setupExam( examObject ) );
-        },
-
-        toggleModal: function toggleModal() {
-            this.showModal = !this.showModal;
-        }
-    },
+    methods: {},
 
     directives: {},
 
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 806 */
@@ -95353,6 +95338,7 @@ exports.default = {
 
     data: function data() {
         return {
+            label: 'Grade it!',
             defaults: {}
         };
     },
@@ -99226,6 +99212,9 @@ var Sortable = __webpack_require__(885); //
 //
 //
 //
+//
+//
+//
 
 
 exports.default = {
@@ -99740,7 +99729,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, "\n.exam-selection-bar {\n  padding-top: 1em;\n  padding-right: 1em;\n}\n.level-left p {\n  color: #DDDDDD;\n  margin-left: 1em;\n}\n", ""]);
+exports.push([module.i, "\n.exam-selection-bar {\n  padding-top: 1em;\n  padding-right: 1em;\n  padding-bottom: 1em;\n}\n.exam-selection-bar .level-left p {\n    color: #DDDDDD;\n    margin-left: 1em;\n}\n", ""]);
 
 // exports
 
@@ -104352,6 +104341,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('exam-selection-bar', {
     attrs: {
+      "page-type": "setup",
       "exam": _vm.exam
     }
   }), _vm._v(" "), _c('exam-card', {
@@ -104463,33 +104453,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level-right"
   }, [_c('div', {
     staticClass: "level-item has-text-centered"
-  }, [_c('a', {
-    staticClass: "button is-primary is-outlined",
-    on: {
-      "click": _vm.handleNewExamClick
-    }
-  }, [_c('span', [_vm._v("New exam")])])]), _vm._v(" "), _c('div', {
+  }, [_c('create-exam-button')], 1), _vm._v(" "), _c('div', {
     staticClass: "level-item has-text-centered"
-  }, [_c('a', {
-    staticClass: "button is-warning is-outlined",
-    on: {
-      "click": _vm.handleChangeExam
-    }
-  }, [_c('span', [_vm._v("Change Exam")])])]), _vm._v(" "), _c('div', {
+  }, [_c('select-exam-button')], 1), _vm._v(" "), _c('div', {
     staticClass: "level-item has-text-centered"
-  }, [_c('grade-exam-button', {
+  }, [(_vm.pageType === 'setup') ? _c('grade-exam-button', {
     attrs: {
       "exam": _vm.exam
     }
-  })], 1)])]), _vm._v(" "), _c('exam-selection-modal', {
+  }) : _vm._e(), _vm._v(" "), (_vm.pageType === 'grade') ? _c('manage-exam-button', {
     attrs: {
-      "isVisible": _vm.showModal
-    },
-    on: {
-      "toggle-modal": _vm.toggleModal,
-      "exam-selected": _vm.handleExamSelection
+      "exam": _vm.exam
     }
-  })], 1)
+  }) : _vm._e()], 1)])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -104539,7 +104515,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.handleClick
     }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Grade it!")])])
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.label))])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('span', {
     staticClass: "icon is-small"
@@ -105782,7 +105758,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         return _.reverse(sorted);
     }(state, getters);
 }), _defineProperty(_module$exports, gTypes.getStudentCount, function (state, getters, rootState) {
-    return state.roster.length;
+    return getters[gTypes.getStudentsFromRoster].length;
 }), _module$exports);
 
 /***/ }),
@@ -106465,6 +106441,772 @@ var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStud
 var addStudent = exports.addStudent = 'addStudentOld';
 //students
 var loadStudents = exports.loadStudents = 'loadStudentsOld';
+
+//times
+var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
+var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+
+var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
+
+/***/ }),
+/* 1019 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actions, _getters;
+
+var _vue = __webpack_require__(14);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _newGradingMutationTypes = __webpack_require__(21);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(25);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(22);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _PayloadTime = __webpack_require__(146);
+
+var _PayloadTime2 = _interopRequireDefault(_PayloadTime);
+
+var _timeRequests = __webpack_require__(83);
+
+var _timeRequests2 = _interopRequireDefault(_timeRequests);
+
+var _legacyMutationTypes = __webpack_require__(1017);
+
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
+
+var _legacyActionTypes = __webpack_require__(1018);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+
+var mutations = _defineProperty({}, ngmTypes.updateStudentGradingTime, function (state, payload) {
+    _vue2.default.set(payload.student, 'gradingTime', payload.time);
+});
+
+var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.incrementGradingTime, function (_ref, amount) {
+    var state = _ref.state,
+        dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    var student = getters[nggTypes.getActiveStudent];
+    var exam = getters[nggTypes.getActiveExam];
+
+    var newTime = amount + student.gradingTime;
+
+    commit(ngmTypes.updateStudentGradingTime, _PayloadTime2.default.factory({
+        student: student,
+        exam: exam,
+        time: newTime
+    }));
+}), _defineProperty(_actions, ngaTypes.loadTimesFromServer, function (_ref2, exam) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+
+    var me = undefined;
+    return new Promise(function (resolve, reject) {
+        // window.console.log( 'itemscores', '', 193, exam, item, student);
+        var p = _timeRequests2.default.getAllGradingTimes(exam);
+
+        p.then(function (data) {
+            _.forEach(data, function (d) {
+                var student = getters.getStudentFromRosterById(d.student_id);
+                var time = parseFloat(d.seconds);
+
+                //record the score (this will initialize the object too)
+                commit(mTypes.updateStudentInRoster, _Payload2.default.factory({
+                    obj: student,
+                    exam: exam,
+                    updateProp: 'gradingTime',
+                    updateVal: time,
+                    mutateSilently: true
+                }));
+            });
+
+            resolve();
+        });
+    });
+}), _actions);
+
+var getters = (_getters = {}, _defineProperty(_getters, nggTypes.getTotalGradingTime, function (state, getters, rootState) {
+    var total = 0;
+    var students = getters[gTypes.getStudentsFromRoster];
+    if (_.isUndefined(students)) return total;
+    _.forEach(students, function (s) {
+        total += s.gradingTime;
+    });
+    return total;
+}), _defineProperty(_getters, nggTypes.getAverageGradingTime, function (state, getters, rootState) {
+    var storedNum = getters[nggTypes.getNumberGraded];
+    var totalTime = getters[nggTypes.getTotalGradingTime];
+    //avoid dividing by 0
+    var numGraded = storedNum == 0 ? 1 : storedNum;
+    var avgTime = totalTime / numGraded;
+    return avgTime;
+}), _defineProperty(_getters, nggTypes.getRemainingGradingTime, function (state, getters, rootState) {
+    var remainingExams = getters[nggTypes.getNumberExamsRemaining];
+    var avgTime = getters[nggTypes.getAverageGradingTime];
+    var estTime = avgTime * remainingExams;
+    return estTime;
+}), _getters);
+
+exports.default = {
+    getters: getters,
+    actions: actions,
+    mutations: mutations
+};
+
+/***/ }),
+/* 1020 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _getters;
+
+var _newGradingMutationTypes = __webpack_require__(21);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(25);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(22);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 11/30/17.
+                                                                                                                                                                                                                   */
+
+/**
+ * This handles getting calculated information
+ * about how many students or completed exams
+ * need to be graded and how many have been graded
+ */
+
+var getters = (_getters = {}, _defineProperty(_getters, nggTypes.getTotalExams, function (state, getters, rootState) {
+    var s = getters[gTypes.getStudentsFromRoster];
+    if (!_.isUndefined(s)) return s.length;
+    //        return getters[ gTypes.getStudentCount ];
+}), _defineProperty(_getters, nggTypes.getNumberGraded, function (state, getters, rootState) {
+    var allScores = getters[nggTypes.getAllItemScores];
+    var validScores = [];
+    _.forEach(allScores, function (score) {
+        //if the score is defined and non null
+        if (!_.isUndefined(score.score) && !_.isNull(score.score)) validScores.push(score);
+    });
+    //we consider an exam graded if there is at least one score
+    var uniqueStudents = _.uniqBy(validScores, 'studentId');
+    return uniqueStudents.length;
+}), _defineProperty(_getters, nggTypes.getNumberExamsRemaining, function (state, getters, rootState) {
+    //try{
+    var totalExams = getters[nggTypes.getTotalExams];
+    var gradedExams = getters[nggTypes.getNumberGraded];
+    var remaining = totalExams - gradedExams;
+    return remaining;
+    // } catch (err) {
+    //     return '';
+    // }
+}), _getters);
+
+exports.default = {
+    getters: getters
+};
+
+/***/ }),
+/* 1021 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _apiSettings = __webpack_require__(19);
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            label: 'New exam',
+            defaults: {}
+        };
+    },
+
+    computed: {
+        route: function route() {
+            return window.routeRoot + '/' + _apiSettings.Routes.commonBaseRoute;
+        }
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            //handle redirection
+            //                return this.$router.go( route );
+            return window.open(this.route, "_self");
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 1022 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1023 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1025)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1021),
+  /* template */
+  __webpack_require__(1024),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/exams/create-exam-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] create-exam-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c1636b90", Component.options)
+  } else {
+    hotAPI.reload("data-v-c1636b90", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1024 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button create-exam-button is-primary is-outlined",
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.label))])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-plus",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c1636b90", module.exports)
+  }
+}
+
+/***/ }),
+/* 1025 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1022);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("bade42e8", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c1636b90\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./create-exam-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c1636b90\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./create-exam-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1026 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _apiSettings = __webpack_require__(19);
+
+var _examSelectionModal = __webpack_require__(891);
+
+var _examSelectionModal2 = _interopRequireDefault(_examSelectionModal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['exam'],
+
+    components: { ExamSelectionModal: _examSelectionModal2.default },
+
+    data: function data() {
+        return {
+            showModal: false,
+            label: 'Change Exam',
+            icon: '',
+            defaults: {}
+        };
+    },
+
+    computed: {
+        route: function route() {
+            return window.routeRoot + '/' + _apiSettings.Routes.gradeExam(this.exam.id);
+        }
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            this.toggleModal();
+        },
+
+        handleExamSelection: function handleExamSelection(examObject) {
+            window.console.log('exam-selection-bar', 'handleExamSelection', 98, examObject);
+            this.toggleModal();
+            var route = window.routeRoot + '/' + _apiSettings.Routes.setupExam(examObject);
+            //handle redirection
+            //                return this.$router.go( route );
+
+            return window.open(route, "_self");
+            //                return window.axios.get( Routes.setupExam( examObject ) );
+        },
+
+        toggleModal: function toggleModal() {
+            this.showModal = !this.showModal;
+        }
+    }
+
+};
+
+/***/ }),
+/* 1027 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1028 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1030)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1026),
+  /* template */
+  __webpack_require__(1029),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/exams/select-exam-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] select-exam-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c7804390", Component.options)
+  } else {
+    hotAPI.reload("data-v-c7804390", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1029 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', [_c('a', {
+    staticClass: "button select-exam-button is-warning is-outlined",
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_c('span', [_vm._v(_vm._s(_vm.label))])]), _vm._v(" "), _c('exam-selection-modal', {
+    attrs: {
+      "isVisible": _vm.showModal
+    },
+    on: {
+      "toggle-modal": _vm.toggleModal,
+      "exam-selected": _vm.handleExamSelection
+    }
+  })], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c7804390", module.exports)
+  }
+}
+
+/***/ }),
+/* 1030 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1027);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("0008aca0", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c7804390\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./select-exam-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c7804390\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./select-exam-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1031 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _apiSettings = __webpack_require__(19);
+
+exports.default = {
+
+    props: ['exam'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            label: 'Manage exam',
+            defaults: {}
+        };
+    },
+
+    computed: {
+        route: function route() {
+            return window.routeRoot + '/' + _apiSettings.Routes.setupExam(this.exam);
+        }
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            //handle redirection
+            //                return this.$router.go( route );
+            return window.open(this.route, "_self");
+        }
+    }
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * This is the button which takes the user
+ * back to the setup / management page
+ */
+
+/***/ }),
+/* 1032 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1033 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1035)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1031),
+  /* template */
+  __webpack_require__(1034),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/exams/manage-exam-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] manage-exam-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-33a754a1", Component.options)
+  } else {
+    hotAPI.reload("data-v-33a754a1", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1034 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button grade-exam-button is-success is-outlined",
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.label))])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    staticClass: "fa fa-arrow-left",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-33a754a1", module.exports)
+  }
+}
+
+/***/ }),
+/* 1035 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1032);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("2c15838c", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-33a754a1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./manage-exam-button.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-33a754a1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./manage-exam-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

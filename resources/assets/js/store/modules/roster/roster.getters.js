@@ -108,7 +108,7 @@ module.exports = {
      * @returns {Number}
      */
     [ gTypes.getStudentCount ]: ( state, getters, rootState ) => {
-        return state.roster.length;
+        return getters[gTypes.getStudentsFromRoster].length;
     },
 
 

@@ -1,11 +1,11 @@
 <template>
-    <a class="button grade-exam-button is-success is-outlined"
+    <a class="button create-exam-button is-primary is-outlined"
        v-on:click="handleClick"
     >
         <span class="icon is-small">
-            <i class="fa fa-check" aria-hidden="true"></i>
+            <i class="fa fa-plus" aria-hidden="true"></i>
         </span>
-        <span>{{ label }}</span>
+        <span>{{label}}</span>
     </a>
 </template>
 
@@ -18,31 +18,28 @@
 
     export default {
 
-        props: [ 'exam' ],
+        props: [ ],
 
         components: {},
 
         data: function () {
             return {
-                label : 'Grade it!',
+                label : 'New exam',
                 defaults: {}
             }
         },
 
         computed: {
             route: function () {
-                return window.routeRoot + '/' + Routes.gradeExam( this.exam.id );
-            }
+                return window.routeRoot + '/' + Routes.commonBaseRoute;
+                }
         },
 
         methods: {
             handleClick: function () {
-                //handle redirection
+                    //handle redirection
 //                return this.$router.go( route );
-                return window.open( this.route, "_self" );
-
-                this.$emit( 'grade-currently-selected-exam' );
-
+                    return window.open( this.route, "_self" );
             }
         },
 
