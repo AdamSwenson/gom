@@ -1,18 +1,18 @@
 <template>
+    <div id="grade-main-page"
+         class=" mainBodyLocator"
+    >
 
-    <div id="gradeExamPage" class="container-flexible mainBodyLocator">
-        <div class="grading-main box">
-
-            <exam-selection-bar
+        <div class="grade-main-body container box">
+            <top-navbar
                     :exam="exam"
                     page-type="grade"
             >
                 <p slot="level-left"
                    class="title">{{examName}}
                 </p>
-            </exam-selection-bar>
 
-
+            </top-navbar>
             <div class="tile is-ancestor">
                 <div class="tile is-parent">
 
@@ -66,24 +66,26 @@
             </div>
         </div>
 
+        <bottom-navbar></bottom-navbar>
+
     </div>
 
 
 </template>
 
 <style lang="scss">
-    @import '../../../../sass/development/newSetup';
+    @import '../../../../sass/development/newGom';
 
-    #gradeExamPage {
-    }
-
-    .grading-main {
-        /*<!--background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
-        padding-left: 2px;
-        padding-right: 2px;
+    #grade-main-page {
         background-color: $main-background-color-gradient-limit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
 
+        #grade-main-body {
+            /*<!--background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
+            /*padding-left: 1em;*/
+            /*padding-right: 1em;*/
+
+        }
     }
 </style>
 
@@ -94,7 +96,9 @@
     import DashboardCounts from './dashboard/dashboard-counts.vue';
     import DashboardTimer from './dashboard/dashboard-timer.vue';
     import GradingRoster from './roster/grading-roster.vue';
-    import ExamSelectionBar from '../exams/exam-selection-bar.vue';
+    //navs
+    import TopNavbar from '../top-nav/top-navbar.vue';
+    import BottomNavbar from "../bottom-nav/bottom-navbar";
 
     import { loadExam } from '../../../api/requests/examRequests';
     import { loadExamKumi } from '../../../api/requests/kumiRequests';
@@ -114,10 +118,11 @@
         props: [],
 
         components: {
+            BottomNavbar,
             ActiveStudentArea,
             DashboardCounts,
             DashboardTimer,
-            ExamSelectionBar,
+            TopNavbar,
             // FinishButton,
             GradingNavTabs,
             GradingRoster,
@@ -212,10 +217,10 @@
                                         p.then( function () {
                                             let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
                                             p2.then( function () {
-                                                let p3 = me.$store.dispatch(ngaTypes.loadTimesFromServer, exam);
-                                                p3.then(function(){
+                                                let p3 = me.$store.dispatch( ngaTypes.loadTimesFromServer, exam );
+                                                p3.then( function () {
                                                     resolve();
-                                                });
+                                                } );
 
                                             } );
                                         } );

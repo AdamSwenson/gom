@@ -31,7 +31,7 @@
         data: function () {
             return {
                 showModal: false,
-                label: 'Change Exam',
+                label: 'Change',
                 icon: '',
                 defaults: {}
             }

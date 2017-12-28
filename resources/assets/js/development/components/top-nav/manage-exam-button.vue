@@ -1,12 +1,14 @@
 <template>
-    <a class="button grade-exam-button is-success is-outlined"
-       v-on:click="handleClick"
-    >
+    <p class="field">
+        <a class="button grade-exam-button is-success is-outlined"
+           v-on:click="handleClick"
+        >
         <span class="icon is-small">
             <i class="fa fa-arrow-left" aria-hidden="true"></i>
         </span>
-        <span>{{ label }}</span>
-    </a>
+            <span>{{ label }}</span>
+        </a>
+    </p>
 </template>
 
 <style lang="scss">

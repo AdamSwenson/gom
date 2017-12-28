@@ -87,10 +87,12 @@ const getters = {
     [ nggTypes.getTotalGradingTime ]: ( state, getters, rootState ) => {
         let total = 0;
         let students = getters[ gTypes.getStudentsFromRoster ];
-        if ( _.isUndefined( students ) ) return total;
-        _.forEach( students, function ( s ) {
-            total += s.gradingTime;
-        } );
+        if ( ! _.isUndefined( students ) ) {
+            _.forEach( students, function ( s ) {
+                let t = _.isUndefined(s.gradingTime) ? 0 : s.gradingTime;
+                total += t;
+            } );
+        }
         return total;
     },
 

@@ -1,6 +1,11 @@
 // Central definition of variables
 // for new setup process
 
+
+// Import custom variables
+@import "newVariables";
+
+//likely redundant...
 @import "~bulma";
 
 //@import ../node_modules/bootstrap-vue/dist/bootstrap-vue.css
@@ -9,10 +14,10 @@ $border-image-lft-path: $image-dir + 'images/styling/border-tiled.png';
 $border-image-long-path: $image-dir + 'images/styling/border-long.png';
 $border-image-horiz-path: $image-dir + 'images/styling/border-horiz-sm.png';
 
-$main-background-color: #00496C;
-$main-background-color-gradient-limit: #004768;
-$tan-background: #FFFDF4;
-$border-outline-color: #990002;
+//$main-background-color: #00496C;
+//$main-background-color-gradient-limit: #004768;
+//$tan-background: #FFFDF4;
+//$border-outline-color: #990002;
 
 // SASS style sheet */
 // Palette color codes */

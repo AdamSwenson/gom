@@ -81,26 +81,20 @@ import examCard from './components/cards/exam-card.vue'
 Vue.component( 'exam-card', examCard );
 
 
-//menus
-import examSelectionBar from './components/exams/exam-selection-bar.vue';
-Vue.component( 'exam-selection-bar', examSelectionBar );
 
-import examList from './components/exams/existing-exams-list.vue'
+//lists
+import examList from './components/menus/existing-exams-list.vue'
 Vue.component( 'existing-exams-menu', examList )
 
-import itemList from './components/items/existing-items-list.vue'
+import itemList from './components/menus/existing-items-list.vue'
 Vue.component( 'existing-items-menu', itemList )
-
-//Server request handlers
-import api from '../api/old/controller'
-Vue.component( 'api', api );
 
 
 //Tags
 import tagDisplay from './components/panels/tag/tag-display.vue';
 Vue.component( 'tag-display', tagDisplay );
 
-//Helpers
+//Universal helpers
 import infoButton from './components/helpers/info-button.vue';
 Vue.component( 'info-button', infoButton );
 

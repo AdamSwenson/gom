@@ -19,6 +19,7 @@ use App\Http\Controllers\Time\TimeController;
 Route::auth();
 //temp until convert everything to use the post
 Route::get('/logout', 'Auth\LoginController@logout');
+Route::post('/logout', 'Auth\LoginController@logout');
 
 /* Temporary: Limitations on registration */
 Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage')->name('show-restricted-registration-page');
@@ -222,6 +223,9 @@ Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
 Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');
 Route::resource('dev/notes', 'Item\NotesController');
 
+/* =============================
+        Preferences and settings
+   ============================= */
 
 /* =============================
         Scores and comments

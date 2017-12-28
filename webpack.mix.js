@@ -21,7 +21,10 @@ mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/d
 mix.react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newGrading.js'], 'public/js/dev/newest-grading-package.js');
 
 // mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
-mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newSetup.scss'], 'public/css/new-setup-package.css');
+mix.sass(['resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
+//
+// mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
+
 
 //this was not working for some reason
 //and slowed down everything

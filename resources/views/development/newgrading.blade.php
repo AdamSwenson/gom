@@ -13,7 +13,7 @@
 
 <body>
 
-<div class="container-fluid">
+<div class="main-area">
 
     <div id="app"></div>
 
@@ -28,10 +28,6 @@
     <input type="hidden" id="examId" data="{{ $exam->id }}"/>
 
 </div>
-<div class="footer">
-
-</div>
-
 
 <script type="text/javascript">
     window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );

@@ -1,0 +1,11 @@
+// Import the global custom  variables
+@import "newVariables";
+
+//import the setup scss
+@import "newSetup";
+
+//import global grading
+@import "newGrade";
+
+// Import the rest of Bulma
+@import "~bulma";

@@ -5,14 +5,14 @@
          v-bind:data-index="serialNumber"
     >
 
-        <div class="card-content">
+        <div class="card-content main-body">
             <item-main
                     :serial-number="serialNumber"
                     :is-exam="true"
             ></item-main>
         </div>
 
-        <div class="card-content" v-show="isPaneVisible">
+        <div class="card-content  main-body" v-show="isPaneVisible">
             <nav-tabs
                     :serial-number="serialNumber"
                     :is-exam="true"
@@ -22,10 +22,10 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer main-body">
 
             <div class="card-footer-item">
-                <div class="columns is-mobile is-multiline ">
+                <div class="columns  is-mobile is-multiline ">
 
                     <div class="column is-narrow">
 
@@ -99,8 +99,9 @@
         /*padding: 1em;*/
         /*}*/
         /*.panel-heading {*/
-
-        background-color: #00496C;
+.main-body {
+    background-color: #00496C;
+}
         //background-color: #FFFDF4;
 
     }

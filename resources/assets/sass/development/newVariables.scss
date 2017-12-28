@@ -1,0 +1,23 @@
+// 1. Import the initial variables
+@import "~bulma/sass/utilities/initial-variables";
+@import "~bulma/sass/utilities/functions";
+
+// 2. Set your own initial variables
+//$navbar-background-color :  #00496C;
+$main-background-color: #00496C;
+$main-background-color-gradient-limit: #004768;
+$tan-background: #FFFDF4;
+$border-outline-color: #990002;
+
+// 3. Set the derived variables
+
+// 4. Setup your Custom Colors
+
+// 5. Add new color variables to the color map.
+//@import "../sass/utilities/derived-variables.sass";
+//$addColors: (
+//);
+//$colors: map-merge($colors, $addColors);
+
+// 6. Import the rest of Bulma
+@import "~bulma";

@@ -39,7 +39,7 @@
 </style>
 
 <script>
-    import itemList from './existing-exams-list.vue';
+    import itemList from '../menus/existing-exams-list.vue';
 
     export default {
 

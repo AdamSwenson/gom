@@ -8,11 +8,13 @@ import Vue from 'vue'
 import gradingRoutes from './routes.grading';
 import examRoutes from './routes.exam-panel';
 import itemRoutes from './routes.item-panel';
+import preferenceRoutes from './routes.preferences';
 
 export const routes = [
     ...examRoutes,
     ...gradingRoutes,
     ...itemRoutes,
+    ...preferenceRoutes,
 
     //exams: change, grade, or new
     {

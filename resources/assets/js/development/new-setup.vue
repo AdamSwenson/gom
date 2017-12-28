@@ -1,18 +1,21 @@
 <template>
-    <div id="examEditor"
-         class="setup-main"
+    <div id="setup-main-page"
+         class=" mainBodyLocator"
     >
-        <div class="container is-fluid">
-            <div class="columns is-centered">
+        <div class="container">
+            <top-navbar
+                    page-type="setup"
+                    :exam="exam"
+            ></top-navbar>
+
+            <div id="setup-main-body"
+                 class="columns is-centered"
+            >
 
                 <div class="column is-three-fourths ">
-                <!--<div class="column is-four-fifths ">-->
+                    <!--<div class="column is-four-fifths ">-->
 
-                    <div id="examCardArea" class="card">
-                        <exam-selection-bar
-                                page-type="setup"
-                                :exam="exam"
-                        ></exam-selection-bar>
+                    <div id="examCardArea" >
 
                         <exam-card
                                 :serial-number="examSerialNumber"
@@ -36,48 +39,56 @@
 
             <input type="hidden" id="examId" v-model="examId"/>
         </div>
+
+        <bottom-navbar></bottom-navbar>
+
     </div>
 </template>
 
 <style lang="scss">
     @import '../../sass/development/newSetup';
 
-    .setup-main {
-        background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
-    }
-
-    #examCardArea {
-        /*<!--background-color: $color-primary-2;-->*/
-        padding-left: 2px;
-        padding-right: 2px;
+    #setup-main-page {
         background-color: $main-background-color-gradient-limit;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
+
+
+        #setup-main-body {
+
+            /*<!-- background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
+
+            #examCardArea {
+                /*<!--background-color: $color-primary-2;-->*/
+                padding-left: 2px;
+                padding-right: 2px;
+                background-color: $main-background-color-gradient-limit;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
+            }
+
+            #itemCardArea {
+                box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
+            }
+
+            .itemCol {
+                border-left-color: $border-outline-color;
+                border-left-width: thin;
+                border-left-style: solid;
+                border-right-color: $border-outline-color;
+                border-right-width: thin;
+                border-right-style: solid;
+                /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                /*border-width: 10px;*/
+                /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/
+
+            }
+
+            .infoCol {
+                margin-top: 2em;
+                /*background-color: #00496C;*/
+            }
+        }
     }
-
-    #itemCardArea {
-        box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
-    }
-
-    .itemCol {
-        border-left-color: $border-outline-color;
-        border-left-width: thin;
-        border-left-style: solid;
-        border-right-color: $border-outline-color;
-        border-right-width: thin;
-        border-right-style: solid;
-        /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
-        /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
-        /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
-        /*border-width: 10px;*/
-        /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/
-
-    }
-
-    .infoCol {
-        margin-top: 2em;
-        /*background-color: #00496C;*/
-    }
-
 </style>
 <script>
 
@@ -93,10 +104,18 @@
     import { loadExamKumi } from '../api/requests/kumiRequests';
     import { loadAllStudents } from '../api/requests/studentRequests';
 
+    //navigation bars
+    import BottomNavbar from '../development/components/bottom-nav/bottom-navbar.vue';
+    import TopNavbar from '../development/components/top-nav/top-navbar.vue';
+
     var Sortable = require( 'sortablejs' );
 
     export default {
 
+        components: {
+            BottomNavbar,
+            TopNavbar
+        },
         data: function () {
             return {
 //                isSyncable: this.$store.getters.canSync,

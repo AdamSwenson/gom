@@ -127,7 +127,7 @@ Vue.component( 'public-indicator', publicIndicator );
 import examList from './components/exams/existing-exams-list.vue'
 Vue.component( 'existing-exams-menu', examList )
 
-import itemList from './components/items/existing-items-list.vue'
+import itemList from './components/menus/existing-items-list.vue'
 Vue.component( 'existing-items-menu', itemList )
 
 

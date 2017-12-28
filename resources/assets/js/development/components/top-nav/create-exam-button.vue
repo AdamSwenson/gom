@@ -24,7 +24,7 @@
 
         data: function () {
             return {
-                label : 'New exam',
+                label : 'New',
                 defaults: {}
             }
         },
