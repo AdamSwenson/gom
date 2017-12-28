@@ -1,15 +1,12 @@
 <template>
-<div class="box account-area">
-l
+    <div class="box connections-area">
 
-<h4>account</h4>
+        <h4>Setup label preferences</h4>
 
-    ll
-
+        <p> areStudentNamesVisible: true,</p>
 
 
-    ll
-</div>
+    </div>
 </template>
 
 <style lang="scss">

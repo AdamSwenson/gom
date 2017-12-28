@@ -1,9 +1,9 @@
 <template>
-<div class="box account-area">
+<div class="box connections-area">
 l
 
-<h4>account</h4>
 
+<h4>connections</h4>
     ll
 
 

@@ -1,15 +1,23 @@
+grade-input.vue
 <template>
-<div class="box account-area">
-l
-
-<h4>account</h4>
-
-    ll
+    <div class="box connections-area">
 
 
+        <h4>Grading input preferences</h4>
 
-    ll
-</div>
+      <p>  areStudentNamesVisible: true,</p>
+
+        <p>isLetterGradeButtonUsed : true,</p>
+
+        <p>        shouldDynamicallyCollapseCommentAreas : true,</p>
+
+        <p>        isSliderUsed : true,</p>
+
+        <p>        isScoreDisplayed : true,</p>
+
+
+
+    </div>
 </template>
 
 <style lang="scss">

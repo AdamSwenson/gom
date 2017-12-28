@@ -16,8 +16,9 @@
             </ul>
         </div>
 
-        <div class="prefs-content-area">
-            <router-view name="prefsContentArea"></router-view>
+        <div class="prefs-content">
+            <slot name="prefsContent"></slot>
+
         </div>
     </div>
 

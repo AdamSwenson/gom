@@ -4,7 +4,11 @@
         <preferences-base
                 :tabs="tabs"
                 default-route="defaultRoute"
-        ></preferences-base>
+        >
+            <div slot="prefsContent">
+                <router-view name="prefsContentArea"></router-view>
+            </div>
+        </preferences-base>
     </div>
 
 </template>
@@ -26,9 +30,9 @@
             return {
                 defaultRoute: 'account',
                 tabs: [
-                    { route: 'account', text: 'Manage account' },
-                    { route: 'connections', text: 'Manage connections' },
-                    { text: 'Pay yo bills', route: 'bills' }
+                    { route: '/preferences/user/account', text: 'Manage account' },
+                    { route: '/preferences/user/connections', text: 'Manage connections' },
+                    { text: 'Pay yo bills', route: '/preferences/user/bills' }
                 ],
             }
         },

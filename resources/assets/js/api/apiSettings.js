@@ -220,8 +220,9 @@ export const BusinessLinks = [
 ];
 
 export const SettingsLinks = [
-    { text: 'Grading page settings', link: makeRoute( 'settings/page-settings' ) },
-    { text: 'User settings', link: makeRoute( 'settings/user-settings' ) },
+    { text: 'Grading page settings', type: 'grade', route: '/preferences/grade'  },
+    { text: 'Setup page settings', type: 'setup', route: '/preferences/setup'  },
+    { text: 'User settings', type: 'user', route: '/preferences/user'  },
 ];
 
 // `transformRequest` allows changes to the request data before it is sent to the server

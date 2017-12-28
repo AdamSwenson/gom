@@ -1,12 +1,10 @@
-<!--This holds the displayed preference area  -->
 <template>
-    <div class="preference-panel">
+    <div class="box connections-area">
 
-        <div class="container">
 
-            <router-view name="preferencePanelArea"></router-view>
+        <h4>Setup structure preferences</h4>
 
-        </div>
+      <p>  true,</p>
     </div>
 </template>
 
@@ -23,15 +21,13 @@
 
         data: function () {
             return {
-
                 defaults: {}
             }
         },
 
         computed: {},
 
-        methods: {
-         },
+        methods: {},
 
         directives: {},
 
