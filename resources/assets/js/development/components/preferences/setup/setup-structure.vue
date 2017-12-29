@@ -1,11 +1,10 @@
 <template>
     <div class="box connections-area">
 
-        <h4>Setup label preferences</h4>
 
-        <p> areStudentNamesVisible: true,</p>
+        <h4 class="title is-4">Setup structure preferences</h4>
 
-
+      <p>  </p>
     </div>
 </template>
 
@@ -14,6 +13,7 @@
 </style>
 
 <script>
+
     export default {
 
         props: [],

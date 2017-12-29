@@ -4,11 +4,6 @@
 
 
 
-// ================================================================
-// ======================= GRADING PREFERENCES ====================
-// ================================================================
-export const areStudentNamesVisible = 'areStudentNamesVisible';
-
 
 //Grading a student's exam
 export const getExamId = 'getExamId'
@@ -138,6 +133,30 @@ export const getSortedIds = 'getSortedIds'
 // export const getMaxPossibleScore = 'getMaxPossibleScore';
 // export const getInconsistentCutOffs = 'getInconsistentCutOffs';
 // export const getListOfGradeValues = 'getListOfGradeValues';
+
+
+
+/* ================================================================
+   ================== PREFERENCES -- GRADE    =====================
+   ================================================================ */
+export const areStudentNamesVisible = 'areStudentNamesVisible';
+export const isLetterGradeButtonUsed = 'isLetterGradeButtonUsed';
+export const isSliderUsed = 'isSliderUsed';
+export const isScoreDisplayed = 'isScoreDisplayed';
+export const shouldDynamicallyCollapseCommentAreas = 'shouldDynamicallyCollapseCommentAreas';
+
+
+/* ================================================================
+   ================== PREFERENCES -- SETUP    =====================
+   ================================================================ */
+export const getSetupPreferences = 'getSetupPreferences';
+
+/* ================================================================
+   ================== PREFERENCES -- USER    =====================
+   ================================================================ */
+export const getUserPreferences = 'getUserPreferences';
+
+
 
 /* ================================================================
    ================== SCORES        =====================

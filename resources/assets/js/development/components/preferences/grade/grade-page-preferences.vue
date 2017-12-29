@@ -1,6 +1,6 @@
 <template>
 
-    <div class="setup-preferences">
+    <div class="grade-preferences">
         <preferences-base
                 :tabs="tabs"
                 default-route="defaultRoute"
@@ -17,7 +17,8 @@
 </style>
 
 <script>
-    import PreferencesBase from "./preferences-base";
+    import PreferencesBase from "../preferences-base";
+    import Routes from '../../../routes.preferences';
 
     export default {
 
@@ -27,16 +28,17 @@
 
         data: function () {
             return {
-                defaultRoute: '/preferences/setup/labels',
-                tabs: [
-                    { route: '/preferences/setup/labels', text: 'What things are called' },
-                    { route: '/preferences/setup/structure', text: 'Assignment structure options' },
-                  ],
+                routeGroup: 'grade',
+                defaultRoute: 'prefs-grade-input',
                 defaults: {}
             }
         },
 
-        computed: {},
+        computed: {
+            tabs: function () {
+                return _.filter( Routes, { group: this.routeGroup } );
+            }
+        },
 
         methods: {},
 

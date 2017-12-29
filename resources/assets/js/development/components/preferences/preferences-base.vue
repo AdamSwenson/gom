@@ -4,13 +4,11 @@
         <div class="tabs">
             <ul>
                 <li v-for="t in tabs"
-                    v-bind:class="t.route == selected ? 'is-active' : ''"
+                    v-bind:class="t.name === selected ? 'is-active' : ''"
                     v-on:click="handleClick(t)"
                 >
-                    <router-link
-                            v-bind:to="t.route"
-                    >
-                        <a class="pref-nav">{{t.text}} </a>
+                    <router-link v-bind:to="t.path">
+                        <a class="pref-nav">{{t.tabText}} </a>
                     </router-link>
                 </li>
             </ul>
@@ -48,7 +46,7 @@
         methods: {
 
             handleClick: function ( tab ) {
-                this.selected = tab.route;
+                this.selected = tab.name;
             }
         },
 

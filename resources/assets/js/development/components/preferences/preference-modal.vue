@@ -29,9 +29,9 @@
 </style>
 
 <script>
-    import UserPreferences from "./user-preferences";
-    import GradePagePreferences from "./grade-page-preferences";
-    import SetupPagePreferences from "./setup-page-preferences";
+    import UserPreferences from "./user/user-preferences";
+    import GradePagePreferences from "./grade/grade-page-preferences";
+    import SetupPagePreferences from "./setup/setup-page-preferences";
 
     import { SettingsLinks } from '../../../api/apiSettings';
 
@@ -56,8 +56,11 @@
 
         computed: {
             title: function () {
+                if(_.isUndefined(this.type) || _.isUndefined(this.links)) return '';
+
                 let t = _.find( this.links, { type: this.type } );
-                return t.text;
+
+                return ! _.isUndefined(t) ? t.text : '';
             }
         },
 

@@ -1,10 +1,8 @@
 <template>
     <div class="box connections-area">
 
+        <h4 class="title is-4"> Grading dashboard settings</h4>
 
-        <h4>Setup structure preferences</h4>
-
-      <p>  true,</p>
     </div>
 </template>
 

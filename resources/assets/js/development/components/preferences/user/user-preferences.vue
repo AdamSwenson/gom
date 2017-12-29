@@ -1,6 +1,6 @@
 <template>
 
-    <div class="grade-preferences">
+    <div class="user-preferences">
         <preferences-base
                 :tabs="tabs"
                 default-route="defaultRoute"
@@ -10,6 +10,7 @@
             </div>
         </preferences-base>
     </div>
+
 </template>
 
 <style lang="scss">
@@ -17,7 +18,8 @@
 </style>
 
 <script>
-    import PreferencesBase from "./preferences-base";
+    import PreferencesBase from "../preferences-base";
+    import Routes from '../../../routes.preferences';
 
     export default {
 
@@ -27,17 +29,16 @@
 
         data: function () {
             return {
-                defaultRoute:  '/preferences/grade/input',
-                tabs: [
-                    { route: '/preferences/grade/input', text: 'Inputs' },
-                    { route: '/preferences/grade/dash', text: 'Dash' },
-                ],
-                defaults: {}
+                routeGroup : 'user',
+                defaultRoute: 'prefs-account',
             }
         },
 
-        computed: {},
-
+        computed: {
+            tabs: function () {
+                return _.filter( Routes, { group: this.routeGroup } );
+            }
+        },
         methods: {},
 
         directives: {},
@@ -45,6 +46,7 @@
         events: {},
 
         mounted: function () {
+
         }
     }
 </script>

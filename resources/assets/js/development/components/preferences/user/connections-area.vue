@@ -1,14 +1,8 @@
 <template>
-<div class="box bills-area">
-l
+<div class="box connections-area">
 
+    <h4 class="title is-4">connections</h4>
 
-<h4>bills</h4>
-    ll
-
-
-
-    ll
 </div>
 </template>
 

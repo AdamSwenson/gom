@@ -1,13 +1,13 @@
-grade-input.vue
 <template>
-    <div class="box connections-area">
+<div class="box bills-area">
 
-        <h4> Grading dashboard</h4>
-        ll
+    <h4 class="title is-4">bills</h4>
+    ll
 
 
-        ll
-    </div>
+
+    ll
+</div>
 </template>
 
 <style lang="scss">

@@ -226,6 +226,9 @@ Route::resource('dev/notes', 'Item\NotesController');
 /* =============================
         Preferences and settings
    ============================= */
+Route::resource('dev/preferences/user', 'Preferences\UserPreferencesController' );
+Route::resource('dev/preferences/setup', 'Preferences\setupPreferencesController' );
+Route::resource('dev/preferences/grade', 'Preferences\gradePreferencesController' );
 
 /* =============================
         Scores and comments

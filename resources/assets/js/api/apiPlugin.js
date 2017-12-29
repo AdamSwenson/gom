@@ -53,6 +53,9 @@ import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiReque
 //notes
 import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
 
+//prefs
+import { setGradePreferences } from '../api/requests/preferenceRequests';
+
 import {
     saveItemScoreRequest,
     saveCommentTextRequest,
@@ -308,6 +311,10 @@ export default function ( store ) {
                 destroyNoteRequest( store, payload.obj );
                 break;
 
+            // ********************  Preferences
+            case ngmTypes.updateGradingPreference:
+                setGradePreferences(payload);
+                break;
 
             // ******************** Scores
 
@@ -346,8 +353,8 @@ export default function ( store ) {
                 break;
 
             case mTypes.updateStudentInRoster:
-                     // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
-                    updateStudent( store, payload.obj );
+                // window.console.log( 'apiPlugin', 'updateStudentInRoster', 169, type, payload );
+                updateStudent( store, payload.obj );
                 break;
 
 
@@ -387,9 +394,9 @@ export default function ( store ) {
             // ************ Times
 
             case ngmTypes.updateStudentGradingTime:
-                    setStudentGradingTime(payload.exam, payload.student, payload.time);
+                setStudentGradingTime( payload.exam, payload.student, payload.time );
 
-                    break;
+                break;
             default:
 
         }

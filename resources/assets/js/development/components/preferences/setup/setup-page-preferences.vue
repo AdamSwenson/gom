@@ -1,6 +1,6 @@
 <template>
 
-    <div class="user-preferences">
+    <div class="setup-preferences">
         <preferences-base
                 :tabs="tabs"
                 default-route="defaultRoute"
@@ -10,7 +10,6 @@
             </div>
         </preferences-base>
     </div>
-
 </template>
 
 <style lang="scss">
@@ -18,7 +17,8 @@
 </style>
 
 <script>
-    import PreferencesBase from "./preferences-base";
+    import PreferencesBase from "../preferences-base";
+import Routes from '../../../routes.preferences';
 
     export default {
 
@@ -28,16 +28,17 @@
 
         data: function () {
             return {
-                defaultRoute: 'account',
-                tabs: [
-                    { route: '/preferences/user/account', text: 'Manage account' },
-                    { route: '/preferences/user/connections', text: 'Manage connections' },
-                    { text: 'Pay yo bills', route: '/preferences/user/bills' }
-                ],
+                routeGroup: 'setup',
+                defaultRoute: 'prefs-labels',
+                defaults: {}
             }
         },
 
-        computed: {},
+        computed: {
+            tabs: function () {
+                return _.filter( Routes, { group: this.routeGroup } );
+            }
+        },
 
         methods: {},
 
@@ -46,7 +47,6 @@
         events: {},
 
         mounted: function () {
-
         }
     }
 </script>

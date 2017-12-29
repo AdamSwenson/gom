@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Models\Preferences\GradePreferences;
+use App\Models\Preferences\SetupPreferences;
+use App\Models\Preferences\UserPreferences;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -139,7 +142,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @param $related A model with a user_id attribute
      * @return bool
      */
-    public function owns($related)
+    public function owns( $related )
     {
         return $this->id == $related->user_id;
     }
@@ -157,4 +160,29 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return env('SLACK_HOOK_NEW_USER', '');
     }
 
+    /* ------------------------------ Preferences ---------------------- */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function grade_preferences()
+    {
+        return $this->hasOne(GradePreferences::class);
+    }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function setup_preferences()
+    {
+        return $this->hasOne(SetupPreferences::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function user_preferences()
+    {
+        return $this->hasOne(UserPreferences::class);
+    }
 }

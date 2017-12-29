@@ -74,7 +74,7 @@ import gradeAssignments from './modules/grades/gradeAssignments';
 //new grading
 import newactivestudent from './modules/newgrading/activestudent-new';
 import newactiveexam from './modules/newgrading/activeexam-new';
-import gradingPreferences from './modules/newgrading/preferences';
+import preferences from './modules/preferences/index';
 
 //timer
 import timerNew from './modules/newgrading/timer-new';
@@ -121,10 +121,10 @@ const debug = process.env.NODE_ENV !== 'production';
     modules: {
         newactiveexam,
         newactivestudent,
-        gradingPreferences,
         timerNew,
         gradingTimesNew,
         gradingCountsNew,
+        preferences,
 
 
         comments,
