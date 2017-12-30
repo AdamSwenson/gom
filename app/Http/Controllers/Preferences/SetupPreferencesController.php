@@ -5,100 +5,83 @@ namespace App\Http\Controllers\Preferences;
 use App\Http\Controllers\Controller;
 use App\Models\Preferences\SetupPreferences;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SetupPreferencesController extends Controller
 {
+
+
+
     protected $user;
 
     public function __construct()
     {
         $this->middleware('auth');
         $this->user = Auth::user();
-
     }
 
     /**
-     * Display a listing of the resource.
+     * @return SetupPreferences
+     */
+    protected function initializePreferences()
+    {
+        //if no preferences object exists, make one with defaults
+        $p = new SetupPreferences();
+        $p->preferences = SetupPreferences::$defaultPreferences;
+        $p->save();
+        return $p;
+    }
+
+    /**
+     * @return $this|SetupPreferences
+     */
+    protected function loadPreferences()
+    {
+        $p = SetupPreferences::where('user_id', Auth::id())->first();
+        if ( is_null($p) ) {
+            //if no preferences object exists, make one with defaults
+            $p = $this->initializePreferences();
+        }
+        return $p;
+    }
+
+    /**
+     * Returns json of the preferences
+     * for the grading page.
      *
-     * @return \Illuminate\Http\Response
+     * @return SetupPreferencesController|SetupPreferences
      */
     public function index()
     {
-        $p = SetupPreferences::where('user_id', $this->user->id);
-        if ( isNull($p) ) {
-            $p = new SetupPreferences();
-            $p->preferences = SetupPreferences::$defaultPreferences;
-            $p->save();
-        }
-        return $p;
-
+        $p = $this->loadPreferences();
+        return $p->preferences;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function store( Request $request )
     {
-        $p = SetupPreferences::where('user_id', $this->user->id);
-        $p->preferences = $request->preferences;
+        //we will be receiving a payload object
+        //with updateProp and updateVal
+        //containing the relevant data
+
+        //get existing preferences or initialized to defaults
+        $p = $this->loadPreferences();
+
+        $pl = $request->input('payload');
+        $preferenceToUpdate = $pl['updateProp'];
+        $newValue = $pl['updateVal'];
+
+        $p->setPreference($preferenceToUpdate, $newValue);
+
         $p->save();
+
+        return $this->sendAjaxSuccess();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show( $id )
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit( $id )
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update( Request $request, $id )
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy( $id )
-    {
-        //
-    }
 }

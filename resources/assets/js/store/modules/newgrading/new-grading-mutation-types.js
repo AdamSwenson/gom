@@ -29,6 +29,12 @@ export const toggleStudentNameVisibility = 'toggleStudentNameVisibility';
 export const loadExams = 'loadExams';
 export const updateGradingPreference = 'updateGradingPreference';
 
+//preferences for setup
+export const updateSetupPreference = 'updateSetupPreference';
+
+//preferences for user and account
+export const updateUserPreference = 'updateUserPreference';
+
 //times
 export const incrementGradingTime = 'incrementGradingTime';
 export const setGradingTime = 'setGradingTime';

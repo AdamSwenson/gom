@@ -5,7 +5,7 @@ namespace App\Models\Preferences;
 use App\BaseModel;
 use App\User;
 
-class SetupPreferences extends BaseModel
+class SetupPreferences extends PreferenceBase
 {
     protected $fillable = ['preferences'];
 

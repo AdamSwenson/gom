@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Preferences;
 use App\Http\Controllers\Controller;
 use App\Models\Preferences\UserPreferences;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserPreferencesController extends Controller
 {
@@ -18,78 +19,67 @@ class UserPreferencesController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * @return UserPreferences
+     */
+    protected function initializePreferences()
+    {
+        //if no preferences object exists, make one with defaults
+        $p = new UserPreferences();
+        $p->preferences = UserPreferences::$defaultPreferences;
+        $p->save();
+        return $p;
+    }
+
+    /**
+     * @return $this|UserPreferences
+     */
+    protected function loadPreferences()
+    {
+        $p = UserPreferences::where('user_id', Auth::id())->first();
+        if ( is_null($p) ) {
+            //if no preferences object exists, make one with defaults
+            $p = $this->initializePreferences();
+        }
+        return $p;
+    }
+
+    /**
+     * Returns json of the preferences
+     * for the grading page.
      *
-     * @return \Illuminate\Http\Response
+     * @return UserPreferencesController|UserPreferences
      */
     public function index()
     {
-        $p = UserPreferences::where('user_id', $this->user->id);
-        if ( isNull($p) ) {
-            $p = new UserPreferences();
-            $p->preferences = UserPreferences::$defaultPreferences;
-            $p->save();
-        }
-        return $p;
-
+        $p = $this->loadPreferences();
+        return $p->preferences;
     }
 
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store( Request $request )
     {
-        $p = UserPreferences::where('user_id', $this->user->id);
-        $p->preferences = $request->preferences;
+        //we will be receiving a payload object
+        //with updateProp and updateVal
+        //containing the relevant data
+
+        //get existing preferences or initialized to defaults
+        $p = $this->loadPreferences();
+
+        $pl = $request->input('payload');
+        $preferenceToUpdate = $pl['updateProp'];
+        $newValue = $pl['updateVal'];
+
+        $p->setPreference($preferenceToUpdate, $newValue);
+
         $p->save();
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        return $this->sendAjaxSuccess();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

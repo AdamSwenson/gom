@@ -24,6 +24,8 @@ const state = {
 
     isScoreDisplayed: true,
 
+    showTimer: true,
+
 };
 
 const mutations = {
@@ -38,7 +40,7 @@ const mutations = {
 };
 
 const actions = {
-    loadGradingPreferencesFromServer: ( { dispatch, commit, getters } ) => {
+    [ngaTypes.loadGradePreferencesFromServer] : ( { dispatch, commit, getters } ) => {
         return new Promise( function ( resolve, reject ) {
             let p = getGradePreferences();
             p.then( function ( prefs ) {
@@ -74,6 +76,18 @@ const getters = {
         return state.shouldDynamicallyCollapseCommentAreas;
     },
 
+    /**
+     * One getter to rule them all. Given the string name of the
+     * grading preference to retrieve, it, uh, retrieves it.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param preferenceName
+     * @returns {function(*)}
+     */
+    [nggTypes.getGradingPreference] : (state, getters, rootState, preferenceName) => ( preferenceName ) => {
+        return state[preferenceName];
+    }
 
 };
 

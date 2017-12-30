@@ -13066,6 +13066,12 @@ var toggleStudentNameVisibility = exports.toggleStudentNameVisibility = 'toggleS
 var loadExams = exports.loadExams = 'loadExams';
 var updateGradingPreference = exports.updateGradingPreference = 'updateGradingPreference';
 
+//preferences for setup
+var updateSetupPreference = exports.updateSetupPreference = 'updateSetupPreference';
+
+//preferences for user and account
+var updateUserPreference = exports.updateUserPreference = 'updateUserPreference';
+
 //times
 var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
 var setGradingTime = exports.setGradingTime = 'setGradingTime';
@@ -13517,16 +13523,18 @@ var isLetterGradeButtonUsed = exports.isLetterGradeButtonUsed = 'isLetterGradeBu
 var isSliderUsed = exports.isSliderUsed = 'isSliderUsed';
 var isScoreDisplayed = exports.isScoreDisplayed = 'isScoreDisplayed';
 var shouldDynamicallyCollapseCommentAreas = exports.shouldDynamicallyCollapseCommentAreas = 'shouldDynamicallyCollapseCommentAreas';
+var getGradingPreference = exports.getGradingPreference = 'getGradingPreference';
 
 /* ================================================================
    ================== PREFERENCES -- SETUP    =====================
    ================================================================ */
 var getSetupPreferences = exports.getSetupPreferences = 'getSetupPreferences';
-
+var getSetupPreference = exports.getSetupPreference = 'getSetupPreference';
 /* ================================================================
    ================== PREFERENCES -- USER    =====================
    ================================================================ */
 var getUserPreferences = exports.getUserPreferences = 'getUserPreferences';
+var getUserPreference = exports.getUserPreference = 'getUserPreference';
 
 /* ================================================================
    ================== SCORES        =====================
@@ -13693,6 +13701,11 @@ var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
 //grade assignments
 var updateCutoff = exports.updateCutoff = 'updateCutoff';
 var loadGradeAssignmentsFromServerData = exports.loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
+
+//preferences
+var loadUserPreferencesFromServer = exports.loadUserPreferencesFromServer = 'loadUserPreferencesFromServer';
+var loadSetupPreferencesFromServer = exports.loadSetupPreferencesFromServer = 'loadSetupPreferencesFromServer';
+var loadGradePreferencesFromServer = exports.loadGradePreferencesFromServer = 'loadGradePreferencesFromServer';
 
 //questions
 // export const loadMaxQuestionScores = 'loadMaxQuestionScores';
@@ -45534,7 +45547,7 @@ module.exports = {
     getSetupPreferences: function getSetupPreferences() {
         var route = preferencesBaseRoute + 'setup';
         return window.axios.get(route, out).then(function (response) {
-            return response.data.preferences;
+            return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
@@ -45543,7 +45556,7 @@ module.exports = {
     getUserPreferences: function getUserPreferences() {
         var route = preferencesBaseRoute + 'user';
         return window.axios.get(route, out).then(function (response) {
-            return response.data.preferences;
+            return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
@@ -45561,7 +45574,7 @@ module.exports = {
 
     setSetupPreferences: function setSetupPreferences(toSend) {
         var route = preferencesBaseRoute + 'setup';
-        out['preferences'] = toSend;
+        out['payload'] = toSend;
         return window.axios.post(route, out).then(function (response) {
             return response.data;
         }).catch(function (error) {
@@ -45571,7 +45584,7 @@ module.exports = {
 
     setUserPreferences: function setUserPreferences(toSend) {
         var route = preferencesBaseRoute + 'user';
-        out['preferences'] = toSend;
+        out['payload'] = toSend;
         return window.axios.post(route, out).then(function (response) {
             return response.data;
         }).catch(function (error) {
@@ -63923,7 +63936,11 @@ exports.default = {
 
     methods: {
         toggleModal: function toggleModal() {
+            this.$router.push('/');
             this.$emit('toggle-modal');
+        },
+        handleBackgroundClick: function handleBackgroundClick() {
+            this.toggleModal();
         }
     },
 
@@ -63972,35 +63989,25 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
 
 exports.default = {
 
-    props: ['tabs', 'defaultRoute'],
+    props: ['tabs'],
 
     components: {},
 
     data: function data() {
         return {
-            selected: this.defaultRoute,
             defaults: {}
         };
     },
 
-    computed: {},
-
-    methods: {
-
-        handleClick: function handleClick(tab) {
-            this.selected = tab.name;
+    computed: {
+        currentPath: function currentPath() {
+            return this.$route.path;
         }
-    },
+    }
 
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
 };
 
 /***/ }),
@@ -64894,6 +64901,14 @@ exports.default = function (store) {
                 (0, _preferenceRequests.setGradePreferences)(payload);
                 break;
 
+            case ngmTypes.updateSetupPreference:
+                (0, _preferenceRequests.setSetupPreferences)(payload);
+                break;
+
+            case ngmTypes.updateUserPreference:
+                (0, _preferenceRequests.setUserPreferences)(payload);
+                break;
+
             // ******************** Scores
 
 
@@ -65081,6 +65096,9 @@ window._ = __webpack_require__(28);
 
 
 //prefs
+
+
+//scores
 
 
 //students
@@ -65811,6 +65829,7 @@ module.exports = [
     components: { prefsContentArea: _accountArea2.default },
     props: true,
     group: 'user',
+    isDefaultRoute: true,
     tabText: 'Manage account'
 }, //props: (route) => {return route.index;}},
 
@@ -65860,6 +65879,8 @@ module.exports = [
     components: { prefsContentArea: _setupLabels2.default },
     props: true,
     group: 'setup',
+
+    isDefaultRoute: true,
     tabText: 'What things are called' //{default: true}
 }, //props: (route) => {return route.index;}},
 
@@ -65871,6 +65892,8 @@ module.exports = [
     components: { prefsContentArea: _gradeInput2.default },
     props: true,
     group: 'grade',
+
+    isDefaultRoute: true,
     tabText: 'Inputs' //{default: true}
 }, //props: (route) => {return route.index;}},
 
@@ -72725,7 +72748,9 @@ var state = {
 
     isSliderUsed: true,
 
-    isScoreDisplayed: true
+    isScoreDisplayed: true,
+
+    showTimer: true
 
 };
 
@@ -72735,24 +72760,22 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.toggleStu
     _vue2.default.set(state, payload.updateProp, payload.updateVal);
 }), _mutations);
 
-var actions = {
-    loadGradingPreferencesFromServer: function loadGradingPreferencesFromServer(_ref) {
-        var dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
+var actions = _defineProperty({}, ngaTypes.loadGradePreferencesFromServer, function (_ref) {
+    var dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
 
-        return new Promise(function (resolve, reject) {
-            var p = (0, _preferenceRequests.getGradePreferences)();
-            p.then(function (prefs) {
-                _.forEach(prefs, function (v, k) {
-                    var pl = _Payload2.default.factory({ updateProp: k, updateVal: v, mutateSilently: true });
-                    commit('updateGradingPreference', pl);
-                });
-                resolve();
+    return new Promise(function (resolve, reject) {
+        var p = (0, _preferenceRequests.getGradePreferences)();
+        p.then(function (prefs) {
+            _.forEach(prefs, function (v, k) {
+                var pl = _Payload2.default.factory({ updateProp: k, updateVal: v, mutateSilently: true });
+                commit('updateGradingPreference', pl);
             });
+            resolve();
         });
-    }
-};
+    });
+});
 
 var getters = (_getters = {}, _defineProperty(_getters, nggTypes.areStudentNamesVisible, function (state, getters) {
     return state.areStudentNamesVisible;
@@ -72764,6 +72787,10 @@ var getters = (_getters = {}, _defineProperty(_getters, nggTypes.areStudentNames
     return state.isScoreDisplayed;
 }), _defineProperty(_getters, nggTypes.shouldDynamicallyCollapseCommentAreas, function (state, getters) {
     return state.shouldDynamicallyCollapseCommentAreas;
+}), _defineProperty(_getters, nggTypes.getGradingPreference, function (state, getters, rootState, preferenceName) {
+    return function (preferenceName) {
+        return state[preferenceName];
+    };
 }), _getters);
 
 exports.default = {
@@ -72823,6 +72850,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _getters;
+
 var _newGradingMutationTypes = __webpack_require__(17);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
@@ -72857,42 +72886,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    * Created by adam on 12/10/17.
                                                                                                                                                                                                                    */
 
-var state = {};
+var state = {
 
-var mutations = {
-
-    updateSetupPreference: function updateSetupPreference(state, payload) {
-        _vue2.default.set(state, payload.updateProp, payload.updateVal);
-    }
-
+    defaultOverallName: 'exam',
+    defaultMaxScore: 100
 };
 
-var actions = {
-    loadSetupPreferencesFromServer: function loadSetupPreferencesFromServer(_ref) {
-        var dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
+var mutations = _defineProperty({}, ngmTypes.updateSetupPreference, function (state, payload) {
+    _vue2.default.set(state, payload.updateProp, payload.updateVal);
+});
 
-        return new Promise(function (resolve, reject) {
-            var p = (0, _preferenceRequests.getSetupPreferences)();
-            p.then(function (prefs) {
-                _.forEach(prefs, function (v, k) {
-                    var pl = _Payload2.default.factory({ updateProp: k, updateVal: v, mutateSilently: true });
-                    commit('updateSetupPreference', pl);
-                });
-                resolve();
+var actions = _defineProperty({}, ngaTypes.loadSetupPreferencesFromServer, function (_ref) {
+    var dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    return new Promise(function (resolve, reject) {
+        var p = (0, _preferenceRequests.getSetupPreferences)();
+        p.then(function (prefs) {
+            _.forEach(prefs, function (v, k) {
+                var pl = _Payload2.default.factory({ updateProp: k, updateVal: v, mutateSilently: true });
+                commit(ngmTypes.updateSetupPreference, pl);
             });
+            resolve();
         });
-    }
-};
+    });
+});
 
-var getters = _defineProperty({}, nggTypes.getSetupPreferences, function (_ref2) {
+var getters = (_getters = {}, _defineProperty(_getters, nggTypes.getSetupPreferences, function (_ref2) {
     var state = _ref2.state,
         getters = _ref2.getters,
         rootState = _ref2.rootState;
 
     return state;
-});
+}), _defineProperty(_getters, nggTypes.getSetupPreference, function (state, getters, rootState, preferenceName) {
+    return function (preferenceName) {
+        return state[preferenceName];
+    };
+}), _getters);
 
 exports.default = {
     actions: actions,
@@ -72942,41 +72973,38 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 12/10/17.
+                                                                                                                                                                                                                   */
+
 var state = {
     userNameShownToStudents: '',
     userEmailSignature: ''
-}; /**
-    * Created by adam on 12/10/17.
-    */
-
-var mutations = {
-
-    updateUserPreference: function updateUserPreference(state, payload) {
-        _vue2.default.set(state, payload.updateProp, payload.updateVal);
-    }
-
 };
 
-var actions = {
-    loadUserPreferencesFromServer: function loadUserPreferencesFromServer(_ref) {
-        var dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
+var mutations = _defineProperty({}, ngmTypes.updateUserPreference, function (state, payload) {
+    _vue2.default.set(state, payload.updateProp, payload.updateVal);
+});
 
-        return new Promise(function (resolve, reject) {
-            var p = (0, _preferenceRequests.getUserPreferences)();
-            p.then(function (prefs) {
-                _.forEach(prefs, function (v, k) {
-                    var pl = _Payload2.default.factory({ updateProp: k, updateVal: v, mutateSilently: true });
-                    commit('updateUserPreference', pl);
-                });
-                resolve();
+var actions = _defineProperty({}, ngaTypes.loadUserPreferencesFromServer, function (_ref) {
+    var dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    return new Promise(function (resolve, reject) {
+        var p = (0, _preferenceRequests.getUserPreferences)();
+        p.then(function (prefs) {
+            window.console.log('user-preferences', 'p', 33, prefs);
+            _.forEach(prefs, function (v, k) {
+                var pl = _Payload2.default.factory({ updateProp: k, updateVal: v, mutateSilently: true });
+                commit(ngmTypes.updateUserPreference, pl);
             });
+            resolve();
         });
-    }
-};
+    });
+});
 
-var getters = {
+var getters = _defineProperty({
     getUserPreferences: function getUserPreferences(_ref2) {
         var state = _ref2.state,
             getters = _ref2.getters,
@@ -72984,7 +73012,12 @@ var getters = {
 
         return state;
     }
-};
+
+}, nggTypes.getUserPreference, function (state, getters, rootState, preferenceName) {
+    return function (preferenceName) {
+        return state[preferenceName];
+    };
+});
 
 exports.default = {
     actions: actions,
@@ -90742,12 +90775,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "tabs"
   }, [_c('ul', _vm._l((_vm.tabs), function(t) {
     return _c('li', {
-      class: t.name === _vm.selected ? 'is-active' : '',
-      on: {
-        "click": function($event) {
-          _vm.handleClick(t)
-        }
-      }
+      class: t.path === _vm.currentPath ? 'is-active' : ''
     }, [_c('router-link', {
       attrs: {
         "to": t.path
@@ -91133,7 +91161,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "preference-modal modal",
     class: [_vm.isVisible ? 'is-active' : '']
   }, [_c('div', {
-    staticClass: "modal-background"
+    staticClass: "modal-background",
+    on: {
+      "click": _vm.handleBackgroundClick
+    }
   }), _vm._v(" "), _c('div', {
     staticClass: "modal-card"
   }, [_c('header', {
@@ -99863,54 +99894,124 @@ module.exports = __webpack_require__(923);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _preferenceInput = __webpack_require__(1178);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
-
+    mixins: [_preferencesInput2.default],
     props: [],
 
-    components: {
-        preferences: function preferences() {
-            return this.$store.getters.getUserPreferences;
-        },
-
-        userNameShownToStudents: function userNameShownToStudents() {},
-
-        userEmailSignature: function userEmailSignature() {}
-    },
+    components: { PreferenceInput: _preferenceInput2.default },
 
     data: function data() {
         return {
+            updateMutationName: ngmTypes.updateUserPreference,
+
+            userNameVisibility: {
+                name: 'userNameShownToStudents',
+                available: true,
+                type: 'text',
+                label: 'User name students see',
+                help: "When your students are notified and receive feedback what name do you want them to see. If you prefer to be called by your title or just your first name, enter it here"
+            },
+
+            emailSignature: {
+                name: 'userEmailSignature',
+                available: true,
+                type: 'text',
+                label: 'Email signature to students ',
+                help: "How you want your emails to students signed."
+
+            },
+
             defaults: {}
         };
     },
 
-    computed: {},
+    computed: {
+        userNameShownToStudents: function userNameShownToStudents() {
+            return this.$store.getters[nggTypes.getUserPreference]('userNameShownToStudents');
+        },
 
-    methods: {},
+        userEmailSignature: function userEmailSignature() {
+            return this.$store.getters[nggTypes.getUserPreference]('userEmailSignature');
+        }
+
+    },
+
+    methods: {
+        //     handleValueChange: function ( obj ) {
+        //         let fieldName = obj.fieldName;
+        //         let newVal = obj.value;
+        //         let pl = Payload.factory( { updateProp: fieldName, updateVal: newVal } );
+        //         this.$store.commit( ngmTypes.updateUserPreference, pl );
+        // },
+        //
+    },
 
     directives: {},
 
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1117 */
@@ -99922,24 +100023,33 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _preferenceInput = __webpack_require__(1178);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
@@ -99960,7 +100070,22 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1118 */
@@ -99972,20 +100097,33 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _preferenceInput = __webpack_require__(1178);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
@@ -100006,7 +100144,20 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1119 */
@@ -100193,7 +100344,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "box connections-area"
   }, [_c('h4', {
     staticClass: "title is-4"
-  }, [_vm._v("connections")])])
+  }, [_vm._v("connections")]), _vm._v(" "), _c('p', [_vm._v("Manage canvas connection")]), _vm._v(" "), _c('p', [_vm._v("Manage moodle connection")])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -100208,14 +100359,52 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "box account-area"
   }, [_c('h4', {
     staticClass: "title is-4"
-  }, [_vm._v("account")]), _vm._v("\n\n    ll\n\n\n\n    ll\n")])
-}]}
+  }, [_vm._v("account")]), _vm._v(" "), _c('preference-input', {
+    attrs: {
+      "field-name": _vm.userNameShownToStudents,
+      "type": _vm.userNameVisibility.type,
+      "value": _vm.userNameShownToStudents,
+      "available": _vm.userNameVisibility.available
+    },
+    on: {
+      "valuechange": _vm.handleValueChange
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "labelText"
+    },
+    slot: "labelText"
+  }, [_vm._v(_vm._s(_vm.userNameVisibility.label))]), _vm._v(" "), _c('span', {
+    attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.userNameVisibility.help))])]), _vm._v(" "), _c('preference-input', {
+    attrs: {
+      "field-name": _vm.emailSignature.name,
+      "type": _vm.emailSignature.type,
+      "value": _vm.userEmailSignature,
+      "available": _vm.emailSignature.available
+    },
+    on: {
+      "valuechange": _vm.handleValueChange
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "labelText"
+    },
+    slot: "labelText"
+  }, [_vm._v(_vm._s(_vm.emailSignature.label))]), _vm._v(" "), _c('span', {
+    attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.emailSignature.help))])])], 1)
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -100377,41 +100566,100 @@ module.exports = Component.exports
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _preferenceToggle = __webpack_require__(1173);
+
+var _preferenceToggle2 = _interopRequireDefault(_preferenceToggle);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
-    components: {},
+    components: { PreferenceToggle: _preferenceToggle2.default },
 
     data: function data() {
         return {
+
+            updateMutationName: ngmTypes.updateGradingPreference,
+
+            timerVisibility: {
+                available: false,
+                label: "Show grading time dashboard ",
+                help: "Show how much time you've spent grading this assignment and how long it is expected to take."
+            },
             defaults: {}
         };
     },
 
-    computed: {},
+    computed: {
 
-    methods: {},
+        showTimer: function showTimer() {
+            return this.$store.getters[nggTypes.getGradingPreference]('showTimer');
+        }
+    },
+
+    methods: {
+        // handleToggle: function ( fieldName ) {
+        //     let newVal = !this[ fieldName ];
+        //     let pl = Payload.factory( { updateProp: fieldName, updateVal: newVal } );
+        //     this.$store.commit( ngmTypes.updateGradingPreference, pl );
+        // }
+
+    },
 
     directives: {},
 
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1133 */
@@ -100436,11 +100684,20 @@ var _newGradingGetterTypes = __webpack_require__(19);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
@@ -100450,6 +100707,38 @@ exports.default = {
 
     data: function data() {
         return {
+            updateMutationName: ngmTypes.updateGradingPreference,
+
+            nameVisibility: {
+                available: true,
+                label: "Display student names while grading ",
+                help: "Selecting this option obscures student names on the grading page. Grading without knowing the identities of the student is often helpful for ensuring fairness and accuracy. Of course, this requires students to write their id number or some other unique identifier on the exam.  "
+            },
+
+            letterGradeButton: {
+                available: false,
+                label: "Assign scores via letter grade button ",
+                help: "Grade each constituent item on the exam by assigning it a letter grade. The letter grade will be translated into a score for the item based on a fixed percentage of the item's maximum score. The overall grade for the assignment will be calculated from these item scores."
+            },
+
+            collapseCommentArea: {
+                available: false,
+                label: "Collapse comment areas when not being edited",
+                help: ""
+            },
+
+            gradeSliders: {
+                available: false,
+                label: "Record scores using sliders ",
+                help: ""
+            },
+
+            showScores: {
+                available: false,
+                label: "View numeric scores while grading",
+                help: "Sometimes, trying to assign a precise scores overly complicates the grading process. Selecting this option hides the numerical value of the score assigned. Used in conjunction with the slider, allows you to grade with something like a visual analog scale. "
+            },
+
             defaults: {}
         };
     },
@@ -100478,11 +100767,11 @@ exports.default = {
     },
 
     methods: {
-        handleToggle: function handleToggle(fieldName) {
-            var newVal = !this[fieldName];
-            var pl = _Payload2.default.factory({ updateProp: fieldName, updateVal: newVal });
-            this.$store.commit('updateGradingPreference', pl);
-        }
+        // handleToggle: function ( fieldName ) {
+        //     let newVal = !this[ fieldName ];
+        //     let pl = Payload.factory( { updateProp: fieldName, updateVal: newVal } );
+        //     this.$store.commit( 'updateGradingPreference', pl );
+        // }
     },
 
     directives: {},
@@ -100491,6 +100780,24 @@ exports.default = {
 
     mounted: function mounted() {}
 }; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -100551,33 +100858,20 @@ var _preferencesBase = __webpack_require__(139);
 
 var _preferencesBase2 = _interopRequireDefault(_preferencesBase);
 
-var _routes = __webpack_require__(325);
+var _newGradingActionTypes = __webpack_require__(24);
 
-var _routes2 = _interopRequireDefault(_routes);
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _preferencesPage = __webpack_require__(1181);
+
+var _preferencesPage2 = _interopRequireDefault(_preferencesPage);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 exports.default = {
-
+    mixins: [_preferencesPage2.default],
     props: [],
 
     components: { PreferencesBase: _preferencesBase2.default },
@@ -100585,25 +100879,29 @@ exports.default = {
     data: function data() {
         return {
             routeGroup: 'grade',
-            defaultRoute: 'prefs-grade-input',
+            loadAction: ngaTypes.loadGradePreferencesFromServer,
             defaults: {}
         };
-    },
+    }
 
-    computed: {
-        tabs: function tabs() {
-            return _.filter(_routes2.default, { group: this.routeGroup });
-        }
-    },
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1135 */
@@ -100615,44 +100913,119 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _preferenceInput = __webpack_require__(1178);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
-    components: {},
+    components: { PreferenceInput: _preferenceInput2.default },
 
     data: function data() {
         return {
+            updateMutationName: ngmTypes.updateSetupPreference,
+            defaultMax: {
+                name: 'defaultMaxScore',
+                available: true,
+                type: 'number',
+                label: 'The default maximum score for each item',
+                help: "The maximum possible score on the exam is the sum of the maximum scores for each item. This is the default score for each item."
+            },
+
+            overallName: {
+                name: 'defaultOverallName',
+                available: true,
+                type: 'text',
+                label: 'What to call the thing you grade',
+                help: "'Exam', 'Paper', 'Quiz', 'Torture session', whatever you want to call it."
+            },
             defaults: {}
         };
     },
 
-    computed: {},
+    computed: {
+        defaultOverallName: function defaultOverallName() {
+            return this.$store.getters[nggTypes.getSetupPreference]('defaultOverallName');
+        },
 
-    methods: {},
+        defaultMaxScore: function defaultMaxScore() {
+            return this.$store.getters[nggTypes.getSetupPreference]('defaultMaxScore');
+        }
+    },
+
+    methods: {
+        // handleValueChange: function ( obj ) {
+        //     let fieldName = obj.fieldName;
+        //     let newVal = obj.value;
+        //     let pl = Payload.factory( { updateProp: fieldName, updateVal: newVal } );
+        //     this.$store.commit( ngmTypes.updateSetupPreference, pl );
+        // }
+    },
 
     directives: {},
 
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1136 */
@@ -100673,6 +101046,16 @@ var _routes = __webpack_require__(325);
 
 var _routes2 = _interopRequireDefault(_routes);
 
+var _newGradingActionTypes = __webpack_require__(24);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _preferencesPage = __webpack_require__(1181);
+
+var _preferencesPage2 = _interopRequireDefault(_preferencesPage);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //
@@ -100695,7 +101078,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 
 exports.default = {
-
+    mixins: [_preferencesPage2.default],
     props: [],
 
     components: { PreferencesBase: _preferencesBase2.default },
@@ -100703,24 +101086,12 @@ exports.default = {
     data: function data() {
         return {
             routeGroup: 'setup',
-            defaultRoute: 'prefs-labels',
+            loadAction: ngaTypes.loadSetupPreferencesFromServer,
+            // defaultRoute: 'prefs-labels',
             defaults: {}
         };
-    },
+    }
 
-    computed: {
-        tabs: function tabs() {
-            return _.filter(_routes2.default, { group: this.routeGroup });
-        }
-    },
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
 };
 
 /***/ }),
@@ -100733,23 +101104,33 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
+var _preferenceInput = __webpack_require__(1178);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
@@ -100770,7 +101151,20 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1138 */
@@ -100790,6 +101184,24 @@ var _preferencesBase2 = _interopRequireDefault(_preferencesBase);
 var _routes = __webpack_require__(325);
 
 var _routes2 = _interopRequireDefault(_routes);
+
+var _newGradingActionTypes = __webpack_require__(24);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesPage = __webpack_require__(1181);
+
+var _preferencesPage2 = _interopRequireDefault(_preferencesPage);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -100814,7 +101226,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 
 exports.default = {
-
+    mixins: [_preferencesPage2.default],
     props: [],
 
     components: { PreferencesBase: _preferencesBase2.default },
@@ -100822,22 +101234,11 @@ exports.default = {
     data: function data() {
         return {
             routeGroup: 'user',
-            defaultRoute: 'prefs-account'
+            loadAction: ngaTypes.loadUserPreferencesFromServer
+            // defaultRoute: 'prefs-account',
         };
-    },
+    }
 
-    computed: {
-        tabs: function tabs() {
-            return _.filter(_routes2.default, { group: this.routeGroup });
-        }
-    },
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
 };
 
 /***/ }),
@@ -101232,7 +101633,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "grade-preferences"
   }, [_c('preferences-base', {
     attrs: {
-      "tabs": _vm.tabs,
+      "tabs": _vm.routes,
       "default-route": "defaultRoute"
     }
   }, [_c('div', {
@@ -101267,6 +101668,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "box"
   }, [_c('preference-toggle', {
     attrs: {
+      "available": _vm.nameVisibility.available,
       "selected": _vm.areStudentNamesVisible
     },
     on: {
@@ -101279,8 +101681,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "labelText"
     },
     slot: "labelText"
-  }, [_vm._v("Display student names while grading ")])]), _vm._v(" "), _c('preference-toggle', {
+  }, [_vm._v(" " + _vm._s(_vm.nameVisibility.label) + " ")]), _vm._v(" "), _c('span', {
     attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.nameVisibility.help) + " ")])]), _vm._v(" "), _c('preference-toggle', {
+    attrs: {
+      "available": _vm.letterGradeButton.available,
       "selected": _vm.isLetterGradeButtonUsed
     },
     on: {
@@ -101293,8 +101701,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "labelText"
     },
     slot: "labelText"
-  }, [_vm._v("Assign scores via letter grade button ")])]), _vm._v(" "), _c('preference-toggle', {
+  }, [_vm._v(_vm._s(_vm.letterGradeButton.label))]), _vm._v(" "), _c('span', {
     attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.letterGradeButton.help))])]), _vm._v(" "), _c('preference-toggle', {
+    attrs: {
+      "available": _vm.collapseCommentArea.available,
       "selected": _vm.shouldDynamicallyCollapseCommentAreas
     },
     on: {
@@ -101307,8 +101721,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "labelText"
     },
     slot: "labelText"
-  }, [_vm._v("Collapse comment areas when not being edited")])]), _vm._v(" "), _c('preference-toggle', {
+  }, [_vm._v(_vm._s(_vm.collapseCommentArea.label))]), _vm._v(" "), _c('span', {
     attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.collapseCommentArea.help))])]), _vm._v(" "), _c('preference-toggle', {
+    attrs: {
+      "available": _vm.gradeSliders.available,
       "selected": _vm.isSliderUsed
     },
     on: {
@@ -101321,8 +101741,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "labelText"
     },
     slot: "labelText"
-  }, [_vm._v("Record scores using sliders ")])]), _vm._v(" "), _c('preference-toggle', {
+  }, [_vm._v(_vm._s(_vm.gradeSliders.label))]), _vm._v(" "), _c('span', {
     attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.gradeSliders.help))])]), _vm._v(" "), _c('preference-toggle', {
+    attrs: {
+      "available": _vm.showScores.available,
       "selected": _vm.isScoreDisplayed
     },
     on: {
@@ -101335,7 +101761,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "labelText"
     },
     slot: "labelText"
-  }, [_vm._v("View numeric scores while grading ")])])], 1)])
+  }, [_vm._v(_vm._s(_vm.showScores.label))]), _vm._v(" "), _c('span', {
+    attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.showScores.help))])])], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -101354,7 +101785,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "user-preferences"
   }, [_c('preferences-base', {
     attrs: {
-      "tabs": _vm.tabs,
+      "tabs": _vm.routes,
       "default-route": "defaultRoute"
     }
   }, [_c('div', {
@@ -101385,7 +101816,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "setup-preferences"
   }, [_c('preferences-base', {
     attrs: {
-      "tabs": _vm.tabs,
+      "tabs": _vm.routes,
       "default-route": "defaultRoute"
     }
   }, [_c('div', {
@@ -101412,14 +101843,34 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "box connections-area"
   }, [_c('h4', {
     staticClass: "title is-4"
-  }, [_vm._v(" Grading dashboard settings")])])
-}]}
+  }, [_vm._v(" Grading dashboard settings")]), _vm._v(" "), _c('br'), _vm._v(" "), _c('div', {
+    staticClass: "box"
+  }, [_c('preference-toggle', {
+    attrs: {
+      "available": _vm.timerVisibility.available,
+      "selected": _vm.showTimer
+    },
+    on: {
+      "toggled": function($event) {
+        _vm.handleToggle('showTimer')
+      }
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "labelText"
+    },
+    slot: "labelText"
+  }, [_vm._v(" " + _vm._s(_vm.timerVisibility.label) + " ")]), _vm._v(" "), _c('span', {
+    attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.timerVisibility.help) + " ")])])], 1)])
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -101433,14 +101884,52 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "box setup-labels"
   }, [_c('h4', {
     staticClass: "title is-4"
-  }, [_vm._v("Setup label preferences")]), _vm._v(" "), _c('p', [_vm._v(" areStudentNamesVisible: true,")])])
-}]}
+  }, [_vm._v("Setup label preferences")]), _vm._v(" "), _c('br'), _vm._v(" "), _c('preference-input', {
+    attrs: {
+      "field-name": _vm.overallName.name,
+      "type": _vm.overallName.type,
+      "value": _vm.defaultOverallName,
+      "available": _vm.overallName.available
+    },
+    on: {
+      "valuechange": _vm.handleValueChange
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "labelText"
+    },
+    slot: "labelText"
+  }, [_vm._v(_vm._s(_vm.overallName.label))]), _vm._v(" "), _c('span', {
+    attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.overallName.help))])]), _vm._v(" "), _c('preference-input', {
+    attrs: {
+      "field-name": _vm.defaultMax.name,
+      "type": _vm.defaultMax.type,
+      "value": _vm.defaultMaxScore,
+      "available": _vm.defaultMax.available
+    },
+    on: {
+      "valuechange": _vm.handleValueChange
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "labelText"
+    },
+    slot: "labelText"
+  }, [_vm._v(_vm._s(_vm.defaultMax.label))]), _vm._v(" "), _c('span', {
+    attrs: {
+      "slot": "helpText"
+    },
+    slot: "helpText"
+  }, [_vm._v(_vm._s(_vm.defaultMax.help))])])], 1)
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -101641,27 +102130,33 @@ if(false) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _preferenceInput = __webpack_require__(1178);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(1182);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    mixins: [_preferencesInput2.default],
 
     props: [],
 
@@ -101690,7 +102185,25 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 1167 */
@@ -101863,10 +102376,15 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
 
 exports.default = {
 
-    props: ['selected'],
+    props: ['available', //whether the option is actually user settable at this time
+    'selected'],
 
     components: {},
 
@@ -101901,7 +102419,7 @@ exports = module.exports = __webpack_require__(3)();
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "\n.preference-toggle {\n  margin-bottom: 2em;\n}\n", ""]);
 
 // exports
 
@@ -101982,7 +102500,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.handleClick
     }
   }, [_vm._v("Off")])])]), _vm._v(" "), _c('p', {
-    staticClass: "help"
+    staticClass: "help has-text-left"
   }, [_vm._t("helpText")], 2)])]) : _vm._e(), _vm._v(" "), (!_vm.horizontal) ? _c('div', {
     staticClass: "field"
   }, [_c('label', {
@@ -101992,19 +102510,25 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "buttons has-addons "
   }, [_c('span', {
-    staticClass: "button",
-    class: _vm.selected ? 'is-info is-selected' : '',
+    staticClass: "button ",
+    class: _vm.selected ? ' is-info is-selected ' : '',
+    attrs: {
+      "disabled": !_vm.available
+    },
     on: {
       "click": _vm.handleClick
     }
   }, [_vm._v("On")]), _vm._v(" "), _c('span', {
     staticClass: "button",
-    class: !_vm.selected ? 'is-info is-selected' : '',
+    class: !_vm.selected ? ' is-info is-selected ' : '',
+    attrs: {
+      "disabled": !_vm.available
+    },
     on: {
       "click": _vm.handleClick
     }
   }, [_vm._v("Off")])])]), _vm._v(" "), _c('p', {
-    staticClass: "help"
+    staticClass: "help has-text-left"
   }, [_vm._t("helpText")], 2)]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -102040,6 +102564,476 @@ if(false) {
  // When the module is disposed, remove the <style> tags
  module.hot.dispose(function() { update(); });
 }
+
+/***/ }),
+/* 1176 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['fieldName', 'type', //text, number, et cetera
+    'available', //whether the option is actually user settable at this time
+    'value' //the current value of the setting
+    ],
+
+    components: {},
+
+    data: function data() {
+        return {
+            horizontal: false,
+            defaults: {}
+        };
+    },
+
+    computed: {
+        prefValue: {
+            get: function get() {
+                return this.value;
+            },
+            set: function set(v) {
+                this.$emit('valuechange', {
+                    fieldName: this.fieldName,
+                    value: v
+                });
+            }
+        }
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 1177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(3)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.preference-input {\n  margin-bottom: 2em;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1180)
+}
+var Component = __webpack_require__(2)(
+  /* script */
+  __webpack_require__(1176),
+  /* template */
+  __webpack_require__(1179),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/preferences/preference-input.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] preference-input.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5e74bc3d", Component.options)
+  } else {
+    hotAPI.reload("data-v-5e74bc3d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1179 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "preference-input "
+  }, [(_vm.horizontal) ? _c('div', {
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-label"
+  }, [_c('label', {
+    staticClass: "label"
+  }, [_vm._t("labelText")], 2)]), _vm._v(" "), _c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    staticClass: "control"
+  }, [((_vm.type) === 'checkbox') ? _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.prefValue),
+      expression: "prefValue"
+    }],
+    staticClass: "input",
+    attrs: {
+      "disabled": !_vm.available,
+      "type": "checkbox"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.prefValue) ? _vm._i(_vm.prefValue, null) > -1 : (_vm.prefValue)
+    },
+    on: {
+      "change": function($event) {
+        var $$a = _vm.prefValue,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$el.checked) {
+            $$i < 0 && (_vm.prefValue = $$a.concat([$$v]))
+          } else {
+            $$i > -1 && (_vm.prefValue = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.prefValue = $$c
+        }
+      }
+    }
+  }) : ((_vm.type) === 'radio') ? _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.prefValue),
+      expression: "prefValue"
+    }],
+    staticClass: "input",
+    attrs: {
+      "disabled": !_vm.available,
+      "type": "radio"
+    },
+    domProps: {
+      "checked": _vm._q(_vm.prefValue, null)
+    },
+    on: {
+      "change": function($event) {
+        _vm.prefValue = null
+      }
+    }
+  }) : _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.prefValue),
+      expression: "prefValue"
+    }],
+    staticClass: "input",
+    attrs: {
+      "disabled": !_vm.available,
+      "type": _vm.type
+    },
+    domProps: {
+      "value": (_vm.prefValue)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.prefValue = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help has-text-left"
+  }, [_vm._t("helpText")], 2)])]) : _vm._e(), _vm._v(" "), (!_vm.horizontal) ? _c('div', {
+    staticClass: "field"
+  }, [_c('label', {
+    staticClass: "label has-text-left"
+  }, [_vm._t("labelText")], 2), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [((_vm.type) === 'checkbox') ? _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.prefValue),
+      expression: "prefValue"
+    }],
+    staticClass: "input",
+    attrs: {
+      "disabled": !_vm.available,
+      "type": "checkbox"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.prefValue) ? _vm._i(_vm.prefValue, null) > -1 : (_vm.prefValue)
+    },
+    on: {
+      "change": function($event) {
+        var $$a = _vm.prefValue,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$el.checked) {
+            $$i < 0 && (_vm.prefValue = $$a.concat([$$v]))
+          } else {
+            $$i > -1 && (_vm.prefValue = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.prefValue = $$c
+        }
+      }
+    }
+  }) : ((_vm.type) === 'radio') ? _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.prefValue),
+      expression: "prefValue"
+    }],
+    staticClass: "input",
+    attrs: {
+      "disabled": !_vm.available,
+      "type": "radio"
+    },
+    domProps: {
+      "checked": _vm._q(_vm.prefValue, null)
+    },
+    on: {
+      "change": function($event) {
+        _vm.prefValue = null
+      }
+    }
+  }) : _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.prefValue),
+      expression: "prefValue"
+    }],
+    staticClass: "input",
+    attrs: {
+      "disabled": !_vm.available,
+      "type": _vm.type
+    },
+    domProps: {
+      "value": (_vm.prefValue)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.prefValue = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help has-text-left"
+  }, [_vm._t("helpText")], 2)]) : _vm._e()])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-5e74bc3d", module.exports)
+  }
+}
+
+/***/ }),
+/* 1180 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1177);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(5)("51575e98", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5e74bc3d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./preference-input.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5e74bc3d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./preference-input.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1181 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(24);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _routes = __webpack_require__(325);
+
+var _routes2 = _interopRequireDefault(_routes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// import gTypes from '../../../../store/getter-types';
+module.exports = {
+
+    computed: {
+        routes: function routes() {
+            return _.filter(_routes2.default, { group: this.routeGroup });
+        },
+        defaultRoute: function defaultRoute() {
+            return _.find(this.routes, { isDefaultRoute: true });
+        }
+    },
+
+    methods: {
+        loadDefaultRoute: function loadDefaultRoute() {
+            this.$router.push(this.defaultRoute.path);
+        }
+    },
+
+    mounted: function mounted() {
+        this.$store.dispatch(this.loadAction);
+        this.loadDefaultRoute();
+        // this.$router.push(this.defaultRoute.path);
+    }
+};
+
+/***/ }),
+/* 1182 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _newGradingGetterTypes = __webpack_require__(19);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(17);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(24);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _routes = __webpack_require__(325);
+
+var _routes2 = _interopRequireDefault(_routes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+module.exports = {
+
+    computed: {},
+
+    methods: {
+        handleToggle: function handleToggle(fieldName) {
+            var newVal = !this[fieldName];
+            var pl = _Payload2.default.factory({ updateProp: fieldName, updateVal: newVal });
+            this.$store.commit(this.updateMutationName, pl);
+        },
+        handleValueChange: function handleValueChange(obj) {
+            var fieldName = obj.fieldName;
+            var newVal = obj.value;
+            var pl = _Payload2.default.factory({ updateProp: fieldName, updateVal: newVal });
+            this.$store.commit(this.updateMutationName, pl);
+        }
+    }
+}; // import gTypes from '../../../../store/getter-types';
 
 /***/ })
 /******/ ]);

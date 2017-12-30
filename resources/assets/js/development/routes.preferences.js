@@ -38,6 +38,7 @@ module.exports =  [
         components: {     prefsContentArea: accountArea },
         props:  true,
         group: 'user',
+        isDefaultRoute : true,
         tabText : 'Manage account'
     }, //props: (route) => {return route.index;}},
 
@@ -87,6 +88,8 @@ module.exports =  [
         components: { prefsContentArea: setupLabelArea },
         props:  true,
      group: 'setup',
+
+        isDefaultRoute : true,
         tabText: 'What things are called'//{default: true}
     }, //props: (route) => {return route.index;}},
 
@@ -98,6 +101,8 @@ module.exports =  [
         components: { prefsContentArea: gradeInputArea },
         props:  true ,
         group: 'grade',
+
+        isDefaultRoute : true,
         tabText: 'Inputs'//{default: true}
     }, //props: (route) => {return route.index;}},
 

@@ -4,8 +4,7 @@
         <div class="tabs">
             <ul>
                 <li v-for="t in tabs"
-                    v-bind:class="t.name === selected ? 'is-active' : ''"
-                    v-on:click="handleClick(t)"
+                    v-bind:class="t.path === currentPath ? 'is-active' : ''"
                 >
                     <router-link v-bind:to="t.path">
                         <a class="pref-nav">{{t.tabText}} </a>
@@ -30,32 +29,21 @@
 <script>
     export default {
 
-        props: [ 'tabs' , 'defaultRoute'],
+        props: [ 'tabs' ],
 
         components: {},
 
         data: function () {
             return {
-                selected: this.defaultRoute,
                 defaults: {}
             }
         },
 
-        computed: {},
-
-        methods: {
-
-            handleClick: function ( tab ) {
-                this.selected = tab.name;
+        computed: {
+            currentPath: function () {
+                return this.$route.path;
             }
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-
-        }
     }
 </script>

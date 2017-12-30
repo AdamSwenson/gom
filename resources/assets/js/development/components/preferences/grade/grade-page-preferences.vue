@@ -2,7 +2,7 @@
 
     <div class="grade-preferences">
         <preferences-base
-                :tabs="tabs"
+                :tabs="routes"
                 default-route="defaultRoute"
         >
             <div slot="prefsContent">
@@ -18,10 +18,11 @@
 
 <script>
     import PreferencesBase from "../preferences-base";
-    import Routes from '../../../routes.preferences';
+    import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
+    import preferencesPageMixin from '../preferencesPage.mixin';
 
     export default {
-
+        mixins : [preferencesPageMixin],
         props: [],
 
         components: { PreferencesBase },
@@ -29,24 +30,10 @@
         data: function () {
             return {
                 routeGroup: 'grade',
-                defaultRoute: 'prefs-grade-input',
+                loadAction : ngaTypes.loadGradePreferencesFromServer,
                 defaults: {}
             }
         },
 
-        computed: {
-            tabs: function () {
-                return _.filter( Routes, { group: this.routeGroup } );
-            }
-        },
-
-        methods: {},
-
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>

@@ -5,7 +5,7 @@ namespace App\Models\Preferences;
 use App\BaseModel;
 use App\User;
 
-class UserPreferences extends BaseModel
+class UserPreferences extends PreferenceBase
 {
 
     protected $fillable = ['preferences'];
@@ -20,8 +20,4 @@ class UserPreferences extends BaseModel
 
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }

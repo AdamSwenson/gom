@@ -54,8 +54,9 @@ import { createKumi, updateKumi, associateKumi } from '../api/requests/kumiReque
 import { createNoteRequest, updateNoteRequest, destroyNoteRequest } from '../api/requests/noteRequests';
 
 //prefs
-import { setGradePreferences } from '../api/requests/preferenceRequests';
+import { setGradePreferences, setUserPreferences, setSetupPreferences } from '../api/requests/preferenceRequests';
 
+//scores
 import {
     saveItemScoreRequest,
     saveCommentTextRequest,
@@ -314,6 +315,14 @@ export default function ( store ) {
             // ********************  Preferences
             case ngmTypes.updateGradingPreference:
                 setGradePreferences(payload);
+                break;
+
+            case ngmTypes.updateSetupPreference:
+                setSetupPreferences(payload);
+                break;
+
+            case ngmTypes.updateUserPreference:
+                setUserPreferences(payload);
                 break;
 
             // ******************** Scores

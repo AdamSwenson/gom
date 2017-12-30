@@ -144,17 +144,18 @@ export const isLetterGradeButtonUsed = 'isLetterGradeButtonUsed';
 export const isSliderUsed = 'isSliderUsed';
 export const isScoreDisplayed = 'isScoreDisplayed';
 export const shouldDynamicallyCollapseCommentAreas = 'shouldDynamicallyCollapseCommentAreas';
-
+export const getGradingPreference = 'getGradingPreference';
 
 /* ================================================================
    ================== PREFERENCES -- SETUP    =====================
    ================================================================ */
 export const getSetupPreferences = 'getSetupPreferences';
-
+export const getSetupPreference = 'getSetupPreference';
 /* ================================================================
    ================== PREFERENCES -- USER    =====================
    ================================================================ */
 export const getUserPreferences = 'getUserPreferences';
+export const getUserPreference = 'getUserPreference';
 
 
 

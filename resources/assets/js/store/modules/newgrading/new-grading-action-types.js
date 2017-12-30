@@ -40,6 +40,10 @@ export const updateExamGrade = 'updateExamGrade';
 export const updateCutoff = 'updateCutoff';
 export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
 
+//preferences
+export const loadUserPreferencesFromServer = 'loadUserPreferencesFromServer';
+export const loadSetupPreferencesFromServer = 'loadSetupPreferencesFromServer';
+export const loadGradePreferencesFromServer = 'loadGradePreferencesFromServer';
 
 
 //questions

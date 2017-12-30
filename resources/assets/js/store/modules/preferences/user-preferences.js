@@ -19,20 +19,21 @@ const state = {
 
 const mutations = {
 
-    updateUserPreference: ( state, payload ) => {
+    [ngmTypes.updateUserPreference] : ( state, payload ) => {
         Vue.set( state, payload.updateProp, payload.updateVal );
     }
 
 };
 
 const actions = {
-    loadUserPreferencesFromServer: ( { dispatch, commit, getters } ) => {
+    [ngaTypes.loadUserPreferencesFromServer] : ( { dispatch, commit, getters } ) => {
         return new Promise( function ( resolve, reject ) {
             let p = getUserPreferences();
             p.then( function ( prefs ) {
+                window.console.log( 'user-preferences', 'p', 33, prefs);
                 _.forEach( prefs, function ( v, k ) {
                     let pl = Payload.factory( { updateProp: k, updateVal: v, mutateSilently: true } );
-                    commit( 'updateUserPreference', pl );
+                    commit( ngmTypes.updateUserPreference, pl );
                 } );
                 resolve();
             } );
@@ -43,7 +44,21 @@ const actions = {
 const getters = {
     getUserPreferences: ( { state, getters, rootState } ) => {
         return state;
+    },
+
+    /**
+     * One getter to rule them all. Given the string name of the
+     * user preference to retrieve, it, uh, retrieves it.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param preferenceName
+     * @returns {function(*)}
+     */
+    [nggTypes.getUserPreference ] : (state, getters, rootState, preferenceName) => (preferenceName) => {
+        return state[preferenceName];
     }
+
 };
 
 

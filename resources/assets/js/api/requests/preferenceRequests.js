@@ -48,7 +48,7 @@ module.exports = {
         return window.axios
             .get( route, out )
             .then( ( response ) => {
-                return response.data.preferences
+                return response.data
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -60,7 +60,7 @@ module.exports = {
         return window.axios
             .get( route, out )
             .then( ( response ) => {
-                return response.data.preferences
+                return response.data
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -83,7 +83,7 @@ module.exports = {
 
     setSetupPreferences: ( toSend ) => {
         let route = preferencesBaseRoute + 'setup';
-        out[ 'preferences' ] = toSend;
+        out[ 'payload' ] = toSend;
         return window.axios
             .post( route, out )
             .then( ( response ) => {
@@ -96,7 +96,7 @@ module.exports = {
 
     setUserPreferences: ( toSend ) => {
         let route = preferencesBaseRoute + 'user';
-        out[ 'preferences' ] = toSend;
+        out[ 'payload' ] = toSend;
         return window.axios
             .post( route, out )
             .then( ( response ) => {

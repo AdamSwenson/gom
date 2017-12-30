@@ -3,7 +3,7 @@
     <div class="preference-modal modal"
          v-bind:class="[isVisible ? 'is-active' : '' ]"
     >
-        <div class="modal-background"></div>
+        <div class="modal-background" v-on:click="handleBackgroundClick"></div>
         <div class="modal-card">
 
             <header class="modal-card-head">
@@ -66,7 +66,11 @@
 
         methods: {
             toggleModal: function () {
+                this.$router.push('/');
                 this.$emit( 'toggle-modal' )
+            },
+            handleBackgroundClick: function (  ) {
+                this.toggleModal();
             }
         },
 

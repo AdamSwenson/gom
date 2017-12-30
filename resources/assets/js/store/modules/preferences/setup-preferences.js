@@ -13,24 +13,26 @@ import Vue from "vue";
 
 const state = {
 
+    defaultOverallName : 'exam',
+    defaultMaxScore : 100,
 };
 
 const mutations = {
 
-    updateSetupPreference: ( state, payload ) => {
+    [ngmTypes.updateSetupPreference] : ( state, payload ) => {
         Vue.set( state, payload.updateProp, payload.updateVal );
     }
 
 };
 
 const actions = {
-    loadSetupPreferencesFromServer: ( { dispatch, commit, getters } ) => {
+    [ngaTypes.loadSetupPreferencesFromServer] : ( { dispatch, commit, getters } ) => {
         return new Promise( function ( resolve, reject ) {
             let p = getSetupPreferences();
             p.then( function ( prefs ) {
                 _.forEach( prefs, function ( v, k ) {
                     let pl = Payload.factory( { updateProp: k, updateVal: v, mutateSilently: true } );
-                    commit( 'updateSetupPreference', pl );
+                    commit(ngmTypes.updateSetupPreference, pl );
                 } );
                 resolve();
             } );
@@ -41,6 +43,19 @@ const actions = {
 const getters = {
     [nggTypes.getSetupPreferences]: ( { state, getters, rootState } ) => {
         return state;
+    },
+
+    /**
+     * One getter to rule them all. Given the string name of the
+     * setup preference to retrieve, it, uh, retrieves it.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param preferenceName
+     * @returns {function(*)}
+     */
+    [nggTypes.getSetupPreference] : (state, getters, rootState, preferenceName) => (preferenceName) => {
+        return state[preferenceName];
     }
 };
 
