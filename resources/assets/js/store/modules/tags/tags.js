@@ -2,20 +2,20 @@
  * Created by adam on 7/31/17.
  */
 import Vue from 'vue';
-import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
-import * as gTypes from '../getter-types';
+import * as mTypes from '../../mutation-types'
+import * as aTypes from '../../action-types'
+import * as gTypes from '../../getter-types';
 
 
-import Payload from '../../models/Payload'
-import Item from '../../models/Item'
-import Exam from '../../models/Exam'
-import Student from '../../models/Student'
+import Payload from '../../../models/Payload'
+import Item from '../../../models/Item'
+import Exam from '../../../models/Exam'
+import Student from '../../../models/Student'
 
-import Tag from '../../models/Tag'
+import Tag from '../../../models/Tag'
 
 
-import { loadTagsForItemRequest, handleLoadResponse } from '../../api/requests/tagRequests';
+import { loadTagsForItemRequest, handleLoadResponse } from '../../../api/requests/tagRequests';
 
 
 const objectGetters = [

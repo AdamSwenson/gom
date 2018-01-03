@@ -11,6 +11,8 @@ import * as gTypes from '../../getter-types';
 import GradeAssignment from '../../../models/GradeAssignment';
 import Payload from '../../../models/Payload';
 
+import { getGradeAssignments } from '../../../api/requests/gradeAssignmentRequests';
+
 
 /**
  * Takes the totalScores array
@@ -94,14 +96,14 @@ export const updateInconsistentList = ( state ) => {
     let inconsistent = [];
     // let sortedAssignments = sortGradeAssignments(state.gradeAssignments);
     // let assignments = _.values( sortedAssignments  );
-    let assignments = _.values( state.gradeAssignments  );
-    assignments = _.sortBy(state.gradeAssignments, 'ordinal');
+    let assignments = _.values( state.gradeAssignments );
+    assignments = _.sortBy( state.gradeAssignments, 'ordinal' );
     for (let i = 0; i < assignments.length - 1; i++) { //note that we need to stop before the last one (F)
         let current = assignments[ i ];
         let nextLower = assignments[ i + 1 ];
         if ( nextLower.minScore > current.minScore ) inconsistent.push( current );
     }
-    Vue.set(state, 'inconsistent', inconsistent);
+    Vue.set( state, 'inconsistent', inconsistent );
 };
 
 const state = {
@@ -114,7 +116,7 @@ const state = {
      * GradeAssignment objects for its values.
      */
     gradeAssignments: (function () {
-        return sortGradeAssignments(GradeAssignment.initialize());
+        return sortGradeAssignments( GradeAssignment.initialize() );
     })(),
 
     /**
@@ -135,7 +137,7 @@ const state = {
      * The list of inconsistent grade assignments are kept here
      *
      */
-    inconsistent : []
+    inconsistent: []
 
 };
 
@@ -152,7 +154,7 @@ const mutations = {
         Payload.checkIfPayload( payload );
         Vue.set( payload.obj, payload.updateProp, payload.updateVal );
 
-        updateInconsistentList(state);
+        updateInconsistentList( state );
     },
 
     /**
@@ -170,7 +172,7 @@ const mutations = {
      */
     replaceGradeAssignments: ( state, payload ) => {
         Vue.set( state, 'gradeAssignments', payload.obj );
-        updateInconsistentList(state);
+        updateInconsistentList( state );
 
     },
 
@@ -190,6 +192,32 @@ const mutations = {
 };
 
 const actions = {
+
+    /**
+     * Makes a request to the server for grade assignment data
+     * and then dispatches loadGradeAssignmentsFromServerData.
+     * Triggers resolve once all data is loaded.
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param exam
+     * @returns {Promise<any>}
+     */
+    [ aTypes.loadGradeAssignmentsFromServer ]: ( { state, dispatch, commit, getters }, exam ) => {
+        return new Promise( function ( resolve, reject ) {
+            let me = this;
+            let p = getGradeAssignments( exam );
+            p.then( function ( data ) {
+                let p2 = dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
+                p2.then( function () {
+                    resolve();
+                } );
+            } );
+
+        } );
+    },
 
     /**
      * Processes the result of a request for grade assignment data
@@ -219,9 +247,9 @@ const actions = {
                 } );
                 newData[ g.displayValue ] = g;
                 commit( 'replaceGradeAssignments', Payload.factory( { obj: newData, mutateSilently: true } ) );
-
-                resolve();
             } );
+
+            resolve();
         } );
     },
 
@@ -276,7 +304,7 @@ const getters = {
     },
 
     [ gTypes.getGradeAssignmentsInSortedList ]: ( state, getters, rootState ) => {
-        return sortGradeAssignments( getters[gTypes.getGradeAssignments] );
+        return sortGradeAssignments( getters[ gTypes.getGradeAssignments ] );
     },
 
     /**
@@ -331,7 +359,7 @@ const getters = {
      * @returns {Array}
      */
     [ gTypes.getInconsistentCutOffs ]: ( state, getters ) => {
-       return state.inconsistent;
+        return state.inconsistent;
     },
 
     /**
@@ -377,7 +405,7 @@ const getters = {
         let score = 0;
         let items = getters[ gTypes.getAllItems ];
 
-        if(! _.isUndefined(items) && ! _.isNull(items)) {
+        if ( !_.isUndefined( items ) && !_.isNull( items ) ) {
             _.forEach( items, function ( item ) {
                 score += !_.isUndefined( item.maxScore ) ? item.maxScore : 0;
             } );

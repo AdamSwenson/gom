@@ -89,7 +89,7 @@
 
                 //thus when it is complete, we get them from the store
                 return p.then( function () {
-                    let stats = me.$store.getters.getStatsForItem( me.item );
+                    let stats = me.$store.getters.getAnonScoresForItemStats( me.item );
                     //done loading
                     me.isLoading = false;
                     return _.sortBy( stats, 'score', me.scoreSortOrder );

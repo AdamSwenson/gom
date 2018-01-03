@@ -11,7 +11,8 @@ import * as aTypes from '../../action-types'
 import * as gTypes from '../../getter-types';
 
 import Payload from '../../../models/Payload'
-import Kumi from '../../../models/Kumi'
+import Kumi from '../../../models/Kumi';
+import ItemStat from '../../../models/ItemStat';
 
 /**
  * An item score without student info
@@ -70,10 +71,10 @@ const actions = {
                     //Lets get the actual objects
                     //to make it easier to display labels and data
                     // window.console.log( 'scoresForStats', 'getters', 65, getters);
-                    let exam = getters.getExam(r); //looks up by examId
-                    let item = getters.getItemById(r.itemId);
+                    let exam = getters.getExam( r ); //looks up by examId
+                    let item = getters.getItemById( r.itemId );
 
-                    let s = new Stat( exam, item, r.score, kumiIds )
+                    let s = new Stat( exam, item, r.score, kumiIds );
                     stats.push( s );
                 } )
                 commit( 'overwriteStats', Payload.factory( { obj: stats, mutateSilently: true } ) );
@@ -95,7 +96,7 @@ const actions = {
                     //Lets get the actual objects
                     //to make it easier to display labels and data
                     // window.console.log( 'scoresForStats', 'getters', 65, getters);
-                    let item = getters.getItemById(r.itemId);
+                    let item = getters.getItemById( r.itemId );
 
                     let s = new Stat( exam, item, r.score, kumiIds )
                     stats.push( s );
@@ -110,7 +111,20 @@ const actions = {
 };
 
 const getters = {
-    getStatsForItem: ( state, getters, rootState, item ) =>
+
+
+
+
+    /**
+     * Returns the item scores without identifying student information
+     * for the item
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param item
+     * @returns {function(*=)}
+     */
+    getAnonScoresForItemStats: ( state, getters, rootState, item ) =>
         ( item ) => {
             // window.console.log( 'scoresForStats', 'getStatsForitem', 70, item, state);
 

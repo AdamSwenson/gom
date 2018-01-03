@@ -15,7 +15,7 @@ import {
 
 
 //Dependencies
-import * as orderings from '../../../../../resources/assets/js/store/modules/items.order';
+import * as orderings from '../../../../../resources/assets/js/store/modules/items/items.order';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'

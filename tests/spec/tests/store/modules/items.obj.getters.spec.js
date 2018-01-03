@@ -32,7 +32,7 @@ import { traverseDF } from '../../../../../resources/assets/js/models/NodeTools'
 // //tested methods
 // let { getters, actions, mutations } = obj;
 
-const getters = require('../../../../../resources/assets/js/store/modules/items.obj.getters');
+const getters = require('../../../../../resources/assets/js/store/modules/items/items.obj.getters');
 
 describe( "store.modules.items.obj getters  ", function () {
     beforeEach( function () {

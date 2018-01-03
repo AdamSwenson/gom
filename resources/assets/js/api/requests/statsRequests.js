@@ -65,7 +65,7 @@ module.exports = {
         return window.axios
             .get( to )
             .then( ( response ) => {
-                window.console.log( 'examSummary', 173, response );
+                // window.console.log( 'examSummary', 173, response );
                 //me.isExamSummaryLoading = false;
                 return response.data;
             } )
@@ -86,7 +86,7 @@ module.exports = {
         return window.axios
             .get( to )
             .then( ( response ) => {
-                window.console.log( 'getItemScoreSummariesByKumis', 82, response );
+                // window.console.log( 'getItemScoreSummariesByKumis', 82, response );
                 return response.data;
             } )
             .catch( function ( error ) {
@@ -107,11 +107,30 @@ module.exports = {
         return window.axios
             .get( to )
             .then( ( response ) => {
-                window.console.log( 'getItemSummaryStats', 69, response );
                 return response.data;
             } )
             .catch( function ( error ) {
                 errorHandling( error );
             } );
+    },
+
+    /**
+     * Gets the summary statistics for all total scores
+     * on the exam
+     * @param exam
+     * @returns {Promise<T> | *}
+     */
+    getTotalScoreSummaryStats : (exam )=>{
+        let to = 'dev/stats/summary/exam/' + exam.id;
+
+        return window.axios
+            .get( to )
+            .then( ( response ) => {
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
     }
 };

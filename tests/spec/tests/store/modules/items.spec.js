@@ -16,7 +16,7 @@ import {
 
 
 //Dependencies
-import * as items from '../../../../../resources/assets/js/store/modules/items';
+import * as items from '../../../../../resources/assets/js/store/modules/items/items';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'

@@ -249,13 +249,15 @@ Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreContro
         Stats
         (i.e., scores without identifying the student and statistical summaries )
    ============================= */
+//lists of anonymized scores
 Route::get('dev/stats/item/{item}', 'Item\ItemStatsController@itemScores');
 Route::get('dev/stats/exam/{exam}', 'Item\ItemStatsController@examScores');
+//summary stats
 Route::get('dev/stats/summary/item/{item}', 'Item\ItemStatsController@itemSummary');
-Route::get('dev/stats/summary/exam/{exam}', 'Item\ItemStatsController@examSummary');
+Route::get('dev/stats/summary/exam/{exam}', 'Analytics\TotalScoreStatsController@show');
 Route::get('dev/stats/summary/exam/{exam}/item/{item}', 'Item\ItemStatsController@itemSummaryForExam');
 Route::get('dev/stats/summary/kumi/item/{item}', 'Item\ItemStatsController@itemSummaryByKumi');
-
+// number graded
 Route::get('dev/numgraded/exam/{exam}', 'Analytics\ExamCountsController@getExamCounts');
 
 /* =============================

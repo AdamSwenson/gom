@@ -1,5 +1,5 @@
 import * as nggTypes from "../newgrading/new-grading-getter-types";
-import { itemScoreGetter} from "./itemscores.helpers";
+import { itemScoreGetter } from "./itemscores.helpers";
 
 module.exports = {
 
@@ -33,7 +33,7 @@ module.exports = {
                         return i;
                     }
                 } );
-                return r[ 0 ];
+                return r;
             })( state, studentId )
         },
 
@@ -41,7 +41,7 @@ module.exports = {
      * Returns all the item scores currently
      * in store
      */
-    [nggTypes.getAllItemScores] : ( state, getters, rootState ) => {
+    [ nggTypes.getAllItemScores ]: ( state, getters, rootState ) => {
         return state.scores;
     },
 
@@ -56,13 +56,30 @@ module.exports = {
      * @param studentId
      * @returns {function(*=, *=)}
      */
-    [ nggTypes.getItemScoreObject ]: ( state, getters, rootState, pl ) => (pl) => {
+    [ nggTypes.getItemScoreObject ]: ( state, getters, rootState, pl ) => ( pl ) => {
         let { item, student } = pl;
-        return (function(state, item, student){
+        return (function ( state, item, student ) {
             if ( !_.isUndefined( item ) && !_.isUndefined( student ) ) {
                 return itemScoreGetter( state, item.id, student.id );
             }
-        })(state, item, student)
+        })( state, item, student )
     },
+
+    /**
+     * Returns the sum of item scores for the student
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param student
+     * @returns {function(*)}
+     */
+    [ nggTypes.getTotalScoreForStudent] : ( state, getters, rootState, student ) => ( student ) => {
+            let scores = getters.getStudentScores( student.id );
+            let total = 0;
+            _.forEach( scores, function ( scoreObj ) {
+                total += _.isNumber( scoreObj.score ) ? scoreObj.score : 0;
+            } );
+            return total;
+    }
 };
 

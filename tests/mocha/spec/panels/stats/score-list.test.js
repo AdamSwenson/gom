@@ -46,13 +46,13 @@ describe( "score-list   ", () => {
             getItemBySerialNumber: ( v ) => ( v ) => {
                 return item;
             },
-            getStatsForItem: ( v ) => ( v ) => {
+            getAnonScoresForItemStats: ( v ) => ( v ) => {
                 return scoreListAjaxResponse;
             }
         };
 
         mutations = {
-            getStatsForItem: sinon.spy()
+            getAnonScoresForItemStats: sinon.spy()
         };
 
         store = new Vuex.Store( {

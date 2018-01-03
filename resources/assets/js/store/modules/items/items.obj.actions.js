@@ -1,13 +1,13 @@
 /**
  * Created by adam on 5/27/17.
  */
-import * as mTypes from '../../store/mutation-types'
-import * as aTypes from '../../store/action-types'
-import * as gTypes from '../../store/getter-types'
+import * as mTypes from '../../mutation-types'
+import * as aTypes from '../../action-types'
+import * as gTypes from '../../getter-types'
 
-import Payload from '../../models/Payload'
-import Item from '../../models/Item'
-import Exam from '../../models/Exam'
+import Payload from '../../../models/Payload'
+import Item from '../../../models/Item'
+import Exam from '../../../models/Exam'
 
 // const actions = {
 module.exports = {

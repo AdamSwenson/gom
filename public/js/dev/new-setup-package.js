@@ -1162,6 +1162,7 @@ var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
 //grade assignments
 var updateCutoff = exports.updateCutoff = 'updateCutoff';
 var loadGradeAssignmentsFromServerData = exports.loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
+var loadGradeAssignmentsFromServer = exports.loadGradeAssignmentsFromServer = 'loadGradeAssignmentsFromServer';
 
 //items
 var cloneItem = exports.cloneItem = 'cloneItem';
@@ -13298,41 +13299,6 @@ var Student = function (_IModel) {
         set: function set(val) {
             this.studentIdentifier = val;
         }
-
-        /* *************************** Email ****************** */
-
-        //
-        // static get fillable(){
-        //     return [
-        //         'firstName',
-        //         'lastName',
-        //         'studentId',
-        //         'studentIdentifier',
-        //         'studentIndex',
-        //     ]
-        // }
-        // /**
-        //  * Takes the json student object received from the server and
-        //  * returns a Student object
-        //  * @param studentJson
-        //  * @returns {Student}
-        //  */
-        // static factory( studentJson ) {
-        //     let student = new Student(  );
-        //     let fields = Student.fillable;
-        //
-        //     for(let i=0; i<fields.length; i++){
-        //         let field = fields[i];
-        //         if(typeof studentJson[field] != 'undefined' ){
-        //             student[field] = studentJson[field];
-        //         }
-        //     }
-        //
-        //     console.log( 'student', student );
-        //     return student;
-        // }
-
-
     }], [{
         key: 'factory',
         value: function factory(params) {
@@ -13540,6 +13506,7 @@ var getUserPreference = exports.getUserPreference = 'getUserPreference';
    ================== SCORES        =====================
    ================================================================ */
 var getItemScoreObject = exports.getItemScoreObject = 'getItemScoreObject';
+var getTotalScoreForStudent = exports.getTotalScoreForStudent = 'getTotalScoreForStudent';
 
 /* ================================================================
    ================== TIMES        =====================
@@ -48063,7 +48030,7 @@ module.exports = {
     getItemScoreSummaryForExam: function getItemScoreSummaryForExam(exam, item) {
         var to = 'dev/stats/summary/exam/' + exam.id + '/item/' + item.id;
         return window.axios.get(to).then(function (response) {
-            window.console.log('examSummary', 173, response);
+            // window.console.log( 'examSummary', 173, response );
             //me.isExamSummaryLoading = false;
             return response.data;
         }).catch(function (error) {
@@ -48081,7 +48048,7 @@ module.exports = {
     getItemScoreSummariesByKumis: function getItemScoreSummariesByKumis(item) {
         var to = 'dev/stats/summary/kumi/item/' + item.id;
         return window.axios.get(to).then(function (response) {
-            window.console.log('getItemScoreSummariesByKumis', 82, response);
+            // window.console.log( 'getItemScoreSummariesByKumis', 82, response );
             return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
@@ -48097,7 +48064,22 @@ module.exports = {
         var to = 'dev/stats/summary/item/' + item.id;
 
         return window.axios.get(to).then(function (response) {
-            window.console.log('getItemSummaryStats', 69, response);
+            return response.data;
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
+    },
+
+    /**
+     * Gets the summary statistics for all total scores
+     * on the exam
+     * @param exam
+     * @returns {Promise<T> | *}
+     */
+    getTotalScoreSummaryStats: function getTotalScoreSummaryStats(exam) {
+        var to = 'dev/stats/summary/exam/' + exam.id;
+
+        return window.axios.get(to).then(function (response) {
             return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
@@ -48970,7 +48952,7 @@ module.exports = (_module$exports = {
                         return i;
                     }
                 });
-                return r[0];
+                return r;
             }(state, studentId);
         };
     }
@@ -48987,6 +48969,15 @@ module.exports = (_module$exports = {
                 return (0, _itemscores.itemScoreGetter)(state, item.id, student.id);
             }
         }(state, item, student);
+    };
+}), _defineProperty(_module$exports, nggTypes.getTotalScoreForStudent, function (state, getters, rootState, student) {
+    return function (student) {
+        var scores = getters.getStudentScores(student.id);
+        var total = 0;
+        _.forEach(scores, function (scoreObj) {
+            total += _.isNumber(scoreObj.score) ? scoreObj.score : 0;
+        });
+        return total;
     };
 }), _module$exports);
 
@@ -57885,10 +57876,11 @@ exports.default = {
 
         gradesAjax: function gradesAjax() {
             var me = this;
-            var p = _gradeAssignmentRequests2.default.getGradeAssignments(this.exam);
-            p.then(function (data) {
-                var p2 = me.$store.dispatch(aTypes.loadGradeAssignmentsFromServerData, data);
-            });
+            this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer, this.exam);
+            // let p = requests.getGradeAssignments( this.exam );
+            // p.then( function ( data ) {
+            //     let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
+            // } );
         },
 
         totalScores: function totalScores() {
@@ -61226,7 +61218,7 @@ exports.default = {
 
             //thus when it is complete, we get them from the store
             return p.then(function () {
-                var stats = me.$store.getters.getStatsForItem(me.item);
+                var stats = me.$store.getters.getAnonScoresForItemStats(me.item);
                 //done loading
                 me.isLoading = false;
                 return _.sortBy(stats, 'score', me.scoreSortOrder);
@@ -68580,7 +68572,7 @@ var _exams = __webpack_require__(335);
 
 var _exams2 = _interopRequireDefault(_exams);
 
-var _items = __webpack_require__(338);
+var _items = __webpack_require__(1230);
 
 var _items2 = _interopRequireDefault(_items);
 
@@ -68620,11 +68612,11 @@ var _kumis = __webpack_require__(366);
 
 var _kumis2 = _interopRequireDefault(_kumis);
 
-var _notes = __webpack_require__(355);
+var _notes = __webpack_require__(1228);
 
 var _notes2 = _interopRequireDefault(_notes);
 
-var _tags = __webpack_require__(377);
+var _tags = __webpack_require__(1229);
 
 var _tags2 = _interopRequireDefault(_tags);
 
@@ -68640,9 +68632,13 @@ var _quality = __webpack_require__(361);
 
 var _quality2 = _interopRequireDefault(_quality);
 
-var _scoresForStats = __webpack_require__(374);
+var _itemScoresForStats = __webpack_require__(1216);
 
-var _scoresForStats2 = _interopRequireDefault(_scoresForStats);
+var _itemScoresForStats2 = _interopRequireDefault(_itemScoresForStats);
+
+var _itemStats = __webpack_require__(1217);
+
+var _itemStats2 = _interopRequireDefault(_itemStats);
 
 var _gradeAssignments = __webpack_require__(337);
 
@@ -68693,6 +68689,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import createLogger from '../../../src/plugins/logger'
 
 //new grading
+_vue2.default.use(_vuex2.default);
+
+/**
+ * This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+
+
+//timer
+
+
+//grade assignments
 
 
 //Newer
@@ -68732,19 +68741,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 // import Vue from  'vue/dist/vue.js'
-_vue2.default.use(_vuex2.default);
-
-/**
- * This subscribes the api package which
- * handles data exchange with the server
- * to mutations in the store.
- */
-
-
-//timer
-
-
-//grade assignments
 
 
 var debug = "development" !== 'production';
@@ -68774,6 +68770,8 @@ exports.default = new _vuex2.default.Store({
     gradingCountsNew: _gradingCountsNew2.default,
     preferences: _index2.default,
 
+    itemStats: _itemStats2.default,
+
     comments: _comments2.default,
     exams: _exams2.default,
     gradeAssignments: _gradeAssignments2.default,
@@ -68786,7 +68784,7 @@ exports.default = new _vuex2.default.Store({
     roster: _roster2.default,
     rosterDisplay: _display2.default,
     settings: _settings2.default,
-    stats: _scoresForStats2.default,
+    stats: _itemScoresForStats2.default,
     students: _students2.default,
     tags: _tags2.default,
     times: _times2.default,
@@ -69751,7 +69749,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.updateInconsistentList = exports.gradeGetterForScore = undefined;
 
-var _mutations, _getters;
+var _mutations, _actions, _getters;
 
 var _vue = __webpack_require__(11);
 
@@ -69776,6 +69774,8 @@ var _GradeAssignment2 = _interopRequireDefault(_GradeAssignment);
 var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
+
+var _gradeAssignmentRequests = __webpack_require__(146);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -69930,11 +69930,27 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateGrade
     state.totalScores = sortTotalScores(payload.updateVal);
 }), _mutations);
 
-var actions = _defineProperty({}, aTypes.loadGradeAssignmentsFromServerData, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradeAssignmentsFromServer, function (_ref, exam) {
     var state = _ref.state,
         dispatch = _ref.dispatch,
         commit = _ref.commit,
         getters = _ref.getters;
+
+    return new Promise(function (resolve, reject) {
+        var me = this;
+        var p = (0, _gradeAssignmentRequests.getGradeAssignments)(exam);
+        p.then(function (data) {
+            var p2 = dispatch(aTypes.loadGradeAssignmentsFromServerData, data);
+            p2.then(function () {
+                resolve();
+            });
+        });
+    });
+}), _defineProperty(_actions, aTypes.loadGradeAssignmentsFromServerData, function (_ref2, payload) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
 
     return new Promise(function (resolve, reject) {
         var newData = {};
@@ -69951,11 +69967,11 @@ var actions = _defineProperty({}, aTypes.loadGradeAssignmentsFromServerData, fun
             });
             newData[g.displayValue] = g;
             commit('replaceGradeAssignments', _Payload2.default.factory({ obj: newData, mutateSilently: true }));
-
-            resolve();
         });
+
+        resolve();
     });
-});
+}), _actions);
 
 var getters = (_getters = {}, _defineProperty(_getters, gTypes.getGradeAssignmentForScore, function (state, getters, rootState, score) {
     return function (score) {
@@ -70042,1929 +70058,18 @@ exports.default = {
 };
 
 /***/ }),
-/* 338 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _extends2, _extends3;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
-                                                                                                                                                                                                                                                                   * This ties together the two types of storage for
-                                                                                                                                                                                                                                                                   * items
-                                                                                                                                                                                                                                                                   */
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeTools = __webpack_require__(54);
-
-var _JsonReaders = __webpack_require__(156);
-
-var _JsonReaders2 = _interopRequireDefault(_JsonReaders);
-
-var _items = __webpack_require__(342);
-
-var _items2 = _interopRequireDefault(_items);
-
-var _items3 = __webpack_require__(347);
-
-var _items4 = _interopRequireDefault(_items3);
-
-var _items5 = __webpack_require__(339);
-
-var _items6 = _interopRequireDefault(_items5);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var Vue = __webpack_require__(11);
-var _ = window._ = __webpack_require__(28);
-
-var REQUEST_VERSION = 1;
-
-var standardTimeout = 1000;
-
-var state = _extends({}, _items2.default.state, _items4.default.state);
-
-/**
- * The make use of both the item object store
- * and the order mapping
- *
- * @type {{getSortedIds: ((p1:*, p2?:*))}}
- */
-var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_extends2 = {}, _defineProperty(_extends2, gTypes.getSortedIds, function (state, getters) {
-    //get the serial number map
-    //we explicitly use the getter rather than
-    //just looking in the state because this
-    //may well evolve to a different storage
-    //behind the scenes
-    //We begin by making a copy because we will
-    //be altering the data stored
-    var map = getters[gTypes.getItemMapCopy]; //( state, getters );
-    // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
-
-    var updater = function updater(currentNode) {
-        currentNode = _extends({}, currentNode);
-        //Look up the id
-        var isn = currentNode.data;
-
-        //ignore the exam
-        if (isn === 0) return true;
-        var item = getters.getItemBySerialNumber(isn);
-
-        // let item = getters[ gTypes.getItemBySerialNumber ]( state, getters, isn );
-        // window.console.log( 'items', 'updater isn item', 144, isn, item);
-        if (!_.isUndefined(item)) {
-            //we don't check if id is defined.
-            //should we????
-            currentNode.data = item.id;
-            currentNode.dataType = 'id';
-            // window.console.log( 'items', 'recurse', 150, currentNode);
-        }
-        return currentNode;
-    };
-    // window.console.log( 'items', 'getSortedIds', 123, map);
-    // //transform to ids
-    //map is the exam represented as a Node object
-    // Doing this depth first
-    // this is a recurse and immediately-invoking function
-    (function recurse(currentNode) {
-        // window.console.log( 'items', 'recurse', 129, currentNode);
-        // step 2
-        for (var i = 0; i < currentNode.children.length; i++) {
-            // step 3
-            recurse(currentNode.children[i]);
-        }
-        // window.console.log( 'items', 'recurse', 153, currentNode );
-        // step 4
-        updater(currentNode);
-    })(map);
-    return map;
-}), _defineProperty(_extends2, 'getOrderForSync', function getOrderForSync(state, getters) {
-    var out = [];
-    var map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
-    window.console.log('items', 'getOrderForSync', 162, map);
-
-    if (_.isUndefined(map) || map.length === 0) return false;
-
-    //map is the exam represented as a Node object
-    // Doing this depth first
-    // this is a recurse and immediately-invoking function
-    (function recurse(currentNode) {
-        var cnt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-
-        // window.console.log( 'items', 'recurse', 129, currentNode);
-        // step 2
-        for (var i = 0; i < currentNode.children.length; i++) {
-            // step 3
-            recurse(currentNode.children[i], i);
-        }
-        // window.console.log( 'items', 'recurse', 153, currentNode );
-        // step 4
-        var item = getters.getItemBySerialNumber(currentNode.data);
-        // holdForIdLoading(item);
-        // window.console.log( 'items', 'recurse', 193, 'post hold', item);
-        if (!_.isUndefined(item)) {
-            var exam = item.isExam() ? item : getters.currentExam;
-            var parent = getters.getItemBySerialNumber(currentNode.parent);
-            out.push({
-                examId: exam.id,
-                itemId: item.id,
-                parentId: parent.id,
-                itemOrder: cnt
-            });
-        }
-    })(map);
-    // }
-    return out;
-}), _defineProperty(_extends2, 'canSync', function canSync(state, getters, rootState) {
-    if (state.items.length === 0) return false;
-
-    return function (state) {
-        var r = state.items.filter(function (item) {
-            if (item.id === -1) {
-                return item;
-            }
-        });
-        return r.length === 0;
-        document.getElementById('isSyncing');
-    }(state);
-}), _extends2));
-
-var actions = _extends({}, _items2.default.actions, _items4.default.actions, _JsonReaders2.default.actions, _items6.default.actions, (_extends3 = {}, _defineProperty(_extends3, aTypes.createItem, function (_ref, parentSN) {
-    var state = _ref.state,
-        commit = _ref.commit,
-        dispatch = _ref.dispatch,
-        getters = _ref.getters;
-
-    return function (state, commit, dispatch, getters, parentSN) {
-        // window.console.log( 'items', aTypes.createItem, 220, parent );
-        if (_.isUndefined(parentSN)) {
-            parentSN = getters.currentExam;
-        }
-
-        //If we were passed an item to serve as the parent
-        //we will use s serial number
-        var item = _Item2.default.factory({ parent: parentSN });
-        var payload = _Payload2.default.factory({ parent: parentSN, obj: item });
-
-        commit(mTypes.addNewItem, payload);
-        // window.console.log( 'items', 'canSync', 245, getters.canSync );
-        // holdForCanSync( item )
-        // {
-        dispatch(aTypes.addItemToOrder, payload);
-        // }
-    }(state, commit, dispatch, getters, parentSN);
-}), _defineProperty(_extends3, aTypes.cloneItem, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit,
-        dispatch = _ref2.dispatch,
-        getters = _ref2.getters;
-
-    return function (state, commit, dispatch, getters, payload) {
-        //NB, parent is the parent item's serial number
-        //toClone is an object
-        var parent = payload.parent,
-            toClone = payload.toClone;
-
-        //If we were passed an item to serve as the parent
-        //we will use s serial number
-
-        var item = _Item2.default.factory({ parent: parent });
-
-        _.forEach(_Item2.default.clonableProps, function (p) {
-            item[p] = toClone[p];
-        });
-
-        var pl = _Payload2.default.factory({ parent: parent, obj: item });
-        // window.console.log( 'items', 'cloneItem payload', 234, pl);
-        commit(mTypes.addNewItem, pl);
-
-        dispatch(aTypes.addItemToOrder, pl);
-    }(state, commit, dispatch, getters, payload);
-}), _defineProperty(_extends3, 'importItem', function importItem(_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit,
-        dispatch = _ref3.dispatch,
-        getters = _ref3.getters;
-
-    return function (state, commit, dispatch, getters, payload) {
-        //NB, parent is the parent item's serial number
-        //obj is an object
-        var parent = payload.parent,
-            obj = payload.obj;
-
-
-        var pl = _Payload2.default.factory({ parent: parent, obj: obj });
-        // window.console.log( 'items', 'cloneItem payload', 234, pl);
-
-        dispatch(aTypes.addItemToOrder, pl);
-        //the item will not have been stored in the regular items array
-        //instead it is loaded asynchronously.
-        //So we need to push it into the main array
-        pl.mutateSilently = true;
-        commit(mTypes.addNewItem, pl);
-    }(state, commit, dispatch, getters, payload);
-}), _defineProperty(_extends3, aTypes.removeItem, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit,
-        dispatch = _ref4.dispatch,
-        getters = _ref4.getters;
-
-    return function (state, commit, dispatch, getters, payload) {
-        //obj is an object
-        var obj = payload.obj;
-
-
-        var pl = _Payload2.default.factory({ obj: obj });
-        // window.console.log( 'items', 'cloneItem payload', 234, pl);
-
-        dispatch(aTypes.addItemToOrder, pl);
-        //the item will not have been stored in the regular items array
-        //instead it is loaded asynchronously.
-        //So we need to push it into the main array
-        pl.mutateSilently = true;
-        commit(mTypes.addNewItem, pl);
-    }(state, commit, dispatch, getters, payload);
-
-    //remove from order
-    [aTypes.removeItem];
-
-    //remove from objects
-}), _defineProperty(_extends3, aTypes.deleteItem, function () {}), _extends3));
-
-var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, _JsonReaders2.default.mutations, _items6.default.mutations, {
-
-    initializeItemStorage: function initializeItemStorage(store, payload) {
-
-        return new Promise(function (resolve, reject) {
-
-            var exam = payload.obj;
-
-            //set it in items
-            state.items[0] = exam;
-
-            //initialize the order store
-            state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
-            resolve();
-        });
-    }
-
-});
-//Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-
-    // Object indexed by Item id holding Item objects
-    // On load the root exam object and first item are created but given no
-    // ids. thus we will eventually need to create an exam object if one isn't set
-    //
-    // However don't ask the server to create an id just yet
-    // lookup the exam object that resides at index 0
-    // this will have either been newly created on page load
-    // or it will be an existing exam object loaded from the db
-    // let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-    // //Call the set active exam method
-    // //We do this rather than call the mutation directly
-    // //because there may need to be various other events and
-    // //things which need to happen depending on the context.
-    // //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-    // this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
-    // }
-
-};
-
-/***/ }),
-/* 339 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeTools = __webpack_require__(54);
-
-var _itemHelpers = __webpack_require__(157);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _itemRequests = __webpack_require__(210);
-
-var _itemRequests2 = _interopRequireDefault(_itemRequests);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var processItemOrderFromJson = function processItemOrderFromJson(state, orderData) {
-
-    _.forEach(orderData, function (d, i) {
-        var item = function (state, d) {
-            return (0, _itemHelpers.getItem)(state, d.itemId);
-        }(state, d);
-        //if the parent is null it is the exam, and we can skip
-        if (d.parentId === null) return true;
-
-        // these are top level
-        //and should be added as children of the exam.
-        //if the parent is null, we add the exam instead
-        //todo this must be fixed since an item could have the same id as an exam
-        var parentNode = d.parentId === state.items[0].id ? state.itemMap : function (state, d) {
-            var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
-            return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
-        }(state, d);
-
-        var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
-
-        //if an index was specified, splice it in at the index
-        //                 if ( !_.isUndefined( index ) ) {
-        //                     parentNode.children.splice( index, 0, itemNode );
-        //                 }
-        //                 else {
-        //otherwise just push it on the end
-        parentNode.children.push(itemNode);
-    });
-};
-
-var processItemObjectFromJson = function processItemObjectFromJson(state, objectData) {
-    _.forEach(objectData, function (d, i) {
-        var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
-        item.loadCommentsFromJson(d.comments);
-        state.items.push(item);
-    });
-};
-
-var mutations = {
-    /** This is what gets run when the root instance is mounted for the setup page */
-    // [ mTypes.loadInitialData ]: ( state, payload ) => {
-    //     return new Promise( function ( resolve, reject ) {
-    //
-    //         // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-    //         let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
-    //
-    //         let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
-    //
-    //         let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
-    //
-    //
-    //         // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
-    //
-    //         //assume everything is there, just load directly
-    //         let exam = Exam.factory( examData );
-    //
-    //         //set it in items
-    //         state.items[ 0 ] = exam;
-    //
-    //         //initialize the order store
-    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-    //
-    //         //load in the item objects
-    //         processItemObjectFromJson( state, objectData );
-    //
-    //         //load in the order data
-    //         processItemOrderFromJson( state, orderData );
-    //
-    //         resolve();
-    //     } );
-    //     // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
-    // },
-    //
-    //
-    // //todo move to more appropriate location once working
-    // initializeItemStore: ( state ) => {
-    //     return new Promise( function ( resolve, reject ) {
-    //         let exam = new Exam();
-    //         state.items[ 0 ] = exam;
-    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-    //         resolve();
-    //     } );
-    // },
-
-    saveItemsFromServer: function saveItemsFromServer(state, payload) {
-        processItemObjectFromJson(state, payload.obj);
-    },
-
-    saveOrderFromServer: function saveOrderFromServer(state, payload) {
-
-        processItemOrderFromJson(state, payload.obj);
-    }
-};
-
-var actions = {
-
-    loadItemsFromServer: function loadItemsFromServer(_ref, exam) {
-        var state = _ref.state,
-            commit = _ref.commit,
-            dispatch = _ref.dispatch,
-            getters = _ref.getters;
-
-        return new Promise(function (resolve, reject) {
-
-            //ahem. initialize the store
-            commit('initializeItemStorage', _Payload2.default.factory({ obj: exam }));
-
-            //The returned array  will have the keys
-            //  'itemObjects'
-            //  'itemOrder'
-            var p = _itemRequests2.default.getItemsForExam(exam);
-            p.then(function (data) {
-
-                //save the item objects
-                commit('saveItemsFromServer', _Payload2.default.factory({
-                    obj: data.itemObjects,
-                    mutateSilently: true
-                }));
-
-                //store their ordering
-                commit('saveOrderFromServer', _Payload2.default.factory({
-                    obj: data.itemOrder,
-                    mutateSilently: true
-                }));
-
-                resolve();
-            });
-        });
-    }
-
-};
-
-exports.default = {
-    actions: actions,
-    mutations: mutations
-
-};
-
-/***/ }),
-/* 340 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 5/27/17.
-                                                                                                                                                                                                                   */
-
-
-// const actions = {
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addOlderSibling, function (_ref, payload) {
-    var state = _ref.state,
-        dispatch = _ref.dispatch,
-        commit = _ref.commit,
-        getters = _ref.getters;
-
-    //add item at same depth with same parent but with lower index
-    window.console.log('items', 'addOlderSibling', 283, payload);
-}), _defineProperty(_module$exports, aTypes.addYoungerSibling, function (_ref2, payload) {
-    var state = _ref2.state,
-        dispatch = _ref2.dispatch,
-        commit = _ref2.commit,
-        getters = _ref2.getters;
-
-    //add item at same depth with same parent but with higher index
-    window.console.log('items', 'addYoungerSibling', 288, payload);
-}), _defineProperty(_module$exports, aTypes.cleanupItems, function (_ref3) {
-    var dispatch = _ref3.dispatch,
-        commit = _ref3.commit,
-        getters = _ref3.getters;
-
-
-    var p = new Promise(function (resolve, reject) {
-        commit('cleanupEmptyItems');
-        resolve();
-    });
-
-    return p.then(function () {
-        return new Promise(function (resolve, reject) {
-            commit(mTypes.updateOrder);
-            resolve();
-        });
-    });
-}), _defineProperty(_module$exports, aTypes.deleteItem, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-    console.log(aTypes.deleteItem, state, commit, payload);
-    //check if payload has correct structure
-    var index = payload.index,
-        id = payload.id;
-    //remove from page
-
-    //reorder index
-
-    //call to server to delete
-
-    //confirm
-
-    //if fail, put back on page with message
-
-    //reorder index
-    //todo write
-}), _defineProperty(_module$exports, aTypes.demoteItem, function (_ref5, payload) {
-    var state = _ref5.state,
-        dispatch = _ref5.dispatch,
-        commit = _ref5.commit,
-        getters = _ref5.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.demote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_module$exports, aTypes.onUpdate, function (_ref6, event) {
-    var state = _ref6.state,
-        dispatch = _ref6.dispatch,
-        commit = _ref6.commit,
-        getters = _ref6.getters;
-
-    var p = new Promise(function (resolve, reject) {
-        commit(aTypes.onUpdate, event);
-        resolve();
-    });
-
-    return p.then(function () {
-        return new Promise(function (resolve, reject) {
-            commit(mTypes.updateOrder);
-            resolve();
-        });
-    });
-}), _defineProperty(_module$exports, aTypes.promoteItem, function (_ref7, payload) {
-    var state = _ref7.state,
-        dispatch = _ref7.dispatch,
-        commit = _ref7.commit,
-        getters = _ref7.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.promote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_module$exports, aTypes.toggleItemPublic, function (_ref8, payload) {
-    var state = _ref8.state,
-        dispatch = _ref8.dispatch,
-        commit = _ref8.commit,
-        getters = _ref8.getters;
-
-    window.console.log('items', 'toggleItemPublic', 365, payload);
-
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var item = getters.getItemByIndex(payload.index);
-
-        commit(mTypes.updateItem, _Payload2.default.factory({
-            index: item.index,
-            updateProp: 'publicity',
-            updateVal: !item.publicity
-        }));
-    }
-}), _module$exports);
-
-//
-// export default {
-//     actions}
-
-/***/ }),
-/* 341 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          * Created by adam on 6/8/17.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          */
-
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var _ = window._ = __webpack_require__(28);
-
-var buildKey = function buildKey(idx) {
-    var k = '';
-    for (var i = 0; i < idx.length; i++) {
-        k += idx[i];
-        if (i <= idx.length - 2) {
-            k += '-';
-        }
-    }
-    return k;
-};
-
-var isItemsEmpty = function isItemsEmpty(state) {
-    if (state.items.length > 0) {
-        return false;
-    }
-    return true;
-};
-
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getAllItems, function (state, getters, rootState) {
-    return state.items;
-}), _defineProperty(_module$exports, gTypes.getItem, function (state, getters, rootState, payload) {
-    // console.log('getItem', state, payload);
-    if (isItemsEmpty(state)) return false;
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var index = payload.index,
-            id = payload.id;
-
-        if (typeof index !== 'undefined') {
-            return getters[gTypes.getItemByIndex](state, getters, index);
-        }
-        if (typeof id !== 'undefined') {
-            return getters[gTypes.getItemById](state, getters, id);
-        }
-    }
-}), _defineProperty(_module$exports, gTypes.getItemById, function (state, getters, rootState, id) {
-    return function (id) {
-        // [gTypes.getItemById]: function ( state, getters, rootState, id ) {
-        // window.console.log( 'items', 'getItemById', 148, state, id );
-        return function (state, id) {
-            var r = state.items.filter(function (i) {
-                if (i.id === id) {
-                    return i;
-                }
-            });
-            return r[0];
-        }(state, id);
-    };
-}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, rootState, index) {
-    return function (index) {
-
-        // [gTypes.getItemByIndex]: ( state, getters, rootState, index) => {
-        // [gTypes.getItemByIndex]: function ( state, getters, index ) {
-        //remove the payload wrapper if necessary
-        if (_Payload2.default.checkIfPayload(index)) {
-            index = index.index;
-        }
-
-        //if this is a single member array, we can treat
-        //it like a numeric input under the older system
-        if (_.isArray(index) && index.length === 1) {
-            index = index[0];
-        }
-
-        //Now we're ready to deal with the input
-        return function (state, index) {
-            //There are two cases to consider
-            //We deal first with the easy case in which the index
-            //is a number or string representation of a number
-            //and not a composite
-            if (!_.isArray(index)) {
-                //if was just a string or integer this is fine
-                //also if the input was an array with only one item
-                var r = state.items.filter(function (i) {
-                    if (i.index === index) {
-                        return i;
-                    }
-                });
-                return r[0];
-            } else {
-                //we need to do something different
-                //because it is an array
-                if (_.isArray(index)) {
-                    var idx = index.join('-');
-                }
-            }
-        }(state, index);
-    };
-}), _defineProperty(_module$exports, gTypes.getItemBySerialNumber, function (state, getters, rootState, serialNumber) {
-    return function (serialNumber) {
-        // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
-        // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
-        return function (state, serialNumber) {
-            var r = state.items.filter(function (i) {
-                if (i.serialNumber === serialNumber) {
-                    return i;
-                }
-            });
-            return r[0];
-        }(state, serialNumber);
-    };
-}), _defineProperty(_module$exports, 'getAllItemIndexes', function getAllItemIndexes(state, getters, rootState) {
-    var out = [];
-    for (var item in state.items) {
-        out.push(item.index);
-    }
-    return out;
-}), _defineProperty(_module$exports, 'getAllIndexesList', function getAllIndexesList(state, getters, rootState) {
-    if (isItemsEmpty(state)) return [];
-    // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
-
-    var out = [];
-    for (var _ref in state.items) {
-        var _ref2 = _slicedToArray(_ref, 2);
-
-        var key = _ref2[0];
-        var val = _ref2[1];
-
-        out.push(key);
-    }
-    return out;
-
-    //Leaving this here, in case someday we go back to items being an object
-    // return Object.keys( state.items )
-}), _defineProperty(_module$exports, gTypes.getAllItemsList, function (state, getters, rootState) {
-    //alias.
-    // used to be used when items was different data structure
-    //         return this.getAllItems( state, getters );
-    return state.items;
-}), _defineProperty(_module$exports, gTypes.getItemCount, function (state, getters, rootState) {
-
-    return state.items.length;
-}), _defineProperty(_module$exports, 'getNextIndex', function getNextIndex(state, getters) {
-    // return _.sortedIndex( state.items );
-
-}), _defineProperty(_module$exports, 'currentExam', function currentExam(state, getters) {
-    return state.items[0];
-}), _defineProperty(_module$exports, 'getExamSerialNumber', function getExamSerialNumber(state, getters) {
-    return state.items[0] ? state.items[0].serialNumber : null;
-}), _module$exports);
-
-/***/ }),
-/* 342 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeTools = __webpack_require__(54);
-
-var _itemsObj = __webpack_require__(343);
-
-var _itemsObj2 = _interopRequireDefault(_itemsObj);
-
-var _itemsObj3 = __webpack_require__(340);
-
-var _itemsObj4 = _interopRequireDefault(_itemsObj3);
-
-var _itemsObj5 = __webpack_require__(341);
-
-var _itemsObj6 = _interopRequireDefault(_itemsObj5);
-
-var _itemsObj7 = __webpack_require__(344);
-
-var _itemsObj8 = _interopRequireDefault(_itemsObj7);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-/**
- * This integrates the various methods for operating on
- * the stored item objects.
- */
-
-var Vue = __webpack_require__(11);
-var _ = window._ = __webpack_require__(28);
-
-var standardTimeout = 1000;
-
-var helpers = {
-    getItemFromPayload: function getItemFromPayload(state, payload) {
-        return state.items[payload.index];
-        // if (typeof payload.id !== 'undefined') {
-        //     //get the item
-        //     var item = state.items.filter(function (i) {
-        //         if (typeof i.id != 'undefined' && i.id === id) {
-        //             return i;
-        //         }
-        //     });
-        //     return item;
-        // } else {
-        //     //get the item
-        //     return state.items[payload.index];
-        // }
-    }
-};
-
-/**
- * Build an input object out of an input object
- * and return a payload object containing it
- * @param input
- */
-var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, payload) {
-    //either a json or an item object have been passed in
-    var ItemId = payload.ItemId,
-        ItemIndex = payload.ItemIndex,
-        obj = payload.obj,
-        ItemObject = payload.ItemObject;
-
-
-    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
-
-    //check and see if an Item object has already been passed in
-    if (!obj instanceof _Item2.default) {
-        //create a new Item
-        var name = payload.name,
-            id = payload.id,
-            index = payload.index;
-
-        var ItemJson = { name: name, ItemIndex: ItemIndex };
-        obj = _Item2.default.factory(ItemJson);
-    }
-
-    //assemble the expected payload
-    // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
-    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
-    //Add to the Items store
-    return out;
-};
-
-// let state = require('./items.obj.state')
-// let getters = require('./items.obj.getters')
-// const actions = require( './items.obj.actions' );
-// const mutations = require( './items.obj.mutations' );
-//
-// window.console.log( 'items.obj', 'getters before check ^^^^^^^^^^^^^^^^^^^^^^', 68, getters);
-//Object.assign( {}, getters_both, objGetters, Orderings.getters );
-// if(typeof getters.default !== 'undefined'){
-//     getters = getters.default;
-// }
-
-
-exports.default = {
-    actions: _itemsObj4.default,
-    getters: _itemsObj6.default,
-    mutations: _itemsObj2.default,
-    state: _itemsObj8.default
-
-    // Object indexed by Item id holding Item objects
-    // On load the root exam object and first item are created but given no
-    // ids. thus we will eventually need to create an exam object if one isn't set
-    //
-    // However don't ask the server to create an id just yet
-    // lookup the exam object that resides at index 0
-    // this will have either been newly created on page load
-    // or it will be an existing exam object loaded from the db
-    // let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-    // //Call the set active exam method
-    // //We do this rather than call the mutation directly
-    // //because there may need to be various other events and
-    // //things which need to happen depending on the context.
-    // //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-    // this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
-    // }
-
-};
-
-/***/ }),
-/* 343 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-var _vue = __webpack_require__(11);
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 5/27/17.
-                                                                                                                                                                                                                   */
-
-
-/**
- * We want the actual mutations to be as agnostic as possible
- * on how the item is identified. This takes the payload
- * and returns the item.
- * The order of preference is:
- *     - if the item object has been given to us, use it.
- *     - if the serial number of the item object has been given, use it
- *     - if the id of the item has been given, use it
- *     - if the index of the item has been given, use it
- * @param state
- * @param payload
- */
-var getItemFromPayload = function getItemFromPayload(state, payload) {
-
-    switch (payload.identifierType) {
-        case 'obj':
-            return payload.obj;
-            break;
-
-        case 'serialNumber':
-            return state.items.filter(function (o) {
-                if (o.serialNumber === payload.serialNumber) {
-                    return o;
-                }
-            });
-            break;
-
-        case 'index':
-            return state.items[payload.index];
-            break;
-    }
-};
-
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addItemIndexMapping, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    _vue2.default.set(state.indexMap, payload.index, payload.id);
-
-    // state.indexMap.set( payload.index, payload.id );
-}), _defineProperty(_module$exports, 'addMappedItem', function addMappedItem(state, payload) {
-    var idx = payload.idx,
-        item = payload.item;
-
-    if (_.isEmpty(idx) || _.isEmpty(item)) return false;
-    var key = buildKey(idx);
-    window.console.log('items', 'addMappedItem', 102, key, item);
-    _vue2.default.set(state.orderMap, key, item);
-}), _defineProperty(_module$exports, mTypes.addNewItem, function (state, payload) {
-    console.log(mTypes.addNewItem, state, payload);
-
-    // return new Promise( ( resolve, reject ) => {
-
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var obj = payload.obj,
-            callback = payload.callback;
-        //and here we meet the problem of deciding what data
-        //structure to use to store the items and the many
-        //times I've changed my mind
-        //The problem is what to do if the incoming
-        //item has an internally different index.
-        //The answer isn't very good. Right now, it is just
-        //to not use this method to update.
-        //Of course, everyone is on their honor to not do so....
-
-        state.items.push(obj);
-
-        if (!_.isUndefined(callback)) callback(payload);
-        // return resolve();
-    }
-    // } );
-}), _defineProperty(_module$exports, 'cleanupEmptyItems', function cleanupEmptyItems(state) {
-    for (var i = 0; i < state.items.length; i++) {
-        if (typeof state.items[i] === 'undefined') {
-            state.items.splice(i, 1);
-        }
-    }
-}), _defineProperty(_module$exports, 'onUpdate', function onUpdate(state, event) {
-    window.console.log('items', 'onUpdate', 102, event);
-    var newIndex = event.newIndex,
-        oldIndex = event.oldIndex;
-
-    var resorted = state.items.splice(newIndex, 0, state.items.splice(oldIndex, 1)[0]);
-    // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
-    // window.console.log( 'items', 'onUpdate', 105, resorted);
-    _vue2.default.set(state, 'items', resorted);
-    // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
-    // window.console.log( 'items', 'onUpdate', 105, );
-}), _defineProperty(_module$exports, mTypes.setItem, function (state, payload) {
-    return new Promise(function (resolve, reject) {
-
-        // console.log('items.mutations', mTypes.setItem, state, payload);
-        if (_Payload2.default.checkIfPayload(payload)) {
-            var index = payload.obj.index;
-
-            window.console.log('items.mutations', 'index', 100, index);
-            _vue2.default.set(state.items, index, payload.obj);
-        }
-        resolve();
-    });
-}), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
-    console.log(mTypes.updateComment, payload, state);
-    //get the item
-    var itm = getItemFromPayload(state, payload);
-    window.console.log('items', 'updateComment', 145, itm, state.items);
-
-    if (typeof itm !== 'undefined') {
-        // let itm = state.items[ payload.index ];
-        var comment = itm.getComment(payload.updateValence);
-
-        if (typeof comment !== 'undefined') {
-            //Set the value so vue can see it
-            _vue2.default.set(comment, 'text', payload.updateVal);
-        }
-
-        //Push the altered item back into the array
-        //set it in the array with vue
-        _vue2.default.set(state.items, payload.index, itm);
-        // state.items.$set( payload.index, itm );
-        window.console.log('items', 'updateComment', 145, itm, state.items);
-    }
-}), _defineProperty(_module$exports, mTypes.updateItem, function (state, payload) {
-    // console.log( mTypes.updateItem, payload, state );
-    var itm = getItemFromPayload(state, payload);
-
-    if (typeof itm !== 'undefined') {
-        //Set the value so vue can see it
-        _vue2.default.set(itm, payload.updateProp, payload.updateVal);
-    }
-}), _defineProperty(_module$exports, mTypes.updateItemSilently, function (state, payload) {
-    return new Promise(function (resolve, reject) {
-        var itm = getItemFromPayload(state, payload);
-        // if ( typeof itm === 'undefined' ) return reject();
-        //Set the value so vue can see it
-        _vue2.default.set(itm, payload.updateProp, payload.updateVal);
-        return resolve();
-    });
-}), _defineProperty(_module$exports, mTypes.updateOrder, function (state, payload) {
-    return new Promise(function (resolve, reject) {
-
-        // if ( state.items.length === 0 ) return reject();
-        // console.log(mTypes.updateOrder, state, payload);
-        // this just requires us to match list indexes w the
-        //property of the item
-        for (var i = 0; i < state.items.length; i++) {
-            var item = state.items[i];
-            // window.console.log('items', 'updateOrder', 87, i, item);
-            if (typeof item !== 'undefined') {
-                //set the property on the object
-                _vue2.default.set(item, 'index', i);
-                //set it in the array with vue
-                _vue2.default.set(state.items, i, item);
-            }
-        }
-        resolve();
-    });
-}), _module$exports);
-
-// /**
-//  * Make sure the property index matches the lookup index
-//  * @param state
-//  * @param payload
-//  */
-// [mTypes.updateOrder]: ( state, orderList ) => {
-//     //new payload where it contains a key orderList
-//     for (let i = 0; i < orderList.length; i++) {
-//         // this is the ith item id
-//         let id = orderList[ i ];
-//         let item = state.items.filter( ( i ) => {
-//             if ( i.id === id ) {
-//                 return i;
-//             }
-//         } );
-//
-//         //get the item, and update its index
-//         //no moving it or anything
-//         // window.console.log('items', 'updateOrder', 87, i, item);
-//         if ( typeof item !== 'undefined' ) {
-//             //set the property on the object
-//             Vue.set( item, 'index', i );
-//             //set it in the array with vue
-//             // Vue.set(state.items, i, item);
-//             //resort array
-//         }
-//     }
-//
-//     //now that we've done all that, let's resort items
-//     //by the object's index
-//     let items = state.items.sort( ( a, b ) => {
-//         return a.index > b.index;
-//     } );
-//
-//     //and finally push the sorted array back
-//     Vue.set( state, 'items', items );
-//
-//     // // console.log(mTypes.updateOrder, state, payload);
-//     // // this just requires us to match list indexes w the
-//     // //property of the item
-//     // for (let i = 0; i < state.items.length; i++) {
-//     //     let item = state.items[ i ];
-//     //     // window.console.log('items', 'updateOrder', 87, i, item);
-//     //     if ( typeof item !== 'undefined' ) {
-//     //         //set the property on the object
-//     //         Vue.set(item, 'index', i);
-//     //         //set it in the array with vue
-//     //         Vue.set(state.items, i, item);
-//     //     }
-//     // }
-//
-// },
-
-/***/ }),
-/* 344 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Vue = __webpack_require__(11);
-
-/**
- * The older version used an index value to do lots of stuff.
- * Given the prospect of using a websocket connection or connecting
- * to canvas or other 3rd party system, it now makes more sense
- * to use the db's id as the primary locator in the store. Thus
- * state.Items has the Item's database id as key and an Item object
- * as value. That is:
- *      state.Items[Item.id] = Item
- *
- * To maintain compatibility, indexMap holds a mapping from the old
- * ItemIndex to the database id
- */
-module.exports = {
-
-  /**
-   * This holds the current item objects.
-   * Because we now want maximal flexibility in how we store and
-   * retrieve item objects, we store them in a simple list.
-   * The access to the items in the last is handled by getters
-   * which filter the list on whatever internal property of the item
-   * a particular use case needs.
-   */
-  items: [],
-
-  // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
-  /**
-   * Mapping from older ItemIndex to new Item id value
-   */
-  indexMap: new Map(),
-
-  orderMap: {}
-};
-
-// Object indexed by Item id holding Item objects
-// On load the root exam object and first item are created but given no
-// ids. thus we will eventually need to create an exam object if one isn't set
-//
-// However don't ask the server to create an id just yet
-// lookup the exam object that resides at index 0
-// this will have either been newly created on page load
-// or it will be an existing exam object loaded from the db
-// let exam = this.$store.getters[ gTypes.getActiveExamObj ];
-// //Call the set active exam method
-// //We do this rather than call the mutation directly
-// //because there may need to be various other events and
-// //things which need to happen depending on the context.
-// //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
-// this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
-// }
-
-/***/ }),
-/* 345 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeTools = __webpack_require__(54);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Created by adam on 6/12/17.
- */
-
-var _ = window._ = __webpack_require__(28);
-// const Vue = require( 'vue' );
-
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addItemToOrder, function (_ref, payload) {
-    var state = _ref.state,
-        dispatch = _ref.dispatch,
-        commit = _ref.commit,
-        getters = _ref.getters;
-
-    window.console.log('items.order.actions', aTypes.addItemToOrder, 31, payload);
-    // return new Promise( ( resolve, reject ) => {
-
-    var obj = payload.obj,
-        parent = payload.parent,
-        index = payload.index,
-        mutateSilently = payload.mutateSilently;
-
-    //Sort out whether obj and parent are nodes or items
-
-    var toAddSerialNumber = _.isNumber(obj) ? obj : obj.serialNumber; // getSerialNumber( obj );
-    var parentSerialNumber = _.isNumber(parent) ? parent : (0, _NodeTools.getSerialNumber)(parent);
-    // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
-
-    var newNode = new _Node2.default(toAddSerialNumber, parentSerialNumber);
-    var parentNode = getters.getItemNodeFromOrder(parentSerialNumber);
-    // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
-
-    var pl = _Payload2.default.factory({
-        objNode: newNode,
-        parentNode: parentNode,
-        index: index,
-        mutateSilently: mutateSilently
-    });
-    window.console.log('items.order.actions', 'pl', 47, pl);
-
-    commit(mTypes.insertNodeIntoOrder, pl);
-
-    // resolve();
-
-    // } );
-}), _defineProperty(_module$exports, aTypes.removeItemFromOrder, function (_ref2, payload) {
-    var state = _ref2.state,
-        dispatch = _ref2.dispatch,
-        commit = _ref2.commit,
-        getters = _ref2.getters;
-    var serialNumber = payload.serialNumber;
-    // let  serialNumber = getSerialNumber(payload);
-
-    var toRemove = getters[gTypes.getItemNodeFromOrder](serialNumber);
-    var parent = getters[gTypes.getItemNodeFromOrder](toRemove.parent);
-    var pl = _Payload2.default.factory({ obj: toRemove, parent: parent });
-    commit(mTypes.removeNodeFromOrder, pl);
-}), _module$exports);
-
-/***/ }),
-/* 346 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeTools = __webpack_require__(54);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Created by adam on 6/12/17.
- */
-
-var _ = window._ = __webpack_require__(28);
-var Vue = __webpack_require__(11);
-
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
-    return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
-}), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, rootState, serialNumber) {
-    return function (serialNumber) {
-
-        return function (state, serialNumber) {
-            var callback = function callback(node) {
-                if (!callback.found) callback.found = [];
-                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
-                if (node.data === serialNumber) {
-                    callback.found.push(node);
-                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
-                    return true;
-                }
-                return false;
-            };
-            (0, _NodeTools.traverseDF)(state.itemMap, callback);
-            return callback.found[0];
-        }(state, serialNumber);
-
-        //    return state.itemMap ? getNode(state, serialNumber) : null;
-    };
-}), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters, rootState, serialNumber) {
-    return function (serialNumber) {
-        // return 1;
-        // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
-        return function (state, serialNumber) {
-
-            var level = 0;
-
-            var node = (0, _NodeTools.getNode)(state, serialNumber);
-            if (node) {
-                while (node.parent !== node.data) {
-                    var parent = node.parent;
-                    //get the parent node
-                    //set it as node so that we operate on it next time
-                    node = (0, _NodeTools.getNode)(state, parent);
-                    //increment level
-                    level += 1;
-                }
-            }
-            return level;
-        }(state, serialNumber);
-        //
-        //
-        // return (function recurse( serialNumber ) {
-        //     // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
-        //     //look up the node whose serial number we've just  been handed.
-        //     let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
-        //     //break condition is that we've hit the exam
-        //     //which is of course the only item which is its
-        //     //own parent
-        //     if ( node.parent === node.data ) return level;
-        //     //Otherwise, increment the level counter
-        //     // and re-run on the parent
-        //     level += 1;
-        //     return recurse( node.parent );
-        // })( serialNumber );
-    };
-}), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, rootState, serialNumber) {
-    return function (serialNumber) {
-        //look up the node whose serial number we've just  been handed.
-        var node = (0, _NodeTools.getNode)(state, serialNumber);
-        //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
-        if (node) {
-            var parent = (0, _NodeTools.getNode)(state, node.parent);
-            // let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
-            if (parent) {
-                for (var index = 0; index < parent.children.length; index++) {
-                    if (parent.children[index].data === node.data) {
-                        return index;
-                    }
-                }
-            }
-        }
-        return 0;
-    };
-}), _defineProperty(_module$exports, 'getRootNode', function getRootNode(state, getters, rootState) {
-    return state.itemMap;
-}), _defineProperty(_module$exports, 'getRootNodeSerialNumber', function getRootNodeSerialNumber(state, getters, rootState) {
-    return state.itemMap.data;
-}), _defineProperty(_module$exports, 'getQuestionLevelItems', function getQuestionLevelItems(state, getters) {
-    var items = [];
-    if (state.itemMap.children) {
-        _.forEach(state.itemMap.children, function (node) {
-            items.push(getters[gTypes.getItemBySerialNumber](node.data));
-        });
-    }
-    return items;
-}), _defineProperty(_module$exports, 'getItemChildren', function getItemChildren(state, getters, rootState, item) {
-    return function (item) {
-
-        var kids = [];
-        var node = getters[gTypes.getItemNodeFromOrder](item.serialNumber);
-
-        if (node.children.length > 0) {
-            _.forEach(node.children, function (child) {
-                if (child.data) {
-                    var o = getters[gTypes.getItemBySerialNumber](child.data);
-                    kids.push(o);
-                }
-            });
-        }
-        return kids;
-    };
-}), _module$exports);
-
-/***/ }),
-/* 347 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _itemsOrder = __webpack_require__(348);
-
-var _itemsOrder2 = _interopRequireDefault(_itemsOrder);
-
-var _itemsOrder3 = __webpack_require__(345);
-
-var _itemsOrder4 = _interopRequireDefault(_itemsOrder3);
-
-var _itemsOrder5 = __webpack_require__(346);
-
-var _itemsOrder6 = _interopRequireDefault(_itemsOrder5);
-
-var _itemsOrder7 = __webpack_require__(349);
-
-var _itemsOrder8 = _interopRequireDefault(_itemsOrder7);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * This pulls together the various parts of
- * handling item order.
- * If there was something which required multiple
- * portions of the tools to be used, it would
- * be defined in this file
- *
- * Otherwise, it just makes the locations of
- * methods more intelligible and helps clean
- * up the items.js file where everything comes
- * together
- *
- * Created by adam on 4/11/17.
- */
-
-exports.default = {
-  actions: _itemsOrder4.default,
-  getters: _itemsOrder6.default,
-  mutations: _itemsOrder2.default,
-  state: _itemsOrder8.default
-};
-
-/***/ }),
-/* 348 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeTools = __webpack_require__(54);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Created by adam on 6/12/17.
- */
-
-var _ = window._ = __webpack_require__(28);
-var Vue = __webpack_require__(11);
-
-var checkExpectedType = function checkExpectedType(toBeSet) {
-    if (toBeSet instanceof _Node2.default) return true;
-
-    window.console.log('items.order.mutations', 'ERROR', 25, "is not a Node", toBeSet);
-    throw new Error("non node passed to order mutation", toBeSet);
-    return false;
-};
-
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
-    return new Promise(function (resolve, reject) {
-
-        // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
-
-        var index = payload.index,
-            objNode = payload.objNode,
-            parentNode = payload.parentNode;
-
-        //type check
-
-        if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
-            //Try out the un type checked properties to see if they have
-            //nodes
-            var obj = payload.obj,
-                parent = payload.parent;
-            //if not, oh well
-
-            return false;
-        }
-
-        //if an index was specified, splice it in at the index
-        if (!_.isUndefined(index)) {
-            parentNode.children.splice(index, 0, objNode);
-            return resolve();
-        }
-
-        //otherwise just push it on the end
-        parentNode.children.push(objNode);
-        return resolve();
-    });
-}), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
-    var obj = payload.obj,
-        parent = payload.parent;
-    //Merge its children into its parent's children
-
-    parent.children.concat(obj.children);
-    //delete the node
-    var idx = parent.children.indexOf(obj);
-    parent.children.splice(idx, 1);
-}), _defineProperty(_module$exports, 'increasePosition', function increasePosition(state, payload) {
-    var objNode = payload.objNode,
-        parentNode = payload.parentNode;
-
-
-    var currentIndex = parentNode.children.indexOf(objNode);
-    // if ( currentIndex + 1 === parentNode.children.length ) return true;
-    //
-    // //make sure it is not the last item already
-    // if ( parentNode.children.length !== currentIndex + 1 ) {
-    //We first pop the item out so that its successor
-    //slides down and occupies its current index
-    parentNode.children.splice(currentIndex, 1);
-    //Now we push it in at  its
-    //original position + 1
-    parentNode.children.splice(currentIndex - 1, 0, objNode);
-    // }
-}), _defineProperty(_module$exports, 'decreasePosition', function decreasePosition(state, payload) {
-    var objNode = payload.objNode,
-        parentNode = payload.parentNode;
-
-    var currentIndex = parentNode.children.indexOf(objNode);
-    //check whether at the end of the children list
-    //if so, ignore the call
-    //   if ( currentIndex === 0 ) return true;
-
-    //We first pop the item out so that its successor
-    //slides down and occupies its current index
-    //Now we push it in at  its
-    //original position -1 1
-    parentNode.children.splice(currentIndex, 1); //remove it
-    parentNode.children.splice(currentIndex + 1, 0, objNode); //push it in
-}), _defineProperty(_module$exports, 'promote', function promote(state, payload) {
-    //where it makes no sense to promote
-    var objNode = payload.objNode,
-        parentNode = payload.parentNode;
-    //get parent's parent
-
-    if (parentNode instanceof _Node2.default) {
-        var grandParent = (0, _NodeTools.getNode)(state, parentNode.parent);
-
-        //check that we aren't at the question level
-        // if ( grandParent ) {
-        //add to grandparent
-        grandParent.children.push(objNode);
-
-        //remove from parent's children list
-        parentNode.children.splice(parentNode.children.indexOf(objNode), 1);
-        // }
-    }
-}), _defineProperty(_module$exports, 'demote', function demote(state, payload) {
-    var objNode = payload.objNode,
-        parentNode = payload.parentNode;
-
-    var currentIndex = parentNode.children.indexOf(objNode);
-    //get the node who will become parent
-    var newParent = parentNode.children[currentIndex - 1];
-    //remove from parent
-    parentNode.children.splice(currentIndex, 1); //remove it
-    //push it in to its former older sibling's children
-    newParent.children.push(objNode);
-}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
-    var objNode = payload.objNode,
-        obj = payload.obj;
-    // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
-    //     objNode = new Node(obj.serialNumber, obj.serialNumber);
-    // }
-    //
-    // if(_.isUndefined(state.itemMap)){
-    //     //we can just put it in
-    //     state.itemMap = objNode;
-    //  }
-    // else{
-    //we can just directly update the existing node's serial numbers
-
-    state.itemMap.parent = obj.serialNumber;
-    state.itemMap.data = obj.serialNumber;
-    // }
-    //if it already exists, we need to merge the children
-    //of the existing exam node into the new node
-    //
-    //         else if((! _.isUndefined(state.itemMap.children)) && state.itemMap.children.length > 0){
-    //             state.itemMap.parent = children
-    // ;        }
-}), _module$exports);
-
-/***/ }),
-/* 349 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Node = __webpack_require__(42);
-
-var _Node2 = _interopRequireDefault(_Node);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-/**
- * Created by adam on 6/12/17.
- */
-
-var _ = window._ = __webpack_require__(28);
-var Vue = __webpack_require__(11);
-
-var initialExam = new _Exam2.default();
-
-module.exports = {
-  itemMap: new _Node2.default(initialExam.serialNumber, initialExam.serialNumber)
-
-  /*
-   * What we want to have is the ability to store nested
-   * tuples which map the item to a position on an exam
-   * (which is itself formally an item).
-   * order : {
-   *      0 : {
-   *          id: null,
-   *          children: {
-   *              0 : {
-   *                      id: null.
-   *                      children: {}
-   *                 }
-   *          }
-   *      }
-   }
-   *
-   * */
-  //the first value in the array is the item's id
-  //the second value is an array of children
-  // orderMap: new Map(),
-  // orderList: [],
-  //
-  // order: {
-  //     0: {
-  //         id: null,
-  //         children: {
-  //             0: {
-  //                 id: null,
-  //                 children: {}
-  //             }
-  //         }
-  //     }
-  // }
-  // orderMap: new Map(),
-  // order: {}
-
-};
-
-/***/ }),
+/* 338 */,
+/* 339 */,
+/* 340 */,
+/* 341 */,
+/* 342 */,
+/* 343 */,
+/* 344 */,
+/* 345 */,
+/* 346 */,
+/* 347 */,
+/* 348 */,
+/* 349 */,
 /* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -72536,161 +70641,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 355 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _getters;
-
-var _vue = __webpack_require__(11);
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Note = __webpack_require__(78);
-
-var _Note2 = _interopRequireDefault(_Note);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 7/31/17.
-                                                                                                                                                                                                                   */
-
-var state = {
-    notes: [],
-    newNoteSerialNumber: -1
-
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.createNote, function (state, payload) {
-    if (_Payload2.default.checkIfPayload(payload)) {
-        var obj = payload.obj,
-            callback = payload.callback;
-
-
-        state.notes.push(payload.obj);
-
-        if (!_.isUndefined(callback)) callback(payload);
-    }
-}), _defineProperty(_mutations, mTypes.updateNote, function (state, payload) {
-    window.console.log('notes', 'updateNote', 35, payload);
-    var note = payload.obj;
-
-    if (typeof note !== 'undefined') {
-        //Set the value so vue can see it
-        _vue2.default.set(note, payload.updateProp, payload.updateVal);
-    }
-}), _defineProperty(_mutations, mTypes.destroyNote, function (state, payload) {
-    window.console.log('notes', 'destroyNote', 45, payload);
-    var idx = state.notes.indexOf(payload.obj);
-    if (idx) state.notes.splice(idx, 1);
-}), _defineProperty(_mutations, 'setNewNote', function setNewNote(state, payload) {
-    var note = payload.obj;
-    state.newNoteSerialNumber = note.serialNumber;
-}), _mutations);
-
-var actions = {
-    createNewNote: function createNewNote(_ref, payload) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
-
-        var itm = payload.obj;
-        if (typeof itm !== 'undefined') {
-            if (itm instanceof _Item2.default || itm instanceof _Exam2.default) {
-                var note = _Note2.default.factory({ associatedItemSerialNumber: itm.serialNumber });
-                var pl = _Payload2.default.factory({ obj: note });
-                commit('createNote', pl);
-                commit("setNewNote", pl);
-            }
-        }
-    }
-
-};
-
-var getters = (_getters = {
-
-    /**
-     * Returns a list of notes associated with the
-     * specified exam or item
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param examOrItem
-     */
-    getNotesForItem: function getNotesForItem(state, getters, rootState, examOrItem) {
-        return function (examOrItem) {
-            return function (state, serialNumber) {
-                var r = state.notes.filter(function (i) {
-                    if (i.associatedItemSerialNumber === serialNumber) {
-                        return i;
-                    }
-                });
-                return r;
-            }(state, examOrItem.serialNumber);
-        };
-    }
-
-}, _defineProperty(_getters, gTypes.getNoteBySerialNumber, function (state, getters, rootState, serialNumber) {
-    return function (serialNumber) {
-        return function (state, serialNumber) {
-            var r = state.notes.filter(function (i) {
-                if (i.serialNumber === serialNumber) {
-                    return i;
-                }
-            });
-            return r[0];
-        }(state, serialNumber);
-    };
-}), _defineProperty(_getters, 'getNewNote', function getNewNote(state, getters, rootState) {
-    if (state.newNoteSerialNumber === -1) return false;
-
-    //get the note object
-    var note = getters.getNoteBySerialNumber(state.newNoteSerialNumber);
-    return note;
-}), _getters);
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
+/* 355 */,
 /* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75451,179 +73402,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, ngmType
 }), _module$exports);
 
 /***/ }),
-/* 374 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _vue = __webpack_require__(11);
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Kumi = __webpack_require__(23);
-
-var _Kumi2 = _interopRequireDefault(_Kumi);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
-                                                                                                                                                           * This is for storing data used in displaying statistics
-                                                                                                                                                           * It may or may not end up also being used in actual grading....
-                                                                                                                                                           *
-                                                                                                                                                           * Created by adam on 7/16/17.
-                                                                                                                                                           */
-
-/**
- * An item score without student info
- */
-var Stat = function Stat(exam, item, score) {
-    var kumiIds = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-
-    _classCallCheck(this, Stat);
-
-    this.exam = exam;
-    this.examId = exam.id;
-
-    this.item = item;
-    this.itemId = item.id;
-    this.id = item.id; //alias
-
-    this.kumiIds = [];
-
-    this.score = score;
-
-    this.mean;
-    this.standardDeviation;
-    this.minScore;
-    this.maxScore;
-    this.median;
-};
-
-var state = {
-    stats: [],
-    summaryStats: []
-};
-
-var mutations = {
-
-    /**
-     * Replaces the stored stats array with the payload
-     * @param state
-     * @param payload
-     */
-    overwriteStats: function overwriteStats(state, payload) {
-        state.stats = payload.obj;
-    }
-};
-
-var actions = {
-
-    processScoreForStatsResponse: function processScoreForStatsResponse(_ref, axiosResponse) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
-
-        // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
-        return new Promise(function (resolve) {
-            var stats = [];
-            if (!_.isUndefined(axiosResponse.data) && axiosResponse.data.length > 0) {
-                _.forEach(axiosResponse.data, function (r) {
-                    var kumiIds = r.kumis.forEach(function (k) {
-                        return k.id;
-                    });
-                    //Lets get the actual objects
-                    //to make it easier to display labels and data
-                    // window.console.log( 'scoresForStats', 'getters', 65, getters);
-                    var exam = getters.getExam(r); //looks up by examId
-                    var item = getters.getItemById(r.itemId);
-
-                    var s = new Stat(exam, item, r.score, kumiIds);
-                    stats.push(s);
-                });
-                commit('overwriteStats', _Payload2.default.factory({ obj: stats, mutateSilently: true }));
-            }
-        });
-    },
-
-    processSummaryResponse: function processSummaryResponse(_ref2, axiosResponse) {
-        var state = _ref2.state,
-            dispatch = _ref2.dispatch,
-            commit = _ref2.commit,
-            getters = _ref2.getters;
-
-        // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
-        return new Promise(function (resolve) {
-            var stats = [];
-            if (!_.isUndefined(axiosResponse.data) && axiosResponse.data.length > 0) {
-                _.forEach(axiosResponse.data, function (r) {
-                    var kumiIds = r.kumis.forEach(function (k) {
-                        return k.id;
-                    });
-                    //Lets get the actual objects
-                    //to make it easier to display labels and data
-                    // window.console.log( 'scoresForStats', 'getters', 65, getters);
-                    var item = getters.getItemById(r.itemId);
-
-                    var s = new Stat(exam, item, r.score, kumiIds);
-                    stats.push(s);
-                });
-                commit('overwriteStats', _Payload2.default.factory({ obj: stats, mutateSilently: true }));
-            }
-        });
-    }
-
-};
-
-var getters = {
-    getStatsForItem: function getStatsForItem(state, getters, rootState, item) {
-        return function (item) {
-            // window.console.log( 'scoresForStats', 'getStatsForitem', 70, item, state);
-
-            return function (state, item) {
-                var r = state.stats.filter(function (i) {
-                    if (i.id === item.id) {
-                        return i;
-                    }
-                });
-                return r;
-            }(state, item);
-        };
-    }
-
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
+/* 374 */,
 /* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75831,314 +73610,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 377 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _getters;
-
-var _vue = __webpack_require__(11);
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _mutationTypes = __webpack_require__(4);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(7);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(6);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Item = __webpack_require__(8);
-
-var _Item2 = _interopRequireDefault(_Item);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Student = __webpack_require__(18);
-
-var _Student2 = _interopRequireDefault(_Student);
-
-var _Tag = __webpack_require__(79);
-
-var _Tag2 = _interopRequireDefault(_Tag);
-
-var _tagRequests = __webpack_require__(86);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 7/31/17.
-                                                                                                                                                                                                                   */
-
-
-var objectGetters = [gTypes.getItemBySerialNumber, gTypes.getNoteBySerialNumber];
-
-var getObjectBySerialNumber = function getObjectBySerialNumber(getters, objectSerialNumber) {
-    //We don't know what kind of
-    //object this relates to, so
-    //fall through the options
-    //maybe later we could cache the types on
-    //imodel
-
-    for (var i = 0; i < objectGetters.length; i++) {
-        var o = getters[objectGetters[i]]();
-        if (o > -1) {
-            return o;
-        }
-    }
-};
-
-var getTagBySerialNumber = function getTagBySerialNumber(state, serialNumber) {
-    return function (state, serialNumber) {
-        var r = state.tags.filter(function (i) {
-            if (i.serialNumber === serialNumber) {
-                return i;
-            }
-        });
-        return r[0];
-    };
-};
-
-var getTagSerialNumbersFromObjectSerialNumber = function getTagSerialNumbersFromObjectSerialNumber(state, objectSerialNumber) {
-    return function (state, serialNumber) {
-        if (Object.keys(state.associations).indexOf(serialNumber) > -1) {
-            return state.associations[serialNumber];
-        }
-    }(state, objectSerialNumber);
-};
-
-var state = {
-    tags: [],
-
-    /**
-     * object serial numbers are the keys
-     * the values are lists of tag serial numbers
-     *
-     * The storage has no notion of what sort of object
-     * the serial number (key) corresponds to. If that is
-     * needed, it should be handled elsewhere
-     */
-    associations: {}
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.createTag, function (state, payload) {
-    window.console.log('tags', 'createTag', 79);
-    return new Promise(function (resolve, reject) {
-        var tag = payload.obj;
-        state.tags.push(tag);
-        resolve();
-    });
-}), _defineProperty(_mutations, mTypes.updateTag, function (state, payload) {
-    _vue2.default.set(payload.obj, payload.updateProp, payload.updateVal);
-}), _defineProperty(_mutations, mTypes.destroyTag, function (state, payload) {
-    state.splice(state.tags.indexOf(payload.obj), 1);
-}), _defineProperty(_mutations, mTypes.associateTag, function (state, payload) {
-    // window.console.log( 'tags', mTypes.associateTag, 85, payload, state.associations );
-    var objSn = payload.obj.serialNumber;
-    var tagSn = payload.tag.serialNumber;
-
-    if (_.isUndefined(tagSn)) return false;
-
-    // /create an entry if one doesn't already exist
-    if (_.isUndefined(state.associations[objSn])) {
-        _vue2.default.set(state.associations, objSn, []);
-    }
-
-    //     //Tags should be unique. No duplicates
-    if (state.associations[objSn].indexOf(tagSn) > -1) return true;
-
-    //     //finally, we actually add it into the store
-    state.associations[objSn].push(tagSn);
-}), _defineProperty(_mutations, mTypes.disassociateTag, function (state, payload) {
-    var objSn = payload.obj.serialNumber;
-    var tagSn = payload.tag.serialNumber;
-    var idx = state.associations[objSn].indexOf(tagSn);
-    state.associations[objSn].splice(idx, 1);
-}), _mutations);
-
-var actions = {
-
-    /**
-     * When an item is loaded, it has an object of
-     * tags from the db. These need to be matched up
-     * with the client storage of tags
-     * @param state
-     * @param dispatch
-     * @param commit
-     * @param getters
-     * @param itemObject
-     */
-    processItemTags: function processItemTags(_ref, itemObject) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
-
-        if (itemObject.tags.length === 0) return true;
-
-        _.forEach(itemObject.tags, function (r) {
-            // window.console.log( 'tagRequests', 'r', 29, r );
-
-            //make sure we don't already have a tag
-            //object
-            var tag = getters.getTagById(r.id);
-            // window.console.log( 'tagRequests', 'tag', 55, tag);
-
-            //if the tag doesn't already exist
-            //we create it
-            if (_.isUndefined(tag)) {
-                tag = _Tag2.default.factory({ r: r });
-                tag.id = r.id;
-                tag.text = r.text;
-                tag.props = r.props;
-                tag.name = r.name;
-                var payload = _Payload2.default.factory({ obj: tag, mutateSilently: true });
-                commit(mTypes.createTag, payload);
-            }
-
-            //now we associate the item with the tag
-            commit(mTypes.associateTag, _Payload2.default.factory({
-                obj: itemObject,
-                tag: tag,
-                mutateSilently: true
-            }));
-        });
-    },
-
-    /**
-     * Stores the new tag centrally, asks the server to create the tag,
-     * then associates the tag with whatever object has been passed in
-     * @param state
-     * @param dispatch
-     * @param commit
-     * @param getters
-     * @param payload
-     */
-    createAndAssociateTag: function createAndAssociateTag(_ref2, payload) {
-        var state = _ref2.state,
-            dispatch = _ref2.dispatch,
-            commit = _ref2.commit,
-            getters = _ref2.getters;
-
-        var sendRequest = function sendRequest(object, tag) {
-            window.console.log('tags', 'sendRequest', 170);
-            //If the menu is attached to an object, create an association
-            if (object) {
-                commit(mTypes.associateTag, _Payload2.default.factory({
-                    obj: object,
-                    tag: tag
-                }));
-            }
-        };
-
-        var obj = payload.obj,
-            tag = payload.tag;
-
-
-        var p = commit(mTypes.createTag, _Payload2.default.factory({ obj: tag }));
-
-        // p.then( ( object, tag ) => {
-        if (tag.id > -1) {
-            window.console.log('tags', 'createAndAssociateTag', 183, 'id set', obj, tag);
-            sendRequest(obj, tag);
-        } else {
-            setTimeout(function () {
-                window.console.log('tags', 'not set', 188, obj, tag);
-                sendRequest(obj, tag);
-            }, 5000);
-        }
-
-        // } );
-    }
-
-};
-
-var getters = (_getters = {}, _defineProperty(_getters, gTypes.getTagBySerialNumber, function (state, getters, rootState, serialNumber) {
-    return function (serialNumber) {
-        // [gTypes.getTagBySerialNumber]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
-        window.console.log('tags', 'gtsn', 217, serialNumber, state);
-        //return getTagBySerialNumber( state, serialNumber );
-        return function (state, serialNumber) {
-            var r = state.tags.filter(function (i) {
-                if (i.serialNumber === serialNumber) {
-                    return i;
-                }
-            });
-            return r[0];
-        }(state, serialNumber);
-    };
-}), _defineProperty(_getters, 'getTagById', function getTagById(state, getters, rootState, id) {
-    return function (id) {
-        // let serialNumber = (function ( state, id ) {
-        var r = state.tags.filter(function (i) {
-            if (i.id === id) {
-                return i;
-            }
-        });
-        // return r[ 0 ];
-        // })( state, id );
-        var serialNumber = r[0];
-        // window.console.log( 'tags', 'getTagById', 244, r, serialNumber);
-        return getTagBySerialNumber(state, serialNumber);
-    };
-}), _defineProperty(_getters, gTypes.getAllTags, function (state, getters, rootState) {
-    return state.tags;
-}), _defineProperty(_getters, gTypes.getTagsForObject, function (state, getters, rootState, object) {
-    return function (object) {
-        //todo handle case where obj and case where sn
-        //         let osn = object;
-        var osn = _.isNumber(object) ? object : object.serialNumber;
-
-        var tagSerialNumbers = state.associations[osn];
-        // let tagSerialNumbers = getTagSerialNumbersFromObjectSerialNumber( state, osn );
-        var out = [];
-
-        // window.console.log( 'tags', 'tagSerialNumbers', 155, tagSerialNumbers, object );
-
-        if (!_.isUndefined(tagSerialNumbers) && tagSerialNumbers.length > 0) {
-            //look up tags and return them
-            for (var i = 0; i < tagSerialNumbers.length; i++) {
-                var tsn = tagSerialNumbers[i];
-                var tag = getters.getTagBySerialNumber(tsn);
-                out.push(tag);
-            }
-        }
-        return out;
-    };
-}), _defineProperty(_getters, 'isObjectTagged', function isObjectTagged(state, getters, rootState, object, tag) {
-    return function (object, tag) {
-        var tagSerialNumbers = state.associations[object.serialNumber];
-        return _.includes(tagSerialNumbers, tag.serialNumber);
-    };
-}), _getters);
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
+/* 377 */,
 /* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -112146,6 +109618,2839 @@ module.exports = {
         }
     }
 }; // import gTypes from '../../../../store/getter-types';
+
+/***/ }),
+/* 1183 */,
+/* 1184 */,
+/* 1185 */,
+/* 1186 */,
+/* 1187 */,
+/* 1188 */,
+/* 1189 */,
+/* 1190 */,
+/* 1191 */,
+/* 1192 */,
+/* 1193 */,
+/* 1194 */,
+/* 1195 */,
+/* 1196 */,
+/* 1197 */,
+/* 1198 */,
+/* 1199 */,
+/* 1200 */,
+/* 1201 */,
+/* 1202 */,
+/* 1203 */,
+/* 1204 */,
+/* 1205 */,
+/* 1206 */,
+/* 1207 */,
+/* 1208 */,
+/* 1209 */,
+/* 1210 */,
+/* 1211 */,
+/* 1212 */,
+/* 1213 */,
+/* 1214 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _IModel = __webpack_require__(38);
+
+var _IModel2 = _interopRequireDefault(_IModel);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Statistical summary properties of an item
+ */
+var ItemStat = function () {
+    function ItemStat() {
+        _classCallCheck(this, ItemStat);
+
+        this.exam;
+        this.item;
+        this.kumiIds = [];
+        this.mean;
+        this.standardDeviation;
+        this.minScore;
+        this.maxScore;
+        this.median;
+    }
+
+    _createClass(ItemStat, null, [{
+        key: "factory",
+        value: function factory(params) {
+            var p = new ItemStat();
+            if (typeof params !== 'undefined') {
+
+                //fill any fillable values
+                ItemStat.fillableProps.forEach(function (v) {
+                    if (typeof params[v] !== 'undefined') {
+                        p[v] = params[v];
+                    }
+                });
+            }
+            return p;
+        }
+    }, {
+        key: "fillableProps",
+        get: function get() {
+            return ['exam', 'item', 'kumiIds', 'mean', 'standardDeviation', 'minScore', 'maxScore', 'median'];
+        }
+    }]);
+
+    return ItemStat;
+}();
+
+exports.default = ItemStat;
+
+/***/ }),
+/* 1215 */,
+/* 1216 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _vue = __webpack_require__(11);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _ItemStat = __webpack_require__(1214);
+
+var _ItemStat2 = _interopRequireDefault(_ItemStat);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
+                                                                                                                                                           * This is for storing data used in displaying statistics
+                                                                                                                                                           * It may or may not end up also being used in actual grading....
+                                                                                                                                                           *
+                                                                                                                                                           * Created by adam on 7/16/17.
+                                                                                                                                                           */
+
+/**
+ * An item score without student info
+ */
+var Stat = function Stat(exam, item, score) {
+    var kumiIds = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
+    _classCallCheck(this, Stat);
+
+    this.exam = exam;
+    this.examId = exam.id;
+
+    this.item = item;
+    this.itemId = item.id;
+    this.id = item.id; //alias
+
+    this.kumiIds = [];
+
+    this.score = score;
+
+    this.mean;
+    this.standardDeviation;
+    this.minScore;
+    this.maxScore;
+    this.median;
+};
+
+var state = {
+    stats: [],
+    summaryStats: []
+};
+
+var mutations = {
+
+    /**
+     * Replaces the stored stats array with the payload
+     * @param state
+     * @param payload
+     */
+    overwriteStats: function overwriteStats(state, payload) {
+        state.stats = payload.obj;
+    }
+};
+
+var actions = {
+
+    processScoreForStatsResponse: function processScoreForStatsResponse(_ref, axiosResponse) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
+        return new Promise(function (resolve) {
+            var stats = [];
+            if (!_.isUndefined(axiosResponse.data) && axiosResponse.data.length > 0) {
+                _.forEach(axiosResponse.data, function (r) {
+                    var kumiIds = r.kumis.forEach(function (k) {
+                        return k.id;
+                    });
+                    //Lets get the actual objects
+                    //to make it easier to display labels and data
+                    // window.console.log( 'scoresForStats', 'getters', 65, getters);
+                    var exam = getters.getExam(r); //looks up by examId
+                    var item = getters.getItemById(r.itemId);
+
+                    var s = new Stat(exam, item, r.score, kumiIds);
+                    stats.push(s);
+                });
+                commit('overwriteStats', _Payload2.default.factory({ obj: stats, mutateSilently: true }));
+            }
+        });
+    },
+
+    processSummaryResponse: function processSummaryResponse(_ref2, axiosResponse) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
+
+        // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
+        return new Promise(function (resolve) {
+            var stats = [];
+            if (!_.isUndefined(axiosResponse.data) && axiosResponse.data.length > 0) {
+                _.forEach(axiosResponse.data, function (r) {
+                    var kumiIds = r.kumis.forEach(function (k) {
+                        return k.id;
+                    });
+                    //Lets get the actual objects
+                    //to make it easier to display labels and data
+                    // window.console.log( 'scoresForStats', 'getters', 65, getters);
+                    var item = getters.getItemById(r.itemId);
+
+                    var s = new Stat(exam, item, r.score, kumiIds);
+                    stats.push(s);
+                });
+                commit('overwriteStats', _Payload2.default.factory({ obj: stats, mutateSilently: true }));
+            }
+        });
+    }
+
+};
+
+var getters = {
+
+    /**
+     * Returns the item scores without identifying student information
+     * for the item
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param item
+     * @returns {function(*=)}
+     */
+    getAnonScoresForItemStats: function getAnonScoresForItemStats(state, getters, rootState, item) {
+        return function (item) {
+            // window.console.log( 'scoresForStats', 'getStatsForitem', 70, item, state);
+
+            return function (state, item) {
+                var r = state.stats.filter(function (i) {
+                    if (i.id === item.id) {
+                        return i;
+                    }
+                });
+                return r;
+            }(state, item);
+        };
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1217 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.lookupStats = lookupStats;
+
+var _vue = __webpack_require__(11);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Kumi = __webpack_require__(23);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _ItemStat = __webpack_require__(1214);
+
+var _ItemStat2 = _interopRequireDefault(_ItemStat);
+
+var _statsRequests = __webpack_require__(149);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * This handles summary statistics for individual items
+ *
+ * Created by adam on 7/16/17.
+ */
+
+function lookupStats(state, item) {
+    return function (state, item) {
+        var r = state.itemStats.filter(function (i) {
+            if (i.item.id === item.id) {
+                return i;
+            }
+        });
+        return r[0];
+    }(state, item);
+}
+
+var state = {
+    itemStats: []
+};
+
+var mutations = {
+
+    addItemStats: function addItemStats(state, payload) {
+        var idx = state.itemStats.indexOf(payload.obj);
+        if (idx > -1) {
+            //remove the old object and push in the new
+            state.itemStats.splice(idx, 1, payload.obj);
+        } else {
+            state.itemStats.push(payload.obj);
+        }
+    }
+};
+
+var actions = {
+    /**
+     * Asks the server for stats for the item on the given exam
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     * @returns {Promise<any>}
+     */
+    loadItemScoreSummaryForExam: function loadItemScoreSummaryForExam(_ref, payload) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        var me = undefined;
+        var exam = payload.exam,
+            item = payload.item;
+
+
+        return new Promise(function (resolve, reject) {
+            // window.console.log( 'itemscores', '', 193, exam, item, student);
+
+            var p = (0, _statsRequests.getItemScoreSummaryForExam)(exam, item);
+
+            return p.then(function (data) {
+                var e = _ItemStat2.default.factory(data);
+                e.exam = exam;
+                e.item = item;
+                var pl = _Payload2.default.factory({ obj: e, mutateSilently: true });
+                commit('addItemStats', pl);
+                resolve();
+            });
+        });
+    }
+};
+
+var getters = {
+
+    /**
+     * Returns an itemStat object for
+     * the given item on the given exam
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param pl
+     * @returns {function(*)}
+     */
+    getItemStatsForExam: function getItemStatsForExam(state, getters, rootState, pl) {
+        return function (pl) {
+            var exam = pl.exam,
+                item = pl.item;
+
+
+            var s = lookupStats(state, item);
+            return s;
+        };
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1218 */,
+/* 1219 */,
+/* 1220 */,
+/* 1221 */,
+/* 1222 */,
+/* 1223 */,
+/* 1224 */,
+/* 1225 */,
+/* 1226 */,
+/* 1227 */,
+/* 1228 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _getters;
+
+var _vue = __webpack_require__(11);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Note = __webpack_require__(78);
+
+var _Note2 = _interopRequireDefault(_Note);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 7/31/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    notes: [],
+    newNoteSerialNumber: -1
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.createNote, function (state, payload) {
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var obj = payload.obj,
+            callback = payload.callback;
+
+
+        state.notes.push(payload.obj);
+
+        if (!_.isUndefined(callback)) callback(payload);
+    }
+}), _defineProperty(_mutations, mTypes.updateNote, function (state, payload) {
+    window.console.log('notes', 'updateNote', 35, payload);
+    var note = payload.obj;
+
+    if (typeof note !== 'undefined') {
+        //Set the value so vue can see it
+        _vue2.default.set(note, payload.updateProp, payload.updateVal);
+    }
+}), _defineProperty(_mutations, mTypes.destroyNote, function (state, payload) {
+    window.console.log('notes', 'destroyNote', 45, payload);
+    var idx = state.notes.indexOf(payload.obj);
+    if (idx) state.notes.splice(idx, 1);
+}), _defineProperty(_mutations, 'setNewNote', function setNewNote(state, payload) {
+    var note = payload.obj;
+    state.newNoteSerialNumber = note.serialNumber;
+}), _mutations);
+
+var actions = {
+    createNewNote: function createNewNote(_ref, payload) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        var itm = payload.obj;
+        if (typeof itm !== 'undefined') {
+            if (itm instanceof _Item2.default || itm instanceof _Exam2.default) {
+                var note = _Note2.default.factory({ associatedItemSerialNumber: itm.serialNumber });
+                var pl = _Payload2.default.factory({ obj: note });
+                commit('createNote', pl);
+                commit("setNewNote", pl);
+            }
+        }
+    }
+
+};
+
+var getters = (_getters = {
+
+    /**
+     * Returns a list of notes associated with the
+     * specified exam or item
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param examOrItem
+     */
+    getNotesForItem: function getNotesForItem(state, getters, rootState, examOrItem) {
+        return function (examOrItem) {
+            return function (state, serialNumber) {
+                var r = state.notes.filter(function (i) {
+                    if (i.associatedItemSerialNumber === serialNumber) {
+                        return i;
+                    }
+                });
+                return r;
+            }(state, examOrItem.serialNumber);
+        };
+    }
+
+}, _defineProperty(_getters, gTypes.getNoteBySerialNumber, function (state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+        return function (state, serialNumber) {
+            var r = state.notes.filter(function (i) {
+                if (i.serialNumber === serialNumber) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, serialNumber);
+    };
+}), _defineProperty(_getters, 'getNewNote', function getNewNote(state, getters, rootState) {
+    if (state.newNoteSerialNumber === -1) return false;
+
+    //get the note object
+    var note = getters.getNoteBySerialNumber(state.newNoteSerialNumber);
+    return note;
+}), _getters);
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1229 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _getters;
+
+var _vue = __webpack_require__(11);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Student = __webpack_require__(18);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Tag = __webpack_require__(79);
+
+var _Tag2 = _interopRequireDefault(_Tag);
+
+var _tagRequests = __webpack_require__(86);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 7/31/17.
+                                                                                                                                                                                                                   */
+
+
+var objectGetters = [gTypes.getItemBySerialNumber, gTypes.getNoteBySerialNumber];
+
+var getObjectBySerialNumber = function getObjectBySerialNumber(getters, objectSerialNumber) {
+    //We don't know what kind of
+    //object this relates to, so
+    //fall through the options
+    //maybe later we could cache the types on
+    //imodel
+
+    for (var i = 0; i < objectGetters.length; i++) {
+        var o = getters[objectGetters[i]]();
+        if (o > -1) {
+            return o;
+        }
+    }
+};
+
+var getTagBySerialNumber = function getTagBySerialNumber(state, serialNumber) {
+    return function (state, serialNumber) {
+        var r = state.tags.filter(function (i) {
+            if (i.serialNumber === serialNumber) {
+                return i;
+            }
+        });
+        return r[0];
+    };
+};
+
+var getTagSerialNumbersFromObjectSerialNumber = function getTagSerialNumbersFromObjectSerialNumber(state, objectSerialNumber) {
+    return function (state, serialNumber) {
+        if (Object.keys(state.associations).indexOf(serialNumber) > -1) {
+            return state.associations[serialNumber];
+        }
+    }(state, objectSerialNumber);
+};
+
+var state = {
+    tags: [],
+
+    /**
+     * object serial numbers are the keys
+     * the values are lists of tag serial numbers
+     *
+     * The storage has no notion of what sort of object
+     * the serial number (key) corresponds to. If that is
+     * needed, it should be handled elsewhere
+     */
+    associations: {}
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.createTag, function (state, payload) {
+    window.console.log('tags', 'createTag', 79);
+    return new Promise(function (resolve, reject) {
+        var tag = payload.obj;
+        state.tags.push(tag);
+        resolve();
+    });
+}), _defineProperty(_mutations, mTypes.updateTag, function (state, payload) {
+    _vue2.default.set(payload.obj, payload.updateProp, payload.updateVal);
+}), _defineProperty(_mutations, mTypes.destroyTag, function (state, payload) {
+    state.splice(state.tags.indexOf(payload.obj), 1);
+}), _defineProperty(_mutations, mTypes.associateTag, function (state, payload) {
+    // window.console.log( 'tags', mTypes.associateTag, 85, payload, state.associations );
+    var objSn = payload.obj.serialNumber;
+    var tagSn = payload.tag.serialNumber;
+
+    if (_.isUndefined(tagSn)) return false;
+
+    // /create an entry if one doesn't already exist
+    if (_.isUndefined(state.associations[objSn])) {
+        _vue2.default.set(state.associations, objSn, []);
+    }
+
+    //     //Tags should be unique. No duplicates
+    if (state.associations[objSn].indexOf(tagSn) > -1) return true;
+
+    //     //finally, we actually add it into the store
+    state.associations[objSn].push(tagSn);
+}), _defineProperty(_mutations, mTypes.disassociateTag, function (state, payload) {
+    var objSn = payload.obj.serialNumber;
+    var tagSn = payload.tag.serialNumber;
+    var idx = state.associations[objSn].indexOf(tagSn);
+    state.associations[objSn].splice(idx, 1);
+}), _mutations);
+
+var actions = {
+
+    /**
+     * When an item is loaded, it has an object of
+     * tags from the db. These need to be matched up
+     * with the client storage of tags
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param itemObject
+     */
+    processItemTags: function processItemTags(_ref, itemObject) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        if (itemObject.tags.length === 0) return true;
+
+        _.forEach(itemObject.tags, function (r) {
+            // window.console.log( 'tagRequests', 'r', 29, r );
+
+            //make sure we don't already have a tag
+            //object
+            var tag = getters.getTagById(r.id);
+            // window.console.log( 'tagRequests', 'tag', 55, tag);
+
+            //if the tag doesn't already exist
+            //we create it
+            if (_.isUndefined(tag)) {
+                tag = _Tag2.default.factory({ r: r });
+                tag.id = r.id;
+                tag.text = r.text;
+                tag.props = r.props;
+                tag.name = r.name;
+                var payload = _Payload2.default.factory({ obj: tag, mutateSilently: true });
+                commit(mTypes.createTag, payload);
+            }
+
+            //now we associate the item with the tag
+            commit(mTypes.associateTag, _Payload2.default.factory({
+                obj: itemObject,
+                tag: tag,
+                mutateSilently: true
+            }));
+        });
+    },
+
+    /**
+     * Stores the new tag centrally, asks the server to create the tag,
+     * then associates the tag with whatever object has been passed in
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     */
+    createAndAssociateTag: function createAndAssociateTag(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
+
+        var sendRequest = function sendRequest(object, tag) {
+            window.console.log('tags', 'sendRequest', 170);
+            //If the menu is attached to an object, create an association
+            if (object) {
+                commit(mTypes.associateTag, _Payload2.default.factory({
+                    obj: object,
+                    tag: tag
+                }));
+            }
+        };
+
+        var obj = payload.obj,
+            tag = payload.tag;
+
+
+        var p = commit(mTypes.createTag, _Payload2.default.factory({ obj: tag }));
+
+        // p.then( ( object, tag ) => {
+        if (tag.id > -1) {
+            window.console.log('tags', 'createAndAssociateTag', 183, 'id set', obj, tag);
+            sendRequest(obj, tag);
+        } else {
+            setTimeout(function () {
+                window.console.log('tags', 'not set', 188, obj, tag);
+                sendRequest(obj, tag);
+            }, 5000);
+        }
+
+        // } );
+    }
+
+};
+
+var getters = (_getters = {}, _defineProperty(_getters, gTypes.getTagBySerialNumber, function (state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+        // [gTypes.getTagBySerialNumber]: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
+        window.console.log('tags', 'gtsn', 217, serialNumber, state);
+        //return getTagBySerialNumber( state, serialNumber );
+        return function (state, serialNumber) {
+            var r = state.tags.filter(function (i) {
+                if (i.serialNumber === serialNumber) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, serialNumber);
+    };
+}), _defineProperty(_getters, 'getTagById', function getTagById(state, getters, rootState, id) {
+    return function (id) {
+        // let serialNumber = (function ( state, id ) {
+        var r = state.tags.filter(function (i) {
+            if (i.id === id) {
+                return i;
+            }
+        });
+        // return r[ 0 ];
+        // })( state, id );
+        var serialNumber = r[0];
+        // window.console.log( 'tags', 'getTagById', 244, r, serialNumber);
+        return getTagBySerialNumber(state, serialNumber);
+    };
+}), _defineProperty(_getters, gTypes.getAllTags, function (state, getters, rootState) {
+    return state.tags;
+}), _defineProperty(_getters, gTypes.getTagsForObject, function (state, getters, rootState, object) {
+    return function (object) {
+        //todo handle case where obj and case where sn
+        //         let osn = object;
+        var osn = _.isNumber(object) ? object : object.serialNumber;
+
+        var tagSerialNumbers = state.associations[osn];
+        // let tagSerialNumbers = getTagSerialNumbersFromObjectSerialNumber( state, osn );
+        var out = [];
+
+        // window.console.log( 'tags', 'tagSerialNumbers', 155, tagSerialNumbers, object );
+
+        if (!_.isUndefined(tagSerialNumbers) && tagSerialNumbers.length > 0) {
+            //look up tags and return them
+            for (var i = 0; i < tagSerialNumbers.length; i++) {
+                var tsn = tagSerialNumbers[i];
+                var tag = getters.getTagBySerialNumber(tsn);
+                out.push(tag);
+            }
+        }
+        return out;
+    };
+}), _defineProperty(_getters, 'isObjectTagged', function isObjectTagged(state, getters, rootState, object, tag) {
+    return function (object, tag) {
+        var tagSerialNumbers = state.associations[object.serialNumber];
+        return _.includes(tagSerialNumbers, tag.serialNumber);
+    };
+}), _getters);
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1230 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends2, _extends3;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * This ties together the two types of storage for
+                                                                                                                                                                                                                                                                   * items
+                                                                                                                                                                                                                                                                   */
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(54);
+
+var _JsonReaders = __webpack_require__(156);
+
+var _JsonReaders2 = _interopRequireDefault(_JsonReaders);
+
+var _items = __webpack_require__(1234);
+
+var _items2 = _interopRequireDefault(_items);
+
+var _items3 = __webpack_require__(1239);
+
+var _items4 = _interopRequireDefault(_items3);
+
+var _items5 = __webpack_require__(1231);
+
+var _items6 = _interopRequireDefault(_items5);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Vue = __webpack_require__(11);
+var _ = window._ = __webpack_require__(28);
+
+var REQUEST_VERSION = 1;
+
+var standardTimeout = 1000;
+
+var state = _extends({}, _items2.default.state, _items4.default.state);
+
+/**
+ * The make use of both the item object store
+ * and the order mapping
+ *
+ * @type {{getSortedIds: ((p1:*, p2?:*))}}
+ */
+var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_extends2 = {}, _defineProperty(_extends2, gTypes.getSortedIds, function (state, getters) {
+    //get the serial number map
+    //we explicitly use the getter rather than
+    //just looking in the state because this
+    //may well evolve to a different storage
+    //behind the scenes
+    //We begin by making a copy because we will
+    //be altering the data stored
+    var map = getters[gTypes.getItemMapCopy]; //( state, getters );
+    // window.console.log( 'items', 'getSortedIds', 124, 'map', map);
+
+    var updater = function updater(currentNode) {
+        currentNode = _extends({}, currentNode);
+        //Look up the id
+        var isn = currentNode.data;
+
+        //ignore the exam
+        if (isn === 0) return true;
+        var item = getters.getItemBySerialNumber(isn);
+
+        // let item = getters[ gTypes.getItemBySerialNumber ]( state, getters, isn );
+        // window.console.log( 'items', 'updater isn item', 144, isn, item);
+        if (!_.isUndefined(item)) {
+            //we don't check if id is defined.
+            //should we????
+            currentNode.data = item.id;
+            currentNode.dataType = 'id';
+            // window.console.log( 'items', 'recurse', 150, currentNode);
+        }
+        return currentNode;
+    };
+    // window.console.log( 'items', 'getSortedIds', 123, map);
+    // //transform to ids
+    //map is the exam represented as a Node object
+    // Doing this depth first
+    // this is a recurse and immediately-invoking function
+    (function recurse(currentNode) {
+        // window.console.log( 'items', 'recurse', 129, currentNode);
+        // step 2
+        for (var i = 0; i < currentNode.children.length; i++) {
+            // step 3
+            recurse(currentNode.children[i]);
+        }
+        // window.console.log( 'items', 'recurse', 153, currentNode );
+        // step 4
+        updater(currentNode);
+    })(map);
+    return map;
+}), _defineProperty(_extends2, 'getOrderForSync', function getOrderForSync(state, getters) {
+    var out = [];
+    var map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
+    window.console.log('items', 'getOrderForSync', 162, map);
+
+    if (_.isUndefined(map) || map.length === 0) return false;
+
+    //map is the exam represented as a Node object
+    // Doing this depth first
+    // this is a recurse and immediately-invoking function
+    (function recurse(currentNode) {
+        var cnt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+        // window.console.log( 'items', 'recurse', 129, currentNode);
+        // step 2
+        for (var i = 0; i < currentNode.children.length; i++) {
+            // step 3
+            recurse(currentNode.children[i], i);
+        }
+        // window.console.log( 'items', 'recurse', 153, currentNode );
+        // step 4
+        var item = getters.getItemBySerialNumber(currentNode.data);
+        // holdForIdLoading(item);
+        // window.console.log( 'items', 'recurse', 193, 'post hold', item);
+        if (!_.isUndefined(item)) {
+            var exam = item.isExam() ? item : getters.currentExam;
+            var parent = getters.getItemBySerialNumber(currentNode.parent);
+            out.push({
+                examId: exam.id,
+                itemId: item.id,
+                parentId: parent.id,
+                itemOrder: cnt
+            });
+        }
+    })(map);
+    // }
+    return out;
+}), _defineProperty(_extends2, 'canSync', function canSync(state, getters, rootState) {
+    if (state.items.length === 0) return false;
+
+    return function (state) {
+        var r = state.items.filter(function (item) {
+            if (item.id === -1) {
+                return item;
+            }
+        });
+        return r.length === 0;
+        document.getElementById('isSyncing');
+    }(state);
+}), _extends2));
+
+var actions = _extends({}, _items2.default.actions, _items4.default.actions, _JsonReaders2.default.actions, _items6.default.actions, (_extends3 = {}, _defineProperty(_extends3, aTypes.createItem, function (_ref, parentSN) {
+    var state = _ref.state,
+        commit = _ref.commit,
+        dispatch = _ref.dispatch,
+        getters = _ref.getters;
+
+    return function (state, commit, dispatch, getters, parentSN) {
+        // window.console.log( 'items', aTypes.createItem, 220, parent );
+        if (_.isUndefined(parentSN)) {
+            parentSN = getters.currentExam;
+        }
+
+        //If we were passed an item to serve as the parent
+        //we will use s serial number
+        var item = _Item2.default.factory({ parent: parentSN });
+        var payload = _Payload2.default.factory({ parent: parentSN, obj: item });
+
+        commit(mTypes.addNewItem, payload);
+        // window.console.log( 'items', 'canSync', 245, getters.canSync );
+        // holdForCanSync( item )
+        // {
+        dispatch(aTypes.addItemToOrder, payload);
+        // }
+    }(state, commit, dispatch, getters, parentSN);
+}), _defineProperty(_extends3, aTypes.cloneItem, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit,
+        dispatch = _ref2.dispatch,
+        getters = _ref2.getters;
+
+    return function (state, commit, dispatch, getters, payload) {
+        //NB, parent is the parent item's serial number
+        //toClone is an object
+        var parent = payload.parent,
+            toClone = payload.toClone;
+
+        //If we were passed an item to serve as the parent
+        //we will use s serial number
+
+        var item = _Item2.default.factory({ parent: parent });
+
+        _.forEach(_Item2.default.clonableProps, function (p) {
+            item[p] = toClone[p];
+        });
+
+        var pl = _Payload2.default.factory({ parent: parent, obj: item });
+        // window.console.log( 'items', 'cloneItem payload', 234, pl);
+        commit(mTypes.addNewItem, pl);
+
+        dispatch(aTypes.addItemToOrder, pl);
+    }(state, commit, dispatch, getters, payload);
+}), _defineProperty(_extends3, 'importItem', function importItem(_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit,
+        dispatch = _ref3.dispatch,
+        getters = _ref3.getters;
+
+    return function (state, commit, dispatch, getters, payload) {
+        //NB, parent is the parent item's serial number
+        //obj is an object
+        var parent = payload.parent,
+            obj = payload.obj;
+
+
+        var pl = _Payload2.default.factory({ parent: parent, obj: obj });
+        // window.console.log( 'items', 'cloneItem payload', 234, pl);
+
+        dispatch(aTypes.addItemToOrder, pl);
+        //the item will not have been stored in the regular items array
+        //instead it is loaded asynchronously.
+        //So we need to push it into the main array
+        pl.mutateSilently = true;
+        commit(mTypes.addNewItem, pl);
+    }(state, commit, dispatch, getters, payload);
+}), _defineProperty(_extends3, aTypes.removeItem, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit,
+        dispatch = _ref4.dispatch,
+        getters = _ref4.getters;
+
+    return function (state, commit, dispatch, getters, payload) {
+        //obj is an object
+        var obj = payload.obj;
+
+
+        var pl = _Payload2.default.factory({ obj: obj });
+        // window.console.log( 'items', 'cloneItem payload', 234, pl);
+
+        dispatch(aTypes.addItemToOrder, pl);
+        //the item will not have been stored in the regular items array
+        //instead it is loaded asynchronously.
+        //So we need to push it into the main array
+        pl.mutateSilently = true;
+        commit(mTypes.addNewItem, pl);
+    }(state, commit, dispatch, getters, payload);
+
+    //remove from order
+    [aTypes.removeItem];
+
+    //remove from objects
+}), _defineProperty(_extends3, aTypes.deleteItem, function () {}), _extends3));
+
+var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, _JsonReaders2.default.mutations, _items6.default.mutations, {
+
+    initializeItemStorage: function initializeItemStorage(store, payload) {
+
+        return new Promise(function (resolve, reject) {
+
+            var exam = payload.obj;
+
+            //set it in items
+            state.items[0] = exam;
+
+            //initialize the order store
+            state.itemMap = new _Node2.default(exam.serialNumber, exam.serialNumber);
+            resolve();
+        });
+    }
+
+});
+//Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+
+    // Object indexed by Item id holding Item objects
+    // On load the root exam object and first item are created but given no
+    // ids. thus we will eventually need to create an exam object if one isn't set
+    //
+    // However don't ask the server to create an id just yet
+    // lookup the exam object that resides at index 0
+    // this will have either been newly created on page load
+    // or it will be an existing exam object loaded from the db
+    // let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+    // //Call the set active exam method
+    // //We do this rather than call the mutation directly
+    // //because there may need to be various other events and
+    // //things which need to happen depending on the context.
+    // //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+    // this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+    // }
+
+};
+
+/***/ }),
+/* 1231 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(54);
+
+var _itemHelpers = __webpack_require__(157);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _itemRequests = __webpack_require__(210);
+
+var _itemRequests2 = _interopRequireDefault(_itemRequests);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var processItemOrderFromJson = function processItemOrderFromJson(state, orderData) {
+
+    _.forEach(orderData, function (d, i) {
+        var item = function (state, d) {
+            return (0, _itemHelpers.getItem)(state, d.itemId);
+        }(state, d);
+        //if the parent is null it is the exam, and we can skip
+        if (d.parentId === null) return true;
+
+        // these are top level
+        //and should be added as children of the exam.
+        //if the parent is null, we add the exam instead
+        //todo this must be fixed since an item could have the same id as an exam
+        var parentNode = d.parentId === state.items[0].id ? state.itemMap : function (state, d) {
+            var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
+            return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
+        }(state, d);
+
+        var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
+
+        //if an index was specified, splice it in at the index
+        //                 if ( !_.isUndefined( index ) ) {
+        //                     parentNode.children.splice( index, 0, itemNode );
+        //                 }
+        //                 else {
+        //otherwise just push it on the end
+        parentNode.children.push(itemNode);
+    });
+};
+
+var processItemObjectFromJson = function processItemObjectFromJson(state, objectData) {
+    _.forEach(objectData, function (d, i) {
+        var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
+        item.loadCommentsFromJson(d.comments);
+        state.items.push(item);
+    });
+};
+
+var mutations = {
+    /** This is what gets run when the root instance is mounted for the setup page */
+    // [ mTypes.loadInitialData ]: ( state, payload ) => {
+    //     return new Promise( function ( resolve, reject ) {
+    //
+    //         // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
+    //         let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
+    //
+    //         let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
+    //
+    //         let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
+    //
+    //
+    //         // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+    //
+    //         //assume everything is there, just load directly
+    //         let exam = Exam.factory( examData );
+    //
+    //         //set it in items
+    //         state.items[ 0 ] = exam;
+    //
+    //         //initialize the order store
+    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+    //
+    //         //load in the item objects
+    //         processItemObjectFromJson( state, objectData );
+    //
+    //         //load in the order data
+    //         processItemOrderFromJson( state, orderData );
+    //
+    //         resolve();
+    //     } );
+    //     // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
+    // },
+    //
+    //
+    // //todo move to more appropriate location once working
+    // initializeItemStore: ( state ) => {
+    //     return new Promise( function ( resolve, reject ) {
+    //         let exam = new Exam();
+    //         state.items[ 0 ] = exam;
+    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+    //         resolve();
+    //     } );
+    // },
+
+    saveItemsFromServer: function saveItemsFromServer(state, payload) {
+        processItemObjectFromJson(state, payload.obj);
+    },
+
+    saveOrderFromServer: function saveOrderFromServer(state, payload) {
+
+        processItemOrderFromJson(state, payload.obj);
+    }
+};
+
+var actions = {
+
+    loadItemsFromServer: function loadItemsFromServer(_ref, exam) {
+        var state = _ref.state,
+            commit = _ref.commit,
+            dispatch = _ref.dispatch,
+            getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+
+            //ahem. initialize the store
+            commit('initializeItemStorage', _Payload2.default.factory({ obj: exam }));
+
+            //The returned array  will have the keys
+            //  'itemObjects'
+            //  'itemOrder'
+            var p = _itemRequests2.default.getItemsForExam(exam);
+            p.then(function (data) {
+
+                //save the item objects
+                commit('saveItemsFromServer', _Payload2.default.factory({
+                    obj: data.itemObjects,
+                    mutateSilently: true
+                }));
+
+                //store their ordering
+                commit('saveOrderFromServer', _Payload2.default.factory({
+                    obj: data.itemOrder,
+                    mutateSilently: true
+                }));
+
+                resolve();
+            });
+        });
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    mutations: mutations
+
+};
+
+/***/ }),
+/* 1232 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 5/27/17.
+                                                                                                                                                                                                                   */
+
+
+// const actions = {
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addOlderSibling, function (_ref, payload) {
+    var state = _ref.state,
+        dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    //add item at same depth with same parent but with lower index
+    window.console.log('items', 'addOlderSibling', 283, payload);
+}), _defineProperty(_module$exports, aTypes.addYoungerSibling, function (_ref2, payload) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+
+    //add item at same depth with same parent but with higher index
+    window.console.log('items', 'addYoungerSibling', 288, payload);
+}), _defineProperty(_module$exports, aTypes.cleanupItems, function (_ref3) {
+    var dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
+
+
+    var p = new Promise(function (resolve, reject) {
+        commit('cleanupEmptyItems');
+        resolve();
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            commit(mTypes.updateOrder);
+            resolve();
+        });
+    });
+}), _defineProperty(_module$exports, aTypes.deleteItem, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    console.log(aTypes.deleteItem, state, commit, payload);
+    //check if payload has correct structure
+    var index = payload.index,
+        id = payload.id;
+    //remove from page
+
+    //reorder index
+
+    //call to server to delete
+
+    //confirm
+
+    //if fail, put back on page with message
+
+    //reorder index
+    //todo write
+}), _defineProperty(_module$exports, aTypes.demoteItem, function (_ref5, payload) {
+    var state = _ref5.state,
+        dispatch = _ref5.dispatch,
+        commit = _ref5.commit,
+        getters = _ref5.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.demote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_module$exports, aTypes.onUpdate, function (_ref6, event) {
+    var state = _ref6.state,
+        dispatch = _ref6.dispatch,
+        commit = _ref6.commit,
+        getters = _ref6.getters;
+
+    var p = new Promise(function (resolve, reject) {
+        commit(aTypes.onUpdate, event);
+        resolve();
+    });
+
+    return p.then(function () {
+        return new Promise(function (resolve, reject) {
+            commit(mTypes.updateOrder);
+            resolve();
+        });
+    });
+}), _defineProperty(_module$exports, aTypes.promoteItem, function (_ref7, payload) {
+    var state = _ref7.state,
+        dispatch = _ref7.dispatch,
+        commit = _ref7.commit,
+        getters = _ref7.getters;
+    var index = payload.index;
+
+    var item = getters.getItemByIndex(index);
+    item.promote();
+    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
+}), _defineProperty(_module$exports, aTypes.toggleItemPublic, function (_ref8, payload) {
+    var state = _ref8.state,
+        dispatch = _ref8.dispatch,
+        commit = _ref8.commit,
+        getters = _ref8.getters;
+
+    window.console.log('items', 'toggleItemPublic', 365, payload);
+
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var item = getters.getItemByIndex(payload.index);
+
+        commit(mTypes.updateItem, _Payload2.default.factory({
+            index: item.index,
+            updateProp: 'publicity',
+            updateVal: !item.publicity
+        }));
+    }
+}), _module$exports);
+
+//
+// export default {
+//     actions}
+
+/***/ }),
+/* 1233 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          * Created by adam on 6/8/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          */
+
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var _ = window._ = __webpack_require__(28);
+
+var buildKey = function buildKey(idx) {
+    var k = '';
+    for (var i = 0; i < idx.length; i++) {
+        k += idx[i];
+        if (i <= idx.length - 2) {
+            k += '-';
+        }
+    }
+    return k;
+};
+
+var isItemsEmpty = function isItemsEmpty(state) {
+    if (state.items.length > 0) {
+        return false;
+    }
+    return true;
+};
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getAllItems, function (state, getters, rootState) {
+    return state.items;
+}), _defineProperty(_module$exports, gTypes.getItem, function (state, getters, rootState, payload) {
+    // console.log('getItem', state, payload);
+    if (isItemsEmpty(state)) return false;
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var index = payload.index,
+            id = payload.id;
+
+        if (typeof index !== 'undefined') {
+            return getters[gTypes.getItemByIndex](state, getters, index);
+        }
+        if (typeof id !== 'undefined') {
+            return getters[gTypes.getItemById](state, getters, id);
+        }
+    }
+}), _defineProperty(_module$exports, gTypes.getItemById, function (state, getters, rootState, id) {
+    return function (id) {
+        // [gTypes.getItemById]: function ( state, getters, rootState, id ) {
+        // window.console.log( 'items', 'getItemById', 148, state, id );
+        return function (state, id) {
+            var r = state.items.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, id);
+    };
+}), _defineProperty(_module$exports, gTypes.getItemByIndex, function (state, getters, rootState, index) {
+    return function (index) {
+
+        // [gTypes.getItemByIndex]: ( state, getters, rootState, index) => {
+        // [gTypes.getItemByIndex]: function ( state, getters, index ) {
+        //remove the payload wrapper if necessary
+        if (_Payload2.default.checkIfPayload(index)) {
+            index = index.index;
+        }
+
+        //if this is a single member array, we can treat
+        //it like a numeric input under the older system
+        if (_.isArray(index) && index.length === 1) {
+            index = index[0];
+        }
+
+        //Now we're ready to deal with the input
+        return function (state, index) {
+            //There are two cases to consider
+            //We deal first with the easy case in which the index
+            //is a number or string representation of a number
+            //and not a composite
+            if (!_.isArray(index)) {
+                //if was just a string or integer this is fine
+                //also if the input was an array with only one item
+                var r = state.items.filter(function (i) {
+                    if (i.index === index) {
+                        return i;
+                    }
+                });
+                return r[0];
+            } else {
+                //we need to do something different
+                //because it is an array
+                if (_.isArray(index)) {
+                    var idx = index.join('-');
+                }
+            }
+        }(state, index);
+    };
+}), _defineProperty(_module$exports, gTypes.getItemBySerialNumber, function (state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+        // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
+        // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
+        return function (state, serialNumber) {
+            var r = state.items.filter(function (i) {
+                if (i.serialNumber === serialNumber) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, serialNumber);
+    };
+}), _defineProperty(_module$exports, 'getAllItemIndexes', function getAllItemIndexes(state, getters, rootState) {
+    var out = [];
+    for (var item in state.items) {
+        out.push(item.index);
+    }
+    return out;
+}), _defineProperty(_module$exports, 'getAllIndexesList', function getAllIndexesList(state, getters, rootState) {
+    if (isItemsEmpty(state)) return [];
+    // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
+
+    var out = [];
+    for (var _ref in state.items) {
+        var _ref2 = _slicedToArray(_ref, 2);
+
+        var key = _ref2[0];
+        var val = _ref2[1];
+
+        out.push(key);
+    }
+    return out;
+
+    //Leaving this here, in case someday we go back to items being an object
+    // return Object.keys( state.items )
+}), _defineProperty(_module$exports, gTypes.getAllItemsList, function (state, getters, rootState) {
+    //alias.
+    // used to be used when items was different data structure
+    //         return this.getAllItems( state, getters );
+    return state.items;
+}), _defineProperty(_module$exports, gTypes.getItemCount, function (state, getters, rootState) {
+
+    return state.items.length;
+}), _defineProperty(_module$exports, 'getNextIndex', function getNextIndex(state, getters) {
+    // return _.sortedIndex( state.items );
+
+}), _defineProperty(_module$exports, 'currentExam', function currentExam(state, getters) {
+    return state.items[0];
+}), _defineProperty(_module$exports, 'getExamSerialNumber', function getExamSerialNumber(state, getters) {
+    return state.items[0] ? state.items[0].serialNumber : null;
+}), _module$exports);
+
+/***/ }),
+/* 1234 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(54);
+
+var _itemsObj = __webpack_require__(1235);
+
+var _itemsObj2 = _interopRequireDefault(_itemsObj);
+
+var _itemsObj3 = __webpack_require__(1232);
+
+var _itemsObj4 = _interopRequireDefault(_itemsObj3);
+
+var _itemsObj5 = __webpack_require__(1233);
+
+var _itemsObj6 = _interopRequireDefault(_itemsObj5);
+
+var _itemsObj7 = __webpack_require__(1236);
+
+var _itemsObj8 = _interopRequireDefault(_itemsObj7);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * This integrates the various methods for operating on
+ * the stored item objects.
+ */
+
+var Vue = __webpack_require__(11);
+var _ = window._ = __webpack_require__(28);
+
+var standardTimeout = 1000;
+
+var helpers = {
+    getItemFromPayload: function getItemFromPayload(state, payload) {
+        return state.items[payload.index];
+        // if (typeof payload.id !== 'undefined') {
+        //     //get the item
+        //     var item = state.items.filter(function (i) {
+        //         if (typeof i.id != 'undefined' && i.id === id) {
+        //             return i;
+        //         }
+        //     });
+        //     return item;
+        // } else {
+        //     //get the item
+        //     return state.items[payload.index];
+        // }
+    }
+};
+
+/**
+ * Build an input object out of an input object
+ * and return a payload object containing it
+ * @param input
+ */
+var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, payload) {
+    //either a json or an item object have been passed in
+    var ItemId = payload.ItemId,
+        ItemIndex = payload.ItemIndex,
+        obj = payload.obj,
+        ItemObject = payload.ItemObject;
+
+
+    obj = typeof ItemObject !== 'undefined' ? ItemObject : obj;
+
+    //check and see if an Item object has already been passed in
+    if (!obj instanceof _Item2.default) {
+        //create a new Item
+        var name = payload.name,
+            id = payload.id,
+            index = payload.index;
+
+        var ItemJson = { name: name, ItemIndex: ItemIndex };
+        obj = _Item2.default.factory(ItemJson);
+    }
+
+    //assemble the expected payload
+    // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
+    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
+    //Add to the Items store
+    return out;
+};
+
+// let state = require('./items.obj.state')
+// let getters = require('./items.obj.getters')
+// const actions = require( './items.obj.actions' );
+// const mutations = require( './items.obj.mutations' );
+//
+// window.console.log( 'items.obj', 'getters before check ^^^^^^^^^^^^^^^^^^^^^^', 68, getters);
+//Object.assign( {}, getters_both, objGetters, Orderings.getters );
+// if(typeof getters.default !== 'undefined'){
+//     getters = getters.default;
+// }
+
+
+exports.default = {
+    actions: _itemsObj4.default,
+    getters: _itemsObj6.default,
+    mutations: _itemsObj2.default,
+    state: _itemsObj8.default
+
+    // Object indexed by Item id holding Item objects
+    // On load the root exam object and first item are created but given no
+    // ids. thus we will eventually need to create an exam object if one isn't set
+    //
+    // However don't ask the server to create an id just yet
+    // lookup the exam object that resides at index 0
+    // this will have either been newly created on page load
+    // or it will be an existing exam object loaded from the db
+    // let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+    // //Call the set active exam method
+    // //We do this rather than call the mutation directly
+    // //because there may need to be various other events and
+    // //things which need to happen depending on the context.
+    // //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+    // this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+    // }
+
+};
+
+/***/ }),
+/* 1235 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _vue = __webpack_require__(11);
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 5/27/17.
+                                                                                                                                                                                                                   */
+
+
+/**
+ * We want the actual mutations to be as agnostic as possible
+ * on how the item is identified. This takes the payload
+ * and returns the item.
+ * The order of preference is:
+ *     - if the item object has been given to us, use it.
+ *     - if the serial number of the item object has been given, use it
+ *     - if the id of the item has been given, use it
+ *     - if the index of the item has been given, use it
+ * @param state
+ * @param payload
+ */
+var getItemFromPayload = function getItemFromPayload(state, payload) {
+
+    switch (payload.identifierType) {
+        case 'obj':
+            return payload.obj;
+            break;
+
+        case 'serialNumber':
+            return state.items.filter(function (o) {
+                if (o.serialNumber === payload.serialNumber) {
+                    return o;
+                }
+            });
+            break;
+
+        case 'index':
+            return state.items[payload.index];
+            break;
+    }
+};
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addItemIndexMapping, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    _vue2.default.set(state.indexMap, payload.index, payload.id);
+
+    // state.indexMap.set( payload.index, payload.id );
+}), _defineProperty(_module$exports, 'addMappedItem', function addMappedItem(state, payload) {
+    var idx = payload.idx,
+        item = payload.item;
+
+    if (_.isEmpty(idx) || _.isEmpty(item)) return false;
+    var key = buildKey(idx);
+    window.console.log('items', 'addMappedItem', 102, key, item);
+    _vue2.default.set(state.orderMap, key, item);
+}), _defineProperty(_module$exports, mTypes.addNewItem, function (state, payload) {
+    console.log(mTypes.addNewItem, state, payload);
+
+    // return new Promise( ( resolve, reject ) => {
+
+    if (_Payload2.default.checkIfPayload(payload)) {
+        var obj = payload.obj,
+            callback = payload.callback;
+        //and here we meet the problem of deciding what data
+        //structure to use to store the items and the many
+        //times I've changed my mind
+        //The problem is what to do if the incoming
+        //item has an internally different index.
+        //The answer isn't very good. Right now, it is just
+        //to not use this method to update.
+        //Of course, everyone is on their honor to not do so....
+
+        state.items.push(obj);
+
+        if (!_.isUndefined(callback)) callback(payload);
+        // return resolve();
+    }
+    // } );
+}), _defineProperty(_module$exports, 'cleanupEmptyItems', function cleanupEmptyItems(state) {
+    for (var i = 0; i < state.items.length; i++) {
+        if (typeof state.items[i] === 'undefined') {
+            state.items.splice(i, 1);
+        }
+    }
+}), _defineProperty(_module$exports, 'onUpdate', function onUpdate(state, event) {
+    window.console.log('items', 'onUpdate', 102, event);
+    var newIndex = event.newIndex,
+        oldIndex = event.oldIndex;
+
+    var resorted = state.items.splice(newIndex, 0, state.items.splice(oldIndex, 1)[0]);
+    // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
+    // window.console.log( 'items', 'onUpdate', 105, resorted);
+    _vue2.default.set(state, 'items', resorted);
+    // state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
+    // window.console.log( 'items', 'onUpdate', 105, );
+}), _defineProperty(_module$exports, mTypes.setItem, function (state, payload) {
+    return new Promise(function (resolve, reject) {
+
+        // console.log('items.mutations', mTypes.setItem, state, payload);
+        if (_Payload2.default.checkIfPayload(payload)) {
+            var index = payload.obj.index;
+
+            window.console.log('items.mutations', 'index', 100, index);
+            _vue2.default.set(state.items, index, payload.obj);
+        }
+        resolve();
+    });
+}), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
+    console.log(mTypes.updateComment, payload, state);
+    //get the item
+    var itm = getItemFromPayload(state, payload);
+    window.console.log('items', 'updateComment', 145, itm, state.items);
+
+    if (typeof itm !== 'undefined') {
+        // let itm = state.items[ payload.index ];
+        var comment = itm.getComment(payload.updateValence);
+
+        if (typeof comment !== 'undefined') {
+            //Set the value so vue can see it
+            _vue2.default.set(comment, 'text', payload.updateVal);
+        }
+
+        //Push the altered item back into the array
+        //set it in the array with vue
+        _vue2.default.set(state.items, payload.index, itm);
+        // state.items.$set( payload.index, itm );
+        window.console.log('items', 'updateComment', 145, itm, state.items);
+    }
+}), _defineProperty(_module$exports, mTypes.updateItem, function (state, payload) {
+    // console.log( mTypes.updateItem, payload, state );
+    var itm = getItemFromPayload(state, payload);
+
+    if (typeof itm !== 'undefined') {
+        //Set the value so vue can see it
+        _vue2.default.set(itm, payload.updateProp, payload.updateVal);
+    }
+}), _defineProperty(_module$exports, mTypes.updateItemSilently, function (state, payload) {
+    return new Promise(function (resolve, reject) {
+        var itm = getItemFromPayload(state, payload);
+        // if ( typeof itm === 'undefined' ) return reject();
+        //Set the value so vue can see it
+        _vue2.default.set(itm, payload.updateProp, payload.updateVal);
+        return resolve();
+    });
+}), _defineProperty(_module$exports, mTypes.updateOrder, function (state, payload) {
+    return new Promise(function (resolve, reject) {
+
+        // if ( state.items.length === 0 ) return reject();
+        // console.log(mTypes.updateOrder, state, payload);
+        // this just requires us to match list indexes w the
+        //property of the item
+        for (var i = 0; i < state.items.length; i++) {
+            var item = state.items[i];
+            // window.console.log('items', 'updateOrder', 87, i, item);
+            if (typeof item !== 'undefined') {
+                //set the property on the object
+                _vue2.default.set(item, 'index', i);
+                //set it in the array with vue
+                _vue2.default.set(state.items, i, item);
+            }
+        }
+        resolve();
+    });
+}), _module$exports);
+
+// /**
+//  * Make sure the property index matches the lookup index
+//  * @param state
+//  * @param payload
+//  */
+// [mTypes.updateOrder]: ( state, orderList ) => {
+//     //new payload where it contains a key orderList
+//     for (let i = 0; i < orderList.length; i++) {
+//         // this is the ith item id
+//         let id = orderList[ i ];
+//         let item = state.items.filter( ( i ) => {
+//             if ( i.id === id ) {
+//                 return i;
+//             }
+//         } );
+//
+//         //get the item, and update its index
+//         //no moving it or anything
+//         // window.console.log('items', 'updateOrder', 87, i, item);
+//         if ( typeof item !== 'undefined' ) {
+//             //set the property on the object
+//             Vue.set( item, 'index', i );
+//             //set it in the array with vue
+//             // Vue.set(state.items, i, item);
+//             //resort array
+//         }
+//     }
+//
+//     //now that we've done all that, let's resort items
+//     //by the object's index
+//     let items = state.items.sort( ( a, b ) => {
+//         return a.index > b.index;
+//     } );
+//
+//     //and finally push the sorted array back
+//     Vue.set( state, 'items', items );
+//
+//     // // console.log(mTypes.updateOrder, state, payload);
+//     // // this just requires us to match list indexes w the
+//     // //property of the item
+//     // for (let i = 0; i < state.items.length; i++) {
+//     //     let item = state.items[ i ];
+//     //     // window.console.log('items', 'updateOrder', 87, i, item);
+//     //     if ( typeof item !== 'undefined' ) {
+//     //         //set the property on the object
+//     //         Vue.set(item, 'index', i);
+//     //         //set it in the array with vue
+//     //         Vue.set(state.items, i, item);
+//     //     }
+//     // }
+//
+// },
+
+/***/ }),
+/* 1236 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Vue = __webpack_require__(11);
+
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.Items has the Item's database id as key and an Item object
+ * as value. That is:
+ *      state.Items[Item.id] = Item
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * ItemIndex to the database id
+ */
+module.exports = {
+
+  /**
+   * This holds the current item objects.
+   * Because we now want maximal flexibility in how we store and
+   * retrieve item objects, we store them in a simple list.
+   * The access to the items in the last is handled by getters
+   * which filter the list on whatever internal property of the item
+   * a particular use case needs.
+   */
+  items: [],
+
+  // items: [ Exam.factory({index: 0}), Item.factory({index: 1}) ],
+  /**
+   * Mapping from older ItemIndex to new Item id value
+   */
+  indexMap: new Map(),
+
+  orderMap: {}
+};
+
+// Object indexed by Item id holding Item objects
+// On load the root exam object and first item are created but given no
+// ids. thus we will eventually need to create an exam object if one isn't set
+//
+// However don't ask the server to create an id just yet
+// lookup the exam object that resides at index 0
+// this will have either been newly created on page load
+// or it will be an existing exam object loaded from the db
+// let exam = this.$store.getters[ gTypes.getActiveExamObj ];
+// //Call the set active exam method
+// //We do this rather than call the mutation directly
+// //because there may need to be various other events and
+// //things which need to happen depending on the context.
+// //                this.$store.dispatch(aTypes.setActiveExam, Payload.factory({obj: exam}));
+// this.$store.getters[ mTypes.setItem ](Payload.factory({index: 0, obj: exam}));
+// }
+
+/***/ }),
+/* 1237 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(54);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Created by adam on 6/12/17.
+ */
+
+var _ = window._ = __webpack_require__(28);
+// const Vue = require( 'vue' );
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addItemToOrder, function (_ref, payload) {
+    var state = _ref.state,
+        dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    window.console.log('items.order.actions', aTypes.addItemToOrder, 31, payload);
+    // return new Promise( ( resolve, reject ) => {
+
+    var obj = payload.obj,
+        parent = payload.parent,
+        index = payload.index,
+        mutateSilently = payload.mutateSilently;
+
+    //Sort out whether obj and parent are nodes or items
+
+    var toAddSerialNumber = _.isNumber(obj) ? obj : obj.serialNumber; // getSerialNumber( obj );
+    var parentSerialNumber = _.isNumber(parent) ? parent : (0, _NodeTools.getSerialNumber)(parent);
+    // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
+
+    var newNode = new _Node2.default(toAddSerialNumber, parentSerialNumber);
+    var parentNode = getters.getItemNodeFromOrder(parentSerialNumber);
+    // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
+
+    var pl = _Payload2.default.factory({
+        objNode: newNode,
+        parentNode: parentNode,
+        index: index,
+        mutateSilently: mutateSilently
+    });
+    window.console.log('items.order.actions', 'pl', 47, pl);
+
+    commit(mTypes.insertNodeIntoOrder, pl);
+
+    // resolve();
+
+    // } );
+}), _defineProperty(_module$exports, aTypes.removeItemFromOrder, function (_ref2, payload) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+    var serialNumber = payload.serialNumber;
+    // let  serialNumber = getSerialNumber(payload);
+
+    var toRemove = getters[gTypes.getItemNodeFromOrder](serialNumber);
+    var parent = getters[gTypes.getItemNodeFromOrder](toRemove.parent);
+    var pl = _Payload2.default.factory({ obj: toRemove, parent: parent });
+    commit(mTypes.removeNodeFromOrder, pl);
+}), _module$exports);
+
+/***/ }),
+/* 1238 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(54);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Created by adam on 6/12/17.
+ */
+
+var _ = window._ = __webpack_require__(28);
+var Vue = __webpack_require__(11);
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
+    return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
+}), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+
+        return function (state, serialNumber) {
+            var callback = function callback(node) {
+                if (!callback.found) callback.found = [];
+                // window.console.log( 'orderings', 'callback', 253, node.data, serialNumber );
+                if (node.data === serialNumber) {
+                    callback.found.push(node);
+                    // window.console.log( 'orderings.spec', 'callback.found', 78, node, callback.found );
+                    return true;
+                }
+                return false;
+            };
+            (0, _NodeTools.traverseDF)(state.itemMap, callback);
+            return callback.found[0];
+        }(state, serialNumber);
+
+        //    return state.itemMap ? getNode(state, serialNumber) : null;
+    };
+}), _defineProperty(_module$exports, gTypes.getHeightOfNode, function (state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+        // return 1;
+        // [gTypes.getHeightOfNode]: ( state, getters) => ( serialNumber ) => {
+        return function (state, serialNumber) {
+
+            var level = 0;
+
+            var node = (0, _NodeTools.getNode)(state, serialNumber);
+            if (node) {
+                while (node.parent !== node.data) {
+                    var parent = node.parent;
+                    //get the parent node
+                    //set it as node so that we operate on it next time
+                    node = (0, _NodeTools.getNode)(state, parent);
+                    //increment level
+                    level += 1;
+                }
+            }
+            return level;
+        }(state, serialNumber);
+        //
+        //
+        // return (function recurse( serialNumber ) {
+        //     // window.console.log( 'items.order', 'recurse', 245, serialNumber, level);
+        //     //look up the node whose serial number we've just  been handed.
+        //     let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
+        //     //break condition is that we've hit the exam
+        //     //which is of course the only item which is its
+        //     //own parent
+        //     if ( node.parent === node.data ) return level;
+        //     //Otherwise, increment the level counter
+        //     // and re-run on the parent
+        //     level += 1;
+        //     return recurse( node.parent );
+        // })( serialNumber );
+    };
+}), _defineProperty(_module$exports, gTypes.getDepthOfNode, function (state, getters, rootState, serialNumber) {
+    return function (serialNumber) {
+        //look up the node whose serial number we've just  been handed.
+        var node = (0, _NodeTools.getNode)(state, serialNumber);
+        //        let node = getters[ gTypes.getItemNodeFromOrder ](state, getters, serialNumber);
+        if (node) {
+            var parent = (0, _NodeTools.getNode)(state, node.parent);
+            // let parent = getters[ gTypes.getItemNodeFromOrder ](state, getters, node.parent);
+            if (parent) {
+                for (var index = 0; index < parent.children.length; index++) {
+                    if (parent.children[index].data === node.data) {
+                        return index;
+                    }
+                }
+            }
+        }
+        return 0;
+    };
+}), _defineProperty(_module$exports, 'getRootNode', function getRootNode(state, getters, rootState) {
+    return state.itemMap;
+}), _defineProperty(_module$exports, 'getRootNodeSerialNumber', function getRootNodeSerialNumber(state, getters, rootState) {
+    return state.itemMap.data;
+}), _defineProperty(_module$exports, 'getQuestionLevelItems', function getQuestionLevelItems(state, getters) {
+    var items = [];
+    if (state.itemMap.children) {
+        _.forEach(state.itemMap.children, function (node) {
+            items.push(getters[gTypes.getItemBySerialNumber](node.data));
+        });
+    }
+    return items;
+}), _defineProperty(_module$exports, 'getItemChildren', function getItemChildren(state, getters, rootState, item) {
+    return function (item) {
+
+        var kids = [];
+        var node = getters[gTypes.getItemNodeFromOrder](item.serialNumber);
+
+        if (!_.isUndefined(node) && node.children.length > 0) {
+            _.forEach(node.children, function (child) {
+                if (child.data) {
+                    var o = getters[gTypes.getItemBySerialNumber](child.data);
+                    kids.push(o);
+                }
+            });
+        }
+        return kids;
+    };
+}), _module$exports);
+
+/***/ }),
+/* 1239 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _itemsOrder = __webpack_require__(1240);
+
+var _itemsOrder2 = _interopRequireDefault(_itemsOrder);
+
+var _itemsOrder3 = __webpack_require__(1237);
+
+var _itemsOrder4 = _interopRequireDefault(_itemsOrder3);
+
+var _itemsOrder5 = __webpack_require__(1238);
+
+var _itemsOrder6 = _interopRequireDefault(_itemsOrder5);
+
+var _itemsOrder7 = __webpack_require__(1241);
+
+var _itemsOrder8 = _interopRequireDefault(_itemsOrder7);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * This pulls together the various parts of
+ * handling item order.
+ * If there was something which required multiple
+ * portions of the tools to be used, it would
+ * be defined in this file
+ *
+ * Otherwise, it just makes the locations of
+ * methods more intelligible and helps clean
+ * up the items.js file where everything comes
+ * together
+ *
+ * Created by adam on 4/11/17.
+ */
+
+exports.default = {
+  actions: _itemsOrder4.default,
+  getters: _itemsOrder6.default,
+  mutations: _itemsOrder2.default,
+  state: _itemsOrder8.default
+};
+
+/***/ }),
+/* 1240 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(54);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Created by adam on 6/12/17.
+ */
+
+var _ = window._ = __webpack_require__(28);
+var Vue = __webpack_require__(11);
+
+var checkExpectedType = function checkExpectedType(toBeSet) {
+    if (toBeSet instanceof _Node2.default) return true;
+
+    window.console.log('items.order.mutations', 'ERROR', 25, "is not a Node", toBeSet);
+    throw new Error("non node passed to order mutation", toBeSet);
+    return false;
+};
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
+    return new Promise(function (resolve, reject) {
+
+        // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+
+        var index = payload.index,
+            objNode = payload.objNode,
+            parentNode = payload.parentNode;
+
+        //type check
+
+        if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
+            //Try out the un type checked properties to see if they have
+            //nodes
+            var obj = payload.obj,
+                parent = payload.parent;
+            //if not, oh well
+
+            return false;
+        }
+
+        //if an index was specified, splice it in at the index
+        if (!_.isUndefined(index)) {
+            parentNode.children.splice(index, 0, objNode);
+            return resolve();
+        }
+
+        //otherwise just push it on the end
+        parentNode.children.push(objNode);
+        return resolve();
+    });
+}), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
+    var obj = payload.obj,
+        parent = payload.parent;
+    //Merge its children into its parent's children
+
+    parent.children.concat(obj.children);
+    //delete the node
+    var idx = parent.children.indexOf(obj);
+    parent.children.splice(idx, 1);
+}), _defineProperty(_module$exports, 'increasePosition', function increasePosition(state, payload) {
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+
+
+    var currentIndex = parentNode.children.indexOf(objNode);
+    // if ( currentIndex + 1 === parentNode.children.length ) return true;
+    //
+    // //make sure it is not the last item already
+    // if ( parentNode.children.length !== currentIndex + 1 ) {
+    //We first pop the item out so that its successor
+    //slides down and occupies its current index
+    parentNode.children.splice(currentIndex, 1);
+    //Now we push it in at  its
+    //original position + 1
+    parentNode.children.splice(currentIndex - 1, 0, objNode);
+    // }
+}), _defineProperty(_module$exports, 'decreasePosition', function decreasePosition(state, payload) {
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+
+    var currentIndex = parentNode.children.indexOf(objNode);
+    //check whether at the end of the children list
+    //if so, ignore the call
+    //   if ( currentIndex === 0 ) return true;
+
+    //We first pop the item out so that its successor
+    //slides down and occupies its current index
+    //Now we push it in at  its
+    //original position -1 1
+    parentNode.children.splice(currentIndex, 1); //remove it
+    parentNode.children.splice(currentIndex + 1, 0, objNode); //push it in
+}), _defineProperty(_module$exports, 'promote', function promote(state, payload) {
+    //where it makes no sense to promote
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+    //get parent's parent
+
+    if (parentNode instanceof _Node2.default) {
+        var grandParent = (0, _NodeTools.getNode)(state, parentNode.parent);
+
+        //check that we aren't at the question level
+        // if ( grandParent ) {
+        //add to grandparent
+        grandParent.children.push(objNode);
+
+        //remove from parent's children list
+        parentNode.children.splice(parentNode.children.indexOf(objNode), 1);
+        // }
+    }
+}), _defineProperty(_module$exports, 'demote', function demote(state, payload) {
+    var objNode = payload.objNode,
+        parentNode = payload.parentNode;
+
+    var currentIndex = parentNode.children.indexOf(objNode);
+    //get the node who will become parent
+    var newParent = parentNode.children[currentIndex - 1];
+    //remove from parent
+    parentNode.children.splice(currentIndex, 1); //remove it
+    //push it in to its former older sibling's children
+    newParent.children.push(objNode);
+}), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
+    var objNode = payload.objNode,
+        obj = payload.obj;
+    // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
+    //     objNode = new Node(obj.serialNumber, obj.serialNumber);
+    // }
+    //
+    // if(_.isUndefined(state.itemMap)){
+    //     //we can just put it in
+    //     state.itemMap = objNode;
+    //  }
+    // else{
+    //we can just directly update the existing node's serial numbers
+
+    state.itemMap.parent = obj.serialNumber;
+    state.itemMap.data = obj.serialNumber;
+    // }
+    //if it already exists, we need to merge the children
+    //of the existing exam node into the new node
+    //
+    //         else if((! _.isUndefined(state.itemMap.children)) && state.itemMap.children.length > 0){
+    //             state.itemMap.parent = children
+    // ;        }
+}), _module$exports);
+
+/***/ }),
+/* 1241 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _mutationTypes = __webpack_require__(4);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(7);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(6);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Node = __webpack_require__(42);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 6/12/17.
+ */
+
+var _ = window._ = __webpack_require__(28);
+var Vue = __webpack_require__(11);
+
+var initialExam = new _Exam2.default();
+
+module.exports = {
+  itemMap: new _Node2.default(initialExam.serialNumber, initialExam.serialNumber)
+
+  /*
+   * What we want to have is the ability to store nested
+   * tuples which map the item to a position on an exam
+   * (which is itself formally an item).
+   * order : {
+   *      0 : {
+   *          id: null,
+   *          children: {
+   *              0 : {
+   *                      id: null.
+   *                      children: {}
+   *                 }
+   *          }
+   *      }
+   }
+   *
+   * */
+  //the first value in the array is the item's id
+  //the second value is an array of children
+  // orderMap: new Map(),
+  // orderList: [],
+  //
+  // order: {
+  //     0: {
+  //         id: null,
+  //         children: {
+  //             0: {
+  //                 id: null,
+  //                 children: {}
+  //             }
+  //         }
+  //     }
+  // }
+  // orderMap: new Map(),
+  // order: {}
+
+};
 
 /***/ })
 /******/ ]);

@@ -47,7 +47,7 @@ import activeexam from './modules/activeexam.js'
 import comments from './modules/comments.js'
 import escores from './modules/escores.js'
 import exams from './modules/exams'
-import items from './modules/items.js'
+import items from './modules/items/items.js'
 import grades from './modules/grades.js'
 import qscores from './modules/qscores.js'
 import questions from './modules/questions.js'
@@ -60,13 +60,15 @@ import times from './modules/times.js'
 import roster from './modules/roster/roster'
 import visibility from './modules/visibility'
 import kumi from './modules/roster/kumis'
-import notes from './modules/notes'
-import tags from './modules/tags'
+import notes from './modules/notes/notes'
+import tags from './modules/tags/tags'
 import rosterDisplay from './modules/roster/display'
 
 import itemScores from './modules/scores/itemscores';
 import quality from './modules/quality/quality';
-import stats from './modules/scores/scoresForStats';
+import stats from './modules/scores/itemScoresForStats';
+
+import itemStats from './modules/feedback/itemStats';
 
 //grade assignments
 import gradeAssignments from './modules/grades/gradeAssignments';
@@ -125,6 +127,8 @@ const debug = process.env.NODE_ENV !== 'production';
         gradingTimesNew,
         gradingCountsNew,
         preferences,
+
+        itemStats,
 
 
         comments,

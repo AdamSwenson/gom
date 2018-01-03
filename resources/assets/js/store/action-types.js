@@ -42,7 +42,7 @@ export const updateExamGrade = 'updateExamGrade';
 //grade assignments
 export const updateCutoff = 'updateCutoff';
 export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
-
+export const loadGradeAssignmentsFromServer = 'loadGradeAssignmentsFromServer';
 
 
 //items

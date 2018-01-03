@@ -126,10 +126,11 @@
 
             gradesAjax: function () {
                 let me = this;
-                let p = requests.getGradeAssignments( this.exam );
-                p.then( function ( data ) {
-                    let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
-                } );
+                this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer , this.exam);
+                // let p = requests.getGradeAssignments( this.exam );
+                // p.then( function ( data ) {
+                //     let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
+                // } );
             },
 
 

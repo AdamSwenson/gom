@@ -15,7 +15,7 @@ import {
 
 
 //Dependencies
-const getters = require('../../../../../resources/assets/js/store/modules/items.order.getters');
+const getters = require('../../../../../resources/assets/js/store/modules/items/items.order.getters');
 //import * as orderings from '../../../../../resources/assets/js/store/modules/items.order';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'

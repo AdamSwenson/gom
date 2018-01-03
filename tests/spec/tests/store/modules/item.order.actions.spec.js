@@ -15,7 +15,7 @@ import {
 
 
 //Dependencies
-const orderings = require('../../../../../resources/assets/js/store/modules/items.order');
+const orderings = require('../../../../../resources/assets/js/store/modules/items/items.order');
 window.console.log( 'item.order.actions.spec', 'orderings', 19, orderings);
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'

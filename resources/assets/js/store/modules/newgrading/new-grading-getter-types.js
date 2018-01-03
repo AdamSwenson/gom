@@ -163,6 +163,7 @@ export const getUserPreference = 'getUserPreference';
    ================== SCORES        =====================
    ================================================================ */
 export const getItemScoreObject =  'getItemScoreObject';
+export const getTotalScoreForStudent = 'getTotalScoreForStudent';
 
 /* ================================================================
    ================== TIMES        =====================

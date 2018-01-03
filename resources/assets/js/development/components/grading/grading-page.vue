@@ -58,6 +58,7 @@
                                 <!-- student table shows the student roster -->
                                 <grading-roster></grading-roster>
                                 <a class="button">Hide graded</a>
+                                <feedback-preview-button></feedback-preview-button>
                             </div>
                         </div>
                     </div>
@@ -99,6 +100,9 @@
     //navs
     import TopNavbar from '../top-nav/top-navbar.vue';
     import BottomNavbar from "../bottom-nav/bottom-navbar";
+    //buttons
+    import FeedbackPreviewButton from "../feedback/feedback-preview-button";
+
 
     import { loadExam } from '../../../api/requests/examRequests';
     import { loadExamKumi } from '../../../api/requests/kumiRequests';
@@ -118,6 +122,7 @@
         props: [],
 
         components: {
+            FeedbackPreviewButton,
             BottomNavbar,
             ActiveStudentArea,
             DashboardCounts,

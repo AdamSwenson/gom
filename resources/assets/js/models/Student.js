@@ -184,40 +184,6 @@ export default class Student extends IModel{
     }
 
 
-    /* *************************** Email ****************** */
-
-
-    //
-    // static get fillable(){
-    //     return [
-    //         'firstName',
-    //         'lastName',
-    //         'studentId',
-    //         'studentIdentifier',
-    //         'studentIndex',
-    //     ]
-    // }
-    // /**
-    //  * Takes the json student object received from the server and
-    //  * returns a Student object
-    //  * @param studentJson
-    //  * @returns {Student}
-    //  */
-    // static factory( studentJson ) {
-    //     let student = new Student(  );
-    //     let fields = Student.fillable;
-    //
-    //     for(let i=0; i<fields.length; i++){
-    //         let field = fields[i];
-    //         if(typeof studentJson[field] != 'undefined' ){
-    //             student[field] = studentJson[field];
-    //         }
-    //     }
-    //
-    //     console.log( 'student', student );
-    //     return student;
-    // }
-
 
     static checkIfStudent( obj ) {
         if ( obj instanceof Student) return true;

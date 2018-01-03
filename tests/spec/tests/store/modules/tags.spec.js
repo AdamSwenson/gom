@@ -7,7 +7,7 @@ import { testAction, description, factories } from '../../../helpers/vuex.spec.h
 
 
 //Dependencies
-import * as tags from '../../../../../resources/assets/js/store/modules/tags';
+import * as tags from '../../../../../resources/assets/js/store/modules/tags/tags';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'

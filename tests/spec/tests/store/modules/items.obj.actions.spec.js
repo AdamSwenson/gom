@@ -10,7 +10,7 @@ import {makeState, makeTestPayload, makeMutationPayload} from '../../../helpers/
 
 
 //Dependencies
-import * as items from '../../../../../resources/assets/js/store/modules/items';
+import * as items from '../../../../../resources/assets/js/store/modules/items/items';
 
 //tested object
 let obj = items.default;
