@@ -47,7 +47,8 @@
              */
             studentName: function () {
                 if ( _.isNull( this.activeStudent ) ) return '';
-                if ( this.studentNamesVisible ) return '';
+                if ( ! this.isStudentNameVisible ) return '';
+
                 return this.activeStudent.nameFirstLast;
             },
 
@@ -63,7 +64,7 @@
              * Whether to show student names
              * false is blind grading.
              */
-            studentNamesVisible: function () {
+            isStudentNameVisible: function () {
                 return this.$store.getters[ gTypes.areStudentNamesVisible ];
             },
         },

@@ -1,13 +1,13 @@
 import Vue from 'vue'
 
 //Panels (objects within pane)
-import panelComments from './components/panels/comment-setup-panel.vue'
-import panelHistory from './components/panels/history-panel.vue';
-import panelItemDetail from './components/panels/item-detail-panel.vue'
+import panelComments from './components/setup/comment-setup-panel.vue'
+import panelHistory from './components/setup/history-panel.vue';
+import panelItemDetail from './components/setup/item-detail-panel.vue'
 
-import panelNotes from './components/panels/notes-panel.vue';
-import panelStats from './components/panels/stats-panel.vue';
-import panelTags from './components/panels/tags-panel.vue'
+import panelNotes from './components/setup/notes-panel.vue';
+import panelStats from './components/setup/stats-panel.vue';
+import panelTags from './components/setup/tags-panel.vue'
 
 Vue.component( 'panel-comments', panelComments );
 Vue.component( 'panel-notes', panelNotes );

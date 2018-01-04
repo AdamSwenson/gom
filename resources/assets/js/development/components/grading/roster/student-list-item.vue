@@ -3,7 +3,7 @@
     <tr v-bind:id="rowIdString"
         class="studentListItem "
         v-on:click="handleRowClick"
-        v-bind:class="{ 'unalteredStudentRow': isUnaltered, 'activeStudentRow': isActiveStudent, 'gradedStudentRow': isGraded }"
+        v-bind:class="{ 'unalteredStudentRow': isUnaltered, 'activeStudentRow': isActiveStudent, 'gradedStudentRow': isGraded }">
 
         <td class="col-xs-6"
             id="studentName{{ studentIndex }}">{{ studentName }}</td>

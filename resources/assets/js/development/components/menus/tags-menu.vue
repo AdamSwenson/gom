@@ -104,7 +104,7 @@
     import { Routes } from '../../../api/apiSettings';
     import { loadAllUserTagsRequest, createTagRequest, associateTagRequest } from '../../../api/requests/tagRequests';
 
-    import colorSelector from '../panels/tag/color-selector.vue';
+    import colorSelector from '../setup/tag/color-selector.vue';
 
     /**
      * This is a menu of all tags existing for the user.

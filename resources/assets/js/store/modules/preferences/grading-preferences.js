@@ -16,6 +16,8 @@ const state = {
     /** Whether student names are visible during grading */
     areStudentNamesVisible: true,
 
+    areGradedStudentRowsVisible: true,
+
     isLetterGradeButtonUsed: true,
 
     shouldDynamicallyCollapseCommentAreas: true,
@@ -29,24 +31,38 @@ const state = {
 };
 
 const mutations = {
+    /**
+     * Not used because no api listener set
+     * @deprecated
+     * @param state
+     */
+    [ ngmTypes.toggleGradedStudentRowVisibility ]: ( state ) => {
+        state.areGradedStudentRowsVisible = !state.areGradedStudentRowsVisible;
+    },
+
+    /**
+     * Not used because no api listener set
+     * @deprecated
+     * @param state
+     */
     [ ngmTypes.toggleStudentNameVisibility ]: ( state ) => {
         state.areStudentNamesVisible = !state.areStudentNamesVisible;
     },
 
-    [ngmTypes.updateGradingPreference]: ( state, payload ) => {
+    [ ngmTypes.updateGradingPreference ]: ( state, payload ) => {
         Vue.set( state, payload.updateProp, payload.updateVal );
     }
 
 };
 
 const actions = {
-    [ngaTypes.loadGradePreferencesFromServer] : ( { dispatch, commit, getters } ) => {
+    [ ngaTypes.loadGradePreferencesFromServer ]: ( { dispatch, commit, getters } ) => {
         return new Promise( function ( resolve, reject ) {
             let p = getGradePreferences();
             p.then( function ( prefs ) {
                 _.forEach( prefs, function ( v, k ) {
                     let pl = Payload.factory( { updateProp: k, updateVal: v, mutateSilently: true } );
-                    commit( 'updateGradingPreference', pl );
+                    commit( ngmTypes.updateGradingPreference , pl );
                 } );
                 resolve();
             } );
@@ -55,9 +71,14 @@ const actions = {
 };
 
 const getters = {
+    [ nggTypes.areGradedStudentRowsVisible ]: ( state, getters ) => {
+        return state.areGradedStudentRowsVisible;
+    },
+
     [ nggTypes.areStudentNamesVisible ]: ( state, getters ) => {
         return state.areStudentNamesVisible;
     },
+
 
     [ nggTypes.isLetterGradeButtonUsed ]: ( state, getters ) => {
         return state.isLetterGradeButtonUsed;
@@ -85,8 +106,8 @@ const getters = {
      * @param preferenceName
      * @returns {function(*)}
      */
-    [nggTypes.getGradingPreference] : (state, getters, rootState, preferenceName) => ( preferenceName ) => {
-        return state[preferenceName];
+    [ nggTypes.getGradingPreference ]: ( state, getters, rootState, preferenceName ) => ( preferenceName ) => {
+        return state[ preferenceName ];
     }
 
 };

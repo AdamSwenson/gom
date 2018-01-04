@@ -25,6 +25,7 @@ export const startExamTimer = 'startExamTimer';
 export const stopExamTimer = 'stopExamTimer';
 
 //preferences for grading
+export const toggleGradedStudentRowVisibility = 'toggleGradedStudentRowVisibility';
 export const toggleStudentNameVisibility = 'toggleStudentNameVisibility';
 export const loadExams = 'loadExams';
 export const updateGradingPreference = 'updateGradingPreference';

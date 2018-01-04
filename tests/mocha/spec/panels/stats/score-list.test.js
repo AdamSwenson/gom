@@ -19,7 +19,7 @@ import { makeScoreListServerResponse } from '../../../helpers/factories';
 
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/stats/score-list.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/setup/stats/score-list.vue" );
 
 
 describe( "score-list   ", () => {

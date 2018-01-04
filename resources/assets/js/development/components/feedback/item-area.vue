@@ -3,7 +3,13 @@
         <h4 class="title is-4">{{ name }}</h4>
 
         <div class="columns">
+
             <div class="column comments-area">
+                <item-comment
+                        :item="item"
+                        :student="student"
+                ></item-comment>
+
                 <div v-for="e in elements">
                     <item-comment
                             :item="e"
@@ -13,6 +19,12 @@
             </div>
 
             <div class="column charts-area">
+                <item-chart
+                        :item="item"
+                        :exam="exam"
+                        :student="student"
+                ></item-chart>
+
                 <div v-for="e in elements">
                     <item-chart
                             :item="e"
@@ -44,7 +56,8 @@
 
         components: {
             ItemChart,
-            ItemComment },
+            ItemComment
+        },
 
         data: function () {
             return {
@@ -54,10 +67,13 @@
 
         computed: {        //the associated child items
             elements: function () {
-                let els = [];
+                let els = [ this.item ];
                 if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
                     let level = 0;
-                    return this.$store.getters.getItemChildren( this.item );
+                    let c = this.$store.getters.getItemChildren( this.item );
+                    // _.forEach(c, function(d){
+                    //    els.push(c);
+                    // });
                 }
                 return els;
             },

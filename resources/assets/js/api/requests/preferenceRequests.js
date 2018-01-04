@@ -36,7 +36,7 @@ module.exports = {
         return window.axios
             .get( route, out )
             .then( ( response ) => {
-                return response.data.preferences
+                return response.data
             } )
             .catch( function ( error ) {
                 errorHandling( error );

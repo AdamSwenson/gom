@@ -167,34 +167,41 @@ Route::get('dev/test', 'TestController@test');
 //When we want those directly, we use the edit route
 
 
-/* ******************** New setup page ***************** */
-//display of page
+//====================================== New setup page
 Route::get('dev/setup/{exam}', 'Item\SetupController@show')->name('show-exam');
 Route::get('dev/setup', 'Item\SetupController@index');
-//order of the items on the exam
-Route::post('dev/setup/{exam}/order', 'Item\AssignmentController@store');
 
-//intrinsic properties of the item
-//Route::put('items/{item}', 'ItemController@update');
-//Route::patch('items/{exam}', 'ItemController@updateAll');
-Route::resource('items', 'Item\ItemController'); //,
-Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
+// ====================================== NEW GRADING
+Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
 
-Route::post('comments/{item}', 'Item\CommentController@store');
-Route::get('items/exam/{exam}', 'Grading\NewGradingController@getItems');
-//new exam controller
+
+/* =============================
+        Exams (intrinsic properties)
+   ============================= */
 Route::get('dev/exams', 'Item\ExamResourceController@index');
 Route::put('dev/exam/{exam}', 'Item\ExamResourceController@update');
 Route::get('dev/exam/{exam}', 'Item\ExamResourceController@show');
 
-//new student controller for intrinsic props of student objects
-Route::resource('dev/students', 'Item\StudentResourceController');
 
-//associations between student and exam
-Route::post('dev/roster/{student}/assoc/{kumi}', 'Item\RosterController@associateStudent');
-Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassociateStudent');
+/* =============================
+        Items
+   ============================= */
+Route::resource('items', 'Item\ItemController');
+Route::post('comments/{item}', 'Item\CommentController@store');
+Route::get('items/exam/{exam}', 'Grading\NewGradingController@getItems');
+//order of the items on the exam
+Route::post('dev/setup/{exam}/order', 'Item\AssignmentController@store');
 
-//Grade assignments
+//Route::put('items/{item}', 'ItemController@update');
+//Route::patch('items/{exam}', 'ItemController@updateAll');
+ //,
+//Route::put('editexam/{exam}', 'Item\ItemController@examUpdate');
+
+
+
+/* =============================
+        Grade assignments
+   ============================= */
 //retrieve assignments for a particular exam
 Route::get('dev/grade-assignment/exam/{exam}', 'Grade\GradeAssignmentController@show');
 // update grade assignments
@@ -230,6 +237,13 @@ Route::resource('dev/preferences/user', 'Preferences\UserPreferencesController' 
 Route::resource('dev/preferences/setup', 'Preferences\setupPreferencesController' );
 Route::resource('dev/preferences/grade', 'Preferences\gradePreferencesController' );
 
+
+/* =============================
+        Quality control
+   ============================= */
+Route::get('quality/exam/{exam}', 'Quality\QualityControlController@show');
+
+
 /* =============================
         Scores and comments
    ============================= */
@@ -243,7 +257,6 @@ Route::delete('dev/scores/{exam}/{item}/{student}/comment', 'Item\ItemScoreContr
 Route::delete('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@resetScore');
 
 
-Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreController@getTotalScoresForExam');
 
 /* =============================
         Stats
@@ -252,6 +265,8 @@ Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreContro
 //lists of anonymized scores
 Route::get('dev/stats/item/{item}', 'Item\ItemStatsController@itemScores');
 Route::get('dev/stats/exam/{exam}', 'Item\ItemStatsController@examScores');
+//total scores
+Route::get('dev/analytics/total-scores/exam/{exam}', 'Analytics\TotalScoreController@getTotalScoresForExam');
 //summary stats
 Route::get('dev/stats/summary/item/{item}', 'Item\ItemStatsController@itemSummary');
 Route::get('dev/stats/summary/exam/{exam}', 'Analytics\TotalScoreStatsController@show');
@@ -261,13 +276,14 @@ Route::get('dev/stats/summary/kumi/item/{item}', 'Item\ItemStatsController@itemS
 Route::get('dev/numgraded/exam/{exam}', 'Analytics\ExamCountsController@getExamCounts');
 
 /* =============================
-        Quality control
-   ============================= */
-Route::get('quality/exam/{exam}', 'Quality\QualityControlController@show');
-
-/* =============================
         Students
    ============================= */
+//controller for intrinsic props of student objects
+Route::resource('dev/students', 'Item\StudentResourceController');
+//associations between student and exam
+Route::post('dev/roster/{student}/assoc/{kumi}', 'Item\RosterController@associateStudent');
+Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassociateStudent');
+
 Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
 Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
 
@@ -289,9 +305,6 @@ Route::delete('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@disas
 Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
 //-- other
 Route::resource('dev/tags', 'Item\TagsController');
-
-// ====================================== NEW GRADING
-Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
 
 /* =============================
         Time

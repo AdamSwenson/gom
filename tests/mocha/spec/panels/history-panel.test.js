@@ -23,7 +23,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/history-panel.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/setup/history-panel.vue" );
 
 
 describe( "history-panel  ", () => {

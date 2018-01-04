@@ -68,7 +68,7 @@ import itemScores from './modules/scores/itemscores';
 import quality from './modules/quality/quality';
 import stats from './modules/scores/itemScoresForStats';
 
-import itemStats from './modules/feedback/itemStats';
+import itemStats from './modules/analytics/itemStats';
 
 //grade assignments
 import gradeAssignments from './modules/grades/gradeAssignments';

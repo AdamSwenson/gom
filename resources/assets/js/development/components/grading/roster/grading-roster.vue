@@ -7,75 +7,82 @@
         </div>
 
         <div class="panel-heading">
-            <div class="level">
-                <div class="level-left">
+            <active-student-area></active-student-area>
 
-                    <div class="level-item">
-                        <student-name-visibility></student-name-visibility>
-                    </div>
-                </div>
-                <div class="level-right">
-
-                    <div class="level-item">
-                        <active-student-area></active-student-area>
-                    </div>
-
-                </div>
-            </div>
         </div>
+
         <div class="panel-block">
             <student-search-bar></student-search-bar>
         </div>
 
         <p class="panel-tabs ">
 
-            <a class="isActiveClass('name')"
-               id="nameHeader"
+            <a id="nameHeader"
                title="Sort by name"
                v-on:click="sortRosterBy('lastName')"
+               v-bind:class="sortField == 'lastName' ? 'is-active' : ''"
                v-if="studentNamesVisible"
             >Name</a>
 
-            <a class="isActiveClass('identifier')"
-               id="idHeader"
+            <a id="idHeader"
+               v-bind:class="sortField == 'studentIdentifier' ? 'is-active' : ''"
                v-on:click="sortRosterBy('studentIdentifier')"
                title="Sort by ID"
-            >ID
-            </a>
+            >ID</a>
 
             <a class="isActiveClass('grade')"
                id="gradeHeader"
                title="Sort by grade"
+               v-bind:class="sortField == 'grade' ? 'is-active' : ''"
                v-on:click="sortRosterBy('grade')"
-            >Grade
-            </a>
+            >Grade</a>
 
             <a id="sortHeader"
                title="Reverse sort direction "
                v-on:click="toggleSortDirection"
             >
-                <span class="icon">
-                    <i v-if="sortAsc" class="fa sort-alpha-asc"></i>
-                    <i v-else class="fa sort-alpha-desc"></i> sort
-            </span>
-            </a>
+                <span class="panel-icon">
+                    <i v-if="sortAsc" class="fa fa-sort-alpha-asc"></i>
+                    <i v-else class="fa fa-sort-alpha-desc"></i>
+            </span></a>
         </p>
 
-        <a v-for="student in students"
-           v-bind:key="student.id"
-           class="panel-block student-row"
-           v-bind:class="rowStyling(student)"
-           v-on:click="handleRowSelection(student)"
-        >
-            <span class="panel-icon">
-                <i class="fa fa-user"></i>
-            </span>
-            <span class="student-name" v-if="studentNamesVisible">{{ student.nameLastFirst }}</span>
-            <span class="student-identifier ">{{ student.identifier }}</span>
-        </a>
+        <roster-row v-for="student in students"
+                    v-bind:key="student.id"
+                    :student="student"
+        ></roster-row>
+
+        <!--<a v-for="student in students"-->
+           <!--v-bind:key="student.id"-->
+           <!--class="panel-block student-row"-->
+           <!--v-bind:class="rowStyling(student)"-->
+           <!--v-on:click="handleRowSelection(student)"-->
+        <!--&gt;-->
+            <!--&lt;!&ndash;<span class="panel-icon">&ndash;&gt;-->
+            <!--&lt;!&ndash;<i class="fa fa-user"></i>&ndash;&gt;-->
+            <!--&lt;!&ndash;</span>&ndash;&gt;-->
+
+            <!--<div class="columns is-fullwidth">-->
+                <!--<div class="column is-half">-->
+            <!--<span class="student-name "-->
+                  <!--v-if="studentNamesVisible"> {{ student.nameLastFirst }}    </span>-->
+                <!--</div>-->
+                <!--<div class="column is-half">-->
+                     <!--<span-->
+                             <!--class="student-identifier "> {{ student.identifier }} </span>-->
+                <!--</div>-->
+            <!--</div>-->
+
+
+        <!--</a>-->
     </nav>
 
 </template>
+
+<style lang="scss">
+
+</style>
+
 <script>
 
 
@@ -91,9 +98,9 @@
     import ActiveStudentArea from './active-student-area.vue';
     import StudentNameVisibility from '../controls/student-name-visibility.vue';
     import FinishButton from "../inputs/finish-button.vue";
-
+import RosterRow from "./roster-row";
     module.exports = {
-        components: { ActiveStudentArea, FinishButton, StudentSearchBar, StudentNameVisibility },
+        components: { ActiveStudentArea, FinishButton, StudentSearchBar, StudentNameVisibility, RosterRow },
 
         props: [],
 
@@ -164,40 +171,40 @@
 
         methods: {
 
-            /**
-             * Returns boolean of whether a student is currently being graded
-             * @returns {boolean}
-             */
-            isActiveStudent: function ( student ) {
-                if ( this.activeStudent && this.activeStudent.id === student.id ) return true;
+            // /**
+            //  * Returns boolean of whether a student is currently being graded
+            //  * @returns {boolean}
+            //  */
+            // isActiveStudent: function ( student ) {
+            //     if ( this.activeStudent && this.activeStudent.id === student.id ) return true;
+            //
+            //     return false;
+            // },
+            //
+            // /**
+            //  * Tests whether the student has been graded.
+            //  */
+            // isGraded: function ( student ) {
+            //     return false;
+            // },
+            //
+            //
+            // handleRowSelection: function ( student ) {
+            //     this.$store.dispatch( ngaTypes.setStudentAsActive, student );
+            // },
 
-                return false;
-            },
-
-            /**
-             * Tests whether the student has been graded.
-             */
-            isGraded: function ( student ) {
-                return false;
-            },
-
-
-            handleRowSelection: function ( student ) {
-                this.$store.dispatch( ngaTypes.setStudentAsActive, student );
-            },
-
-            /**
-             * Gets the appropriate classes for the student
-             */
-            rowStyling: function ( student ) {
-                if ( this.isActiveStudent( student ) ) return this.rowStylings.activeStudent;
-
-                if ( this.isGraded( student ) ) return this.rowStylings.gradedStudent;
-
-                //  if(this.isUnaltered(student)) return this.rowStylings.isUnaltered;
-                return this.rowStylings.isUnaltered;
-
-            },
+            // /**
+            //  * Gets the appropriate classes for the student
+            //  */
+            // rowStyling: function ( student ) {
+            //     if ( this.isActiveStudent( student ) ) return this.rowStylings.activeStudent;
+            //
+            //     if ( this.isGraded( student ) ) return this.rowStylings.gradedStudent;
+            //
+            //     //  if(this.isUnaltered(student)) return this.rowStylings.isUnaltered;
+            //     return this.rowStylings.isUnaltered;
+            //
+            // },
 
             sortRosterBy: function ( field ) {
                 this.$store.commit( 'setSortedBy', Payload.factory( { updateVal: field, mutateSilently: true } ) );

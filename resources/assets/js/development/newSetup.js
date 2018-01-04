@@ -60,7 +60,7 @@ Vue.component( 'settings-button', settingsButton );
 import childrenDisplayButton from './components/input/children-display-control.vue'
 Vue.component( 'children-display-control', childrenDisplayButton )
 
-import valenceButton from './components/panels/comment/valence-buttons.vue'
+import valenceButton from './components/setup/comment/valence-buttons.vue'
 Vue.component( 'valence-button', valenceButton );
 
 import deleteButton from './components/input/item-delete-button.vue'
@@ -91,7 +91,7 @@ Vue.component( 'existing-items-menu', itemList )
 
 
 //Tags
-import tagDisplay from './components/panels/tag/tag-display.vue';
+import tagDisplay from './components/setup/tag/tag-display.vue';
 Vue.component( 'tag-display', tagDisplay );
 
 //Universal helpers

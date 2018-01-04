@@ -23,7 +23,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/exam-detail-panel.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/setup/exam-detail-panel.vue" );
 
 
 describe( " exam-detail-panel ", () => {

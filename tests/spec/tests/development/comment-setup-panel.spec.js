@@ -18,7 +18,7 @@ var Vue = require( 'vue' );
 
 import {mount} from 'vue-test-utils';
 //tested stuff
-var commentPanel = require( "../../../../resources/assets/js/development/components/panels/comment-setup-panel.vue" );
+var commentPanel = require( "../../../../resources/assets/js/development/components/setup/comment-setup-panel.vue" );
 
 
 

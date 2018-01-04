@@ -21,7 +21,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/stats-panel.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/setup/stats-panel.vue" );
 
 
 describe( "stats-panel for items  ", () => {

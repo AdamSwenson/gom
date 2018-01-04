@@ -28,7 +28,7 @@
         computed: {
 
             text: function () {
-                if(this.scoreObject)  return this.scoreObject.text;
+                return this.scoreObject ? this.scoreObject.text : '';
             },
 
         },

@@ -1,8 +1,9 @@
 <template>
     <div class="feedback-preview">
-        <a class="button is-info is-outlined"
+        <a class="button "
            aria-haspopup="true"
            aria-controls="dropdown-menu"
+           v-bind:class="styling"
            v-on:click="toggleModal"
         >Preview feedback </a>
 
@@ -30,6 +31,7 @@
 
         data: function () {
             return {
+                styling: ' is-info is-outlined ',
                 isVisible: false,
                 defaults: {}
             }

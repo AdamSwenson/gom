@@ -22,7 +22,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/stats/number-graded.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/setup/stats/number-graded.vue" );
 
 
 describe( "number-graded  ", () => {

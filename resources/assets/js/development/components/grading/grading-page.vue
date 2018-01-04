@@ -57,8 +57,12 @@
                             <div class="tile is-child">
                                 <!-- student table shows the student roster -->
                                 <grading-roster></grading-roster>
-                                <a class="button">Hide graded</a>
+
+                                <div class="buttons">
+                                <student-name-visibility></student-name-visibility>
+                                <hide-graded-rows></hide-graded-rows>
                                 <feedback-preview-button></feedback-preview-button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,6 +119,8 @@
     import * as ngaTypes from '../../../store/modules/newgrading/new-grading-action-types';
     import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
     import * as gTypes from '../../../store/getter-types';
+    import StudentNameVisibility from "./controls/student-name-visibility";
+    import HideGradedRows from "./controls/hide-graded-rows";
 
 
     export default {
@@ -122,6 +128,8 @@
         props: [],
 
         components: {
+            HideGradedRows,
+            StudentNameVisibility,
             FeedbackPreviewButton,
             BottomNavbar,
             ActiveStudentArea,
@@ -201,6 +209,11 @@
 
         created: function () {
             let me = this;
+
+            //this is loaded async. We call it first since we don't want the student names
+            //to display if they are supposed to be hidden. However, it's not that important
+            //so we're not letting it block the other requests until it loads...
+            this.$store.dispatch(ngaTypes.loadGradePreferencesFromServer);
 
             return new Promise( function ( resolve, reject ) {
                 //load the exam object and store it

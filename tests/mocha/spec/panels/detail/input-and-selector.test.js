@@ -24,7 +24,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/detail/input-and-selector.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/setup/detail/input-and-selector.vue" );
 
 
 describe( " input-and-selector  ", function () {

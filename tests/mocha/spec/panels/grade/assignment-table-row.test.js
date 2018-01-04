@@ -28,7 +28,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/grade/assignment-table-row.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/setup/grade/assignment-table-row.vue" );
 
 
 describe( "assignment-table-row  ", function () {

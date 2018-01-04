@@ -18,7 +18,7 @@ var Vue = require( 'vue' );
 Vue.config.debug = true;
 
 //tested stuff
-var testedComponent = require( "../../../../../../../resources/assets/js/development/components/panels/student/student-table.vue" );
+var testedComponent = require( "../../../../../../../resources/assets/js/development/components/setup/student/student-table.vue" );
 var fixture = 'generic.fixture.html';
 
 

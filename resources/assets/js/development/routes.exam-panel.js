@@ -1,14 +1,14 @@
 import Vue from 'vue'
 
-import panelComments from './components/panels/comment-setup-panel.vue'
+import panelComments from './components/setup/comment-setup-panel.vue'
 // import panelExamStats from './components/panels/exam-stats-panel.vue';
-import panelExamDetail from './components/panels/exam-detail-panel.vue'
-import panelGrades from './components/panels/grades-panel.vue'
+import panelExamDetail from './components/setup/exam-detail-panel.vue'
+import panelGrades from './components/setup/grades-panel.vue'
 // import panelStats from './components/panels/stats-panel.vue';
-import panelStudents from './components/panels/students-panel.vue'
-import panelQuality from './components/panels/quality-control-panel.vue';
+import panelStudents from './components/setup/students-panel.vue'
+import panelQuality from './components/setup/quality-control-panel.vue';
 
-import panelNotes from './components/panels/notes-panel.vue';
+import panelNotes from './components/setup/notes-panel.vue';
 
 Vue.component( 'panel-exam-detail', panelExamDetail);
 Vue.component( 'panel-comments', panelComments );

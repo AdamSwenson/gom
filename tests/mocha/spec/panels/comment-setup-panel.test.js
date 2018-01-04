@@ -16,7 +16,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../resources/assets/js/development/components/panels/comment-setup-panel.vue" );
+var Component = require( "../../../../resources/assets/js/development/components/setup/comment-setup-panel.vue" );
 
 
 describe( "comment-setup-panel  ", () => {

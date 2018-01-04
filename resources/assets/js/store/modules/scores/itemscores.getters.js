@@ -80,6 +80,22 @@ module.exports = {
                 total += _.isNumber( scoreObj.score ) ? scoreObj.score : 0;
             } );
             return total;
+    },
+
+    /**
+     * Returns a list of ids of students who have been graded
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {number}
+     */
+    [ nggTypes.getGradedStudentIds] : ( state, getters, rootState) => {
+        let graded = [];
+        _.forEach(state.scores, function ( scoreObj ) {
+            if(! _.isUndefined(scoreObj.score) && scoreObj.score >= 0 ) graded.push(scoreObj.studentId);
+        })
+        return _.uniq(graded);
+
     }
 };
 

@@ -24,7 +24,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/grade/cutoff-field.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/setup/grade/cutoff-field.vue" );
 
 
 describe( "cutoff-field  ", function () {

@@ -112,7 +112,7 @@
     import KumiSelector from './kumi/kumi-selector.vue';
     import KumiTabs from './kumi/kumi-tabs.vue';
 
-    import StudentTable from '../panels/student/student-table.vue';
+    import StudentTable from './/student/student-table.vue';
     import StudentActionButtons from './student/student-action-buttons.vue';
     //File importing stuff
     import FileImporter from '../../../store/modules/roster/studentFileImporter';

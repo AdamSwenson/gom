@@ -139,6 +139,7 @@ export const getSortedIds = 'getSortedIds'
 /* ================================================================
    ================== PREFERENCES -- GRADE    =====================
    ================================================================ */
+export const areGradedStudentRowsVisible = 'areGradedStudentRowsVisible';
 export const areStudentNamesVisible = 'areStudentNamesVisible';
 export const isLetterGradeButtonUsed = 'isLetterGradeButtonUsed';
 export const isSliderUsed = 'isSliderUsed';
@@ -164,6 +165,7 @@ export const getUserPreference = 'getUserPreference';
    ================================================================ */
 export const getItemScoreObject =  'getItemScoreObject';
 export const getTotalScoreForStudent = 'getTotalScoreForStudent';
+export const getGradedStudentIds = 'getGradedStudentIds';
 
 /* ================================================================
    ================== TIMES        =====================

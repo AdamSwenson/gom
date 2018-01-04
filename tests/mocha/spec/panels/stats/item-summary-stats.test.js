@@ -18,7 +18,7 @@ localVue.use( Vuex )
 
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/panels/stats/item-summary-stats.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/setup/stats/item-summary-stats.vue" );
 
 
 describe( "item-summary-stats  ", () => {
