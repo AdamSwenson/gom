@@ -63,7 +63,7 @@ export const factories = {
         let s = new Student( faker.random.number() );
         s.email = faker.internet.email();
         s.studentIndex = index ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-        s.studentIdentifier = faker.random.uuid();
+        s.studentIdentifier = faker.random.number();
         s.lastName = faker.name.lastName();
         s.firstName = faker.name.firstName();
         return s;

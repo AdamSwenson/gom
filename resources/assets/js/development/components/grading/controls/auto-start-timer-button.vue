@@ -2,11 +2,11 @@
 
     <a class="button "
        v-bind:id="buttonId"
-       title="Control whether the grading timer automatically starts"
+       v-bind:title="title"
        v-bind:class="styling"
        v-on:click="toggle"
     >
-        <span class="sr-only">{{ srText.button }}</span>
+        <span class="sr-only">{{ srTextDisplay }}</span>
 
         <span class="icon is-small">
               <i v-bind:class="icon" aria-hidden="true"></i>
@@ -31,22 +31,17 @@
     export default {
         mixins: [ gradingControlMixin ],
 
-        props: [],
-
-        components: {},
-
         data: function () {
             return {
                 buttonId: 'autoStartTimerControl',
 
-                preferenceName: 'autoStartTimer',
+                preferenceName: 'shouldTimerAutomaticallyStart',
                 updateMutationName: ngmTypes.updateGradingPreference,
-                toggleMutationName: ngmTypes.toggleGradedStudentRowVisibility,
-                toggleStateGetterName: nggTypes.areGradedStudentRowsVisible,
+                toggleStateGetterName: nggTypes.shouldTimerAutomaticallyStart,
 
-                styling: ' is-info is-outlined ',
+                styling: ' is-primary is-outlined ',
                 icons: {
-                    off: 'fa pause-circle-o',
+                    off: 'fa fa-pause-circle-o',
                     on: 'fa fa-tachometer'
                 },
 
@@ -59,6 +54,8 @@
                     on: 'Click to make the timer automatically start ',
                     off: 'Click to prevent the timer from automatically starting ',
                 },
+
+                title: 'Control whether the grading timer automatically starts',
 
                 defaults: {}
             }

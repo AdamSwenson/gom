@@ -46,8 +46,9 @@
                             <div class="tile is-child">
                                 <!-- graded / remaining counters -->
                                <div class="has-text-centered">
-                                <dashboard-counts></dashboard-counts>
+                                    <dashboard-counts></dashboard-counts>
                                </div>
+
                                 <dashboard-timer></dashboard-timer>
 
                                 <!-- save & finish button -->
@@ -62,6 +63,7 @@
                                 <div class="buttons">
                                     <student-name-visibility></student-name-visibility>
                                     <hide-graded-rows></hide-graded-rows>
+                                    <auto-start-timer-button></auto-start-timer-button>
                                     <feedback-preview-button></feedback-preview-button>
                                 </div>
 
@@ -126,6 +128,7 @@
     import HideGradedRows from "./controls/hide-graded-rows";
     import FinishButton from "./inputs/finish-button";
     import StudentSearchBar from "./roster/student-search-bar";
+    import AutoStartTimerButton from "./controls/auto-start-timer-button";
 
 
     export default {
@@ -133,6 +136,7 @@
         props: [],
 
         components: {
+            AutoStartTimerButton,
             StudentSearchBar,
             FinishButton,
             HideGradedRows,

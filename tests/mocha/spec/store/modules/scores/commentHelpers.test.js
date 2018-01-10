@@ -23,7 +23,7 @@ import {
 } from '../../../../../../resources/assets/js/store/modules/scores/commentHelpers';
 
 
-describe.only( "commentHelpers | ", function () {
+describe( "commentHelpers | ", function () {
     let sliderScore;
 
 

@@ -12,7 +12,7 @@ import { itemscores } from "../../../../helpers/state-factories";
 let { makePopulatedState, makeState } = itemscores;
 
 
-describe.only( "itemscores | getters ", function () {
+describe( "itemscores | getters ", function () {
     let state;
     let testExam;
     let testItem;

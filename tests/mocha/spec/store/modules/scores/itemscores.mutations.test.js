@@ -29,7 +29,7 @@ let { makePopulatedState, makeState } = itemscores;
 
 //tested methods
 
-describe.only( "itemscores | mutations  ", function () {
+describe( "itemscores | mutations  ", function () {
     let state;
     let testExam;
     let testItem;

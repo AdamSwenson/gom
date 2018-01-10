@@ -1,7 +1,7 @@
 <template>
 
     <p class="control has-icons-left search-bar-area">
-
+µ
         <input
                 type="text"
                 class="input is-small typeahead"
@@ -37,18 +37,14 @@
 </style>
 
 <script>
-    var jQuery = require( 'jquery' );
-    // window.$ = $;
-    // var jQuery = $;
-    // window.jQuery = jQuery;
 
     import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
     import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
 
-    //this depends on jquery
+    //Import typeahead which depends on jquery
+    var jQuery = require( 'jquery' );
     require( '../../../../libraries/typeahead-0.11.1.js' );
-
 
     export default {
 
@@ -101,16 +97,6 @@
             },
 
 
-            // activeStudent: {
-            //     get: function () {
-            //         return this.$store.getters[ nggTypes.getActiveStudent ];
-            //     },
-            //     set: function ( student ) {
-            //         this.$store.dispatch( ngaTypes.setStudentAsActive, student );
-            //     }
-            // },
-
-
             /** Student identifier data for the ID search box (typeahead) */
             studentIdents: function () {
                 let n = [];
@@ -133,11 +119,6 @@
                 return n;
             },
 
-            /** Total number of students */
-            numStudents: function () {
-                return !_.isUndefined( this.students ) ? this.students.length : null;
-            },
-
         },
 
         methods: {
@@ -150,7 +131,7 @@
              * dispatch the relevant actions.
              * WARNING: THIS WILL LIKELY BREAK IF A STUDENT HAS AN IDENTIFIER OF 0
              */
-            handleSearch: function ( query ) {
+            handleSearchResult: function ( query ) {
                 //The query returned by typeahead will always
                 //be a string. Thus to test whether we have a student id
                 //or student name, we start by casting it to an integer.
@@ -160,11 +141,11 @@
                     //The _.toInteger method will return 0 if a name was
                     //given to it. Thus we know that the suggestion was a name.
                     //WARNING: THIS WILL LIKELY BREAK IF A STUDENT HAS AN IDENTIFIER OF 0
-                    this.handleStudentNameSearch( query );
+                    this.handleStudentNameSearchResult( query );
                 }
                 else {
                     //If q is not 0, it is an identifier.
-                    this.handleStudentIdentifierSearch( q );
+                    this.handleStudentIdentifierSearchResult( q );
                 }
             },
 
@@ -173,14 +154,11 @@
              * the corresponding student. Then passes the student to the appropriate
              * handler to be set as the active student.
              */
-            handleStudentNameSearch: function ( nameSearched ) {
-                window.console.log( 'student-search-bar', 'handleStudentNameSearch', 142, _.toInteger( nameSearched ) );
-
-                var nameToFind = nameSearched.replace( /\s+/g, ' ' );
+            handleStudentNameSearchResult: function ( result ) {
+                var nameToFind = result.replace( /\s+/g, ' ' );
                 var i = this.studentNames.indexOf( nameToFind );
-                window.console.log( 'handlingNameSearch', nameToFind, i );
-                if ( i >= 0 ) {
-                    // window.console.log( $( '#studentListItem' + i ) );
+
+                 if ( i >= 0 ) {
                     this.handleStudentSelection( this.students[ i ] );
                 }
                 return false;
@@ -206,8 +184,8 @@
              * the corresponding student. Then passes the student to the appropriate
              * handler to be set as the active student.
              */
-            handleStudentIdentifierSearch: function ( idToFind ) {
-                var i = this.studentIdents.indexOf( idToFind );
+            handleStudentIdentifierSearchResult: function (result ) {
+                var i = this.studentIdents.indexOf( result );
                 if ( i >= 0 ) {
                     this.handleStudentSelection( this.students[ i ] );
                 }
@@ -264,7 +242,7 @@
                     .typeahead( me.options, dataset )
                     .bind( 'typeahead:select', function ( ev, suggestion ) {
                         // console.log( 'Selection: ' + suggestion );
-                        me.handleSearch( suggestion );
+                        me.handleSearchResult( suggestion );
                     } );
             } );
         },

@@ -17,7 +17,7 @@ let obj = Component.default;
 let { getters } = obj;
 
 
-describe.only( "grading-counts-new  | ", function () {
+describe( "grading-counts-new  | ", function () {
 
     let getterStub;
     let getterStub2;

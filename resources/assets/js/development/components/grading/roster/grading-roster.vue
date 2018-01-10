@@ -70,7 +70,8 @@
     import ActiveStudentArea from './active-student-area.vue';
     import StudentNameVisibility from '../controls/student-name-visibility.vue';
     import FinishButton from "../inputs/finish-button.vue";
-    import RosterRow from "./roster-row";
+
+    import RosterRow from "./roster-row.vue";
 
     module.exports = {
         components: { ActiveStudentArea, FinishButton, StudentSearchBar, StudentNameVisibility, RosterRow },

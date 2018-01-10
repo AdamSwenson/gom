@@ -100439,6 +100439,10 @@ module.exports = {
 
         isActive: function isActive() {
             return this.$store.getters[this.toggleStateGetterName];
+        },
+
+        srTextDisplay: function srTextDisplay() {
+            return this.isActive ? this.srText.on : this.srText.off;
         }
 
     },
@@ -101778,10 +101782,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 exports.default = {
     mixins: [_gradingControl2.default],
 
-    props: [],
-
-    components: {},
-
     data: function data() {
         return {
             buttonId: 'gradedRowVisibilityControl',
@@ -101792,12 +101792,10 @@ exports.default = {
             toggleStateGetterName: nggTypes.areGradedStudentRowsVisible,
 
             styling: ' is-primary is-outlined ',
+
             icons: {
                 off: 'fa fa-eye',
                 on: 'fa fa-eye-slash'
-
-                // on: 'fa fa-user',
-                //     off: 'fa fa-user-secret'
             },
 
             text: {
@@ -101806,8 +101804,12 @@ exports.default = {
             },
 
             srText: {
-                button: 'Click to hide student names and grade blind'
+                on: 'Click to view all students ',
+                off: 'Click to hide rows of students who have been graded  '
             },
+
+            title: "Click to hide or show rows for students whose exams have been graded",
+
             defaults: {}
         };
     }
@@ -101872,12 +101874,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 exports.default = {
     mixins: [_gradingControl2.default],
 
-    props: [],
-
-    components: {},
-
     data: function data() {
         return {
+            buttonId: "nameVisibilityControl",
             preferenceName: 'areStudentNamesVisible',
             updateMutationName: ngmTypes.updateGradingPreference,
             // toggleMutationName: ngmTypes.toggleStudentNameVisibility,
@@ -101893,10 +101892,13 @@ exports.default = {
                 on: "Hide names",
                 off: "Show names"
             },
-
             srText: {
-                button: 'Click to hide student names and grade blind'
+                on: 'Click to hide student names and grade blind',
+                off: 'Click to view student names while grading '
             },
+
+            title: "Click to hide or show student names",
+
             defaults: {}
         };
     }
@@ -102390,116 +102392,23 @@ var _studentSearchBar = __webpack_require__(946);
 
 var _studentSearchBar2 = _interopRequireDefault(_studentSearchBar);
 
+var _autoStartTimerButton = __webpack_require__(1194);
+
+var _autoStartTimerButton2 = _interopRequireDefault(_autoStartTimerButton);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+//buttons
 
-
+//navs
 exports.default = {
 
     props: [],
 
     components: {
+        AutoStartTimerButton: _autoStartTimerButton2.default,
         StudentSearchBar: _studentSearchBar2.default,
         FinishButton: _finishButton2.default,
         HideGradedRows: _hideGradedRows2.default,
@@ -102609,10 +102518,107 @@ exports.default = {
             });
         });
     }
-};
-//buttons
-
-//navs
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 /* 970 */
@@ -103255,7 +103261,8 @@ var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-//
+//Import typeahead which depends on jquery
+var jQuery = __webpack_require__(91); //
 //
 //
 //
@@ -103294,12 +103301,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 
-var jQuery = __webpack_require__(91);
-// window.$ = $;
-// var jQuery = $;
-// window.jQuery = jQuery;
 
-//this depends on jquery
 __webpack_require__(1000);
 
 exports.default = {
@@ -103351,16 +103353,6 @@ exports.default = {
             return !_.isUndefined(s) ? s : [];
         },
 
-        // activeStudent: {
-        //     get: function () {
-        //         return this.$store.getters[ nggTypes.getActiveStudent ];
-        //     },
-        //     set: function ( student ) {
-        //         this.$store.dispatch( ngaTypes.setStudentAsActive, student );
-        //     }
-        // },
-
-
         /** Student identifier data for the ID search box (typeahead) */
         studentIdents: function studentIdents() {
             var n = [];
@@ -103381,11 +103373,6 @@ exports.default = {
                 n.push(student.nameFirstLast);
             });
             return n;
-        },
-
-        /** Total number of students */
-        numStudents: function numStudents() {
-            return !_.isUndefined(this.students) ? this.students.length : null;
         }
 
     },
@@ -103400,7 +103387,7 @@ exports.default = {
          * dispatch the relevant actions.
          * WARNING: THIS WILL LIKELY BREAK IF A STUDENT HAS AN IDENTIFIER OF 0
          */
-        handleSearch: function handleSearch(query) {
+        handleSearchResult: function handleSearchResult(query) {
             //The query returned by typeahead will always
             //be a string. Thus to test whether we have a student id
             //or student name, we start by casting it to an integer.
@@ -103410,10 +103397,10 @@ exports.default = {
                 //The _.toInteger method will return 0 if a name was
                 //given to it. Thus we know that the suggestion was a name.
                 //WARNING: THIS WILL LIKELY BREAK IF A STUDENT HAS AN IDENTIFIER OF 0
-                this.handleStudentNameSearch(query);
+                this.handleStudentNameSearchResult(query);
             } else {
                 //If q is not 0, it is an identifier.
-                this.handleStudentIdentifierSearch(q);
+                this.handleStudentIdentifierSearchResult(q);
             }
         },
 
@@ -103422,14 +103409,11 @@ exports.default = {
          * the corresponding student. Then passes the student to the appropriate
          * handler to be set as the active student.
          */
-        handleStudentNameSearch: function handleStudentNameSearch(nameSearched) {
-            window.console.log('student-search-bar', 'handleStudentNameSearch', 142, _.toInteger(nameSearched));
-
-            var nameToFind = nameSearched.replace(/\s+/g, ' ');
+        handleStudentNameSearchResult: function handleStudentNameSearchResult(result) {
+            var nameToFind = result.replace(/\s+/g, ' ');
             var i = this.studentNames.indexOf(nameToFind);
-            window.console.log('handlingNameSearch', nameToFind, i);
+
             if (i >= 0) {
-                // window.console.log( $( '#studentListItem' + i ) );
                 this.handleStudentSelection(this.students[i]);
             }
             return false;
@@ -103455,8 +103439,8 @@ exports.default = {
          * the corresponding student. Then passes the student to the appropriate
          * handler to be set as the active student.
          */
-        handleStudentIdentifierSearch: function handleStudentIdentifierSearch(idToFind) {
-            var i = this.studentIdents.indexOf(idToFind);
+        handleStudentIdentifierSearchResult: function handleStudentIdentifierSearchResult(result) {
+            var i = this.studentIdents.indexOf(result);
             if (i >= 0) {
                 this.handleStudentSelection(this.students[i]);
             }
@@ -103510,7 +103494,7 @@ exports.default = {
             //Initialize and bind the typeahead to the input box
             jQuery('#' + me.boxId).typeahead(me.options, dataset).bind('typeahead:select', function (ev, suggestion) {
                 // console.log( 'Selection: ' + suggestion );
-                me.handleSearch(suggestion);
+                me.handleSearchResult(suggestion);
             });
         });
     }
@@ -106206,7 +106190,7 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('p', {
     staticClass: "control has-icons-left search-bar-area"
-  }, [_c('input', {
+  }, [_vm._v("\nµ\n        "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -106567,14 +106551,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     class: _vm.styling,
     attrs: {
       "id": _vm.buttonId,
-      "title": "Click to hide or show rows for students whose exams have been graded"
+      "title": _vm.title
     },
     on: {
       "click": _vm.toggle
     }
   }, [_c('span', {
     staticClass: "sr-only"
-  }, [_vm._v(_vm._s(_vm.srText.button))]), _vm._v(" "), _c('span', {
+  }, [_vm._v(_vm._s(_vm.srTextDisplay))]), _vm._v(" "), _c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     class: _vm.icon,
@@ -106602,15 +106586,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "button ",
     class: _vm.styling,
     attrs: {
-      "id": "nameVisibilityControl",
-      "title": "Click to hide or show student names"
+      "id": _vm.buttonId,
+      "title": _vm.title
     },
     on: {
       "click": _vm.toggle
     }
   }, [_c('span', {
     staticClass: "sr-only"
-  }, [_vm._v(_vm._s(_vm.srText.button))]), _vm._v(" "), _c('span', {
+  }, [_vm._v(_vm._s(_vm.srTextDisplay))]), _vm._v(" "), _c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
     class: _vm.icon,
@@ -106774,7 +106758,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "tile is-child"
   }, [_c('grading-roster'), _vm._v(" "), _c('div', {
     staticClass: "buttons"
-  }, [_c('student-name-visibility'), _vm._v(" "), _c('hide-graded-rows'), _vm._v(" "), _c('feedback-preview-button')], 1)], 1)])])])])], 1), _vm._v(" "), _c('bottom-navbar')], 1)
+  }, [_c('student-name-visibility'), _vm._v(" "), _c('hide-graded-rows'), _vm._v(" "), _c('auto-start-timer-button'), _vm._v(" "), _c('feedback-preview-button')], 1)], 1)])])])])], 1), _vm._v(" "), _c('bottom-navbar')], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -107317,6 +107301,216 @@ if(false) {
 __webpack_require__(213);
 module.exports = __webpack_require__(949);
 
+
+/***/ }),
+/* 1191 */,
+/* 1192 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _newGradingMutationTypes = __webpack_require__(13);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(18);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(10);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _gradingControl = __webpack_require__(939);
+
+var _gradingControl2 = _interopRequireDefault(_gradingControl);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+exports.default = {
+    mixins: [_gradingControl2.default],
+
+    data: function data() {
+        return {
+            buttonId: 'autoStartTimerControl',
+
+            preferenceName: 'shouldTimerAutomaticallyStart',
+            updateMutationName: ngmTypes.updateGradingPreference,
+            toggleStateGetterName: nggTypes.shouldTimerAutomaticallyStart,
+
+            styling: ' is-primary is-outlined ',
+            icons: {
+                off: 'fa fa-pause-circle-o',
+                on: 'fa fa-tachometer'
+            },
+
+            text: {
+                off: "Automatically start timer",
+                on: "Manually start timer"
+            },
+
+            srText: {
+                on: 'Click to make the timer automatically start ',
+                off: 'Click to prevent the timer from automatically starting '
+            },
+
+            title: 'Control whether the grading timer automatically starts',
+
+            defaults: {}
+        };
+    }
+
+};
+
+/***/ }),
+/* 1193 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(3)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1194 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1196)
+}
+var Component = __webpack_require__(2)(
+  /* script */
+  __webpack_require__(1192),
+  /* template */
+  __webpack_require__(1195),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/grading/controls/auto-start-timer-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] auto-start-timer-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-15fbc053", Component.options)
+  } else {
+    hotAPI.reload("data-v-15fbc053", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1195 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button ",
+    class: _vm.styling,
+    attrs: {
+      "id": _vm.buttonId,
+      "title": _vm.title
+    },
+    on: {
+      "click": _vm.toggle
+    }
+  }, [_c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v(_vm._s(_vm.srTextDisplay))]), _vm._v(" "), _c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    class: _vm.icon,
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })]), _vm._v(" "), _c('span', {
+    staticClass: "button-text"
+  }, [_vm._v(" " + _vm._s(_vm.buttonText))])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-15fbc053", module.exports)
+  }
+}
+
+/***/ }),
+/* 1196 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1193);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(4)("31e77cb6", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-15fbc053\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./auto-start-timer-button.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-15fbc053\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./auto-start-timer-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

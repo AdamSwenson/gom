@@ -22,7 +22,7 @@ let obj = Component.default;
 let { getters, actions, mutations } = obj;
 
 
-describe.only( "grading-times-new  | ", function () {
+describe( "grading-times-new  | ", function () {
     let getterStub;
     let getterStub2;
     beforeEach( function () {

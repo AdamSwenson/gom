@@ -17,6 +17,10 @@ module.exports ={
             return this.$store.getters[ this.toggleStateGetterName ];
         },
 
+        srTextDisplay: function (  ) {
+            return this.isActive ? this.srText.on : this.srText.off;
+        }
+
     },
 
     methods: {

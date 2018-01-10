@@ -1,12 +1,12 @@
 <template>
 
     <a class="button "
-       id="nameVisibilityControl"
-       title="Click to hide or show student names"
+       v-bind:id="buttonId"
+       v-bind:title="title"
        v-bind:class="styling"
        v-on:click="toggle"
     >
-        <span class="sr-only">{{ srText.button }}</span>
+        <span class="sr-only">{{ srTextDisplay }}</span>
 
         <span class="icon is-small">
               <i v-bind:class="icon" aria-hidden="true"></i>
@@ -33,12 +33,9 @@
     export default {
         mixins: [ gradingControlMixin ],
 
-        props: [],
-
-        components: {},
-
         data: function () {
             return {
+                buttonId : "nameVisibilityControl",
                 preferenceName : 'areStudentNamesVisible',
                 updateMutationName : ngmTypes.updateGradingPreference,
                 // toggleMutationName: ngmTypes.toggleStudentNameVisibility,
@@ -54,10 +51,13 @@
                     on: "Hide names",
                     off: "Show names",
                 },
-
                 srText: {
-                    button: 'Click to hide student names and grade blind',
+                    on: 'Click to hide student names and grade blind',
+                    off: 'Click to view student names while grading '
                 },
+
+                title : "Click to hide or show student names",
+
                 defaults: {}
             }
         },
