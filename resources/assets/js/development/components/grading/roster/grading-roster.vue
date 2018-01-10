@@ -1,14 +1,9 @@
 <template xmlns="http://www.w3.org/1999/html">
     <nav id="grading-roster"
          class="panel">
-        <div class="panel-block">
-            <!-- save & finish button -->
-            <finish-button></finish-button>
-        </div>
 
         <div class="panel-heading">
             <active-student-area></active-student-area>
-
         </div>
 
         <div class="panel-block">
@@ -52,29 +47,6 @@
                     :student="student"
         ></roster-row>
 
-        <!--<a v-for="student in students"-->
-           <!--v-bind:key="student.id"-->
-           <!--class="panel-block student-row"-->
-           <!--v-bind:class="rowStyling(student)"-->
-           <!--v-on:click="handleRowSelection(student)"-->
-        <!--&gt;-->
-            <!--&lt;!&ndash;<span class="panel-icon">&ndash;&gt;-->
-            <!--&lt;!&ndash;<i class="fa fa-user"></i>&ndash;&gt;-->
-            <!--&lt;!&ndash;</span>&ndash;&gt;-->
-
-            <!--<div class="columns is-fullwidth">-->
-                <!--<div class="column is-half">-->
-            <!--<span class="student-name "-->
-                  <!--v-if="studentNamesVisible"> {{ student.nameLastFirst }}    </span>-->
-                <!--</div>-->
-                <!--<div class="column is-half">-->
-                     <!--<span-->
-                             <!--class="student-identifier "> {{ student.identifier }} </span>-->
-                <!--</div>-->
-            <!--</div>-->
-
-
-        <!--</a>-->
     </nav>
 
 </template>
@@ -124,11 +96,6 @@ import RosterRow from "./roster-row";
                     initialTextColor: 'black',
                 },
 
-                rowStylings: {
-                    activeStudent: 'is-active',
-                    gradedStudent: 'gradedStudentRow',
-                    unalteredStudent: 'unalteredStudentRow'
-                }
             };
         },
         asyncComputed: {
@@ -170,41 +137,6 @@ import RosterRow from "./roster-row";
         },
 
         methods: {
-
-            // /**
-            //  * Returns boolean of whether a student is currently being graded
-            //  * @returns {boolean}
-            //  */
-            // isActiveStudent: function ( student ) {
-            //     if ( this.activeStudent && this.activeStudent.id === student.id ) return true;
-            //
-            //     return false;
-            // },
-            //
-            // /**
-            //  * Tests whether the student has been graded.
-            //  */
-            // isGraded: function ( student ) {
-            //     return false;
-            // },
-            //
-            //
-            // handleRowSelection: function ( student ) {
-            //     this.$store.dispatch( ngaTypes.setStudentAsActive, student );
-            // },
-
-            // /**
-            //  * Gets the appropriate classes for the student
-            //  */
-            // rowStyling: function ( student ) {
-            //     if ( this.isActiveStudent( student ) ) return this.rowStylings.activeStudent;
-            //
-            //     if ( this.isGraded( student ) ) return this.rowStylings.gradedStudent;
-            //
-            //     //  if(this.isUnaltered(student)) return this.rowStylings.isUnaltered;
-            //     return this.rowStylings.isUnaltered;
-            //
-            // },
 
             sortRosterBy: function ( field ) {
                 this.$store.commit( 'setSortedBy', Payload.factory( { updateVal: field, mutateSilently: true } ) );

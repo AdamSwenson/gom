@@ -8,7 +8,6 @@
             <i v-if="! isGraded" class="fa fa-user"></i>
             <i v-if="isGraded" class="fa fa-check-circle"></i>
         </span> {{ studentName }}
-
     </a>
 </template>
 

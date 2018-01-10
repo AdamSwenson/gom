@@ -2,7 +2,6 @@
     <div id="grade-main-page"
          class=" mainBodyLocator"
     >
-
         <div class="grade-main-body container box">
             <top-navbar
                     :exam="exam"
@@ -39,18 +38,18 @@
 
                     <!-- Right column holds Roster and Time info -->
                     <div id="rosterAndDashboardColumn"
-                         class="tile is-child rosterAndDashboardColumn box">
-
+                         class="tile is-child rosterAndDashboardColumn box"
+                    >
 
                         <div class="roster-column tile is-parent is-vertical">
-                            <div class="tile is-child">
-                            <span class="icon" aria-hidden="true">
-                        <!--<i class="fa fa-tachometer"></i> <span>Statistics</span>-->
-                    </span>
 
+                            <div class="tile is-child">
                                 <!-- graded / remaining counters -->
                                 <dashboard-counts></dashboard-counts>
                                 <dashboard-timer></dashboard-timer>
+
+                                <!-- save & finish button -->
+                                <finish-button></finish-button>
 
                             </div>
 
@@ -59,11 +58,13 @@
                                 <grading-roster></grading-roster>
 
                                 <div class="buttons">
-                                <student-name-visibility></student-name-visibility>
-                                <hide-graded-rows></hide-graded-rows>
-                                <feedback-preview-button></feedback-preview-button>
+                                    <student-name-visibility></student-name-visibility>
+                                    <hide-graded-rows></hide-graded-rows>
+                                    <feedback-preview-button></feedback-preview-button>
                                 </div>
+
                             </div>
+
                         </div>
                     </div>
 
@@ -121,6 +122,8 @@
     import * as gTypes from '../../../store/getter-types';
     import StudentNameVisibility from "./controls/student-name-visibility";
     import HideGradedRows from "./controls/hide-graded-rows";
+    import FinishButton from "./inputs/finish-button";
+    import StudentSearchBar from "./roster/student-search-bar";
 
 
     export default {
@@ -128,6 +131,8 @@
         props: [],
 
         components: {
+            StudentSearchBar,
+            FinishButton,
             HideGradedRows,
             StudentNameVisibility,
             FeedbackPreviewButton,
@@ -213,7 +218,7 @@
             //this is loaded async. We call it first since we don't want the student names
             //to display if they are supposed to be hidden. However, it's not that important
             //so we're not letting it block the other requests until it loads...
-            this.$store.dispatch(ngaTypes.loadGradePreferencesFromServer);
+            this.$store.dispatch( ngaTypes.loadGradePreferencesFromServer );
 
             return new Promise( function ( resolve, reject ) {
                 //load the exam object and store it
