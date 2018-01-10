@@ -45,7 +45,9 @@
 
                             <div class="tile is-child">
                                 <!-- graded / remaining counters -->
+                               <div class="has-text-centered">
                                 <dashboard-counts></dashboard-counts>
+                               </div>
                                 <dashboard-timer></dashboard-timer>
 
                                 <!-- save & finish button -->

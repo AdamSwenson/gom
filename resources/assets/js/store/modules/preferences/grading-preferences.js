@@ -22,6 +22,8 @@ const state = {
 
     shouldDynamicallyCollapseCommentAreas: true,
 
+    shouldTimerAutomaticallyStart: true,
+
     isSliderUsed: true,
 
     isScoreDisplayed: true,
@@ -95,6 +97,10 @@ const getters = {
 
     [ nggTypes.shouldDynamicallyCollapseCommentAreas ]: ( state, getters ) => {
         return state.shouldDynamicallyCollapseCommentAreas;
+    },
+
+    [nggTypes.shouldTimerAutomaticallyStart] : ( state, getters ) => {
+        return state.shouldTimerAutomaticallyStart;
     },
 
     /**

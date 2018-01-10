@@ -145,6 +145,7 @@ export const isLetterGradeButtonUsed = 'isLetterGradeButtonUsed';
 export const isSliderUsed = 'isSliderUsed';
 export const isScoreDisplayed = 'isScoreDisplayed';
 export const shouldDynamicallyCollapseCommentAreas = 'shouldDynamicallyCollapseCommentAreas';
+export const shouldTimerAutomaticallyStart = 'shouldTimerAutomaticallyStart';
 export const getGradingPreference = 'getGradingPreference';
 
 /* ================================================================

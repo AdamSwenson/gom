@@ -1,6 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
     <nav id="grading-roster"
-         class="panel">
+         class="panel"
+    >
 
         <div class="panel-heading">
             <active-student-area></active-student-area>
@@ -23,7 +24,7 @@
                v-bind:class="sortField == 'studentIdentifier' ? 'is-active' : ''"
                v-on:click="sortRosterBy('studentIdentifier')"
                title="Sort by ID"
-            >ID</a>
+            >Id</a>
 
             <a class="isActiveClass('grade')"
                id="gradeHeader"
@@ -39,7 +40,8 @@
                 <span class="panel-icon">
                     <i v-if="sortAsc" class="fa fa-sort-alpha-asc"></i>
                     <i v-else class="fa fa-sort-alpha-desc"></i>
-            </span></a>
+                </span>
+            </a>
         </p>
 
         <roster-row v-for="student in students"
@@ -56,8 +58,6 @@
 </style>
 
 <script>
-
-
     import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
     import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
@@ -70,7 +70,8 @@
     import ActiveStudentArea from './active-student-area.vue';
     import StudentNameVisibility from '../controls/student-name-visibility.vue';
     import FinishButton from "../inputs/finish-button.vue";
-import RosterRow from "./roster-row";
+    import RosterRow from "./roster-row";
+
     module.exports = {
         components: { ActiveStudentArea, FinishButton, StudentSearchBar, StudentNameVisibility, RosterRow },
 
@@ -109,8 +110,8 @@ import RosterRow from "./roster-row";
                 return this.$store.getters[ 'getSortedStudents' ];
             },
 
-
         },
+
         computed: {
             activeStudent: function () {
                 return this.$store.getters[ nggTypes.getActiveStudent ];
@@ -127,8 +128,8 @@ import RosterRow from "./roster-row";
             },
 
             /**
-             * Whether to show student names
-             * false is blind grading.
+             * Whether to show student names.
+             * False is blind grading.
              */
             studentNamesVisible: function () {
                 return this.$store.getters[ nggTypes.areStudentNamesVisible ];
@@ -138,119 +139,22 @@ import RosterRow from "./roster-row";
 
         methods: {
 
+            /**
+             * Sets the field to sort the roster by
+             */
             sortRosterBy: function ( field ) {
                 this.$store.commit( 'setSortedBy', Payload.factory( { updateVal: field, mutateSilently: true } ) );
 
             },
 
+            /**
+             * Toggles the order in which the rows are sorted
+             */
             toggleSortDirection: function () {
                 this.$store.commit( 'toggleSortAscending' );
             }
         },
 
-        directives: {}
     };
-
-
-    //-----------
-    //
-    //             /**
-    //              * set the "grade" column in the student roster, or "--" if exam is not graded
-    //              */
-    //             updateRosterGradeDisplay: function ( data ) {
-    //                 for (var i = 0; i < Object.keys( data.examGrades ).length; i++) {
-    //                     if ( data.examGrades[ i ] >= 0 ) {
-    //                         $( '#examGrade' + i ).text( data.examGrades[ i ] );
-    //                     } else {
-    //                         // the student has no grade (val of -1)
-    //                         $( '#examGrade' + i ).text( '--' );
-    //                     }
-    //                 }
-    //             },
-    // //
-    //
-    //             /**
-    //              * set background colors in the student roster
-    //              *  graded = green
-    //              *  ungraded = white
-    //              *  active = blue
-    //              */
-    //             setStudentBackgroundColors: function ( data ) {
-    //                 for (var i = 0; i < Object.keys( data.examGrades ).length; i++) {
-    //                     var name = "#studentListItem" + i;
-    //                     var $item = $( '#studentRoster' ).find( name );
-    //                     if ( this.activeStudent && this.activeStudent == i ) {
-    //                         this.setRowToActiveStudent( $item );
-    //                     } else if ( data.isGraded( i ) ) {
-    //                         this.setRowToGraded( $item );
-    //                     } else {
-    //                         this.setRowToUnaltered( $item )
-    //                     }
-    //                 }
-    //             },
-    //
-    //             /**
-    //              * DEPRECATED. Just use setStudentBackgroundColors
-    //              * set background for the student roster row that is selected
-    //              */
-    //             setActiveStudentBackgroundColor: function ( data ) {
-    //                 //if not null
-    //                 if ( this.activeStudent ) {
-    //                     var $roster = $( '#studentRoster' );
-    //
-    //                     //remove active from all
-    //                     $roster.find( '[id^="studentListItem"]' ).removeClass( 'activeStudentRow' );
-    //
-    //                     var item = $roster.find( '#studentListItem' + this.activeStudent ); // set the activeStudent
-    //                     this.setRowToActiveStudent( item );
-    //                     this.setStudentBackgroundColors( data ); // reset prev. selected student to it's color (white or green)
-    // //            this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor );
-    //                 }
-    //             },
-
-    // /**
-    //  * set color for a student roster row
-    //  * @param item
-    //  * @param backColor
-    //  * @param textColor
-    //  */
-    // setRosterBackgroundColor: function ( item, backColor, textColor ) {
-    //     $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
-    //     $( item ).css( 'color', textColor );
-    // },
-    //
-    //
-    // /**
-    //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-    //  * @param value
-    //  * @param data
-    //  */
-    // sortRosterBy: function ( value, data ) {
-    //     var me = this;
-    //     var $roster = $( '#studentRosterBody' );
-    //     $roster.append(
-    //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
-    //             var i = $( a ).find( '[id^="' + value + '"]' );
-    //             var j = $( b ).find( '[id^="' + value + '"]' );
-    //             var result;
-    //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
-    //                 result = $( i ).text().toUpperCase().localeCompare(
-    //                     $( j ).text().toUpperCase() );
-    //             } else {
-    //                 // sort by exam grade
-    //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
-    //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
-    //                 result = gradeA - gradeB;
-    //             }
-    //             // flip results if we're sorting in DESC
-    //             if ( !me.sortAsc ) {
-    //                 result *= -1;
-    //             }
-    //             return result;
-    //         } )
-    //     );
-    //     me.sortAsc = !me.sortAsc;
-    // }
-
 
 </script>

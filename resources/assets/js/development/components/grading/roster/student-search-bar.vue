@@ -1,43 +1,53 @@
 <template>
 
-    <p class="control has-icons-left">
+    <p class="control has-icons-left search-bar-area">
 
         <input
                 type="text"
                 class="input is-small typeahead"
                 placeholder="search"
                 v-bind:id="boxId"
-                v-model="toFind"
+                v-model="searchVal"
         >
-        <span class="icon is-small is-left">
-        <i class="fa fa-search"></i>
-      </span>
+        <span class="icon is-left small">
+            <i class="fa fa-search"></i>
+        </span>
     </p>
 
 </template>
 
 <style lang="scss">
+    .twitter-typeahead {
+        width: 100%;
+    }
 
+    .Typeahead-input{
+        /*background: transparent;*/
+    }
+
+
+    .Typeahead-menu {
+        background: whitesmoke;
+        opacity: 1;
+    }
+
+    .Typeahead-suggestion {
+        background: whitesmoke;
+    }
 </style>
 
 <script>
-    var $ = require( 'jquery' );
-    window.$ = $;
-    var jQuery = $;
-    window.jQuery = jQuery;
+    var jQuery = require( 'jquery' );
+    // window.$ = $;
+    // var jQuery = $;
+    // window.jQuery = jQuery;
 
-    require( 'bootstrap' );
     import * as ngmTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
     import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
     import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
 
-
-    // var typeahead = require( '../../../../libraries/typeahead.bundle.js' );
-    // var typeahead = require( '../../../../libraries/bootstrap3-typeahead.min.js' );
+    //this depends on jquery
     require( '../../../../libraries/typeahead-0.11.1.js' );
-    // var Bloodhound = require('../../../../libraries/bloodhound-0.11.1.js');
-
-    // import {Bloodhound, typeahead} from  '../../../../libraries/typeahead-0.11.1.js';
 
 
     export default {
@@ -51,6 +61,27 @@
                 searchVal: '',
 
                 boxId: 'student-search-box',
+
+                templates: {
+                    suggestion: ( v ) => {
+                    }
+                },
+
+                options: {
+                    hint: true,
+                    highlight: true,
+                    minLength: 1,
+
+                    classNames: {
+                        menu: 'Typeahead-menu',
+                        input: 'Typeahead-input',
+                        hint: 'Typeahead-hint',
+                        selectable: 'Typeahead-selectable',
+                        suggestion: 'Typeahead-suggestion'
+                    }
+
+                },
+
                 defaults: {}
             }
         },
@@ -70,35 +101,14 @@
             },
 
 
-            activeStudent: {
-                get: function () {
-                    return this.$store.getters[ nggTypes.getActiveStudent ];
-                },
-                set: function ( student ) {
-                    this.$store.dispatch( ngaTypes.setStudentAsActive, student );
-                }
-            },
-
-            toFind: {
-                get: function () {
-                    return this.searchVal;
-                },
-                set: function ( searchText ) {
-                    //even though the model is bound to the
-                    //text box value, we can't just set the student
-                    //with every change. That's because the typeahead
-                    //dialog will fill the field with invalid names
-                    //while substrings are searched. Thus, we will
-                    //use a method to check if the text is valid
-                    //and let it handle dispatching the action.
-                    // That is the responsibility of an event listener
-
-
-                    this.searchVal = searchText;
-
-                    // this.$store.dispatch( ngaTypes.setStudentAsActive, student );
-                }
-            },
+            // activeStudent: {
+            //     get: function () {
+            //         return this.$store.getters[ nggTypes.getActiveStudent ];
+            //     },
+            //     set: function ( student ) {
+            //         this.$store.dispatch( ngaTypes.setStudentAsActive, student );
+            //     }
+            // },
 
 
             /** Student identifier data for the ID search box (typeahead) */
@@ -132,52 +142,74 @@
 
         methods: {
 
-            handleSearch:function(query){
-              let q = _.toInteger(query);
-              if(q === 0){
-                  this.handleStudentNameSearch(query);
-              }
-              else{
-                  this.handleStudentIdentifierSearch(q);
-              }
+            /**
+             * Since the typeahead suggestion may
+             * return either a student name or student identifier,
+             * this determines which has been selected and calls
+             * the relevant method to validate the suggestion and
+             * dispatch the relevant actions.
+             * WARNING: THIS WILL LIKELY BREAK IF A STUDENT HAS AN IDENTIFIER OF 0
+             */
+            handleSearch: function ( query ) {
+                //The query returned by typeahead will always
+                //be a string. Thus to test whether we have a student id
+                //or student name, we start by casting it to an integer.
+                let q = _.toInteger( query );
+
+                if ( q === 0 ) {
+                    //The _.toInteger method will return 0 if a name was
+                    //given to it. Thus we know that the suggestion was a name.
+                    //WARNING: THIS WILL LIKELY BREAK IF A STUDENT HAS AN IDENTIFIER OF 0
+                    this.handleStudentNameSearch( query );
+                }
+                else {
+                    //If q is not 0, it is an identifier.
+                    this.handleStudentIdentifierSearch( q );
+                }
             },
 
             /**
-             * Check whether the name value corresponds to a student,
-             * if so, set the active student.
-             *
+             * Validates the selected suggested student name and retrieves
+             * the corresponding student. Then passes the student to the appropriate
+             * handler to be set as the active student.
              */
             handleStudentNameSearch: function ( nameSearched ) {
-                window.console.log( 'student-search-bar', 'handleStudentNameSearch', 142, _.toInteger(nameSearched));
+                window.console.log( 'student-search-bar', 'handleStudentNameSearch', 142, _.toInteger( nameSearched ) );
 
                 var nameToFind = nameSearched.replace( /\s+/g, ' ' );
                 var i = this.studentNames.indexOf( nameToFind );
                 window.console.log( 'handlingNameSearch', nameToFind, i );
                 if ( i >= 0 ) {
                     // window.console.log( $( '#studentListItem' + i ) );
-                    this.handleStudentSelection(this.students[ i ]);
+                    this.handleStudentSelection( this.students[ i ] );
                 }
                 return false;
             },
 
             /**
-             * When the search has returned an object,
-             * sets it as active and clears the search box.
-             * This is shared by the name and id searches
+             * Handles the successful selection of a suggestion.
+             * Takes the student object retrieved and sets it as active
+             * and clears the search box.
+             *
+             * This is shared by the name and id searches.
+             *
+             * Any other actions which need to be handled on successful
+             * searches should be added here.
              */
-            handleStudentSelection : function ( student ) {
-                this.activeStudent = student;
+            handleStudentSelection: function ( student ) {
+                this.$store.dispatch( ngaTypes.setStudentAsActive, student );
                 this.searchVal = '';
             },
 
             /**
-             * todo
-             * do the same with ID search
+             * Validates the selected suggested student id and retrieves
+             * the corresponding student. Then passes the student to the appropriate
+             * handler to be set as the active student.
              */
-            handleStudentIdentifierSearch: function (idToFind) {
+            handleStudentIdentifierSearch: function ( idToFind ) {
                 var i = this.studentIdents.indexOf( idToFind );
                 if ( i >= 0 ) {
-                    this.handleStudentSelection(this.students[ i ]);
+                    this.handleStudentSelection( this.students[ i ] );
                 }
                 return false;
             },
@@ -190,7 +222,7 @@
              * @param syncResults
              * @param asyncResults
              */
-            nameMatcher: function ( query, syncResults, asyncResults ) {
+            substringMatcher: function ( query, syncResults, asyncResults ) {
                 // window.console.log( 'student-search-bar', 'nameMatcher', 183, query, _.isNumber(query));
                 var matches, substringRegex;
 
@@ -200,10 +232,10 @@
                 // regex used to determine if a string contains the substring `q`
                 substringRegex = new RegExp( query, 'i' );
 
-                let pool = _.concat(this.studentNames , this.studentIdents);
+                let pool = _.concat( this.studentNames, this.studentIdents );
                 // iterate through the pool of strings and for any string that
                 // contains the substring `q`, add it to the `matches` array
-                _.forEach(pool , function ( n ) {
+                _.forEach( pool, function ( n ) {
                     if ( substringRegex.test( n ) ) {
                         matches.push( n );
                     }
@@ -218,21 +250,20 @@
         mounted: function () {
             var me = this;
             this.$nextTick( function () {
-                let options = {
-                    hint: true,
-                    highlight: true,
-                    minLength: 1
-                };
 
+                //This includes both student names and identifiers
+                //The method called on selection will sort out which type
+                //was selected
                 let dataset = {
-                    name: 'student-names',
-                    source: this.nameMatcher
+                    name: 'students',
+                    source: this.substringMatcher,
                 };
 
+                //Initialize and bind the typeahead to the input box
                 jQuery( '#' + me.boxId )
-                    .typeahead( options, dataset )
+                    .typeahead( me.options, dataset )
                     .bind( 'typeahead:select', function ( ev, suggestion ) {
-                        console.log( 'Selection: ' + suggestion );
+                        // console.log( 'Selection: ' + suggestion );
                         me.handleSearch( suggestion );
                     } );
             } );

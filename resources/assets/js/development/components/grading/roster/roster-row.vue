@@ -7,7 +7,9 @@
         <span class="panel-icon" >
             <i v-if="! isGraded" class="fa fa-user"></i>
             <i v-if="isGraded" class="fa fa-check-circle"></i>
-        </span> {{ studentName }}
+        </span>
+        <span class="student-name" v-if="isStudentNameVisible">{{ studentName }}</span>
+        <span class="student-identifier">{{studentIdentifier}}</span>
     </a>
 </template>
 
@@ -15,6 +17,16 @@
 .student-row{
     .gradedStudentRow{
         /*background: #1b6d85;*/
+    }
+    .student-name{
+        text-align: left;
+        width:200px;
+        /*margin-right: 10em;*/
+    }
+
+    .student-identifier{
+        text-align: right;
+        /*margin-left: 10em;*/
     }
 }
 </style>
@@ -115,9 +127,15 @@
 
             studentName: function () {
                 if ( this.isStudentNameVisible ) {
-                    return this.student.nameLastFirst + '             ' + this.student.identifier;
+                    return this.student.nameLastFirst; // + '             ' + this.student.identifier;
                 }
-                return this.student.identifier;
+                //return this.student.identifier;
+            },
+
+            studentIdentifier : function (  ) {
+                if ( this.student.identifier ) {
+                    return this.student.identifier;
+                }
             }
 
 
