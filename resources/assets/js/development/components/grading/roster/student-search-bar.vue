@@ -1,7 +1,7 @@
 <template>
 
     <p class="control has-icons-left search-bar-area">
-µ
+
         <input
                 type="text"
                 class="input is-small typeahead"

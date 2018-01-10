@@ -73827,15 +73827,15 @@ var _vue2 = _interopRequireDefault(_vue);
 
 var _newGradingMutationTypes = __webpack_require__(13);
 
-var mTypes = _interopRequireWildcard(_newGradingMutationTypes);
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
 var _newGradingActionTypes = __webpack_require__(18);
 
-var aTypes = _interopRequireWildcard(_newGradingActionTypes);
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
 var _newGradingGetterTypes = __webpack_require__(10);
 
-var gTypes = _interopRequireWildcard(_newGradingGetterTypes);
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
 var _Student = __webpack_require__(21);
 
@@ -73878,37 +73878,37 @@ var state = {
 
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setActiveStudent, function (state, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.setActiveStudent, function (state, payload) {
     window.console.log('activestudent-new', '', 48, payload);
     _vue2.default.set(state, 'activeStudent', payload.obj);
-}), _defineProperty(_mutations, mTypes.setActiveStudentTime, function (state, payloadTime) {
+}), _defineProperty(_mutations, ngmTypes.setActiveStudentTime, function (state, payloadTime) {
     // Payload.checkIfPayload( payload );
     _vue2.default.set(state.activeStudent, 'gradingTime', payloadTime.time);
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.incrementGradingTime, function (_ref, amount) {
+var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.incrementGradingTime, function (_ref, amount) {
     var dispatch = _ref.dispatch,
         commit = _ref.commit,
         getters = _ref.getters;
 
-    var prevTime = getters[gTypes.getActiveStudentGradingTime];
+    var prevTime = getters[nggTypes.getActiveStudentGradingTime];
     if (_.isUndefined(prevTime)) prevTime = 0;
     var newTime = prevTime += amount;
-    var exam = getters[gTypes.getActiveExamNew];
-    var student = getters[gTypes.getActiveStudent];
+    var exam = getters[nggTypes.getActiveExamNew];
+    var student = getters[nggTypes.getActiveStudent];
     var pl = _PayloadTime2.default.factory({ exam: exam, student: student, time: newTime });
     // dispatch( aTypes.setTime, pl );
-    commit(mTypes.setActiveStudentTime, pl);
-}), _defineProperty(_actions, aTypes.resetActiveStudent, function (_ref2) {
+    commit(ngmTypes.setActiveStudentTime, pl);
+}), _defineProperty(_actions, ngaTypes.resetActiveStudent, function (_ref2) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
     return new Promise(function (resolve, reject) {
         var pl = _Payload2.default.factory({ obj: null, num: null });
-        commit(mTypes.setActiveStudent, pl);
-        commit(mTypes.setActiveStudentTime, pl);
+        commit(ngmTypes.setActiveStudent, pl);
+        commit(ngmTypes.setActiveStudentTime, pl);
     });
-}), _defineProperty(_actions, aTypes.setStudentAsActive, function (_ref3, student) {
+}), _defineProperty(_actions, ngaTypes.setStudentAsActive, function (_ref3, student) {
     var dispatch = _ref3.dispatch,
         commit = _ref3.commit,
         getters = _ref3.getters;
@@ -73917,23 +73917,23 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.incrementGradingT
     var pl = _Payload2.default.factory({ obj: student, mutateSilently: true });
 
     //call the mutation
-    commit(mTypes.setActiveStudent, pl);
+    commit(ngmTypes.setActiveStudent, pl);
 
-    //todo dev start the timer?
-
-
-    // } );
-}), _defineProperty(_actions, aTypes.setTime, function (_ref4, time) {
+    //start timer if the preference says to
+    if (getters[nggTypes.getGradingPreference]('shouldTimerAutomaticallyStart')) {
+        dispatch(ngaTypes.startExamTimer);
+    }
+}), _defineProperty(_actions, ngaTypes.setTime, function (_ref4, time) {
     // commit( mTypes.setActiveStudentTime, Payload.factory( { num: time } ) );
 
     var state = _ref4.state,
         commit = _ref4.commit;
 }), _actions);
 
-var getters = (_getters = {}, _defineProperty(_getters, gTypes.getActiveStudent, function (state, getters, rootState) {
+var getters = (_getters = {}, _defineProperty(_getters, nggTypes.getActiveStudent, function (state, getters, rootState) {
     return state.activeStudent;
-}), _defineProperty(_getters, gTypes.getActiveStudentGradingTime, function (state, getters) {
-    var s = getters[gTypes.getActiveStudent];
+}), _defineProperty(_getters, nggTypes.getActiveStudentGradingTime, function (state, getters) {
+    var s = getters[nggTypes.getActiveStudent];
     if (!_.isUndefined(s) && !_.isNull(s)) return s.gradingTime;
 }), _getters);
 
@@ -74227,7 +74227,7 @@ var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.startExamTimer,
     var me = undefined;
 
     //if no student is active, don't start
-    if (getters[nggTypes.isTimerRunning]) return;
+    // if ( getters[nggTypes.isTimerRunning]) return;
 
     clearInterval(timer);
 
@@ -77031,289 +77031,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// class Score {
-//     constructor( examId, itemId, studentId ) {
-//         this.examId = examId;
-//         this.itemId = itemId;
-//         this.studentId = studentId;
-//         this.score;
-//         this.commentText;
-//     }
-// }
-
-//
-// export const itemScoreGetter = ( state, itemId, studentId ) => {
-//     return (function ( state, itemId, studentId ) {
-//         var r = state.scores.filter( function ( i ) {
-//             if ( i.itemId === itemId && i.studentId === studentId ) {
-//                 return i;
-//             }
-//         } );
-//         return r[ 0 ];
-//     })( state, itemId, studentId )
-// };
-//
-//
-// export const create = ( state, exam, item, student ) => {
-//     let obj = ItemScore.factory( {
-//         examId: exam.id,
-//         itemId: item.id,
-//         studentId: student.id
-//     } );
-//     //add it to storage
-//     state.scores.push( obj )
-//     return obj;
-// }
-//
-
 var state = {
     //Array of Score objects
     scores: []
-};
-//
-// const mutations = {
-//
-//     [ ngmTypes.updateScore ]: ( state, payload ) => {
-//         //check whether we already have the object
-//         let obj = itemScoreGetter( state, payload.item.id, payload.student.id );
-//         if ( _.isUndefined( obj ) ) {
-//             obj = create( state, payload.exam, payload.item, payload.student );
-//         }
-//         let score = payload.score;
-//         //update the object
-//         Vue.set( obj, 'score', score );
-//     },
-//
-//     [ ngmTypes.updateText ]: ( state, payload ) => {
-//         //check whether we already have the object
-//         let obj = itemScoreGetter( state, payload.item.id, payload.student.id );
-//         if ( _.isUndefined( obj ) ) {
-//             obj = create( state, payload.exam, payload.item, payload.student );
-//         }
-//         let text = payload.text;
-//         //update the object
-//         Vue.set( obj, 'text', text );
-//     }
-// };
-
-// const actions = {
-//     initializeItemScore: ( { state, dispatch, commit, getters }, { exam, item, student } ) => {
-//         let me = this;
-//         return new Promise( function ( resolve, reject ) {
-//             // window.console.log( 'itemscores', '', 193, exam, item, student);
-//             commit( ngmTypes.updateScore, PayloadScore.factory( { exam, item, student, mutateSilently: true } ) );
-//             //create( state, exam, item, student );
-//             resolve();
-//         } );
-//     },
-//
-//     loadScoresFromServer: ( { state, dispatch, commit, getters }, exam ) => {
-//         let me = this;
-//         return new Promise( function ( resolve, reject ) {
-//             // window.console.log( 'itemscores', '', 193, exam, item, student);
-//             let p = scoreRequests.getAllScoresForExamRequest( exam );
-//
-//             p.then( function ( data ) {
-//                 _.forEach( data, function ( d ) {
-//                     let item = getters[ gTypes.getItemById ]( d.item_id );
-//                     let student = getters.getStudentFromRosterById( d.student_id );
-//                     let score = parseFloat( d.score );
-//
-//                     //record the score (this will initialize the object too)
-//                     commit( ngmTypes.updateScore, PayloadScore.factory( {
-//                         exam: exam,
-//                         item: item,
-//                         student: student,
-//                         score: score,
-//                         mutateSilently: true
-//                     } ) );
-//
-//                     //record the comment text
-//                     commit( ngmTypes.updateText, PayloadScore.factory( {
-//                         exam: exam,
-//                         item: item,
-//                         student: student,
-//                         text: d.comment_text,
-//                         mutateSilently: true
-//                     } ) );
-//                 } );
-//
-//                 resolve();
-//             } );
-//
-//
-//         } );
-//     },
-//     /**
-//      * This handles saving an item score to the server
-//      * as well as updating the comments and performing
-//      * any other necessary actions.
-//      *
-//      * Any change to the item score (aside from initial load)
-//      * should happen through this
-//      *
-//      * @param state
-//      * @param dispatch
-//      * @param commit
-//      * @param getters
-//      * @param item
-//      * @param student
-//      * @param score
-//      */
-//     [ ngaTypes.recordItemScore ]: ( { state, dispatch, commit, getters }, { exam, item, student, score } ) => {
-//         return new Promise( function ( resolve, reject ) {
-//
-//             //store the score
-//             let pl = PayloadScore.factory( {
-//                 exam: exam,
-//                 item: item,
-//                 student: student,
-//                 score: score
-//             } );
-//
-//             //before we save the score and thus lose
-//             // what the previous score was, we need to
-//             //check whether the valence has changed
-//             let oldScore = getters[ nggTypes.getItemScoreObject ]( {item : item, student: student} );
-//             let sameValence = _.isUndefined(oldScore) ? false : isSameValence( oldScore.score, score, item.maxScore );
-//             window.console.log( 'itemscores', 'sqmc', 163, oldScore, sameValence);
-//             //Similarly, we need to determine whether the presently
-//             //existing text has been customized by the user. If it has,
-//             //we don't want changes of the slider and score to overwrite
-//             //the text
-//             //todo dev
-//             let customText = false;
-//
-//             let p1 = new Promise( function ( resolve, reject ) {
-//                 commit( ngmTypes.updateScore, pl );
-//                 resolve();
-//             } );
-//
-//             p1.then( function () {
-//                 //We only need to alter text if the score has changed valence regions
-//                 //if the valence hasn't changed or if the text is customized, we are done
-//                 if ( sameValence || customText ) resolve();
-//
-//                 //Ok. So the score is in a new valence region and we're using stock
-//                 //comments. Let's get the appropriate stock comment text and update
-//                 // accordingly.
-//                 let newValenceIdx = getValenceForScore( score, item.maxScore );
-//                 let newValenceName = _.lowerCase(sliderSettings.valenceLabels[ newValenceIdx ]);
-//                 let comment = item.comments.get( newValenceName );
-//                 //This needs to be stored / saved
-//                 let pl2 = {
-//                     exam: exam,
-//                     item: item,
-//                     student: student,
-//                     text: comment
-//                 };
-//
-//                 //call the action to record the new comment
-//                 let p2 = dispatch( ngaTypes.recordCommentText, pl2 );
-//                 p2.then( function () {
-//                     resolve();
-//                 } );
-//
-//             } );
-//
-//         } );
-//     },
-//
-//     /**
-//      * This handles saving the comment text to the server.
-//      * It performs all other relevant tasks. Any change to the
-//      * comment text should be made using this.
-//      * @param state
-//      * @param dispatch
-//      * @param commit
-//      * @param getters
-//      * @param exam
-//      * @param item
-//      * @param student
-//      */
-//     [ ngaTypes.recordCommentText ]: ( { state, dispatch, commit, getters }, { exam, item, student, text } ) => {
-//         return new Promise( function ( resolve, reject ) {
-//
-//             //todo Checks for making sure that the text isn't custom go here
-//
-//             //store the score
-//             let pl = PayloadScore.factory( {
-//                 exam: exam,
-//                 item: item,
-//                 student: student,
-//                 text: text
-//             } );
-//
-//             commit( ngmTypes.updateText, pl );
-//
-//             //todo we may need to handle flagging the text as custom here so it won't get overwritten
-//             resolve();
-//         } );
-//     },
-//
-//
-// };
-
-// const getters = {
-//
-//     getExamScores: ( state, getters, rootState, examId ) => ( examId ) => {
-//         return (function ( state, examId ) {
-//             var r = state.scores.filter( function ( i ) {
-//                 if ( i.examId === examId ) {
-//                     return i;
-//                 }
-//             } );
-//             return r[ 0 ];
-//         })( state, examId )
-//     },
-//
-//     getItemScores: ( state, getters, rootState, itemId ) => ( ItemId ) => {
-//         return (function ( state, itemId ) {
-//             var r = state.scores.filter( function ( i ) {
-//                 if ( i.itemId === itemId ) {
-//                     return i;
-//                 }
-//             } );
-//             return r[ 0 ];
-//         })( state, itemId )
-//     },
-//
-//     getStudentScores: ( state, getters, rootState, studentId ) =>
-//         ( studentId ) => {
-//             return (function ( state, studentId ) {
-//                 var r = state.scores.filter( function ( i ) {
-//                     if ( i.studentId === studentId ) {
-//                         return i;
-//                     }
-//                 } );
-//                 return r[ 0 ];
-//             })( state, studentId )
-//         },
-//
-//
-//     /**
-//      * Returns the score object for the given item
-//      * and student.
-//      * This object includes score and commentText fields
-//      * @param state
-//      * @param getters
-//      * @param rootState
-//      * @param itemId
-//      * @param studentId
-//      * @returns {function(*=, *=)}
-//      */
-//     [ nggTypes.getItemScoreObject ]: ( state, getters, rootState, { item, student } ) => ( { item, student } ) => {
-//         return (function(state, item, student){
-//             if ( !_.isUndefined( item ) && !_.isUndefined( student ) ) {
-//                 return itemScoreGetter( state, item.id, student.id );
-//             }
-//         })(item, student)
-//     },
-// };
-
-/**
- * Created by adam on 7/7/17.
- */
+}; /**
+    * Created by adam on 7/7/17.
+    */
 exports.default = {
     actions: _itemscores2.default,
     getters: _itemscores4.default,

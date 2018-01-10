@@ -38,7 +38,9 @@ const actions = {
 
     /**
      * Sets the timer to active and initializes the
-     * update loop
+     * update loop.
+     *
+     *
      * @param dispatch
      * @param commit
      * @param getters
@@ -47,7 +49,7 @@ const actions = {
         var me = this;
 
         //if no student is active, don't start
-        if ( getters[nggTypes.isTimerRunning]) return;
+        // if ( getters[nggTypes.isTimerRunning]) return;
 
         clearInterval( timer );
 

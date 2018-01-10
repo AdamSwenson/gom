@@ -10,9 +10,9 @@
 import Vue from 'vue';
 //using different common name store so don't get into
 //trouble with the original
-import * as mTypes from './new-grading-mutation-types';
-import * as aTypes from './new-grading-action-types';
-import * as gTypes from './new-grading-getter-types';
+import * as ngmTypes from './new-grading-mutation-types';
+import * as ngaTypes from './new-grading-action-types';
+import * as nggTypes from './new-grading-getter-types';
 import Student from '../../../models/Student';
 import Payload from '../../../models/Payload';
 
@@ -39,13 +39,13 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [ mTypes.setActiveStudent ]: ( state, payload ) => {
+    [ ngmTypes.setActiveStudent ]: ( state, payload ) => {
         window.console.log( 'activestudent-new', '', 48, payload );
         Vue.set( state, 'activeStudent', payload.obj );
     },
 
 
-    [ mTypes.setActiveStudentTime ]: ( state, payloadTime ) => {
+    [ ngmTypes.setActiveStudentTime ]: ( state, payloadTime ) => {
         // Payload.checkIfPayload( payload );
         Vue.set( state.activeStudent, 'gradingTime', payloadTime.time );
     },
@@ -61,15 +61,15 @@ const actions = {
      * @param payload.studentIndex
      * @param payload.timeToAdd
      */
-    [ aTypes.incrementGradingTime ]: ( { dispatch, commit, getters }, amount ) => {
-        let prevTime = getters[ gTypes.getActiveStudentGradingTime ];
+    [ ngaTypes.incrementGradingTime ]: ( { dispatch, commit, getters }, amount ) => {
+        let prevTime = getters[ nggTypes.getActiveStudentGradingTime ];
         if ( _.isUndefined( prevTime ) ) prevTime = 0;
         let newTime = prevTime += amount;
-        let exam = getters[ gTypes.getActiveExamNew ];
-        let student = getters[ gTypes.getActiveStudent ];
+        let exam = getters[ nggTypes.getActiveExamNew ];
+        let student = getters[ nggTypes.getActiveStudent ];
         let pl = PayloadTime.factory( { exam: exam, student: student, time: newTime } );
         // dispatch( aTypes.setTime, pl );
-        commit( mTypes.setActiveStudentTime, pl );
+        commit( ngmTypes.setActiveStudentTime, pl );
 
     },
 
@@ -84,11 +84,11 @@ const actions = {
      * @param rootState
      * @param payload
      */
-    [ aTypes.resetActiveStudent ]: ( { state, commit } ) => {
+    [ ngaTypes.resetActiveStudent ]: ( { state, commit } ) => {
         return new Promise( function ( resolve, reject ) {
             let pl = Payload.factory( { obj: null, num: null } )
-            commit( mTypes.setActiveStudent, pl );
-            commit( mTypes.setActiveStudentTime, pl );
+            commit( ngmTypes.setActiveStudent, pl );
+            commit( ngmTypes.setActiveStudentTime, pl );
         } );
 
     },
@@ -100,21 +100,28 @@ const actions = {
      * This is the main action which should be called externally.
      * Most of the other actions are called by this.
      *
+     * If the preference for autorunning the timer is on,
+     * it will also start the timer.
+     *
+     * No need to check if the timer is running. It will reset any existing
+     * timer.
+     *
      * @param state
      * @param student
      * @param rootState
      */
-    [ aTypes.setStudentAsActive ]( { dispatch, commit, getters }, student ) {
+    [ ngaTypes.setStudentAsActive ]( { dispatch, commit, getters }, student ) {
         // return new Promise( function ( resolve, reject ) {
         let pl = Payload.factory( { obj: student, mutateSilently: true } );
 
         //call the mutation
-        commit( mTypes.setActiveStudent, pl );
-
-        //todo dev start the timer?
+        commit( ngmTypes.setActiveStudent, pl );
 
 
-        // } );
+        //start timer if the preference says to
+        if(getters[nggTypes.getGradingPreference]('shouldTimerAutomaticallyStart')){
+            dispatch(ngaTypes.startExamTimer);
+        }
     },
 
 
@@ -124,7 +131,7 @@ const actions = {
      * @param rootState
      * @param payload integer
      */
-    [ aTypes.setTime ]( { state, commit }, time ) {
+    [ ngaTypes.setTime ]( { state, commit }, time ) {
         // commit( mTypes.setActiveStudentTime, Payload.factory( { num: time } ) );
 
     },
@@ -139,13 +146,13 @@ const getters = {
      * currently selected student.
      * @returns {Student}
      */
-    [ gTypes.getActiveStudent ]: ( state, getters, rootState ) => {
+    [ nggTypes.getActiveStudent ]: ( state, getters, rootState ) => {
         return state.activeStudent;
     },
 
 
-    [ gTypes.getActiveStudentGradingTime ]: ( state, getters ) => {
-        let s = getters[ gTypes.getActiveStudent ];
+    [ nggTypes.getActiveStudentGradingTime ]: ( state, getters ) => {
+        let s = getters[ nggTypes.getActiveStudent ];
         if ( !_.isUndefined( s ) && !_.isNull( s ) ) return s.gradingTime;
     }
 
