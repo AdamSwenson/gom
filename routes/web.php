@@ -174,6 +174,9 @@ Route::get('dev/setup', 'Item\SetupController@index');
 // ====================================== NEW GRADING
 Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
 
+// ====================================== NEW FEEDBACK
+Route::get('dev/feedback/{exam}/{student}', 'Feedback\NewFeedbackController@show');
+
 
 /* =============================
         Exams (intrinsic properties)
@@ -186,9 +189,10 @@ Route::get('dev/exam/{exam}', 'Item\ExamResourceController@show');
 /* =============================
         Items
    ============================= */
-Route::resource('items', 'Item\ItemController');
 Route::post('comments/{item}', 'Item\CommentController@store');
 Route::get('items/exam/{exam}', 'Grading\NewGradingController@getItems');
+Route::resource('items', 'Item\ItemController');
+
 //order of the items on the exam
 Route::post('dev/setup/{exam}/order', 'Item\AssignmentController@store');
 

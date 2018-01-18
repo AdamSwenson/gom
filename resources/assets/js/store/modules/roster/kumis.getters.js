@@ -115,7 +115,7 @@ module.exports = {
     getExamKumis: ( state, getters, rootState, examOrExamId ) => ( examOrExamId ) => {
         // return new Promise((resolve, reject)=>{
 
-        let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.currentExam : examOrExamId;
+        let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.rootItem : examOrExamId;
 
         // let objId = examOrExamId;
         let objId = exam.id;

@@ -75,7 +75,7 @@ const handleCreateKumiResponse = ( store, kumi, data ) => {
 
 module.exports = {
 
-    loadExamKumi: ( store, exam ) => {
+    loadExamKumi: ( exam ) => {
         // window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8, exam );
         let out = {
             requestVersion: REQUEST_VERSION
@@ -83,13 +83,14 @@ module.exports = {
         return window.axios
             .get( Routes.loadExamKumi(exam) )
             .then( ( response ) => {
+                return response.data;
                 // window.console.log( 'kumiRequests', 'loadExamKumi', 28, response );
-                let kumis = response.data;
-                _.forEach( kumis, ( kumi ) => {
-                    let k = Kumi.factory( kumi );
-                    let pl = Payload.factory( { obj: k, mutateSilently: true } );
-                    store.commit( 'addKumi', pl );
-                } );
+                // let kumis = response.data;
+                // _.forEach( kumis, ( kumi ) => {
+                //     let k = Kumi.factory( kumi );
+                //     let pl = Payload.factory( { obj: k, mutateSilently: true } );
+                //     store.commit( 'addKumi', pl );
+                // } );
 
                 //set the first kumi as the one to display
                 //this needs to happen before associate exam is called

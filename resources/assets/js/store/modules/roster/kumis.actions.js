@@ -21,10 +21,35 @@ import Student from '../../../models/Student';
 
 const KUMIS_JSON_NAME = 'loadedKumis';
 
+import { loadExamKumi } from '../../../api/requests/kumiRequests';
 
 module.exports = {
 
 
+    /**
+     * Requests all kumis for the exam
+     * then adds them to the kumi store by calling addKumi
+     * on each object returned;
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param exam
+     * @returns {Promise<any>}
+     */
+    loadKumisForExamFromServer( { state, dispatch, commit, getters }, exam ) {
+        return new Promise( function ( resolve, reject ) {
+            let p = loadExamKumi( exam );
+            return p.then( function ( data ) {
+                _.forEach( data, ( d ) => {
+                    let k = Kumi.factory( d );
+                    let pl = Payload.factory( { obj: k, mutateSilently: true } );
+                    commit( 'addKumi', pl );
+                } );
+                resolve();
+            } );
+        } );
+    },
 
 
     processKumiFromJson( { state, dispatch, commit, getters } ) {
@@ -49,7 +74,8 @@ module.exports = {
                 commit( 'toggleKumi', pl )
             }
         } );
-    },
+    }
+    ,
 
     /**
      * Removes all associations between an exam and a kumi.
@@ -61,7 +87,8 @@ module.exports = {
      * @param getters
      * @param payload
      */
-    removeKumi({ state, dispatch, commit, getters }, payload){}
+    removeKumi( { state, dispatch, commit, getters }, payload ) {
+    }
 
 };
 

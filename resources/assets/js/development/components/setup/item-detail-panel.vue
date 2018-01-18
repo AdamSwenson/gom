@@ -58,9 +58,11 @@
 
     //    import tagMenu from '../menus/tags-menu.vue';
 
+    import MaxScore from '../input/max-score-input.vue'
 
     export default {
         components: {
+            MaxScore
 //          'tag-menu' : tagMenu
         },
 

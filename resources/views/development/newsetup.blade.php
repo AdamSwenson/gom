@@ -23,6 +23,7 @@
     {{ method_field('DELETE') }}
 
     <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
+    <input type="hidden" id="examId" data="{{ $exam->id }}"/>
 
 
 </div>
@@ -46,6 +47,8 @@
 
 <script type="text/javascript">
     window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
+    window.examId = document.getElementById( 'examId' ).getAttribute( 'data' );
+
 </script>
 <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
 {{--<script src="http://localhost:35729/livereload.js"></script>--}}

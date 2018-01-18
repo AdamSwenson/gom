@@ -77,10 +77,10 @@
         <!--we will make a box that will surround the children-->
         <div class="box graph-paper-background-big" v-if="numberChildren > 0">
 
-            <div v-for="isn in children">
+            <div v-for="item in items">
                 <!--Now we make cards recursively-->
-                <item-card :serial-number="isn"
-                           :key="isn"></item-card>
+                <item-card :item="item"
+                           :key="item.serialNumber"></item-card>
             </div>
         </div>
 
@@ -99,9 +99,9 @@
         /*padding: 1em;*/
         /*}*/
         /*.panel-heading {*/
-.main-body {
-    background-color: #00496C;
-}
+        .main-body {
+            background-color: #00496C;
+        }
         //background-color: #FFFDF4;
 
     }
@@ -112,6 +112,10 @@
     //    import itemEditPane from './item.edit-pane.component.vue'
     //    import depthControl from './buttons.depth-control.component.vue'
     //    import itemMain from './item-main.vue'
+
+    import AddChildButton from '../items/add-child-button.vue';
+    import PublicIndicator from '../input/visibility-control.vue';
+
 
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'
@@ -127,9 +131,11 @@
         //a prop was that we may want to use the exam card on a page
         //with other exams. It thus won't do to assume that it is
         //the only exam and have it look up its serial number on its own
-        props: [ 'serialNumber' ],
+        props: [ 'exam' ], //, 'serialNumber' ],
 
         components: {
+            AddChildButton,
+            PublicIndicator,
             'nav-tabs': navTabs,
             'item-main': itemMain
         },
@@ -145,34 +151,26 @@
             };
         },
 
+        asyncComputed: {
+
+
+            /**
+             * The children of the item
+             */
+            items: function () {
+                if ( _.isUndefined( this.exam ) ) return [];
+
+                let c = this.$store.getters.getItemChildren( this.exam );
+                return !_.isUndefined( c ) ? c : [];
+            },
+        },
 
         computed: {
-            /**
-             * Returns an array of serial numbers belonging to
-             * this item's children (in order)
-             */
-            children: function () {
-                let node = this.$store.getters[ gTypes.getItemNodeFromOrder ]( this.serialNumber );
-                let cdrn = [];
-                if ( node.children.length > 0 ) {
-                    for (let i = 0; i < node.children.length; i++) {
-                        cdrn.push( node.children[ i ].data );
-                    }
-                }
-                return cdrn;
-            },
+
 
             divId: function () {
                 return "exam-card-" + this.serialNumber
             },
-
-            /**
-             * The object representing the exam's intrinsic properties
-             */
-            exam: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
 
             index: function () {
                 return this.serialNumber;
@@ -193,8 +191,11 @@
             },
 
             numberChildren: function () {
-                return this.children.length;
+                return (!_.isUndefined( this.items ) && ! _.isNull(this.items) ) ? this.items.length : 0;
             },
+            serialNumber: function () {
+                return this.exam.serialNumber;
+            }
 
         },
 
@@ -221,6 +222,9 @@
             },
 
 
+        },
+
+        mounted: function () {
         },
 
         directives: {

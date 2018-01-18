@@ -30,7 +30,7 @@ module.exports = {
     [mTypes.insertNodeIntoOrder]: ( state, payload ) => {
         return new Promise( ( resolve, reject ) => {
 
-            // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+            window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
 
             let { index, objNode, parentNode } = payload;
 
@@ -143,6 +143,15 @@ module.exports = {
         newParent.children.push( objNode);
     },
 
+    //
+    // initializeItemStore: ( state ) => {
+    //     return new Promise( function ( resolve, reject ) {
+    //         let exam = new Exam();
+    //         state.items[ 0 ] = exam;
+    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+    //         resolve();
+    //     } );
+    // },
 
     setRootNode: ( state, payload ) => {
         let { objNode, obj } = payload;

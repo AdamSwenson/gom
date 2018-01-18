@@ -16,36 +16,46 @@ import Exam from '../../../models/Exam'
 import Node from '../../../models/Node'
 import { traverseDF, traverseBF, getSerialNumber } from '../../../models/NodeTools'
 
+import { updateItemsOrder } from '../../../api/requests/itemRequests';
 
 module.exports = {
-    [aTypes.addItemToOrder]: ( { state, dispatch, commit, getters }, payload ) => {
-        window.console.log( 'items.order.actions', aTypes.addItemToOrder, 31, payload );
-        // return new Promise( ( resolve, reject ) => {
+    [ aTypes.addItemToOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
+        return new Promise( function ( resolve, reject ) {
 
-        let { obj, parent, index, mutateSilently } = payload;
+            window.console.log( 'items.order.actions', aTypes.addItemToOrder, 31, payload );
 
-        //Sort out whether obj and parent are nodes or items
-        let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber; // getSerialNumber( obj );
-        let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
-        // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
+            let { obj, parent, index, mutateSilently } = payload;
 
-        let newNode = new Node( toAddSerialNumber, parentSerialNumber );
-        let parentNode = getters.getItemNodeFromOrder( parentSerialNumber );
-        // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
+            let exam = getters[gTypes.getActiveExam];
 
-        let pl = Payload.factory( {
-            objNode: newNode,
-            parentNode: parentNode,
-            index: index,
-            mutateSilently: mutateSilently
+            //Sort out whether obj and parent are nodes or items
+            let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber; // getSerialNumber( obj );
+            let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
+            // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
+
+            let newNode = new Node( toAddSerialNumber, parentSerialNumber );
+            let parentNode = getters.getItemNodeFromOrder( parentSerialNumber );
+            // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
+
+            let pl = Payload.factory( {
+                objNode: newNode,
+                parentNode: parentNode,
+                index: index,
+                mutateSilently: mutateSilently
+            } );
+            window.console.log( 'items.order.actions', 'pl', 47, pl );
+
+            commit( mTypes.insertNodeIntoOrder, pl );
+
+            let ordering = getters.getOrderForSync;
+            let p = updateItemsOrder(exam, ordering);
+
+            p.then(function (  ) {
+                resolve();
+            })
+
+
         } );
-        window.console.log( 'items.order.actions', 'pl', 47, pl );
-
-        commit( mTypes.insertNodeIntoOrder, pl );
-
-        // resolve();
-
-        // } );
     },
     //
     // let f = function ( currentNode ) {
@@ -63,7 +73,7 @@ module.exports = {
     // let parentNode = traverseDF( state.itemMap, f );
 
 
-    [aTypes.removeItemFromOrder]: ( { state, dispatch, commit, getters }, payload ) => {
+    [ aTypes.removeItemFromOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
         let { serialNumber } = payload;
         // let  serialNumber = getSerialNumber(payload);
         let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );

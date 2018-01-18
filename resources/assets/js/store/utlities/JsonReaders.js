@@ -25,54 +25,82 @@ const Vue = require( 'vue' );
 
 const standardTimeout = 1000;
 
-const EXAM_JSON_NAME = 'loadedExam';
-const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
-const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+import {
+    EXAM_JSON_NAME,
+    ITEM_ORDER_JSON_NAME,
+    ITEM_OBJECT_JSON_NAME,
+    processItemOrderFromJson,
+    processItemObjectsFromJson,
+    readJsonFromPageString
+} from './JsonHelpers';
 
-const processItemOrderFromJson = function ( state, orderData ) {
+// const EXAM_JSON_NAME = 'loadedExam';
+// const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
+// const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+//
+// const processItemOrderFromJson = function ( state, orderData ) {
+//
+//     _.forEach( orderData, function ( d, i ) {
+//         let item = (( state, d ) => {
+//             return getItem( state, d.itemId )
+//         })( state, d );
+//         //if the parent is null it is the exam, and we can skip
+//         if ( d.parentId === null ) return true;
+//
+//         // these are top level
+//         //and should be added as children of the exam.
+//         //if the parent is null, we add the exam instead
+//         //todo this must be fixed since an item could have the same id as an exam
+//         let parentNode = (d.parentId === state.items[ 0 ].id) ? state.itemMap : (function ( state, d ) {
+//             let parentItem = getItem( state, d.parentId );
+//             return getNode( state, parentItem.serialNumber );
+//         })( state, d );
+//
+//         let itemNode = new Node( item.serialNumber, parentNode.data );
+//
+//
+// //if an index was specified, splice it in at the index
+// //                 if ( !_.isUndefined( index ) ) {
+// //                     parentNode.children.splice( index, 0, itemNode );
+// //                 }
+// //                 else {
+// //otherwise just push it on the end
+//         parentNode.children.push( itemNode );
+//     } );
+//
+// };
+//
+// const processItemObjectFromJson = function ( state, objectData ) {
+//
+//     _.forEach( objectData, function ( d, i ) {
+//         let item = Item.factory( d ); //.factory( {id: id, index: index} );
+//         item.loadCommentsFromJson( d.comments );
+//         state.items.push( item );
+//     } );
+// };
+//
+// /**
+//  * When the server has stored data we need as a json string
+//  * in the data attribute of some page element, this reads it
+//  * and returns an object
+//  *
+//  * @param elementId
+//  * @returns {any}
+//  */
+// const readJsonFromPageString = function ( elementId ) {
+//     let e = document.getElementById(elementId).getAttribute('data');
+//     // window.console.log( 'feedback-page', 'loadJson', 66, e);
+//     let j = JSON.parse(e);
+//     // window.console.log( 'feedback-page', 'loadJson', 68, j);
+//     return j;
+// }
 
-    _.forEach( orderData, function ( d, i ) {
-        let item = (( state, d ) => {
-            return getItem( state, d.itemId )
-        })( state, d );
-        //if the parent is null it is the exam, and we can skip
-        if ( d.parentId === null ) return true;
-
-        // these are top level
-        //and should be added as children of the exam.
-        //if the parent is null, we add the exam instead
-        //todo this must be fixed since an item could have the same id as an exam
-        let parentNode = (d.parentId === state.items[ 0 ].id) ? state.itemMap : (function ( state, d ) {
-            let parentItem = getItem( state, d.parentId );
-            return getNode( state, parentItem.serialNumber );
-        })( state, d );
-
-        let itemNode = new Node( item.serialNumber, parentNode.data );
-
-
-//if an index was specified, splice it in at the index
-//                 if ( !_.isUndefined( index ) ) {
-//                     parentNode.children.splice( index, 0, itemNode );
-//                 }
-//                 else {
-//otherwise just push it on the end
-        parentNode.children.push( itemNode );
-    } );
-
-};
-
-const processItemObjectFromJson = function ( state, objectData ) {
-
-    _.forEach( objectData, function ( d, i ) {
-        let item = Item.factory( d ); //.factory( {id: id, index: index} );
-        item.loadCommentsFromJson( d.comments );
-        state.items.push( item );
-    } );
-};
-
+import { initializeItemsWithExam } from './itemHelpers';
 
 module.exports = {
+
     mutations: {
+
 
         /**
          * These are actions which different parts of the gom
@@ -80,46 +108,42 @@ module.exports = {
          *
          */
         /** This is what gets run when the root instance is mounted for the setup page */
-        [ mTypes.loadInitialData ]: ( state, payload ) => {
+        [ mTypes.loadExamAndItemsFromPageData ]: ( state, payload ) => {
             return new Promise( function ( resolve, reject ) {
 
+                if ( _.isUndefined( payload ) ) payload = new Payload();
+
+                //sort out the element ids
+                let objectPageElementId = ITEM_OBJECT_JSON_NAME; //! _.isUndefined(payload.options.elementIds.itemObjects) ? payload.options.elementIds.itemObjects : ITEM_OBJECT_JSON_NAME;
+
+                let orderPageElementId = ITEM_ORDER_JSON_NAME; //! _.isUndefined(payload.options.elementIds.itemOrder) ? payload.options.elementIds.itemOrder : ITEM_ORDER_JSON_NAME;
+
+                let examPageElementId = EXAM_JSON_NAME; //! _.isUndefined(payload.options.elementIds.exam) ? payload.options.elementIds.exam : EXAM_JSON_NAME;
+
+
                 // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-                let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
+                let objectData = readJsonFromPageString( objectPageElementId );
 
-                let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
+                let orderData = readJsonFromPageString( orderPageElementId );
 
-                let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
+                let examData = readJsonFromPageString( examPageElementId );
 
-
-                // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+                window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
 
                 //assume everything is there, just load directly
                 let exam = Exam.factory( examData );
 
-                //set it in items
-                state.items[ 0 ] = exam;
-
-                //initialize the order store
-                state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+                //Initialize the item order store
+                //with the exam as its root
+                initializeItemsWithExam( state, exam );
 
                 //load in the item objects
-                processItemObjectFromJson( state, objectData );
+                state.items = processItemObjectsFromJson( objectData );
+
 
                 //load in the order data
                 processItemOrderFromJson( state, orderData );
 
-                resolve();
-            } );
-            // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
-        },
-
-
-        //todo move to more appropriate location once working
-        initializeItemStore: ( state ) => {
-            return new Promise( function ( resolve, reject ) {
-                let exam = new Exam();
-                state.items[ 0 ] = exam;
-                state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
                 resolve();
             } );
         },
@@ -217,7 +241,7 @@ module.exports = {
                     //Make sure the index is what we expect
                     examData.index = 0;
 
-                    let examSerialNumber = getters.currentExam; //items.items[ 0 ].serialNumber;
+                    let examSerialNumber = getters.rootItem; //items.items[ 0 ].serialNumber;
                     // window.console.log( 'actions', 'esn', 117, examSerialNumber );
 
                     Exam.fillableProps.forEach(
@@ -268,6 +292,7 @@ module.exports = {
                 // }
                 resolve();
             } );
+            1`                                                                                                          `
         },
 
         /**
@@ -282,6 +307,7 @@ module.exports = {
          */
         processTagsOutOfLoadedItems: ( { state, commit, dispatch, getters } ) => {
             let items = getters[ gTypes.getAllItems ];
+            if ( _.isUndefined( items ) || items.length === 0 ) return false;
 
             _.forEach( items, function ( item ) {
                 dispatch( 'processItemTags', item );

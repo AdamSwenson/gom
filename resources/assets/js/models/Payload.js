@@ -47,6 +47,7 @@ export default class Payload extends IModel{
 
         this.str;
         this.index;
+        this.options;
         this.parent;
 
         this.serialNumber = null;
@@ -113,6 +114,7 @@ export default class Payload extends IModel{
             'kumi',
             'id', 'index', 'num',
             'mutateSilently',
+            'options',
             'obj', 'parent',
             'objNode', 'parentNode',
             'serialNumber', 'str', 'stamp', 'student',

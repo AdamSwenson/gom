@@ -173,10 +173,11 @@ export default function ( store ) {
              * the server to create something for us
              */
             case mTypes.addNewItem:
+                //we now do all of this in the action
                 if ( item ) {
-                    createItem( store, item ).then( function () {
+                    // createItem( store, item ).then( function () {
                         // payload.callback();
-                    } );
+                    // } );
                 }
                 break;
 
@@ -184,9 +185,10 @@ export default function ( store ) {
             case mTypes.setItem:
                 if ( item ) {
                     if ( !item instanceof Exam ) {
-                        Item.setExamId( store.getters.currentExam.id );
+                        let exam = store.getters[gTypes.getActiveExam];
+                        Item.setExamId( exam.id );
 
-                        item.examId = store.getters.currentExam.id;
+                        item.examId = exam.id;
                     }
                     if ( item.isNew() ) {
                         createItem( store, item )
@@ -227,7 +229,7 @@ export default function ( store ) {
                 break;
 
             case mTypes.insertNodeIntoOrder:
-                updateItemsOrder( store );
+                // updateItemsOrder( store );
                 break;
 
             case mTypes.updateOrder:
@@ -271,7 +273,7 @@ export default function ( store ) {
                 //if an exam is set as current,
                 //this will create an association, otherwise
                 //it will just create a kumi
-                let exam = store.getters.currentExam;
+                let exam = store.getters.rootItem;
                 createKumi( store, payload, exam );
                 break;
 

@@ -30,9 +30,9 @@ module.exports = {
     /**
      * Mapping from older ItemIndex to new Item id value
      */
-    indexMap: new Map(),
+    // indexMap: new Map(),
 
-    orderMap: {}
+    // orderMap: {}
 };
 
 // Object indexed by Item id holding Item objects

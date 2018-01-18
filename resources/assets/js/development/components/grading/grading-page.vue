@@ -45,9 +45,9 @@
 
                             <div class="tile is-child">
                                 <!-- graded / remaining counters -->
-                               <div class="has-text-centered">
+                                <div class="has-text-centered">
                                     <dashboard-counts></dashboard-counts>
-                               </div>
+                                </div>
 
                                 <dashboard-timer></dashboard-timer>
 
@@ -116,7 +116,7 @@
     import { loadExam } from '../../../api/requests/examRequests';
     import { loadExamKumi } from '../../../api/requests/kumiRequests';
     import { loadAllStudents } from '../../../api/requests/studentRequests';
-    import { getItemsForExam, getItemOrderForExam } from '../../../api/requests/itemRequests';
+    // import { getItemsForExam, getItemOrderForExam } from '../../../api/requests/itemRequests';
     import Payload from '../../../models/Payload';
     import Exam from '../../../models/Exam';
 
@@ -124,6 +124,8 @@
     import * as ngaTypes from '../../../store/modules/newgrading/new-grading-action-types';
     import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
     import * as gTypes from '../../../store/getter-types';
+    import * as mTypes from '../../../store/mutation-types';
+
     import StudentNameVisibility from "./controls/student-name-visibility";
     import HideGradedRows from "./controls/hide-graded-rows";
     import FinishButton from "./inputs/finish-button";
@@ -231,23 +233,40 @@
                 loadExam( me.examId )
                     .then( function ( data ) {
                         let exam = Exam.factory( data );
-                        me.$store.commit( ngmTypes.setActiveExam, Payload.factory( {
+                        let pl = Payload.factory( {
                             obj: exam,
                             mutateSilently: true
-                        } ) );
-                        return exam;
+                        } );
+                        //initialize the item store (which holds the
+                        //order of the items) with the exam
+                       let pm =  me.$store.commit( mTypes.initializeItemStorage, pl);
+                        return pm.then(function(pl){
+                            //Set the exam as the current exam
+                            me.$store.commit( ngmTypes.setActiveExam, pl );
+                            return exam;
+                        });
                     } )
                     .then( function ( exam ) {
+                        //get any groups associated with the exam
+                        //this will include the central group which
+                        //constitutes the roster
                         loadExamKumi( me.$store, exam )
                             .then( function () {
+                                //and then get the students to go in those
+                                //groups
                                 loadAllStudents( me.$store, exam )
                                     .then( function () {
+                                    //Now we can get the item objects
                                         let p = me.$store.dispatch( 'loadItemsFromServer', exam );
                                         p.then( function () {
+                                            //and any existing scores
+                                            //as well as comments
                                             let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
                                             p2.then( function () {
+                                                //finally we get grading times
                                                 let p3 = me.$store.dispatch( ngaTypes.loadTimesFromServer, exam );
                                                 p3.then( function () {
+                                                    //and are done.
                                                     resolve();
                                                 } );
 

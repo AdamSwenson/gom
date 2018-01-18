@@ -22,11 +22,6 @@ import App from './new-setup.vue'
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
 
-import listDropdown from './components/field.list-dropdown.component.vue'
-Vue.component( 'list-dropdown', listDropdown );
-
-import progressDashboard from './components/dashboard.progress.component.vue'
-Vue.component( 'progress-dashboard', progressDashboard );
 
 import toolsDashboard from './components/dashboard.tools.component.vue'
 Vue.component( 'tools-dashboard', toolsDashboard );
@@ -36,29 +31,14 @@ Vue.component( 'tools-dashboard', toolsDashboard );
 import depthControl from './components/input/buttons.depth-control.component.vue'
 Vue.component( 'depth-control', depthControl );
 
-import maxScore from './components/input/max-score-input.vue'
-Vue.component( 'max-score', maxScore );
+// import maxScore from './components/input/max-score-input.vue'
+// Vue.component( 'max-score', maxScore );
 
 import itemNumber from './components/field.item-number.component.vue'
 Vue.component( 'item-number', itemNumber );
 
-import itemName from './components/input/item-name-input.vue'
-Vue.component( 'item-name', itemName );
-
-import siblingAddButton from './components/items/add-sibling-button.vue'
-Vue.component( 'add-sibling-button', siblingAddButton );
-
-import childAddButton from './components/items/add-child-button.vue'
-Vue.component( 'add-child-button', childAddButton );
-
 import itemAddButton from './components/input/buttons.item.add.component.vue'
 Vue.component( 'item-add-button', itemAddButton );
-
-import settingsButton from './components/input/settings-display-control.vue'
-Vue.component( 'settings-button', settingsButton );
-
-import childrenDisplayButton from './components/input/children-display-control.vue'
-Vue.component( 'children-display-control', childrenDisplayButton )
 
 import valenceButton from './components/setup/comment/valence-buttons.vue'
 Vue.component( 'valence-button', valenceButton );
@@ -69,25 +49,18 @@ Vue.component( 'delete-item-button', deleteButton );
 import removeButton from './components/items/item-remove-button.vue'
 Vue.component( 'remove-item-button', removeButton );
 
-import publicIndicator from './components/input/visibility-control.vue'
-Vue.component( 'public-indicator', publicIndicator );
-
 
 //Cards
 import itemCard from './components/cards/item-card.vue'
 Vue.component( 'item-card', itemCard );
 
-import examCard from './components/cards/exam-card.vue'
-Vue.component( 'exam-card', examCard );
 
-
-
-//lists
-import examList from './components/menus/existing-exams-list.vue'
-Vue.component( 'existing-exams-menu', examList )
-
-import itemList from './components/menus/existing-items-list.vue'
-Vue.component( 'existing-items-menu', itemList )
+// //lists
+// import examList from './components/menus/existing-exams-list.vue'
+// Vue.component( 'existing-exams-menu', examList )
+//
+// import itemList from './components/menus/existing-items-list.vue'
+// Vue.component( 'existing-items-menu', itemList )
 
 
 //Tags
@@ -97,10 +70,6 @@ Vue.component( 'tag-display', tagDisplay );
 //Universal helpers
 import infoButton from './components/helpers/info-button.vue';
 Vue.component( 'info-button', infoButton );
-
-import syncIndicator from './components/helpers/server-sync-indicator.vue';
-Vue.component( 'sync-indicator', syncIndicator );
-
 
 
 

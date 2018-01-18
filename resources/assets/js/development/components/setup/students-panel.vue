@@ -153,7 +153,7 @@
 
         computed: {
             exam: function () {
-                return this.$store.getters.currentExam;
+                return this.$store.getters.rootItem;
             },
 
             examId: function () {

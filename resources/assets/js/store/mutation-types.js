@@ -96,7 +96,9 @@ export const hideItemSettings = 'hideItemSettings';
 export const toggleExamSettings = 'toggleExamSettings';
 
 //Initialization
-export const loadInitialData = 'loadInitialData';
+export const loadExamAndItemsFromPageData = 'loadInitialData';
+export const initializeItemStorage = 'initializeItemStorage';
+
 
 //notes
 export const updateNote = 'updateNote';

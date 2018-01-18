@@ -10,101 +10,34 @@ import Payload from '../../../models/Payload'
 import Item from '../../../models/Item'
 import Exam from '../../../models/Exam'
 
+//these are originally defined in jsonReaders
+
+import {
+    EXAM_JSON_NAME,
+    ITEM_ORDER_JSON_NAME,
+    ITEM_OBJECT_JSON_NAME,
+    processItemOrderFromJson,
+    processItemObjectsFromJson,
+    readJsonFromPageString
+} from '../../utlities/JsonHelpers';
+
+
 import itemRequests from "../../../api/requests/itemRequests";
 
-const processItemOrderFromJson = function ( state, orderData ) {
-
-    _.forEach( orderData, function ( d, i ) {
-        let item = (( state, d ) => {
-            return getItem( state, d.itemId )
-        })( state, d );
-        //if the parent is null it is the exam, and we can skip
-        if ( d.parentId === null ) return true;
-
-        // these are top level
-        //and should be added as children of the exam.
-        //if the parent is null, we add the exam instead
-        //todo this must be fixed since an item could have the same id as an exam
-        let parentNode = (d.parentId === state.items[ 0 ].id) ? state.itemMap : (function ( state, d ) {
-            let parentItem = getItem( state, d.parentId );
-            return getNode( state, parentItem.serialNumber );
-        })( state, d );
-
-        let itemNode = new Node( item.serialNumber, parentNode.data );
-
-
-//if an index was specified, splice it in at the index
-//                 if ( !_.isUndefined( index ) ) {
-//                     parentNode.children.splice( index, 0, itemNode );
-//                 }
-//                 else {
-//otherwise just push it on the end
-        parentNode.children.push( itemNode );
-    } );
-
-};
-
-const processItemObjectFromJson = function ( state, objectData ) {
-    _.forEach( objectData, function ( d, i ) {
-        let item = Item.factory( d ); //.factory( {id: id, index: index} );
-        item.loadCommentsFromJson( d.comments );
-        state.items.push( item );
-    } );
-};
 
 const mutations = {
-    /** This is what gets run when the root instance is mounted for the setup page */
-    // [ mTypes.loadInitialData ]: ( state, payload ) => {
-    //     return new Promise( function ( resolve, reject ) {
-    //
-    //         // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-    //         let objectData = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
-    //
-    //         let orderData = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
-    //
-    //         let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
-    //
-    //
-    //         // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
-    //
-    //         //assume everything is there, just load directly
-    //         let exam = Exam.factory( examData );
-    //
-    //         //set it in items
-    //         state.items[ 0 ] = exam;
-    //
-    //         //initialize the order store
-    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-    //
-    //         //load in the item objects
-    //         processItemObjectFromJson( state, objectData );
-    //
-    //         //load in the order data
-    //         processItemOrderFromJson( state, orderData );
-    //
-    //         resolve();
-    //     } );
-    //     // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
-    // },
-    //
-    //
-    // //todo move to more appropriate location once working
-    // initializeItemStore: ( state ) => {
-    //     return new Promise( function ( resolve, reject ) {
-    //         let exam = new Exam();
-    //         state.items[ 0 ] = exam;
-    //         state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-    //         resolve();
-    //     } );
-    // },
 
-    saveItemsFromServer: ( state, payload ) => {
-        processItemObjectFromJson( state, payload.obj );
-    },
 
-    saveOrderFromServer: ( state, payload ) => {
-
-        processItemOrderFromJson( state, payload.obj );
+    /**
+     * Given a new child node and parent node, this
+     * simply pushes the child node into the parent's children
+     * array.
+     * @param state
+     * @param payload
+     */
+    addNodeAsChild: ( state, payload ) => {
+        let { objNode, parentNode } = payload;
+        parentNode.children.push( objNode );
     }
 };
 
@@ -112,27 +45,43 @@ const actions = {
 
     loadItemsFromServer: ( { state, commit, dispatch, getters }, exam ) => {
         return new Promise( function ( resolve, reject ) {
-
-            //ahem. initialize the store
-            commit( 'initializeItemStorage', Payload.factory( { obj: exam } ) );
-
-            //The returned array  will have the keys
-            //  'itemObjects'
-            //  'itemOrder'
+            //Make the request to the server and return the data
+            //in the promise.
             let p = itemRequests.getItemsForExam( exam );
             p.then( function ( data ) {
+                //The returned object  will have the keys
+                //  'itemObjects'
+                //  'itemOrder'
+                let objectJson = data.itemObjects;
+                let orderJson = data.itemOrder;
 
-                //save the item objects
-                commit( 'saveItemsFromServer', Payload.factory( {
-                    obj: data.itemObjects,
-                    mutateSilently: true
-                } ) );
+                //Get a list of item objects from the data
+                let items = processItemObjectsFromJson( objectJson );
 
-                //store their ordering
-                commit( 'saveOrderFromServer', Payload.factory( {
-                    obj: data.itemOrder,
-                    mutateSilently: true
-                } ) );
+                //push the item objects into state.items
+                _.forEach( items, function ( item ) {
+                    commit( mTypes.addNewItem, Payload.factory( {
+                        obj: item,
+                        mutateSilently: true
+                    } ) );
+                } );
+
+                //Store the order of the items
+                _.forEach( orderJson, function ( d, i ) {
+                    //if the parent is null, we are operating on the exam, so we can skip
+                    if ( d.parentId === null ) return true;
+
+                    let item = getters[ gTypes.getItemById ]( d.itemId );
+                    let parentItem = getters[ gTypes.getItemById ]( d.parentId );
+
+                    //Get or make the new node for the item's position
+                    let parentNode = getters[ gTypes.getItemNodeFromOrder ]( parentItem.serialNumber );
+                    let itemNode = new Node( item.serialNumber, parentNode.data );
+
+                    //Add the new node to the order store
+                    let pl =  Payload.factory( { objNode: itemNode, parentNode: parentNode } )
+                    commit( 'addNodeAsChild', pl );
+                } );
 
                 resolve();
             } );
@@ -140,7 +89,90 @@ const actions = {
 
         } );
 
-    }
+    },
+
+
+    /**
+     * Reads the exam data from the data attribute of a page element
+     * Options object may contain:
+     *      Options.elementIds = { exam : the id of the element the data is located in}
+     * Otherwise, it will use the default element id
+     *
+     * @param state
+     * @param commit
+     * @param dispatch
+     * @param getters
+     * @param options
+     * @returns {Promise<any>}
+     */
+    loadExamFromPageJson: ( { state, commit, dispatch, getters }, options ) => {
+        return new Promise( function ( resolve, reject ) {
+            //Figure out what element id to use
+            let pageElementId = EXAM_JSON_NAME; //options.elementIds.exam ? options.elementIds.exam : EXAM_JSON_NAME
+
+            //Read the data from the page element and parse it into an object
+            let examJson = readJsonFromPageString( pageElementId );
+
+            //assume everything is there, just load directly
+            let exam = Exam.factory( examJson );
+
+            let pl = Payload.factory( {
+                obj: exam,
+                mutateSilently: true
+            } );
+            //Now that we have the exam loaded,
+            //we need to do some stuff with it.
+            //NB, since these call mutations, they happen
+            //synchronously, thus no need to wrap in promises
+            //First, we initialize the item store (which holds the
+            //order of the items) with the exam
+            me.$store.commit( mTypes.initializeItemStorage, pl );
+            //Then we et the exam as the current exam
+            me.$store.commit( mTypes.setActiveExam, pl );
+            return exam;
+            if ( exam ) {
+                let pl = Payload.factory( { obj: exam, mutateSilently: true } );
+                commit( mTypes.initializeItemStorage, pl );
+
+                return resolve( exam );
+            }
+
+        } );
+
+    },
+
+    /**
+     * These are actions which different parts of the gom
+     * call to when they initialize.
+     *
+     */
+    /** This is what gets run when the root instance is mounted for the setup page */
+    loadItemsFromPageData:
+        ( { state, commit, dispatch, getters }, options ) => {
+            return new Promise( function ( resolve, reject ) {
+                let objectPageElementId = options.elementIds.itemObjects ? options.elementIds.itemObjects : ITEM_OBJECT_JSON_NAME
+
+                // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
+                let objectData = readJsonFromPageString( ITEM_OBJECT_JSON_NAME );
+
+                let orderData = readJsonFromPageString( ITEM_ORDER_JSON_NAME );
+
+                let examData = readJsonFromPageString( EXAM_JSON_NAME );
+
+
+                // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+
+                //load in the item objects
+                processItemObjectsFromJson( objectData );
+
+                //load in the order data
+                processItemOrderFromJson( state, orderData );
+
+                resolve();
+            } );
+            // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
+        },
+
 
 };
 

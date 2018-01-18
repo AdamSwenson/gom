@@ -34,7 +34,7 @@ module.exports = {
         if ( holdForIdLoading( item ) ) {
             //copy so vuex doesn't yell
             let out = Object.assign( {}, item );
-            out.examId = store.getters.currentExam.id;
+            out.examId = store.getters.rootItem.id;
             out.requestVersion = REQUEST_VERSION;
 
             //put/patch
@@ -104,7 +104,7 @@ module.exports = {
             } );
         }
 
-        let exam = store.getters.currentExam;
+        let exam = store.getters.rootItem;
         let toSend = {
             ...item,
             requestVersion: REQUEST_VERSION,
@@ -140,12 +140,7 @@ module.exports = {
      * @param store
      * @returns {Promise}
      */
-    updateItemsOrder: ( store ) => {
-        //This getter will also check to make sure we have ids
-        //if not, it will wait until we have an id for each item
-        let ord = store.getters.getOrderForSync;
-
-        let exam = store.getters.currentExam;
+    updateItemsOrder: ( exam, ordering ) => {
 
         let payload = {
             examId: exam.id,

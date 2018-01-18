@@ -31,7 +31,7 @@
 </template>
 
 <style lang="scss">
-    .item-main{
+    .item-main {
         h5 {
             text-shadow: 0 -2px 3px rgba(255, 255, 255, 1),
             0 2px 3px rgba(0, 0, 0, .8),
@@ -52,24 +52,34 @@
 
 <script>
 
+    import ChildrenDisplayControl from '../input/children-display-control.vue'
+    // Vue.component( 'children-display-control', childrenDisplayButton )
+
+
+    import ItemName from '../input/item-name-input.vue'
+    // Vue.component( 'item-name', itemName );
+
+    import SettingsButton from '../input/settings-display-control.vue'
+    // Vue.component( 'settings-button', settingsButton );
+
+
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'
     import * as aTypes from '../../../store/action-types'
     import * as mTypes from '../../../store/mutation-types'
 
-    export default{
-
+    export default {
+        components: { ChildrenDisplayControl, ItemName, SettingsButton },
         props: [ 'serialNumber' ],
 
         data: function () {
             return {
-                identifiers :{
+                identifiers: {
                     exam: 'exam-main',
-                    item : 'item-main'
+                    item: 'item-main'
                 },
 
-                placeHolders: {
-                },
+                placeHolders: {},
 
                 display: {
                     type: {
@@ -89,11 +99,11 @@
                 return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
-            isItem: function(){
-              return ! this.isExam;
+            isItem: function () {
+                return !this.isExam;
             },
 
-            isExam: function(){
+            isExam: function () {
                 return this.item ? this.item.isExam : false;
             },
 
@@ -102,27 +112,27 @@
              * depending on whether it is attached to an exam or
              * regular item
              */
-            identifier : function(){
+            identifier: function () {
                 return this.isExam ? this.identifiers.exam : this.identifiers.item;
             },
 
             /**
              * The input's css id
              */
-            id : function(){
+            id: function () {
                 return this.identifier + '-' + this.serialNumber;
             },
 
-            position : function(){
-                return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;
+            position: function () {
+                return this.$store.getters.getDepthOfNode( this.serialNumber ) + 1;
 
             },
 
             displayIndex: function () {
-                if(this.isExam) return 'Exam';
+                if ( this.isExam ) return 'Exam';
                 let idx = this.position + 1;
                 let parentIdx = this.$parent.displayIndex;
-                if(parentIdx) return `${parentIdx} - ${idx}`;
+                if ( parentIdx ) return `${parentIdx} - ${idx}`;
                 return idx;
 
 //                return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;

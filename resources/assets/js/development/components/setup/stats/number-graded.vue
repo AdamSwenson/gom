@@ -102,6 +102,8 @@
         asyncComputed: {
 
             examCountsAjax: function () {
+                if(_.isUndefined(this.exam) || this.exam.id === -1) return false;
+
                 let route = 'dev/numgraded/exam/' + this.exam.id;
                 let me = this;
 

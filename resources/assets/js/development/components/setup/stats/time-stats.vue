@@ -103,6 +103,8 @@
         asyncComputed: {
 
             timeElapsedAjax: function () {
+                if(_.isUndefined(this.exam) || this.exam.id === -1) return false;
+
                 let me = this;
 
                 me.isLoading = true;
@@ -135,7 +137,7 @@
 
         computed: {
             item: function () {
-                return this.$store.getters.currentExam;
+                return this.$store.getters.rootItem;
 //                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 

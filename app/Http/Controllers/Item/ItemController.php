@@ -97,6 +97,10 @@ class ItemController extends Controller
      */
     public function store( ItemRequest $request )
     {
+
+        return Item::create();
+
+
 //todo Separate this so that store only handles creation
         if ( $request->has('id') ) {
             //find the item

@@ -104,7 +104,7 @@
 
         computed: {
             exam: function () {
-                return this.item.isExam() ? this.item : this.$store.getters.currentExam;
+                return this.item.isExam() ? this.item : this.$store.getters.rootItem;
             },
 
             id: function () {

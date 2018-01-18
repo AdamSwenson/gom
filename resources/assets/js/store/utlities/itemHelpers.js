@@ -1,3 +1,5 @@
+import Node from "../../models/Node";
+
 /**
  * Generic methods for getting and doing stuff with items
  * Created by adam on 7/2/17.
@@ -43,6 +45,29 @@ module.exports = {
             } );
             return r[ 0 ];
         })( state, id );
+    },
+
+    /**
+     * Handles the actual tasks
+     * associated with initializing the
+     * storage of item order.
+     *
+     * This task has been extracted to this function
+     * so that it can be called from multiple mutations.
+     *
+     * Note that this should only be called by a mutation.
+     * Otherwise, vue will be very angry.
+     *
+     * @param state
+     * @param exam
+     */
+    initializeItemsWithExam : (state, exam  ) => {
+        // window.console.log( 'itemHelpers', 'initializeItemsWithExam', 65, exam);
+        //set it in items
+        state.items[ 0 ] = exam;
+
+        //initialize the order store
+        state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
     }
 
 };

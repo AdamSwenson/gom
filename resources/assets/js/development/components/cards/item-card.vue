@@ -64,11 +64,11 @@
         <!--we will make a box that will surround the children-->
         <div class="box" v-if="numberChildren > 0">
 
-            <div v-for="isn in children">
+            <div v-for="item in items">
                 <!--Now we make cards recursively-->
                 <item-card
-                        :serial-number="isn"
-                        :key="isn"></item-card>
+                        :item="item"
+                        :key="item.serialNumber"></item-card>
             </div>
         </div>
     </div>
@@ -114,6 +114,15 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
+
+    import siblingAddButton from '../items/add-sibling-button.vue'
+
+    import AddChildButton from '../items/add-child-button.vue'
+
+
+    import PublicIndicator from '../input/visibility-control.vue'
+
+
     import itemCloneButton from '../items/item-clone-button.vue';
     import itemImportButton from '../items/item-import-button.vue';
     import movementControl from '../items/card-movement-control.vue';
@@ -124,14 +133,17 @@
 
     export default {
 
-        props: [ 'serialNumber' ],
+        props: [ 'item', ], //'serialNumber' ],
 
         components: {
+            AddChildButton,
+            PublicIndicator,
             'card-movement-control': movementControl,
             'item-clone-button': itemCloneButton,
             'item-import-button': itemImportButton,
             'item-main': itemMain,
-            'nav-tabs': navTabs
+            'nav-tabs': navTabs,
+            'add-sibling-button' : siblingAddButton
         },
 
         data: function () {
@@ -154,6 +166,19 @@
             };
         },
 
+        asyncComputed : {
+
+
+            /**
+             * The children of the item
+             */
+            items: function () {
+                if ( _.isUndefined( this.item ) ) return [];
+
+                let c = this.$store.getters.getItemChildren( this.item );
+                return !_.isUndefined( c ) ? c : [];
+            },
+        },
 
         computed: {
 
@@ -165,30 +190,16 @@
                 return "card-content-" + this.height + '-' + this.depth;
             },
 
-            /**
-             * The object representing the item's intrinsic properties
-             * */
-            item: function () {
-                return this.$store.getters[ gTypes.getItemBySerialNumber ]( this.serialNumber );
+
+            serialNumber : function (  ) {
+              return this.item.serialNumber;
             },
 
-            /**
-             * Returns an array of serial numbers belonging to
-             * this item's children (in order)
-             */
-            children: function () {
-                let c = [];
-                if ( this.node ) {
-                    for (let i = 0; i < this.node.children.length; i++) {
-                        c.push( this.node.children[ i ].data );
-                    }
-                }
-                return c;
-            },
 
             numberChildren: function () {
-                return this.children.length;
+                return (!_.isUndefined( this.items ) && ! _.isNull(this.items) ) ? this.items.length : 0;
             },
+
 
             depth: function () {
                 return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );

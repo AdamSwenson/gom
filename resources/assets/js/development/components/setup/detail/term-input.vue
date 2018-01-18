@@ -6,7 +6,7 @@
                 :options="terms"
                 :item="exam"
                 item-prop="term"
-                :input-value="exam.term"
+                :input-value="term"
                 type="term"
                 v-on:update="handleValueChange"
         >
@@ -57,6 +57,11 @@
 
             terms: function () {
                 return this.defaults.terms;
+            },
+
+            term: function (  ) {
+                if(this.exam) return this.exam.term;
+                return '';
             }
 
         },

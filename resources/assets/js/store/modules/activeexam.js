@@ -9,6 +9,7 @@ import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 import Exam from '../../models/Exam'
 import Payload from '../../models/Payload'
+import * as gTypes from "../getter-types";
 
 const state = {
     /**
@@ -124,6 +125,24 @@ const actions = {
 
 const getters = {
 
+    /**
+     * Returns the exam currently being used
+     * @param state
+     * @returns {*}
+     */
+    [gTypes.getActiveExam] : ( state ) => {
+        return state.activeExam;
+    },
+
+    /**
+     * Poorly named shortcut for getting the currently active exam.
+     * @param state
+     */
+    currentExam: ( state, getters ) => {
+      return state.activeExam;
+        // return typeof state.activeExam != 'undefined' && state.activeExam ? state.activeExam : false;
+
+    },
     getActiveExamId: ( state, getters, payload ) => {
         return 0;
         // return typeof state.activeExam != 'undefined' ? state.activeExam.id : false;
@@ -142,6 +161,13 @@ const getters = {
      */
     getActiveExamObj: ( state ) => {
         return typeof state.activeExam != 'undefined' && state.activeExam ? state.activeExam : false;
+    },
+
+
+    getExamSerialNumber: ( state, getters ) => {
+        return typeof state.activeExam != 'undefined' && state.activeExam ? state.activeExam.serialNumber : false;
+
+//        return state.items[ 0 ] ? state.items[ 0 ].serialNumber : null;
     }
 
 };

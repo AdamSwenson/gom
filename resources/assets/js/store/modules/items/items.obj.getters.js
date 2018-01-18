@@ -261,12 +261,9 @@ module.exports = {
      * Poorly named shortcut for getting the currently active exam.
      * @param state
      */
-    currentExam: ( state, getters ) => {
+    rootItem: ( state, getters ) => {
         return state.items[ 0 ];
     },
 
-    getExamSerialNumber: ( state, getters ) => {
-        return state.items[ 0 ] ? state.items[ 0 ].serialNumber : null;
-    }
 
 };

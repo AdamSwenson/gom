@@ -2,6 +2,7 @@
  * Created by adam on 3/21/17.
  */
 
+export const getActiveExam  = 'getActiveExam';
 
 //Defined in getters (though the names there do not use the constants)
 //Exam
@@ -116,6 +117,7 @@ export const getDepthOfNode = 'getDepthOfNode';
  * @type {string}
  */
 export const getItemMapCopy = 'getItemMapCopy'
+
 
 //Visibility settings
 export const isItemSettingsVisible = 'isItemSettingsVisible'

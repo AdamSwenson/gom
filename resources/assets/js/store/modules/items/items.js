@@ -14,7 +14,8 @@ import Node from '../../../models/Node'
 import { traverseDF, traverseBF, getNode } from '../../../models/NodeTools'
 
 import JsonReaders from '../../utlities/JsonReaders'
-
+import { initializeItemsWithExam } from '../../utlities/itemHelpers';
+import { createItem } from '../../../api/requests/itemRequests';
 
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
@@ -22,6 +23,7 @@ const _ = window._ = require( 'lodash' );
 import Objects from './items.obj';
 import Orderings from './items.order';
 import Loaders from './items.loaders';
+
 const REQUEST_VERSION = 1;
 
 const standardTimeout = 1000;
@@ -33,6 +35,7 @@ const state = {
     ...Orderings.state
 
 };
+
 
 /**
  * The make use of both the item object store
@@ -105,8 +108,8 @@ const getters = {
 
     getOrderForSync: ( state, getters ) => {
         let out = [];
-        let map = state.itemMap; //getters[ gTypes.getItemMapCopy ];
-        window.console.log( 'items', 'getOrderForSync', 162, map );
+        let map = getters[ gTypes.getItemMapCopy ];
+        // window.console.log( 'items', 'getOrderForSync', 162, map );
 
         if ( _.isUndefined( map ) || map.length === 0 ) return false;
 
@@ -126,14 +129,17 @@ const getters = {
             // holdForIdLoading(item);
             // window.console.log( 'items', 'recurse', 193, 'post hold', item);
             if ( !_.isUndefined( item ) ) {
-                let exam = item.isExam() ? item : getters.currentExam;
+                let exam = item.isExam() ? item : getters[gTypes.getActiveExam];
                 let parent = getters.getItemBySerialNumber( currentNode.parent );
-                out.push( {
-                    examId: exam.id,
-                    itemId: item.id,
-                    parentId: parent.id,
-                    itemOrder: cnt
-                } );
+                if(parent) {
+                    out.push( {
+                        examId: exam.id,
+                        itemId: item.id,
+                        parentId: parent.id,
+                        itemOrder: cnt
+
+                    } );
+                }
             }
 
         })( map );
@@ -185,24 +191,47 @@ const actions = {
      * @param commit
      */
     [ aTypes.createItem ]: ( { state, commit, dispatch, getters }, parentSN ) => {
-        return (function ( state, commit, dispatch, getters, parentSN ) {
-            // window.console.log( 'items', aTypes.createItem, 220, parent );
+        return new Promise( ( resolve, reject ) => {
+            let exam = getters[ gTypes.getActiveExam ];
+
             if ( _.isUndefined( parentSN ) ) {
-                parentSN = getters.currentExam;
+                //we are creating the object on the root
+                parentSN = exam.serialNumber;
             }
 
-            //If we were passed an item to serve as the parent
-            //we will use s serial number
-            let item = Item.factory( { parent: parentSN } );
-            let payload = Payload.factory( { parent: parentSN, obj: item } );
+            let item = new Item( );
 
-            commit( mTypes.addNewItem, payload );
-            // window.console.log( 'items', 'canSync', 245, getters.canSync );
-            // holdForCanSync( item )
-            // {
-            dispatch( aTypes.addItemToOrder, payload );
-            // }
-        })( state, commit, dispatch, getters, parentSN );
+            //directly create the item on the server
+            let p = createItem( item );
+            p.then( function ( data ) {
+                // window.console.log( 'items', 'data', 207, data );
+                //set the item's id
+                //no need to user a mutation, because
+                //we haven't yet stored the item
+                item.id = data.id;
+                //Speaking of which, we now store the newly created
+                // item in the items list
+                let payload = Payload.factory(
+                    {
+                        obj: item,
+                        parent: parentSN, //this way we can reuse the payload
+                        mutateSilently: true
+                    } );
+                commit( mTypes.addNewItem, payload );
+
+                //Now trigger the actions to put the item in the
+                //proper place in the order
+                let p2 = dispatch( aTypes.addItemToOrder, payload );
+                p2.then( function () {
+                    //and we're done
+                    resolve();
+                } );
+
+            } );
+
+
+        } );
+        // })( state, commit, dispatch, getters, parentSN );
 
     },
 
@@ -300,8 +329,8 @@ const actions = {
     },
 
 
-
 };
+
 
 const mutations = {
     ...Objects.mutations,
@@ -309,19 +338,30 @@ const mutations = {
     ...JsonReaders.mutations,
     ...Loaders.mutations,
 
-    initializeItemStorage: ( store, payload ) => {
 
-        return new Promise( function ( resolve, reject ) {
+    /**
+     * This takes the newly loaded exam and stores it as the item
+     * root.
+     * Should normally be used before any items are loaded
+     * State.obj should be the exam object
+     * @param state
+     * @param payload
+     */
+    [ mTypes.initializeItemStorage ]: ( store, payload ) => {
 
-            let exam = payload.obj
+        // return new Promise( function ( resolve, reject ) {
 
-            //set it in items
-            state.items[ 0 ] = exam;
+        let exam = payload.obj
 
-            //initialize the order store
-            state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
-            resolve();
-        } );
+        state.items[ 0 ] = exam;
+
+        //initialize the order store
+        state.itemMap = new Node( exam.serialNumber, exam.serialNumber );
+
+        // initializeItemsWithExam( state, exam );
+
+        // resolve();
+        // } );
     }
 
 };

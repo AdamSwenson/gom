@@ -77,7 +77,7 @@
 
         computed: {
             currentExam: function () {
-                return this.$store.getters.currentExam;
+                return this.$store.getters.rootItem;
             }
         },
 

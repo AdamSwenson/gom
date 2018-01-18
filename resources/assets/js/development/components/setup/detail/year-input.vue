@@ -59,8 +59,9 @@
 
         computed: {
             year: function () {
-                let i = this.$store.getters.getItemBySerialNumber( this.exam.serialNumber );
-                return i.year;
+               if(this.exam) return this.exam.year;
+                // let i = this.$store.getters.getItemBySerialNumber( this.exam.serialNumber );
+                return '';
             },
 
             currentYear: function () {

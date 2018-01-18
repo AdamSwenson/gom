@@ -78,13 +78,13 @@
 
             //if this is not the panel for the exam
             item: function () {
-                return this.$store.getters.currentExam;
+                return this.$store.getters.rootItem;
 
 //                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
             },
 
             exam: function () {
-                return this.item.isExam() ? this.item : this.$store.getters.currentExam;
+                return this.item.isExam() ? this.item : this.$store.getters.rootItem;
             },
 
             isExam: function () {

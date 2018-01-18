@@ -6,10 +6,12 @@
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 import * as gTypes from '../getter-types'
+import * as ngmTypes from './newgrading/new-grading-mutation-types';
 
 import Exam from '../../models/Exam'
 import Payload from '../../models/Payload'
 
+import {loadExam  } from '../../api/requests/examRequests';
 // import * as api from '../../api/controller'
 
 /**
@@ -49,7 +51,7 @@ const mutations = {
      * @param rootState
      * @param payload Expecting Exam object to be in payload.obj
      */
-    [mTypes.addExam]: ( state, payload ) => {
+    [ mTypes.addExam ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         if ( payload.obj instanceof Exam ) {
             //push into exams storage
@@ -66,7 +68,7 @@ const mutations = {
      * @param rootState
      * @param payload Array with keys: examIndex, examId
      */
-    [mTypes.addIndexMapping]: ( state, rootState, payload ) => {
+    [ mTypes.addIndexMapping ]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
 
         state.indexMap[ payload.index ] = payload.id;
@@ -79,7 +81,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.loadExams]: ( state, rootState, payload ) => {
+    [ mTypes.loadExams ]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
         //add exams
         state.exams = payload.obj;
@@ -90,6 +92,47 @@ const mutations = {
 const actions = {
 
     /**
+     * Loads the exam object for the given id from the server,
+     * sets it as root and as active
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param examId
+     * @returns {Promise<any>}
+     */
+    loadExamFromServer: ( { state, dispatch, commit, getters }, examId ) => {
+        return new Promise( function ( resolve, reject ) {
+
+            let p = loadExam( examId )
+            return p.then( function ( data ) {
+                let exam = Exam.factory( data );
+
+                let pl = Payload.factory( {
+                    obj: exam,
+                    mutateSilently: true
+                } );
+                //First we save it in the exams list
+                commit( mTypes.addExam, pl );
+                //Now that we have the exam loaded,
+                // we need to do some stuff with it.
+                // NB, since these call mutations, they happen
+                // synchronously, thus no need to wrap in promises
+                // First, we initialize the item store (which holds the
+                // order of the items) with the exam
+                commit( mTypes.initializeItemStorage, pl );
+                //todo consolidate the active exam storage
+                //Then we et the exam as the current exam
+                commit( mTypes.setActiveExam, pl );
+                commit( ngmTypes.setActiveExam, pl );
+                resolve();
+
+            } );
+
+        } );
+    },
+
+    /**
      * Adds the exam in the payload to the store. Also
      * adds the exam index to the indexMap so can look up
      * the id for older components.
@@ -97,7 +140,7 @@ const actions = {
      * @param commit
      * @param payload Keys: examId, examIndex, obj
      */
-    [aTypes.addNewExam]: ( { state, commit }, payload ) => {
+    [ aTypes.addNewExam ]: ( { state, commit }, payload ) => {
         let { examId, examIndex, obj, examObject } = payload;
 
         obj = typeof examObject != 'undefined' ? examObject : obj;
@@ -130,7 +173,7 @@ const actions = {
      * @param rootState
      * @param payload
      */
-    [aTypes.loadExams]: ( state, rootState, payload ) => {
+    [ aTypes.loadExams ]: ( state, rootState, payload ) => {
         //check if payload has correct structure
         //todo
 
@@ -159,7 +202,7 @@ const getters = {
      * @param getters
      * @param payload Object containing exam identifier
      */
-    [gTypes.getExam]: ( state, getters, rootState, payload ) =>
+    [ gTypes.getExam ]: ( state, getters, rootState, payload ) =>
         ( payload ) => {
             //finds the exam and returns it
             const lookupByExamId = ( state, examId ) => {
@@ -181,7 +224,7 @@ const getters = {
      * @param payload
      * @returns {{}}
      */
-    [gTypes.getAllExams]: ( state, getters, payload ) => {
+    [ gTypes.getAllExams ]: ( state, getters, payload ) => {
         return (function ( state ) {
             let out = [];
             let keys = Object.keys( state.exams );
