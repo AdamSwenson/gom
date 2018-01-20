@@ -33,7 +33,7 @@ use Illuminate\Http\Request;
  */
 class SetupController extends Controller
 {
-const DEFAULT_KUMI_NAME = 'All';
+    const DEFAULT_KUMI_NAME = 'All';
     const EXAM_JSON_NAME = 'loadedExam';
     const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
     const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
@@ -122,13 +122,17 @@ const DEFAULT_KUMI_NAME = 'All';
      */
     public function show( Exam $exam )
     {
+
+        return view('development.newsetup', ['exam' => $exam]);
+
+
         $out = $this->assignmentRepository->getItemOrderForClient($exam);
         //The returned array  will have the keys
         //  'itemObjects'
         //  'itemOrder'
         $kumis = $exam->kumis()->get();
 
-        if($kumis->count() === 0){
+        if ( $kumis->count() === 0 ) {
             //if there isn't one, we need it
             $kumi = Kumi::create();
             $exam->kumis()->attach($kumi->id);

@@ -1,3 +1,10 @@
+
+import a from "./roster.actions";
+import g from "./roster.getters";
+import m from "./roster.mutations";
+import Display from "./roster.display";
+import Loaders from "./loaders";
+
 /**
  * This is the new version of students.
  *
@@ -16,6 +23,8 @@
  */
 
 const state = {
+    ...Display.state,
+
     /**
      * List of student objects
      * */
@@ -23,10 +32,22 @@ const state = {
 
 };
 
+const actions = {
+    ...a,
+    ...Display.actions,
+    ...Loaders.actions,
+};
 
-import actions from './roster.actions';
-import getters from './roster.getters';
-import mutations from './roster.mutations';
+const mutations = {
+    ...m,
+    ...Display.mutations
+};
+
+const getters = {
+    ...g,
+    ...Display.getters
+};
+
 
 export default {
     actions,

@@ -257,7 +257,7 @@ export default function ( store ) {
             // ******************** Comments
             case mTypes.updateComment:
                 // window.console.log( 'apiPlugin', 'calling update comment', 140, item );
-                updateComment( store, item );
+                updateComment(item );
                 break;
 
 
@@ -273,8 +273,8 @@ export default function ( store ) {
                 //if an exam is set as current,
                 //this will create an association, otherwise
                 //it will just create a kumi
-                let exam = store.getters.rootItem;
-                createKumi( store, payload, exam );
+                // let exam = store.getters[gTypes.getActiveExam];
+                // createKumi( store, payload, exam );
                 break;
 
             case mTypes.updateKumi:

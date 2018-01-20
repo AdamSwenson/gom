@@ -204,8 +204,13 @@
 
             },
 
+            selectedStudents : function (  ) {
+                return this.$store.getters.getSelectedStudents;
+            },
+
             isSelected: function(){
-                return this.$store.getters.getSelectedStudents.indexOf(this.student) > -1;
+                if(_.isUndefined(this.selectedStudents)) return false;
+                return this.selectedStudents.indexOf(this.student) > -1;
             },
 
 

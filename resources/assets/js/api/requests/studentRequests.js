@@ -177,6 +177,34 @@ module.exports = {
         }
     },
 
+
+    /**
+     * Loads all students associated with the exam.
+     * Returns the response.data object
+     * @param exam
+     * @returns {Promise<T> | *}
+     */
+    loadStudentsForExam: ( exam ) => {
+        // window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8 );
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
+
+        //Get students for a particular exam
+            return window.axios
+                .get( Routes.loadStudentsForExam( exam ) )
+                .then( ( response ) => {
+                   return response.data;
+                    // window.console.log( 'examRequests', '', 28, response );
+                    //handleLoadResponse( store, response );
+                } )
+                .catch( function ( error ) {
+                    window.console.log( 'examRequests', 'ERROR', 39, error );
+                    // errorHandling( error );
+                } );
+    },
+
+
     loadStudent: ( store, student ) => {
 
     },

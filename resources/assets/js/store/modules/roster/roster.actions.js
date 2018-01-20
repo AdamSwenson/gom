@@ -24,11 +24,10 @@ import StudentImporter from './studentFileImporter';
 
 import { createStudentRequest, associateStudentWithKumiRequest } from '../../../api/requests/studentRequests';
 
-
+import Loaders from './loaders';
 
 
 module.exports = {
-
     ...StudentImporter,
 
     /**

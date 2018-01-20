@@ -36,21 +36,32 @@
         <div class="addition-buttons-area panel-block"
              v-show="additionButtonsVisible"
         >
-            <div class="field is-grouped is-fullwidth">
-                <p class="control">
-                    <add-student-control
-                             v-on:add-student-complete="handleAddStudentComplete"
-                    ></add-student-control>
-                </p>
+            <div class="buttons">
+                <!--<div class="field is-grouped is-fullwidth">-->
+                <!--<p class="control">-->
+                <add-student-control
+                        v-on:add-student-complete="handleAddStudentComplete"
+                ></add-student-control>
+                <!--</p>-->
 
-                <div class="control">
-                    <button id="add-students-button"
-                            class="button is-primary is-outlined "
-                            v-on:click="toggleFileButtonVisibility"
-                    >Import students
-                    </button>
-                </div>
+                <!--<div class="control">-->
+                <button id="add-students-button"
+                        class="button is-primary is-outlined "
+                        v-on:click="toggleFileButtonVisibility"
+                >Import students
+                </button>
+                <!--</div>-->
+
+
+                <new-kumi-control type="button"></new-kumi-control>
+
+                <edit-kumi-control type="button"></edit-kumi-control>
+
             </div>
+
+            <kumi-editing-modal :is-visible="isModalVisible"
+                                v-on:togglemodal="toggleModalVisibility"
+            ></kumi-editing-modal>
         </div>
 
         <div id="file-input-area"
@@ -63,6 +74,11 @@
             ></import-students-control>
 
         </div>
+
+        <!--<div id="group-management-area" class="panel-block">-->
+
+        <!--</div>-->
+
 
         <kumi-selector injectable-class="panel-block">
             <label class="label" slot="label"> {{ kumiSelectorLabel }}</label>
@@ -108,7 +124,7 @@
 
     //components
     import StudentRow from './student-row.vue'
-    import KumiNameField from '../input/kumi-name-field.vue';
+    import KumiNameField from './kumi/kumi-name-field.vue';
     import KumiSelector from './kumi/kumi-selector.vue';
     import KumiTabs from './kumi/kumi-tabs.vue';
 
@@ -117,7 +133,12 @@
     //File importing stuff
     import FileImporter from '../../../store/modules/roster/studentFileImporter';
     import ImportStudentsControl from "./student/import-students-control.vue";
-    import AddStudentControl from "./student/add-student-control.vue";
+    import AddStudentControl from "./student/add-student-button.vue";
+
+    import { loadAllStudents } from '../../../api/requests/studentRequests';
+    import NewKumiControl from "./kumi/new-kumi-control";
+    import EditKumiControl from "./kumi/edit-kumi-control";
+    import KumiEditingModal from "./kumi/kumi-editing-modal";
 
 
     export default {
@@ -125,6 +146,9 @@
         props: [],
 
         components: {
+            KumiEditingModal,
+            EditKumiControl,
+            NewKumiControl,
             AddStudentControl,
             ImportStudentsControl,
             'kumi-name': KumiNameField,
@@ -153,7 +177,7 @@
 
         computed: {
             exam: function () {
-                return this.$store.getters.rootItem;
+                return this.$store.getters[ gTypes.getActiveExam ];
             },
 
             examId: function () {
@@ -171,8 +195,7 @@
             },
 
             students: function () {
-                let s = this.$store.getters.getStudentsFromRoster;
-                return s;
+                return this.$store.getters.getStudentsFromRoster;
             },
 
             selectedStudents: function () {
@@ -220,6 +243,13 @@
 
         },
 
+        mounted: function () {
+            let me = this;
+            let p = this.$store.dispatch( 'loadKumisForExamFromServer', this.exam );
+            p.then( function () {
+                me.$store.dispatch( 'loadStudentsFromServer', me.exam );
+            } );
+        }
 
     }
 </script>

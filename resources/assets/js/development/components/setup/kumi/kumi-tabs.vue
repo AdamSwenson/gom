@@ -1,31 +1,28 @@
 <template>
     <div class="kumi-tabs tabs is-boxed">
 
-        <show-all-kumi-control type="tab"
-                               :is-active="isActive(-1)"
-                               :is-visible="isAllTabVisible"
-        ></show-all-kumi-control>
+        <ul>
+            <show-all-kumi-control type="tab"
+                                   :is-active="isActive(-1)"
+                                   :is-visible="isAllTabVisible"
+            ></show-all-kumi-control>
 
 
-        <a v-for="kumi in kumis"
-           v-bind:key="kumi.serialNumber"
-           v-on:click="handleKumiSelection(kumi)"
-           v-bind:class="[isActive(kumi) ? 'is-active' : '' ]"
-        >
-            <span v-if="isEditable">
-                    <kumi-name :serialNumber="kumi.serialNumber"></kumi-name>
-            </span>
+            <kumi-tab v-if="kumiCount > 0"
+                      v-for="kumi in kumis"
+                      :kumi="kumi"
+                      v-bind:key="kumi.serialNumber"
+            ></kumi-tab>
 
-            <span v-else >{{ kumi.name }}</span>
-        </a>
 
-        <new-kumi-control type="tab"></new-kumi-control>
+            <!--<new-kumi-control type="tab"></new-kumi-control>-->
 
-        <edit-kumi-control type="tab"
-                           :is-editable="isEditable"
-                           v-on:toggle-kumi-editable="toggleEditable"
-        ></edit-kumi-control>
+            <!--<edit-kumi-control type="tab"-->
+                               <!--:is-editable="isEditable"-->
+                               <!--v-on:toggle-kumi-editable="toggleEditable"-->
+            <!--&gt;</edit-kumi-control>-->
 
+        </ul>
     </div>
 </template>
 
@@ -34,12 +31,16 @@
 </style>
 
 <script>
-    import KumiNameField from '../../input/kumi-name-field.vue';
+    import KumiNameField from './kumi-name-field.vue';
     import Payload from "../../../../models/Payload";
     import Kumi from "../../../../models/Kumi";
     import EditKumiControl from "./edit-kumi-control.vue";
     import NewKumiControl from "./new-kumi-control.vue";
     import ShowAllKumiControl from "./show-all-kumi-control.vue";
+    import * as mTypes from '../../../../store/mutation-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as gTypes from '../../../../store/getter-types';
+    import KumiTab from "./kumi-tab";
 
 
     export default {
@@ -47,6 +48,7 @@
         props: [],
 
         components: {
+            KumiTab,
             ShowAllKumiControl,
             NewKumiControl,
             EditKumiControl,
@@ -65,13 +67,38 @@
         },
 
         asyncComputed: {
-            kumis: function () {
-                return this.$store.getters.getKumis;
-            },
+            // kumis: function () {
+            //     let k = this.$store.getters[ gTypes.getKumisForExam ]( this.exam );
+            //     if ( !_.isUndefined( k ) && !_.isNull( k ) ) return k;
+            //     return null;
+            // },
+            //
+            // kumiCount: function () {
+            //     if ( _.isNull( this.kumis ) || _.isUndefined( this.kumis ) ) return 0;
+            //     return this.kumis.length;
+            // },
+
         },
 
 
         computed: {
+            kumis: function () {
+                let k = this.$store.getters[ gTypes.getKumisForExam ]( this.exam );
+                if ( !_.isUndefined( k ) && !_.isNull( k ) ) return k;
+                return null;
+            },
+            // kumis: function () {
+            //     return this.$store.getters[ gTypes.getKumisForExam ]( this.exam );;
+            //     return this.$store.getters[ gTypes.getAllKumis ];
+            // },
+
+            kumiCount: function () {
+                if ( _.isNull( this.kumis ) || _.isUndefined( this.kumis ) ) return 0;
+                return this.kumis.length;
+            },
+            exam: function () {
+                return this.$store.getters[ gTypes.getActiveExam ];
+            },
 
             displayedKumis: function () {
                 return this.$store.getters.getDisplayedKumis;

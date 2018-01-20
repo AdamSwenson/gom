@@ -26,7 +26,7 @@ use App\Student;
  */
 class GradingTime extends Model
 {
-    protected $fillable = [];
+    protected $fillable = ['student_id', 'exam_id'];
 
     protected $casts = [
         'seconds' => 'float',

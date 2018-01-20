@@ -160,6 +160,8 @@ export const getNoteBySerialNumber = 'getNoteBySerialNumber';
    ================================================================ */
 export const getStudentsFromRoster = 'getStudentsFromRoster';
 export const getStudentFromRosterBySerialNumber = 'getStudentFromRosterBySerialNumber';
+export const getKumisForExam = 'getKumisForExam';
+export const getAllKumis = 'getAllKumis';
 
 // ================================================================
 // ==================================== TAGS  =====================

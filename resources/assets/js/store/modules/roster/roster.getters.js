@@ -70,14 +70,6 @@ module.exports = {
         })( state, id )
 
     },
-    //
-    // getSortAsc: ( state ) => {
-    //     return state.sortAsc;
-    // },
-    //
-    // getSortedBy: ( state, getters, rootState ) => {
-    //     return state.sortedBy;
-    // },
 
     getSortedStudents: ( state, getters, rootState ) => {
 

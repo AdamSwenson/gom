@@ -45,7 +45,7 @@
 
         computed: {
             styling: function () {
-                return "is-primary is-outlined is-fullwidth";
+                return "is-primary is-outlined ";
             }
         },
 

@@ -4,7 +4,7 @@
        v-on:click="newKumi"
     >
         <span class="icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
-        <span class="">Create</span>
+        <span class="">New group</span>
         <span class="sr-only">Create new group button</span>
     </a>
 
@@ -17,6 +17,9 @@
 <script>
     import Payload from "../../../../models/Payload";
     import Kumi from "../../../../models/Kumi";
+    import * as mTypes from '../../../../store/mutation-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as gTypes from '../../../../store/getter-types';
 
     export default {
 
@@ -26,14 +29,13 @@
 
         data: function () {
             return {
-
+buttonColor : 'is-info',
                 defaults: {}
             }
         },
 
         computed: {
             styling: function () {
-
                     let out = '';
                     switch ( this.type ) {
                         case  'tab':
@@ -41,34 +43,32 @@
                             break;
                         case 'button':
                             out += ' button ';
-                            out += 'is-outlined is-primary';
+                            out += 'is-outlined ';
+                            out += this.buttonColor;
                             break;
                     }
 
-
                     return out;
 
-            }
+            },
+
+            isKumiEditModalVisible : function (  ) {
+                return this.$store.getters.isKumiEditModalVisible;
+            },
+
         },
 
         methods: {
 
             newKumi: function ( evt ) {
-                //should open a pane for creating or editing kumi
-                let kumi = new Kumi(); //completely empty
-                this.$store.commit( 'addKumi', Payload.factory( { obj: kumi } ) );
-                //toggle open the edit fields if not already displayed
-                this.notifyParent();
+                //Create a new kumi object
+                this.$store.dispatch( 'createKumi');
+
+                //If the edit modal is not already visible, then toggle it open
+                //so we can edit the new kumi
+                if(! this.isKumiEditModalVisible) this.$store.commit('toggleEditKumiModal');
             },
 
-
-            /**
-             * Let's any listening parent know that
-             * the new kumi processes have been called
-             */
-            notifyParent: function () {
-                return this.$emit( 'showKumiEditFields' );
-            },
         },
 
     }

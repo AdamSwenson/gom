@@ -19,35 +19,40 @@ import Payload from '../../../models/Payload';
 import Kumi from '../../../models/Kumi';
 import Student from '../../../models/Student';
 
+import { createKumiRequest, disassociateKumiAndExam } from '../../../api/requests/kumiRequests';
+
 const KUMIS_JSON_NAME = 'loadedKumis';
 
-import { loadExamKumi } from '../../../api/requests/kumiRequests';
 
 module.exports = {
 
 
     /**
-     * Requests all kumis for the exam
-     * then adds them to the kumi store by calling addKumi
-     * on each object returned;
+     * Creates a new kumi and gets the id from the server
+     * before storing it centrally.
+     *
+     * ANY PROCESS WISHING TO CREATE A KUMI SHOULD
+     * DISPATCH THIS ACTION
      * @param state
      * @param dispatch
      * @param commit
      * @param getters
-     * @param exam
-     * @returns {Promise<any>}
+     * @param payload
      */
-    loadKumisForExamFromServer( { state, dispatch, commit, getters }, exam ) {
-        return new Promise( function ( resolve, reject ) {
-            let p = loadExamKumi( exam );
-            return p.then( function ( data ) {
-                _.forEach( data, ( d ) => {
-                    let k = Kumi.factory( d );
-                    let pl = Payload.factory( { obj: k, mutateSilently: true } );
-                    commit( 'addKumi', pl );
+    createKumi( { state, dispatch, commit, getters } ) {
+
+        return new Promise( ( resolve, reject ) => {
+            let exam = getters[ gTypes.getActiveExam ];
+            let kumi = new Kumi();
+            createKumiRequest( kumi, exam )
+                .then( function (data) {
+                    kumi.id = data.id;
+                    commit( mTypes.addKumi, Payload.factory( {
+                        obj: kumi,
+                        mutateSilently: true
+                    } ) );
+                    resolve( kumi );
                 } );
-                resolve();
-            } );
         } );
     },
 
@@ -88,6 +93,11 @@ module.exports = {
      * @param payload
      */
     removeKumi( { state, dispatch, commit, getters }, payload ) {
+let {kumi, exam } = payload;
+        disassociateKumiAndExam(kumi, exam)
+            .then(function(){
+                commit( mTypes.disassociateExamFromKumi, payload);
+            });
     }
 
 };

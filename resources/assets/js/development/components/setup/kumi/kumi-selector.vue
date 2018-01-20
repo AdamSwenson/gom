@@ -78,7 +78,7 @@
 
         computed: {
             kumis: function () {
-                return this.$store.getters.getKumis;
+                return this.$store.getters[gTypes.getAllKumis];
             },
 
             styling: function () {

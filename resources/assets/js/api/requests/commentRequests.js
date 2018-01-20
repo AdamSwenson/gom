@@ -27,7 +27,7 @@ module.exports = {
      * @param store
      * @param item
      */
-    updateComment: ( store , item ) => {
+    updateComment: ( item ) => {
         window.console.log( 'apiPlugin-commentRequests', 'updateComment', 8 );
         let out = {
             requestVersion: REQUEST_VERSION

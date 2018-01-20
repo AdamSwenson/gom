@@ -22,69 +22,13 @@ import Student from '../../../models/Student'
 const KUMIS_JSON_NAME = 'loadedKumis';
 
 
-const filterExamAssociations = ( state, prop, val ) => {
-    return state.examKumiAssociations.filter( ( i ) => {
-        if ( i[ prop ] === val ) {
-            return i;
-        }
-    } );
-};
+import {
+    filterExamAssociations, filterStudentAssociations, filterKumis,
+    getKumiById,
+    getKumiBySerialNumber,
+    processKumiFromJson
+} from './kumis.helpers';
 
-
-const filterStudentAssociations = ( state, prop, val ) => {
-    return state.studentKumiAssociations.filter( ( i ) => {
-        if ( i[ prop ] === val ) {
-            return i;
-        }
-    } );
-};
-
-const filterKumis = ( state, prop, val ) => {
-    return state.kumis.filter( ( i ) => {
-        if ( i[ prop ] === val ) {
-            return i;
-        }
-    } );
-};
-
-const getKumiById = ( state, kumiId ) => {
-    let r = filterKumis( state, 'id', kumiId );
-    return r[ 0 ];
-};
-
-
-const getKumiBySerialNumber = ( state, ksn ) => {
-    let r = filterKumis( state, 'serialNumber', ksn );
-    return r[ 0 ];
-};
-
-const processKumiFromJson = function ( state, kumiData, exam ) {
-    _.forEach( kumiData, function ( d, i ) {
-        //first make a kumi from the loaded data
-        let kumi = Kumi.factory( { d } );
-        let pl = Payload.factory( {
-            obj: kumi,
-            examId: exam.id,
-            kumiId: kumi.id,
-            mutateSilently: true
-        } );
-
-        // push it into storage
-        // state.commit('addKumi', pl);
-        state.kumis.push( kumi );
-
-        if ( i === 0 ) {
-            //set the first kumi as the one to display
-            //this needs to happen before associate exam is called
-            state.commit( 'toggleKumi', pl )
-        }
-
-        //Now associate the kumi with the exam
-        state.commit( 'associateExamWithKumi', pl );
-
-
-    } );
-};
 
 module.exports = {
 
@@ -104,32 +48,29 @@ module.exports = {
         return getKumiById( state, kumiId );
     },
 
-    getKumis: function ( state ) {
-        return state.kumis;
+    /**
+     * Returns all kumis that have been loaded
+     * @param state
+     * @returns {any[] | _.LoDashImplicitArrayWrapper<T> | _.LoDashImplicitArrayWrapper<any> | _.LoDashExplicitArrayWrapper<T> | _.LoDashExplicitArrayWrapper<any>}
+     */
+    [gTypes.getAllKumis] : function ( state ) {
+        return _.uniq(state.kumis);
     },
 
     /**
      * Returns all kumis associated with the exam
      * @param examId
      */
-    getExamKumis: ( state, getters, rootState, examOrExamId ) => ( examOrExamId ) => {
-        // return new Promise((resolve, reject)=>{
-
-        let exam = _.isUndefined( examOrExamId ) ? this.$store.getters.rootItem : examOrExamId;
-
-        // let objId = examOrExamId;
-        let objId = exam.id;
-        let kumiIds = filterExamAssociations( state, objId );
-        // if ( !returnObjects ) return kumiIds;
-
+    [gTypes.getKumisForExam]: ( state, getters, rootState, exam ) => ( exam ) => {
+        let kumiAssocs = filterExamAssociations( state, 'examId', exam.id );
         let out = [];
-        _.forEach( kumiIds, ( i ) => {
-            let kumi = getKumiById( state, i );
+        _.forEach( kumiAssocs, function( i ){
+            //since the associations only have ids,
+            //we add the object for each to our list
+            let kumi = getters.getKumiById( i.kumiId );
             out.push( kumi );
         } );
-        // resolve(out);
-        return out;
-        // });
+        return _.uniq(out);
     },
 
     /**
@@ -149,7 +90,7 @@ module.exports = {
      * @param getters
      */
     getRootKumi: function ( state, getters ) {
-        return state.kumis[0];
+        return state.kumis[ 0 ];
     },
 
 

@@ -28,21 +28,21 @@
 
 </div>
 
-<input type="hidden"
-       id="{{ $examObjectJsonName }}"
-       data='{!! isset($exam) ? json_encode($exam, JSON_FORCE_OBJECT) : '' !!}'/>
+{{--<input type="hidden"--}}
+       {{--id="{{ $examObjectJsonName }}"--}}
+       {{--data='{!! isset($exam) ? json_encode($exam, JSON_FORCE_OBJECT) : '' !!}'/>--}}
 
-<input type="hidden"
-       id="{{ $itemObjectJsonName }}"
-       data='{!! isset($itemObjects) ? json_encode($itemObjects, JSON_FORCE_OBJECT) : '' !!}'/>
+{{--<input type="hidden"--}}
+       {{--id="{{ $itemObjectJsonName }}"--}}
+       {{--data='{!! isset($itemObjects) ? json_encode($itemObjects, JSON_FORCE_OBJECT) : '' !!}'/>--}}
 
-<input type="hidden"
-       id="{{ $itemOrderJsonName }}"
-       data='{!! isset($itemOrder) ? json_encode($itemOrder, JSON_FORCE_OBJECT) : '' !!}'/>
+{{--<input type="hidden"--}}
+       {{--id="{{ $itemOrderJsonName }}"--}}
+       {{--data='{!! isset($itemOrder) ? json_encode($itemOrder, JSON_FORCE_OBJECT) : '' !!}'/>--}}
 
-<input type="hidden"
-       id="{{ $kumisJsonName}}"
-       data='{!! isset($kumis) ?  json_encode($kumis, JSON_FORCE_OBJECT) : '' !!}'/>
+{{--<input type="hidden"--}}
+       {{--id="{{ $kumisJsonName}}"--}}
+       {{--data='{!! isset($kumis) ?  json_encode($kumis, JSON_FORCE_OBJECT) : '' !!}'/>--}}
 
 
 <script type="text/javascript">

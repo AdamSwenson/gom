@@ -62,7 +62,6 @@ import visibility from './modules/visibility'
 import kumi from './modules/roster/kumis'
 import notes from './modules/notes/notes'
 import tags from './modules/tags/tags'
-import rosterDisplay from './modules/roster/display'
 
 import itemScores from './modules/scores/itemscores';
 import quality from './modules/quality/quality';
@@ -141,7 +140,6 @@ const debug = process.env.NODE_ENV !== 'production';
         notes,
         quality,
         roster,
-        rosterDisplay,
         settings,
         stats,
         students,

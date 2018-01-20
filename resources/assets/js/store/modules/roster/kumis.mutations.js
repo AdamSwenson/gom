@@ -22,6 +22,13 @@ import Student from '../../../models/Student'
 const KUMIS_JSON_NAME = 'loadedKumis';
 
 
+import {
+    filterExamAssociations, filterStudentAssociations, filterKumis,
+    getKumiById,
+    getKumiBySerialNumber,
+    processKumiFromJson
+} from './kumis.helpers'
+
 module.exports = {
 
     /**
@@ -29,7 +36,7 @@ module.exports = {
      * @param state
      * @param payload
      */
-    addKumi: ( state, payload ) => {
+    [mTypes.addKumi]: ( state, payload ) => {
         state.kumis.push( payload.obj );
     },
 
@@ -38,7 +45,7 @@ module.exports = {
      * @param state
      * @param payload
      */
-    updateKumi: ( state, payload ) => {
+    [mTypes.updateKumi]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         let kumi = getKumiBySerialNumber( state, payload.obj.serialNumber );
         Vue.set( kumi, payload.updateProp, payload.updateVal );
@@ -49,10 +56,10 @@ module.exports = {
      * kumi is associated with
      * @param examId
      */
-    associateExamWithKumi: ( state, payload ) => {
+    [mTypes.associateExamWithKumi] : ( state, payload ) => {
 //todo Should check that not duplicating?
-        let examId = payload.examId;
-        let kumiId = payload.kumiId;
+        let examId = payload.exam.id;
+        let kumiId = payload.kumi.id;
         state.examKumiAssociations.push( { examId: examId, kumiId: kumiId } );
     },
 
@@ -60,9 +67,9 @@ module.exports = {
      * Removes the association between a kumi and exam
      * @param examId
      */
-    disassociateExamFromKumi: ( state, payload ) => {
-        let examId = payload.examId;
-        let kumiId = payload.kumiId;
+    [mTypes.disassociateExamFromKumi]: ( state, payload ) => {
+        let examId = payload.exam.id;
+        let kumiId = payload.kumi.id;
         let r = filterExamAssociations( state, kumiId, examId );
         let index = state.examKumiAssociations.indexOf( r[ 0 ] );
         state.examKumiAssociations.splice( index, 1 );
@@ -75,7 +82,7 @@ module.exports = {
      * @param kumiId
      * @param studentId
      */
-    associateStudentWithKumi: ( state, payload ) => {
+    [mTypes.associateStudentWithKumi]: ( state, payload ) => {
         let student = payload.student;
         let kumi = payload.kumi;
 
@@ -95,7 +102,7 @@ module.exports = {
      * Removes the association between the student and a group
      * @param studentId
      */
-    disassociateStudentFromKumi: ( state, payload ) => {
+    [mTypes.disassociateStudentFromKumi]: ( state, payload ) => {
         let student = payload.student;
         let kumi = payload.kumi;
         let index = state.studentKumiAssociations.indexOf( r[ 0 ] );

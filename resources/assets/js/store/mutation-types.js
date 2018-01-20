@@ -37,7 +37,10 @@ export const loadExams = 'loadExams';
 
 //kumi
 export const addKumi = 'addKumi';
+export const associateExamWithKumi ='associateExamWithKumi';
+export const disassociateExamFromKumi = 'disassociateExamFromKumi';
 export const associateStudentWithKumi = 'associateStudentWithKumi';
+export const disassociateStudentFromKumi = 'disassociateStudentFromKumi';
 export const updateKumi = 'updateKumi';
 export const updateSelectedKumi = 'updateSelectedKumi';
 

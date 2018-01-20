@@ -77,7 +77,7 @@ module.exports = {
      * @param payload Expecting Item object to be in payload.obj
      */
     [ mTypes.addNewItem ]: ( state, payload ) => {
-        console.log( mTypes.addNewItem, state, payload );
+        // console.log( mTypes.addNewItem, state, payload );
 
         // return new Promise( ( resolve, reject ) => {
 
@@ -109,7 +109,7 @@ module.exports = {
     },
 
     onUpdate: ( state, event ) => {
-        window.console.log( 'items', 'onUpdate', 102, event );
+        // window.console.log( 'items', 'onUpdate', 102, event );
         let { newIndex, oldIndex } = event;
         let resorted = state.items.splice( newIndex, 0, state.items.splice( oldIndex, 1 )[ 0 ] );
         // resorted.splice( newIndex, 0, resorted.splice( oldIndex, 1 )[ 0 ] );
@@ -134,7 +134,7 @@ module.exports = {
             // console.log('items.mutations', mTypes.setItem, state, payload);
             if ( Payload.checkIfPayload( payload ) ) {
                 let { index } = payload.obj;
-                window.console.log( 'items.mutations', 'index', 100, index );
+                // window.console.log( 'items.mutations', 'index', 100, index );
                 Vue.set( state.items, index, payload.obj );
             }
             resolve();
@@ -148,10 +148,10 @@ module.exports = {
      * @param payload
      */
     [ mTypes.updateComment ]: ( state, payload ) => {
-        console.log( mTypes.updateComment, payload, state );
+        // console.log( mTypes.updateComment, payload, state );
         //get the item
         let itm = getItemFromPayload( state, payload );
-        window.console.log( 'items', 'updateComment', 145, itm, state.items );
+        // window.console.log( 'items', 'updateComment', 145, itm, state.items );
 
         if ( typeof itm !== 'undefined' ) {
             // let itm = state.items[ payload.index ];
@@ -166,7 +166,7 @@ module.exports = {
             //set it in the array with vue
             Vue.set( state.items, payload.index, itm );
             // state.items.$set( payload.index, itm );
-            window.console.log( 'items', 'updateComment', 145, itm, state.items );
+            // window.console.log( 'items', 'updateComment', 145, itm, state.items );
         }
     },
 

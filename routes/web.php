@@ -223,6 +223,7 @@ Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
 Route::resource('dev/kumis', 'Item\KumiController');
 Route::get('dev/kumis/exam/{exam}', 'Item\KumiController@loadExamKumi');
 Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKumi');
+Route::delete('dev/kumis/{kumi}/exam/{exam}', 'Item\KumiController@disassociateExamAndKumi');
 
 
 /* =============================

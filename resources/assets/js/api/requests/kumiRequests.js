@@ -2,7 +2,7 @@
  * Created by adam on 7/6/17.
  */
 
-import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT , Routes} from '../apiSettings';
+import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes } from '../apiSettings';
 
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
@@ -81,7 +81,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION
         };
         return window.axios
-            .get( Routes.loadExamKumi(exam) )
+            .get( Routes.loadExamKumi( exam ) )
             .then( ( response ) => {
                 return response.data;
                 // window.console.log( 'kumiRequests', 'loadExamKumi', 28, response );
@@ -131,7 +131,7 @@ module.exports = {
         };
 
         window.axios
-            .post( Routes.associateKumi(kumi, exam), toSend )
+            .post( Routes.associateKumi( kumi, exam ), toSend )
             .then( ( response ) => {
                 // window.console.log( 'kumiRequests', 'associateKumi', 28, response );
             } )
@@ -143,7 +143,14 @@ module.exports = {
 
     },
 
-    createKumi: ( store, kumi, exam = null ) => {
+    /**
+     * Requests the server creates a new kumi for the
+     * object provided. Returns response.data
+     * @param kumi
+     * @param exam
+     * @returns {Promise<T> | *}
+     */
+    createKumiRequest: ( kumi, exam = null ) => {
         if ( Payload.checkIfPayload( kumi ) ) {
             kumi = kumi.obj; //in case someone sent a payload object
         }
@@ -155,11 +162,12 @@ module.exports = {
 
         if ( exam ) toSend[ 'examId' ] = exam.id;
 
-        window.axios
+        return window.axios
             .post( Routes.createKumi(), toSend )
             .then( ( response ) => {
+                return response.data;
                 // window.console.log( 'kumiRequests', 'createKumi', 28, response );
-                handleCreateKumiResponse( store, kumi, response.data );
+                // handleCreateKumiResponse( store, kumi, response.data );
             } )
             .catch( function ( error ) {
                 //todo add response handling
@@ -179,7 +187,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION,
         };
         window.axios
-            .put( Routes.updateKumi(kumi), toSend )
+            .put( Routes.updateKumi( kumi ), toSend )
             .then( ( response ) => {
                 // window.console.log( 'kumiRequests', 'updateKumi', 28, response );
             } )
@@ -191,9 +199,21 @@ module.exports = {
 
     },
 
+    disassociateKumiAndExam: ( kumi, exam ) => {
+        let to = 'dev/kumis/' + kumi.id + '/exam/' + exam.id;
+        return window.axios
+            .delete( to )
+            .then( ( response ) => {
+                // window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
+            } )
+            .catch( function ( error ) {
+                window.console.log( 'kumiRequests', 'ERROR', 39, error );
+                // errorHandling( error );
+            } );
+    },
     destroyKumi: ( store, kumi ) => {
         window.axios
-            .delete( Routes.destroyKumi(kumi) )
+            .delete( Routes.destroyKumi( kumi ) )
             .then( ( response ) => {
                 // window.console.log( 'kumiRequests', 'destroyKumi', 28, response );
             } )

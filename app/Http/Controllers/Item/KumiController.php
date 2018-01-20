@@ -108,6 +108,20 @@ class KumiController extends Controller
     }
 
     /**
+     * Detaches a kumi from an exam
+     *  Route:
+     *          dev/kumi/exam/{exam}/new
+     *
+     * @param Exam $exam
+     * @param Kumi $kumi
+     * @return mixed
+     */
+    public function disassociateExamAndKumi( Kumi $kumi, Exam $exam){
+        $exam->kumis()->detach($kumi->id);
+        return $this->sendAjaxSuccess();
+    }
+
+    /**
      *  Route:
      *          dev/kumi/exam/{exam}
      *

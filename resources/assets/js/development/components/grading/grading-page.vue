@@ -228,55 +228,27 @@
             //so we're not letting it block the other requests until it loads...
             this.$store.dispatch( ngaTypes.loadGradePreferencesFromServer );
 
-            return new Promise( function ( resolve, reject ) {
-                //load the exam object and store it
-                loadExam( me.examId )
-                    .then( function ( data ) {
-                        let exam = Exam.factory( data );
-                        let pl = Payload.factory( {
-                            obj: exam,
-                            mutateSilently: true
-                        } );
-                        //initialize the item store (which holds the
-                        //order of the items) with the exam
-                       let pm =  me.$store.commit( mTypes.initializeItemStorage, pl);
-                        return pm.then(function(pl){
-                            //Set the exam as the current exam
-                            me.$store.commit( ngmTypes.setActiveExam, pl );
-                            return exam;
-                        });
-                    } )
-                    .then( function ( exam ) {
-                        //get any groups associated with the exam
-                        //this will include the central group which
-                        //constitutes the roster
-                        loadExamKumi( me.$store, exam )
-                            .then( function () {
-                                //and then get the students to go in those
-                                //groups
-                                loadAllStudents( me.$store, exam )
-                                    .then( function () {
-                                    //Now we can get the item objects
-                                        let p = me.$store.dispatch( 'loadItemsFromServer', exam );
-                                        p.then( function () {
-                                            //and any existing scores
-                                            //as well as comments
-                                            let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
-                                            p2.then( function () {
-                                                //finally we get grading times
-                                                let p3 = me.$store.dispatch( ngaTypes.loadTimesFromServer, exam );
-                                                p3.then( function () {
-                                                    //and are done.
-                                                    resolve();
-                                                } );
-
-                                            } );
-                                        } );
-                                    } );
+            this.$store.dispatch( 'loadExamFromServer', this.examId ).then( function () {
+                me.$store.dispatch( 'loadItemsFromServer', me.exam ).then( function () {
+                    //get any groups associated with the exam
+                    //this will include the central group which
+                    //constitutes the roster
+                    me.$store.dispatch( 'loadKumisForExamFromServer', me.exam ).then( function () {
+                        //and then get the students to go in those
+                        //groups
+                        me.$store.dispatch( 'loadStudentsFromServer', me.exam ).then( function () {
+                            //and any existing scores
+                            //as well as comments
+                            me.$store.dispatch( 'loadScoresFromServer', me.exam ).then( function () {
+                                //finally we get grading times
+                                me.$store.dispatch( ngaTypes.loadTimesFromServer, me.exam )
+                                //and are done.
                             } );
+                        } );
                     } );
-
+                } );
             } );
+
         }
     };
 

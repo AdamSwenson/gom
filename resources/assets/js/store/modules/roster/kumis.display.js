@@ -23,53 +23,19 @@ module.exports = {
         //The kumis by which we are filtering
         displayedKumis: [],
 
-
         /** whether the kumi list is visible */
         kumiSelectVisible: false,
 
         /** Kumis which have been selected for whatever reason */
         selectedKumis: [],
 
-        /** The students whose rows have been selected */
-        selectedStudents: [],
-
-        /** The direction to sort the roster */
-        sortAsc: true,
-
-        /**
-         * The currently selected field by which
-         * the roster is sorted
-         */
-        sortedBy: 'lastName',
-
+        /** Whether the modal that allows one to edit and remove kumi is shown */
+        isKumiEditModalVisible : false,
 
     },
 
     mutations: {
 
-        toggleStudent: function ( state, payload ) {
-            let student = payload.obj;
-            let idx = state.selectedStudents.indexOf( student );
-            window.console.log( 'display', 'toggleStudent', 30, student, idx );
-            if ( idx === -1 ) {
-                //was not previously selected
-                //so add it to the selected list
-                state.selectedStudents.push( student );
-                window.console.log( 'display', 'toggleStudent', 35, state.selectedStudents );
-            } else {
-                //was previously selected, so remove it
-                state.selectedStudents.splice( idx, 1 );
-            }
-        },
-
-        selectStudent: function ( state, payload ) {
-            state.selectedStudents.push( payload.obj );
-        },
-
-        deselectStudent: function ( state, payload ) {
-            let idx = state.selectedStudents.indexOf( payload.obj );
-            state.selectedStudents.splice( idx, 1 );
-        },
 
         selectKumi: function ( state, payload ) {
             state.selectedKumis.push( payload.obj );
@@ -113,64 +79,15 @@ module.exports = {
             state.selectedKumis = _.take( state.selectedKumis );
         },
 
-        clearSelectedStudents: function ( state, payload ) {
-            state.selectedStudents = [];
-        },
-
-
-        /**
-         * Alters which field the list of students
-         * is sorted by
-         */
-        setSortedBy: ( state, payload ) => {
-            state.sortedBy = payload.updateVal;
-        },
-
-        /**
-         * Toggles between sorting the student list
-         * ascending and descending
-         * @param state
-         */
-        toggleSortAscending: ( state ) => {
-            state.sortAsc = !state.sortAsc;
-        },
-
-
-
-        /**
-         * @deprecated
-         * @param state
-         * @param payload
-         */
-        updateSelectedKumi: function ( state, payload ) {
-            let kumi = payload.obj;
-            let idx = state.displayedKumis.indexOf( kumi );
-
-            if ( idx === -1 ) {
-                //was not previously selected
-                //so add it to the selected list
-                state.displayedKumis.push( kumi );
-            }
+        toggleEditKumiModal : function ( state ) {
+            state.isKumiEditModalVisible = ! state.isKumiEditModalVisible;
         }
-
 
     },
 
     actions: {},
 
     getters: {
-
-        getSortAsc: ( state ) => {
-            return state.sortAsc;
-        },
-
-        getSortedBy: ( state, getters, rootState ) => {
-            return state.sortedBy;
-        },
-
-        getSelectedStudents: function ( state, getters, ) {
-            return state.selectedStudents;
-        },
 
         getSelectedKumis: function ( state, getters ) {
             return state.selectedKumis;
@@ -182,6 +99,10 @@ module.exports = {
 
         isKumiSelectVisible: function ( state, getters ) {
             return state.kumiSelectVisible;
+        },
+
+        isKumiEditModalVisible: function ( state ) {
+          return state.isKumiEditModalVisible;
         },
 
         /**

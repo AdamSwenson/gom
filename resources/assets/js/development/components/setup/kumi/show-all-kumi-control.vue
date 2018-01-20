@@ -27,12 +27,18 @@
         },
 
         computed: {
+            displayedKumis: function () {
+                return this.$store.getters.getDisplayedKumis;
+            },
 
             styling: function () {
                 let out = '';
                 switch ( this.type ) {
                     case  'tab':
                         out += ' tab ';
+
+                        if(this.displayedKumis && this.displayedKumis.length === 0) out += 'is-active';
+
                         break;
                     case 'button':
                         out += ' button ';
