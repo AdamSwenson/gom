@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Item;
+namespace App\Http\Controllers\Roster;
 
 
 use App\Exam;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Item\StudentResourceController;
 use App\Kumi;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;

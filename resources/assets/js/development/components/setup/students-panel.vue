@@ -55,13 +55,13 @@
 
                 <new-kumi-control type="button"></new-kumi-control>
 
+                <!--This requires the kumi editing modal to also be included-->
                 <edit-kumi-control type="button"></edit-kumi-control>
 
             </div>
 
-            <kumi-editing-modal :is-visible="isModalVisible"
-                                v-on:togglemodal="toggleModalVisibility"
-            ></kumi-editing-modal>
+            <!--This goes with the edit kumi control-->
+            <kumi-editing-modal></kumi-editing-modal>
         </div>
 
         <div id="file-input-area"

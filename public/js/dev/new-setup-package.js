@@ -75705,7 +75705,9 @@ exports.default = {
 
     data: function data() {
         return {
-            styling: 'is-outlined is-info',
+            buttonLabel: 'Edit groups',
+            buttonStyle: 'button is-outlined is-info', //style when used as button
+            tabStyle: 'tab ', //style when used as tab
             isModalVisible: false,
             defaults: {}
         };
@@ -75721,11 +75723,10 @@ exports.default = {
             var out = '';
             switch (this.type) {
                 case 'tab':
-                    out += ' tab ';
+                    out += this.tabStyle;
                     break;
                 case 'button':
-                    out += ' button ';
-                    out += 'is-outlined is-primary';
+                    out += this.buttonStyle;
                     break;
             }
 
@@ -93889,7 +93890,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleModalVisibility
     }
-  }, [_vm._m(0), _vm._v(" "), _c('span', {}, [_vm._v("Edit")]), _vm._v(" "), _c('span', {
+  }, [_vm._m(0), _vm._v(" "), _c('span', {}, [_vm._v(_vm._s(_vm.buttonLabel))]), _vm._v(" "), _c('span', {
     staticClass: "sr-only"
   }, [_vm._v("Edit button in unselected state")])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95104,14 +95105,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "button"
     }
-  })], 1), _vm._v(" "), _c('kumi-editing-modal', {
-    attrs: {
-      "is-visible": _vm.isModalVisible
-    },
-    on: {
-      "togglemodal": _vm.toggleModalVisibility
-    }
-  })], 1), _vm._v(" "), _c('div', {
+  })], 1), _vm._v(" "), _c('kumi-editing-modal')], 1), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",

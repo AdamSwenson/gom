@@ -33,7 +33,7 @@ use Illuminate\Http\Request;
  */
 class SetupController extends Controller
 {
-    const DEFAULT_KUMI_NAME = 'All';
+    const DEFAULT_KUMI_NAME = 'Group 1';
     const EXAM_JSON_NAME = 'loadedExam';
     const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
     const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
@@ -42,30 +42,30 @@ class SetupController extends Controller
     public $type;
     public $exam;
 
-    /**@var IExamRepository */
-    protected $examDao;
-    /**@var IQuestionRepository */
-    protected $questionDao;
-    /** @var IQuestionAssignmentRepository */
-    protected $questionAssignmentDao;
-    protected $questions;
-    protected $requestIds;
-    /** @var IStudentRepository */
-    protected $studentDao;
-    /** @var IElementRepository */
-    protected $elementDao;
-    /** @var IElementAssignmentRepository */
-    protected $elementAssignmentDao;
-    /** @var IItemRepository */
-    protected $itemRepository;
-    /**
-     * @var IAssignmentRepository
-     */
-    protected $assignmentRepository;
-    /**
-     * @var IItemCommentRepository
-     */
-    private $commentRepository;
+//    /**@var IExamRepository */
+//    protected $examDao;
+//    /**@var IQuestionRepository */
+//    protected $questionDao;
+//    /** @var IQuestionAssignmentRepository */
+//    protected $questionAssignmentDao;
+//    protected $questions;
+//    protected $requestIds;
+//    /** @var IStudentRepository */
+//    protected $studentDao;
+//    /** @var IElementRepository */
+//    protected $elementDao;
+//    /** @var IElementAssignmentRepository */
+//    protected $elementAssignmentDao;
+//    /** @var IItemRepository */
+//    protected $itemRepository;
+//    /**
+//     * @var IAssignmentRepository
+//     */
+//    protected $assignmentRepository;
+//    /**
+//     * @var IItemCommentRepository
+//     */
+//    private $commentRepository;
 
     /**
      * SetupController constructor.
@@ -74,17 +74,20 @@ class SetupController extends Controller
      * @param IAssignmentRepository $assignmentRepository
      * @param IItemCommentRepository $commentRepository
      */
-    public function __construct(
-        IExamRepository $examDao,
-        IItemRepository $itemRepository,
-        IAssignmentRepository $assignmentRepository,
-        IItemCommentRepository $commentRepository )
-    {
+    public function __construct()
+ {
+
         $this->middleware('auth');
-        $this->itemRepository = $itemRepository;
-        $this->examDao = $examDao;
-        $this->assignmentRepository = $assignmentRepository;
-        $this->commentRepository = $commentRepository;
+//        IExamRepository $examDao,
+//        IItemRepository $itemRepository,
+//        IAssignmentRepository $assignmentRepository,
+//        IItemCommentRepository $commentRepository )
+
+
+        //        $this->itemRepository = $itemRepository;
+//        $this->examDao = $examDao;
+//        $this->assignmentRepository = $assignmentRepository;
+//        $this->commentRepository = $commentRepository;
     }
 
 
@@ -104,7 +107,7 @@ class SetupController extends Controller
         //this is a brand new exam, so there are no
         //kumis associated with it. So we create
         //and empty one to be the default kumi
-        $kumi = Kumi::create(['name' => 'All']);
+        $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
         $exam->kumis()->attach($kumi->id);
         $kumi->save();
 
@@ -125,6 +128,12 @@ class SetupController extends Controller
 
         return view('development.newsetup', ['exam' => $exam]);
 
+/*
+ * WE'VE MOVED TO THE SETUP PAGE LOADING THE DATA
+ * VIA AJAX. KEEPING THIS HERE FOR REFERENCE IF
+ * DECIDE TO GO BACK TO LOADING FROM PAGE JSON. ALSO
+ * MAY BE USEFUL FOR THE FEEDBACK PAGE WHICH WILL NOT
+ * USE AJAX
 
         $out = $this->assignmentRepository->getItemOrderForClient($exam);
         //The returned array  will have the keys
@@ -151,7 +160,7 @@ class SetupController extends Controller
         $out += $standard;
 
         return view('development.newsetup', $out);
-
+*/
     }
 
     //keep this for the hybrid api!!!!!!!

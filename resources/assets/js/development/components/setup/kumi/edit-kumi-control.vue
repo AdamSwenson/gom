@@ -12,7 +12,7 @@
 
         <!--<span v-else>-->
                     <span class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></span>
-                    <span class="">Edit</span>
+                    <span class="">{{ buttonLabel }}</span>
                     <span class="sr-only">Edit button in unselected state</span>
                 <!--</span>-->
 
@@ -37,7 +37,9 @@
 
         data: function () {
             return {
-                styling: 'is-outlined is-info',
+                buttonLabel : 'Edit groups',
+                buttonStyle: 'button is-outlined is-info', //style when used as button
+                tabStyle: 'tab ', //style when used as tab
                 isModalVisible: false,
                 defaults: {}
             }
@@ -53,11 +55,10 @@
                 let out = '';
                 switch ( this.type ) {
                     case  'tab':
-                        out += ' tab ';
+                        out += this.tabStyle;
                         break;
                     case 'button':
-                        out += ' button ';
-                        out += 'is-outlined is-primary';
+                        out += this.buttonStyle;
                         break;
                 }
 

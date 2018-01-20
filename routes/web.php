@@ -181,9 +181,9 @@ Route::get('dev/feedback/{exam}/{student}', 'Feedback\NewFeedbackController@show
 /* =============================
         Exams (intrinsic properties)
    ============================= */
-Route::get('dev/exams', 'Item\ExamResourceController@index');
-Route::put('dev/exam/{exam}', 'Item\ExamResourceController@update');
-Route::get('dev/exam/{exam}', 'Item\ExamResourceController@show');
+Route::get('dev/exams', 'Exam\ExamResourceController@index');
+Route::put('dev/exam/{exam}', 'Exam\ExamResourceController@update');
+Route::get('dev/exam/{exam}', 'Exam\ExamResourceController@show');
 
 
 /* =============================
@@ -220,20 +220,20 @@ Route::get('dev/history/item/{item}', 'Item\ItemHistoryController@show');
 /* =============================
         Kumi
    ============================= */
-Route::resource('dev/kumis', 'Item\KumiController');
-Route::get('dev/kumis/exam/{exam}', 'Item\KumiController@loadExamKumi');
-Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Item\KumiController@loadExamKumi');
-Route::delete('dev/kumis/{kumi}/exam/{exam}', 'Item\KumiController@disassociateExamAndKumi');
+Route::resource('dev/kumis', 'Roster\KumiController');
+Route::get('dev/kumis/exam/{exam}', 'Roster\KumiController@loadExamKumi');
+Route::post('dev/kumis/{kumi}/exam/{exam}/new', 'Roster\KumiController@loadExamKumi');
+Route::delete('dev/kumis/{kumi}/exam/{exam}', 'Roster\KumiController@disassociateExamAndKumi');
 
 
 /* =============================
         Notes
    ============================= */
-Route::post('dev/notes/item/{item}', 'Item\NotesController@store');
-Route::get('dev/notes/item/{item}', 'Item\NotesController@showForItem');
-Route::post('dev/notes/exam/{exam}', 'Item\NotesController@store');
-Route::get('dev/notes/exam/{exam}', 'Item\NotesController@showForExam');
-Route::resource('dev/notes', 'Item\NotesController');
+Route::post('dev/notes/item/{item}', 'Notes\NotesController@store');
+Route::get('dev/notes/item/{item}', 'Notes\NotesController@showForItem');
+Route::post('dev/notes/exam/{exam}', 'Notes\NotesController@store');
+Route::get('dev/notes/exam/{exam}', 'Notes\NotesController@showForExam');
+Route::resource('dev/notes', 'Notes\NotesController');
 
 /* =============================
         Preferences and settings
@@ -286,30 +286,30 @@ Route::get('dev/numgraded/exam/{exam}', 'Analytics\ExamCountsController@getExamC
 //controller for intrinsic props of student objects
 Route::resource('dev/students', 'Item\StudentResourceController');
 //associations between student and exam
-Route::post('dev/roster/{student}/assoc/{kumi}', 'Item\RosterController@associateStudent');
-Route::post('dev/roster/{student}/diss/{kumi}', 'Item\RosterController@disassociateStudent');
+Route::post('dev/roster/{student}/assoc/{kumi}', 'Roster\RosterController@associateStudent');
+Route::post('dev/roster/{student}/diss/{kumi}', 'Roster\RosterController@disassociateStudent');
 
-Route::post('dev/roster/anon/{exam}', 'Item\RosterController@anonymizeStudents');
-Route::get('dev/roster/exam/{exam}', 'Item\RosterController@getStudentsForExam');
+Route::post('dev/roster/anon/{exam}', 'Roster\RosterController@anonymizeStudents');
+Route::get('dev/roster/exam/{exam}', 'Roster\RosterController@getStudentsForExam');
 
 
 /* =============================
         Tags
    ============================= */
 //-- tag-item
-Route::post('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@associateTagWithItem');
-Route::delete('dev/tags/item/{item}/tag/{tag}', 'Item\TagsController@disassociateTagFromItem');
-Route::get('dev/tags/item/{item}', 'Item\TagsController@showForItem');
+Route::post('dev/tags/item/{item}/tag/{tag}', 'Tags\TagsController@associateTagWithItem');
+Route::delete('dev/tags/item/{item}/tag/{tag}', 'Tags\TagsController@disassociateTagFromItem');
+Route::get('dev/tags/item/{item}', 'Tags\TagsController@showForItem');
 //-- tag-exam
-Route::post('dev/tags/exam/{exam}/tag/{tag}', 'Item\TagsController@associateTagWithExam');
-Route::delete('dev/tags/exam/{exam}/tag/{tag}', 'Item\TagsController@disassociateTagFromExam');
-Route::get('dev/tags/exam/{exam}', 'Item\TagsController@showForExam');
+Route::post('dev/tags/exam/{exam}/tag/{tag}', 'Tags\TagsController@associateTagWithExam');
+Route::delete('dev/tags/exam/{exam}/tag/{tag}', 'Tags\TagsController@disassociateTagFromExam');
+Route::get('dev/tags/exam/{exam}', 'Tags\TagsController@showForExam');
 //-- tag-student
-Route::post('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@associateTagWithStudent');
-Route::delete('dev/tags/student/{student}/tag/{tag}', 'Item\TagsController@disassociateTagFromStudent');
-Route::get('dev/tags/student/{student}', 'Item\TagsController@showForStudent');
+Route::post('dev/tags/student/{student}/tag/{tag}', 'Tags\TagsController@associateTagWithStudent');
+Route::delete('dev/tags/student/{student}/tag/{tag}', 'Tags\TagsController@disassociateTagFromStudent');
+Route::get('dev/tags/student/{student}', 'Tags\TagsController@showForStudent');
 //-- other
-Route::resource('dev/tags', 'Item\TagsController');
+Route::resource('dev/tags', 'Tags\TagsController');
 
 /* =============================
         Time

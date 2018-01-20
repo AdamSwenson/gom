@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Item;
+namespace App\Http\Controllers\Roster;
 
 use App\Exam;
 use App\Http\Requests\KumiRequest;
