@@ -1,6 +1,6 @@
 //test libraries
 
-import * as nggTypes from "../../../../../../resources/assets/js/store/modules/newgrading/new-grading-getter-types";
+import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
 
 import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 

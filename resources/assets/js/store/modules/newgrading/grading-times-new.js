@@ -2,9 +2,9 @@
  * Created by adam on 10/7/16.
  */
 import Vue from 'vue';
-import * as ngmTypes from './new-grading-mutation-types';
-import * as ngaTypes from './new-grading-action-types';
-import * as nggTypes from './new-grading-getter-types';
+import * as ngmTypes from '../../new-grading-mutation-types';
+import * as ngaTypes from '../../new-grading-action-types';
+import * as nggTypes from '../../new-grading-getter-types';
 import * as gTypes from '../../getter-types';
 import * as mTypes from '../../mutation-types';
 

@@ -56,16 +56,19 @@ module.exports = {
             state.selectedStudents.push( payload.obj );
         },
 
+        /**
+         * If the student was in the selected list, this removes them
+         * If they were not selected, this adds them
+         * @param state
+         * @param payload
+         */
         toggleStudent:  ( state, payload ) =>{
             let student = payload.obj;
-            window.console.log( 'roster.display', 'toggleStudent', 61, state, payload);
             let idx = state.selectedStudents.indexOf( student );
-            window.console.log( 'display', 'toggleStudent', 30, student, idx );
             if ( idx === -1 ) {
                 //was not previously selected
                 //so add it to the selected list
                 state.selectedStudents.push( student );
-                window.console.log( 'display', 'toggleStudent', 35, state.selectedStudents );
             } else {
                 //was previously selected, so remove it
                 state.selectedStudents.splice( idx, 1 );

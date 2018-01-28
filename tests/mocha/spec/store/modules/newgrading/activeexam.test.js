@@ -4,8 +4,8 @@ let faker = require( 'faker' );
 //Dependencies
 import * as activeexam from '../../../../../../resources/assets/js/store/modules/newgrading/activeexam-new';
 
-import * as mTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-action-types';
+import * as mTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
+import * as aTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
 
 import Exam from '../../../../../../resources/assets/js/models/Exam';
 import Payload from '../../../../../../resources/assets/js/models/Payload';

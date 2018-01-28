@@ -108,6 +108,7 @@ class SetupController extends Controller
         //kumis associated with it. So we create
         //and empty one to be the default kumi
         $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
+        $kumi->is_roster = true; //make it the default roster
         $exam->kumis()->attach($kumi->id);
         $kumi->save();
 

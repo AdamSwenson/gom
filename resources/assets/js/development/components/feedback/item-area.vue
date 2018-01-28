@@ -45,7 +45,7 @@
 </style>
 
 <script>
-    import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
+    import * as nggTypes from '../../../store/new-grading-getter-types';
 
     import ItemComment from "./item-comment";
     import ItemChart from "./item-chart";

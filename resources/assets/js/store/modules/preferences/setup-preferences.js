@@ -2,9 +2,9 @@
  * Created by adam on 12/10/17.
  */
 
-import * as ngmTypes from '../newgrading/new-grading-mutation-types';
-import * as ngaTypes from '../newgrading/new-grading-action-types';
-import * as nggTypes from '../newgrading/new-grading-getter-types';
+import * as ngmTypes from '../../new-grading-mutation-types';
+import * as ngaTypes from '../../new-grading-action-types';
+import * as nggTypes from '../../new-grading-getter-types';
 
 import Exam from '../../../models/Exam'
 import Payload from '../../../models/Payload'

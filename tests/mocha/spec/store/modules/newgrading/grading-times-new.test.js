@@ -3,11 +3,11 @@ require( 'sinon' );
 let faker = require( 'faker' );
 
 //Dependencies
-import * as nggTypes from "../../../../../../resources/assets/js/store/modules/newgrading/new-grading-getter-types";
+import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
 import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
 
-import * as ngmTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-mutation-types';
-import * as ngaTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-action-types';
+import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
+import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
 
 import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 

@@ -45,15 +45,15 @@ import * as state from './state'
 import activestudent from './modules/activestudent.js'
 import activeexam from './modules/activeexam.js'
 import comments from './modules/comments.js'
-import escores from './modules/escores.js'
+import escores from './modules/legacy/escores.js'
 import exams from './modules/exams'
 import items from './modules/items/items.js'
-import grades from './modules/grades.js'
-import qscores from './modules/qscores.js'
-import questions from './modules/questions.js'
-import students from './modules/students.js'
+import grades from './modules/legacy/grades.js'
+import qscores from './modules/legacy/qscores.js'
+import questions from './modules/legacy/questions.js'
+import students from './modules/legacy/students.js'
 import settings from './modules/settings'
-import times from './modules/times.js'
+import times from './modules/legacy/times.js'
 
 
 //Newer
@@ -72,13 +72,16 @@ import itemStats from './modules/analytics/itemStats';
 //grade assignments
 import gradeAssignments from './modules/grades/gradeAssignments';
 
+//modals
+import modals from './modules/modals/modals';
+
 //new grading
 import newactivestudent from './modules/newgrading/activestudent-new';
 import newactiveexam from './modules/newgrading/activeexam-new';
 import preferences from './modules/preferences/index';
 
 //timer
-import timerNew from './modules/newgrading/timer-new';
+import timerNew from './modules/timer/timer-new';
 import gradingTimesNew from './modules/newgrading/grading-times-new';
 import gradingCountsNew from './modules/newgrading/grading-counts-new';
 //api
@@ -122,22 +125,20 @@ const debug = process.env.NODE_ENV !== 'production';
     modules: {
         newactiveexam,
         newactivestudent,
-        timerNew,
-        gradingTimesNew,
-        gradingCountsNew,
-        preferences,
-
-        itemStats,
-
 
         comments,
         exams,
         gradeAssignments,
+        gradingTimesNew,
+        gradingCountsNew,
         grades,
         items,
         itemScores,
+        itemStats,
         kumi,
+        modals,
         notes,
+        preferences,
         quality,
         roster,
         settings,
@@ -145,6 +146,7 @@ const debug = process.env.NODE_ENV !== 'production';
         students,
         tags,
         times,
+        timerNew,
         visibility,
 
         //old version of gom

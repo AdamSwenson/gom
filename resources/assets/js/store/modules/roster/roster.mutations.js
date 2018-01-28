@@ -14,24 +14,31 @@ import Vue from 'vue'
 import Student from '../../../models/Student'
 import Payload from '../../../models/Payload'
 
-import Kumi from '../../../models/Kumi'
 
 import * as mTypes from '../../mutation-types'
-import * as aTypes from '../../action-types'
-import * as gTypes from '../../getter-types';
+
+
+const isNew = ( state, student ) => {
+    return _.findIndex( state.roster, { id: student.id } ) === -1;
+};
 
 module.exports = {
 
     /**
-     * Adds a student record to state.students.
-     * NB, this does not add it to the associated class
+     * Adds a student record to state.roster.
+     * NB, this does not add it to the associated class.
+     *
+     * Since students may be loaded at different times, this
+     * silently fails to add duplicates
+     *
      * @param state
      * @param payload
      */
     [ mTypes.addStudentToRoster ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         let student = payload.obj;
-        state.roster.push( student );
+        //make sure that not duplicating
+        if(isNew(state, student)) state.roster.push( student );
     },
 
     /**

@@ -1,8 +1,7 @@
 <template>
-    <a
-            class="public-indicator button is-outlined "
-            v-bind:class="displayClass"
-            v-on:click="togglePublic"
+    <a class="public-indicator button is-outlined "
+       v-bind:class="displayClass"
+       v-on:click="togglePublic"
     >
        <span class="icon is-small">
            <i v-bind:class="icon" aria-hidden="true"></i>
@@ -41,7 +40,7 @@
      */
     export default {
 
-        props: [ 'serialNumber'],
+        props: [ 'serialNumber' ],
 
         data: function () {
             return {

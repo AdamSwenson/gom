@@ -14,33 +14,48 @@ import Vue from 'vue'
 
 import Payload from '../../../models/Payload';
 import * as mTypes from '../../mutation-types';
+import Student from "../../../models/Student";
 
 module.exports = {
 
 
     state: {
 
-        //The kumis by which we are filtering
-        displayedKumis: [],
+        //The kumis by which we are filtering students by
+        kumisToFilterStudentsBy: [],
 
         /** whether the kumi list is visible */
         kumiSelectVisible: false,
 
-        /** Kumis which have been selected for whatever reason */
+        /** Kumis which have been selected for reasons other
+         * than filtering which students are displayed.
+         * This often will include selecting a group of kumis
+         * to be altered, or to have their associations altered
+         */
         selectedKumis: [],
 
         /** Whether the modal that allows one to edit and remove kumi is shown */
-        isKumiEditModalVisible : false,
+        isKumiEditModalVisible: false,
 
     },
 
     mutations: {
 
 
+        /**
+         * Add a kumi to the selected Kumis list
+         * @param state
+         * @param payload
+         */
         selectKumi: function ( state, payload ) {
             state.selectedKumis.push( payload.obj );
         },
 
+        /**
+         * Remove a kumi from the selected kumis list
+         * @param state
+         * @param payload
+         */
         deselectKumi: function ( state, payload ) {
             let idx = state.selectedKumis.indexOf( payload.obj );
             state.selectedKumis.splice( idx, 1 );
@@ -53,34 +68,52 @@ module.exports = {
          */
         toggleKumi: function ( state, payload ) {
             let kumi = payload.obj;
-            let idx = state.displayedKumis.indexOf( kumi );
+            let idx = state.kumisToFilterStudentsBy.indexOf( kumi );
 
             if ( idx === -1 ) {
                 //was not previously selected
                 //so add it to the selected list
-                state.displayedKumis.push( kumi );
+                state.kumisToFilterStudentsBy.push( kumi );
             } else {
                 //was previously selected, so remove it
-                state.displayedKumis.splice( idx, 1 );
+                state.kumisToFilterStudentsBy.splice( idx, 1 );
             }
         },
 
+        /**
+         * Toggles whether a kumi selector is visible
+         * @param state
+         * @param payload
+         */
         toggleKumiSelectVisibility: function ( state, payload ) {
             state.kumiSelectVisible = !state.kumiSelectVisible;
         },
 
-        clearDisplayedKumis: function ( state, payload ) {
-            state.displayedKumis = _.take( state.displayedKumis );
+
+        /**
+         * Removes all kumi filters on students
+         * @param state
+         * @param payload
+         */
+        clearKumisToFilterStudentsBy: function ( state, payload ) {
+            state.kumisToFilterStudentsBy = [];
         },
 
+        /**
+         * Empties the selected kumis list
+         * @param state
+         * @param payload
+         */
         clearSelectedKumis: function ( state, payload ) {
-            //we always keep the first kumi because that ties the
-            //student to the exam
-            state.selectedKumis = _.take( state.selectedKumis );
+            state.selectedKumis = [];
         },
 
-        toggleEditKumiModal : function ( state ) {
-            state.isKumiEditModalVisible = ! state.isKumiEditModalVisible;
+        /**
+         * Shows or hides the edit kumi modal
+         * @param state
+         */
+        toggleEditKumiModal: function ( state ) {
+            state.isKumiEditModalVisible = !state.isKumiEditModalVisible;
         }
 
     },
@@ -93,8 +126,8 @@ module.exports = {
             return state.selectedKumis;
         },
 
-        getDisplayedKumis: function ( state, getters ) {
-            return state.displayedKumis;
+        getKumisToFilterStudentsBy: function ( state, getters ) {
+            return state.kumisToFilterStudentsBy;
         },
 
         isKumiSelectVisible: function ( state, getters ) {
@@ -102,7 +135,7 @@ module.exports = {
         },
 
         isKumiEditModalVisible: function ( state ) {
-          return state.isKumiEditModalVisible;
+            return state.isKumiEditModalVisible;
         },
 
         /**
@@ -115,11 +148,32 @@ module.exports = {
          * @returns {function(*)}
          */
         isKumiDisplayed: ( state, getters, rootState, kumi ) => ( kumi ) => {
-            return state.displayedKumis.filter( ( i ) => {
+            return state.kumisToFilterStudentsBy.filter( ( i ) => {
                 if ( i.serialNumber === kumi.serialNumber ) {
                     return i;
                 }
             } );
-        }
+        },
+
+        //
+        // /**
+        //  * Returns true if the specified student is in the
+        //  * presently selected kumi or, if all kumis are selected.
+        //  * Returns false otherwise
+        //  * @param state
+        //  * @param getters
+        //  * @param rootState
+        //  * @param student
+        //  * @returns {boolean}
+        //  */
+        // isStudentInSelectedKumis: ( state, getters, rootState, student ) => ( student ) => {
+        //     let kumis = getters.getSelectedKumis;
+        //     //if the kumis are null or empty, then
+        //     // no student could be associated with any kumi in that list
+        //     if ( _.isNull( kumis ) || _.isUndefined( kumis ) || kumis.length === 0 ) return false;
+        //     return student.isInKumiOrKumiList( kumis );
+        // },
+
+
     }
 };

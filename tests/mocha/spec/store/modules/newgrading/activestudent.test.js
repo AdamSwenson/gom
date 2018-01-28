@@ -7,9 +7,9 @@ let faker = require( 'faker' );
 import * as Component from '../../../../../../resources/assets/js/store/modules/newgrading/activestudent-new';
 
 
-import * as mTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-mutation-types';
+import * as mTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
 
-import * as aTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-action-types';
+import * as aTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
 
 import Payload from '../../../../../../resources/assets/js/models/Payload';
 

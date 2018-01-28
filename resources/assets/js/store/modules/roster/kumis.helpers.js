@@ -1,8 +1,15 @@
 import Kumi from "../../../models/Kumi";
 import Payload from "../../../models/Payload";
 
-
-export function filterExamAssociations ( state, prop, val )  {
+/**
+ * Returns objects with examId, kumiId as keys
+ *
+ * @param state
+ * @param prop
+ * @param val
+ * @returns {*[]}
+ */
+export function filterExamKumiAssociations ( state, prop, val )  {
     return state.examKumiAssociations.filter( ( i ) => {
         if ( i[ prop ] === val ) {
             return i;

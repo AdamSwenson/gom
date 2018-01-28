@@ -16,7 +16,7 @@
 </style>
 
 <script>
-    import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
+    import * as nggTypes from '../../../store/new-grading-getter-types';
     import ItemStat from '../../../models/ItemStat';
 
     import {

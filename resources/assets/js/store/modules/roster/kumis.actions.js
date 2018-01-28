@@ -20,6 +20,7 @@ import Kumi from '../../../models/Kumi';
 import Student from '../../../models/Student';
 
 import { createKumiRequest, disassociateKumiAndExam } from '../../../api/requests/kumiRequests';
+import { disassociateStudent } from "../../../api/requests/studentRequests";
 
 const KUMIS_JSON_NAME = 'loadedKumis';
 
@@ -40,12 +41,11 @@ module.exports = {
      * @param payload
      */
     createKumi( { state, dispatch, commit, getters } ) {
-
-        return new Promise( ( resolve, reject ) => {
+        return new Promise( function ( resolve, reject ) {
             let exam = getters[ gTypes.getActiveExam ];
             let kumi = new Kumi();
             createKumiRequest( kumi, exam )
-                .then( function (data) {
+                .then( function ( data ) {
                     kumi.id = data.id;
                     commit( mTypes.addKumi, Payload.factory( {
                         obj: kumi,
@@ -57,34 +57,16 @@ module.exports = {
     },
 
 
-    processKumiFromJson( { state, dispatch, commit, getters } ) {
-        let exam = getters.getCurrentExam;
-        let kumiData = JSON.parse( document.getElementById( KUMIS_JSON_NAME ).getAttribute( 'data' ) );
-
-        _.forEach( kumiData, function ( d, i ) {
-            //first make a kumi from the loaded data and push it into storage
-            let kumi = Kumi.factory( { d } );
-            //Now associate the kumi with the exam
-            let pl = Payload.factory( {
-                obj: kumi,
-                kumi: kumi,
-                examId: exam.id,
-                kumiId: kumi.id,
-                mutateSilently: true
-            } );
-            commit( 'addKumi', pl );
-            commit( 'associateExamWithKumi', pl );
-            if ( i === 0 ) {
-                //set the first kumi as the one to display
-                commit( 'toggleKumi', pl )
-            }
-        } );
-    }
-    ,
-
     /**
      * Removes all associations between an exam and a kumi.
-     * Also removes all student associations with the kumi
+     * Also removes all student associations (from this roster)
+     * with the kumi
+     *
+     * NB, it does not delete the kumi itself. Nor does it disassociate
+     * any students who weren't on this exam. So if someone had created
+     * a kumi for students needing intervention (which would link them
+     * across exams), it and its relationships to other students
+     * would be unaffected
      *
      * @param state
      * @param dispatch
@@ -93,12 +75,34 @@ module.exports = {
      * @param payload
      */
     removeKumi( { state, dispatch, commit, getters }, payload ) {
-let {kumi, exam } = payload;
-        disassociateKumiAndExam(kumi, exam)
-            .then(function(){
-                commit( mTypes.disassociateExamFromKumi, payload);
-            });
+        return new Promise( function ( resolve, reject ) {
+
+            //We first remove the associations between the kumi
+            //and the exam
+            let { kumi, exam } = payload;
+            disassociateKumiAndExam( kumi, exam )
+                .then( function () {
+                    commit( mTypes.disassociateExamFromKumi, payload );
+                } );
+
+            //now we need to remove the student associations
+            let students = getters.getStudentsForKumi( kumi );
+            //if there are none, then we are done
+            if ( _.isUndefined( students ) || students.length === 0 ) return resolve();
+
+            //Otherwise we ask the server to remove any relationship for each one
+            dispatch( 'removeStudentsFromKumis',
+                Payload.factory( {
+                        students: student,
+                        kumis: [ kumi ]
+                    } ) ).then( function () {
+                resolve();
+            } );
+
+        } );
     }
 
-};
+
+}
+;
 

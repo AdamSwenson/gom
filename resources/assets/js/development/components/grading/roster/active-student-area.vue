@@ -14,9 +14,9 @@
 <script>
 
 
-    import * as mTypes from '../../../../store/modules/newgrading/new-grading-mutation-types';
-    import * as aTypes from '../../../../store/modules/newgrading/new-grading-action-types';
-    import * as gTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
+    import * as mTypes from '../../../../store/new-grading-mutation-types';
+    import * as aTypes from '../../../../store/new-grading-action-types';
+    import * as gTypes from '../../../../store/new-grading-getter-types';
     import Student from '../../../../models/Student';
     import PayloadTime from '../../../../models/PayloadTime';
 

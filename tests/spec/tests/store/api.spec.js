@@ -3,7 +3,7 @@
 require('jasmine-jquery');
 
 //Dependencies
-import * as api from '../../../../resources/assets/js/store/api.js';
+import * as api from '../../../../resources/assets/js/store/modules/legacy/api.js';
 
 
 describe(" tests | ", function () {

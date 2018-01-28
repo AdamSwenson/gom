@@ -10,9 +10,9 @@
 import Vue from 'vue';
 //using different common name store so don't get into
 //trouble with the original
-import * as ngmTypes from './new-grading-mutation-types';
-import * as ngaTypes from './new-grading-action-types';
-import * as nggTypes from './new-grading-getter-types';
+import * as ngmTypes from '../../new-grading-mutation-types';
+import * as ngaTypes from '../../new-grading-action-types';
+import * as nggTypes from '../../new-grading-getter-types';
 import Student from '../../../models/Student';
 import Payload from '../../../models/Payload';
 

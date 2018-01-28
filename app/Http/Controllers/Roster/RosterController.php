@@ -115,20 +115,31 @@ class RosterController extends Controller
 
     public function getStudentsForExam( Exam $exam )
     {
-        $out = [];
-        $kumis = $exam->kumis()->get();
-        foreach ( $kumis as $kumi ) {
-            $students = $kumi->students()->get();
-            foreach ( $students as $student ) {
-                $s = StudentResourceController::convertOutgoing($student);
-                $s['kumiId'] = $kumi->id;
-                $out[] = $s;
+        $out =[];
+        $rosterKumi = $exam->roster();
+        $students = $rosterKumi->students()->get();
+        foreach ( $students as $student ) {
+            $s = StudentResourceController::convertOutgoing($student);
+//            $s['kumiIds'] = $student->kumis;
 
-            }
-
+            $s['kumiIds'] = collect($student->kumis)->pluck('id');
+            $out[] = $s;
         }
-        //        $students = $this->dao->load_students_by_exam($exam->id);
         return $out;
+//        $out = [];
+//        $kumis = $exam->kumis()->get();
+//        foreach ( $kumis as $kumi ) {
+//            $students = $kumi->students()->get();
+//            foreach ( $students as $student ) {
+//                $s = StudentResourceController::convertOutgoing($student);
+//                $s['kumiId'] = $kumi->id;
+//                $out[] = $s;
+//
+//            }
+//
+//        }
+//        //        $students = $this->dao->load_students_by_exam($exam->id);
+//        return $out;
     }
 
 }

@@ -1,6 +1,8 @@
+import { factories } from "../../spec/helpers/vuex.spec.helpers";
 
 const faker = require('faker');
 import GradeAssignment from "../../../resources/assets/js/models/GradeAssignment";
+import Kumi from "../../../resources/assets/js/models/Kumi";
 
 
 // Factories
@@ -92,5 +94,14 @@ export const makeScoreListServerResponse = (  ) => {
 
 };
 
+
+
+export const makeKumis = ( number ) => {
+    let kumis = [];
+    for (let i = 0; i < number; i++) {
+        kumis.push( Kumi.factory( { name: faker.company.bs(), id: faker.random.number() } ) );
+    }
+    return kumis;
+}
 
 // /

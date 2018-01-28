@@ -35,7 +35,7 @@
     import * as gTypes from '../store/getter-types'
 
     import { updateItemsOrder } from '../api/requests'
-    import { loadExamKumi } from '../api/requests/kumiRequests';
+    import { loadKumiForExam } from '../api/requests/kumiRequests';
     import { loadAllStudents } from '../api/requests/studentRequests';
 
     export default {

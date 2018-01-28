@@ -666,62 +666,6 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function() {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		var result = [];
-		for(var i = 0; i < this.length; i++) {
-			var item = this[i];
-			if(item[2]) {
-				result.push("@media " + item[2] + "{" + item[1] + "}");
-			} else {
-				result.push(item[1]);
-			}
-		}
-		return result.join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -898,6 +842,62 @@ var getTagsForObject = exports.getTagsForObject = 'getTagsForObject';
 var getTagById = exports.getTagById = 'getTagById';
 
 /***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function() {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		var result = [];
+		for(var i = 0; i < this.length; i++) {
+			var item = this[i];
+			if(item[2]) {
+				result.push("@media " + item[2] + "{" + item[1] + "}");
+			} else {
+				result.push(item[1]);
+			}
+		}
+		return result.join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+
+/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1005,7 +1005,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(507)
+var listToStyles = __webpack_require__(509)
 
 /*
 type StyleObject = {
@@ -12735,7 +12735,7 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78), __webpack_require__(206).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78), __webpack_require__(207).setImmediate))
 
 /***/ }),
 /* 12 */
@@ -12750,188 +12750,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Created by adam on 3/21/17.
- */
-
-//Grading a student's exam
-var getExamId = exports.getExamId = 'getExamId';
-var isActive = exports.isActive = 'isActive';
-
-//counts
-var getNumberGraded = exports.getNumberGraded = 'getNumberGradedNew';
-var getTotalExams = exports.getTotalExams = 'getTotalExamsNew';
-var getNumberExamsRemaining = exports.getNumberExamsRemaining = 'getNumberExamsRemainingNew';
-var getAllItemScores = exports.getAllItemScores = 'getAllItemScores';
-
-var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent';
-var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = 'getCommentTextForActiveStudent';
-var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = 'getExamGradeForActiveStudent';
-var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 'getElementScoreForActiveStudent';
-
-// ================================================================
-// ==================================== EXAMS =====================
-// ================================================================
-var getExam = exports.getExam = 'getExam';
-var getAllExams = exports.getAllExams = 'getAllExams';
-var getActiveExam = exports.getActiveExam = 'getActiveExamNew';
-
-// ================================================================
-// ==================================== ITEMS =====================
-// ================================================================
-
-/**
-* Returns list of items objects
-* @param state
-* @param getters
-* @param payload
-* @returns []
-*/
-var getAllItems = exports.getAllItems = 'getAllItems';
-var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
-var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
-
-/**
-* Returns the item object. See original for
-* parameters
-* @type {string}
-*/
-var getItem = exports.getItem = 'getItem';
-
-/**
- * Returns the item object with the given id.
- * This is the preferred way of looking up objects.
- * It is immutable across re-sorting and corresponds with
- * the stored db value.
- * Getting an object by this does not guarantee
- * that the item.index property will equal the
- * list index. That could happen if updateOrder has not
- * yet run.
- * @param state
- * @param getters
- * @param rootState
- * @param index
- */
-var getItemById = exports.getItemById = 'getItemById';
-
-/**
- * Returns the item object residing at the
- * given index in the list.
- * This does not guarantee
- * that the item.index property will equal the
- * list index. That could happen if updateOrder has not
- * yet run.
- * @param state
- * @param getters
- * @param rootState
- * @param index
- */
-var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
-var getItemBySerialNumber = exports.getItemBySerialNumber = 'getItemBySerialNumber';
-
-var getItemCount = exports.getItemCount = 'getItemCount';
-var getStudentCount = exports.getStudentCount = 'getStudentCount';
-var getKumiCount = exports.getKumiCount = 'getKumiCount';
-var getKumiCountForExam = exports.getKumiCountForExam = 'getKumiCountForExam';
-
-/**
- * Returns a node from the itemMap by serial number
- * @type {string}
- */
-var getItemNodeFromOrder = exports.getItemNodeFromOrder = 'getItemNodeFromOrder';
-
-//Node properties
-var getHeightOfNode = exports.getHeightOfNode = 'getHeightOfNode';
-var getDepthOfNode = exports.getDepthOfNode = 'getDepthOfNode';
-
-/**
- * Returns a copy of the itemMap.
- * The copy shouldn't be reactive.
- * This will be a Node instance representing
- * the exam with all the questions and elements in
- * children properties
- * @type {string}
- */
-var getItemMapCopy = exports.getItemMapCopy = 'getItemMapCopy';
-
-//Visibility settings
-var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
-var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
-
-/**
- * Translates the current map of items into
- * a map with the database ids set as data on the
- * nodes.
- * This is the object which will be sent to sync
- * with the server.
- * @type {string}
- */
-var getSortedIds = exports.getSortedIds = 'getSortedIds';
-
-/* ================================================================
-   ================== GRADE ASSIGNMENTS       =====================
-   ================================================================ */
-// export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
-// export const getGradeAssignments = 'getGradeAssignments';
-// export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
-// export const getTotalScores = 'getTotalScores';
-// export const getGradeFrequencies = 'getGradeFrequencies';
-// export const getGradeAssignmentForScore = 'getGradeAssignmentForScore';
-// export const getMaxPossibleScore = 'getMaxPossibleScore';
-// export const getInconsistentCutOffs = 'getInconsistentCutOffs';
-// export const getListOfGradeValues = 'getListOfGradeValues';
-
-
-/* ================================================================
-   ================== PREFERENCES -- GRADE    =====================
-   ================================================================ */
-var areGradedStudentRowsVisible = exports.areGradedStudentRowsVisible = 'areGradedStudentRowsVisible';
-var areStudentNamesVisible = exports.areStudentNamesVisible = 'areStudentNamesVisible';
-var isLetterGradeButtonUsed = exports.isLetterGradeButtonUsed = 'isLetterGradeButtonUsed';
-var isSliderUsed = exports.isSliderUsed = 'isSliderUsed';
-var isScoreDisplayed = exports.isScoreDisplayed = 'isScoreDisplayed';
-var shouldDynamicallyCollapseCommentAreas = exports.shouldDynamicallyCollapseCommentAreas = 'shouldDynamicallyCollapseCommentAreas';
-var shouldTimerAutomaticallyStart = exports.shouldTimerAutomaticallyStart = 'shouldTimerAutomaticallyStart';
-var getGradingPreference = exports.getGradingPreference = 'getGradingPreference';
-
-/* ================================================================
-   ================== PREFERENCES -- SETUP    =====================
-   ================================================================ */
-var getSetupPreferences = exports.getSetupPreferences = 'getSetupPreferences';
-var getSetupPreference = exports.getSetupPreference = 'getSetupPreference';
-/* ================================================================
-   ================== PREFERENCES -- USER    =====================
-   ================================================================ */
-var getUserPreferences = exports.getUserPreferences = 'getUserPreferences';
-var getUserPreference = exports.getUserPreference = 'getUserPreference';
-
-/* ================================================================
-   ================== SCORES        =====================
-   ================================================================ */
-var getItemScoreObject = exports.getItemScoreObject = 'getItemScoreObject';
-var getTotalScoreForStudent = exports.getTotalScoreForStudent = 'getTotalScoreForStudent';
-var getGradedStudentIds = exports.getGradedStudentIds = 'getGradedStudentIds';
-
-/* ================================================================
-   ================== TIMES        =====================
-   ================================================================ */
-var getTotalGradingTime = exports.getTotalGradingTime = 'getTotalGradingTimeNew';
-var getAverageGradingTime = exports.getAverageGradingTime = 'getAverageGradingTimeNew';
-var getRemainingGradingTime = exports.getRemainingGradingTime = 'getRemainingGradingTimeNew';
-var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew';
-var isTimerRunning = exports.isTimerRunning = 'isTimerRunning';
-var getActiveStudent = exports.getActiveStudent = 'getActiveStudentNew';
-
-/***/ }),
+/* 13 */,
 /* 14 */
 /***/ (function(module, exports) {
 
@@ -12954,77 +12773,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Created by adam on 1/10/17.
- */
-/**
- * https://vuex.vuejs.org/en/mutations.html
- * It is a commonly seen pattern to use constants for mutation types in various Flux implementations. This allow the code to take advantage of tooling like linters, and putting all constants in a single file allows your collaborators to get an at-a-glance view of what mutations are possible in the entire application:
- Whether to use constants is largely a preference - it can be helpful in large projects with many developers, but it's totally optional if you don't like them.
-
- * @type {string}
- */
-
-// ------------------------------ New grading
-
-
-//active exam
-var setActiveExam = exports.setActiveExam = 'setActiveExam';
-var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
-var updateActiveExamProp = exports.updateActiveExamProp = 'updateActiveExamProp';
-
-//activestudent
-var setActiveStudent = exports.setActiveStudent = 'setActiveStudentNew';
-var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
-var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTimeNew';
-var startExamTimer = exports.startExamTimer = 'startExamTimer';
-var stopExamTimer = exports.stopExamTimer = 'stopExamTimer';
-
-//preferences for grading
-var toggleGradedStudentRowVisibility = exports.toggleGradedStudentRowVisibility = 'toggleGradedStudentRowVisibility';
-var toggleStudentNameVisibility = exports.toggleStudentNameVisibility = 'toggleStudentNameVisibility';
-var loadExams = exports.loadExams = 'loadExams';
-var updateGradingPreference = exports.updateGradingPreference = 'updateGradingPreference';
-
-//preferences for setup
-var updateSetupPreference = exports.updateSetupPreference = 'updateSetupPreference';
-
-//preferences for user and account
-var updateUserPreference = exports.updateUserPreference = 'updateUserPreference';
-
-//times
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-var setGradingTime = exports.setGradingTime = 'setGradingTime';
-var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
-var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
-
-var setExam = exports.setExam = 'setExam';
-
-//Initialization
-var loadInitialData = exports.loadInitialData = 'loadInitialData';
-
-//scores
-var updateScore = exports.updateScore = 'updateScore';
-var updateText = exports.updateText = 'updateText';
-
-var setItemScore = exports.setItemScore = 'setItemScore';
-var removeItemScore = exports.removeItemScore = 'removeItemScore';
-
-var loadTotalScores = exports.loadTotalScores = 'loadTotalScores';
-
-//time
-var updateStudentGradingTime = exports.updateStudentGradingTime = 'updateStudentGradingTime';
-
-/***/ }),
+/* 16 */,
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13327,19 +13076,48 @@ var Kumi = function (_IModel) {
     function Kumi() {
         _classCallCheck(this, Kumi);
 
-        return _possibleConstructorReturn(this, (Kumi.__proto__ || Object.getPrototypeOf(Kumi)).call(this));
+        var _this = _possibleConstructorReturn(this, (Kumi.__proto__ || Object.getPrototypeOf(Kumi)).call(this));
+
+        _this.year;
+        _this.term = '';
+        _this.name = '';
+        _this.description = '';
+        _this.id;
+        _this.isRoster = false;
+        return _this;
     }
 
-    _createClass(Kumi, null, [{
+    /**
+     * Whether the kumi is newly created.
+     * That is, whether it has a name or other
+     * essential properties. (right now, just checks
+     * for a name).
+     *
+     */
+
+
+    _createClass(Kumi, [{
+        key: 'isNew',
+        value: function isNew() {
+            return _.isNull(this.name) || this.name.length === 0;
+        }
+    }], [{
         key: 'factory',
         value: function factory(params) {
             var o = new Kumi();
-            return this.fillObject(o, params, {}); //Exam.aliasMap);
+            return this.fillObject(o, params, Kumi.aliasMap);
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                is_roster: 'isRoster'
+            };
         }
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['year', 'term', 'name', 'id'].concat(_get(Kumi.__proto__ || Object.getPrototypeOf(Kumi), 'fillableProps', this));
+            return ['year', 'term', 'name', 'description', 'id', 'isRoster'].concat(_get(Kumi.__proto__ || Object.getPrototypeOf(Kumi), 'fillableProps', this));
         }
     }]);
 
@@ -13350,121 +13128,6 @@ exports.default = Kumi;
 
 /***/ }),
 /* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Created by adam on 1/10/17.
- */
-
-//parent.actions
-
-//activeexam -- which exam is being graded, set up, et cetera
-var setExamAsActive = exports.setExamAsActive = 'setExamAsActive';
-var resetActiveExam = exports.resetActiveExam = 'resetActiveExam';
-
-//activestudent -- which student is being graded, reviewed, et cetera
-var setStudentAsActive = exports.setStudentAsActive = 'setStudentAsActive';
-var resetActiveStudent = exports.resetActiveStudent = 'resetActiveStudent';
-
-var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
-
-//comments
-var recordCommentText = exports.recordCommentText = 'recordCommentTextNew';
-
-//scores
-var recordItemScore = exports.recordItemScore = 'recordItemScoreNew';
-var resetItemScore = exports.resetItemScore = 'resetItemScore';
-var loadScoresFromServer = exports.loadScoresFromServer = 'loadScoresFromServer';
-
-//exams
-var addNewExam = exports.addNewExam = 'addNewExam';
-var loadExams = exports.loadExams = 'loadExams';
-
-//grades
-var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
-var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
-var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
-
-//grade assignments
-var updateCutoff = exports.updateCutoff = 'updateCutoff';
-var loadGradeAssignmentsFromServerData = exports.loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
-
-//preferences
-var loadUserPreferencesFromServer = exports.loadUserPreferencesFromServer = 'loadUserPreferencesFromServer';
-var loadSetupPreferencesFromServer = exports.loadSetupPreferencesFromServer = 'loadSetupPreferencesFromServer';
-var loadGradePreferencesFromServer = exports.loadGradePreferencesFromServer = 'loadGradePreferencesFromServer';
-
-//questions
-// export const loadMaxQuestionScores = 'loadMaxQuestionScores';
-// export const loadQuestions = 'loadQuestions';
-// export const loadNumberQuestions = 'loadNumberQuestions';
-// export const addQuestion = 'addQuestion';
-//
-// //roster and kumi
-// export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';
-
-
-//students
-var loadStudents = exports.loadStudents = 'loadStudents';
-
-//times
-var loadTimesFromServer = exports.loadTimesFromServer = 'loadTimesFromServer';
-var startExamTimer = exports.startExamTimer = 'startExamTimer';
-var stopExamTimer = exports.stopExamTimer = 'stopExamTimer';
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(14)(function () {
-  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
-});
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var anObject = __webpack_require__(10);
-var IE8_DOM_DEFINE = __webpack_require__(172);
-var toPrimitive = __webpack_require__(47);
-var dP = Object.defineProperty;
-
-exports.f = __webpack_require__(21) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (IE8_DOM_DEFINE) try {
-    return dP(O, P, Attributes);
-  } catch (e) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.1.15 ToLength
-var toInteger = __webpack_require__(46);
-var min = Math.min;
-module.exports = function (it) {
-  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
-};
-
-
-/***/ }),
-/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13490,6 +13153,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Created by adam on 8/15/16.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
+/**
+ * Helper function for checking whether a kumi is
+ * in the student's list of kumis that she is associated with
+ */
+var isInList = function isInList(kumi, listToCheck) {
+    // if(_.isUndefined(kumi) || _.isUndefined(kumi.id)) return false;
+    // if(_.isUndefined(listToCheck)) return false;
+
+    return _.findIndex(listToCheck, { id: kumi.id }) >= 0;
+};
+
 var Student = function (_IModel) {
     _inherits(Student, _IModel);
 
@@ -13507,6 +13181,7 @@ var Student = function (_IModel) {
         _this.lastName = '';
         _this.firstName = '';
 
+        /** Kumi objects with which the student is associated */
         _this.associatedKumis = [];
 
         //sometimes it will be expeditious just
@@ -13545,6 +13220,38 @@ var Student = function (_IModel) {
         key: 'isNew',
         value: function isNew() {
             return this.id === -1;
+        }
+
+        /**
+         * Given a kumi object or list of kumi objects,
+         * it returns whether or not the student is a member
+         * of that kumi by checking the provided kumi against
+         * the internally stored list of kumis which the student
+         * belongs to.
+         * When a list is provided, it returns true only if
+         * the student is a member of at least one of the kumis
+         * @param kumi
+         * @returns {boolean}
+         */
+
+    }, {
+        key: 'isInKumiOrKumiList',
+        value: function isInKumiOrKumiList(kumiOrKumis) {
+            //This student belongs to no groups
+            if (this.associatedKumis.length === 0) return false;
+
+            var isIn = false;
+            var me = this;
+
+            //Make sure we have a list to check
+            var kumis = _.isArray(kumiOrKumis) ? kumiOrKumis : [kumiOrKumis];
+            _.forEach(kumis, function (kumi) {
+                //if it is in the list of kumis stored on the student,
+                //set our value to true;
+                if (isInList(kumi, me.associatedKumis)) isIn = true;
+            });
+
+            return isIn;
         }
 
         /**
@@ -13597,7 +13304,7 @@ var Student = function (_IModel) {
          * Alias for _id
          */
         get: function get() {
-            return Number(this._id);
+            return Number(this.id);
         },
 
 
@@ -13606,7 +13313,7 @@ var Student = function (_IModel) {
          * @param val
          */
         set: function set(val) {
-            this._id = val;
+            this.id = val;
         }
 
         /* *************************** Index ************* */
@@ -13670,7 +13377,7 @@ var Student = function (_IModel) {
         key: 'factory',
         value: function factory(params) {
             var student = new Student();
-            return this.fillObject(student, params);
+            return this.fillObject(student, params, Student.aliasMap);
         }
     }, {
         key: 'checkIfStudent',
@@ -13705,6 +13412,51 @@ var Student = function (_IModel) {
 }(_IModel3.default);
 
 exports.default = Student;
+
+/***/ }),
+/* 21 */,
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Thank's IE8 for his funny defineProperty
+module.exports = !__webpack_require__(14)(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var anObject = __webpack_require__(10);
+var IE8_DOM_DEFINE = __webpack_require__(172);
+var toPrimitive = __webpack_require__(47);
+var dP = Object.defineProperty;
+
+exports.f = __webpack_require__(22) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if (IE8_DOM_DEFINE) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.15 ToLength
+var toInteger = __webpack_require__(46);
+var min = Math.min;
+module.exports = function (it) {
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+
 
 /***/ }),
 /* 25 */
@@ -30817,7 +30569,7 @@ module.exports = function (it) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78), __webpack_require__(508)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78), __webpack_require__(510)(module)))
 
 /***/ }),
 /* 28 */
@@ -30833,9 +30585,9 @@ module.exports = function (it, key) {
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(22);
+var dP = __webpack_require__(23);
 var createDesc = __webpack_require__(60);
-module.exports = __webpack_require__(21) ? function (object, key, value) {
+module.exports = __webpack_require__(22) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
 } : function (object, key, value) {
   object[key] = value;
@@ -31560,7 +31312,7 @@ var has = __webpack_require__(28);
 var IE8_DOM_DEFINE = __webpack_require__(172);
 var gOPD = Object.getOwnPropertyDescriptor;
 
-exports.f = __webpack_require__(21) ? gOPD : function getOwnPropertyDescriptor(O, P) {
+exports.f = __webpack_require__(22) ? gOPD : function getOwnPropertyDescriptor(O, P) {
   O = toIObject(O);
   P = toPrimitive(P, true);
   if (IE8_DOM_DEFINE) try {
@@ -31616,7 +31368,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -31822,7 +31574,7 @@ module.exports = function (method, arg) {
 var ctx = __webpack_require__(40);
 var IObject = __webpack_require__(76);
 var toObject = __webpack_require__(25);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var asc = __webpack_require__(115);
 module.exports = function (TYPE, $create) {
   var IS_MAP = TYPE == 1;
@@ -31986,7 +31738,7 @@ module.exports = {
 
 "use strict";
 
-if (__webpack_require__(21)) {
+if (__webpack_require__(22)) {
   var LIBRARY = __webpack_require__(56);
   var global = __webpack_require__(12);
   var fails = __webpack_require__(14);
@@ -31999,7 +31751,7 @@ if (__webpack_require__(21)) {
   var hide = __webpack_require__(29);
   var redefineAll = __webpack_require__(61);
   var toInteger = __webpack_require__(46);
-  var toLength = __webpack_require__(23);
+  var toLength = __webpack_require__(24);
   var toIndex = __webpack_require__(191);
   var toAbsoluteIndex = __webpack_require__(63);
   var toPrimitive = __webpack_require__(47);
@@ -32023,7 +31775,7 @@ if (__webpack_require__(21)) {
   var setSpecies = __webpack_require__(62);
   var arrayFill = __webpack_require__(114);
   var arrayCopyWithin = __webpack_require__(164);
-  var $DP = __webpack_require__(22);
+  var $DP = __webpack_require__(23);
   var $GOPD = __webpack_require__(35);
   var dP = $DP.f;
   var gOPD = $GOPD.f;
@@ -32816,7 +32568,7 @@ module.exports = function (key) {
 var META = __webpack_require__(64)('meta');
 var isObject = __webpack_require__(15);
 var has = __webpack_require__(28);
-var setDesc = __webpack_require__(22).f;
+var setDesc = __webpack_require__(23).f;
 var id = 0;
 var isExtensible = Object.isExtensible || function () {
   return true;
@@ -32887,7 +32639,7 @@ var ctx = __webpack_require__(40);
 var call = __webpack_require__(175);
 var isArrayIter = __webpack_require__(122);
 var anObject = __webpack_require__(10);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var getIterFn = __webpack_require__(139);
 var BREAK = {};
 var RETURN = {};
@@ -33022,8 +32774,8 @@ module.exports = function (target, src, safe) {
 "use strict";
 
 var global = __webpack_require__(12);
-var dP = __webpack_require__(22);
-var DESCRIPTORS = __webpack_require__(21);
+var dP = __webpack_require__(23);
+var DESCRIPTORS = __webpack_require__(22);
 var SPECIES = __webpack_require__(17)('species');
 
 module.exports = function (KEY) {
@@ -33066,13 +32818,13 @@ module.exports = function (key) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(920)
+  __webpack_require__(919)
 }
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(527),
   /* template */
-  __webpack_require__(813),
+  __webpack_require__(812),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -33114,7 +32866,7 @@ module.exports = {};
 /* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var def = __webpack_require__(22).f;
+var def = __webpack_require__(23).f;
 var has = __webpack_require__(28);
 var TAG = __webpack_require__(17)('toStringTag');
 
@@ -33290,15 +33042,15 @@ if (false) {
 "use strict";
 
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
@@ -33578,7 +33330,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -33689,7 +33441,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -33836,7 +33588,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -33844,7 +33596,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -34209,7 +33961,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -34486,7 +34238,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -34502,7 +34254,7 @@ var _Item = __webpack_require__(8);
 
 var _Item2 = _interopRequireDefault(_Item);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -35083,7 +34835,7 @@ module.exports = {
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = __webpack_require__(37);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var toAbsoluteIndex = __webpack_require__(63);
 module.exports = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
@@ -35464,7 +35216,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -35548,24 +35300,13 @@ var handleCreateKumiResponse = function handleCreateKumiResponse(store, kumi, da
 
 module.exports = {
 
-    loadExamKumi: function loadExamKumi(exam) {
+    loadKumiForExam: function loadKumiForExam(exam) {
         // window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8, exam );
         var out = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
         return window.axios.get(_apiSettings.Routes.loadExamKumi(exam)).then(function (response) {
             return response.data;
-            // window.console.log( 'kumiRequests', 'loadExamKumi', 28, response );
-            // let kumis = response.data;
-            // _.forEach( kumis, ( kumi ) => {
-            //     let k = Kumi.factory( kumi );
-            //     let pl = Payload.factory( { obj: k, mutateSilently: true } );
-            //     store.commit( 'addKumi', pl );
-            // } );
-
-            //set the first kumi as the one to display
-            //this needs to happen before associate exam is called
-            // store.commit( 'updateSelectedKumi' )
         }).catch(function (error) {
             //todo add response handling
             window.console.log('kumiRequests', 'ERROR', 39, error);
@@ -35699,7 +35440,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -35715,7 +35456,7 @@ var _Item = __webpack_require__(8);
 
 var _Item2 = _interopRequireDefault(_Item);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -36177,13 +35918,13 @@ exports.default = GradeAssignment;
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(955)
+  __webpack_require__(953)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(534),
+  __webpack_require__(536),
   /* template */
-  __webpack_require__(853),
+  __webpack_require__(851),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -36221,13 +35962,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(945)
+  __webpack_require__(944)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(550),
+  __webpack_require__(552),
   /* template */
-  __webpack_require__(841),
+  __webpack_require__(840),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -36265,13 +36006,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(933)
+  __webpack_require__(931)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(587),
+  __webpack_require__(589),
   /* template */
-  __webpack_require__(828),
+  __webpack_require__(826),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -36310,7 +36051,7 @@ module.exports = Component.exports
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(33);
-var normalizeHeaderName = __webpack_require__(222);
+var normalizeHeaderName = __webpack_require__(223);
 
 var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 var DEFAULT_CONTENT_TYPE = {
@@ -36510,7 +36251,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -36710,35 +36451,35 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _accountArea = __webpack_require__(743);
+var _accountArea = __webpack_require__(745);
 
 var _accountArea2 = _interopRequireDefault(_accountArea);
 
-var _connectionsArea = __webpack_require__(745);
+var _connectionsArea = __webpack_require__(747);
 
 var _connectionsArea2 = _interopRequireDefault(_connectionsArea);
 
-var _billsArea = __webpack_require__(744);
+var _billsArea = __webpack_require__(746);
 
 var _billsArea2 = _interopRequireDefault(_billsArea);
 
-var _permissions = __webpack_require__(746);
+var _permissions = __webpack_require__(748);
 
 var _permissions2 = _interopRequireDefault(_permissions);
 
-var _gradeInput = __webpack_require__(737);
+var _gradeInput = __webpack_require__(739);
 
 var _gradeInput2 = _interopRequireDefault(_gradeInput);
 
-var _gradeDash = __webpack_require__(736);
+var _gradeDash = __webpack_require__(738);
 
 var _gradeDash2 = _interopRequireDefault(_gradeDash);
 
-var _setupLabels = __webpack_require__(740);
+var _setupLabels = __webpack_require__(742);
 
 var _setupLabels2 = _interopRequireDefault(_setupLabels);
 
-var _setupStructure = __webpack_require__(742);
+var _setupStructure = __webpack_require__(744);
 
 var _setupStructure2 = _interopRequireDefault(_setupStructure);
 
@@ -36859,7 +36600,7 @@ module.exports = [
 
 var toObject = __webpack_require__(25);
 var toAbsoluteIndex = __webpack_require__(63);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 module.exports = function fill(value /* , start = 0, end = @length */) {
   var O = toObject(this);
   var length = toLength(O.length);
@@ -36877,7 +36618,7 @@ module.exports = function fill(value /* , start = 0, end = @length */) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = __webpack_require__(290);
+var speciesConstructor = __webpack_require__(291);
 
 module.exports = function (original, length) {
   return new (speciesConstructor(original))(length);
@@ -36890,7 +36631,7 @@ module.exports = function (original, length) {
 
 "use strict";
 
-var $defineProperty = __webpack_require__(22);
+var $defineProperty = __webpack_require__(23);
 var createDesc = __webpack_require__(60);
 
 module.exports = function (object, index, value) {
@@ -37403,7 +37144,7 @@ module.exports = {
 "use strict";
 
 var global = __webpack_require__(12);
-var DESCRIPTORS = __webpack_require__(21);
+var DESCRIPTORS = __webpack_require__(22);
 var LIBRARY = __webpack_require__(56);
 var $typed = __webpack_require__(103);
 var hide = __webpack_require__(29);
@@ -37411,10 +37152,10 @@ var redefineAll = __webpack_require__(61);
 var fails = __webpack_require__(14);
 var anInstance = __webpack_require__(54);
 var toInteger = __webpack_require__(46);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var toIndex = __webpack_require__(191);
 var gOPN = __webpack_require__(58).f;
-var dP = __webpack_require__(22).f;
+var dP = __webpack_require__(23).f;
 var arrayFill = __webpack_require__(114);
 var setToStringTag = __webpack_require__(67);
 var ARRAY_BUFFER = 'ArrayBuffer';
@@ -37697,7 +37438,7 @@ var global = __webpack_require__(12);
 var core = __webpack_require__(43);
 var LIBRARY = __webpack_require__(56);
 var wksExt = __webpack_require__(192);
-var defineProperty = __webpack_require__(22).f;
+var defineProperty = __webpack_require__(23).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
   if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
@@ -37776,7 +37517,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -47902,7 +47643,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -48081,7 +47822,7 @@ module.exports = {
 "use strict";
 
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -48117,15 +47858,15 @@ module.exports = {
 "use strict";
 
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
@@ -48390,7 +48131,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(588),
+  __webpack_require__(590),
   /* template */
   __webpack_require__(886),
   /* styles */
@@ -48431,12 +48172,12 @@ module.exports = Component.exports
 
 
 var utils = __webpack_require__(33);
-var settle = __webpack_require__(214);
-var buildURL = __webpack_require__(217);
-var parseHeaders = __webpack_require__(223);
-var isURLSameOrigin = __webpack_require__(221);
+var settle = __webpack_require__(215);
+var buildURL = __webpack_require__(218);
+var parseHeaders = __webpack_require__(224);
+var isURLSameOrigin = __webpack_require__(222);
 var createError = __webpack_require__(154);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(216);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(217);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -48532,7 +48273,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(219);
+      var cookies = __webpack_require__(220);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -48652,7 +48393,7 @@ module.exports = function isCancel(value) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(213);
+var enhanceError = __webpack_require__(214);
 
 /**
  * Create an Error with the specified message, config, error code, and response.
@@ -48704,7 +48445,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -48777,7 +48518,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.processKumiFromJson = exports.filterStudentAssociations = undefined;
-exports.filterExamAssociations = filterExamAssociations;
+exports.filterExamKumiAssociations = filterExamKumiAssociations;
 exports.filterKumis = filterKumis;
 exports.getKumiById = getKumiById;
 exports.getKumiBySerialNumber = getKumiBySerialNumber;
@@ -48792,7 +48533,15 @@ var _Payload2 = _interopRequireDefault(_Payload);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function filterExamAssociations(state, prop, val) {
+/**
+ * Returns objects with examId, kumiId as keys
+ *
+ * @param state
+ * @param prop
+ * @param val
+ * @returns {*[]}
+ */
+function filterExamKumiAssociations(state, prop, val) {
     return state.examKumiAssociations.filter(function (i) {
         if (i[prop] === val) {
             return i;
@@ -48859,7 +48608,7 @@ var processKumiFromJson = exports.processKumiFromJson = function processKumiFrom
 "use strict";
 
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -48914,32 +48663,34 @@ module.exports = {
                         var payload = _Payload2.default.factory({ obj: student, mutateSilently: true });
                         commit(mTypes.addStudentToRoster, payload);
 
-                        if (r.kumiId) {
-                            //if the server sent us the id of the associated kumi
-                            //we are going to look up the client side representation
-                            //and then store it in the student object.
-                            //NB, there might not be a kumi id for any number of reasons,
-                            //including that an existing student is being newly associated with
-                            //a kumi.
-                            //Remember also that kumis are just groups now
-                            var kumi = getters.getKumiById(r.kumiId);
-                            if (_.isUndefined(kumi)) {}
-                            //if a kumi object doesn't exist yet with this id
-                            //figure out what the fuck to do.....
-                            //the best thing will probably involve
-                            //having the kumi loader update the kumi id's of
-                            //existing students when it loads. Thus if each
-                            //of them (kumi and student loaders) check and update ids
-                            // when they are done, we should be okay
-                            //todo add promises to help with this
+                        if (r.kumiIds) {
+                            _.forEach(r.kumiIds, function (id) {
+                                //if the server sent us the id of the associated kumi
+                                //we are going to look up the client side representation
+                                //and then store it in the student object.
+                                //NB, there might not be a kumi id for any number of reasons,
+                                //including that an existing student is being newly associated with
+                                //a kumi.
+                                //Remember also that kumis are just groups now
+                                var kumi = getters.getKumiById(id);
 
+                                if (!_.isUndefined(kumi)) {
 
-                            //Otherwise we are good, so call the mutation
-                            // this will both add the kumi to the student
-                            //and store the relationship centrally
-                            payload.student = student;
-                            payload.kumi = kumi;
-                            commit(mTypes.associateStudentWithKumi, payload);
+                                    //if a kumi object doesn't exist yet with this id
+                                    //figure out what the fuck to do.....
+                                    //This is probably because the kumi is not associated with the exam.
+
+                                    //Otherwise we are good, so call the mutation
+                                    // this will both add the kumi to the student
+                                    //and store the relationship centrally
+                                    payload.student = student;
+                                    payload.kumi = kumi;
+                                    commit(mTypes.associateStudentWithKumi, payload);
+
+                                    //actually the current problem is that we're not properly
+                                    //disassociating the kumi and student
+                                }
+                            });
                         }
                     });
                     resolve();
@@ -48966,7 +48717,7 @@ module.exports = {
                 getters = _ref2.getters;
 
             return new Promise(function (resolve, reject) {
-                var p = (0, _kumiRequests.loadExamKumi)(exam);
+                var p = (0, _kumiRequests.loadKumiForExam)(exam);
                 return p.then(function (data) {
                     _.forEach(data, function (d) {
                         var k = _Kumi2.default.factory(d);
@@ -48997,7 +48748,7 @@ module.exports = {
 
 var _module$exports;
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -49007,15 +48758,15 @@ var _PayloadScore = __webpack_require__(79);
 
 var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -49253,7 +49004,7 @@ module.exports = (_module$exports = {
 
 var _module$exports;
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -49393,11 +49144,11 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -49740,7 +49491,7 @@ module.exports = function (it, msg) {
 
 var toObject = __webpack_require__(25);
 var toAbsoluteIndex = __webpack_require__(63);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 
 module.exports = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
   var O = toObject(this);
@@ -49784,7 +49535,7 @@ module.exports = function (iter, ITERATOR) {
 var aFunction = __webpack_require__(26);
 var toObject = __webpack_require__(25);
 var IObject = __webpack_require__(76);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 
 module.exports = function (that, callbackfn, aLen, memo, isRight) {
   aFunction(callbackfn);
@@ -49849,7 +49600,7 @@ module.exports = Function.bind || function bind(that /* , ...args */) {
 
 "use strict";
 
-var dP = __webpack_require__(22).f;
+var dP = __webpack_require__(23).f;
 var create = __webpack_require__(57);
 var redefineAll = __webpack_require__(61);
 var ctx = __webpack_require__(40);
@@ -49858,7 +49609,7 @@ var forOf = __webpack_require__(55);
 var $iterDefine = __webpack_require__(124);
 var step = __webpack_require__(176);
 var setSpecies = __webpack_require__(62);
-var DESCRIPTORS = __webpack_require__(21);
+var DESCRIPTORS = __webpack_require__(22);
 var fastKey = __webpack_require__(53).fastKey;
 var validate = __webpack_require__(69);
 var SIZE = DESCRIPTORS ? '_s' : 'size';
@@ -50110,7 +49861,7 @@ module.exports = {
 // https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
 var isArray = __webpack_require__(94);
 var isObject = __webpack_require__(15);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var ctx = __webpack_require__(40);
 var IS_CONCAT_SPREADABLE = __webpack_require__(17)('isConcatSpreadable');
 
@@ -50151,7 +49902,7 @@ module.exports = flattenIntoArray;
 /* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(21) && !__webpack_require__(14)(function () {
+module.exports = !__webpack_require__(22) && !__webpack_require__(14)(function () {
   return Object.defineProperty(__webpack_require__(117)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
@@ -50325,11 +50076,11 @@ module.exports = !$assign || __webpack_require__(14)(function () {
 /* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(22);
+var dP = __webpack_require__(23);
 var anObject = __webpack_require__(10);
 var getKeys = __webpack_require__(59);
 
-module.exports = __webpack_require__(21) ? Object.defineProperties : function defineProperties(O, Properties) {
+module.exports = __webpack_require__(22) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
   var keys = getKeys(Properties);
   var length = keys.length;
@@ -50491,7 +50242,7 @@ module.exports = function (C, x) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-string-pad-start-end
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var repeat = __webpack_require__(133);
 var defined = __webpack_require__(44);
 
@@ -50514,7 +50265,7 @@ module.exports = function (that, maxLength, fillString, left) {
 
 // https://tc39.github.io/ecma262/#sec-toindex
 var toInteger = __webpack_require__(46);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 module.exports = function (it) {
   if (it === undefined) return 0;
   var number = toInteger(it);
@@ -50562,7 +50313,7 @@ module.exports = __webpack_require__(91)(MAP, function (get) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 21.2.5.3 get RegExp.prototype.flags()
-if (__webpack_require__(21) && /./g.flags != 'g') __webpack_require__(22).f(RegExp.prototype, 'flags', {
+if (__webpack_require__(22) && /./g.flags != 'g') __webpack_require__(23).f(RegExp.prototype, 'flags', {
   configurable: true,
   get: __webpack_require__(93)
 });
@@ -51798,7 +51549,7 @@ var index_esm = {
 "use strict";
 
 
-__webpack_require__(286);
+__webpack_require__(287);
 
 /**
  * This file bootstraps the application
@@ -51842,7 +51593,7 @@ window.Laravel = { csrfToken: content };
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(207);
+window.axios = __webpack_require__(208);
 
 window.axios.defaults.headers.common = {
   'X-CSRF-TOKEN': window.Laravel.csrfToken,
@@ -51924,15 +51675,15 @@ module.exports = {
 "use strict";
 
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
@@ -51984,7 +51735,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -51992,7 +51743,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -52338,13 +52089,13 @@ module.exports = {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(960)
+  __webpack_require__(959)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(537),
+  __webpack_require__(539),
   /* template */
-  __webpack_require__(859),
+  __webpack_require__(858),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -52382,13 +52133,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(949)
+  __webpack_require__(948)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(567),
+  __webpack_require__(569),
   /* template */
-  __webpack_require__(845),
+  __webpack_require__(844),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -52421,6 +52172,50 @@ module.exports = Component.exports
 
 /***/ }),
 /* 205 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(960)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(573),
+  /* template */
+  __webpack_require__(859),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/new-kumi-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] new-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6f8c6288", Component.options)
+  } else {
+    hotAPI.reload("data-v-6f8c6288", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52621,7 +52416,7 @@ module.exports = _extends({}, _examRequests2.default, {
 // };
 
 /***/ }),
-/* 206 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -52674,19 +52469,19 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(489);
+__webpack_require__(490);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 207 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(208);
+module.exports = __webpack_require__(209);
 
 /***/ }),
-/* 208 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52694,7 +52489,7 @@ module.exports = __webpack_require__(208);
 
 var utils = __webpack_require__(33);
 var bind = __webpack_require__(155);
-var Axios = __webpack_require__(210);
+var Axios = __webpack_require__(211);
 var defaults = __webpack_require__(110);
 
 /**
@@ -52729,14 +52524,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(152);
-axios.CancelToken = __webpack_require__(209);
+axios.CancelToken = __webpack_require__(210);
 axios.isCancel = __webpack_require__(153);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(224);
+axios.spread = __webpack_require__(225);
 
 module.exports = axios;
 
@@ -52745,7 +52540,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 209 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52809,7 +52604,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 210 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52817,10 +52612,10 @@ module.exports = CancelToken;
 
 var defaults = __webpack_require__(110);
 var utils = __webpack_require__(33);
-var InterceptorManager = __webpack_require__(211);
-var dispatchRequest = __webpack_require__(212);
-var isAbsoluteURL = __webpack_require__(220);
-var combineURLs = __webpack_require__(218);
+var InterceptorManager = __webpack_require__(212);
+var dispatchRequest = __webpack_require__(213);
+var isAbsoluteURL = __webpack_require__(221);
+var combineURLs = __webpack_require__(219);
 
 /**
  * Create a new instance of Axios
@@ -52901,7 +52696,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 211 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52960,14 +52755,14 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 212 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(33);
-var transformData = __webpack_require__(215);
+var transformData = __webpack_require__(216);
 var isCancel = __webpack_require__(153);
 var defaults = __webpack_require__(110);
 
@@ -53046,7 +52841,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53072,7 +52867,7 @@ module.exports = function enhanceError(error, config, code, response) {
 
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53104,7 +52899,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53131,7 +52926,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53174,7 +52969,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53249,7 +53044,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 218 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53268,7 +53063,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 219 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53328,7 +53123,7 @@ module.exports = (
 
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53349,7 +53144,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 221 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53424,7 +53219,7 @@ module.exports = (
 
 
 /***/ }),
-/* 222 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53443,7 +53238,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53487,7 +53282,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53521,7 +53316,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53549,7 +53344,7 @@ exports.default = function (store) {
 
         // window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
 
-        var item = payload ? payload.getStoredObject(store) : null;
+        var item = !_.isUndefined(payload) ? payload.getStoredObject(store) : null;
 
         switch (type) {
 
@@ -53584,11 +53379,6 @@ exports.default = function (store) {
              */
             case mTypes.addNewItem:
                 //we now do all of this in the action
-                if (item) {
-                    // createItem( store, item ).then( function () {
-                    // payload.callback();
-                    // } );
-                }
                 break;
 
             //this is the operation of pushing an item into the array
@@ -53690,13 +53480,9 @@ exports.default = function (store) {
              * NB This only associates. Thus the student
              * must have already been created on the server.
              */
-            // case mTypes.associateStudentWithKumi:
-            //     //We use the currently selected kumi if one wasn't set
-            //     //in the payload
-            //     var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
-            //     associateStudent( store, payload.student, kumi );
-            //     break;
-
+            case mTypes.associateStudentWithKumi:
+                (0, _studentRequests.associateStudentWithKumiRequest)(payload.student, payload.kumi);
+                break;
 
             // ******************** Notes
             case mTypes.createNote:
@@ -53736,30 +53522,17 @@ exports.default = function (store) {
 
             // ******************** Students
             case mTypes.addStudentToRoster:
-                //Remember this now ONLY handles pushing a student into
-                //the roster. So it only sends the request to create a new
-                //student. This does nothing to create an association with a kumi
-                //either on the server or locally.
-                // setSyncStarting( store );
-                // // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                // var student = payload.obj;
-                // //Requests the creation of a new student
-                // createStudentRequest( store, student );
-                // setSyncDone( store );
-                // //Assigns them to a particular kumi
-                // // var kumi = store.getters.getSelectedKumi;
-                // // let p = associateStudent( store, student, kumi );
-                // // p.then(()=>{
-                // //
-                // // })
-
+                //now handled in the action itself
                 break;
 
             case mTypes.removeStudentFromRoster:
+                //now handled in the action itself
+
+                //This is now done through the
                 // window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
-                var kumi = store.getters.getSelectedKumi;
-                var student = payload.obj;
-                (0, _studentRequests.disassociateStudent)(student, kumi);
+                // var kumi = payload.kumi; //store.getters.getSelectedKumi;
+                // var student = payload.obj;
+                // disassociateStudent( student, kumi );
                 break;
 
             case mTypes.deleteStudent:
@@ -53818,21 +53591,21 @@ exports.default = function (store) {
     });
 };
 
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
 var _apiSettings = __webpack_require__(18);
 
 var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -53848,7 +53621,7 @@ var _Item = __webpack_require__(8);
 
 var _Item2 = _interopRequireDefault(_Item);
 
-var _requests = __webpack_require__(205);
+var _requests = __webpack_require__(206);
 
 var _commentRequests = __webpack_require__(156);
 
@@ -53874,9 +53647,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * Created by adam on 4/1/17.
- */
 // require('../development/init-bootstrap-vue');
 // window.console.log( 'apiPlugin', 'vue', 5, Vue );
 
@@ -53897,7 +53667,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // // This wrapper bind axios to Vue or this if you're using single file component.
 // Vue.use(VueAxios, axios);
 
-window._ = __webpack_require__(27);
+window._ = __webpack_require__(27); /**
+                               * Created by adam on 4/1/17.
+                               */
+
 
 //item
 
@@ -54021,7 +53794,7 @@ var shouldTellServerAboutThis = function shouldTellServerAboutThis(mutation) {
 // };
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54180,7 +53953,7 @@ exports.default = {
     } };
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54218,7 +53991,7 @@ var socketRoute = '';
 ;
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54379,84 +54152,18 @@ var Question = function (_Item) {
 exports.default = Question;
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+        value: true
 });
 
 exports.default = function () {
-    return {
-        // export const actions = {
-        // module.exports = {
-        /**
-         * Creates a new exam on the client, sets
-         * it as the active exam, and requests an
-         * exam id from the server
-         * @param state
-         * @param commit
-         * @param payload
-         */
-        createExam: function createExam(_ref, payload) {
-            var state = _ref.state,
-                commit = _ref.commit;
-
-            return new Promise(function (resolve, reject) {
-                //instantiate the new exam
-                var exam = _Exam2.default.factory({ index: 0 }); //.factory( {id: id, index: index} );
-                //set it in the items list
-                //this will call the api lister.
-                commit(mTypes.setItem, _Payload2.default.factory({ index: 0, obj: exam }));
-                //set it as active (in case anything is depending on the older structure)
-                // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
-                resolve();
-            });
-        },
-
-        /**
-         * The payload should contain the exam that is presently set
-         * as the active exam, but with updated properties. This
-         * will replace the exam stored, so that vue can see the change
-         * @param state
-         * @param commit
-         * @param payload
-         */
-        updateExam: function updateExam(_ref2, payload) {
-            var state = _ref2.state,
-                commit = _ref2.commit;
-
-            //set it as active
-            commit(mTypes.setActiveExam, _Payload2.default.factory({ obj: exam }));
-        }
-        //,
-        //
-        // /**
-        //  * These are actions which different parts of the gom
-        //  * call to when they initialize.
-        //  *
-        //  */
-        // /** This is what gets run when the root instance is mounted for the setup page */
-        // setupOnMount: ( { state, commit, dispatch } ) => {
-        //     //wrap in promise? probably not since this doesn't yet hit the server
-        //     commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
-        //     dispatch( 'parseExamData' ).then( () => {
-        //         dispatch( 'parseItemObjectData' ).then(
-        //             () => {
-        //                 dispatch( 'parseItemOrderData' );
-        //             } );
-        //     } );
-        //     // .then( () => {
-        //     //
-        //     // } ).then( () => {
-        //     //
-        //     // } );
-        //
-        // }
-    };
+        return {};
 };
 
 var _mutationTypes = __webpack_require__(2);
@@ -54467,7 +54174,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -54487,7 +54194,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _controller = __webpack_require__(226);
+var _controller = __webpack_require__(227);
 
 var api = _interopRequireWildcard(_controller);
 
@@ -54510,6 +54217,71 @@ var ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
 var ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
 
 ;
+
+// export const actions = {
+// module.exports = {
+//         /**
+//          * Creates a new exam on the client, sets
+//          * it as the active exam, and requests an
+//          * exam id from the server
+//          * @param state
+//          * @param commit
+//          * @param payload
+//          */
+//         createExam: ( { state, commit }, payload ) => {
+//             return new Promise( ( resolve, reject ) => {
+//                 //instantiate the new exam
+//                 let exam = Exam.factory( { index: 0 } ); //.factory( {id: id, index: index} );
+//                 //set it in the items list
+//                 //this will call the api lister.
+//                 commit( mTypes.setItem, Payload.factory( { index: 0, obj: exam } ) );
+//                 //set it as active (in case anything is depending on the older structure)
+//                 // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+//                 resolve()
+//             } );
+//
+//         },
+//
+//         /**
+//          * The payload should contain the exam that is presently set
+//          * as the active exam, but with updated properties. This
+//          * will replace the exam stored, so that vue can see the change
+//          * @param state
+//          * @param commit
+//          * @param payload
+//          */
+//         updateExam: ( { state, commit }, payload ) => {
+//             //set it as active
+//             commit( mTypes.setActiveExam, Payload.factory( { obj: exam } ) );
+//         }
+//
+//
+//,
+//
+// /**
+//  * These are actions which different parts of the gom
+//  * call to when they initialize.
+//  *
+//  */
+// /** This is what gets run when the root instance is mounted for the setup page */
+// setupOnMount: ( { state, commit, dispatch } ) => {
+//     //wrap in promise? probably not since this doesn't yet hit the server
+//     commit( 'initializeItemStore', Payload.factory( { mutateSilently: true } ) );
+//     dispatch( 'parseExamData' ).then( () => {
+//         dispatch( 'parseItemObjectData' ).then(
+//             () => {
+//                 dispatch( 'parseItemOrderData' );
+//             } );
+//     } );
+//     // .then( () => {
+//     //
+//     // } ).then( () => {
+//     //
+//     // } );
+//
+// }
+//     }
+// };
 
 // export const parseItemData = ( { state, commit, dispatch } ) => {
 //     return new Promise( ( resolve, reject ) => {
@@ -54977,13 +54749,13 @@ var ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
 // ;
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -55157,7 +54929,7 @@ module.exports = {
     */
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55175,139 +54947,143 @@ var _vuex = __webpack_require__(198);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _actions = __webpack_require__(229);
+var _actions = __webpack_require__(230);
 
 var actions = _interopRequireWildcard(_actions);
 
-var _getters = __webpack_require__(230);
+var _getters = __webpack_require__(231);
 
 var _getters2 = _interopRequireDefault(_getters);
 
-var _mutations = __webpack_require__(284);
+var _mutations = __webpack_require__(285);
 
 var mutations = _interopRequireWildcard(_mutations);
 
-var _state = __webpack_require__(285);
+var _state = __webpack_require__(286);
 
 var state = _interopRequireWildcard(_state);
 
-var _activestudent = __webpack_require__(233);
+var _activestudent = __webpack_require__(234);
 
 var _activestudent2 = _interopRequireDefault(_activestudent);
 
-var _activeexam = __webpack_require__(232);
+var _activeexam = __webpack_require__(233);
 
 var _activeexam2 = _interopRequireDefault(_activeexam);
 
-var _comments = __webpack_require__(235);
+var _comments = __webpack_require__(236);
 
 var _comments2 = _interopRequireDefault(_comments);
 
-var _escores = __webpack_require__(236);
+var _escores = __webpack_require__(1221);
 
 var _escores2 = _interopRequireDefault(_escores);
 
-var _exams = __webpack_require__(237);
+var _exams = __webpack_require__(238);
 
 var _exams2 = _interopRequireDefault(_exams);
 
-var _items = __webpack_require__(240);
+var _items = __webpack_require__(241);
 
 var _items2 = _interopRequireDefault(_items);
 
-var _grades = __webpack_require__(238);
+var _grades = __webpack_require__(1226);
 
 var _grades2 = _interopRequireDefault(_grades);
 
-var _qscores = __webpack_require__(262);
+var _qscores = __webpack_require__(1222);
 
 var _qscores2 = _interopRequireDefault(_qscores);
 
-var _questions = __webpack_require__(264);
+var _questions = __webpack_require__(1223);
 
 var _questions2 = _interopRequireDefault(_questions);
 
-var _students = __webpack_require__(280);
+var _students = __webpack_require__(1224);
 
 var _students2 = _interopRequireDefault(_students);
 
-var _settings = __webpack_require__(279);
+var _settings = __webpack_require__(280);
 
 var _settings2 = _interopRequireDefault(_settings);
 
-var _times = __webpack_require__(282);
+var _times = __webpack_require__(1225);
 
 var _times2 = _interopRequireDefault(_times);
 
-var _roster = __webpack_require__(273);
+var _roster = __webpack_require__(274);
 
 var _roster2 = _interopRequireDefault(_roster);
 
-var _visibility = __webpack_require__(283);
+var _visibility = __webpack_require__(284);
 
 var _visibility2 = _interopRequireDefault(_visibility);
 
-var _kumis = __webpack_require__(268);
+var _kumis = __webpack_require__(269);
 
 var _kumis2 = _interopRequireDefault(_kumis);
 
-var _notes = __webpack_require__(257);
+var _notes = __webpack_require__(258);
 
 var _notes2 = _interopRequireDefault(_notes);
 
-var _tags = __webpack_require__(281);
+var _tags = __webpack_require__(282);
 
 var _tags2 = _interopRequireDefault(_tags);
 
-var _itemscores = __webpack_require__(277);
+var _itemscores = __webpack_require__(278);
 
 var _itemscores2 = _interopRequireDefault(_itemscores);
 
-var _quality = __webpack_require__(263);
+var _quality = __webpack_require__(264);
 
 var _quality2 = _interopRequireDefault(_quality);
 
-var _itemScoresForStats = __webpack_require__(276);
+var _itemScoresForStats = __webpack_require__(277);
 
 var _itemScoresForStats2 = _interopRequireDefault(_itemScoresForStats);
 
-var _itemStats = __webpack_require__(234);
+var _itemStats = __webpack_require__(235);
 
 var _itemStats2 = _interopRequireDefault(_itemStats);
 
-var _gradeAssignments = __webpack_require__(239);
+var _gradeAssignments = __webpack_require__(240);
 
 var _gradeAssignments2 = _interopRequireDefault(_gradeAssignments);
 
-var _activestudentNew = __webpack_require__(253);
+var _modals = __webpack_require__(1257);
+
+var _modals2 = _interopRequireDefault(_modals);
+
+var _activestudentNew = __webpack_require__(254);
 
 var _activestudentNew2 = _interopRequireDefault(_activestudentNew);
 
-var _activeexamNew = __webpack_require__(252);
+var _activeexamNew = __webpack_require__(253);
 
 var _activeexamNew2 = _interopRequireDefault(_activeexamNew);
 
-var _index = __webpack_require__(259);
+var _index = __webpack_require__(260);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _timerNew = __webpack_require__(256);
+var _timerNew = __webpack_require__(1220);
 
 var _timerNew2 = _interopRequireDefault(_timerNew);
 
-var _gradingTimesNew = __webpack_require__(255);
+var _gradingTimesNew = __webpack_require__(256);
 
 var _gradingTimesNew2 = _interopRequireDefault(_gradingTimesNew);
 
-var _gradingCountsNew = __webpack_require__(254);
+var _gradingCountsNew = __webpack_require__(255);
 
 var _gradingCountsNew2 = _interopRequireDefault(_gradingCountsNew);
 
-var _apiPlugin = __webpack_require__(225);
+var _apiPlugin = __webpack_require__(226);
 
 var _apiPlugin2 = _interopRequireDefault(_apiPlugin);
 
-var _websocketPlugin = __webpack_require__(227);
+var _websocketPlugin = __webpack_require__(228);
 
 var _websocketPlugin2 = _interopRequireDefault(_websocketPlugin);
 
@@ -55324,6 +55100,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import createLogger from '../../../src/plugins/logger'
 
 //new grading
+
+
+//grade assignments
+_vue2.default.use(_vuex2.default);
+
+/**
+ * This subscribes the api package which
+ * handles data exchange with the server
+ * to mutations in the store.
+ */
+
+
+//timer
+
+
+//modals
 
 
 //Newer
@@ -55363,19 +55155,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 // import Vue from  'vue/dist/vue.js'
-_vue2.default.use(_vuex2.default);
-
-/**
- * This subscribes the api package which
- * handles data exchange with the server
- * to mutations in the store.
- */
-
-
-//timer
-
-
-//grade assignments
 
 
 var debug = "development" !== 'production';
@@ -55400,21 +55179,20 @@ exports.default = new _vuex2.default.Store({
   modules: {
     newactiveexam: _activeexamNew2.default,
     newactivestudent: _activestudentNew2.default,
-    timerNew: _timerNew2.default,
-    gradingTimesNew: _gradingTimesNew2.default,
-    gradingCountsNew: _gradingCountsNew2.default,
-    preferences: _index2.default,
-
-    itemStats: _itemStats2.default,
 
     comments: _comments2.default,
     exams: _exams2.default,
     gradeAssignments: _gradeAssignments2.default,
+    gradingTimesNew: _gradingTimesNew2.default,
+    gradingCountsNew: _gradingCountsNew2.default,
     grades: _grades2.default,
     items: _items2.default,
     itemScores: _itemscores2.default,
+    itemStats: _itemStats2.default,
     kumi: _kumis2.default,
+    modals: _modals2.default,
     notes: _notes2.default,
+    preferences: _index2.default,
     quality: _quality2.default,
     roster: _roster2.default,
     settings: _settings2.default,
@@ -55422,6 +55200,7 @@ exports.default = new _vuex2.default.Store({
     students: _students2.default,
     tags: _tags2.default,
     times: _times2.default,
+    timerNew: _timerNew2.default,
     visibility: _visibility2.default,
 
     //old version of gom
@@ -55436,7 +55215,7 @@ exports.default = new _vuex2.default.Store({
   } });
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55464,7 +55243,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -55574,7 +55353,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55594,7 +55373,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -55717,7 +55496,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55740,7 +55519,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -55866,7 +55645,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56064,116 +55843,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 236 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _legacyMutationTypes = __webpack_require__(74);
-
-var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
-
-var _legacyActionTypes = __webpack_require__(73);
-
-var laTypes = _interopRequireWildcard(_legacyActionTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var state = {
-    /** Format: { studentIndex : { elementIndex : elementScore},  ... } */
-    elementScores: {}
-};
-
-var isEmpty = function isEmpty(state) {
-    if (Object.keys(state.elementScores).length > 0) {
-        return false;
-    }
-    return true;
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.loadElementScores, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    //set the state to the payload's object
-    state.elementScores = payload.obj;
-}), _defineProperty(_mutations, lmTypes.setElementScore, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    var studentIndex = payload.index;
-    var elementIndex = payload.index2;
-    var score = payload.num;
-
-    state.elementScores[studentIndex][elementIndex] = score;
-}), _mutations);
-
-var actions = (_actions = {}, _defineProperty(_actions, laTypes.setElementScore, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-    var studentIndex = payload.studentIndex,
-        elementIndex = payload.elementIndex,
-        score = payload.score;
-    //type checks
-
-    if (typeof score == 'undefined') {
-        //score may have been named differently
-        score = payload.elementScore;
-    }
-
-    var out = _Payload2.default.factory({
-        index: studentIndex,
-        index2: elementIndex,
-        num: score
-    });
-
-    commit(lmTypes.setElementScore, out);
-}), _defineProperty(_actions, laTypes.loadElementScores, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-
-    var pl = _Payload2.default.factory({ obj: payload });
-    commit(lmTypes.loadElementScores, pl);
-}), _actions);
-
-var getters = {
-    /**
-     * Retrieves element score for a student
-     * Original: data.state.elementScores[ Roster.activeStudent ][ index ];
-     * @param studentIndex
-     * @param elementIndex
-     * @returns {*}
-     */
-    getElementScore: function getElementScore(state, getters, rootState, studentIndex, elementIndex) {
-        if (isEmpty(state)) {
-            return false;
-        };
-
-        return state.elementScores[studentIndex][elementIndex];
-    }
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
-/* 237 */
+/* 237 */,
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56193,11 +55864,11 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -56220,6 +55891,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    */
 
 // import * as api from '../../api/controller'
+
+
+// const isNew = ( state, exam ) => {
+//     return _.findIndex( state.exams, { id: exam.id } ) === -1;
+// };
+
 
 /**
  * The older version used an index value to do lots of stuff.
@@ -56390,190 +56067,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 238 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Vuex component dealing with grades
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * @todo Consider moving standard grades to its own file
-                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                   */
-
-var state = {
-    /**
-     * examGrades[] keeps a persistent total of the exam score for each student.
-     * Exams without grades have a value of -1, because dealing with null and NaN
-     * is unpredictable across js and PHP.
-     * This shouldn't be an issue, as the DB has no notion of exam grades, they're
-     * only used here as a shorthand to store and quickly find information about
-     * the exam state.
-     */
-    examGrades: {},
-
-    /**
-     * Standard grades
-     * Format:
-     *  { {calcValue : int, displayValue: string}, .... }
-     * @type {{}}
-     */
-    standardGrades: {}
-
-};
-
-var isExamGradeEmpty = function isExamGradeEmpty(state) {
-    if (Object.keys(state.examGrades).length > 0) {
-        return false;
-    }
-    return true;
-};
-
-var isStandardGradesEmpty = function isStandardGradesEmpty(state) {
-    if (Object.keys(state.standardGrades).length > 0) {
-        return false;
-    }
-    return true;
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadExamGrades, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.examGrades = payload.obj;
-}), _defineProperty(_mutations, mTypes.loadStandardGrades, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.standardGrades = payload.obj;
-}), _defineProperty(_mutations, mTypes.setGrade, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.examGrades[payload.index] = payload.num;
-}), _mutations);
-
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadExamGrades, function (_ref, studentGrades) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-    //todo type checks
-    var out = _Payload2.default.factory({ obj: studentGrades });
-    commit(mTypes.loadExamGrades, out);
-    // state.examGrades = studentGrades;
-}), _defineProperty(_actions, aTypes.loadStandardGrades, function (_ref2, gradesJson) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    if (typeof gradesJson == 'string') {
-        gradesJson = JSON.parse(gradesJson);
-    }
-    var out = _Payload2.default.factory({ obj: gradesJson });
-    commit(mTypes.loadStandardGrades, out);
-    // state.standardGrades = gradesJson;
-}), _defineProperty(_actions, aTypes.updateExamGrade, function (_ref3, studentIndex) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
-
-
-    var totalScore = null;
-    // try {
-    // state.checkValid( 'state.questionScores' );
-    if (Object.keys(state.questionScores).length > 0) {
-        for (var i = 0; i < Object.keys(state.questionScores[studentIndex]).length; i++) {
-            var v = state.questionScores[studentIndex][i];
-            if (v != null) {
-                //at least one question score is non-null
-                //so the total score should be at least 0
-                //first we check whether the totalScore is still null
-                //and set it to 0 if not
-                if (totalScore === null) {
-                    totalScore = 0;
-                }
-                //now we can add the question values to it
-                totalScore += parseFloat(v);
-            }
-        }
-        if (totalScore != null && totalScore >= 0) {
-            //push the total score into exam grades as a string
-            // state.examGrades[ studentIndex ] = totalScore.toPrecision( 3 );
-            var score = totalScore.toPrecision(3);
-
-            var out = _Payload2.default.factory({ index: studentIndex, num: score });
-
-            commit(mTypes.setGrade, out);
-        } else {
-            //replace 'letter grade' with -1
-            // state.examGrades[ studentIndex ] = -1;
-            var _out = _Payload2.default.factory({ index: studentIndex, num: -1 });
-            commit(mTypes.setGrade, _out);
-        }
-    }
-    // } catch ( err ) {
-    //     window.console.log( err );
-    // }
-}), _actions);
-
-var getters = {
-
-    getExamGrade: function getExamGrade(state, getters, rootState, studentIndex) {
-        if (isExamGradeEmpty(state)) return false;
-
-        return state.examGrades[studentIndex];
-    },
-
-    /**
-     * Returns the standard grades json.
-     * NB, state is not the total scores for students
-     */
-    getStandardGrades: function getStandardGrades(state, getters, rootState) {
-        if (isStandardGradesEmpty(state)) return false;
-
-        return state.standardGrades;
-    },
-
-    /**
-     * Returns the standard grades json.
-     * NB, state is not the total scores for students
-     * @deprecated This now wraps the better named method
-     */
-    getGrade: function getGrade(state, getters, rootState) {
-        // if(isExamGradeEmpty(state)) return false;
-        if (isStandardGradesEmpty(state)) return false;
-        return state.standardGrades;
-
-        // return this.getStandardGrades( state, getters, rootState );
-    }
-
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
-/* 239 */
+/* 239 */,
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56598,7 +56093,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -56893,7 +56388,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56918,7 +56413,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -56948,15 +56443,15 @@ var _itemHelpers = __webpack_require__(89);
 
 var _itemRequests = __webpack_require__(111);
 
-var _items = __webpack_require__(244);
+var _items = __webpack_require__(245);
 
 var _items2 = _interopRequireDefault(_items);
 
-var _items3 = __webpack_require__(249);
+var _items3 = __webpack_require__(250);
 
 var _items4 = _interopRequireDefault(_items3);
 
-var _items5 = __webpack_require__(241);
+var _items5 = __webpack_require__(242);
 
 var _items6 = _interopRequireDefault(_items5);
 
@@ -57248,7 +56743,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57266,7 +56761,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -57467,7 +56962,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57483,7 +56978,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -57623,7 +57118,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 //     actions}
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57644,7 +57139,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -57807,7 +57302,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
 }), _module$exports);
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57825,7 +57320,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -57847,19 +57342,19 @@ var _Node2 = _interopRequireDefault(_Node);
 
 var _NodeTools = __webpack_require__(51);
 
-var _itemsObj = __webpack_require__(245);
+var _itemsObj = __webpack_require__(246);
 
 var _itemsObj2 = _interopRequireDefault(_itemsObj);
 
-var _itemsObj3 = __webpack_require__(242);
+var _itemsObj3 = __webpack_require__(243);
 
 var _itemsObj4 = _interopRequireDefault(_itemsObj3);
 
-var _itemsObj5 = __webpack_require__(243);
+var _itemsObj5 = __webpack_require__(244);
 
 var _itemsObj6 = _interopRequireDefault(_itemsObj5);
 
-var _itemsObj7 = __webpack_require__(246);
+var _itemsObj7 = __webpack_require__(247);
 
 var _itemsObj8 = _interopRequireDefault(_itemsObj7);
 
@@ -57966,7 +57461,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57986,7 +57481,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -58221,7 +57716,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 // },
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58280,7 +57775,7 @@ module.exports = {
 // }
 
 /***/ }),
-/* 247 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58296,7 +57791,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -58392,7 +57887,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 }), _module$exports);
 
 /***/ }),
-/* 248 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58408,7 +57903,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -58551,7 +58046,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
 }), _module$exports);
 
 /***/ }),
-/* 249 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58561,19 +58056,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _itemsOrder = __webpack_require__(250);
+var _itemsOrder = __webpack_require__(251);
 
 var _itemsOrder2 = _interopRequireDefault(_itemsOrder);
 
-var _itemsOrder3 = __webpack_require__(247);
+var _itemsOrder3 = __webpack_require__(248);
 
 var _itemsOrder4 = _interopRequireDefault(_itemsOrder3);
 
-var _itemsOrder5 = __webpack_require__(248);
+var _itemsOrder5 = __webpack_require__(249);
 
 var _itemsOrder6 = _interopRequireDefault(_itemsOrder5);
 
-var _itemsOrder7 = __webpack_require__(251);
+var _itemsOrder7 = __webpack_require__(252);
 
 var _itemsOrder8 = _interopRequireDefault(_itemsOrder7);
 
@@ -58602,7 +58097,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 250 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58618,7 +58113,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -58788,7 +58283,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 }), _module$exports);
 
 /***/ }),
-/* 251 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58802,7 +58297,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -58877,7 +58372,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 252 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58893,15 +58388,15 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var mTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var aTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var gTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -58994,7 +58489,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 253 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59010,19 +58505,19 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -59130,7 +58625,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 254 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59142,19 +58637,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _getters;
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -59200,7 +58695,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 255 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59216,19 +58711,19 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -59347,108 +58842,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 256 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _newGradingMutationTypes = __webpack_require__(16);
-
-var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
-
-var _newGradingActionTypes = __webpack_require__(20);
-
-var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _newGradingGetterTypes = __webpack_require__(13);
-
-var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                   */
-
-
-var state = {
-
-    /**
-     * whether or not the timer is running.
-     * This allows a parent or distant relative
-     * to tell the dashboard-timer to start or stop the
-     * time by altering this
-     */
-    timerRunning: false
-
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.startExamTimer, function (state) {
-    state.timerRunning = true;
-}), _defineProperty(_mutations, ngmTypes.stopExamTimer, function (state) {
-    state.timerRunning = false;
-}), _mutations);
-
-var timer = void 0;
-
-var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.startExamTimer, function (_ref) {
-    var dispatch = _ref.dispatch,
-        commit = _ref.commit,
-        getters = _ref.getters;
-
-    var me = undefined;
-
-    //if no student is active, don't start
-    // if ( getters[nggTypes.isTimerRunning]) return;
-
-    clearInterval(timer);
-
-    //change state
-    commit(ngmTypes.startExamTimer);
-
-    // set a new timer to fire every second.
-    timer = setInterval(function () {
-        //increment the time
-        //tell store to record it
-        dispatch(ngaTypes.incrementGradingTime, 1);
-    }, 1000);
-}), _defineProperty(_actions, ngaTypes.stopExamTimer, function (_ref2) {
-    var dispatch = _ref2.dispatch,
-        commit = _ref2.commit,
-        getters = _ref2.getters;
-
-    clearInterval(timer);
-
-    //change state
-    commit(ngmTypes.stopExamTimer);
-}), _actions);
-
-var getters = _defineProperty({}, nggTypes.isTimerRunning, function (state) {
-    return state.timerRunning;
-});
-
-exports.default = {
-    state: state,
-    getters: getters,
-    actions: actions,
-    mutations: mutations
-};
-
-/***/ }),
-/* 257 */
+/* 257 */,
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59472,7 +58867,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -59603,7 +58998,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 258 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59619,15 +59014,15 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -59723,7 +59118,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 259 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59735,15 +59130,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _gradingPreferences = __webpack_require__(258);
+var _gradingPreferences = __webpack_require__(259);
 
 var _gradingPreferences2 = _interopRequireDefault(_gradingPreferences);
 
-var _setupPreferences = __webpack_require__(260);
+var _setupPreferences = __webpack_require__(261);
 
 var _setupPreferences2 = _interopRequireDefault(_setupPreferences);
 
-var _userPreferences = __webpack_require__(261);
+var _userPreferences = __webpack_require__(262);
 
 var _userPreferences2 = _interopRequireDefault(_userPreferences);
 
@@ -59762,7 +59157,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 260 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59774,15 +59169,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _getters;
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -59855,7 +59250,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 261 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59865,15 +59260,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -59949,122 +59344,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 262 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _legacyMutationTypes = __webpack_require__(74);
-
-var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
-
-var _legacyActionTypes = __webpack_require__(73);
-
-var laTypes = _interopRequireWildcard(_legacyActionTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                   */
-
-
-var state = {
-
-    /**
-     * Object containing empty slots and actual scores for each
-     * student on the exam. Structure of items:
-     *      {studentIndex : {questionIndex: score}]
-     * Use getters and setters to access
-     */
-    questionScores: {}
-
-};
-
-var isScoresEmpty = function isScoresEmpty(state) {
-    if (Object.keys(state.questionScores).length > 0) {
-        return false;
-    }
-    return true;
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setQuestionScore, function (state, rootState, payload) {
-    // console.log( 'mutation.setQuestionScore', payload );
-    _Payload2.default.checkIfPayload(payload);
-
-    var studentIndex = payload.index;
-    var questionIndex = payload.index2;
-
-    state.questionScores[studentIndex][questionIndex] = payload.num;
-}), _defineProperty(_mutations, lmTypes.removeQuestionScore, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-
-    var studentIndex = payload.index;
-    var questionIndex = payload.index2;
-
-    state.questionScores[studentIndex][questionIndex] = payload.num;
-}), _mutations);
-
-var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadQuestionScores, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-    for (var i = 0; i < Object.keys(payload).length; i++) {
-        actions[laTypes.setQuestionScore]({ state: state, commit: commit }, payload[i]);
-    }
-}), _defineProperty(_actions, laTypes.setQuestionScore, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    //todo add checking
-
-    var pl = new _Payload2.default();
-    pl.index = payload.studentIndex;
-    pl.index2 = payload.questionIndex;
-    pl.num = payload.score;
-
-    commit(lmTypes.setQuestionScore, pl);
-}), _actions);
-
-var getters = {
-
-    /**
-     * Returns student score for question
-     * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
-     * @param studentIndex
-     * @param questionIndex
-     */
-    getQuestionScore: function getQuestionScore(state, getters, rootState, studentIndex, questionIndex) {
-        if (isScoresEmpty(state)) {
-            return false;
-        }
-
-        return state.questionScores[studentIndex][questionIndex];
-    }
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
-/* 263 */
+/* 263 */,
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60100,7 +59381,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -60248,150 +59529,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 264 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _Question = __webpack_require__(228);
-
-var _Question2 = _interopRequireDefault(_Question);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                   */
-
-
-var state = {
-    /** Integer count of questions on the exam */
-    numberQuestions: null,
-    /**
-     * Json of the maximum possible scores for each question.
-     * Keys are questionIndexes
-     * Format: { questionIndex : maxScore, ... }
-     */
-    maxQuestionScores: {},
-
-    /**
-     * Format: { questionIndex : {questionName, questionNumber, questionAssignmentId, maxScore}, .... }
-     * @type {{}}
-     */
-    questions: {}
-
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setMaxQuestionScore, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.maxQuestionScores[payload.index] = payload.num;
-}), _defineProperty(_mutations, mTypes.removeMaxQuestionScore, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    delete state.maxQuestionScores[payload.index];
-}), _defineProperty(_mutations, mTypes.setQuestion, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.questions[payload.index] = payload.obj;
-}), _defineProperty(_mutations, mTypes.removeQuestion, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    delete state.questions[payload.index];
-}), _defineProperty(_mutations, mTypes.setNumberQuestions, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-
-    if (typeof payload.num != 'undefined' && Number.isInteger(payload.num)) {
-        state.numberQuestions = payload.num;
-    } else {
-        //count the questions
-        state.numberQuestions = Object(state.questions).keys().length;
-    }
-}), _mutations);
-
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.addQuestion, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-
-    var question = _Question2.default.factory(payload);
-
-    if (question instanceof _Question2.default) {
-        var pl = new _Payload2.default();
-        pl.id = question.id;
-        pl.index = payload.questionIndex;
-        pl.obj = question;
-        commit(mTypes.setQuestion, pl);
-    }
-}), _defineProperty(_actions, aTypes.loadMaxQuestionScores, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    commit(mTypes.loadMaxQuestionScores, payload);
-}), _defineProperty(_actions, aTypes.loadQuestions, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
-
-    for (var i = 0; i < Object.keys(payload).length; i++) {
-        // actions[ aTypes.addQuestion ]( state, commit, payload[ i ] );
-        var index = Object.keys(payload)[i];
-        var s = payload[index];
-        state.questions[index] = _Question2.default.factory(s, index);
-    }
-}), _defineProperty(_actions, aTypes.loadNumberQuestions, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-    state.numberQuestions = payload;
-}), _actions);
-
-var getters = {
-    /**
-     * Returns a question object.
-     * This has keys: questionName, questionNumber, questionAssignmentId, maxScore
-     * @param questionIndex
-     * @returns {*}
-     */
-    getQuestion: function getQuestion(state, getters, rootState, questionIndex) {
-        return state.questions[questionIndex];
-    },
-
-    /**
-     * Returns the maximum possible score for a given question
-     * @param questionIndex
-     * @returns {*}
-     */
-    getMaxQuestionScore: function getMaxQuestionScore(state, getters, rootState, questionIndex) {
-        return state.maxQuestionScores[questionIndex];
-    }
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
-/* 265 */
+/* 265 */,
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60409,7 +59548,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -60421,29 +59560,31 @@ var _Kumi = __webpack_require__(19);
 
 var _Kumi2 = _interopRequireDefault(_Kumi);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
 var _kumiRequests = __webpack_require__(104);
 
+var _studentRequests = __webpack_require__(82);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * This handles kumi object storage and
- * the relationships between kumi and other
- * objects.
- *
- * It does not handle the display properties
- * (e.g., which are selected for display). That
- * is handled in display.js
- *
- *
- * Created by adam on 7/11/17.
- */
-var KUMIS_JSON_NAME = 'loadedKumis';
+var KUMIS_JSON_NAME = 'loadedKumis'; /**
+                                      * This handles kumi object storage and
+                                      * the relationships between kumi and other
+                                      * objects.
+                                      *
+                                      * It does not handle the display properties
+                                      * (e.g., which are selected for display). That
+                                      * is handled in display.js
+                                      *
+                                      *
+                                      * Created by adam on 7/11/17.
+                                      */
+
 
 module.exports = {
 
@@ -60465,7 +59606,6 @@ module.exports = {
             commit = _ref.commit,
             getters = _ref.getters;
 
-
         return new Promise(function (resolve, reject) {
             var exam = getters[gTypes.getActiveExam];
             var kumi = new _Kumi2.default();
@@ -60479,39 +59619,18 @@ module.exports = {
             });
         });
     },
-    processKumiFromJson: function processKumiFromJson(_ref2) {
-        var state = _ref2.state,
-            dispatch = _ref2.dispatch,
-            commit = _ref2.commit,
-            getters = _ref2.getters;
-
-        var exam = getters.getCurrentExam;
-        var kumiData = JSON.parse(document.getElementById(KUMIS_JSON_NAME).getAttribute('data'));
-
-        _.forEach(kumiData, function (d, i) {
-            //first make a kumi from the loaded data and push it into storage
-            var kumi = _Kumi2.default.factory({ d: d });
-            //Now associate the kumi with the exam
-            var pl = _Payload2.default.factory({
-                obj: kumi,
-                kumi: kumi,
-                examId: exam.id,
-                kumiId: kumi.id,
-                mutateSilently: true
-            });
-            commit('addKumi', pl);
-            commit('associateExamWithKumi', pl);
-            if (i === 0) {
-                //set the first kumi as the one to display
-                commit('toggleKumi', pl);
-            }
-        });
-    },
 
 
     /**
      * Removes all associations between an exam and a kumi.
-     * Also removes all student associations with the kumi
+     * Also removes all student associations (from this roster)
+     * with the kumi
+     *
+     * NB, it does not delete the kumi itself. Nor does it disassociate
+     * any students who weren't on this exam. So if someone had created
+     * a kumi for students needing intervention (which would link them
+     * across exams), it and its relationships to other students
+     * would be unaffected
      *
      * @param state
      * @param dispatch
@@ -60519,22 +59638,41 @@ module.exports = {
      * @param getters
      * @param payload
      */
-    removeKumi: function removeKumi(_ref3, payload) {
-        var state = _ref3.state,
-            dispatch = _ref3.dispatch,
-            commit = _ref3.commit,
-            getters = _ref3.getters;
-        var kumi = payload.kumi,
-            exam = payload.exam;
+    removeKumi: function removeKumi(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
 
-        (0, _kumiRequests.disassociateKumiAndExam)(kumi, exam).then(function () {
-            commit(mTypes.disassociateExamFromKumi, payload);
+        return new Promise(function (resolve, reject) {
+
+            //We first remove the associations between the kumi
+            //and the exam
+            var kumi = payload.kumi,
+                exam = payload.exam;
+
+            (0, _kumiRequests.disassociateKumiAndExam)(kumi, exam).then(function () {
+                commit(mTypes.disassociateExamFromKumi, payload);
+            });
+
+            //now we need to remove the student associations
+            var students = getters.getStudentsForKumi(kumi);
+            //if there are none, then we are done
+            if (_.isUndefined(students) || students.length === 0) return resolve();
+
+            //Otherwise we ask the server to remove any relationship for each one
+            dispatch('removeStudentsFromKumis', _Payload2.default.factory({
+                students: student,
+                kumis: [kumi]
+            })).then(function () {
+                resolve();
+            });
         });
     }
 };
 
 /***/ }),
-/* 266 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60552,21 +59690,41 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
+var _Student = __webpack_require__(20);
+
+var _Student2 = _interopRequireDefault(_Student);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This holds data which determines the
+ * display state of the roster.
+ *
+ * That is, it contains the selected students or other
+ * properties which alter the display of the
+ * rows in the student table
+ *
+ * Created by adam on 9/21/17.
+ *
+ *
+ */
 module.exports = {
 
     state: {
 
-        //The kumis by which we are filtering
-        displayedKumis: [],
+        //The kumis by which we are filtering students by
+        kumisToFilterStudentsBy: [],
 
         /** whether the kumi list is visible */
         kumiSelectVisible: false,
 
-        /** Kumis which have been selected for whatever reason */
+        /** Kumis which have been selected for reasons other
+         * than filtering which students are displayed.
+         * This often will include selecting a group of kumis
+         * to be altered, or to have their associations altered
+         */
         selectedKumis: [],
 
         /** Whether the modal that allows one to edit and remove kumi is shown */
@@ -60576,10 +59734,20 @@ module.exports = {
 
     mutations: {
 
+        /**
+         * Add a kumi to the selected Kumis list
+         * @param state
+         * @param payload
+         */
         selectKumi: function selectKumi(state, payload) {
             state.selectedKumis.push(payload.obj);
         },
 
+        /**
+         * Remove a kumi from the selected kumis list
+         * @param state
+         * @param payload
+         */
         deselectKumi: function deselectKumi(state, payload) {
             var idx = state.selectedKumis.indexOf(payload.obj);
             state.selectedKumis.splice(idx, 1);
@@ -60592,32 +59760,49 @@ module.exports = {
          */
         toggleKumi: function toggleKumi(state, payload) {
             var kumi = payload.obj;
-            var idx = state.displayedKumis.indexOf(kumi);
+            var idx = state.kumisToFilterStudentsBy.indexOf(kumi);
 
             if (idx === -1) {
                 //was not previously selected
                 //so add it to the selected list
-                state.displayedKumis.push(kumi);
+                state.kumisToFilterStudentsBy.push(kumi);
             } else {
                 //was previously selected, so remove it
-                state.displayedKumis.splice(idx, 1);
+                state.kumisToFilterStudentsBy.splice(idx, 1);
             }
         },
 
+        /**
+         * Toggles whether a kumi selector is visible
+         * @param state
+         * @param payload
+         */
         toggleKumiSelectVisibility: function toggleKumiSelectVisibility(state, payload) {
             state.kumiSelectVisible = !state.kumiSelectVisible;
         },
 
-        clearDisplayedKumis: function clearDisplayedKumis(state, payload) {
-            state.displayedKumis = _.take(state.displayedKumis);
+        /**
+         * Removes all kumi filters on students
+         * @param state
+         * @param payload
+         */
+        clearKumisToFilterStudentsBy: function clearKumisToFilterStudentsBy(state, payload) {
+            state.kumisToFilterStudentsBy = [];
         },
 
+        /**
+         * Empties the selected kumis list
+         * @param state
+         * @param payload
+         */
         clearSelectedKumis: function clearSelectedKumis(state, payload) {
-            //we always keep the first kumi because that ties the
-            //student to the exam
-            state.selectedKumis = _.take(state.selectedKumis);
+            state.selectedKumis = [];
         },
 
+        /**
+         * Shows or hides the edit kumi modal
+         * @param state
+         */
         toggleEditKumiModal: function toggleEditKumiModal(state) {
             state.isKumiEditModalVisible = !state.isKumiEditModalVisible;
         }
@@ -60632,8 +59817,8 @@ module.exports = {
             return state.selectedKumis;
         },
 
-        getDisplayedKumis: function getDisplayedKumis(state, getters) {
-            return state.displayedKumis;
+        getKumisToFilterStudentsBy: function getKumisToFilterStudentsBy(state, getters) {
+            return state.kumisToFilterStudentsBy;
         },
 
         isKumiSelectVisible: function isKumiSelectVisible(state, getters) {
@@ -60655,29 +59840,39 @@ module.exports = {
          */
         isKumiDisplayed: function isKumiDisplayed(state, getters, rootState, kumi) {
             return function (kumi) {
-                return state.displayedKumis.filter(function (i) {
+                return state.kumisToFilterStudentsBy.filter(function (i) {
                     if (i.serialNumber === kumi.serialNumber) {
                         return i;
                     }
                 });
             };
         }
+
+        //
+        // /**
+        //  * Returns true if the specified student is in the
+        //  * presently selected kumi or, if all kumis are selected.
+        //  * Returns false otherwise
+        //  * @param state
+        //  * @param getters
+        //  * @param rootState
+        //  * @param student
+        //  * @returns {boolean}
+        //  */
+        // isStudentInSelectedKumis: ( state, getters, rootState, student ) => ( student ) => {
+        //     let kumis = getters.getSelectedKumis;
+        //     //if the kumis are null or empty, then
+        //     // no student could be associated with any kumi in that list
+        //     if ( _.isNull( kumis ) || _.isUndefined( kumis ) || kumis.length === 0 ) return false;
+        //     return student.isInKumiOrKumiList( kumis );
+        // },
+
+
     }
-}; /**
-    * This holds data which determines the
-    * display state of the roster.
-    *
-    * That is, it contains the selected students or other
-    * properties which alter the display of the
-    * rows in the student table
-    *
-    * Created by adam on 9/21/17.
-    *
-    *
-    */
+};
 
 /***/ }),
-/* 267 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60697,7 +59892,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -60709,7 +59904,7 @@ var _Kumi = __webpack_require__(19);
 
 var _Kumi2 = _interopRequireDefault(_Kumi);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -60737,6 +59932,20 @@ var KUMIS_JSON_NAME = 'loadedKumis';
 
 module.exports = (_module$exports = {
 
+    areKumiAndExamAssociated: function areKumiAndExamAssociated(state, getters, rootState, objs) {
+        return function (objs) {
+            var exam = objs.exam,
+                kumi = objs.kumi;
+
+            var r = state.examKumiAssociations.filter(function (i) {
+                if (i.examId === exam.id && i.kumiId === kumi.id) {
+                    return i;
+                }
+            });
+            return r.length > 0;
+        };
+    },
+
     getKumiBySerialNumber: function getKumiBySerialNumber(state, getters, rootState, serialNumber) {
         return function (serialNumber) {
             return (0, _kumis.getKumiBySerialNumber)(state, serialNumber);
@@ -60760,7 +59969,7 @@ module.exports = (_module$exports = {
     return _.uniq(state.kumis);
 }), _defineProperty(_module$exports, gTypes.getKumisForExam, function (state, getters, rootState, exam) {
     return function (exam) {
-        var kumiAssocs = (0, _kumis.filterExamAssociations)(state, 'examId', exam.id);
+        var kumiAssocs = (0, _kumis.filterExamKumiAssociations)(state, 'examId', exam.id);
         var out = [];
         _.forEach(kumiAssocs, function (i) {
             //since the associations only have ids,
@@ -60774,14 +59983,17 @@ module.exports = (_module$exports = {
     var returnObjects = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
     var objId = kumiOrKumiId;
-    var examIds = (0, _kumis.filterExamAssociations)(state, objId);
+    var examIds = (0, _kumis.filterExamKumiAssociations)(state, objId);
     if (!returnObjects) return examIds;
     //todo return objects
 }), _defineProperty(_module$exports, 'getRootKumi', function getRootKumi(state, getters) {
-    return state.kumis[0];
-}), _defineProperty(_module$exports, 'getStudentsForKumi', function getStudentsForKumi(state, getters, rootState, kumiOrKumiId) {
-    return function (kumiOrKumiId) {
-        var kumi = kumiOrKumiId;
+    var idx = _.findIndex(state.kumis, { isRoster: true });
+    if (idx >= 0) {
+        return state.kumis[idx];
+    }
+    // return state.kumis[ 0 ];
+}), _defineProperty(_module$exports, 'getStudentsForKumi', function getStudentsForKumi(state, getters, rootState, kumi) {
+    return function (kumi) {
         var studentSerialNumbers = (0, _kumis.filterStudentAssociations)(state, 'serialNumber', kumi.serialNumber);
         var out = [];
         _.forEach(studentSerialNumbers, function (i) {
@@ -60789,74 +60001,12 @@ module.exports = (_module$exports = {
         });
         return out;
     };
-}), _defineProperty(_module$exports, 'isStudentInDisplayedKumi', function isStudentInDisplayedKumi(state, getters, rootState, studentOrStudentSN) {
-    return function (studentOrStudentSN) {
-        try {
-            var selectedKumis = getters.getDisplayedKumis;
-
-            //if the selected kumi is null or empty, then we are to
-            //display all kumi associated with the exam
-            if (_.isNull(selectedKumis) || selectedKumis.length === 0) return true;
-
-            var student = studentOrStudentSN instanceof _Student2.default ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
-
-            // if(student.associatedKumis.length===0) return false;
-
-            // window.console.log( 'kumis', '', 310, selectedKumis, student);
-            var a = false;
-            _.forEach(selectedKumis, function (kumi) {
-                _.forEach(student.associatedKumis, function (k) {
-                    // window.console.log( 'kumis', 'k', 316, kumi, k );
-                    if (kumi.serialNumber === k.serialNumber) a = true;
-                });
-                // if(filterStudentAssociations(student, 'serialNumber', kumi.serialNumber)) return true;
-                // if ( student.associatedKumis.indexOf( kumi ) > -1 ) return true;
-            });
-
-            return a;
-        } catch (Error) {
-            window.console.log('kumis', 'isStudentInDisplayedKumi', 325, Error);
-            return false;
-        }
-    };
-}), _defineProperty(_module$exports, 'isStudentInSelectedKumi', function isStudentInSelectedKumi(state, getters, rootState, studentOrStudentSN) {
-    return function (studentOrStudentSN) {
-        try {
-            var selectedKumis = getters.getSelectedKumis;
-
-            //if the selected kumi is null or empty, then we are to
-            //display all kumi associated with the exam
-            if (_.isNull(selectedKumis) || selectedKumis.length === 0) return true;
-
-            var student = studentOrStudentSN instanceof _Student2.default ? studentOrStudentSN : getters.getStudentFromRosterBySerialNumber(studentOrStudentSN);
-
-            _.forEach(selectedKumis, function (kumi) {
-                if (student.associatedKumis.indexOf(kumi) > -1) return true;
-            });
-
-            return false;
-            //            return student.associatedKumis.indexOf( kumi ) > -1;
-            //     //if the selected kumi is null, then we are to
-            //     //display all kumi associated with the exam
-            //     if ( _.isNull( kumi ) ) return true;
-            //
-            //     //todo add support for student id
-            //     let student = studentOrStudentId;
-            //     let students = getters.getStudentsForKumi( kumi );
-            //     window.console.log( 'kumis', 'isStudentInSelectedKumi', 222, student, kumi, students );
-            //     if ( students.indexOf( student ) >= 0 ) return true;
-            //     return false;
-        } catch (Error) {
-            window.console.log('kumis', 'isStudentInSelectedKumi', 209, Error);
-            return false;
-        }
-    };
 }), _defineProperty(_module$exports, gTypes.getKumiCount, function (state, getters, rootState) {
     return _.size(state.kumis);
 }), _module$exports);
 
 /***/ }),
-/* 268 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60868,19 +60018,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _kumis = __webpack_require__(265);
+var _kumis = __webpack_require__(266);
 
 var _kumis2 = _interopRequireDefault(_kumis);
 
-var _kumis3 = __webpack_require__(267);
+var _kumis3 = __webpack_require__(268);
 
 var _kumis4 = _interopRequireDefault(_kumis3);
 
-var _kumis5 = __webpack_require__(269);
+var _kumis5 = __webpack_require__(270);
 
 var _kumis6 = _interopRequireDefault(_kumis5);
 
-var _kumis7 = __webpack_require__(266);
+var _kumis7 = __webpack_require__(267);
 
 var _kumis8 = _interopRequireDefault(_kumis7);
 
@@ -60933,7 +60083,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 269 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60953,7 +60103,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -60965,7 +60115,7 @@ var _Kumi = __webpack_require__(19);
 
 var _Kumi2 = _interopRequireDefault(_Kumi);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -60991,8 +60141,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var KUMIS_JSON_NAME = 'loadedKumis';
 
+var checkIfNew = function checkIfNew(state, kumi) {
+    return _.findIndex(state.kumis, { id: kumi.id }) === -1;
+};
+
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addKumi, function (state, payload) {
-    state.kumis.push(payload.obj);
+    //prevent any duplicates since multiple processes
+    //may load kumis from the server. We do this
+    //check here because there may be other parts of
+    //the actions handling the loading which still need to
+    //happen
+    var kumi = payload.obj;
+    if (checkIfNew(state, kumi)) state.kumis.push(kumi);
 }), _defineProperty(_module$exports, mTypes.updateKumi, function (state, payload) {
     _Payload2.default.checkIfPayload(payload);
     var kumi = (0, _kumis.getKumiBySerialNumber)(state, payload.obj.serialNumber);
@@ -61005,34 +60165,46 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 }), _defineProperty(_module$exports, mTypes.disassociateExamFromKumi, function (state, payload) {
     var examId = payload.exam.id;
     var kumiId = payload.kumi.id;
-    var r = (0, _kumis.filterExamAssociations)(state, kumiId, examId);
+    var r = (0, _kumis.filterExamKumiAssociations)(state, kumiId, examId);
     var index = state.examKumiAssociations.indexOf(r[0]);
     state.examKumiAssociations.splice(index, 1);
 }), _defineProperty(_module$exports, mTypes.associateStudentWithKumi, function (state, payload) {
     var student = payload.student;
     var kumi = payload.kumi;
 
-    //store on the student object
-    student.associatedKumis.push(kumi);
-    //Now, redundantly store it centrally
-    //Why? No idea.... Not even sure if anything uses
-    //the central store
-    // todo Should check that not duplicating?
-    state.studentKumiAssociations.push({
-        studentSerialNumber: student.serialNumber,
-        kumiSerialNumber: kumi.serialNumber
-    });
+    //check if the kumi is already associated
+    if (!student.isInKumiOrKumiList(kumi)) {
+
+        //store on the student object
+        student.associatedKumis.push(kumi);
+
+        //dev LEGACY
+        //Now, redundantly store it centrally
+        //Why? No idea.... Not even sure if anything uses
+        //the central store
+        state.studentKumiAssociations.push({
+            studentSerialNumber: student.serialNumber,
+            kumiSerialNumber: kumi.serialNumber
+        });
+    }
 }), _defineProperty(_module$exports, mTypes.disassociateStudentFromKumi, function (state, payload) {
     var student = payload.student;
     var kumi = payload.kumi;
-    var index = state.studentKumiAssociations.indexOf(r[0]);
-    state.studentKumiAssociations.splice(index, 1);
     //remove kumi from array stored in student
-    student.associatedKumis.splice(student.associatedKumis.indexOf(kumi));
+    student.associatedKumis.splice(student.associatedKumis.indexOf(kumi), 1);
+
+    //dev legacy
+    //Remove from legacy storage
+    var r = {
+        studentSerialNumber: student.serialNumber,
+        kumiSerialNumber: kumi.serialNumber
+    };
+    var index = state.studentKumiAssociations.indexOf(r);
+    if (index !== -1) state.studentKumiAssociations.splice(index, 1);
 }), _module$exports);
 
 /***/ }),
-/* 270 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61056,7 +60228,7 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -61076,7 +60248,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -61099,17 +60271,106 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 module.exports = _extends({}, _studentFileImporter2.default, _defineProperty({
 
     /**
+     * Adds provided students to all provided groups
+     * The payload obj should have properties students and kumis
+     * each of which is a list of student and kumi objects respectively.
+     *
+     * The api listener will catch the mutations and handle the server updates
+     */
+    addStudentsToKumis: function addStudentsToKumis(_ref, objs) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+            // window.console.log( 'student-action-buttons', 'addStudentToGroup', 151, );
+            var students = objs.students,
+                kumis = objs.kumis;
+
+
+            _.forEach(kumis, function (kumi) {
+                _.forEach(students, function (student) {
+                    if (!student.isInKumiOrKumiList(kumi)) {
+                        commit(mTypes.associateStudentWithKumi, _Payload2.default.factory({
+                            student: student,
+                            kumi: kumi
+                        }));
+                    }
+                });
+            });
+            resolve();
+        });
+    },
+
+    removeStudentsFromKumis: function removeStudentsFromKumis(_ref2, objs) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
+
+        return new Promise(function (resolve, reject) {
+            // window.console.log( 'student-action-buttons', 'addStudentToGroup', 151, );
+            var students = objs.students,
+                kumis = objs.kumis;
+
+
+            _.forEach(kumis, function (kumi) {
+                _.forEach(students, function (student) {
+                    commit(mTypes.disassociateStudentFromKumi, _Payload2.default.factory({
+                        student: student,
+                        kumi: kumi
+                    }));
+                });
+            });
+            resolve();
+        });
+    },
+
+    /**
+     * Disassociates students from the base kumi connecting
+     * them with the exam. They will no longer show up in the roster.
+     *
+     * Does not delete student data
+     * Any scores on this exam or any data on other exams will
+     * be intact.
+     *
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param students
+     * @returns {Promise<any>}
+     */
+    removeStudentsFromRoster: function removeStudentsFromRoster(_ref3, students) {
+        var state = _ref3.state,
+            dispatch = _ref3.dispatch,
+            commit = _ref3.commit,
+            getters = _ref3.getters;
+
+        return new Promise(function (resolve, reject) {
+            // window.console.log( 'student-action-buttons', 'addStudentToGroup', 151, );
+            var kumi = getters.getRootKumi;
+            _.forEach(students, function (student) {
+                (0, _studentRequests.disassociateStudent)(student, kumi).then(function () {
+                    commit(mTypes.removeStudentFromRoster, _Payload2.default.factory({ obj: student, kumi: kumi }));
+                });
+            });
+        });
+    },
+
+    /**
      * Takes a newly created (but not yet saved) student object or
      * creates a new student object from the payload,
      * saves it to the db, and stores it in
      * store.roster.
      * Does not handle any associations with kumis
      */
-    createStudent: function createStudent(_ref, newStudentObjectOrPayload) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
+    createStudent: function createStudent(_ref4, newStudentObjectOrPayload) {
+        var state = _ref4.state,
+            dispatch = _ref4.dispatch,
+            commit = _ref4.commit,
+            getters = _ref4.getters;
 
         return new Promise(function (resolve, reject) {
 
@@ -61139,11 +60400,11 @@ module.exports = _extends({}, _studentFileImporter2.default, _defineProperty({
         });
     }
 
-}, aTypes.handleNewStudentStorageAndAssociation, function (_ref2, newStudentObject) {
-    var state = _ref2.state,
-        dispatch = _ref2.dispatch,
-        commit = _ref2.commit,
-        getters = _ref2.getters;
+}, aTypes.handleNewStudentStorageAndAssociation, function (_ref5, newStudentObject) {
+    var state = _ref5.state,
+        dispatch = _ref5.dispatch,
+        commit = _ref5.commit,
+        getters = _ref5.getters;
 
     return new Promise(function (resolve, reject) {
         //Create a new student
@@ -61161,8 +60422,9 @@ module.exports = _extends({}, _studentFileImporter2.default, _defineProperty({
         kumis.push(getters.getRootKumi);
         //get the kumis that are currently displayed and
         //selected
-        kumis = kumis.concat(getters.getDisplayedKumis);
+        kumis = kumis.concat(getters.getKumisToFilterStudentsBy);
         kumis = kumis.concat(getters.getSelectedKumis);
+        kumis = _.uniq(kumis);
 
         //once the promise has resolved, we have the student, with id,
         //stored in our roster. We can now associate them with the kumis
@@ -61191,7 +60453,7 @@ module.exports = _extends({}, _studentFileImporter2.default, _defineProperty({
 }));
 
 /***/ }),
-/* 271 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61253,16 +60515,19 @@ module.exports = {
             state.selectedStudents.push(payload.obj);
         },
 
+        /**
+         * If the student was in the selected list, this removes them
+         * If they were not selected, this adds them
+         * @param state
+         * @param payload
+         */
         toggleStudent: function toggleStudent(state, payload) {
             var student = payload.obj;
-            window.console.log('roster.display', 'toggleStudent', 61, state, payload);
             var idx = state.selectedStudents.indexOf(student);
-            window.console.log('display', 'toggleStudent', 30, student, idx);
             if (idx === -1) {
                 //was not previously selected
                 //so add it to the selected list
                 state.selectedStudents.push(student);
-                window.console.log('display', 'toggleStudent', 35, state.selectedStudents);
             } else {
                 //was previously selected, so remove it
                 state.selectedStudents.splice(idx, 1);
@@ -61311,7 +60576,7 @@ module.exports = {
     */
 
 /***/ }),
-/* 272 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61323,7 +60588,7 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -61343,7 +60608,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -61410,7 +60675,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
 }), _module$exports);
 
 /***/ }),
-/* 273 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61422,19 +60687,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _roster = __webpack_require__(270);
+var _roster = __webpack_require__(271);
 
 var _roster2 = _interopRequireDefault(_roster);
 
-var _roster3 = __webpack_require__(272);
+var _roster3 = __webpack_require__(273);
 
 var _roster4 = _interopRequireDefault(_roster3);
 
-var _roster5 = __webpack_require__(274);
+var _roster5 = __webpack_require__(275);
 
 var _roster6 = _interopRequireDefault(_roster5);
 
-var _roster7 = __webpack_require__(271);
+var _roster7 = __webpack_require__(272);
 
 var _roster8 = _interopRequireDefault(_roster7);
 
@@ -61484,7 +60749,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 274 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61496,7 +60761,7 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -61504,21 +60769,9 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _Kumi = __webpack_require__(19);
-
-var _Kumi2 = _interopRequireDefault(_Kumi);
-
 var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(5);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -61538,31 +60791,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    */
 
 
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addStudentToRoster, function (state, payload) {
-  _Payload2.default.checkIfPayload(payload);
-  var student = payload.obj;
-  state.roster.push(student);
-}), _defineProperty(_module$exports, mTypes.removeStudentFromRoster, function (state, payload) {
-  _Payload2.default.checkIfPayload(payload);
-  var student = payload.obj;
-  var idx = state.roster.indexOf(student);
-  state.roster.splice(idx, 1);
-}), _defineProperty(_module$exports, mTypes.deleteStudent, function (state, payload) {
-  _Payload2.default.checkIfPayload(payload);
-  var student = payload.obj;
-  var idx = state.roster.indexOf(student);
-  state.roster.splice(idx, 1);
-}), _defineProperty(_module$exports, mTypes.updateStudentInRoster, function (state, payload) {
-  // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
-  _Payload2.default.checkIfPayload(payload);
-  var student = payload.obj;
-  var idx = state.roster.indexOf(student);
+var isNew = function isNew(state, student) {
+    return _.findIndex(state.roster, { id: student.id }) === -1;
+};
 
-  _vue2.default.set(state.roster[idx], payload.updateProp, payload.updateVal);
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addStudentToRoster, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    var student = payload.obj;
+    //make sure that not duplicating
+    if (isNew(state, student)) state.roster.push(student);
+}), _defineProperty(_module$exports, mTypes.removeStudentFromRoster, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    var student = payload.obj;
+    var idx = state.roster.indexOf(student);
+    state.roster.splice(idx, 1);
+}), _defineProperty(_module$exports, mTypes.deleteStudent, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    var student = payload.obj;
+    var idx = state.roster.indexOf(student);
+    state.roster.splice(idx, 1);
+}), _defineProperty(_module$exports, mTypes.updateStudentInRoster, function (state, payload) {
+    // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
+    _Payload2.default.checkIfPayload(payload);
+    var student = payload.obj;
+    var idx = state.roster.indexOf(student);
+
+    _vue2.default.set(state.roster[idx], payload.updateProp, payload.updateVal);
 }), _module$exports);
 
 /***/ }),
-/* 275 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61690,7 +60948,7 @@ var roundToTwo = exports.roundToTwo = function roundToTwo(num) {
 };
 
 /***/ }),
-/* 276 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61712,7 +60970,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -61877,7 +61135,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 277 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61891,7 +61149,7 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -61899,7 +61157,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -61907,11 +61165,11 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -61937,7 +61195,7 @@ var _itemscores3 = __webpack_require__(160);
 
 var _itemscores4 = _interopRequireDefault(_itemscores3);
 
-var _itemscores5 = __webpack_require__(278);
+var _itemscores5 = __webpack_require__(279);
 
 var _itemscores6 = _interopRequireDefault(_itemscores5);
 
@@ -61959,7 +61217,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 278 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61967,7 +61225,7 @@ exports.default = {
 
 var _module$exports;
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -62012,7 +61270,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, ngmType
 }), _module$exports);
 
 /***/ }),
-/* 279 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62085,141 +61343,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 280 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _Student = __webpack_require__(24);
-
-var _Student2 = _interopRequireDefault(_Student);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _legacyMutationTypes = __webpack_require__(74);
-
-var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
-
-var _legacyActionTypes = __webpack_require__(73);
-
-var laTypes = _interopRequireWildcard(_legacyActionTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * This is the older student storage
-                                                                                                                                                                                                                   * system, still used in grading etc
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * For setup, use roster.js
-                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                   */
-
-/**
- * Created by adam on 10/7/16.
- */
-
-
-var state = {
-    /**
-     * Json of students
-     * Format: { studentIndex : { studentId: int, firstName: str, lastName: str, studentIdentifier: str }, ....}
-     * @type {{}}
-     */
-    students: {}
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setStudent, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.students[payload.index] = payload.obj;
-}), _defineProperty(_mutations, lmTypes.toggleRemoveControls, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    delete state.students[payload.index];
-}), _mutations);
-
-var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadStudents, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-
-    for (var i = 0; i < Object.keys(payload).length; i++) {
-        actions[laTypes.addStudent]({ state: state, commit: commit }, payload[i]);
-    }
-}), _defineProperty(_actions, laTypes.addStudent, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    /*
-     create a student object out of the payload.
-     the factory will not require any properties to
-     be set. That lets us use it in very incremental ways.
-     todo the factory will sanitize values
-     */
-    var student = _Student2.default.factory(payload);
-    if (student instanceof _Student2.default) {
-        var pl = new _Payload2.default();
-        pl.id = student.id;
-        pl.index = student.index;
-        pl.obj = student;
-        commit(lmTypes.setStudent, pl);
-    }
-
-    //todo error handling if a student wasn't returned
-}), _actions);
-
-var getters = {
-    /**
-     * Returns a student object with keys:
-     *      studentId
-     *      studentIdentifier
-     *      firstName
-     *      lastName
-     * @param studentIndex
-     * @returns {*}
-     */
-    getStudent: function getStudent(state, getters, rootState, studentIndex) {
-        return state.students[studentIndex];
-    },
-
-    /**
-     * Returns a json containing student objects with student indexes as keys.
-     * The contained object has the keys:
-     *      studentId
-     *      studentIdentifier
-     *      firstName
-     *      lastName
-     * @returns {*}
-     */
-    getStudents: function getStudents(state, getters, rootState) {
-        return state.students;
-    }
-
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
-/* 281 */
+/* 281 */,
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62243,7 +61368,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -62259,7 +61384,7 @@ var _Exam = __webpack_require__(9);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -62527,152 +61652,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 282 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions;
-
-var _legacyMutationTypes = __webpack_require__(74);
-
-var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _legacyActionTypes = __webpack_require__(73);
-
-var laTypes = _interopRequireWildcard(_legacyActionTypes);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                   */
-
-
-var state = {
-    /**
-     * Key-value store of grading times .
-     *
-     * Each record has the studentIndex as the key and
-     * the gradingTime as the value.
-     * That is:
-     *     { studentIndex : gradingTime, }
-     * Or, if you prefer
-     *      examGradingTimes[ studentIndex] = gradingTime
-     */
-    examGradingTimes: {}
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setGradingTime, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.examGradingTimes[payload.index] = payload.num;
-}), _defineProperty(_mutations, lmTypes.incrementGradingTime, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.examGradingTimes[payload.index] += payload.num;
-}), _defineProperty(_mutations, lmTypes.removeGradingTime, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-
-    var idx = -1;
-    if (payload instanceof _Payload2.default) {
-        idx = payload.index;
-    }
-
-    if (idx > -1) {
-        delete state.examGradingTimes[idx];
-        // state.examGradingTimes.splice( idx, 1 );
-    }
-}), _defineProperty(_mutations, lmTypes.resetGradingTime, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    state.examGradingTimes[payload.index] = 0;
-}), _mutations);
-
-var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadGradingTimes, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-    if (payload.length > 1) {
-        for (var i = 0; i < payload.length; i++) {
-            actions[aTypes.storeGradingTime](state, commit, payload);
-        }
-    }
-}), _defineProperty(_actions, laTypes.storeGradingTime, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    //type checking
-    if (typeof payload.studentIndex != 'undefined' && typeof payload.timeToAdd != 'undefined') {
-
-        //todo add sanitation and checks
-        var studentIndex = payload.studentIndex;
-        var timeToAdd = payload.timeToAdd;
-
-        //add processing from other allowed input configs
-
-
-        var pl = _Payload2.default.factory({ index: studentIndex, num: timeToAdd });
-        commit(mTypes.setGradingTime, pl);
-    }
-}), _defineProperty(_actions, laTypes.incrementGradingTime, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
-
-
-    var pl = _Payload2.default.factory({
-        index: payload.studentIndex,
-        num: payload.timeToAdd
-    });
-
-    commit(lmTypes.incrementGradingTime, pl);
-}), _actions);
-
-var getters = {
-    /**
-     * Returns the total amount of time spent grading in seconds
-     * @returns {number}
-     */
-    getTotalGradingTime: function getTotalGradingTime(state, getters) {
-        var totalTime = 0;
-        for (var i = 0; i < Object.keys(state.examGradingTimes).length; i++) {
-            totalTime += state.examGradingTimes[i];
-        }
-        return totalTime;
-    },
-
-    /**
-     * Original: data.this.examGradingTimes[ Roster.activeStudent ]
-     * @param activeStudent
-     * @returns {*}
-     */
-    getStudentGradingTime: function getStudentGradingTime(state, getters, studentIndex) {
-        return state.examGradingTimes[studentIndex];
-    }
-
-};
-
-exports.default = {
-    state: state,
-    getters: getters,
-    actions: actions,
-    mutations: mutations
-};
-
-/***/ }),
-/* 283 */
+/* 283 */,
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62692,7 +61673,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -62789,7 +61770,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 284 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62819,41 +61800,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 ;
 
 /***/ }),
-/* 285 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 /**
  * Root state for vuex instance
  *
  * Created by adam on 1/10/17.
  */
-exports.default = {
-    //
-    // standardScoring: false,
-    //
-    // /** Standard valences */
-    // valences: [0, 1, 2, 3],
-
-};
+exports.default = {};
 
 /***/ }),
-/* 286 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-__webpack_require__(488);
+__webpack_require__(489);
 
-__webpack_require__(287);
+__webpack_require__(288);
 
-__webpack_require__(289);
+__webpack_require__(290);
 
 if (global._babelPolyfill) {
   throw new Error("only one instance of babel-polyfill is allowed");
@@ -62878,7 +61852,7 @@ define(String.prototype, "padRight", "".padEnd);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78)))
 
 /***/ }),
-/* 287 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -63621,33 +62595,33 @@ define(String.prototype, "padRight", "".padEnd);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78)))
 
 /***/ }),
-/* 288 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
-__webpack_require__(627)
-__webpack_require__(617)
-__webpack_require__(618)
+__webpack_require__(629)
 __webpack_require__(619)
 __webpack_require__(620)
 __webpack_require__(621)
 __webpack_require__(622)
-__webpack_require__(626)
 __webpack_require__(623)
 __webpack_require__(624)
+__webpack_require__(628)
 __webpack_require__(625)
-__webpack_require__(616)
+__webpack_require__(626)
+__webpack_require__(627)
+__webpack_require__(618)
 
 /***/ }),
-/* 289 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(296);
+__webpack_require__(297);
 module.exports = __webpack_require__(43).RegExp.escape;
 
 
 /***/ }),
-/* 290 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(15);
@@ -63669,7 +62643,7 @@ module.exports = function (original) {
 
 
 /***/ }),
-/* 291 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63702,7 +62676,7 @@ module.exports = (fails(function () {
 
 
 /***/ }),
-/* 292 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63718,7 +62692,7 @@ module.exports = function (hint) {
 
 
 /***/ }),
-/* 293 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // all enumerable object keys, includes symbols
@@ -63739,7 +62713,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 294 */
+/* 295 */
 /***/ (function(module, exports) {
 
 module.exports = function (regExp, replace) {
@@ -63753,7 +62727,7 @@ module.exports = function (regExp, replace) {
 
 
 /***/ }),
-/* 295 */
+/* 296 */
 /***/ (function(module, exports) {
 
 // 7.2.9 SameValue(x, y)
@@ -63764,18 +62738,18 @@ module.exports = Object.is || function is(x, y) {
 
 
 /***/ }),
-/* 296 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/benjamingr/RexExp.escape
 var $export = __webpack_require__(0);
-var $re = __webpack_require__(294)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+var $re = __webpack_require__(295)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 
 $export($export.S, 'RegExp', { escape: function escape(it) { return $re(it); } });
 
 
 /***/ }),
-/* 297 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
@@ -63787,7 +62761,7 @@ __webpack_require__(52)('copyWithin');
 
 
 /***/ }),
-/* 298 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63804,7 +62778,7 @@ $export($export.P + $export.F * !__webpack_require__(41)([].every, true), 'Array
 
 
 /***/ }),
-/* 299 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
@@ -63816,7 +62790,7 @@ __webpack_require__(52)('fill');
 
 
 /***/ }),
-/* 300 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63833,7 +62807,7 @@ $export($export.P + $export.F * !__webpack_require__(41)([].filter, true), 'Arra
 
 
 /***/ }),
-/* 301 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63854,7 +62828,7 @@ __webpack_require__(52)(KEY);
 
 
 /***/ }),
-/* 302 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63875,7 +62849,7 @@ __webpack_require__(52)(KEY);
 
 
 /***/ }),
-/* 303 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63893,7 +62867,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 
 
 /***/ }),
-/* 304 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63903,7 +62877,7 @@ var $export = __webpack_require__(0);
 var toObject = __webpack_require__(25);
 var call = __webpack_require__(175);
 var isArrayIter = __webpack_require__(122);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var createProperty = __webpack_require__(116);
 var getIterFn = __webpack_require__(139);
 
@@ -63937,7 +62911,7 @@ $export($export.S + $export.F * !__webpack_require__(96)(function (iter) { Array
 
 
 /***/ }),
-/* 305 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63959,7 +62933,7 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(41)($nati
 
 
 /***/ }),
-/* 306 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
@@ -63969,7 +62943,7 @@ $export($export.S, 'Array', { isArray: __webpack_require__(94) });
 
 
 /***/ }),
-/* 307 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63988,7 +62962,7 @@ $export($export.P + $export.F * (__webpack_require__(76) != Object || !__webpack
 
 
 /***/ }),
-/* 308 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63996,7 +62970,7 @@ $export($export.P + $export.F * (__webpack_require__(76) != Object || !__webpack
 var $export = __webpack_require__(0);
 var toIObject = __webpack_require__(37);
 var toInteger = __webpack_require__(46);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var $native = [].lastIndexOf;
 var NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
 
@@ -64017,7 +62991,7 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(41)($nati
 
 
 /***/ }),
-/* 309 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64034,7 +63008,7 @@ $export($export.P + $export.F * !__webpack_require__(41)([].map, true), 'Array',
 
 
 /***/ }),
-/* 310 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64060,7 +63034,7 @@ $export($export.S + $export.F * __webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 311 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64077,7 +63051,7 @@ $export($export.P + $export.F * !__webpack_require__(41)([].reduceRight, true), 
 
 
 /***/ }),
-/* 312 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64094,7 +63068,7 @@ $export($export.P + $export.F * !__webpack_require__(41)([].reduce, true), 'Arra
 
 
 /***/ }),
-/* 313 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64103,7 +63077,7 @@ var $export = __webpack_require__(0);
 var html = __webpack_require__(120);
 var cof = __webpack_require__(39);
 var toAbsoluteIndex = __webpack_require__(63);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var arraySlice = [].slice;
 
 // fallback for not array-like ES3 strings and DOM objects
@@ -64129,7 +63103,7 @@ $export($export.P + $export.F * __webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 314 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64146,7 +63120,7 @@ $export($export.P + $export.F * !__webpack_require__(41)([].some, true), 'Array'
 
 
 /***/ }),
-/* 315 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64176,14 +63150,14 @@ $export($export.P + $export.F * (fails(function () {
 
 
 /***/ }),
-/* 316 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(62)('Array');
 
 
 /***/ }),
-/* 317 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.3.3.1 / 15.9.4.4 Date.now()
@@ -64193,12 +63167,12 @@ $export($export.S, 'Date', { now: function () { return new Date().getTime(); } }
 
 
 /***/ }),
-/* 318 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.3.4.36 / 15.9.5.43 Date.prototype.toISOString()
 var $export = __webpack_require__(0);
-var toISOString = __webpack_require__(291);
+var toISOString = __webpack_require__(292);
 
 // PhantomJS / old WebKit has a broken implementations
 $export($export.P + $export.F * (Date.prototype.toISOString !== toISOString), 'Date', {
@@ -64207,7 +63181,7 @@ $export($export.P + $export.F * (Date.prototype.toISOString !== toISOString), 'D
 
 
 /***/ }),
-/* 319 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64230,17 +63204,17 @@ $export($export.P + $export.F * __webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 320 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TO_PRIMITIVE = __webpack_require__(17)('toPrimitive');
 var proto = Date.prototype;
 
-if (!(TO_PRIMITIVE in proto)) __webpack_require__(29)(proto, TO_PRIMITIVE, __webpack_require__(292));
+if (!(TO_PRIMITIVE in proto)) __webpack_require__(29)(proto, TO_PRIMITIVE, __webpack_require__(293));
 
 
 /***/ }),
-/* 321 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var DateProto = Date.prototype;
@@ -64258,7 +63232,7 @@ if (new Date(NaN) + '' != INVALID_DATE) {
 
 
 /***/ }),
-/* 322 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
@@ -64268,7 +63242,7 @@ $export($export.P, 'Function', { bind: __webpack_require__(167) });
 
 
 /***/ }),
-/* 323 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64278,7 +63252,7 @@ var getPrototypeOf = __webpack_require__(36);
 var HAS_INSTANCE = __webpack_require__(17)('hasInstance');
 var FunctionProto = Function.prototype;
 // 19.2.3.6 Function.prototype[@@hasInstance](V)
-if (!(HAS_INSTANCE in FunctionProto)) __webpack_require__(22).f(FunctionProto, HAS_INSTANCE, { value: function (O) {
+if (!(HAS_INSTANCE in FunctionProto)) __webpack_require__(23).f(FunctionProto, HAS_INSTANCE, { value: function (O) {
   if (typeof this != 'function' || !isObject(O)) return false;
   if (!isObject(this.prototype)) return O instanceof this;
   // for environment w/o native `@@hasInstance` logic enough `instanceof`, but add this:
@@ -64288,16 +63262,16 @@ if (!(HAS_INSTANCE in FunctionProto)) __webpack_require__(22).f(FunctionProto, H
 
 
 /***/ }),
-/* 324 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(22).f;
+var dP = __webpack_require__(23).f;
 var FProto = Function.prototype;
 var nameRE = /^\s*function ([^ (]*)/;
 var NAME = 'name';
 
 // 19.2.4.2 name
-NAME in FProto || __webpack_require__(21) && dP(FProto, NAME, {
+NAME in FProto || __webpack_require__(22) && dP(FProto, NAME, {
   configurable: true,
   get: function () {
     try {
@@ -64310,7 +63284,7 @@ NAME in FProto || __webpack_require__(21) && dP(FProto, NAME, {
 
 
 /***/ }),
-/* 325 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.3 Math.acosh(x)
@@ -64334,7 +63308,7 @@ $export($export.S + $export.F * !($acosh
 
 
 /***/ }),
-/* 326 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.5 Math.asinh(x)
@@ -64350,7 +63324,7 @@ $export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', { asinh:
 
 
 /***/ }),
-/* 327 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.7 Math.atanh(x)
@@ -64366,7 +63340,7 @@ $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
 
 
 /***/ }),
-/* 328 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.9 Math.cbrt(x)
@@ -64381,7 +63355,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 329 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.11 Math.clz32(x)
@@ -64395,7 +63369,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 330 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.12 Math.cosh(x)
@@ -64410,7 +63384,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 331 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.14 Math.expm1(x)
@@ -64421,7 +63395,7 @@ $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 
 
 
 /***/ }),
-/* 332 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.16 Math.fround(x)
@@ -64431,7 +63405,7 @@ $export($export.S, 'Math', { fround: __webpack_require__(177) });
 
 
 /***/ }),
-/* 333 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
@@ -64462,7 +63436,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 334 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.18 Math.imul(x, y)
@@ -64485,7 +63459,7 @@ $export($export.S + $export.F * __webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 335 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.21 Math.log10(x)
@@ -64499,7 +63473,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 336 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.20 Math.log1p(x)
@@ -64509,7 +63483,7 @@ $export($export.S, 'Math', { log1p: __webpack_require__(178) });
 
 
 /***/ }),
-/* 337 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.22 Math.log2(x)
@@ -64523,7 +63497,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 338 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.28 Math.sign(x)
@@ -64533,7 +63507,7 @@ $export($export.S, 'Math', { sign: __webpack_require__(126) });
 
 
 /***/ }),
-/* 339 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.30 Math.sinh(x)
@@ -64554,7 +63528,7 @@ $export($export.S + $export.F * __webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 340 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.33 Math.tanh(x)
@@ -64572,7 +63546,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 341 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.34 Math.trunc(x)
@@ -64586,7 +63560,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 342 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64599,7 +63573,7 @@ var toPrimitive = __webpack_require__(47);
 var fails = __webpack_require__(14);
 var gOPN = __webpack_require__(58).f;
 var gOPD = __webpack_require__(35).f;
-var dP = __webpack_require__(22).f;
+var dP = __webpack_require__(23).f;
 var $trim = __webpack_require__(68).trim;
 var NUMBER = 'Number';
 var $Number = global[NUMBER];
@@ -64644,7 +63618,7 @@ if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
       && (BROKEN_COF ? fails(function () { proto.valueOf.call(that); }) : cof(that) != NUMBER)
         ? inheritIfRequired(new Base(toNumber(it)), that, $Number) : toNumber(it);
   };
-  for (var keys = __webpack_require__(21) ? gOPN(Base) : (
+  for (var keys = __webpack_require__(22) ? gOPN(Base) : (
     // ES3:
     'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,' +
     // ES6 (in case, if modules with ES6 Number statics required before):
@@ -64662,7 +63636,7 @@ if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
 
 
 /***/ }),
-/* 343 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.1 Number.EPSILON
@@ -64672,7 +63646,7 @@ $export($export.S, 'Number', { EPSILON: Math.pow(2, -52) });
 
 
 /***/ }),
-/* 344 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.2 Number.isFinite(number)
@@ -64687,7 +63661,7 @@ $export($export.S, 'Number', {
 
 
 /***/ }),
-/* 345 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.3 Number.isInteger(number)
@@ -64697,7 +63671,7 @@ $export($export.S, 'Number', { isInteger: __webpack_require__(174) });
 
 
 /***/ }),
-/* 346 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.4 Number.isNaN(number)
@@ -64712,7 +63686,7 @@ $export($export.S, 'Number', {
 
 
 /***/ }),
-/* 347 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.5 Number.isSafeInteger(number)
@@ -64728,7 +63702,7 @@ $export($export.S, 'Number', {
 
 
 /***/ }),
-/* 348 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.6 Number.MAX_SAFE_INTEGER
@@ -64738,7 +63712,7 @@ $export($export.S, 'Number', { MAX_SAFE_INTEGER: 0x1fffffffffffff });
 
 
 /***/ }),
-/* 349 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.10 Number.MIN_SAFE_INTEGER
@@ -64748,7 +63722,7 @@ $export($export.S, 'Number', { MIN_SAFE_INTEGER: -0x1fffffffffffff });
 
 
 /***/ }),
-/* 350 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -64758,7 +63732,7 @@ $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', { 
 
 
 /***/ }),
-/* 351 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -64768,7 +63742,7 @@ $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', { pars
 
 
 /***/ }),
-/* 352 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64889,7 +63863,7 @@ $export($export.P + $export.F * (!!$toFixed && (
 
 
 /***/ }),
-/* 353 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64914,7 +63888,7 @@ $export($export.P + $export.F * ($fails(function () {
 
 
 /***/ }),
-/* 354 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.1 Object.assign(target, source)
@@ -64924,7 +63898,7 @@ $export($export.S + $export.F, 'Object', { assign: __webpack_require__(180) });
 
 
 /***/ }),
-/* 355 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -64933,25 +63907,25 @@ $export($export.S, 'Object', { create: __webpack_require__(57) });
 
 
 /***/ }),
-/* 356 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $export = __webpack_require__(0);
-// 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
-$export($export.S + $export.F * !__webpack_require__(21), 'Object', { defineProperties: __webpack_require__(181) });
-
-
-/***/ }),
 /* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !__webpack_require__(21), 'Object', { defineProperty: __webpack_require__(22).f });
+// 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
+$export($export.S + $export.F * !__webpack_require__(22), 'Object', { defineProperties: __webpack_require__(181) });
 
 
 /***/ }),
 /* 358 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $export = __webpack_require__(0);
+// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
+$export($export.S + $export.F * !__webpack_require__(22), 'Object', { defineProperty: __webpack_require__(23).f });
+
+
+/***/ }),
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.5 Object.freeze(O)
@@ -64966,7 +63940,7 @@ __webpack_require__(45)('freeze', function ($freeze) {
 
 
 /***/ }),
-/* 359 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
@@ -64981,7 +63955,7 @@ __webpack_require__(45)('getOwnPropertyDescriptor', function () {
 
 
 /***/ }),
-/* 360 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.7 Object.getOwnPropertyNames(O)
@@ -64991,7 +63965,7 @@ __webpack_require__(45)('getOwnPropertyNames', function () {
 
 
 /***/ }),
-/* 361 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
@@ -65006,7 +63980,7 @@ __webpack_require__(45)('getPrototypeOf', function () {
 
 
 /***/ }),
-/* 362 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.11 Object.isExtensible(O)
@@ -65020,7 +63994,7 @@ __webpack_require__(45)('isExtensible', function ($isExtensible) {
 
 
 /***/ }),
-/* 363 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.12 Object.isFrozen(O)
@@ -65034,7 +64008,7 @@ __webpack_require__(45)('isFrozen', function ($isFrozen) {
 
 
 /***/ }),
-/* 364 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.13 Object.isSealed(O)
@@ -65048,16 +64022,16 @@ __webpack_require__(45)('isSealed', function ($isSealed) {
 
 
 /***/ }),
-/* 365 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.10 Object.is(value1, value2)
 var $export = __webpack_require__(0);
-$export($export.S, 'Object', { is: __webpack_require__(295) });
+$export($export.S, 'Object', { is: __webpack_require__(296) });
 
 
 /***/ }),
-/* 366 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
@@ -65072,7 +64046,7 @@ __webpack_require__(45)('keys', function () {
 
 
 /***/ }),
-/* 367 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.15 Object.preventExtensions(O)
@@ -65087,7 +64061,7 @@ __webpack_require__(45)('preventExtensions', function ($preventExtensions) {
 
 
 /***/ }),
-/* 368 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.17 Object.seal(O)
@@ -65102,7 +64076,7 @@ __webpack_require__(45)('seal', function ($seal) {
 
 
 /***/ }),
-/* 369 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
@@ -65111,7 +64085,7 @@ $export($export.S, 'Object', { setPrototypeOf: __webpack_require__(129).set });
 
 
 /***/ }),
-/* 370 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65128,7 +64102,7 @@ if (test + '' != '[object z]') {
 
 
 /***/ }),
-/* 371 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -65138,7 +64112,7 @@ $export($export.G + $export.F * (parseFloat != $parseFloat), { parseFloat: $pars
 
 
 /***/ }),
-/* 372 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -65148,7 +64122,7 @@ $export($export.G + $export.F * (parseInt != $parseInt), { parseInt: $parseInt }
 
 
 /***/ }),
-/* 373 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65428,7 +64402,7 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(96)(function
 
 
 /***/ }),
-/* 374 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.1 Reflect.apply(target, thisArgument, argumentsList)
@@ -65450,7 +64424,7 @@ $export($export.S + $export.F * !__webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 375 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
@@ -65503,11 +64477,11 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
 
 
 /***/ }),
-/* 376 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.3 Reflect.defineProperty(target, propertyKey, attributes)
-var dP = __webpack_require__(22);
+var dP = __webpack_require__(23);
 var $export = __webpack_require__(0);
 var anObject = __webpack_require__(10);
 var toPrimitive = __webpack_require__(47);
@@ -65532,7 +64506,7 @@ $export($export.S + $export.F * __webpack_require__(14)(function () {
 
 
 /***/ }),
-/* 377 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
@@ -65549,7 +64523,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 378 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65582,7 +64556,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 379 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
@@ -65598,7 +64572,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 380 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.8 Reflect.getPrototypeOf(target)
@@ -65614,7 +64588,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 381 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
@@ -65641,7 +64615,7 @@ $export($export.S, 'Reflect', { get: get });
 
 
 /***/ }),
-/* 382 */
+/* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.9 Reflect.has(target, propertyKey)
@@ -65655,7 +64629,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 383 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.10 Reflect.isExtensible(target)
@@ -65672,7 +64646,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 384 */
+/* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.11 Reflect.ownKeys(target)
@@ -65682,7 +64656,7 @@ $export($export.S, 'Reflect', { ownKeys: __webpack_require__(185) });
 
 
 /***/ }),
-/* 385 */
+/* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.12 Reflect.preventExtensions(target)
@@ -65704,7 +64678,7 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 386 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
@@ -65725,11 +64699,11 @@ if (setProto) $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 387 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
-var dP = __webpack_require__(22);
+var dP = __webpack_require__(23);
 var gOPD = __webpack_require__(35);
 var getPrototypeOf = __webpack_require__(36);
 var has = __webpack_require__(28);
@@ -65762,12 +64736,12 @@ $export($export.S, 'Reflect', { set: set });
 
 
 /***/ }),
-/* 388 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(12);
 var inheritIfRequired = __webpack_require__(121);
-var dP = __webpack_require__(22).f;
+var dP = __webpack_require__(23).f;
 var gOPN = __webpack_require__(58).f;
 var isRegExp = __webpack_require__(95);
 var $flags = __webpack_require__(93);
@@ -65779,7 +64753,7 @@ var re2 = /a/g;
 // "new" creates a new object, old webkit buggy here
 var CORRECT_NEW = new $RegExp(re1) !== re1;
 
-if (__webpack_require__(21) && (!CORRECT_NEW || __webpack_require__(14)(function () {
+if (__webpack_require__(22) && (!CORRECT_NEW || __webpack_require__(14)(function () {
   re2[__webpack_require__(17)('match')] = false;
   // RegExp constructor can alter flags and IsRegExp works correct with @@match
   return $RegExp(re1) != re1 || $RegExp(re2) == re2 || $RegExp(re1, 'i') != '/a/i';
@@ -65811,7 +64785,7 @@ __webpack_require__(62)('RegExp');
 
 
 /***/ }),
-/* 389 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@match logic
@@ -65827,7 +64801,7 @@ __webpack_require__(92)('match', 1, function (defined, MATCH, $match) {
 
 
 /***/ }),
-/* 390 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@replace logic
@@ -65845,7 +64819,7 @@ __webpack_require__(92)('replace', 2, function (defined, REPLACE, $replace) {
 
 
 /***/ }),
-/* 391 */
+/* 392 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@search logic
@@ -65861,7 +64835,7 @@ __webpack_require__(92)('search', 1, function (defined, SEARCH, $search) {
 
 
 /***/ }),
-/* 392 */
+/* 393 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@split logic
@@ -65938,7 +64912,7 @@ __webpack_require__(92)('split', 2, function (defined, SPLIT, $split) {
 
 
 /***/ }),
-/* 393 */
+/* 394 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65946,7 +64920,7 @@ __webpack_require__(92)('split', 2, function (defined, SPLIT, $split) {
 __webpack_require__(194);
 var anObject = __webpack_require__(10);
 var $flags = __webpack_require__(93);
-var DESCRIPTORS = __webpack_require__(21);
+var DESCRIPTORS = __webpack_require__(22);
 var TO_STRING = 'toString';
 var $toString = /./[TO_STRING];
 
@@ -65970,7 +64944,7 @@ if (__webpack_require__(14)(function () { return $toString.call({ source: 'a', f
 
 
 /***/ }),
-/* 394 */
+/* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65984,7 +64958,7 @@ __webpack_require__(31)('anchor', function (createHTML) {
 
 
 /***/ }),
-/* 395 */
+/* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65998,7 +64972,7 @@ __webpack_require__(31)('big', function (createHTML) {
 
 
 /***/ }),
-/* 396 */
+/* 397 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66012,7 +64986,7 @@ __webpack_require__(31)('blink', function (createHTML) {
 
 
 /***/ }),
-/* 397 */
+/* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66026,7 +65000,7 @@ __webpack_require__(31)('bold', function (createHTML) {
 
 
 /***/ }),
-/* 398 */
+/* 399 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66042,14 +65016,14 @@ $export($export.P, 'String', {
 
 
 /***/ }),
-/* 399 */
+/* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // 21.1.3.6 String.prototype.endsWith(searchString [, endPosition])
 
 var $export = __webpack_require__(0);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var context = __webpack_require__(132);
 var ENDS_WITH = 'endsWith';
 var $endsWith = ''[ENDS_WITH];
@@ -66069,7 +65043,7 @@ $export($export.P + $export.F * __webpack_require__(119)(ENDS_WITH), 'String', {
 
 
 /***/ }),
-/* 400 */
+/* 401 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66083,7 +65057,7 @@ __webpack_require__(31)('fixed', function (createHTML) {
 
 
 /***/ }),
-/* 401 */
+/* 402 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66097,7 +65071,7 @@ __webpack_require__(31)('fontcolor', function (createHTML) {
 
 
 /***/ }),
-/* 402 */
+/* 403 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66111,7 +65085,7 @@ __webpack_require__(31)('fontsize', function (createHTML) {
 
 
 /***/ }),
-/* 403 */
+/* 404 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -66140,7 +65114,7 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
 
 
 /***/ }),
-/* 404 */
+/* 405 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66159,7 +65133,7 @@ $export($export.P + $export.F * __webpack_require__(119)(INCLUDES), 'String', {
 
 
 /***/ }),
-/* 405 */
+/* 406 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66173,7 +65147,7 @@ __webpack_require__(31)('italics', function (createHTML) {
 
 
 /***/ }),
-/* 406 */
+/* 407 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66197,7 +65171,7 @@ __webpack_require__(124)(String, 'String', function (iterated) {
 
 
 /***/ }),
-/* 407 */
+/* 408 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66211,12 +65185,12 @@ __webpack_require__(31)('link', function (createHTML) {
 
 
 /***/ }),
-/* 408 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
 var toIObject = __webpack_require__(37);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 
 $export($export.S, 'String', {
   // 21.1.2.4 String.raw(callSite, ...substitutions)
@@ -66235,7 +65209,7 @@ $export($export.S, 'String', {
 
 
 /***/ }),
-/* 409 */
+/* 410 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -66247,7 +65221,7 @@ $export($export.P, 'String', {
 
 
 /***/ }),
-/* 410 */
+/* 411 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66261,14 +65235,14 @@ __webpack_require__(31)('small', function (createHTML) {
 
 
 /***/ }),
-/* 411 */
+/* 412 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // 21.1.3.18 String.prototype.startsWith(searchString [, position ])
 
 var $export = __webpack_require__(0);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var context = __webpack_require__(132);
 var STARTS_WITH = 'startsWith';
 var $startsWith = ''[STARTS_WITH];
@@ -66286,7 +65260,7 @@ $export($export.P + $export.F * __webpack_require__(119)(STARTS_WITH), 'String',
 
 
 /***/ }),
-/* 412 */
+/* 413 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66300,7 +65274,7 @@ __webpack_require__(31)('strike', function (createHTML) {
 
 
 /***/ }),
-/* 413 */
+/* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66314,7 +65288,7 @@ __webpack_require__(31)('sub', function (createHTML) {
 
 
 /***/ }),
-/* 414 */
+/* 415 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66328,7 +65302,7 @@ __webpack_require__(31)('sup', function (createHTML) {
 
 
 /***/ }),
-/* 415 */
+/* 416 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66342,7 +65316,7 @@ __webpack_require__(68)('trim', function ($trim) {
 
 
 /***/ }),
-/* 416 */
+/* 417 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66350,7 +65324,7 @@ __webpack_require__(68)('trim', function ($trim) {
 // ECMAScript 6 symbols shim
 var global = __webpack_require__(12);
 var has = __webpack_require__(28);
-var DESCRIPTORS = __webpack_require__(21);
+var DESCRIPTORS = __webpack_require__(22);
 var $export = __webpack_require__(0);
 var redefine = __webpack_require__(30);
 var META = __webpack_require__(53).KEY;
@@ -66361,7 +65335,7 @@ var uid = __webpack_require__(64);
 var wks = __webpack_require__(17);
 var wksExt = __webpack_require__(192);
 var wksDefine = __webpack_require__(138);
-var enumKeys = __webpack_require__(293);
+var enumKeys = __webpack_require__(294);
 var isArray = __webpack_require__(94);
 var anObject = __webpack_require__(10);
 var isObject = __webpack_require__(15);
@@ -66371,7 +65345,7 @@ var createDesc = __webpack_require__(60);
 var _create = __webpack_require__(57);
 var gOPNExt = __webpack_require__(182);
 var $GOPD = __webpack_require__(35);
-var $DP = __webpack_require__(22);
+var $DP = __webpack_require__(23);
 var $keys = __webpack_require__(59);
 var gOPD = $GOPD.f;
 var dP = $DP.f;
@@ -66583,7 +65557,7 @@ setToStringTag(global.JSON, 'JSON', true);
 
 
 /***/ }),
-/* 417 */
+/* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66593,7 +65567,7 @@ var $typed = __webpack_require__(103);
 var buffer = __webpack_require__(136);
 var anObject = __webpack_require__(10);
 var toAbsoluteIndex = __webpack_require__(63);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var isObject = __webpack_require__(15);
 var ArrayBuffer = __webpack_require__(12).ArrayBuffer;
 var speciesConstructor = __webpack_require__(102);
@@ -66636,7 +65610,7 @@ __webpack_require__(62)(ARRAY_BUFFER);
 
 
 /***/ }),
-/* 418 */
+/* 419 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -66646,7 +65620,7 @@ $export($export.G + $export.W + $export.F * !__webpack_require__(103).ABV, {
 
 
 /***/ }),
-/* 419 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Float32', 4, function (init) {
@@ -66657,7 +65631,7 @@ __webpack_require__(49)('Float32', 4, function (init) {
 
 
 /***/ }),
-/* 420 */
+/* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Float64', 8, function (init) {
@@ -66668,7 +65642,7 @@ __webpack_require__(49)('Float64', 8, function (init) {
 
 
 /***/ }),
-/* 421 */
+/* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Int16', 2, function (init) {
@@ -66679,7 +65653,7 @@ __webpack_require__(49)('Int16', 2, function (init) {
 
 
 /***/ }),
-/* 422 */
+/* 423 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Int32', 4, function (init) {
@@ -66690,7 +65664,7 @@ __webpack_require__(49)('Int32', 4, function (init) {
 
 
 /***/ }),
-/* 423 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Int8', 1, function (init) {
@@ -66701,7 +65675,7 @@ __webpack_require__(49)('Int8', 1, function (init) {
 
 
 /***/ }),
-/* 424 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Uint16', 2, function (init) {
@@ -66712,7 +65686,7 @@ __webpack_require__(49)('Uint16', 2, function (init) {
 
 
 /***/ }),
-/* 425 */
+/* 426 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Uint32', 4, function (init) {
@@ -66723,7 +65697,7 @@ __webpack_require__(49)('Uint32', 4, function (init) {
 
 
 /***/ }),
-/* 426 */
+/* 427 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Uint8', 1, function (init) {
@@ -66734,7 +65708,7 @@ __webpack_require__(49)('Uint8', 1, function (init) {
 
 
 /***/ }),
-/* 427 */
+/* 428 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(49)('Uint8', 1, function (init) {
@@ -66745,7 +65719,7 @@ __webpack_require__(49)('Uint8', 1, function (init) {
 
 
 /***/ }),
-/* 428 */
+/* 429 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66766,7 +65740,7 @@ __webpack_require__(91)(WEAK_SET, function (get) {
 
 
 /***/ }),
-/* 429 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66775,7 +65749,7 @@ __webpack_require__(91)(WEAK_SET, function (get) {
 var $export = __webpack_require__(0);
 var flattenIntoArray = __webpack_require__(171);
 var toObject = __webpack_require__(25);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var aFunction = __webpack_require__(26);
 var arraySpeciesCreate = __webpack_require__(115);
 
@@ -66795,7 +65769,7 @@ __webpack_require__(52)('flatMap');
 
 
 /***/ }),
-/* 430 */
+/* 431 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66804,7 +65778,7 @@ __webpack_require__(52)('flatMap');
 var $export = __webpack_require__(0);
 var flattenIntoArray = __webpack_require__(171);
 var toObject = __webpack_require__(25);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var toInteger = __webpack_require__(46);
 var arraySpeciesCreate = __webpack_require__(115);
 
@@ -66823,7 +65797,7 @@ __webpack_require__(52)('flatten');
 
 
 /***/ }),
-/* 431 */
+/* 432 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66842,7 +65816,7 @@ __webpack_require__(52)('includes');
 
 
 /***/ }),
-/* 432 */
+/* 433 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
@@ -66860,7 +65834,7 @@ $export($export.G, {
 
 
 /***/ }),
-/* 433 */
+/* 434 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/ljharb/proposal-is-error
@@ -66875,7 +65849,7 @@ $export($export.S, 'Error', {
 
 
 /***/ }),
-/* 434 */
+/* 435 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-global
@@ -66885,7 +65859,7 @@ $export($export.G, { global: __webpack_require__(12) });
 
 
 /***/ }),
-/* 435 */
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
@@ -66893,7 +65867,7 @@ __webpack_require__(99)('Map');
 
 
 /***/ }),
-/* 436 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
@@ -66901,7 +65875,7 @@ __webpack_require__(100)('Map');
 
 
 /***/ }),
-/* 437 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
@@ -66911,7 +65885,7 @@ $export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(169)('Map') 
 
 
 /***/ }),
-/* 438 */
+/* 439 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -66925,7 +65899,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 439 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -66935,7 +65909,7 @@ $export($export.S, 'Math', { DEG_PER_RAD: Math.PI / 180 });
 
 
 /***/ }),
-/* 440 */
+/* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -66950,7 +65924,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 441 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -66966,7 +65940,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 442 */
+/* 443 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -66983,7 +65957,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 443 */
+/* 444 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -67005,7 +65979,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 444 */
+/* 445 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -67022,7 +65996,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 445 */
+/* 446 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -67032,7 +66006,7 @@ $export($export.S, 'Math', { RAD_PER_DEG: 180 / Math.PI });
 
 
 /***/ }),
-/* 446 */
+/* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -67047,7 +66021,7 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 447 */
+/* 448 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -67057,7 +66031,7 @@ $export($export.S, 'Math', { scale: __webpack_require__(179) });
 
 
 /***/ }),
-/* 448 */
+/* 449 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // http://jfbastien.github.io/papers/Math.signbit.html
@@ -67070,7 +66044,7 @@ $export($export.S, 'Math', { signbit: function signbit(x) {
 
 
 /***/ }),
-/* 449 */
+/* 450 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -67092,25 +66066,6 @@ $export($export.S, 'Math', {
 
 
 /***/ }),
-/* 450 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $export = __webpack_require__(0);
-var toObject = __webpack_require__(25);
-var aFunction = __webpack_require__(26);
-var $defineProperty = __webpack_require__(22);
-
-// B.2.2.2 Object.prototype.__defineGetter__(P, getter)
-__webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object', {
-  __defineGetter__: function __defineGetter__(P, getter) {
-    $defineProperty.f(toObject(this), P, { get: aFunction(getter), enumerable: true, configurable: true });
-  }
-});
-
-
-/***/ }),
 /* 451 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -67119,10 +66074,29 @@ __webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object'
 var $export = __webpack_require__(0);
 var toObject = __webpack_require__(25);
 var aFunction = __webpack_require__(26);
-var $defineProperty = __webpack_require__(22);
+var $defineProperty = __webpack_require__(23);
+
+// B.2.2.2 Object.prototype.__defineGetter__(P, getter)
+__webpack_require__(22) && $export($export.P + __webpack_require__(97), 'Object', {
+  __defineGetter__: function __defineGetter__(P, getter) {
+    $defineProperty.f(toObject(this), P, { get: aFunction(getter), enumerable: true, configurable: true });
+  }
+});
+
+
+/***/ }),
+/* 452 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $export = __webpack_require__(0);
+var toObject = __webpack_require__(25);
+var aFunction = __webpack_require__(26);
+var $defineProperty = __webpack_require__(23);
 
 // B.2.2.3 Object.prototype.__defineSetter__(P, setter)
-__webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object', {
+__webpack_require__(22) && $export($export.P + __webpack_require__(97), 'Object', {
   __defineSetter__: function __defineSetter__(P, setter) {
     $defineProperty.f(toObject(this), P, { set: aFunction(setter), enumerable: true, configurable: true });
   }
@@ -67130,7 +66104,7 @@ __webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object'
 
 
 /***/ }),
-/* 452 */
+/* 453 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-values-entries
@@ -67145,7 +66119,7 @@ $export($export.S, 'Object', {
 
 
 /***/ }),
-/* 453 */
+/* 454 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
@@ -67173,7 +66147,7 @@ $export($export.S, 'Object', {
 
 
 /***/ }),
-/* 454 */
+/* 455 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67185,7 +66159,7 @@ var getPrototypeOf = __webpack_require__(36);
 var getOwnPropertyDescriptor = __webpack_require__(35).f;
 
 // B.2.2.4 Object.prototype.__lookupGetter__(P)
-__webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object', {
+__webpack_require__(22) && $export($export.P + __webpack_require__(97), 'Object', {
   __lookupGetter__: function __lookupGetter__(P) {
     var O = toObject(this);
     var K = toPrimitive(P, true);
@@ -67198,7 +66172,7 @@ __webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object'
 
 
 /***/ }),
-/* 455 */
+/* 456 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67210,7 +66184,7 @@ var getPrototypeOf = __webpack_require__(36);
 var getOwnPropertyDescriptor = __webpack_require__(35).f;
 
 // B.2.2.5 Object.prototype.__lookupSetter__(P)
-__webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object', {
+__webpack_require__(22) && $export($export.P + __webpack_require__(97), 'Object', {
   __lookupSetter__: function __lookupSetter__(P) {
     var O = toObject(this);
     var K = toPrimitive(P, true);
@@ -67223,7 +66197,7 @@ __webpack_require__(21) && $export($export.P + __webpack_require__(97), 'Object'
 
 
 /***/ }),
-/* 456 */
+/* 457 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-values-entries
@@ -67238,7 +66212,7 @@ $export($export.S, 'Object', {
 
 
 /***/ }),
-/* 457 */
+/* 458 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67444,7 +66418,7 @@ __webpack_require__(62)('Observable');
 
 
 /***/ }),
-/* 458 */
+/* 459 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67471,7 +66445,7 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 
 /***/ }),
-/* 459 */
+/* 460 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67490,7 +66464,7 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 
 
 /***/ }),
-/* 460 */
+/* 461 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67504,7 +66478,7 @@ metadata.exp({ defineMetadata: function defineMetadata(metadataKey, metadataValu
 
 
 /***/ }),
-/* 461 */
+/* 462 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67525,7 +66499,7 @@ metadata.exp({ deleteMetadata: function deleteMetadata(metadataKey, target /* , 
 
 
 /***/ }),
-/* 462 */
+/* 463 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Set = __webpack_require__(195);
@@ -67550,7 +66524,7 @@ metadata.exp({ getMetadataKeys: function getMetadataKeys(target /* , targetKey *
 
 
 /***/ }),
-/* 463 */
+/* 464 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67573,7 +66547,7 @@ metadata.exp({ getMetadata: function getMetadata(metadataKey, target /* , target
 
 
 /***/ }),
-/* 464 */
+/* 465 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67587,7 +66561,7 @@ metadata.exp({ getOwnMetadataKeys: function getOwnMetadataKeys(target /* , targe
 
 
 /***/ }),
-/* 465 */
+/* 466 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67602,7 +66576,7 @@ metadata.exp({ getOwnMetadata: function getOwnMetadata(metadataKey, target /* , 
 
 
 /***/ }),
-/* 466 */
+/* 467 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67624,7 +66598,7 @@ metadata.exp({ hasMetadata: function hasMetadata(metadataKey, target /* , target
 
 
 /***/ }),
-/* 467 */
+/* 468 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var metadata = __webpack_require__(48);
@@ -67639,7 +66613,7 @@ metadata.exp({ hasOwnMetadata: function hasOwnMetadata(metadataKey, target /* , 
 
 
 /***/ }),
-/* 468 */
+/* 469 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $metadata = __webpack_require__(48);
@@ -67660,7 +66634,7 @@ $metadata.exp({ metadata: function metadata(metadataKey, metadataValue) {
 
 
 /***/ }),
-/* 469 */
+/* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
@@ -67668,7 +66642,7 @@ __webpack_require__(99)('Set');
 
 
 /***/ }),
-/* 470 */
+/* 471 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
@@ -67676,7 +66650,7 @@ __webpack_require__(100)('Set');
 
 
 /***/ }),
-/* 471 */
+/* 472 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
@@ -67686,7 +66660,7 @@ $export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(169)('Set') 
 
 
 /***/ }),
-/* 472 */
+/* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67703,7 +66677,7 @@ $export($export.P, 'String', {
 
 
 /***/ }),
-/* 473 */
+/* 474 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67711,7 +66685,7 @@ $export($export.P, 'String', {
 // https://tc39.github.io/String.prototype.matchAll/
 var $export = __webpack_require__(0);
 var defined = __webpack_require__(44);
-var toLength = __webpack_require__(23);
+var toLength = __webpack_require__(24);
 var isRegExp = __webpack_require__(95);
 var getFlags = __webpack_require__(93);
 var RegExpProto = RegExp.prototype;
@@ -67740,7 +66714,7 @@ $export($export.P, 'String', {
 
 
 /***/ }),
-/* 474 */
+/* 475 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67759,7 +66733,7 @@ $export($export.P + $export.F * /Version\/10\.\d+(\.\d+)? Safari\//.test(userAge
 
 
 /***/ }),
-/* 475 */
+/* 476 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67778,7 +66752,7 @@ $export($export.P + $export.F * /Version\/10\.\d+(\.\d+)? Safari\//.test(userAge
 
 
 /***/ }),
-/* 476 */
+/* 477 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67792,7 +66766,7 @@ __webpack_require__(68)('trimLeft', function ($trim) {
 
 
 /***/ }),
-/* 477 */
+/* 478 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67806,21 +66780,21 @@ __webpack_require__(68)('trimRight', function ($trim) {
 
 
 /***/ }),
-/* 478 */
+/* 479 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138)('asyncIterator');
 
 
 /***/ }),
-/* 479 */
+/* 480 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138)('observable');
 
 
 /***/ }),
-/* 480 */
+/* 481 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-global
@@ -67830,7 +66804,7 @@ $export($export.S, 'System', { global: __webpack_require__(12) });
 
 
 /***/ }),
-/* 481 */
+/* 482 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.from
@@ -67838,7 +66812,7 @@ __webpack_require__(99)('WeakMap');
 
 
 /***/ }),
-/* 482 */
+/* 483 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.of
@@ -67846,7 +66820,7 @@ __webpack_require__(100)('WeakMap');
 
 
 /***/ }),
-/* 483 */
+/* 484 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakset.from
@@ -67854,7 +66828,7 @@ __webpack_require__(99)('WeakSet');
 
 
 /***/ }),
-/* 484 */
+/* 485 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakset.of
@@ -67862,7 +66836,7 @@ __webpack_require__(100)('WeakSet');
 
 
 /***/ }),
-/* 485 */
+/* 486 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $iterators = __webpack_require__(140);
@@ -67926,7 +66900,7 @@ for (var collections = getKeys(DOMIterables), i = 0; i < collections.length; i++
 
 
 /***/ }),
-/* 486 */
+/* 487 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -67938,7 +66912,7 @@ $export($export.G + $export.B, {
 
 
 /***/ }),
-/* 487 */
+/* 488 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // ie9- setTimeout & setInterval additional parameters fix
@@ -67964,36 +66938,35 @@ $export($export.G + $export.B + $export.F * MSIE, {
 
 
 /***/ }),
-/* 488 */
+/* 489 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(416);
-__webpack_require__(355);
-__webpack_require__(357);
+__webpack_require__(417);
 __webpack_require__(356);
-__webpack_require__(359);
-__webpack_require__(361);
-__webpack_require__(366);
-__webpack_require__(360);
 __webpack_require__(358);
-__webpack_require__(368);
-__webpack_require__(367);
-__webpack_require__(363);
-__webpack_require__(364);
+__webpack_require__(357);
+__webpack_require__(360);
 __webpack_require__(362);
-__webpack_require__(354);
-__webpack_require__(365);
+__webpack_require__(367);
+__webpack_require__(361);
+__webpack_require__(359);
 __webpack_require__(369);
+__webpack_require__(368);
+__webpack_require__(364);
+__webpack_require__(365);
+__webpack_require__(363);
+__webpack_require__(355);
+__webpack_require__(366);
 __webpack_require__(370);
-__webpack_require__(322);
-__webpack_require__(324);
-__webpack_require__(323);
-__webpack_require__(372);
 __webpack_require__(371);
-__webpack_require__(342);
-__webpack_require__(352);
-__webpack_require__(353);
+__webpack_require__(323);
+__webpack_require__(325);
+__webpack_require__(324);
+__webpack_require__(373);
+__webpack_require__(372);
 __webpack_require__(343);
+__webpack_require__(353);
+__webpack_require__(354);
 __webpack_require__(344);
 __webpack_require__(345);
 __webpack_require__(346);
@@ -68002,7 +66975,7 @@ __webpack_require__(348);
 __webpack_require__(349);
 __webpack_require__(350);
 __webpack_require__(351);
-__webpack_require__(325);
+__webpack_require__(352);
 __webpack_require__(326);
 __webpack_require__(327);
 __webpack_require__(328);
@@ -68019,155 +66992,156 @@ __webpack_require__(338);
 __webpack_require__(339);
 __webpack_require__(340);
 __webpack_require__(341);
-__webpack_require__(403);
-__webpack_require__(408);
-__webpack_require__(415);
-__webpack_require__(406);
-__webpack_require__(398);
-__webpack_require__(399);
+__webpack_require__(342);
 __webpack_require__(404);
 __webpack_require__(409);
-__webpack_require__(411);
-__webpack_require__(394);
+__webpack_require__(416);
+__webpack_require__(407);
+__webpack_require__(399);
+__webpack_require__(400);
+__webpack_require__(405);
+__webpack_require__(410);
+__webpack_require__(412);
 __webpack_require__(395);
 __webpack_require__(396);
 __webpack_require__(397);
-__webpack_require__(400);
+__webpack_require__(398);
 __webpack_require__(401);
 __webpack_require__(402);
-__webpack_require__(405);
-__webpack_require__(407);
-__webpack_require__(410);
-__webpack_require__(412);
+__webpack_require__(403);
+__webpack_require__(406);
+__webpack_require__(408);
+__webpack_require__(411);
 __webpack_require__(413);
 __webpack_require__(414);
-__webpack_require__(317);
-__webpack_require__(319);
+__webpack_require__(415);
 __webpack_require__(318);
-__webpack_require__(321);
 __webpack_require__(320);
-__webpack_require__(306);
+__webpack_require__(319);
+__webpack_require__(322);
+__webpack_require__(321);
+__webpack_require__(307);
+__webpack_require__(305);
+__webpack_require__(311);
+__webpack_require__(308);
+__webpack_require__(314);
+__webpack_require__(316);
 __webpack_require__(304);
 __webpack_require__(310);
-__webpack_require__(307);
-__webpack_require__(313);
-__webpack_require__(315);
-__webpack_require__(303);
-__webpack_require__(309);
-__webpack_require__(300);
-__webpack_require__(314);
-__webpack_require__(298);
-__webpack_require__(312);
-__webpack_require__(311);
-__webpack_require__(305);
-__webpack_require__(308);
-__webpack_require__(297);
-__webpack_require__(299);
-__webpack_require__(302);
 __webpack_require__(301);
-__webpack_require__(316);
+__webpack_require__(315);
+__webpack_require__(299);
+__webpack_require__(313);
+__webpack_require__(312);
+__webpack_require__(306);
+__webpack_require__(309);
+__webpack_require__(298);
+__webpack_require__(300);
+__webpack_require__(303);
+__webpack_require__(302);
+__webpack_require__(317);
 __webpack_require__(140);
-__webpack_require__(388);
-__webpack_require__(393);
-__webpack_require__(194);
 __webpack_require__(389);
+__webpack_require__(394);
+__webpack_require__(194);
 __webpack_require__(390);
 __webpack_require__(391);
 __webpack_require__(392);
-__webpack_require__(373);
+__webpack_require__(393);
+__webpack_require__(374);
 __webpack_require__(193);
 __webpack_require__(195);
 __webpack_require__(196);
-__webpack_require__(428);
-__webpack_require__(417);
+__webpack_require__(429);
 __webpack_require__(418);
-__webpack_require__(423);
-__webpack_require__(426);
-__webpack_require__(427);
-__webpack_require__(421);
+__webpack_require__(419);
 __webpack_require__(424);
+__webpack_require__(427);
+__webpack_require__(428);
 __webpack_require__(422);
 __webpack_require__(425);
-__webpack_require__(419);
+__webpack_require__(423);
+__webpack_require__(426);
 __webpack_require__(420);
-__webpack_require__(374);
+__webpack_require__(421);
 __webpack_require__(375);
 __webpack_require__(376);
 __webpack_require__(377);
 __webpack_require__(378);
-__webpack_require__(381);
 __webpack_require__(379);
-__webpack_require__(380);
 __webpack_require__(382);
+__webpack_require__(380);
+__webpack_require__(381);
 __webpack_require__(383);
 __webpack_require__(384);
 __webpack_require__(385);
-__webpack_require__(387);
 __webpack_require__(386);
-__webpack_require__(431);
-__webpack_require__(429);
+__webpack_require__(388);
+__webpack_require__(387);
+__webpack_require__(432);
 __webpack_require__(430);
-__webpack_require__(472);
-__webpack_require__(475);
-__webpack_require__(474);
-__webpack_require__(476);
-__webpack_require__(477);
+__webpack_require__(431);
 __webpack_require__(473);
+__webpack_require__(476);
+__webpack_require__(475);
+__webpack_require__(477);
 __webpack_require__(478);
+__webpack_require__(474);
 __webpack_require__(479);
-__webpack_require__(453);
-__webpack_require__(456);
-__webpack_require__(452);
-__webpack_require__(450);
-__webpack_require__(451);
+__webpack_require__(480);
 __webpack_require__(454);
+__webpack_require__(457);
+__webpack_require__(453);
+__webpack_require__(451);
+__webpack_require__(452);
 __webpack_require__(455);
+__webpack_require__(456);
+__webpack_require__(438);
+__webpack_require__(472);
 __webpack_require__(437);
 __webpack_require__(471);
+__webpack_require__(483);
+__webpack_require__(485);
 __webpack_require__(436);
 __webpack_require__(470);
 __webpack_require__(482);
 __webpack_require__(484);
 __webpack_require__(435);
-__webpack_require__(469);
 __webpack_require__(481);
-__webpack_require__(483);
 __webpack_require__(434);
-__webpack_require__(480);
-__webpack_require__(433);
-__webpack_require__(438);
 __webpack_require__(439);
 __webpack_require__(440);
 __webpack_require__(441);
 __webpack_require__(442);
-__webpack_require__(444);
 __webpack_require__(443);
 __webpack_require__(445);
+__webpack_require__(444);
 __webpack_require__(446);
 __webpack_require__(447);
-__webpack_require__(449);
 __webpack_require__(448);
-__webpack_require__(458);
+__webpack_require__(450);
+__webpack_require__(449);
 __webpack_require__(459);
 __webpack_require__(460);
 __webpack_require__(461);
-__webpack_require__(463);
 __webpack_require__(462);
-__webpack_require__(465);
 __webpack_require__(464);
+__webpack_require__(463);
 __webpack_require__(466);
+__webpack_require__(465);
 __webpack_require__(467);
 __webpack_require__(468);
-__webpack_require__(432);
-__webpack_require__(457);
+__webpack_require__(469);
+__webpack_require__(433);
+__webpack_require__(458);
+__webpack_require__(488);
 __webpack_require__(487);
 __webpack_require__(486);
-__webpack_require__(485);
 module.exports = __webpack_require__(43);
 
 
 /***/ }),
-/* 489 */
+/* 490 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -68360,7 +67334,7 @@ module.exports = __webpack_require__(43);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78), __webpack_require__(197)))
 
 /***/ }),
-/* 490 */
+/* 491 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -68541,7 +67515,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof = 
 
 
 /***/ }),
-/* 491 */
+/* 492 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68549,7 +67523,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof="fun
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
 
 /***/ }),
-/* 492 */
+/* 493 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -68559,7 +67533,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(515),
+  __webpack_require__(517),
   /* template */
   __webpack_require__(806),
   /* styles */
@@ -68593,7 +67567,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 493 */
+/* 494 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -68603,7 +67577,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(516),
+  __webpack_require__(518),
   /* template */
   __webpack_require__(805),
   /* styles */
@@ -68637,19 +67611,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 494 */
+/* 495 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(966)
+  __webpack_require__(965)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(519),
+  __webpack_require__(521),
   /* template */
-  __webpack_require__(865),
+  __webpack_require__(864),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -68681,15 +67655,15 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 495 */
+/* 496 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(521),
+  __webpack_require__(523),
   /* template */
-  __webpack_require__(852),
+  __webpack_require__(850),
   /* styles */
   null,
   /* scopeId */
@@ -68721,15 +67695,15 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 496 */
+/* 497 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(522),
+  __webpack_require__(524),
   /* template */
-  __webpack_require__(830),
+  __webpack_require__(828),
   /* styles */
   null,
   /* scopeId */
@@ -68761,7 +67735,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 497 */
+/* 498 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -68771,7 +67745,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(523),
+  __webpack_require__(525),
   /* template */
   __webpack_require__(877),
   /* styles */
@@ -68805,19 +67779,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 498 */
+/* 499 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(928)
+  __webpack_require__(927)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(536),
+  __webpack_require__(538),
   /* template */
-  __webpack_require__(823),
+  __webpack_require__(822),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -68849,7 +67823,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 499 */
+/* 500 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -68859,7 +67833,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(546),
+  __webpack_require__(548),
   /* template */
   __webpack_require__(885),
   /* styles */
@@ -68893,7 +67867,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 500 */
+/* 501 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -68903,7 +67877,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(556),
+  __webpack_require__(558),
   /* template */
   __webpack_require__(803),
   /* styles */
@@ -68937,7 +67911,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 501 */
+/* 502 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -68947,7 +67921,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(557),
+  __webpack_require__(559),
   /* template */
   __webpack_require__(878),
   /* styles */
@@ -68981,19 +67955,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 502 */
+/* 503 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(961)
+  __webpack_require__(957)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(571),
+  __webpack_require__(567),
   /* template */
-  __webpack_require__(860),
+  __webpack_require__(856),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -69001,9 +67975,9 @@ var Component = __webpack_require__(3)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/new-kumi-control.vue"
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/edit-kumi-control.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] new-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
+if (Component.options.functional) {console.error("[vue-loader] edit-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
@@ -69012,9 +67986,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-6f8c6288", Component.options)
+    hotAPI.createRecord("data-v-66ada4b0", Component.options)
   } else {
-    hotAPI.reload("data-v-6f8c6288", Component.options)
+    hotAPI.reload("data-v-66ada4b0", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -69025,19 +67999,63 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 503 */
+/* 504 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(970)
+  __webpack_require__(986)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(576),
+  __webpack_require__(568),
   /* template */
-  __webpack_require__(869),
+  __webpack_require__(887),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/kumi-editing-modal.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] kumi-editing-modal.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d4c28aec", Component.options)
+  } else {
+    hotAPI.reload("data-v-d4c28aec", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 505 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(969)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(578),
+  /* template */
+  __webpack_require__(868),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -69069,7 +68087,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 504 */
+/* 506 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -69079,7 +68097,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(589),
+  __webpack_require__(591),
   /* template */
   __webpack_require__(800),
   /* styles */
@@ -69113,19 +68131,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 505 */
+/* 507 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(918)
+  __webpack_require__(917)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(599),
+  __webpack_require__(601),
   /* template */
-  __webpack_require__(811),
+  __webpack_require__(810),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -69157,19 +68175,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 506 */
+/* 508 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(971)
+  __webpack_require__(970)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(602),
+  __webpack_require__(604),
   /* template */
-  __webpack_require__(870),
+  __webpack_require__(869),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -69201,7 +68219,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 507 */
+/* 509 */
 /***/ (function(module, exports) {
 
 /**
@@ -69234,7 +68252,7 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 508 */
+/* 510 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -69262,19 +68280,19 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 509 */
+/* 511 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(948)
+  __webpack_require__(947)
 }
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(530),
   /* template */
-  __webpack_require__(844),
+  __webpack_require__(843),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -69306,7 +68324,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 510 */
+/* 512 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -69316,7 +68334,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(547),
+  __webpack_require__(549),
   /* template */
   __webpack_require__(890),
   /* styles */
@@ -69350,7 +68368,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 511 */
+/* 513 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69486,7 +68504,7 @@ exports.default = {
  */
 
 /***/ }),
-/* 512 */
+/* 514 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69496,23 +68514,23 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _itemComment = __webpack_require__(493);
+var _itemComment = __webpack_require__(494);
 
 var _itemComment2 = _interopRequireDefault(_itemComment);
 
-var _itemArea = __webpack_require__(727);
+var _itemArea = __webpack_require__(729);
 
 var _itemArea2 = _interopRequireDefault(_itemArea);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _itemChart = __webpack_require__(492);
+var _itemChart = __webpack_require__(493);
 
 var _itemChart2 = _interopRequireDefault(_itemChart);
 
-var _gradeArea = __webpack_require__(726);
+var _gradeArea = __webpack_require__(728);
 
 var _gradeArea2 = _interopRequireDefault(_gradeArea);
 
@@ -69576,7 +68594,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 513 */
+/* 515 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69586,7 +68604,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -69594,7 +68612,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -69608,7 +68626,7 @@ var _feedback = __webpack_require__(146);
 
 var _feedback2 = _interopRequireDefault(_feedback);
 
-var _overallChart = __webpack_require__(728);
+var _overallChart = __webpack_require__(730);
 
 var _overallChart2 = _interopRequireDefault(_overallChart);
 
@@ -69703,7 +68721,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 514 */
+/* 516 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69713,15 +68731,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _itemComment = __webpack_require__(493);
+var _itemComment = __webpack_require__(494);
 
 var _itemComment2 = _interopRequireDefault(_itemComment);
 
-var _itemChart = __webpack_require__(492);
+var _itemChart = __webpack_require__(493);
 
 var _itemChart2 = _interopRequireDefault(_itemChart);
 
@@ -69822,7 +68840,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 515 */
+/* 517 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69832,7 +68850,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -70005,7 +69023,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 516 */
+/* 518 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70015,7 +69033,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -70061,7 +69079,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 517 */
+/* 519 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70071,7 +69089,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -70212,7 +69230,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 518 */
+/* 520 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70270,7 +69288,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 519 */
+/* 521 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70284,19 +69302,19 @@ var _PayloadScore = __webpack_require__(79);
 
 var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -70422,7 +69440,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 520 */
+/* 522 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70434,39 +69452,39 @@ Object.defineProperty(exports, "__esModule", {
 
 var _components;
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _questionScore = __webpack_require__(496);
+var _questionScore = __webpack_require__(497);
 
 var _questionScore2 = _interopRequireDefault(_questionScore);
 
-var _commentText = __webpack_require__(494);
+var _commentText = __webpack_require__(495);
 
 var _commentText2 = _interopRequireDefault(_commentText);
 
-var _scoreSlider = __webpack_require__(497);
+var _scoreSlider = __webpack_require__(498);
 
 var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
 
-var _letterGradeButton = __webpack_require__(495);
+var _letterGradeButton = __webpack_require__(496);
 
 var _letterGradeButton2 = _interopRequireDefault(_letterGradeButton);
 
-var _clearScoreButton = __webpack_require__(729);
+var _clearScoreButton = __webpack_require__(731);
 
 var _clearScoreButton2 = _interopRequireDefault(_clearScoreButton);
 
@@ -70591,25 +69609,25 @@ exports.default = {
 };
 
 /***/ }),
-/* 521 */
+/* 523 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _itemLetterGradeHelpers = __webpack_require__(275);
+var _itemLetterGradeHelpers = __webpack_require__(276);
 
 var _GradeAssignment = __webpack_require__(106);
 
@@ -70763,7 +69781,7 @@ module.exports = {
 // import gTypes from '../../../../store/getter-types';
 
 /***/ }),
-/* 522 */
+/* 524 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70773,7 +69791,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _letterGradeButton = __webpack_require__(495);
+var _letterGradeButton = __webpack_require__(496);
 
 var _letterGradeButton2 = _interopRequireDefault(_letterGradeButton);
 
@@ -70785,23 +69803,23 @@ var _GradeAssignment = __webpack_require__(106);
 
 var _GradeAssignment2 = _interopRequireDefault(_GradeAssignment);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _itemLetterGradeHelpers = __webpack_require__(275);
+var _itemLetterGradeHelpers = __webpack_require__(276);
 
 var _scoreInputMixin = __webpack_require__(147);
 
@@ -70842,7 +69860,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var jQuery = __webpack_require__(144);
 window.jQuery = jQuery;
-__webpack_require__(288);
+__webpack_require__(289);
 
 exports.default = {
     mixins: [_scoreInputMixin2.default],
@@ -70960,7 +69978,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 523 */
+/* 525 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70974,19 +69992,19 @@ var _PayloadScore = __webpack_require__(79);
 
 var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -71020,9 +70038,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var jQuery = __webpack_require__(144);
 window.jQuery = jQuery;
-__webpack_require__(288);
+__webpack_require__(289);
 // var Slider = require("bootstrap-slider");
-var Slider = __webpack_require__(615);
+var Slider = __webpack_require__(617);
 
 exports.default = {
     mixins: [_scoreInputMixin2.default],
@@ -71157,7 +70175,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 524 */
+/* 526 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -71169,35 +70187,35 @@ Object.defineProperty(exports, "__esModule", {
 
 var _components;
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _itemInput = __webpack_require__(730);
+var _itemInput = __webpack_require__(732);
 
 var _itemInput2 = _interopRequireDefault(_itemInput);
 
-var _questionScore = __webpack_require__(496);
+var _questionScore = __webpack_require__(497);
 
 var _questionScore2 = _interopRequireDefault(_questionScore);
 
-var _commentText = __webpack_require__(494);
+var _commentText = __webpack_require__(495);
 
 var _commentText2 = _interopRequireDefault(_commentText);
 
-var _scoreSlider = __webpack_require__(497);
+var _scoreSlider = __webpack_require__(498);
 
 var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
 
@@ -71304,181 +70322,6 @@ exports.default = {
     },
 
     methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
-/* 525 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-
-    props: ['content', 'type', 'delay', 'show'],
-
-    data: function data() {
-        return {
-            defaults: {
-                delay: 3000
-            },
-
-            isModalVisible: false
-        };
-    },
-
-    watch: {
-        show: function show(val, oldVal) {
-            this.isModalVisible = val;
-        }
-    },
-
-    computed: {
-
-        notificationStyles: function notificationStyles() {
-            switch (this.type) {
-                case 'error':
-                    return "is-danger";
-                    break;
-                default:
-                    return "is-danger";
-
-            }
-        }
-    },
-
-    methods: {
-        closeModal: function closeModal() {
-            this.isModalVisible = false;
-        },
-
-        /**
-         * Opens the modal for the set amount of time
-         * then closes it
-         */
-        openAutoClosingModal: function openAutoClosingModal() {
-            delay = !_.isUndefined(delay) ? delay : this.defaults.delay;
-
-            this.isModalVisible = true;
-            var me = this;
-            setTimeout(function () {
-                me.closeModal();
-            }, delay);
-        }
-
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
-/* 526 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-//This is the confirmation modal used by lots of stuff
-exports.default = {
-
-    props: ['isVisible'],
-
-    components: {},
-
-    data: function data() {
-        return {
-            defaults: {}
-        };
-    },
-
-    computed: {},
-
-    methods: {
-        handleCancellation: function handleCancellation() {
-            this.$emit('cancel-selected');
-        },
-        handleConfirmation: function handleConfirmation() {
-            this.$emit('confirm-selected');
-        }
-    },
 
     directives: {},
 
@@ -71709,7 +70552,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -71888,7 +70731,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -71896,7 +70739,7 @@ var _apiSettings = __webpack_require__(18);
 
 var _tagRequests = __webpack_require__(105);
 
-var _colorSelector = __webpack_require__(505);
+var _colorSelector = __webpack_require__(507);
 
 var _colorSelector2 = _interopRequireDefault(_colorSelector);
 
@@ -72294,7 +71137,289 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _preferenceToggle = __webpack_require__(498);
+var _modal = __webpack_require__(1279);
+
+var _modal2 = _interopRequireDefault(_modal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    mixins: [_modal2.default],
+
+    props: ['content', 'type', 'delay', 'show'],
+
+    data: function data() {
+        return {
+            modalKind: 'auto-closing',
+
+            mutationNames: {
+                toggleVisibility: 'toggleErrorModal'
+            },
+
+            getterNames: {
+                visibility: 'isErrorModalVisible'
+            },
+
+            defaults: {
+                delay: 3000,
+                bodyText: "There was a problem. "
+            }
+
+        };
+    },
+
+    watch: {
+
+        /**
+         * We need to watch the visibility property
+         * so that if this modal is opened, we can set the
+         * timer to automatically close it.
+         */
+        isModalVisible: function isModalVisible(val, oldVal) {
+            if (this.modalKind === 'auto-closing') {
+                // window.console.log( 'auto-closing-modal', 'isModalVisible', 58, val, oldVal );
+                //if modal was not visible and now is,
+                //we need to start the timer so it will automatically close
+                if (val && !oldVal) this.setAutoCloseDelayTimer();
+            }
+        }
+    },
+
+    computed: {
+        // /**
+        //  * Whether or not the modal is presently visible
+        //  * @returns {*}
+        //  */
+        // isModalVisible: function () {
+        //     //     //use the prop if provided
+        //     //     if ( ! _.isUndefined( this.isVisible ) ) return this.isVisible;
+        //
+        //     //this is defined in the mixin
+        //     // return this.isErrorModalVisible;
+        //     return this.$store.getters[this.getterNames.visibility];
+        // },
+
+
+        notificationStyles: function notificationStyles() {
+            switch (this.type) {
+                case 'error':
+                    return "is-danger";
+                    break;
+                case 'warn':
+                    return "is-warning";
+                default:
+                    return "is-danger";
+
+            }
+        },
+
+        /**
+         * How long to wait before closing the modal
+         */
+        closingDelay: function closingDelay() {
+            if (!_.isUndefined(this.modalObject) && !_.isUndefined(this.modalObject.closingDelay)) return this.modalObject.closingDelay;
+
+            return this.defaults.delay;
+        }
+    },
+
+    methods: {
+
+        /**
+         * Sets a timer for the modal being displayed.
+         * When time runs out, calls the method to close the modal
+         */
+        setAutoCloseDelayTimer: function setAutoCloseDelayTimer() {
+            var me = this;
+            setTimeout(function () {
+                me.closeModal();
+            }, me.closingDelay);
+        }
+
+    }
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 532 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _modal = __webpack_require__(1279);
+
+var _modal2 = _interopRequireDefault(_modal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * This is the confirmation modal used by lots of stuff
+ * At the very least, it needs to be provided text to go
+ * in the main modal body area using the slot `modalBody`
+ *
+ * Clicking on the background fires the cancellation event.
+ *
+ * Other slots include:
+ *      modalTitle
+ *      confirmationButtonLabel
+ */
+exports.default = {
+
+    mixins: [_modal2.default],
+
+    props: ['isVisible'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            mutationNames: {
+                toggleVisibility: 'toggleConfirmationModal'
+            },
+
+            getterNames: {
+                visibility: 'isConfirmationModalVisible'
+            },
+
+            defaults: {
+                bodyText: "Are you sure. "
+            }
+        };
+    },
+
+    computed: {
+        isModalVisible: function isModalVisible() {
+            //If the prop is set, use it
+            if (!_.isUndefined(this.isVisible)) return this.isVisible;
+
+            return this.isConfirmationModalVisible;
+        }
+
+        // modalDataObject: function () {
+        //     let obj = this.$store.getters.getModalData;
+        //     if ( !_.isUndefined( obj )  && ! _.isNull(obj)) return obj;
+        //     return false;
+        // },
+        //
+        // modalText: function () {
+        //     if ( this.modalDataObject ) return this.modalDataObject.text;
+        // }
+    },
+
+    methods: {
+        // closeModal: function () {
+        //     this.$store.commit( 'toggleErrorModal' );
+        // },
+        //
+        // handleCancellation: function () {
+        //     this.$emit( 'cancel-selected' );
+        //     this.closeModal();
+        // },
+        //
+        // handleConfirmation: function () {
+        //     //hit the callback provided
+        //     if (  this.modalDataObject  ) this.modalDataObject.confirmationCallback();
+        //
+        //     this.$emit( 'confirm-selected' );
+        //     this.closeModal();
+        // }
+    }
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 533 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _preferenceToggle = __webpack_require__(499);
 
 var _preferenceToggle2 = _interopRequireDefault(_preferenceToggle);
 
@@ -72302,11 +71427,11 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -72389,7 +71514,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 532 */
+/* 534 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72399,7 +71524,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _preferenceToggle = __webpack_require__(498);
+var _preferenceToggle = __webpack_require__(499);
 
 var _preferenceToggle2 = _interopRequireDefault(_preferenceToggle);
 
@@ -72407,11 +71532,11 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -72571,7 +71696,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 533 */
+/* 535 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72585,7 +71710,7 @@ var _preferencesBase = __webpack_require__(203);
 
 var _preferencesBase2 = _interopRequireDefault(_preferencesBase);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
@@ -72631,7 +71756,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 534 */
+/* 536 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72730,7 +71855,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 535 */
+/* 537 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72740,15 +71865,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _userPreferences = __webpack_require__(747);
+var _userPreferences = __webpack_require__(749);
 
 var _userPreferences2 = _interopRequireDefault(_userPreferences);
 
-var _gradePagePreferences = __webpack_require__(738);
+var _gradePagePreferences = __webpack_require__(740);
 
 var _gradePagePreferences2 = _interopRequireDefault(_gradePagePreferences);
 
-var _setupPagePreferences = __webpack_require__(741);
+var _setupPagePreferences = __webpack_require__(743);
 
 var _setupPagePreferences2 = _interopRequireDefault(_setupPagePreferences);
 
@@ -72832,7 +71957,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 536 */
+/* 538 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72932,7 +72057,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 537 */
+/* 539 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72991,7 +72116,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 538 */
+/* 540 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73009,11 +72134,11 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -73115,7 +72240,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 539 */
+/* 541 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73133,7 +72258,7 @@ var _routes = __webpack_require__(113);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
@@ -73182,7 +72307,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 540 */
+/* 542 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73200,11 +72325,11 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -73254,7 +72379,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 541 */
+/* 543 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73272,11 +72397,11 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -73383,152 +72508,6 @@ exports.default = {
 //
 
 /***/ }),
-/* 542 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _preferenceInput = __webpack_require__(107);
-
-var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _newGradingGetterTypes = __webpack_require__(13);
-
-var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
-
-var _newGradingMutationTypes = __webpack_require__(16);
-
-var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
-
-var _preferencesInput = __webpack_require__(72);
-
-var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-    mixins: [_preferencesInput2.default],
-
-    props: [],
-
-    components: {},
-
-    data: function data() {
-        return {
-            defaults: {}
-        };
-    },
-
-    computed: {},
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
-/* 543 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _preferenceInput = __webpack_require__(107);
-
-var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _newGradingGetterTypes = __webpack_require__(13);
-
-var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
-
-var _newGradingMutationTypes = __webpack_require__(16);
-
-var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
-
-var _preferencesInput = __webpack_require__(72);
-
-var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-    mixins: [_preferencesInput2.default],
-
-    props: [],
-
-    components: {},
-
-    data: function data() {
-        return {
-            defaults: {}
-        };
-    },
-
-    computed: {},
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
 /* 544 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -73547,11 +72526,157 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(72);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    mixins: [_preferencesInput2.default],
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 545 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _preferenceInput = __webpack_require__(107);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(1217);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _preferencesInput = __webpack_require__(72);
+
+var _preferencesInput2 = _interopRequireDefault(_preferencesInput);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    mixins: [_preferencesInput2.default],
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 546 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _preferenceInput = __webpack_require__(107);
+
+var _preferenceInput2 = _interopRequireDefault(_preferenceInput);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(1217);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -73614,7 +72739,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 545 */
+/* 547 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73632,15 +72757,15 @@ var _routes = __webpack_require__(113);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
@@ -73689,7 +72814,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 546 */
+/* 548 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73719,11 +72844,11 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _valenceButtons = __webpack_require__(510);
+var _valenceButtons = __webpack_require__(512);
 
 var _valenceButtons2 = _interopRequireDefault(_valenceButtons);
 
@@ -74066,7 +73191,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 547 */
+/* 549 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74142,7 +73267,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 548 */
+/* 550 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74160,7 +73285,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74233,7 +73358,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 549 */
+/* 551 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74251,7 +73376,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74316,7 +73441,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 550 */
+/* 552 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74330,7 +73455,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74521,7 +73646,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 551 */
+/* 553 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74539,7 +73664,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74609,7 +73734,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 552 */
+/* 554 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74631,7 +73756,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74713,7 +73838,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 553 */
+/* 555 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74731,7 +73856,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74842,7 +73967,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 554 */
+/* 556 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74860,7 +73985,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -74880,7 +74005,7 @@ var _timeStats = __webpack_require__(781);
 
 var _timeStats2 = _interopRequireDefault(_timeStats);
 
-var _summaryStatsDisplay = __webpack_require__(504);
+var _summaryStatsDisplay = __webpack_require__(506);
 
 var _summaryStatsDisplay2 = _interopRequireDefault(_summaryStatsDisplay);
 
@@ -74892,11 +74017,11 @@ var _examProperties = __webpack_require__(777);
 
 var _examProperties2 = _interopRequireDefault(_examProperties);
 
-var _termInput = __webpack_require__(751);
+var _termInput = __webpack_require__(753);
 
 var _termInput2 = _interopRequireDefault(_termInput);
 
-var _yearInput = __webpack_require__(752);
+var _yearInput = __webpack_require__(754);
 
 var _yearInput2 = _interopRequireDefault(_yearInput);
 
@@ -74904,15 +74029,15 @@ var _inputAndSelector = __webpack_require__(108);
 
 var _inputAndSelector2 = _interopRequireDefault(_inputAndSelector);
 
-var _familyInput = __webpack_require__(749);
+var _familyInput = __webpack_require__(751);
 
 var _familyInput2 = _interopRequireDefault(_familyInput);
 
-var _descriptionInput = __webpack_require__(748);
+var _descriptionInput = __webpack_require__(750);
 
 var _descriptionInput2 = _interopRequireDefault(_descriptionInput);
 
-var _publicNameInput = __webpack_require__(750);
+var _publicNameInput = __webpack_require__(752);
 
 var _publicNameInput2 = _interopRequireDefault(_publicNameInput);
 
@@ -75092,7 +74217,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 555 */
+/* 557 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75110,7 +74235,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -75118,7 +74243,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _cutoffField = __webpack_require__(500);
+var _cutoffField = __webpack_require__(501);
 
 var _cutoffField2 = _interopRequireDefault(_cutoffField);
 
@@ -75207,7 +74332,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 556 */
+/* 558 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75225,7 +74350,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -75335,7 +74460,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 557 */
+/* 559 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75353,7 +74478,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -75361,7 +74486,7 @@ var _statDisplayColumns = __webpack_require__(109);
 
 var _statDisplayColumns2 = _interopRequireDefault(_statDisplayColumns);
 
-var _statRow = __webpack_require__(758);
+var _statRow = __webpack_require__(760);
 
 var _statRow2 = _interopRequireDefault(_statRow);
 
@@ -75516,7 +74641,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 558 */
+/* 560 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75668,7 +74793,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 559 */
+/* 561 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75686,7 +74811,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -75698,7 +74823,7 @@ var _statDisplayColumns = __webpack_require__(109);
 
 var _statDisplayColumns2 = _interopRequireDefault(_statDisplayColumns);
 
-var _distArea = __webpack_require__(501);
+var _distArea = __webpack_require__(502);
 
 var _distArea2 = _interopRequireDefault(_distArea);
 
@@ -75787,7 +74912,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 560 */
+/* 562 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75799,7 +74924,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _googleCharts = __webpack_require__(71);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -75923,7 +75048,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 561 */
+/* 563 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75968,7 +75093,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 562 */
+/* 564 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75986,7 +75111,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -75998,7 +75123,7 @@ var _GradeAssignment = __webpack_require__(106);
 
 var _GradeAssignment2 = _interopRequireDefault(_GradeAssignment);
 
-var _cutoffField = __webpack_require__(500);
+var _cutoffField = __webpack_require__(501);
 
 var _cutoffField2 = _interopRequireDefault(_cutoffField);
 
@@ -76010,23 +75135,23 @@ var _gradeAssignmentRequests = __webpack_require__(141);
 
 var _gradeAssignmentRequests2 = _interopRequireDefault(_gradeAssignmentRequests);
 
-var _assignmentTableRow = __webpack_require__(754);
+var _assignmentTableRow = __webpack_require__(756);
 
 var _assignmentTableRow2 = _interopRequireDefault(_assignmentTableRow);
 
-var _gradeDistributionStats = __webpack_require__(756);
+var _gradeDistributionStats = __webpack_require__(758);
 
 var _gradeDistributionStats2 = _interopRequireDefault(_gradeDistributionStats);
 
-var _frequencyChart = __webpack_require__(755);
+var _frequencyChart = __webpack_require__(757);
 
 var _frequencyChart2 = _interopRequireDefault(_frequencyChart);
 
-var _scoresChart = __webpack_require__(757);
+var _scoresChart = __webpack_require__(759);
 
 var _scoresChart2 = _interopRequireDefault(_scoresChart);
 
-var _distArea = __webpack_require__(501);
+var _distArea = __webpack_require__(502);
 
 var _distArea2 = _interopRequireDefault(_distArea);
 
@@ -76228,7 +75353,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 563 */
+/* 565 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76250,7 +75375,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _historyRequests = __webpack_require__(609);
+var _historyRequests = __webpack_require__(611);
 
 var _apiSettings = __webpack_require__(18);
 
@@ -76354,7 +75479,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 564 */
+/* 566 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76523,7 +75648,7 @@ exports.default = {
 //    import tagMenu from '../menus/tags-menu.vue';
 
 /***/ }),
-/* 565 */
+/* 567 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76533,7 +75658,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _kumiEditingModal = __webpack_require__(763);
+var _kumiEditingModal = __webpack_require__(504);
 
 var _kumiEditingModal2 = _interopRequireDefault(_kumiEditingModal);
 
@@ -76624,7 +75749,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 566 */
+/* 568 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76642,7 +75767,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -76654,7 +75779,7 @@ var _removeKumiButton = __webpack_require__(767);
 
 var _removeKumiButton2 = _interopRequireDefault(_removeKumiButton);
 
-var _newKumiControl = __webpack_require__(502);
+var _newKumiControl = __webpack_require__(205);
 
 var _newKumiControl2 = _interopRequireDefault(_newKumiControl);
 
@@ -76662,6 +75787,26 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -76753,7 +75898,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 567 */
+/* 569 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76779,7 +75924,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -76787,16 +75932,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//todo Adjust styling so that box of input is not visible except when selected
 exports.default = {
 
     props: ['kumi'],
 
-    components: {},
-
     data: function data() {
         return {
-            //                isSelected: false,
             identifier: 'kumi-name-field',
             inputHighlightClass: 'is-info',
             defaults: {}
@@ -76806,21 +75947,20 @@ exports.default = {
     computed: {
 
         id: function id() {
-            return this.kumi ? this.identifier + '-' + this.serialNumber : '';
+            return this.kumi ? this.identifier + '-' + this.kumi.serialNumber : '';
         },
 
         exam: function exam() {
             return this.$store.getters[gTypes.getActiveExam];
         },
 
-        examKumis: function examKumis() {
-            var examKumis = this.$store.getters[gTypes.getKumisForExam](this.exam);
-            if (_.isUndefined(examKumis) || _.isNull(examKumis)) return [];
-            return examKumis;
+        isAssociatedWithActiveExam: function isAssociatedWithActiveExam() {
+            return this.$store.getters.areKumiAndExamAssociated({ kumi: this.kumi, exam: this.exam });
         },
 
-        isAssociatedWithActiveExam: function isAssociatedWithActiveExam() {
-            return this.examKumis.indexOf(this.kumi) > -1;
+        autofocus: function autofocus() {
+            if (_.isUndefined(this.kumi) || _.isNull(this.kumi)) return false;
+            return this.kumi.isNew();
         },
 
         name: {
@@ -76864,9 +76004,11 @@ exports.default = {
 //
 //
 //
+//
+//
 
 /***/ }),
-/* 568 */
+/* 570 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76892,7 +76034,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -76952,15 +76094,8 @@ exports.default = {
             }
         }
 
-    },
+    }
 
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
 }; //
 //
 //
@@ -77012,7 +76147,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 569 */
+/* 571 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77038,7 +76173,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77060,7 +76195,7 @@ exports.default = {
 
     computed: {
         displayedKumis: function displayedKumis() {
-            return this.$store.getters.getDisplayedKumis;
+            return this.$store.getters.getKumisToFilterStudentsBy;
         },
 
         isActive: function isActive() {
@@ -77089,7 +76224,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 570 */
+/* 572 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77111,11 +76246,11 @@ var _Kumi = __webpack_require__(19);
 
 var _Kumi2 = _interopRequireDefault(_Kumi);
 
-var _editKumiControl = __webpack_require__(762);
+var _editKumiControl = __webpack_require__(503);
 
 var _editKumiControl2 = _interopRequireDefault(_editKumiControl);
 
-var _newKumiControl = __webpack_require__(502);
+var _newKumiControl = __webpack_require__(205);
 
 var _newKumiControl2 = _interopRequireDefault(_newKumiControl);
 
@@ -77131,7 +76266,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77143,12 +76278,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -77214,49 +76343,47 @@ exports.default = {
     },
 
     computed: {
+        /**
+         * All kumis associated with the exam
+         */
         kumis: function kumis() {
             var k = this.$store.getters[gTypes.getKumisForExam](this.exam);
             if (!_.isUndefined(k) && !_.isNull(k)) return k;
             return null;
         },
-        // kumis: function () {
-        //     return this.$store.getters[ gTypes.getKumisForExam ]( this.exam );;
-        //     return this.$store.getters[ gTypes.getAllKumis ];
-        // },
 
+        /**
+         * Returns the number of kumis
+         * This is mainly used to prevent the component from
+         * trying to render non-existent kumis.
+         */
         kumiCount: function kumiCount() {
             if (_.isNull(this.kumis) || _.isUndefined(this.kumis)) return 0;
             return this.kumis.length;
         },
+
         exam: function exam() {
             return this.$store.getters[gTypes.getActiveExam];
         },
 
+        /**
+         * List of kumis to filter the displayed students by
+         */
         displayedKumis: function displayedKumis() {
-            return this.$store.getters.getDisplayedKumis;
+            return this.$store.getters.getKumisToFilterStudentsBy;
+        },
+
+        /**
+         * Whether the 'all' tab is selected
+         * @returns {boolean}
+         */
+        isAllTabActive: function isAllTabActive() {
+            return this.displayedKumis.length === 0;
         }
 
     },
 
     methods: {
-        showAllKumi: function showAllKumi() {
-            this.$store.commit('clearDisplayedKumis');
-        },
-
-        handleKumiSelection: function handleKumiSelection(kumi) {
-            // window.console.log( 'kumi-tabs', 'handleKumiSelection', 151, kumi );
-            //This could be accidentally called when the area
-            //is open for editing.
-            //Thus we filter any such calls out
-            if (this.isEditable) return true;
-
-            this.$store.commit('toggleKumi', _Payload2.default.factory({ obj: kumi }));
-        },
-
-        isActive: function isActive(kumi) {
-            //                return this.$store.getters.isKumiDisplayed(kumi);
-            return this.displayedKumis.indexOf(kumi) !== -1;
-        },
 
         toggleEditable: function toggleEditable() {
             this.isEditable = !this.isEditable;
@@ -77267,7 +76394,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 571 */
+/* 573 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77293,7 +76420,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77368,7 +76495,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 572 */
+/* 574 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77394,7 +76521,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77408,7 +76535,10 @@ exports.default = {
 
     data: function data() {
         return {
-            styling: 'is-outlined is-danger',
+            styles: {
+                active: 'is-outlined is-danger',
+                disabled: 'is-disabled'
+            },
 
             defaults: {}
         };
@@ -77417,7 +76547,16 @@ exports.default = {
     computed: {
         exam: function exam() {
             return this.$store.getters[gTypes.getActiveExam];
+        },
+
+        styling: function styling() {
+            return this.isAssociatedWithActiveExam ? this.styles.active : this.styles.disabled;
+        },
+
+        isAssociatedWithActiveExam: function isAssociatedWithActiveExam() {
+            return this.$store.getters.areKumiAndExamAssociated({ kumi: this.kumi, exam: this.exam });
         }
+
     },
 
     methods: {
@@ -77444,7 +76583,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 573 */
+/* 575 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77472,18 +76611,19 @@ exports.default = {
 
     props: ['type', 'isActive', 'isVisible'],
 
-    components: {},
-
     data: function data() {
         return {
-
             defaults: {}
         };
     },
 
     computed: {
+        /**
+         * List of kumis which we are currently filtering by
+         * @returns {module.exports.getters.getKumisToFilterStudentsBy}
+         */
         displayedKumis: function displayedKumis() {
-            return this.$store.getters.getDisplayedKumis;
+            return this.$store.getters.getKumisToFilterStudentsBy;
         },
 
         styling: function styling() {
@@ -77491,17 +76631,13 @@ exports.default = {
             switch (this.type) {
                 case 'tab':
                     out += ' tab ';
-
-                    if (this.displayedKumis && this.displayedKumis.length === 0) out += 'is-active';
-
                     break;
+
                 case 'button':
                     out += ' button ';
                     out += 'is-outlined is-primary';
                     break;
             }
-
-            if (this.isActive) out += ' is-active ';
 
             return out;
         }
@@ -77509,15 +76645,14 @@ exports.default = {
 
     methods: {
         showAllKumi: function showAllKumi() {
-            this.$store.commit('clearDisplayedKumis');
+            this.$store.commit('clearKumisToFilterStudentsBy');
         }
-
     }
 
 };
 
 /***/ }),
-/* 574 */
+/* 576 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77535,7 +76670,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77839,7 +76974,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 575 */
+/* 577 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77857,7 +76992,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77947,7 +77082,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 576 */
+/* 578 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77965,7 +77100,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -77987,7 +77122,7 @@ var _prioritySelector = __webpack_require__(770);
 
 var _prioritySelector2 = _interopRequireDefault(_prioritySelector);
 
-var _colorSelector = __webpack_require__(505);
+var _colorSelector = __webpack_require__(507);
 
 var _colorSelector2 = _interopRequireDefault(_colorSelector);
 
@@ -78317,7 +77452,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 577 */
+/* 579 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78536,7 +77671,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 578 */
+/* 580 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78721,7 +77856,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 579 */
+/* 581 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78846,7 +77981,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 580 */
+/* 582 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78906,7 +78041,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 581 */
+/* 583 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79040,7 +78175,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 582 */
+/* 584 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79178,7 +78313,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 583 */
+/* 585 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79196,7 +78331,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -79357,7 +78492,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 584 */
+/* 586 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79447,7 +78582,7 @@ var _loadingIndicator = __webpack_require__(65);
 
 var _loadingIndicator2 = _interopRequireDefault(_loadingIndicator);
 
-var _summaryStatsDisplay = __webpack_require__(504);
+var _summaryStatsDisplay = __webpack_require__(506);
 
 var _summaryStatsDisplay2 = _interopRequireDefault(_summaryStatsDisplay);
 
@@ -79571,7 +78706,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 585 */
+/* 587 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79780,7 +78915,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 586 */
+/* 588 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79907,124 +79042,124 @@ exports.default = {
 };
 
 /***/ }),
-/* 587 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-
-    props: [],
-
-    components: {},
-
-    data: function data() {
-        return {
-            defaults: {}
-        };
-    },
-
-    computed: {},
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
-/* 588 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-
-    props: [],
-
-    components: {},
-
-    data: function data() {
-        return {
-            defaults: {}
-        };
-    },
-
-    computed: {},
-
-    methods: {},
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {}
-};
-
-/***/ }),
 /* 589 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 590 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 591 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80188,7 +79323,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 590 */
+/* 592 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80419,423 +79554,9 @@ exports.default = {
 //
 
 /***/ }),
-/* 591 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _Student = __webpack_require__(24);
-
-var _Student2 = _interopRequireDefault(_Student);
-
-var _Kumi = __webpack_require__(19);
-
-var _Kumi2 = _interopRequireDefault(_Kumi);
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(5);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//    import studentOpArea from './student-row-ops-area.vue'
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-
-    props: ['serialNumber'],
-
-    components: {
-        //            'student-op-area': studentOpArea
-    },
-
-    data: function data() {
-        return {
-
-            /**
-             * Whether to display the checkbox by which
-             * the student is selected for being moved,
-             * removed, or deleted
-             */
-            //                showOperationCheckbox: false,
-
-            /**
-             * Gets the label to display with the checkbox
-             * i.e., Delete, Move, Remove
-             */
-            operationCheckboxLabel: 'Delete | Move | Remove',
-
-            defaults: {
-                firstName: '-',
-                lastName: '-',
-                email: '-',
-                identifier: '-'
-            }
-        };
-    },
-
-    computed: {
-        //        asyncComputed: {
-        student: function student() {
-            return this.$store.getters.getStudentFromRosterBySerialNumber(this.serialNumber);
-        },
-
-        firstName: {
-            get: function get() {
-                return this.student.firstName;
-            },
-            set: function set(v) {
-                var pl = _Payload2.default.factory({
-                    obj: this.student,
-                    updateProp: 'firstName',
-                    updateVal: _.capitalize(v)
-                });
-                this.$store.commit('updateStudentInRoster', pl);
-            }
-        },
-
-        lastName: {
-            get: function get() {
-                //todo capitalize?
-                return this.student.lastName;
-            },
-            set: function set(v) {
-                this.$store.commit('updateStudentInRoster', _Payload2.default.factory({
-                    obj: this.student,
-                    updateProp: 'lastName',
-                    updateVal: _.capitalize(v)
-                }));
-            }
-        },
-
-        identifier: {
-            get: function get() {
-                return this.student.identifier;
-            },
-            set: function set(v) {
-                var pl = _Payload2.default.factory({
-                    obj: this.student,
-                    updateProp: 'studentIdentifier',
-                    updateVal: v
-                });
-                this.$store.commit('updateStudentInRoster', pl);
-            }
-        },
-
-        email: {
-            get: function get() {
-                return this.student.email;
-            },
-            set: function set(v) {
-                this.$store.commit('updateStudentInRoster', _Payload2.default.factory({
-                    obj: this.student,
-                    updateProp: 'email',
-                    updateVal: v
-                }));
-            }
-        },
-
-        isStudentInSelectedKumi: function isStudentInSelectedKumi() {
-            return this.$store.getters.isStudentInSelectedKumi(this.student);
-        },
-
-        /**
-         * Whether this row is selected
-         */
-        isSelected: {
-            get: function get() {
-                return this.$parent.selectedStudents.indexOf(this.student) > -1;
-            },
-            set: function set(v) {
-                var idx = this.$parent.selectedStudents.indexOf(this.student);
-                if (idx > -1) {
-                    //already selected, so remove
-                    return this.$parent.selectedStudents.splice(idx, 1);
-                }
-                this.$parent.selectedStudents.push(this.student);
-            }
-        },
-        /**
-         * Whether to display score and other
-         * info about how the student has done.
-         * (Note 'done on what?' is resolved by context
-         * since we want to be able to call this menu
-         * up in many contexts ---maybe on item score, exam score
-         */
-        showGradeInfo: function showGradeInfo() {
-            return false;
-        },
-
-        //these need to be here for the op area to read
-        /**
-         * Whether to display the checkbox by which
-         * the student is selected for being moved,
-         * removed, or deleted
-         */
-        showOperationCheckbox: function showOperationCheckbox() {
-            return this.$parent.showDeleteOperationArea;
-        },
-
-        /**
-         * Gets the label to display with the checkbox
-         * i.e., Delete, Move, Remove
-         */
-        //            operationCheckboxLabel: 'Delete | Move | Remove',
-
-
-        /**
-         * Whether to display the checkbox by which
-         * the student is selected for being moved,
-         * removed, or deleted
-         */
-        showDeleteOperationArea: function showDeleteOperationArea() {
-            return this.$parent.showDeleteOperationArea;
-        },
-
-        /**
-         * Whether to display the checkbox by which
-         * the student is selected for being moved,
-         * removed, or deleted
-         */
-        showMoveOperationArea: function showMoveOperationArea() {
-            return this.$parent.showMoveOperationArea;
-        },
-
-        /**
-         * Whether to display the checkbox by which
-         * the student is selected for being moved,
-         * removed, or deleted
-         */
-        showRemoveOperationArea: function showRemoveOperationArea() {
-            return this.$parent.showRemoveOperationArea;
-        },
-
-        //            /**
-        //             * Gets the label to display with the checkbox
-        //             * i.e., Delete, Move, Remove
-        //             */
-        //            operationCheckboxLabel: function () {
-        //                return 'Delete | Move | Remove';
-        //            },
-
-        /**
-         * Whether the row is visible
-         */
-        showRow: function showRow() {
-            if (this.$parent.showKumi === -1) return true;
-
-            var kumi = this.$store.getters.getKumiBySerialNumber(this.$parent.showKumi);
-
-            return this.student.associatedKumis.indexOf(kumi) > -1;
-        },
-
-        /**
-         * Getter for the students grade, if displayed
-         */
-        grade: function grade() {},
-
-        /**
-         * Getter for the student's score, if displayed
-         */
-        score: function score() {},
-
-        checkboxId: function checkboxId() {
-            return 'student-operation-checkbox-' + this.serialNumber;
-        }
-    },
-
-    methods: {
-        getInputId: function getInputId(name) {
-            return _.kebabCase(name) + '-' + this.serialNumber;
-        },
-
-        getCheckboxValue: function getCheckboxValue() {
-            return this.student.serialNumber;
-        },
-
-        handleToggleCheckboxDelete: function handleToggleCheckboxDelete(evt) {
-            window.console.log('student-row', 'toggle-checkbox-delete', 203, 'caught', evt);
-            this.operationCheckboxLabel = 'Delete';
-            this.showOperationCheckbox = !this.showOperationCheckbox;
-        }
-        //
-        //            handleRowSelection: function () {
-        //                let idx = this.$parent.selectedStudents.indexOf( this.student );
-        //                if ( idx > -1 ) {
-        //                    //already selected, so remove
-        //                    return this.$parent.selectedStudents.splice( idx, 1 );
-        //                }
-        //                this.$parent.selectedStudents.push( this.student );
-
-        //            }
-
-    },
-
-    events: {
-        //            'toggle-checkbox-delete': function (evt) {
-        //
-        ////                'toggle-checkbox-delete': function (evt) {
-        //                window.console.log( 'student-row', 'toggle-checkbox-delete', 203, 'caught' , evt);
-        //                this.operationCheckboxLabel = 'Delete';
-        //                this.showOperationCheckbox = !this.showOperationCheckbox;
-        //            },
-
-        'toggle-checkbox-move': function toggleCheckboxMove() {
-            window.console.log('student-row', 'toggle-checkbox-move', 207, 'caught');
-            this.operationCheckboxLabel = 'Move';
-            this.showOperationCheckbox = !this.showOperationCheckbox;
-        },
-
-        'toggle-checkbox-remove': function toggleCheckboxRemove() {
-            window.console.log('student-row', 'toggle-checkbox-remove', 211, 'caught');
-            this.operationCheckboxLabel = 'Remove';
-            this.showOperationCheckbox = !this.showOperationCheckbox;
-        }
-    }
-};
-
-/***/ }),
-/* 592 */,
-/* 593 */
+/* 593 */,
+/* 594 */,
+/* 595 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80947,7 +79668,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 594 */
+/* 596 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81050,7 +79771,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 595 */
+/* 597 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81060,17 +79781,43 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _autoClosingModal = __webpack_require__(732);
+var _autoClosingModal = __webpack_require__(736);
 
 var _autoClosingModal2 = _interopRequireDefault(_autoClosingModal);
 
-var _confirmationModal = __webpack_require__(733);
+var _confirmationModal = __webpack_require__(737);
 
 var _confirmationModal2 = _interopRequireDefault(_confirmationModal);
 
 var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Student = __webpack_require__(20);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Kumi = __webpack_require__(19);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _removeStudentsFromRosterButton = __webpack_require__(1272);
+
+var _removeStudentsFromRosterButton2 = _interopRequireDefault(_removeStudentsFromRosterButton);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -81079,6 +79826,7 @@ exports.default = {
     props: ['injectableClasses'],
 
     components: {
+        RemoveStudentsFromRosterButton: _removeStudentsFromRosterButton2.default,
         'auto-close-modal': _autoClosingModal2.default,
         'confirmation-modal': _confirmationModal2.default
     },
@@ -81088,10 +79836,26 @@ exports.default = {
             defaults: {
                 componentClass: ''
             },
-            pendingOperation: false, //what operation we are to perform
+
+            /** The text displayed in the body of the error modal **/
+            errorModalText: '',
+
+            /** Values to use as errorModalText */
+            errorModalTextOptions: {
+                noSelectedStudents: "Please select 1 or more students ",
+                noSelectedGroups: "Please select 1 or more groups"
+            },
+
+            //what operation we are to perform
+            pendingOperation: false,
 
             messages: {
                 noRowsSelected: "Please select at least one row by clicking outside of the input areas."
+            },
+
+            modalBodyText: {
+                remove: "Are you sure you want to remove the student from this group? The student will no longer appear on the exam if they are not part of another group. However, the student's data will not be affected ---you could add the student back",
+                delete: "This will delete the student entirely. All data related to the student will be lost permanently. Are you absolutely sure that's what you want to do? "
             },
 
             selectorLabels: {
@@ -81099,7 +79863,7 @@ exports.default = {
                 remove: "Select groups to remove the selected students from"
             },
 
-            isModalVisible: false,
+            isErrorModalVisible: false,
 
             /** Whether the confirmation dialog is displayed*/
             isConfirmationModalVisible: false
@@ -81112,23 +79876,64 @@ exports.default = {
             return "Add to group";
         },
 
-        styling: function styling() {
-            return this.defaults.componentClass + this.injectableClasses;
+        /**
+         * When the action button is clicked, the
+         * confirmation modal displays with this text
+         * in the body.
+         */
+        confirmationModalText: function confirmationModalText() {
+            switch (this.pendingOperation) {
+                case 'add':
+                    return '';
+                    break;
+                case 'remove':
+                    return this.modalBodyText.remove;
+                    break;
+                case 'delete':
+                    return this.modalBodyText.delete;
+                    break;
+                default:
+                    return "Are you sure you want to do this?";
+            }
         },
-
-        selectedKumis: function selectedKumis() {
-            return this.$store.getters.getSelectedKumis;
-        },
-
-        selectedStudents: function selectedStudents() {
-            return this.$store.getters.getSelectedStudents;
-        },
-
         /** Includes kumiSelectorVisible so that anything in the label
          * can change with the list state
          */
         kumiSelectorVisible: function kumiSelectorVisible() {
             return this.$store.getters.isKumiSelectVisible;
+        },
+
+        /**
+         * The object which all operations will dispatch
+         * with the actions
+         */
+        payload: function payload() {
+            return {
+                students: this.selectedStudents,
+                kumis: this.selectedKumis
+            };
+        },
+
+        styling: function styling() {
+            return this.defaults.componentClass + this.injectableClasses;
+        },
+
+        /**
+         * Array of currently selected groups. When
+         * an operation button is clicked, these will be part of the
+         * payload.
+         */
+        selectedKumis: function selectedKumis() {
+            return this.$store.getters.getSelectedKumis;
+        },
+
+        /**
+         * Array of currently selected students. When
+         * an operation button is clicked, these will be part of the
+         * payload.
+         */
+        selectedStudents: function selectedStudents() {
+            return this.$store.getters.getSelectedStudents;
         },
 
         showConfirmationButtons: function showConfirmationButtons() {
@@ -81141,11 +79946,32 @@ exports.default = {
 
     methods: {
 
-        testOperationValidity: function testOperationValidity() {
-            if (this.selectedStudents === 0) {
-                this.isModalVisible = true;
+        /**
+         * Determines whether the operation may be performed.
+         * If not, it displays the warning modal
+         * By default it only checks whether students are selected
+         * If testKumis is true, it checks kumis too
+         */
+        isOperationValid: function isOperationValid() {
+            var testKumis = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+            if (this.selectedStudents.length === 0) {
+                //Set which error message displays
+                this.errorModalText = this.errorModalTextOptions.noSelectedStudents;
+                //Display the warning message
+                this.isErrorModalVisible = true;
                 return false;
             }
+
+            if (testKumis && this.selectedKumis.length === 0) {
+                //Set which error message displays
+                this.errorModalText = this.errorModalTextOptions.noSelectedGroups;
+                //Display the warning message
+                this.isErrorModalVisible = true;
+                //Return the result of the test
+                return false;
+            }
+
             return true;
         },
 
@@ -81166,7 +79992,7 @@ exports.default = {
         handleDeleteClick: function handleDeleteClick() {
             window.console.log('student-action-buttons', 'handleDeleteClick', 136);
             this.pendingOperation = 'delete';
-
+            this.isConfirmationModalVisible = true;
             //todo confirmation dialog
         },
 
@@ -81221,51 +80047,65 @@ exports.default = {
          */
         addStudentsToGroups: function addStudentsToGroups() {
             window.console.log('student-action-buttons', 'addStudentToGroup', 151);
-            if (this.testOperationValidity()) {
-                var me = this;
-
-                _.forEach(me.selectedKumis, function (kumi) {
-                    _.forEach(me.selectedStudents, function (student) {
-                        me.$store.commit('associateStudentWithKumi', _Payload2.default.factory({
-                            student: student,
-                            kumi: kumi
-                        }));
-                    });
-                });
-            }
+            if (!this.isOperationValid()) return;
+            this.$store.dispatch('addStudentsToKumis', this.payload);
+            // let me = this;
+            //
+            // _.forEach( me.selectedKumis, function ( kumi ) {
+            //     _.forEach( me.selectedStudents, function ( student ) {
+            //         me.$store.commit( 'associateStudentWithKumi', Payload.factory( {
+            //             student: student,
+            //             kumi: kumi
+            //         } ) );
+            //     } )
+            // } )
         },
 
         removeStudentsFromGroups: function removeStudentsFromGroups() {
-            //todo make sure this throws an error if no groups are displyed
-            if (this.testOperationValidity()) {
-                //remove the selected students
-                var me = this;
 
-                //NB we use the displayed kumi's since it makes no sense
-                //to have to select them separately. We just work with
-                //what's on the screen
-                _.forEach(me.displayedKumis, function (kumi) {
-                    _.forEach(me.selectedStudents, function (student) {
-                        me.$store.commit('disassociateStudentFromKumi', _Payload2.default.factory({
-                            student: student,
-                            kumi: kumi
-                        }));
-                    });
-                });
-            }
+            if (!this.isOperationValid()) return;
+            this.$store.dispatch('removeStudentsFromKumis', this.payload);
+
+            //
+            // //remove the selected students
+            // let me = this;
+            //
+            // //NB we use the displayed kumi's since it makes no sense
+            // //to have to select them separately. We just work with
+            // //what's on the screen
+            // _.forEach( me.displayedKumis, function ( kumi ) {
+            //     _.forEach( me.selectedStudents, function ( student ) {
+            //         me.$store.commit( 'disassociateStudentFromKumi', Payload.factory( {
+            //             student: student,
+            //             kumi: kumi
+            //         } ) );
+            //     } )
+            //
+            // } )
+
+            // }
         },
 
         removeStudentsFromRoster: function removeStudentsFromRoster() {
-            if (this.testOperationValidity()) {
-                //delete the selected students
-                var me = this;
 
-                _.forEach(this.selectedStudents, function (student) {
-                    me.$store.commit(mTypes.removeStudentFromRoster, _Payload2.default.factory({ obj: student }));
-                });
-            }
+            if (!this.isOperationValid()) return;
+
+            this.$store.dispatch('removeStudentsFromRoster', this.selectedStudents);
+
+            //
+            // //delete the selected students
+            // let me = this;
+            //
+            // _.forEach( this.selectedStudents, function ( student ) {
+            //     me.$store.commit( mTypes.removeStudentFromRoster, Payload.factory( { obj: student } ) );
+            // } );
         },
 
+        /**
+         * Resets the selected students and kumis to
+         * default state. Also hides any displayed menus
+         * and clears the pending operation
+         */
         resetDisplay: function resetDisplay() {
             //hide the displayed kumi selector
             if (this.kumiSelectorVisible) this.$store.commit('toggleKumiSelectVisibility');
@@ -81274,12 +80114,21 @@ exports.default = {
             this.$store.commit('clearSelectedStudents');
             this.$store.commit('clearSelectedKumis');
 
+            //make sure the modals are closed
+            this.isConfirmationModalVisible = false;
+            this.isErrorModalVisible = false;
+
             //reset the pending operation
             this.pendingOperation = false;
         }
 
     }
 }; //
+//
+//
+//
+//
+//
 //
 //
 //
@@ -81362,7 +80211,7 @@ exports.default = {
  */
 
 /***/ }),
-/* 596 */
+/* 598 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81376,7 +80225,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -81392,7 +80241,7 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -81521,7 +80370,7 @@ exports.default = {
 
     computed: {
         displayedKumis: function displayedKumis() {
-            return this.$store.getters.getDisplayedKumis;
+            return this.$store.getters.getKumisToFilterStudentsBy;
         },
 
         icon: function icon() {
@@ -81593,7 +80442,11 @@ exports.default = {
         isRowVisible: function isRowVisible() {
             if (this.displayedKumis.length === 0) return true;
 
-            return this.$store.getters.isStudentInDisplayedKumi(this.student);
+            if (_.isUndefined(this.student)) return false;
+
+            return this.student.isInKumiOrKumiList(this.displayedKumis);
+            // return this.$store.getters.isStudentInFilterByKumis( this.student );
+
         },
 
         selectedStudents: function selectedStudents() {
@@ -81658,7 +80511,8 @@ exports.default = {
          * and calling this
          */
         handleRowSelection: function handleRowSelection(evt) {
-            window.console.log('student-table-row', 'handleRowSelection', 247, this.student, evt);
+            // window.console.log( 'student-table-row', 'handleRowSelection', 247, this.student, evt );
+
             //toggle the selected state
             this.$store.commit('toggleStudent', _Payload2.default.factory({
                 obj: this.student,
@@ -81677,7 +80531,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 597 */
+/* 599 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81742,7 +80596,7 @@ exports.default = {
                 sortDesc: "fa fa-sort-amount-desc"
             },
 
-            isModalVisible: false,
+            isErrorModalVisible: false,
             //                selectedStudents: [],
             sortAsc: true,
             //The name of the property on the student object
@@ -81805,20 +80659,19 @@ exports.default = {
             return this.icons.sortDesc;
         },
 
-        handleRowSelectionEvent: function handleRowSelectionEvent(_ref) {
-            var obj = _ref.obj,
-                isSelected = _ref.isSelected;
+        // handleRowSelectionEvent: function ( { obj, isSelected } ) {
+        //     window.console.log( 'student-table', 'handleRowSelectionEvent', 136, obj, isSelected );
+        //     if ( isSelected ) {
+        //         //The row is newly selected
+        //         //Add the student to selectedStudents
+        //         this.$store.commit( 'selectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
+        //     }
+        //     else {
+        //         //it was already selected, so remove it
+        //         this.$store.commit( 'deselectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
+        //     }
+        // },
 
-            window.console.log('student-table', 'handleRowSelectionEvent', 136, obj, isSelected);
-            if (isSelected) {
-                //The row is newly selected
-                //Add the student to selectedStudents
-                this.$store.commit('selectStudent', _Payload2.default.factory({ obj: obj, mutateSilently: true }));
-            } else {
-                //it was already selected, so remove it
-                this.$store.commit('deselectStudent', _Payload2.default.factory({ obj: obj, mutateSilently: true }));
-            }
-        },
 
         toggleSortAscending: function toggleSortAscending(shortText) {
             window.console.log('student-table', 'toggleSortAscending', 156, shortText);
@@ -81906,10 +80759,9 @@ exports.default = {
 //
 //
 //
-//
 
 /***/ }),
-/* 598 */
+/* 600 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81931,7 +80783,7 @@ var _Exam = __webpack_require__(9);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -81947,11 +80799,11 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _studentRow = __webpack_require__(782);
+var _studentRow = __webpack_require__(1229);
 
 var _studentRow2 = _interopRequireDefault(_studentRow);
 
@@ -81983,134 +80835,32 @@ var _importStudentsControl = __webpack_require__(785);
 
 var _importStudentsControl2 = _interopRequireDefault(_importStudentsControl);
 
-var _addStudentButton = __webpack_require__(1219);
+var _addStudentButton = __webpack_require__(1266);
 
 var _addStudentButton2 = _interopRequireDefault(_addStudentButton);
 
 var _studentRequests = __webpack_require__(82);
 
-var _newKumiControl = __webpack_require__(502);
+var _newKumiControl = __webpack_require__(205);
 
 var _newKumiControl2 = _interopRequireDefault(_newKumiControl);
 
-var _editKumiControl = __webpack_require__(762);
+var _editKumiControl = __webpack_require__(503);
 
 var _editKumiControl2 = _interopRequireDefault(_editKumiControl);
 
-var _kumiEditingModal = __webpack_require__(763);
+var _kumiEditingModal = __webpack_require__(504);
 
 var _kumiEditingModal2 = _interopRequireDefault(_kumiEditingModal);
+
+var _studentActionButtonParent = __webpack_require__(1276);
+
+var _studentActionButtonParent2 = _interopRequireDefault(_studentActionButtonParent);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = {
-
-    props: [],
-
-    components: {
-        KumiEditingModal: _kumiEditingModal2.default,
-        EditKumiControl: _editKumiControl2.default,
-        NewKumiControl: _newKumiControl2.default,
-        AddStudentControl: _addStudentButton2.default,
-        ImportStudentsControl: _importStudentsControl2.default,
-        'kumi-name': _kumiNameField2.default,
-        'kumi-selector': _kumiSelector2.default,
-        'student-table': _studentTable2.default,
-        'student-action-buttons': _studentActionButtons2.default,
-        'kumi-tabs': _kumiTabs2.default
-    },
-
-    data: function data() {
-        return {
-
-            fileButtonVisible: false,
-
-            showSearch: false,
-
-            /** whether to show the add and import buttons */
-            additionButtonsVisible: true,
-
-            kumiSelectorLabel: '',
-
-            defaults: {}
-        };
-    },
-
-    computed: {
-        exam: function exam() {
-            return this.$store.getters[gTypes.getActiveExam];
-        },
-
-        examId: function examId() {
-            return this.exam ? this.exam.id : null;
-        },
-
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
-        },
-
-        //Doing this via computed property so don't have to pass in on route
-        isExam: function isExam() {
-            if (this.item instanceof _Exam2.default) return true;
-            return false;
-        },
-
-        students: function students() {
-            return this.$store.getters.getStudentsFromRoster;
-        },
-
-        selectedStudents: function selectedStudents() {
-            return this.$store.getters.getSelectedStudents;
-        },
-
-        selectedKumis: function selectedKumis() {
-            return this.$store.getters.getSelectedKumis;
-        }
-
-    },
-
-    watch: {},
-
-    methods: {
-
-        updateSelectLabel: function updateSelectLabel(evt) {
-            this.kumiSelectorLabel = evt;
-        },
-
-        handleAddStudentComplete: function handleAddStudentComplete() {
-            window.console.log('students-panel', 'handleAddStudentComplete', 223);
-        },
-
-        /**
-         * Handler for the event emitted by the import button
-         */
-        handleImportComplete: function handleImportComplete() {
-            this.toggleFileButtonVisibility();
-        },
-
-        toggleFileButtonVisibility: function toggleFileButtonVisibility() {
-            this.fileButtonVisible = !this.fileButtonVisible;
-            this.operationsButtonsVisible = !this.operationsButtonsVisible;
-        },
-
-        /** Creates the id of the element */
-        getInputId: function getInputId(name) {
-            return _.kebabCase(name) + '-' + this.serialNumber;
-        }
-
-    },
-
-    mounted: function mounted() {
-        var me = this;
-        var p = this.$store.dispatch('loadKumisForExamFromServer', this.exam);
-        p.then(function () {
-            me.$store.dispatch('loadStudentsFromServer', me.exam);
-        });
-    }
-
-};
 //File importing stuff
 
 
@@ -82217,21 +80967,127 @@ exports.default = {
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+exports.default = {
+
+    props: [],
+
+    components: {
+        StudentActionButtonParent: _studentActionButtonParent2.default,
+        KumiEditingModal: _kumiEditingModal2.default,
+        EditKumiControl: _editKumiControl2.default,
+        NewKumiControl: _newKumiControl2.default,
+        AddStudentControl: _addStudentButton2.default,
+        ImportStudentsControl: _importStudentsControl2.default,
+        'kumi-name': _kumiNameField2.default,
+        'kumi-selector': _kumiSelector2.default,
+        'student-table': _studentTable2.default,
+        'student-action-buttons': _studentActionButtons2.default,
+        'kumi-tabs': _kumiTabs2.default
+    },
+
+    data: function data() {
+        return {
+
+            fileButtonVisible: false,
+
+            showSearch: false,
+
+            /** whether to show the add and import buttons */
+            additionButtonsVisible: true,
+
+            kumiSelectorLabel: '',
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+        exam: function exam() {
+            return this.$store.getters[gTypes.getActiveExam];
+        },
+
+        examId: function examId() {
+            return this.exam ? this.exam.id : null;
+        },
+
+        item: function item() {
+            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        },
+
+        //Doing this via computed property so don't have to pass in on route
+        isExam: function isExam() {
+            if (this.item instanceof _Exam2.default) return true;
+            return false;
+        },
+
+        /**
+         * Whether the kumi selector is shown or visible.
+         * It will use the value stored
+         * in roster.display.kumiSelectVisible
+         */
+        isKumiSelectorVisible: function isKumiSelectorVisible() {
+            return this.$store.getters.isKumiSelectVisible;
+        },
+
+        students: function students() {
+            return this.$store.getters.getStudentsFromRoster;
+        },
+
+        selectedStudents: function selectedStudents() {
+            return this.$store.getters.getSelectedStudents;
+        },
+
+        selectedKumis: function selectedKumis() {
+            return this.$store.getters.getSelectedKumis;
+        }
+
+    },
+
+    watch: {},
+
+    methods: {
+
+        updateSelectLabel: function updateSelectLabel(evt) {
+            this.kumiSelectorLabel = evt;
+        },
+
+        //
+        // handleAddStudentComplete: function () {
+        //     // window.console.log( 'students-panel', 'handleAddStudentComplete', 223, );
+        // },
+        //
+        /**
+         * Handler for the event emitted by the import button
+         */
+        handleImportComplete: function handleImportComplete() {
+            this.toggleFileButtonVisibility();
+        },
+
+        toggleFileButtonVisibility: function toggleFileButtonVisibility() {
+            this.fileButtonVisible = !this.fileButtonVisible;
+            this.operationsButtonsVisible = !this.operationsButtonsVisible;
+        },
+
+        /** Creates the id of the element */
+        getInputId: function getInputId(name) {
+            return _.kebabCase(name) + '-' + this.serialNumber;
+        }
+
+    },
+
+    mounted: function mounted() {
+        var me = this;
+        var p = this.$store.dispatch('loadKumisForExamFromServer', this.exam);
+        p.then(function () {
+            me.$store.dispatch('loadStudentsFromServer', me.exam);
+        });
+    }
+
+};
 
 /***/ }),
-/* 599 */
+/* 601 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82311,7 +81167,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 600 */
+/* 602 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82329,7 +81185,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -82339,7 +81195,7 @@ var _Payload2 = _interopRequireDefault(_Payload);
 
 var _tagRequests = __webpack_require__(105);
 
-var _tagsMenu = __webpack_require__(509);
+var _tagsMenu = __webpack_require__(511);
 
 var _tagsMenu2 = _interopRequireDefault(_tagsMenu);
 
@@ -82426,7 +81282,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 601 */
+/* 603 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82487,7 +81343,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 602 */
+/* 604 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82592,7 +81448,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 603 */
+/* 605 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82612,7 +81468,7 @@ exports.default = {
 
     data: function data() {
         return {
-            label: 'Grade it!',
+            label: 'Grade',
             defaults: {}
         };
     },
@@ -82655,7 +81511,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 604 */
+/* 606 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82710,7 +81566,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 605 */
+/* 607 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82773,7 +81629,7 @@ exports.default = {
  */
 
 /***/ }),
-/* 606 */
+/* 608 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82785,7 +81641,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _apiSettings = __webpack_require__(18);
 
-var _examSelectionModal = __webpack_require__(506);
+var _examSelectionModal = __webpack_require__(508);
 
 var _examSelectionModal2 = _interopRequireDefault(_examSelectionModal);
 
@@ -82857,7 +81713,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 607 */
+/* 609 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82869,7 +81725,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _apiSettings = __webpack_require__(18);
 
-var _preferenceModal = __webpack_require__(739);
+var _preferenceModal = __webpack_require__(741);
 
 var _preferenceModal2 = _interopRequireDefault(_preferenceModal);
 
@@ -82942,7 +81798,7 @@ exports.default = {
 
     methods: {
         toggleModal: function toggleModal(v) {
-            this.isModalVisible = !this.isModalVisible;
+            this.isErrorModalVisible = !this.isModalVisible;
         },
 
         handleClick: function handleClick(link) {
@@ -82959,7 +81815,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 608 */
+/* 610 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82973,13 +81829,13 @@ var _gradeExamButton = __webpack_require__(792);
 
 var _gradeExamButton2 = _interopRequireDefault(_gradeExamButton);
 
-var _examSelectionModal = __webpack_require__(506);
+var _examSelectionModal = __webpack_require__(508);
 
 var _examSelectionModal2 = _interopRequireDefault(_examSelectionModal);
 
 var _apiSettings = __webpack_require__(18);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -83112,7 +81968,7 @@ exports.default = {
 //
 
 /***/ }),
-/* 609 */
+/* 611 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83128,7 +81984,7 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -83194,7 +82050,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 610 */
+/* 612 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83238,7 +82094,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 611 */
+/* 613 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83248,15 +82104,15 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _commentSetupPanel = __webpack_require__(499);
+var _commentSetupPanel = __webpack_require__(500);
 
 var _commentSetupPanel2 = _interopRequireDefault(_commentSetupPanel);
 
-var _examDetailPanel = __webpack_require__(753);
+var _examDetailPanel = __webpack_require__(755);
 
 var _examDetailPanel2 = _interopRequireDefault(_examDetailPanel);
 
-var _gradesPanel = __webpack_require__(759);
+var _gradesPanel = __webpack_require__(761);
 
 var _gradesPanel2 = _interopRequireDefault(_gradesPanel);
 
@@ -83268,7 +82124,7 @@ var _qualityControlPanel = __webpack_require__(771);
 
 var _qualityControlPanel2 = _interopRequireDefault(_qualityControlPanel);
 
-var _notesPanel = __webpack_require__(503);
+var _notesPanel = __webpack_require__(505);
 
 var _notesPanel2 = _interopRequireDefault(_notesPanel);
 
@@ -83342,7 +82198,7 @@ module.exports = [
 }];
 
 /***/ }),
-/* 612 */
+/* 614 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83352,7 +82208,7 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _questionPanel = __webpack_require__(731);
+var _questionPanel = __webpack_require__(733);
 
 var _questionPanel2 = _interopRequireDefault(_questionPanel);
 
@@ -83372,7 +82228,7 @@ module.exports = [
 }];
 
 /***/ }),
-/* 613 */
+/* 615 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83382,19 +82238,19 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _commentSetupPanel = __webpack_require__(499);
+var _commentSetupPanel = __webpack_require__(500);
 
 var _commentSetupPanel2 = _interopRequireDefault(_commentSetupPanel);
 
-var _historyPanel = __webpack_require__(760);
+var _historyPanel = __webpack_require__(762);
 
 var _historyPanel2 = _interopRequireDefault(_historyPanel);
 
-var _itemDetailPanel = __webpack_require__(761);
+var _itemDetailPanel = __webpack_require__(763);
 
 var _itemDetailPanel2 = _interopRequireDefault(_itemDetailPanel);
 
-var _notesPanel = __webpack_require__(503);
+var _notesPanel = __webpack_require__(505);
 
 var _notesPanel2 = _interopRequireDefault(_notesPanel);
 
@@ -83465,7 +82321,7 @@ module.exports = [
 }];
 
 /***/ }),
-/* 614 */
+/* 616 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83480,15 +82336,15 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _routes = __webpack_require__(612);
+var _routes = __webpack_require__(614);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _routes3 = __webpack_require__(611);
+var _routes3 = __webpack_require__(613);
 
 var _routes4 = _interopRequireDefault(_routes3);
 
-var _routes5 = __webpack_require__(613);
+var _routes5 = __webpack_require__(615);
 
 var _routes6 = _interopRequireDefault(_routes5);
 
@@ -83517,7 +82373,7 @@ var routes = exports.routes = [].concat(_toConsumableArray(_routes4.default), _t
 { name: 'new-exam', path: '' }, { name: 'grade-exam', path: '/grade/exam/:id' }]);
 
 /***/ }),
-/* 615 */
+/* 617 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85025,7 +83881,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 616 */
+/* 618 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -85193,7 +84049,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 617 */
+/* 619 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -85293,7 +84149,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 618 */
+/* 620 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -85424,7 +84280,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 619 */
+/* 621 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -85667,7 +84523,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 620 */
+/* 622 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -85885,7 +84741,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 621 */
+/* 623 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -86056,7 +84912,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 622 */
+/* 624 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -86401,7 +85257,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 623 */
+/* 625 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -86515,7 +85371,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 624 */
+/* 626 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -86693,7 +85549,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 625 */
+/* 627 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -86854,7 +85710,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 626 */
+/* 628 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -87380,7 +86236,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 627 */
+/* 629 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -87445,10 +86301,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 /***/ }),
-/* 628 */
+/* 630 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87459,10 +86315,10 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 629 */
+/* 631 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87473,10 +86329,10 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 630 */
+/* 632 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87487,38 +86343,10 @@ exports.push([module.i, "\n.stat-label {\n  font-weight: bold;\n}\n", ""]);
 
 
 /***/ }),
-/* 631 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 632 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
 /* 633 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87532,7 +86360,7 @@ exports.push([module.i, "", ""]);
 /* 634 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87546,7 +86374,7 @@ exports.push([module.i, "", ""]);
 /* 635 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87560,7 +86388,7 @@ exports.push([module.i, "", ""]);
 /* 636 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87574,7 +86402,7 @@ exports.push([module.i, "", ""]);
 /* 637 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87588,7 +86416,7 @@ exports.push([module.i, "", ""]);
 /* 638 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87602,7 +86430,7 @@ exports.push([module.i, "", ""]);
 /* 639 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87613,11 +86441,24 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 640 */,
+/* 640 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
 /* 641 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87631,7 +86472,7 @@ exports.push([module.i, "", ""]);
 /* 642 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87645,7 +86486,7 @@ exports.push([module.i, "", ""]);
 /* 643 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87659,7 +86500,21 @@ exports.push([module.i, "", ""]);
 /* 644 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 645 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87670,10 +86525,10 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
 
 /***/ }),
-/* 645 */
+/* 646 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87684,10 +86539,10 @@ exports.push([module.i, "\n.exam-detail-panel {\n.public-name-input {\nlabel {\n
 
 
 /***/ }),
-/* 646 */
+/* 647 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87698,10 +86553,10 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 647 */
+/* 648 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87712,10 +86567,10 @@ exports.push([module.i, "\n.max-score-label {\n  text-align: left;\n}\n\n/*input
 
 
 /***/ }),
-/* 648 */
+/* 649 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87726,10 +86581,10 @@ exports.push([module.i, "/*! bulma.io v0.6.1 | MIT License | github.com/jgthms/b
 
 
 /***/ }),
-/* 649 */
+/* 650 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87740,24 +86595,10 @@ exports.push([module.i, "/*! bulma.io v0.6.1 | MIT License | github.com/jgthms/b
 
 
 /***/ }),
-/* 650 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
 /* 651 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87771,7 +86612,7 @@ exports.push([module.i, "", ""]);
 /* 652 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87785,21 +86626,7 @@ exports.push([module.i, "", ""]);
 /* 653 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.preference-toggle {\n  margin-bottom: 2em;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 654 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87810,10 +86637,24 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
+/* 654 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.preference-toggle {\n  margin-bottom: 2em;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
 /* 655 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87827,7 +86668,7 @@ exports.push([module.i, "", ""]);
 /* 656 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87841,7 +86682,7 @@ exports.push([module.i, "", ""]);
 /* 657 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87855,7 +86696,7 @@ exports.push([module.i, "", ""]);
 /* 658 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87869,7 +86710,7 @@ exports.push([module.i, "\n.stat-label {\n  /*font-weight: bold;*/\n}\n", ""]);
 /* 659 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87883,7 +86724,7 @@ exports.push([module.i, "", ""]);
 /* 660 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87897,7 +86738,7 @@ exports.push([module.i, "", ""]);
 /* 661 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87911,7 +86752,7 @@ exports.push([module.i, "", ""]);
 /* 662 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87925,7 +86766,7 @@ exports.push([module.i, "", ""]);
 /* 663 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87939,7 +86780,7 @@ exports.push([module.i, "", ""]);
 /* 664 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87953,7 +86794,7 @@ exports.push([module.i, "", ""]);
 /* 665 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87967,7 +86808,7 @@ exports.push([module.i, "", ""]);
 /* 666 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87981,7 +86822,7 @@ exports.push([module.i, "", ""]);
 /* 667 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -87995,7 +86836,7 @@ exports.push([module.i, "", ""]);
 /* 668 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88009,7 +86850,7 @@ exports.push([module.i, "", ""]);
 /* 669 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88023,7 +86864,21 @@ exports.push([module.i, "", ""]);
 /* 670 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 671 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88034,10 +86889,10 @@ exports.push([module.i, "\n.input-and-selector {\n  margin: 1em;\n}\n.input-and-
 
 
 /***/ }),
-/* 671 */
+/* 672 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88048,10 +86903,10 @@ exports.push([module.i, "\n.student-row input {\n  border: none;\n}\n", ""]);
 
 
 /***/ }),
-/* 672 */
+/* 673 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88062,10 +86917,10 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 673 */
+/* 674 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88076,10 +86931,10 @@ exports.push([module.i, "\n.tags-panel .filter-tabs {\n  text-transform: capital
 
 
 /***/ }),
-/* 674 */
+/* 675 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88090,24 +86945,10 @@ exports.push([module.i, "\n.kumi-name-field {\n  /* todo Add max width and requi
 
 
 /***/ }),
-/* 675 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
 /* 676 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88121,7 +86962,7 @@ exports.push([module.i, "", ""]);
 /* 677 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88135,7 +86976,7 @@ exports.push([module.i, "", ""]);
 /* 678 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88149,7 +86990,7 @@ exports.push([module.i, "\n.note-object .message {\n  margin-bottom: 0.5em;\n}\n
 /* 679 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88163,7 +87004,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n", ""]);
 /* 680 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88177,7 +87018,7 @@ exports.push([module.i, "", ""]);
 /* 681 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88191,7 +87032,7 @@ exports.push([module.i, "\n.preference-input {\n  margin-bottom: 2em;\n}\n", ""]
 /* 682 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88202,24 +87043,25 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 683 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
+/* 683 */,
 /* 684 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 685 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88230,24 +87072,10 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 685 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
 /* 686 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88261,7 +87089,7 @@ exports.push([module.i, "", ""]);
 /* 687 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88275,7 +87103,7 @@ exports.push([module.i, "", ""]);
 /* 688 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88289,7 +87117,7 @@ exports.push([module.i, "", ""]);
 /* 689 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88303,7 +87131,7 @@ exports.push([module.i, "", ""]);
 /* 690 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88317,7 +87145,7 @@ exports.push([module.i, "", ""]);
 /* 691 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88331,7 +87159,7 @@ exports.push([module.i, "", ""]);
 /* 692 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88345,7 +87173,7 @@ exports.push([module.i, "", ""]);
 /* 693 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88359,7 +87187,7 @@ exports.push([module.i, "", ""]);
 /* 694 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88373,7 +87201,21 @@ exports.push([module.i, "", ""]);
 /* 695 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 696 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88384,10 +87226,10 @@ exports.push([module.i, "\n.kumi-name-field {\n  /* todo Add max width and requi
 
 
 /***/ }),
-/* 696 */
+/* 697 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88398,10 +87240,10 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 697 */
+/* 698 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88412,24 +87254,10 @@ exports.push([module.i, "\n.panel-notes-component label {\n  text-align: left;\n
 
 
 /***/ }),
-/* 698 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
 /* 699 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88443,7 +87271,7 @@ exports.push([module.i, "", ""]);
 /* 700 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88457,7 +87285,7 @@ exports.push([module.i, "", ""]);
 /* 701 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88471,21 +87299,7 @@ exports.push([module.i, "", ""]);
 /* 702 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.question-text-area label {\n  text-align: left;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 703 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88496,10 +87310,24 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
+/* 703 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.question-text-area label {\n  text-align: left;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
 /* 704 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88513,7 +87341,7 @@ exports.push([module.i, "", ""]);
 /* 705 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88527,7 +87355,7 @@ exports.push([module.i, "", ""]);
 /* 706 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88541,7 +87369,7 @@ exports.push([module.i, "", ""]);
 /* 707 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88555,12 +87383,12 @@ exports.push([module.i, "", ""]);
 /* 708 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
 // module
-exports.push([module.i, "\n.maxScoreArea {\n    margin-bottom: 2em;\n}\n", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
 
@@ -88569,7 +87397,7 @@ exports.push([module.i, "\n.maxScoreArea {\n    margin-bottom: 2em;\n}\n", ""]);
 /* 709 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88583,12 +87411,12 @@ exports.push([module.i, "", ""]);
 /* 710 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
 // module
-exports.push([module.i, "\n.add-students-panel .smallHeading {\n  font-size: small;\n}\n", ""]);
+exports.push([module.i, "\n.maxScoreArea {\n    margin-bottom: 2em;\n}\n", ""]);
 
 // exports
 
@@ -88597,7 +87425,7 @@ exports.push([module.i, "\n.add-students-panel .smallHeading {\n  font-size: sma
 /* 711 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88611,7 +87439,21 @@ exports.push([module.i, "", ""]);
 /* 712 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.add-students-panel .smallHeading {\n  font-size: small;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 713 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88622,10 +87464,24 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 713 */
+/* 714 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 715 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88636,10 +87492,10 @@ exports.push([module.i, "\n.comment-setup-panel {\n}\n", ""]);
 
 
 /***/ }),
-/* 714 */
+/* 716 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88650,38 +87506,10 @@ exports.push([module.i, "\n.stat-label {\n  /*font-weight: bold;*/\n}\n", ""]);
 
 
 /***/ }),
-/* 715 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 716 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
 /* 717 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88695,7 +87523,35 @@ exports.push([module.i, "", ""]);
 /* 718 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 719 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 720 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88706,57 +87562,16 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 
 /***/ }),
-/* 719 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.student-row input {\n  border: none;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 720 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 721 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
+/* 721 */,
 /* 722 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
 // module
-exports.push([module.i, "\n#gradeFreqChart {\n  width: 450px;\n  height: 220px;\n}\n", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
 
@@ -88765,7 +87580,7 @@ exports.push([module.i, "\n#gradeFreqChart {\n  width: 450px;\n  height: 220px;\
 /* 723 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -88779,16 +87594,44 @@ exports.push([module.i, "", ""]);
 /* 724 */
 /***/ (function(module, exports, __webpack_require__) {
 
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "\n#gradeFreqChart {\n  width: 450px;\n  height: 220px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 725 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 726 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(924)
+  __webpack_require__(923)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(511),
+  __webpack_require__(513),
   /* template */
-  __webpack_require__(819),
+  __webpack_require__(818),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -88820,19 +87663,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 725 */
+/* 727 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(934)
+  __webpack_require__(932)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(512),
+  __webpack_require__(514),
   /* template */
-  __webpack_require__(829),
+  __webpack_require__(827),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -88864,19 +87707,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 726 */
+/* 728 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(974)
+  __webpack_require__(973)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(513),
+  __webpack_require__(515),
   /* template */
-  __webpack_require__(873),
+  __webpack_require__(872),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -88908,7 +87751,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 727 */
+/* 729 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -88918,7 +87761,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(514),
+  __webpack_require__(516),
   /* template */
   __webpack_require__(889),
   /* styles */
@@ -88952,19 +87795,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 728 */
+/* 730 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(932)
+  __webpack_require__(930)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(517),
+  __webpack_require__(519),
   /* template */
-  __webpack_require__(827),
+  __webpack_require__(825),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -88996,19 +87839,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 729 */
+/* 731 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(965)
+  __webpack_require__(964)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(518),
+  __webpack_require__(520),
   /* template */
-  __webpack_require__(864),
+  __webpack_require__(863),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89040,19 +87883,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 730 */
+/* 732 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(938)
+  __webpack_require__(937)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(520),
+  __webpack_require__(522),
   /* template */
-  __webpack_require__(834),
+  __webpack_require__(833),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89084,19 +87927,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 731 */
+/* 733 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(957)
+  __webpack_require__(956)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(524),
+  __webpack_require__(526),
   /* template */
-  __webpack_require__(855),
+  __webpack_require__(854),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89128,107 +87971,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 732 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(950)
-}
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(525),
-  /* template */
-  __webpack_require__(846),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/helpers/auto-closing-modal.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] auto-closing-modal.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4ffd21ef", Component.options)
-  } else {
-    hotAPI.reload("data-v-4ffd21ef", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 733 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(931)
-}
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(526),
-  /* template */
-  __webpack_require__(826),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/helpers/confirmation-modal.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] confirmation-modal.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2831c20d", Component.options)
-  } else {
-    hotAPI.reload("data-v-2831c20d", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
 /* 734 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(922)
+  __webpack_require__(921)
 }
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(528),
   /* template */
-  __webpack_require__(817),
+  __webpack_require__(816),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89266,13 +88021,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(929)
+  __webpack_require__(928)
 }
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(529),
   /* template */
-  __webpack_require__(824),
+  __webpack_require__(823),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89310,13 +88065,101 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(956)
+  __webpack_require__(934)
 }
 var Component = __webpack_require__(3)(
   /* script */
   __webpack_require__(531),
   /* template */
-  __webpack_require__(854),
+  __webpack_require__(830),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/modals/auto-closing-modal.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] auto-closing-modal.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-394265fc", Component.options)
+  } else {
+    hotAPI.reload("data-v-394265fc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 737 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(975)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(532),
+  /* template */
+  __webpack_require__(874),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/modals/confirmation-modal.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] confirmation-modal.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-88d925c0", Component.options)
+  } else {
+    hotAPI.reload("data-v-88d925c0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 738 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(954)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(533),
+  /* template */
+  __webpack_require__(852),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89348,19 +88191,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 737 */
+/* 739 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(927)
+  __webpack_require__(926)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(532),
+  __webpack_require__(534),
   /* template */
-  __webpack_require__(822),
+  __webpack_require__(821),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89392,7 +88235,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 738 */
+/* 740 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -89402,7 +88245,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(533),
+  __webpack_require__(535),
   /* template */
   __webpack_require__(807),
   /* styles */
@@ -89436,19 +88279,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 739 */
+/* 741 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(969)
+  __webpack_require__(968)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(535),
+  __webpack_require__(537),
   /* template */
-  __webpack_require__(868),
+  __webpack_require__(867),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89480,7 +88323,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 740 */
+/* 742 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -89490,7 +88333,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(538),
+  __webpack_require__(540),
   /* template */
   __webpack_require__(879),
   /* styles */
@@ -89524,19 +88367,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 741 */
+/* 743 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(951)
+  __webpack_require__(949)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(539),
+  __webpack_require__(541),
   /* template */
-  __webpack_require__(847),
+  __webpack_require__(845),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89568,7 +88411,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 742 */
+/* 744 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -89578,7 +88421,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(540),
+  __webpack_require__(542),
   /* template */
   __webpack_require__(802),
   /* styles */
@@ -89612,19 +88455,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 743 */
+/* 745 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(930)
+  __webpack_require__(929)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(541),
+  __webpack_require__(543),
   /* template */
-  __webpack_require__(825),
+  __webpack_require__(824),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89656,19 +88499,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 744 */
+/* 746 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(940)
+  __webpack_require__(939)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(542),
+  __webpack_require__(544),
   /* template */
-  __webpack_require__(836),
+  __webpack_require__(835),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89700,19 +88543,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 745 */
+/* 747 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(926)
+  __webpack_require__(925)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(543),
+  __webpack_require__(545),
   /* template */
-  __webpack_require__(821),
+  __webpack_require__(820),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89744,19 +88587,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 746 */
+/* 748 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(944)
+  __webpack_require__(943)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(544),
+  __webpack_require__(546),
   /* template */
-  __webpack_require__(840),
+  __webpack_require__(839),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89788,19 +88631,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 747 */
+/* 749 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(939)
+  __webpack_require__(938)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(545),
+  __webpack_require__(547),
   /* template */
-  __webpack_require__(835),
+  __webpack_require__(834),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89832,19 +88675,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 748 */
+/* 750 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(935)
+  __webpack_require__(933)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(548),
+  __webpack_require__(550),
   /* template */
-  __webpack_require__(831),
+  __webpack_require__(829),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -89876,7 +88719,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 749 */
+/* 751 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -89886,7 +88729,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(549),
+  __webpack_require__(551),
   /* template */
   __webpack_require__(895),
   /* styles */
@@ -89920,7 +88763,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 750 */
+/* 752 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -89930,7 +88773,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(551),
+  __webpack_require__(553),
   /* template */
   __webpack_require__(893),
   /* styles */
@@ -89964,7 +88807,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 751 */
+/* 753 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -89974,7 +88817,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(552),
+  __webpack_require__(554),
   /* template */
   __webpack_require__(808),
   /* styles */
@@ -90008,19 +88851,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 752 */
+/* 754 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(936)
+  __webpack_require__(935)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(553),
+  __webpack_require__(555),
   /* template */
-  __webpack_require__(832),
+  __webpack_require__(831),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90052,7 +88895,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 753 */
+/* 755 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -90062,9 +88905,9 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(554),
+  __webpack_require__(556),
   /* template */
-  __webpack_require__(815),
+  __webpack_require__(814),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90096,19 +88939,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 754 */
+/* 756 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(954)
+  __webpack_require__(952)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(555),
+  __webpack_require__(557),
   /* template */
-  __webpack_require__(851),
+  __webpack_require__(849),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90140,7 +88983,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 755 */
+/* 757 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -90150,7 +88993,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(558),
+  __webpack_require__(560),
   /* template */
   __webpack_require__(894),
   /* styles */
@@ -90184,19 +89027,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 756 */
+/* 758 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(925)
+  __webpack_require__(924)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(559),
+  __webpack_require__(561),
   /* template */
-  __webpack_require__(820),
+  __webpack_require__(819),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90228,19 +89071,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 757 */
+/* 759 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(959)
+  __webpack_require__(958)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(560),
+  __webpack_require__(562),
   /* template */
-  __webpack_require__(858),
+  __webpack_require__(857),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90272,19 +89115,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 758 */
+/* 760 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(967)
+  __webpack_require__(966)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(561),
+  __webpack_require__(563),
   /* template */
-  __webpack_require__(866),
+  __webpack_require__(865),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90316,7 +89159,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 759 */
+/* 761 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -90326,7 +89169,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(562),
+  __webpack_require__(564),
   /* template */
   __webpack_require__(880),
   /* styles */
@@ -90360,7 +89203,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 760 */
+/* 762 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -90370,9 +89213,9 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(563),
+  __webpack_require__(565),
   /* template */
-  __webpack_require__(814),
+  __webpack_require__(813),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90404,19 +89247,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 761 */
+/* 763 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(975)
+  __webpack_require__(974)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(564),
+  __webpack_require__(566),
   /* template */
-  __webpack_require__(874),
+  __webpack_require__(873),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90448,107 +89291,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 762 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(958)
-}
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(565),
-  /* template */
-  __webpack_require__(857),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/edit-kumi-control.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] edit-kumi-control.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-66ada4b0", Component.options)
-  } else {
-    hotAPI.reload("data-v-66ada4b0", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 763 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(986)
-}
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(566),
-  /* template */
-  __webpack_require__(887),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/kumi-editing-modal.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] kumi-editing-modal.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-d4c28aec", Component.options)
-  } else {
-    hotAPI.reload("data-v-d4c28aec", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
 /* 764 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(968)
+  __webpack_require__(967)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(568),
+  __webpack_require__(570),
   /* template */
-  __webpack_require__(867),
+  __webpack_require__(866),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90586,13 +89341,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(962)
+  __webpack_require__(961)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(569),
+  __webpack_require__(571),
   /* template */
-  __webpack_require__(861),
+  __webpack_require__(860),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90634,7 +89389,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(570),
+  __webpack_require__(572),
   /* template */
   __webpack_require__(809),
   /* styles */
@@ -90674,13 +89429,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(919)
+  __webpack_require__(918)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(572),
+  __webpack_require__(574),
   /* template */
-  __webpack_require__(812),
+  __webpack_require__(811),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90718,13 +89473,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(937)
+  __webpack_require__(936)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(573),
+  __webpack_require__(575),
   /* template */
-  __webpack_require__(833),
+  __webpack_require__(832),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90762,13 +89517,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(953)
+  __webpack_require__(951)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(574),
+  __webpack_require__(576),
   /* template */
-  __webpack_require__(849),
+  __webpack_require__(847),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90806,13 +89561,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(963)
+  __webpack_require__(962)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(575),
+  __webpack_require__(577),
   /* template */
-  __webpack_require__(862),
+  __webpack_require__(861),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90850,13 +89605,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(921)
+  __webpack_require__(920)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(577),
+  __webpack_require__(579),
   /* template */
-  __webpack_require__(816),
+  __webpack_require__(815),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90898,7 +89653,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(578),
+  __webpack_require__(580),
   /* template */
   __webpack_require__(892),
   /* styles */
@@ -90938,13 +89693,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(952)
+  __webpack_require__(950)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(579),
+  __webpack_require__(581),
   /* template */
-  __webpack_require__(848),
+  __webpack_require__(846),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -90982,13 +89737,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(973)
+  __webpack_require__(972)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(580),
+  __webpack_require__(582),
   /* template */
-  __webpack_require__(872),
+  __webpack_require__(871),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91026,13 +89781,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(942)
+  __webpack_require__(941)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(581),
+  __webpack_require__(583),
   /* template */
-  __webpack_require__(838),
+  __webpack_require__(837),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91074,9 +89829,9 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(582),
+  __webpack_require__(584),
   /* template */
-  __webpack_require__(856),
+  __webpack_require__(855),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91118,7 +89873,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(583),
+  __webpack_require__(585),
   /* template */
   __webpack_require__(884),
   /* styles */
@@ -91162,7 +89917,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(584),
+  __webpack_require__(586),
   /* template */
   __webpack_require__(799),
   /* styles */
@@ -91206,7 +89961,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(585),
+  __webpack_require__(587),
   /* template */
   __webpack_require__(876),
   /* styles */
@@ -91246,13 +90001,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(964)
+  __webpack_require__(963)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(586),
+  __webpack_require__(588),
   /* template */
-  __webpack_require__(863),
+  __webpack_require__(862),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91294,7 +90049,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(590),
+  __webpack_require__(592),
   /* template */
   __webpack_require__(801),
   /* styles */
@@ -91328,50 +90083,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 782 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(989)
-}
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(591),
-  /* template */
-  __webpack_require__(891),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student-row.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] student-row.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-e9f9ad10", Component.options)
-  } else {
-    hotAPI.reload("data-v-e9f9ad10", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 782 */,
 /* 783 */,
 /* 784 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -91383,7 +90095,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(593),
+  __webpack_require__(595),
   /* template */
   __webpack_require__(883),
   /* styles */
@@ -91423,13 +90135,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(972)
+  __webpack_require__(971)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(594),
+  __webpack_require__(596),
   /* template */
-  __webpack_require__(871),
+  __webpack_require__(870),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91467,13 +90179,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(943)
+  __webpack_require__(942)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(595),
+  __webpack_require__(597),
   /* template */
-  __webpack_require__(839),
+  __webpack_require__(838),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91511,13 +90223,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(946)
+  __webpack_require__(945)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(596),
+  __webpack_require__(598),
   /* template */
-  __webpack_require__(842),
+  __webpack_require__(841),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91559,7 +90271,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(597),
+  __webpack_require__(599),
   /* template */
   __webpack_require__(881),
   /* styles */
@@ -91603,7 +90315,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(598),
+  __webpack_require__(600),
   /* template */
   __webpack_require__(882),
   /* styles */
@@ -91647,9 +90359,9 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(600),
+  __webpack_require__(602),
   /* template */
-  __webpack_require__(850),
+  __webpack_require__(848),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91691,7 +90403,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(601),
+  __webpack_require__(603),
   /* template */
   __webpack_require__(798),
   /* styles */
@@ -91731,13 +90443,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(941)
+  __webpack_require__(940)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(603),
+  __webpack_require__(605),
   /* template */
-  __webpack_require__(837),
+  __webpack_require__(836),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91775,13 +90487,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(947)
+  __webpack_require__(946)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(604),
+  __webpack_require__(606),
   /* template */
-  __webpack_require__(843),
+  __webpack_require__(842),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -91823,7 +90535,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(605),
+  __webpack_require__(607),
   /* template */
   __webpack_require__(888),
   /* styles */
@@ -91867,7 +90579,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(606),
+  __webpack_require__(608),
   /* template */
   __webpack_require__(804),
   /* styles */
@@ -91911,7 +90623,7 @@ function injectStyle (ssrContext) {
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(607),
+  __webpack_require__(609),
   /* template */
   __webpack_require__(875),
   /* styles */
@@ -91951,13 +90663,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(923)
+  __webpack_require__(922)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(608),
+  __webpack_require__(610),
   /* template */
-  __webpack_require__(818),
+  __webpack_require__(817),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -92509,13 +91221,15 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "kumi-tabs tabs is-boxed"
-  }, [_c('ul', [_c('show-all-kumi-control', {
+  }, [_c('ul', [_c('li', {
+    class: [_vm.isAllTabActive ? 'is-active' : '']
+  }, [_c('show-all-kumi-control', {
     attrs: {
       "type": "tab",
-      "is-active": _vm.isActive(-1),
+      "is-active": _vm.isAllTabActive,
       "is-visible": _vm.isAllTabVisible
     }
-  }), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
+  })], 1), _vm._v(" "), _vm._l((_vm.kumis), function(kumi) {
     return (_vm.kumiCount > 0) ? _c('kumi-tab', {
       key: kumi.serialNumber,
       attrs: {
@@ -92533,8 +91247,7 @@ if (false) {
 }
 
 /***/ }),
-/* 810 */,
-/* 811 */
+/* 810 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92562,7 +91275,7 @@ if (false) {
 }
 
 /***/ }),
-/* 812 */
+/* 811 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92574,7 +91287,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._m(0), _vm._v(" "), _c('span', {
     staticClass: "is-small"
-  }, [_vm._v("Remove")]), _vm._v(" "), _c('span', {
+  }, [_vm._v("Remove from this exam")]), _vm._v(" "), _c('span', {
     staticClass: "sr-only"
   }, [_vm._v("Remove group button")])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92596,7 +91309,7 @@ if (false) {
 }
 
 /***/ }),
-/* 813 */
+/* 812 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92621,7 +91334,7 @@ if (false) {
 }
 
 /***/ }),
-/* 814 */
+/* 813 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92663,7 +91376,7 @@ if (false) {
 }
 
 /***/ }),
-/* 815 */
+/* 814 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92735,7 +91448,7 @@ if (false) {
 }
 
 /***/ }),
-/* 816 */
+/* 815 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92818,7 +91531,7 @@ if (false) {
 }
 
 /***/ }),
-/* 817 */
+/* 816 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92900,7 +91613,7 @@ if (false) {
 }
 
 /***/ }),
-/* 818 */
+/* 817 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -92943,7 +91656,7 @@ if (false) {
 }
 
 /***/ }),
-/* 819 */
+/* 818 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93008,7 +91721,7 @@ if (false) {
 }
 
 /***/ }),
-/* 820 */
+/* 819 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93051,7 +91764,7 @@ if (false) {
 }
 
 /***/ }),
-/* 821 */
+/* 820 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93072,7 +91785,7 @@ if (false) {
 }
 
 /***/ }),
-/* 822 */
+/* 821 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93193,7 +91906,7 @@ if (false) {
 }
 
 /***/ }),
-/* 823 */
+/* 822 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93264,7 +91977,7 @@ if (false) {
 }
 
 /***/ }),
-/* 824 */
+/* 823 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93313,7 +92026,7 @@ if (false) {
 }
 
 /***/ }),
-/* 825 */
+/* 824 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93372,55 +92085,7 @@ if (false) {
 }
 
 /***/ }),
-/* 826 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "modal",
-    class: [_vm.isVisible ? 'is-active' : '']
-  }, [_c('div', {
-    staticClass: "modal-background"
-  }), _vm._v(" "), _c('div', {
-    staticClass: "modal-card"
-  }, [_c('header', {
-    staticClass: "modal-card-head"
-  }, [_c('p', {
-    staticClass: "modal-card-title"
-  }, [_vm._t("modalTitle")], 2), _vm._v(" "), _c('button', {
-    staticClass: "delete",
-    attrs: {
-      "aria-label": "close"
-    },
-    on: {
-      "click": _vm.handleCancellation
-    }
-  })]), _vm._v(" "), _c('section', {
-    staticClass: "modal-card-body"
-  }, [_vm._t("modalBody")], 2), _vm._v(" "), _c('footer', {
-    staticClass: "modal-card-foot"
-  }, [_c('button', {
-    staticClass: "button is-success",
-    on: {
-      "click": _vm.handleConfirmation
-    }
-  }, [_vm._t("confirmationButtonLabel", [_vm._v("Confirm")])], 2), _vm._v(" "), _c('button', {
-    staticClass: "button",
-    on: {
-      "click": _vm.handleCancellation
-    }
-  }, [_vm._v("Cancel")])])])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-2831c20d", module.exports)
-  }
-}
-
-/***/ }),
-/* 827 */
+/* 825 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93444,7 +92109,7 @@ if (false) {
 }
 
 /***/ }),
-/* 828 */
+/* 826 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93465,7 +92130,7 @@ if (false) {
 }
 
 /***/ }),
-/* 829 */
+/* 827 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93499,7 +92164,7 @@ if (false) {
 }
 
 /***/ }),
-/* 830 */
+/* 828 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93547,7 +92212,7 @@ if (false) {
 }
 
 /***/ }),
-/* 831 */
+/* 829 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93582,7 +92247,43 @@ if (false) {
 }
 
 /***/ }),
-/* 832 */
+/* 830 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "modal",
+    class: [_vm.isModalVisible ? 'is-active' : '']
+  }, [_c('div', {
+    staticClass: "modal-background",
+    on: {
+      "click": _vm.closeModal
+    }
+  }), _vm._v(" "), _c('div', {
+    staticClass: "modal-content"
+  }, [_c('div', {
+    staticClass: "notification",
+    class: _vm.notificationStyles
+  }, [_c('button', {
+    staticClass: "delete is-large",
+    attrs: {
+      "aria-label": "close"
+    },
+    on: {
+      "click": _vm.closeModal
+    }
+  }), _vm._v(" "), _vm._t("modalBodyText", [_vm._v(_vm._s(_vm.modalText))])], 2)])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-394265fc", module.exports)
+  }
+}
+
+/***/ }),
+/* 831 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93622,7 +92323,7 @@ if (false) {
 }
 
 /***/ }),
-/* 833 */
+/* 832 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93642,7 +92343,7 @@ if (false) {
 }
 
 /***/ }),
-/* 834 */
+/* 833 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93715,7 +92416,7 @@ if (false) {
 }
 
 /***/ }),
-/* 835 */
+/* 834 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93746,7 +92447,7 @@ if (false) {
 }
 
 /***/ }),
-/* 836 */
+/* 835 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93767,7 +92468,7 @@ if (false) {
 }
 
 /***/ }),
-/* 837 */
+/* 836 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93796,7 +92497,7 @@ if (false) {
 }
 
 /***/ }),
-/* 838 */
+/* 837 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93827,7 +92528,7 @@ if (false) {
 }
 
 /***/ }),
-/* 839 */
+/* 838 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93851,7 +92552,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.handleCancellation
     }
-  }, [_vm._v("Cancel\n            ")])]), _vm._v(" "), _c('p', {
+  }, [_vm._v("Cancel")])]), _vm._v(" "), _c('p', {
     staticClass: "control"
   }, [_c('button', {
     staticClass: "button is-danger",
@@ -93861,7 +92562,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.handleConfirmation
     }
-  }, [_vm._v("Confirm\n            ")])])]) : _c('div', {
+  }, [_vm._v("Confirm")])])]) : _c('div', {
     staticClass: "field is-grouped is-fullwidth",
     attrs: {
       "id": "action-buttons-area"
@@ -93896,13 +92597,22 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.handleDeleteClick
     }
-  }, [_vm._v("Delete")])])]), _vm._v(" "), _c('auto-close-modal', {
+  }, [_vm._v("Remove from roster")])]), _vm._v(" "), _c('remove-students-from-roster-button', {
+    on: {
+      "done": _vm.resetDisplay
+    }
+  })], 1), _vm._v(" "), _c('auto-close-modal', {
     attrs: {
       "content": _vm.messages.noRowsSelected,
-      "show": _vm.isModalVisible,
+      "show": _vm.isErrorModalVisible,
       "type": "error"
     }
-  }), _vm._v(" "), _c('confirmation-modal', {
+  }, [_c('p', {
+    attrs: {
+      "slot": "modalBody"
+    },
+    slot: "modalBody"
+  }, [_vm._v(_vm._s(_vm.errorModalText))])]), _vm._v(" "), _c('confirmation-modal', {
     attrs: {
       "is-visible": _vm.isConfirmationModalVisible
     },
@@ -93915,7 +92625,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "modalBody"
     },
     slot: "modalBody"
-  }, [_vm._v("Are you super duper sure?")])])], 1)
+  }, [_vm._v(_vm._s(_vm.confirmationModalText))])])], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -93926,7 +92636,7 @@ if (false) {
 }
 
 /***/ }),
-/* 840 */
+/* 839 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -93947,7 +92657,7 @@ if (false) {
 }
 
 /***/ }),
-/* 841 */
+/* 840 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94111,7 +92821,7 @@ if (false) {
 }
 
 /***/ }),
-/* 842 */
+/* 841 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94298,7 +93008,7 @@ if (false) {
 }
 
 /***/ }),
-/* 843 */
+/* 842 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94329,7 +93039,7 @@ if (false) {
 }
 
 /***/ }),
-/* 844 */
+/* 843 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94452,7 +93162,7 @@ if (false) {
 }
 
 /***/ }),
-/* 845 */
+/* 844 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94467,7 +93177,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     class: _vm.styling,
     attrs: {
       "type": "text",
-      "id": _vm.id
+      "id": _vm.id,
+      "autofocus": _vm.autofocus
     },
     domProps: {
       "value": (_vm.name)
@@ -94489,40 +93200,7 @@ if (false) {
 }
 
 /***/ }),
-/* 846 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "modal",
-    class: [_vm.isModalVisible ? 'is-active' : '']
-  }, [_c('div', {
-    staticClass: "modal-background"
-  }), _vm._v(" "), _c('div', {
-    staticClass: "modal-content"
-  }, [_c('div', {
-    staticClass: "notification",
-    class: _vm.notificationStyles
-  }, [_c('button', {
-    staticClass: "delete is-large",
-    attrs: {
-      "aria-label": "close"
-    },
-    on: {
-      "click": _vm.closeModal
-    }
-  }), _vm._v("\n            " + _vm._s(_vm.content) + "\n        ")])])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-4ffd21ef", module.exports)
-  }
-}
-
-/***/ }),
-/* 847 */
+/* 845 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94553,7 +93231,7 @@ if (false) {
 }
 
 /***/ }),
-/* 848 */
+/* 846 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94582,7 +93260,7 @@ if (false) {
 }
 
 /***/ }),
-/* 849 */
+/* 847 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94686,7 +93364,7 @@ if (false) {
 }
 
 /***/ }),
-/* 850 */
+/* 848 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94708,7 +93386,7 @@ if (false) {
 }
 
 /***/ }),
-/* 851 */
+/* 849 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94730,7 +93408,7 @@ if (false) {
 }
 
 /***/ }),
-/* 852 */
+/* 850 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94784,7 +93462,7 @@ if (false) {
 }
 
 /***/ }),
-/* 853 */
+/* 851 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -94969,7 +93647,7 @@ if (false) {
 }
 
 /***/ }),
-/* 854 */
+/* 852 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95010,7 +93688,8 @@ if (false) {
 }
 
 /***/ }),
-/* 855 */
+/* 853 */,
+/* 854 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95053,7 +93732,7 @@ if (false) {
 }
 
 /***/ }),
-/* 856 */
+/* 855 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95109,7 +93788,7 @@ if (false) {
 }
 
 /***/ }),
-/* 857 */
+/* 856 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95141,7 +93820,7 @@ if (false) {
 }
 
 /***/ }),
-/* 858 */
+/* 857 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95160,7 +93839,7 @@ if (false) {
 }
 
 /***/ }),
-/* 859 */
+/* 858 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95191,7 +93870,7 @@ if (false) {
 }
 
 /***/ }),
-/* 860 */
+/* 859 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95223,7 +93902,7 @@ if (false) {
 }
 
 /***/ }),
-/* 861 */
+/* 860 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95244,7 +93923,7 @@ if (false) {
 }
 
 /***/ }),
-/* 862 */
+/* 861 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95289,7 +93968,7 @@ if (false) {
 }
 
 /***/ }),
-/* 863 */
+/* 862 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95318,7 +93997,7 @@ if (false) {
 }
 
 /***/ }),
-/* 864 */
+/* 863 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95338,7 +94017,7 @@ if (false) {
 }
 
 /***/ }),
-/* 865 */
+/* 864 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95376,7 +94055,7 @@ if (false) {
 }
 
 /***/ }),
-/* 866 */
+/* 865 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95391,7 +94070,7 @@ if (false) {
 }
 
 /***/ }),
-/* 867 */
+/* 866 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95461,7 +94140,7 @@ if (false) {
 }
 
 /***/ }),
-/* 868 */
+/* 867 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95502,7 +94181,7 @@ if (false) {
 }
 
 /***/ }),
-/* 869 */
+/* 868 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95648,7 +94327,7 @@ if (false) {
 }
 
 /***/ }),
-/* 870 */
+/* 869 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95707,7 +94386,7 @@ if (false) {
 }
 
 /***/ }),
-/* 871 */
+/* 870 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95750,7 +94429,7 @@ if (false) {
 }
 
 /***/ }),
-/* 872 */
+/* 871 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95776,7 +94455,7 @@ if (false) {
 }
 
 /***/ }),
-/* 873 */
+/* 872 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95806,7 +94485,7 @@ if (false) {
 }
 
 /***/ }),
-/* 874 */
+/* 873 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -95856,6 +94535,61 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-8670f59c", module.exports)
+  }
+}
+
+/***/ }),
+/* 874 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "modal",
+    class: [_vm.isModalVisible ? 'is-active' : '']
+  }, [_c('div', {
+    staticClass: "modal-background",
+    on: {
+      "click": _vm.handleCancellation
+    }
+  }), _vm._v(" "), _c('div', {
+    staticClass: "modal-card"
+  }, [_c('header', {
+    staticClass: "modal-card-head"
+  }, [_c('p', {
+    staticClass: "modal-card-title"
+  }, [_vm._t("modalTitle")], 2), _vm._v(" "), _c('button', {
+    staticClass: "delete",
+    attrs: {
+      "aria-label": "close"
+    },
+    on: {
+      "click": _vm.handleCancellation
+    }
+  })]), _vm._v(" "), _c('section', {
+    staticClass: "modal-card-body"
+  }, [_vm._t("modalBody", [_vm._v(_vm._s(_vm.modalText))])], 2), _vm._v(" "), _c('footer', {
+    staticClass: "modal-card-foot "
+  }, [_c('div', {
+    staticClass: "container"
+  }, [_c('div', {
+    staticClass: "content has-text-right"
+  }, [_c('a', {
+    staticClass: "button is-warning ",
+    on: {
+      "click": _vm.handleCancellation
+    }
+  }, [_vm._v("Cancel\n                    ")]), _vm._v(" "), _c('a', {
+    staticClass: "button is-success ",
+    on: {
+      "click": _vm.handleConfirmation
+    }
+  }, [_vm._t("confirmationButtonLabel", [_vm._v("Confirm")])], 2)])])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-88d925c0", module.exports)
   }
 }
 
@@ -96295,9 +95029,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       key: student.serialNumber,
       attrs: {
         "student": student
-      },
-      on: {
-        "row-selection-event": _vm.handleRowSelectionEvent
       }
     })
   }))])])])
@@ -96343,14 +95074,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "addition-buttons-area panel-block"
   }, [_c('div', {
     staticClass: "buttons"
-  }, [_c('add-student-control', {
-    on: {
-      "add-student-complete": _vm.handleAddStudentComplete
-    }
-  }), _vm._v(" "), _c('button', {
+  }, [_c('add-student-control'), _vm._v(" "), _c('button', {
     staticClass: "button is-primary is-outlined ",
     attrs: {
-      "id": "add-students-button"
+      "id": "import-students-button"
     },
     on: {
       "click": _vm.toggleFileButtonVisibility
@@ -96363,13 +95090,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "button"
     }
-  })], 1), _vm._v(" "), _c('kumi-editing-modal')], 1), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.fileButtonVisible),
-      expression: "fileButtonVisible"
-    }],
+  })], 1), _vm._v(" "), _c('kumi-editing-modal')], 1), _vm._v(" "), (_vm.fileButtonVisible) ? _c('div', {
     staticClass: "panel-block",
     attrs: {
       "id": "file-input-area"
@@ -96378,28 +95099,17 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "student-import-complete": _vm.handleImportComplete
     }
-  })], 1), _vm._v(" "), _c('kumi-selector', {
-    attrs: {
-      "injectable-class": "panel-block"
-    }
-  }, [_c('label', {
+  })], 1) : _vm._e(), _vm._v(" "), (_vm.isKumiSelectorVisible) ? _c('div', {
+    staticClass: "panel-block"
+  }, [_c('kumi-selector', [_c('label', {
     staticClass: "label",
     attrs: {
       "slot": "label"
     },
     slot: "label"
-  }, [_vm._v(" " + _vm._s(_vm.kumiSelectorLabel))])]), _vm._v(" "), _c('div', {
-    attrs: {
-      "id": "student-editing-controls-area"
-    }
-  }, [_c('student-action-buttons', {
-    attrs: {
-      "injectable-classes": "panel-block"
-    },
-    on: {
-      "update-select-label": _vm.updateSelectLabel
-    }
-  })], 1)], 1)
+  }, [_vm._v(" " + _vm._s(_vm.kumiSelectorLabel))])])], 1) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "panel-block"
+  }, [_c('student-action-button-parent')], 1)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('p', {
     staticClass: "panel-heading"
@@ -96725,22 +95435,38 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "kumi": kumi
       }
-    })], 1), _vm._v(" "), _c('p', {
+    })], 1), _vm._v(" "), _vm._m(0, true), _vm._v(" "), _c('p', {
       staticClass: "control"
     }, [_c('remove-kumi-control', {
       attrs: {
         "kumi": kumi
       }
     })], 1)])]) : _vm._e()
-  }), _vm._v(" "), _c('p', {}, [_vm._v("Highlighted groups have students related to this exam")])], 2), _vm._v(" "), _c('footer', {
+  }), _vm._v(" "), _c('p', {}, [_vm._v("Highlighted groups have students related to this exam")]), _vm._v(" "), _vm._m(1)], 2), _vm._v(" "), _c('footer', {
     staticClass: "modal-card-foot"
-  }, [_c('new-kumi-control'), _vm._v(" "), _c('button', {
-    staticClass: "button",
+  }, [_c('div', {
+    staticClass: "container"
+  }, [_c('div', {
+    staticClass: "content has-text-right"
+  }, [_c('new-kumi-control', {
+    attrs: {
+      "type": "button"
+    }
+  }), _vm._v(" "), _c('button', {
+    staticClass: "button is-success",
     on: {
       "click": _vm.toggleModal
     }
-  }, [_vm._v("Done")])], 1)])])
-},staticRenderFns: []}
+  }, [_vm._v("Done")])], 1)])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "control"
+  }, [_c('button', {
+    staticClass: "button "
+  }, [_vm._v("+")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', [_vm._v("\n                Removes all associations between an exam and a kumi.\n                Also removes all student associations (from this roster)\n                with the kumi\n               "), _c('br'), _vm._v("\n                NB, it does not delete the kumi itself. Nor does it disassociate\n                any students who weren't on this exam. So if someone had created\n                a kumi for students needing intervention (which would link them\n                across exams), it and its relationships to other students\n                would be unaffected\n            ")])
+}]}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -96866,327 +95592,7 @@ if (false) {
 }
 
 /***/ }),
-/* 891 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('a', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showRow),
-      expression: "showRow"
-    }],
-    staticClass: "panel-block student-row",
-    on: {
-      "toggle-checkbox-delete": _vm.handleToggleCheckboxDelete
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('div', {
-    staticClass: "field is-horizontal"
-  }, [_c('div', {
-    staticClass: "field-body"
-  }, [_c('div', {
-    staticClass: "field"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.firstName),
-      expression: "firstName"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "text",
-      "placeholder": "First name",
-      "id": _vm.getInputId('firstName')
-    },
-    domProps: {
-      "value": (_vm.firstName)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.firstName = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.lastName),
-      expression: "lastName"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "text",
-      "placeholder": "Last name",
-      "id": _vm.getInputId('lastName')
-    },
-    domProps: {
-      "value": (_vm.lastName)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.lastName = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.identifier),
-      expression: "identifier"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "text",
-      "placeholder": "Student id",
-      "id": _vm.getInputId('identifier')
-    },
-    domProps: {
-      "value": (_vm.identifier)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.identifier = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.email),
-      expression: "email"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "text",
-      "placeholder": "Email address",
-      "id": _vm.getInputId('email')
-    },
-    domProps: {
-      "value": (_vm.email)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.email = $event.target.value
-      }
-    }
-  })])])]), _vm._v(" "), _c('div', {
-    staticClass: "field is-horizontal"
-  }, [_c('div', {
-    staticClass: "field-body"
-  }, [_c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showDeleteOperationArea),
-      expression: "showDeleteOperationArea"
-    }],
-    staticClass: "control delete-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox student-operation-checkbox",
-    attrs: {
-      "type": "checkbox",
-      "id": _vm.checkboxId
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "change": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$el.checked) {
-            $$i < 0 && (_vm.isSelected = $$a.concat([$$v]))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("Delete")])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showRemoveOperationArea),
-      expression: "showRemoveOperationArea"
-    }],
-    staticClass: "control remove-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox student-operation-checkbox",
-    attrs: {
-      "type": "checkbox",
-      "id": _vm.checkboxId
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "change": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$el.checked) {
-            $$i < 0 && (_vm.isSelected = $$a.concat([$$v]))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("Remove")])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showMoveOperationArea),
-      expression: "showMoveOperationArea"
-    }],
-    staticClass: "control move-operation-area"
-  }, [_c('label', {
-    staticClass: "checkbox student-operation-checkbox"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.isSelected),
-      expression: "isSelected"
-    }],
-    staticClass: "checkbox",
-    attrs: {
-      "type": "checkbox",
-      "id": _vm.checkboxId
-    },
-    domProps: {
-      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
-    },
-    on: {
-      "change": function($event) {
-        var $$a = _vm.isSelected,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = _vm._i($$a, $$v);
-          if ($$el.checked) {
-            $$i < 0 && (_vm.isSelected = $$a.concat([$$v]))
-          } else {
-            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.isSelected = $$c
-        }
-      }
-    }
-  }), _vm._v("Add")])])])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showGradeInfo),
-      expression: "showGradeInfo"
-    }],
-    staticClass: "field is-horizontal"
-  }, [_c('div', {
-    staticClass: "field-body"
-  }, [_c('div', {
-    staticClass: "control"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.score),
-      expression: "score"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "text",
-      "id": _vm.getInputId('score')
-    },
-    domProps: {
-      "value": (_vm.score)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.score = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "control"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.grade),
-      expression: "grade"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "text",
-      "id": _vm.getInputId('grade')
-    },
-    domProps: {
-      "value": (_vm.grade)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.grade = $event.target.value
-      }
-    }
-  })])])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "panel-icon"
-  }, [_c('i', {
-    staticClass: "fa fa-user"
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-e9f9ad10", module.exports)
-  }
-}
-
-/***/ }),
+/* 891 */,
 /* 892 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -97312,7 +95718,7 @@ if (false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(629);
+var content = __webpack_require__(631);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -97338,7 +95744,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(644);
+var content = __webpack_require__(645);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -97364,7 +95770,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(645);
+var content = __webpack_require__(646);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -97416,7 +95822,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(684);
+var content = __webpack_require__(685);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -97442,7 +95848,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(708);
+var content = __webpack_require__(710);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -97468,7 +95874,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(713);
+var content = __webpack_require__(715);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -97494,7 +95900,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(718);
+var content = __webpack_require__(720);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100184,7 +98590,7 @@ if (inBrowser && window.Vue) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(628);
+var content = __webpack_require__(630);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100210,7 +98616,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(630);
+var content = __webpack_require__(632);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100236,7 +98642,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(631);
+var content = __webpack_require__(633);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100262,7 +98668,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(632);
+var content = __webpack_require__(634);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100288,7 +98694,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(633);
+var content = __webpack_require__(635);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100314,7 +98720,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(634);
+var content = __webpack_require__(636);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100340,7 +98746,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(635);
+var content = __webpack_require__(637);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100366,7 +98772,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(636);
+var content = __webpack_require__(638);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100392,7 +98798,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(637);
+var content = __webpack_require__(639);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100418,7 +98824,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(638);
+var content = __webpack_require__(640);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100444,7 +98850,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(639);
+var content = __webpack_require__(641);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100464,14 +98870,13 @@ if(false) {
 }
 
 /***/ }),
-/* 917 */,
-/* 918 */
+/* 917 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(641);
+var content = __webpack_require__(642);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100491,13 +98896,13 @@ if(false) {
 }
 
 /***/ }),
-/* 919 */
+/* 918 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(642);
+var content = __webpack_require__(643);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100517,13 +98922,13 @@ if(false) {
 }
 
 /***/ }),
-/* 920 */
+/* 919 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(643);
+var content = __webpack_require__(644);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100543,13 +98948,13 @@ if(false) {
 }
 
 /***/ }),
-/* 921 */
+/* 920 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(646);
+var content = __webpack_require__(647);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100569,13 +98974,13 @@ if(false) {
 }
 
 /***/ }),
-/* 922 */
+/* 921 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(647);
+var content = __webpack_require__(648);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100595,13 +99000,13 @@ if(false) {
 }
 
 /***/ }),
-/* 923 */
+/* 922 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(648);
+var content = __webpack_require__(649);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100621,13 +99026,13 @@ if(false) {
 }
 
 /***/ }),
-/* 924 */
+/* 923 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(649);
+var content = __webpack_require__(650);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100647,13 +99052,13 @@ if(false) {
 }
 
 /***/ }),
-/* 925 */
+/* 924 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(650);
+var content = __webpack_require__(651);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100673,13 +99078,13 @@ if(false) {
 }
 
 /***/ }),
-/* 926 */
+/* 925 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(651);
+var content = __webpack_require__(652);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100699,13 +99104,13 @@ if(false) {
 }
 
 /***/ }),
-/* 927 */
+/* 926 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(652);
+var content = __webpack_require__(653);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100725,13 +99130,13 @@ if(false) {
 }
 
 /***/ }),
-/* 928 */
+/* 927 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(653);
+var content = __webpack_require__(654);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100751,13 +99156,13 @@ if(false) {
 }
 
 /***/ }),
-/* 929 */
+/* 928 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(654);
+var content = __webpack_require__(655);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100777,13 +99182,13 @@ if(false) {
 }
 
 /***/ }),
-/* 930 */
+/* 929 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(655);
+var content = __webpack_require__(656);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100803,33 +99208,7 @@ if(false) {
 }
 
 /***/ }),
-/* 931 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(656);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(7)("4b2a58c2", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2831c20d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./confirmation-modal.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2831c20d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./confirmation-modal.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 932 */
+/* 930 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -100855,7 +99234,7 @@ if(false) {
 }
 
 /***/ }),
-/* 933 */
+/* 931 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -100881,7 +99260,7 @@ if(false) {
 }
 
 /***/ }),
-/* 934 */
+/* 932 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -100907,7 +99286,7 @@ if(false) {
 }
 
 /***/ }),
-/* 935 */
+/* 933 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -100933,13 +99312,39 @@ if(false) {
 }
 
 /***/ }),
-/* 936 */
+/* 934 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
 var content = __webpack_require__(661);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("dc6684d4", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-394265fc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./auto-closing-modal.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-394265fc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./auto-closing-modal.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 935 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(662);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100959,13 +99364,13 @@ if(false) {
 }
 
 /***/ }),
-/* 937 */
+/* 936 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(662);
+var content = __webpack_require__(663);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -100985,13 +99390,13 @@ if(false) {
 }
 
 /***/ }),
-/* 938 */
+/* 937 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(663);
+var content = __webpack_require__(664);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101011,13 +99416,13 @@ if(false) {
 }
 
 /***/ }),
-/* 939 */
+/* 938 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(664);
+var content = __webpack_require__(665);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101037,13 +99442,13 @@ if(false) {
 }
 
 /***/ }),
-/* 940 */
+/* 939 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(665);
+var content = __webpack_require__(666);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101063,13 +99468,13 @@ if(false) {
 }
 
 /***/ }),
-/* 941 */
+/* 940 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(666);
+var content = __webpack_require__(667);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101089,13 +99494,13 @@ if(false) {
 }
 
 /***/ }),
-/* 942 */
+/* 941 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(667);
+var content = __webpack_require__(668);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101115,13 +99520,13 @@ if(false) {
 }
 
 /***/ }),
-/* 943 */
+/* 942 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(668);
+var content = __webpack_require__(669);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101141,13 +99546,13 @@ if(false) {
 }
 
 /***/ }),
-/* 944 */
+/* 943 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(669);
+var content = __webpack_require__(670);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101167,13 +99572,13 @@ if(false) {
 }
 
 /***/ }),
-/* 945 */
+/* 944 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(670);
+var content = __webpack_require__(671);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101193,13 +99598,13 @@ if(false) {
 }
 
 /***/ }),
-/* 946 */
+/* 945 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(671);
+var content = __webpack_require__(672);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101219,13 +99624,13 @@ if(false) {
 }
 
 /***/ }),
-/* 947 */
+/* 946 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(672);
+var content = __webpack_require__(673);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101245,13 +99650,13 @@ if(false) {
 }
 
 /***/ }),
-/* 948 */
+/* 947 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(673);
+var content = __webpack_require__(674);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101271,13 +99676,13 @@ if(false) {
 }
 
 /***/ }),
-/* 949 */
+/* 948 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(674);
+var content = __webpack_require__(675);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101297,33 +99702,7 @@ if(false) {
 }
 
 /***/ }),
-/* 950 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(675);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(7)("472912f4", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4ffd21ef\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./auto-closing-modal.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4ffd21ef\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./auto-closing-modal.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 951 */
+/* 949 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -101349,7 +99728,7 @@ if(false) {
 }
 
 /***/ }),
-/* 952 */
+/* 950 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -101375,7 +99754,7 @@ if(false) {
 }
 
 /***/ }),
-/* 953 */
+/* 951 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -101401,7 +99780,7 @@ if(false) {
 }
 
 /***/ }),
-/* 954 */
+/* 952 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -101427,7 +99806,7 @@ if(false) {
 }
 
 /***/ }),
-/* 955 */
+/* 953 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -101453,7 +99832,7 @@ if(false) {
 }
 
 /***/ }),
-/* 956 */
+/* 954 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -101479,13 +99858,14 @@ if(false) {
 }
 
 /***/ }),
-/* 957 */
+/* 955 */,
+/* 956 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(683);
+var content = __webpack_require__(684);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101505,13 +99885,13 @@ if(false) {
 }
 
 /***/ }),
-/* 958 */
+/* 957 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(685);
+var content = __webpack_require__(686);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101531,13 +99911,13 @@ if(false) {
 }
 
 /***/ }),
-/* 959 */
+/* 958 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(686);
+var content = __webpack_require__(687);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101557,13 +99937,13 @@ if(false) {
 }
 
 /***/ }),
-/* 960 */
+/* 959 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(687);
+var content = __webpack_require__(688);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101583,13 +99963,13 @@ if(false) {
 }
 
 /***/ }),
-/* 961 */
+/* 960 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(688);
+var content = __webpack_require__(689);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101609,13 +99989,13 @@ if(false) {
 }
 
 /***/ }),
-/* 962 */
+/* 961 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(689);
+var content = __webpack_require__(690);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101635,13 +100015,13 @@ if(false) {
 }
 
 /***/ }),
-/* 963 */
+/* 962 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(690);
+var content = __webpack_require__(691);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101661,13 +100041,13 @@ if(false) {
 }
 
 /***/ }),
-/* 964 */
+/* 963 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(691);
+var content = __webpack_require__(692);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101687,13 +100067,13 @@ if(false) {
 }
 
 /***/ }),
-/* 965 */
+/* 964 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(692);
+var content = __webpack_require__(693);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101713,13 +100093,13 @@ if(false) {
 }
 
 /***/ }),
-/* 966 */
+/* 965 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(693);
+var content = __webpack_require__(694);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101739,13 +100119,13 @@ if(false) {
 }
 
 /***/ }),
-/* 967 */
+/* 966 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(694);
+var content = __webpack_require__(695);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101765,13 +100145,13 @@ if(false) {
 }
 
 /***/ }),
-/* 968 */
+/* 967 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(695);
+var content = __webpack_require__(696);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101791,13 +100171,13 @@ if(false) {
 }
 
 /***/ }),
-/* 969 */
+/* 968 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(696);
+var content = __webpack_require__(697);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101817,13 +100197,13 @@ if(false) {
 }
 
 /***/ }),
-/* 970 */
+/* 969 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(697);
+var content = __webpack_require__(698);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101843,13 +100223,13 @@ if(false) {
 }
 
 /***/ }),
-/* 971 */
+/* 970 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(698);
+var content = __webpack_require__(699);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101869,13 +100249,13 @@ if(false) {
 }
 
 /***/ }),
-/* 972 */
+/* 971 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(699);
+var content = __webpack_require__(700);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101895,13 +100275,13 @@ if(false) {
 }
 
 /***/ }),
-/* 973 */
+/* 972 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(700);
+var content = __webpack_require__(701);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101921,13 +100301,13 @@ if(false) {
 }
 
 /***/ }),
-/* 974 */
+/* 973 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(701);
+var content = __webpack_require__(702);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101947,13 +100327,13 @@ if(false) {
 }
 
 /***/ }),
-/* 975 */
+/* 974 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(702);
+var content = __webpack_require__(703);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -101973,13 +100353,39 @@ if(false) {
 }
 
 /***/ }),
+/* 975 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(704);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("4f7669dd", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-88d925c0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./confirmation-modal.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-88d925c0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./confirmation-modal.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
 /* 976 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(703);
+var content = __webpack_require__(705);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102005,7 +100411,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(704);
+var content = __webpack_require__(706);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102031,7 +100437,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(705);
+var content = __webpack_require__(707);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102057,7 +100463,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(706);
+var content = __webpack_require__(708);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102083,7 +100489,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(707);
+var content = __webpack_require__(709);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102109,7 +100515,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(709);
+var content = __webpack_require__(711);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102135,7 +100541,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(710);
+var content = __webpack_require__(712);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102161,7 +100567,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(711);
+var content = __webpack_require__(713);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102187,7 +100593,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(712);
+var content = __webpack_require__(714);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102213,7 +100619,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(714);
+var content = __webpack_require__(716);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102239,7 +100645,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(715);
+var content = __webpack_require__(717);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102265,7 +100671,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(716);
+var content = __webpack_require__(718);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102291,7 +100697,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(717);
+var content = __webpack_require__(719);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102311,39 +100717,14 @@ if(false) {
 }
 
 /***/ }),
-/* 989 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(719);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(7)("77098814", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e9f9ad10\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./student-row.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e9f9ad10\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./student-row.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 989 */,
 /* 990 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(720);
+var content = __webpack_require__(722);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102369,7 +100750,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(721);
+var content = __webpack_require__(723);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102395,7 +100776,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(722);
+var content = __webpack_require__(724);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102421,7 +100802,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(723);
+var content = __webpack_require__(725);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -102631,7 +101012,7 @@ var _vue = __webpack_require__(11);
 
 var _vue2 = _interopRequireDefault(_vue);
 
-var _vueAsyncComputed = __webpack_require__(490);
+var _vueAsyncComputed = __webpack_require__(491);
 
 var _vueAsyncComputed2 = _interopRequireDefault(_vueAsyncComputed);
 
@@ -102639,7 +101020,7 @@ var _gradingPage = __webpack_require__(1104);
 
 var _gradingPage2 = _interopRequireDefault(_gradingPage);
 
-var _vueAxios = __webpack_require__(491);
+var _vueAxios = __webpack_require__(492);
 
 var _vueAxios2 = _interopRequireDefault(_vueAxios);
 
@@ -102647,13 +101028,13 @@ var _vueRouter = __webpack_require__(905);
 
 var _vueRouter2 = _interopRequireDefault(_vueRouter);
 
-var _routes = __webpack_require__(614);
+var _routes = __webpack_require__(616);
 
 var _vuex = __webpack_require__(198);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _store = __webpack_require__(231);
+var _store = __webpack_require__(232);
 
 var _store2 = _interopRequireDefault(_store);
 
@@ -102819,11 +101200,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _feedbackPanel = __webpack_require__(725);
+var _feedbackPanel = __webpack_require__(727);
 
 var _feedbackPanel2 = _interopRequireDefault(_feedbackPanel);
 
@@ -102908,19 +101289,19 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _gradingControl = __webpack_require__(610);
+var _gradingControl = __webpack_require__(612);
 
 var _gradingControl2 = _interopRequireDefault(_gradingControl);
 
@@ -102997,19 +101378,19 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _gradingControl = __webpack_require__(610);
+var _gradingControl = __webpack_require__(612);
 
 var _gradingControl2 = _interopRequireDefault(_gradingControl);
 
@@ -103088,19 +101469,19 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _gradingControl = __webpack_require__(610);
+var _gradingControl = __webpack_require__(612);
 
 var _gradingControl2 = _interopRequireDefault(_gradingControl);
 
@@ -103173,11 +101554,11 @@ exports.default = {
 "use strict";
 
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -103254,23 +101635,23 @@ module.exports = {
 "use strict";
 
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -103597,7 +101978,7 @@ var _topNavbar = __webpack_require__(797);
 
 var _topNavbar2 = _interopRequireDefault(_topNavbar);
 
-var _bottomNavbar = __webpack_require__(724);
+var _bottomNavbar = __webpack_require__(726);
 
 var _bottomNavbar2 = _interopRequireDefault(_bottomNavbar);
 
@@ -103619,19 +102000,19 @@ var _Exam = __webpack_require__(9);
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -104044,19 +102425,19 @@ exports.default = {
 "use strict";
 
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var mTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var aTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var gTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -104136,19 +102517,19 @@ module.exports = {
 "use strict";
 
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -104335,19 +102716,19 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -104506,15 +102887,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _newGradingMutationTypes = __webpack_require__(16);
+var _newGradingMutationTypes = __webpack_require__(1218);
 
 var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
 
-var _newGradingActionTypes = __webpack_require__(20);
+var _newGradingActionTypes = __webpack_require__(1219);
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
-var _newGradingGetterTypes = __webpack_require__(13);
+var _newGradingGetterTypes = __webpack_require__(1217);
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
@@ -106363,13 +104744,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     })();
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(206).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(207).setImmediate))
 
 /***/ }),
 /* 1049 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106383,7 +104764,7 @@ exports.push([module.i, "", ""]);
 /* 1050 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106397,7 +104778,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 /* 1051 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106414,7 +104795,7 @@ exports.push([module.i, "\n.student-row .gradedStudentRow {\n  /*background: #1b
 /* 1055 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106429,7 +104810,7 @@ exports.push([module.i, "", ""]);
 /* 1057 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106448,7 +104829,7 @@ exports.push([module.i, "\n.twitter-typeahead {\n  width: 100%;\n}\n.Typeahead-i
 /* 1063 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106464,7 +104845,7 @@ exports.push([module.i, "\n#dashboardCounts .progress-label {\n  font-weight: bo
 /* 1066 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106485,7 +104866,7 @@ exports.push([module.i, "", ""]);
 /* 1074 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106501,7 +104882,7 @@ exports.push([module.i, "", ""]);
 /* 1077 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106520,7 +104901,7 @@ exports.push([module.i, "", ""]);
 /* 1083 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106536,7 +104917,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 /* 1086 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106550,7 +104931,7 @@ exports.push([module.i, "", ""]);
 /* 1087 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106564,7 +104945,7 @@ exports.push([module.i, "", ""]);
 /* 1088 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -106578,7 +104959,7 @@ exports.push([module.i, "", ""]);
 /* 1089 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -108088,6 +106469,1260 @@ module.exports = __webpack_require__(1002);
 
 
 Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 3/21/17.
+ */
+
+//Grading a student's exam
+var getExamId = exports.getExamId = 'getExamId';
+var isActive = exports.isActive = 'isActive';
+
+//counts
+var getNumberGraded = exports.getNumberGraded = 'getNumberGradedNew';
+var getTotalExams = exports.getTotalExams = 'getTotalExamsNew';
+var getNumberExamsRemaining = exports.getNumberExamsRemaining = 'getNumberExamsRemainingNew';
+var getAllItemScores = exports.getAllItemScores = 'getAllItemScores';
+
+var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = 'getQuestionScoreForActiveStudent';
+var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = 'getCommentTextForActiveStudent';
+var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = 'getExamGradeForActiveStudent';
+var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 'getElementScoreForActiveStudent';
+
+// ================================================================
+// ==================================== EXAMS =====================
+// ================================================================
+var getExam = exports.getExam = 'getExam';
+var getAllExams = exports.getAllExams = 'getAllExams';
+var getActiveExam = exports.getActiveExam = 'getActiveExamNew';
+
+// ================================================================
+// ==================================== ITEMS =====================
+// ================================================================
+
+/**
+* Returns list of items objects
+* @param state
+* @param getters
+* @param payload
+* @returns []
+*/
+var getAllItems = exports.getAllItems = 'getAllItems';
+var getAllIndexesList = exports.getAllIndexesList = 'getAllIndexesList';
+var getAllItemsList = exports.getAllItemsList = 'getAllItemsList';
+
+/**
+* Returns the item object. See original for
+* parameters
+* @type {string}
+*/
+var getItem = exports.getItem = 'getItem';
+
+/**
+ * Returns the item object with the given id.
+ * This is the preferred way of looking up objects.
+ * It is immutable across re-sorting and corresponds with
+ * the stored db value.
+ * Getting an object by this does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemById = exports.getItemById = 'getItemById';
+
+/**
+ * Returns the item object residing at the
+ * given index in the list.
+ * This does not guarantee
+ * that the item.index property will equal the
+ * list index. That could happen if updateOrder has not
+ * yet run.
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param index
+ */
+var getItemByIndex = exports.getItemByIndex = 'getItemByIndex';
+var getItemBySerialNumber = exports.getItemBySerialNumber = 'getItemBySerialNumber';
+
+var getItemCount = exports.getItemCount = 'getItemCount';
+var getStudentCount = exports.getStudentCount = 'getStudentCount';
+var getKumiCount = exports.getKumiCount = 'getKumiCount';
+var getKumiCountForExam = exports.getKumiCountForExam = 'getKumiCountForExam';
+
+/**
+ * Returns a node from the itemMap by serial number
+ * @type {string}
+ */
+var getItemNodeFromOrder = exports.getItemNodeFromOrder = 'getItemNodeFromOrder';
+
+//Node properties
+var getHeightOfNode = exports.getHeightOfNode = 'getHeightOfNode';
+var getDepthOfNode = exports.getDepthOfNode = 'getDepthOfNode';
+
+/**
+ * Returns a copy of the itemMap.
+ * The copy shouldn't be reactive.
+ * This will be a Node instance representing
+ * the exam with all the questions and elements in
+ * children properties
+ * @type {string}
+ */
+var getItemMapCopy = exports.getItemMapCopy = 'getItemMapCopy';
+
+//Visibility settings
+var isItemSettingsVisible = exports.isItemSettingsVisible = 'isItemSettingsVisible';
+var isExamSettingsVisible = exports.isExamSettingsVisible = 'isExamSettingsVisible';
+
+/**
+ * Translates the current map of items into
+ * a map with the database ids set as data on the
+ * nodes.
+ * This is the object which will be sent to sync
+ * with the server.
+ * @type {string}
+ */
+var getSortedIds = exports.getSortedIds = 'getSortedIds';
+
+/* ================================================================
+   ================== GRADE ASSIGNMENTS       =====================
+   ================================================================ */
+// export const getCutOffsForLetterGrade = 'getCutOffsForLetterGrade';
+// export const getGradeAssignments = 'getGradeAssignments';
+// export const getGradeAssignmentsInSortedList ='getGradeAssignmentsInSortedList';
+// export const getTotalScores = 'getTotalScores';
+// export const getGradeFrequencies = 'getGradeFrequencies';
+// export const getGradeAssignmentForScore = 'getGradeAssignmentForScore';
+// export const getMaxPossibleScore = 'getMaxPossibleScore';
+// export const getInconsistentCutOffs = 'getInconsistentCutOffs';
+// export const getListOfGradeValues = 'getListOfGradeValues';
+
+
+/* ================================================================
+   ================== PREFERENCES -- GRADE    =====================
+   ================================================================ */
+var areGradedStudentRowsVisible = exports.areGradedStudentRowsVisible = 'areGradedStudentRowsVisible';
+var areStudentNamesVisible = exports.areStudentNamesVisible = 'areStudentNamesVisible';
+var isLetterGradeButtonUsed = exports.isLetterGradeButtonUsed = 'isLetterGradeButtonUsed';
+var isSliderUsed = exports.isSliderUsed = 'isSliderUsed';
+var isScoreDisplayed = exports.isScoreDisplayed = 'isScoreDisplayed';
+var shouldDynamicallyCollapseCommentAreas = exports.shouldDynamicallyCollapseCommentAreas = 'shouldDynamicallyCollapseCommentAreas';
+var shouldTimerAutomaticallyStart = exports.shouldTimerAutomaticallyStart = 'shouldTimerAutomaticallyStart';
+var getGradingPreference = exports.getGradingPreference = 'getGradingPreference';
+
+/* ================================================================
+   ================== PREFERENCES -- SETUP    =====================
+   ================================================================ */
+var getSetupPreferences = exports.getSetupPreferences = 'getSetupPreferences';
+var getSetupPreference = exports.getSetupPreference = 'getSetupPreference';
+/* ================================================================
+   ================== PREFERENCES -- USER    =====================
+   ================================================================ */
+var getUserPreferences = exports.getUserPreferences = 'getUserPreferences';
+var getUserPreference = exports.getUserPreference = 'getUserPreference';
+
+/* ================================================================
+   ================== SCORES        =====================
+   ================================================================ */
+var getItemScoreObject = exports.getItemScoreObject = 'getItemScoreObject';
+var getTotalScoreForStudent = exports.getTotalScoreForStudent = 'getTotalScoreForStudent';
+var getGradedStudentIds = exports.getGradedStudentIds = 'getGradedStudentIds';
+
+/* ================================================================
+   ================== TIMES        =====================
+   ================================================================ */
+var getTotalGradingTime = exports.getTotalGradingTime = 'getTotalGradingTimeNew';
+var getAverageGradingTime = exports.getAverageGradingTime = 'getAverageGradingTimeNew';
+var getRemainingGradingTime = exports.getRemainingGradingTime = 'getRemainingGradingTimeNew';
+var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = 'getActiveStudentGradingTimeNew';
+var isTimerRunning = exports.isTimerRunning = 'isTimerRunning';
+var getActiveStudent = exports.getActiveStudent = 'getActiveStudentNew';
+
+/***/ }),
+/* 1218 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+/**
+ * https://vuex.vuejs.org/en/mutations.html
+ * It is a commonly seen pattern to use constants for mutation types in various Flux implementations. This allow the code to take advantage of tooling like linters, and putting all constants in a single file allows your collaborators to get an at-a-glance view of what mutations are possible in the entire application:
+ Whether to use constants is largely a preference - it can be helpful in large projects with many developers, but it's totally optional if you don't like them.
+
+ * @type {string}
+ */
+
+// ------------------------------ New grading
+
+
+//active exam
+var setActiveExam = exports.setActiveExam = 'setActiveExam';
+var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
+var updateActiveExamProp = exports.updateActiveExamProp = 'updateActiveExamProp';
+
+//activestudent
+var setActiveStudent = exports.setActiveStudent = 'setActiveStudentNew';
+var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
+var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTimeNew';
+var startExamTimer = exports.startExamTimer = 'startExamTimer';
+var stopExamTimer = exports.stopExamTimer = 'stopExamTimer';
+
+//preferences for grading
+var toggleGradedStudentRowVisibility = exports.toggleGradedStudentRowVisibility = 'toggleGradedStudentRowVisibility';
+var toggleStudentNameVisibility = exports.toggleStudentNameVisibility = 'toggleStudentNameVisibility';
+var loadExams = exports.loadExams = 'loadExams';
+var updateGradingPreference = exports.updateGradingPreference = 'updateGradingPreference';
+
+//preferences for setup
+var updateSetupPreference = exports.updateSetupPreference = 'updateSetupPreference';
+
+//preferences for user and account
+var updateUserPreference = exports.updateUserPreference = 'updateUserPreference';
+
+//times
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var setGradingTime = exports.setGradingTime = 'setGradingTime';
+var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
+var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
+
+var setExam = exports.setExam = 'setExam';
+
+//Initialization
+var loadInitialData = exports.loadInitialData = 'loadInitialData';
+
+//scores
+var updateScore = exports.updateScore = 'updateScore';
+var updateText = exports.updateText = 'updateText';
+
+var setItemScore = exports.setItemScore = 'setItemScore';
+var removeItemScore = exports.removeItemScore = 'removeItemScore';
+
+var loadTotalScores = exports.loadTotalScores = 'loadTotalScores';
+
+//time
+var updateStudentGradingTime = exports.updateStudentGradingTime = 'updateStudentGradingTime';
+
+/***/ }),
+/* 1219 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+
+//parent.actions
+
+//activeexam -- which exam is being graded, set up, et cetera
+var setExamAsActive = exports.setExamAsActive = 'setExamAsActive';
+var resetActiveExam = exports.resetActiveExam = 'resetActiveExam';
+
+//activestudent -- which student is being graded, reviewed, et cetera
+var setStudentAsActive = exports.setStudentAsActive = 'setStudentAsActive';
+var resetActiveStudent = exports.resetActiveStudent = 'resetActiveStudent';
+
+var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
+
+//comments
+var recordCommentText = exports.recordCommentText = 'recordCommentTextNew';
+
+//scores
+var recordItemScore = exports.recordItemScore = 'recordItemScoreNew';
+var resetItemScore = exports.resetItemScore = 'resetItemScore';
+var loadScoresFromServer = exports.loadScoresFromServer = 'loadScoresFromServer';
+
+//exams
+var addNewExam = exports.addNewExam = 'addNewExam';
+var loadExams = exports.loadExams = 'loadExams';
+
+//grades
+var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
+var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
+var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
+
+//grade assignments
+var updateCutoff = exports.updateCutoff = 'updateCutoff';
+var loadGradeAssignmentsFromServerData = exports.loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
+
+//preferences
+var loadUserPreferencesFromServer = exports.loadUserPreferencesFromServer = 'loadUserPreferencesFromServer';
+var loadSetupPreferencesFromServer = exports.loadSetupPreferencesFromServer = 'loadSetupPreferencesFromServer';
+var loadGradePreferencesFromServer = exports.loadGradePreferencesFromServer = 'loadGradePreferencesFromServer';
+
+//questions
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores';
+// export const loadQuestions = 'loadQuestions';
+// export const loadNumberQuestions = 'loadNumberQuestions';
+// export const addQuestion = 'addQuestion';
+//
+// //roster and kumi
+// export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';
+
+
+//students
+var loadStudents = exports.loadStudents = 'loadStudents';
+
+//times
+var loadTimesFromServer = exports.loadTimesFromServer = 'loadTimesFromServer';
+var startExamTimer = exports.startExamTimer = 'startExamTimer';
+var stopExamTimer = exports.stopExamTimer = 'stopExamTimer';
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+
+/***/ }),
+/* 1220 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(1219);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _newGradingGetterTypes = __webpack_require__(1217);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+
+var state = {
+
+    /**
+     * whether or not the timer is running.
+     * This allows a parent or distant relative
+     * to tell the dashboard-timer to start or stop the
+     * time by altering this
+     */
+    timerRunning: false
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, ngmTypes.startExamTimer, function (state) {
+    state.timerRunning = true;
+}), _defineProperty(_mutations, ngmTypes.stopExamTimer, function (state) {
+    state.timerRunning = false;
+}), _mutations);
+
+var timer = void 0;
+
+var actions = (_actions = {}, _defineProperty(_actions, ngaTypes.startExamTimer, function (_ref) {
+    var dispatch = _ref.dispatch,
+        commit = _ref.commit,
+        getters = _ref.getters;
+
+    var me = undefined;
+
+    //if no student is active, don't start
+    // if ( getters[nggTypes.isTimerRunning]) return;
+
+    clearInterval(timer);
+
+    //change state
+    commit(ngmTypes.startExamTimer);
+
+    // set a new timer to fire every second.
+    timer = setInterval(function () {
+        //increment the time
+        //tell store to record it
+        dispatch(ngaTypes.incrementGradingTime, 1);
+    }, 1000);
+}), _defineProperty(_actions, ngaTypes.stopExamTimer, function (_ref2) {
+    var dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+
+    clearInterval(timer);
+
+    //change state
+    commit(ngmTypes.stopExamTimer);
+}), _actions);
+
+var getters = _defineProperty({}, nggTypes.isTimerRunning, function (state) {
+    return state.timerRunning;
+});
+
+exports.default = {
+    state: state,
+    getters: getters,
+    actions: actions,
+    mutations: mutations
+};
+
+/***/ }),
+/* 1221 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _legacyMutationTypes = __webpack_require__(74);
+
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
+
+var _legacyActionTypes = __webpack_require__(73);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var state = {
+    /** Format: { studentIndex : { elementIndex : elementScore},  ... } */
+    elementScores: {}
+};
+
+var isEmpty = function isEmpty(state) {
+    if (Object.keys(state.elementScores).length > 0) {
+        return false;
+    }
+    return true;
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.loadElementScores, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    //set the state to the payload's object
+    state.elementScores = payload.obj;
+}), _defineProperty(_mutations, lmTypes.setElementScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    var studentIndex = payload.index;
+    var elementIndex = payload.index2;
+    var score = payload.num;
+
+    state.elementScores[studentIndex][elementIndex] = score;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.setElementScore, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+    var studentIndex = payload.studentIndex,
+        elementIndex = payload.elementIndex,
+        score = payload.score;
+    //type checks
+
+    if (typeof score == 'undefined') {
+        //score may have been named differently
+        score = payload.elementScore;
+    }
+
+    var out = _Payload2.default.factory({
+        index: studentIndex,
+        index2: elementIndex,
+        num: score
+    });
+
+    commit(lmTypes.setElementScore, out);
+}), _defineProperty(_actions, laTypes.loadElementScores, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+
+    var pl = _Payload2.default.factory({ obj: payload });
+    commit(lmTypes.loadElementScores, pl);
+}), _actions);
+
+var getters = {
+    /**
+     * Retrieves element score for a student
+     * Original: data.state.elementScores[ Roster.activeStudent ][ index ];
+     * @param studentIndex
+     * @param elementIndex
+     * @returns {*}
+     */
+    getElementScore: function getElementScore(state, getters, rootState, studentIndex, elementIndex) {
+        if (isEmpty(state)) {
+            return false;
+        };
+
+        return state.elementScores[studentIndex][elementIndex];
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1222 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _legacyMutationTypes = __webpack_require__(74);
+
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
+
+var _legacyActionTypes = __webpack_require__(73);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+
+var state = {
+
+    /**
+     * Object containing empty slots and actual scores for each
+     * student on the exam. Structure of items:
+     *      {studentIndex : {questionIndex: score}]
+     * Use getters and setters to access
+     */
+    questionScores: {}
+
+};
+
+var isScoresEmpty = function isScoresEmpty(state) {
+    if (Object.keys(state.questionScores).length > 0) {
+        return false;
+    }
+    return true;
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setQuestionScore, function (state, rootState, payload) {
+    // console.log( 'mutation.setQuestionScore', payload );
+    _Payload2.default.checkIfPayload(payload);
+
+    var studentIndex = payload.index;
+    var questionIndex = payload.index2;
+
+    state.questionScores[studentIndex][questionIndex] = payload.num;
+}), _defineProperty(_mutations, lmTypes.removeQuestionScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    var studentIndex = payload.index;
+    var questionIndex = payload.index2;
+
+    state.questionScores[studentIndex][questionIndex] = payload.num;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadQuestionScores, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    for (var i = 0; i < Object.keys(payload).length; i++) {
+        actions[laTypes.setQuestionScore]({ state: state, commit: commit }, payload[i]);
+    }
+}), _defineProperty(_actions, laTypes.setQuestionScore, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    //todo add checking
+
+    var pl = new _Payload2.default();
+    pl.index = payload.studentIndex;
+    pl.index2 = payload.questionIndex;
+    pl.num = payload.score;
+
+    commit(lmTypes.setQuestionScore, pl);
+}), _actions);
+
+var getters = {
+
+    /**
+     * Returns student score for question
+     * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
+     * @param studentIndex
+     * @param questionIndex
+     */
+    getQuestionScore: function getQuestionScore(state, getters, rootState, studentIndex, questionIndex) {
+        if (isScoresEmpty(state)) {
+            return false;
+        }
+
+        return state.questionScores[studentIndex][questionIndex];
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1223 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _Question = __webpack_require__(229);
+
+var _Question2 = _interopRequireDefault(_Question);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+
+var state = {
+    /** Integer count of questions on the exam */
+    numberQuestions: null,
+    /**
+     * Json of the maximum possible scores for each question.
+     * Keys are questionIndexes
+     * Format: { questionIndex : maxScore, ... }
+     */
+    maxQuestionScores: {},
+
+    /**
+     * Format: { questionIndex : {questionName, questionNumber, questionAssignmentId, maxScore}, .... }
+     * @type {{}}
+     */
+    questions: {}
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setMaxQuestionScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.maxQuestionScores[payload.index] = payload.num;
+}), _defineProperty(_mutations, mTypes.removeMaxQuestionScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    delete state.maxQuestionScores[payload.index];
+}), _defineProperty(_mutations, mTypes.setQuestion, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.questions[payload.index] = payload.obj;
+}), _defineProperty(_mutations, mTypes.removeQuestion, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    delete state.questions[payload.index];
+}), _defineProperty(_mutations, mTypes.setNumberQuestions, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    if (typeof payload.num != 'undefined' && Number.isInteger(payload.num)) {
+        state.numberQuestions = payload.num;
+    } else {
+        //count the questions
+        state.numberQuestions = Object(state.questions).keys().length;
+    }
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.addQuestion, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+
+    var question = _Question2.default.factory(payload);
+
+    if (question instanceof _Question2.default) {
+        var pl = new _Payload2.default();
+        pl.id = question.id;
+        pl.index = payload.questionIndex;
+        pl.obj = question;
+        commit(mTypes.setQuestion, pl);
+    }
+}), _defineProperty(_actions, aTypes.loadMaxQuestionScores, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    commit(mTypes.loadMaxQuestionScores, payload);
+}), _defineProperty(_actions, aTypes.loadQuestions, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+    for (var i = 0; i < Object.keys(payload).length; i++) {
+        // actions[ aTypes.addQuestion ]( state, commit, payload[ i ] );
+        var index = Object.keys(payload)[i];
+        var s = payload[index];
+        state.questions[index] = _Question2.default.factory(s, index);
+    }
+}), _defineProperty(_actions, aTypes.loadNumberQuestions, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    state.numberQuestions = payload;
+}), _actions);
+
+var getters = {
+    /**
+     * Returns a question object.
+     * This has keys: questionName, questionNumber, questionAssignmentId, maxScore
+     * @param questionIndex
+     * @returns {*}
+     */
+    getQuestion: function getQuestion(state, getters, rootState, questionIndex) {
+        return state.questions[questionIndex];
+    },
+
+    /**
+     * Returns the maximum possible score for a given question
+     * @param questionIndex
+     * @returns {*}
+     */
+    getMaxQuestionScore: function getMaxQuestionScore(state, getters, rootState, questionIndex) {
+        return state.maxQuestionScores[questionIndex];
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1224 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _Student = __webpack_require__(20);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _legacyMutationTypes = __webpack_require__(74);
+
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
+
+var _legacyActionTypes = __webpack_require__(73);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This is the older student storage
+                                                                                                                                                                                                                   * system, still used in grading etc
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * For setup, use roster.js
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+/**
+ * Created by adam on 10/7/16.
+ */
+
+
+var state = {
+    /**
+     * Json of students
+     * Format: { studentIndex : { studentId: int, firstName: str, lastName: str, studentIdentifier: str }, ....}
+     * @type {{}}
+     */
+    students: {}
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setStudent, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.students[payload.index] = payload.obj;
+}), _defineProperty(_mutations, lmTypes.toggleRemoveControls, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    delete state.students[payload.index];
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadStudents, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+
+    for (var i = 0; i < Object.keys(payload).length; i++) {
+        actions[laTypes.addStudent]({ state: state, commit: commit }, payload[i]);
+    }
+}), _defineProperty(_actions, laTypes.addStudent, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    /*
+     create a student object out of the payload.
+     the factory will not require any properties to
+     be set. That lets us use it in very incremental ways.
+     todo the factory will sanitize values
+     */
+    var student = _Student2.default.factory(payload);
+    if (student instanceof _Student2.default) {
+        var pl = new _Payload2.default();
+        pl.id = student.id;
+        pl.index = student.index;
+        pl.obj = student;
+        commit(lmTypes.setStudent, pl);
+    }
+
+    //todo error handling if a student wasn't returned
+}), _actions);
+
+var getters = {
+    /**
+     * Returns a student object with keys:
+     *      studentId
+     *      studentIdentifier
+     *      firstName
+     *      lastName
+     * @param studentIndex
+     * @returns {*}
+     */
+    getStudent: function getStudent(state, getters, rootState, studentIndex) {
+        return state.students[studentIndex];
+    },
+
+    /**
+     * Returns a json containing student objects with student indexes as keys.
+     * The contained object has the keys:
+     *      studentId
+     *      studentIdentifier
+     *      firstName
+     *      lastName
+     * @returns {*}
+     */
+    getStudents: function getStudents(state, getters, rootState) {
+        return state.students;
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _legacyMutationTypes = __webpack_require__(74);
+
+var lmTypes = _interopRequireWildcard(_legacyMutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _legacyActionTypes = __webpack_require__(73);
+
+var laTypes = _interopRequireWildcard(_legacyActionTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+
+var state = {
+    /**
+     * Key-value store of grading times .
+     *
+     * Each record has the studentIndex as the key and
+     * the gradingTime as the value.
+     * That is:
+     *     { studentIndex : gradingTime, }
+     * Or, if you prefer
+     *      examGradingTimes[ studentIndex] = gradingTime
+     */
+    examGradingTimes: {}
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, lmTypes.setGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGradingTimes[payload.index] = payload.num;
+}), _defineProperty(_mutations, lmTypes.incrementGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGradingTimes[payload.index] += payload.num;
+}), _defineProperty(_mutations, lmTypes.removeGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    var idx = -1;
+    if (payload instanceof _Payload2.default) {
+        idx = payload.index;
+    }
+
+    if (idx > -1) {
+        delete state.examGradingTimes[idx];
+        // state.examGradingTimes.splice( idx, 1 );
+    }
+}), _defineProperty(_mutations, lmTypes.resetGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGradingTimes[payload.index] = 0;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, laTypes.loadGradingTimes, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    if (payload.length > 1) {
+        for (var i = 0; i < payload.length; i++) {
+            actions[aTypes.storeGradingTime](state, commit, payload);
+        }
+    }
+}), _defineProperty(_actions, laTypes.storeGradingTime, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    //type checking
+    if (typeof payload.studentIndex != 'undefined' && typeof payload.timeToAdd != 'undefined') {
+
+        //todo add sanitation and checks
+        var studentIndex = payload.studentIndex;
+        var timeToAdd = payload.timeToAdd;
+
+        //add processing from other allowed input configs
+
+
+        var pl = _Payload2.default.factory({ index: studentIndex, num: timeToAdd });
+        commit(mTypes.setGradingTime, pl);
+    }
+}), _defineProperty(_actions, laTypes.incrementGradingTime, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+
+    var pl = _Payload2.default.factory({
+        index: payload.studentIndex,
+        num: payload.timeToAdd
+    });
+
+    commit(lmTypes.incrementGradingTime, pl);
+}), _actions);
+
+var getters = {
+    /**
+     * Returns the total amount of time spent grading in seconds
+     * @returns {number}
+     */
+    getTotalGradingTime: function getTotalGradingTime(state, getters) {
+        var totalTime = 0;
+        for (var i = 0; i < Object.keys(state.examGradingTimes).length; i++) {
+            totalTime += state.examGradingTimes[i];
+        }
+        return totalTime;
+    },
+
+    /**
+     * Original: data.this.examGradingTimes[ Roster.activeStudent ]
+     * @param activeStudent
+     * @returns {*}
+     */
+    getStudentGradingTime: function getStudentGradingTime(state, getters, studentIndex) {
+        return state.examGradingTimes[studentIndex];
+    }
+
+};
+
+exports.default = {
+    state: state,
+    getters: getters,
+    actions: actions,
+    mutations: mutations
+};
+
+/***/ }),
+/* 1226 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Vuex component dealing with grades
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * @todo Consider moving standard grades to its own file
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
+
+var state = {
+    /**
+     * examGrades[] keeps a persistent total of the exam score for each student.
+     * Exams without grades have a value of -1, because dealing with null and NaN
+     * is unpredictable across js and PHP.
+     * This shouldn't be an issue, as the DB has no notion of exam grades, they're
+     * only used here as a shorthand to store and quickly find information about
+     * the exam state.
+     */
+    examGrades: {},
+
+    /**
+     * Standard grades
+     * Format:
+     *  { {calcValue : int, displayValue: string}, .... }
+     * @type {{}}
+     */
+    standardGrades: {}
+
+};
+
+var isExamGradeEmpty = function isExamGradeEmpty(state) {
+    if (Object.keys(state.examGrades).length > 0) {
+        return false;
+    }
+    return true;
+};
+
+var isStandardGradesEmpty = function isStandardGradesEmpty(state) {
+    if (Object.keys(state.standardGrades).length > 0) {
+        return false;
+    }
+    return true;
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadExamGrades, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGrades = payload.obj;
+}), _defineProperty(_mutations, mTypes.loadStandardGrades, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.standardGrades = payload.obj;
+}), _defineProperty(_mutations, mTypes.setGrade, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGrades[payload.index] = payload.num;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadExamGrades, function (_ref, studentGrades) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    //todo type checks
+    var out = _Payload2.default.factory({ obj: studentGrades });
+    commit(mTypes.loadExamGrades, out);
+    // state.examGrades = studentGrades;
+}), _defineProperty(_actions, aTypes.loadStandardGrades, function (_ref2, gradesJson) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    if (typeof gradesJson == 'string') {
+        gradesJson = JSON.parse(gradesJson);
+    }
+    var out = _Payload2.default.factory({ obj: gradesJson });
+    commit(mTypes.loadStandardGrades, out);
+    // state.standardGrades = gradesJson;
+}), _defineProperty(_actions, aTypes.updateExamGrade, function (_ref3, studentIndex) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+
+    var totalScore = null;
+    // try {
+    // state.checkValid( 'state.questionScores' );
+    if (Object.keys(state.questionScores).length > 0) {
+        for (var i = 0; i < Object.keys(state.questionScores[studentIndex]).length; i++) {
+            var v = state.questionScores[studentIndex][i];
+            if (v != null) {
+                //at least one question score is non-null
+                //so the total score should be at least 0
+                //first we check whether the totalScore is still null
+                //and set it to 0 if not
+                if (totalScore === null) {
+                    totalScore = 0;
+                }
+                //now we can add the question values to it
+                totalScore += parseFloat(v);
+            }
+        }
+        if (totalScore != null && totalScore >= 0) {
+            //push the total score into exam grades as a string
+            // state.examGrades[ studentIndex ] = totalScore.toPrecision( 3 );
+            var score = totalScore.toPrecision(3);
+
+            var out = _Payload2.default.factory({ index: studentIndex, num: score });
+
+            commit(mTypes.setGrade, out);
+        } else {
+            //replace 'letter grade' with -1
+            // state.examGrades[ studentIndex ] = -1;
+            var _out = _Payload2.default.factory({ index: studentIndex, num: -1 });
+            commit(mTypes.setGrade, _out);
+        }
+    }
+    // } catch ( err ) {
+    //     window.console.log( err );
+    // }
+}), _actions);
+
+var getters = {
+
+    getExamGrade: function getExamGrade(state, getters, rootState, studentIndex) {
+        if (isExamGradeEmpty(state)) return false;
+
+        return state.examGrades[studentIndex];
+    },
+
+    /**
+     * Returns the standard grades json.
+     * NB, state is not the total scores for students
+     */
+    getStandardGrades: function getStandardGrades(state, getters, rootState) {
+        if (isStandardGradesEmpty(state)) return false;
+
+        return state.standardGrades;
+    },
+
+    /**
+     * Returns the standard grades json.
+     * NB, state is not the total scores for students
+     * @deprecated This now wraps the better named method
+     */
+    getGrade: function getGrade(state, getters, rootState) {
+        // if(isExamGradeEmpty(state)) return false;
+        if (isStandardGradesEmpty(state)) return false;
+        return state.standardGrades;
+
+        // return this.getStandardGrades( state, getters, rootState );
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1227 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
@@ -108095,7 +107730,7 @@ var _Payload = __webpack_require__(1);
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _Student = __webpack_require__(24);
+var _Student = __webpack_require__(20);
 
 var _Student2 = _interopRequireDefault(_Student);
 
@@ -108111,7 +107746,1397 @@ var _actionTypes = __webpack_require__(6);
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _getterTypes = __webpack_require__(5);
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//    import studentOpArea from './student-row-ops-area.vue'
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: ['serialNumber'],
+
+    components: {
+        //            'student-op-area': studentOpArea
+    },
+
+    data: function data() {
+        return {
+
+            /**
+             * Whether to display the checkbox by which
+             * the student is selected for being moved,
+             * removed, or deleted
+             */
+            //                showOperationCheckbox: false,
+
+            /**
+             * Gets the label to display with the checkbox
+             * i.e., Delete, Move, Remove
+             */
+            operationCheckboxLabel: 'Delete | Move | Remove',
+
+            defaults: {
+                firstName: '-',
+                lastName: '-',
+                email: '-',
+                identifier: '-'
+            }
+        };
+    },
+
+    computed: {
+        //        asyncComputed: {
+        student: function student() {
+            return this.$store.getters.getStudentFromRosterBySerialNumber(this.serialNumber);
+        },
+
+        firstName: {
+            get: function get() {
+                return this.student.firstName;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.student,
+                    updateProp: 'firstName',
+                    updateVal: _.capitalize(v)
+                });
+                this.$store.commit('updateStudentInRoster', pl);
+            }
+        },
+
+        lastName: {
+            get: function get() {
+                //todo capitalize?
+                return this.student.lastName;
+            },
+            set: function set(v) {
+                this.$store.commit('updateStudentInRoster', _Payload2.default.factory({
+                    obj: this.student,
+                    updateProp: 'lastName',
+                    updateVal: _.capitalize(v)
+                }));
+            }
+        },
+
+        identifier: {
+            get: function get() {
+                return this.student.identifier;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.student,
+                    updateProp: 'studentIdentifier',
+                    updateVal: v
+                });
+                this.$store.commit('updateStudentInRoster', pl);
+            }
+        },
+
+        email: {
+            get: function get() {
+                return this.student.email;
+            },
+            set: function set(v) {
+                this.$store.commit('updateStudentInRoster', _Payload2.default.factory({
+                    obj: this.student,
+                    updateProp: 'email',
+                    updateVal: v
+                }));
+            }
+        },
+
+        isStudentInSelectedKumi: function isStudentInSelectedKumi() {
+            return this.$store.getters.isStudentInSelectedKumis(this.student);
+        },
+
+        /**
+         * Whether this row is selected
+         */
+        isSelected: {
+            get: function get() {
+                return this.$parent.selectedStudents.indexOf(this.student) > -1;
+            },
+            set: function set(v) {
+                var idx = this.$parent.selectedStudents.indexOf(this.student);
+                if (idx > -1) {
+                    //already selected, so remove
+                    return this.$parent.selectedStudents.splice(idx, 1);
+                }
+                this.$parent.selectedStudents.push(this.student);
+            }
+        },
+        /**
+         * Whether to display score and other
+         * info about how the student has done.
+         * (Note 'done on what?' is resolved by context
+         * since we want to be able to call this menu
+         * up in many contexts ---maybe on item score, exam score
+         */
+        showGradeInfo: function showGradeInfo() {
+            return false;
+        },
+
+        //these need to be here for the op area to read
+        /**
+         * Whether to display the checkbox by which
+         * the student is selected for being moved,
+         * removed, or deleted
+         */
+        showOperationCheckbox: function showOperationCheckbox() {
+            return this.$parent.showDeleteOperationArea;
+        },
+
+        /**
+         * Gets the label to display with the checkbox
+         * i.e., Delete, Move, Remove
+         */
+        //            operationCheckboxLabel: 'Delete | Move | Remove',
+
+
+        /**
+         * Whether to display the checkbox by which
+         * the student is selected for being moved,
+         * removed, or deleted
+         */
+        showDeleteOperationArea: function showDeleteOperationArea() {
+            return this.$parent.showDeleteOperationArea;
+        },
+
+        /**
+         * Whether to display the checkbox by which
+         * the student is selected for being moved,
+         * removed, or deleted
+         */
+        showMoveOperationArea: function showMoveOperationArea() {
+            return this.$parent.showMoveOperationArea;
+        },
+
+        /**
+         * Whether to display the checkbox by which
+         * the student is selected for being moved,
+         * removed, or deleted
+         */
+        showRemoveOperationArea: function showRemoveOperationArea() {
+            return this.$parent.showRemoveOperationArea;
+        },
+
+        //            /**
+        //             * Gets the label to display with the checkbox
+        //             * i.e., Delete, Move, Remove
+        //             */
+        //            operationCheckboxLabel: function () {
+        //                return 'Delete | Move | Remove';
+        //            },
+
+        /**
+         * Whether the row is visible
+         */
+        showRow: function showRow() {
+            if (this.$parent.showKumi === -1) return true;
+
+            var kumi = this.$store.getters.getKumiBySerialNumber(this.$parent.showKumi);
+
+            return this.student.associatedKumis.indexOf(kumi) > -1;
+        },
+
+        /**
+         * Getter for the students grade, if displayed
+         */
+        grade: function grade() {},
+
+        /**
+         * Getter for the student's score, if displayed
+         */
+        score: function score() {},
+
+        checkboxId: function checkboxId() {
+            return 'student-operation-checkbox-' + this.serialNumber;
+        }
+    },
+
+    methods: {
+        getInputId: function getInputId(name) {
+            return _.kebabCase(name) + '-' + this.serialNumber;
+        },
+
+        getCheckboxValue: function getCheckboxValue() {
+            return this.student.serialNumber;
+        },
+
+        handleToggleCheckboxDelete: function handleToggleCheckboxDelete(evt) {
+            window.console.log('student-row', 'toggle-checkbox-delete', 203, 'caught', evt);
+            this.operationCheckboxLabel = 'Delete';
+            this.showOperationCheckbox = !this.showOperationCheckbox;
+        }
+        //
+        //            handleRowSelection: function () {
+        //                let idx = this.$parent.selectedStudents.indexOf( this.student );
+        //                if ( idx > -1 ) {
+        //                    //already selected, so remove
+        //                    return this.$parent.selectedStudents.splice( idx, 1 );
+        //                }
+        //                this.$parent.selectedStudents.push( this.student );
+
+        //            }
+
+    },
+
+    events: {
+        //            'toggle-checkbox-delete': function (evt) {
+        //
+        ////                'toggle-checkbox-delete': function (evt) {
+        //                window.console.log( 'student-row', 'toggle-checkbox-delete', 203, 'caught' , evt);
+        //                this.operationCheckboxLabel = 'Delete';
+        //                this.showOperationCheckbox = !this.showOperationCheckbox;
+        //            },
+
+        'toggle-checkbox-move': function toggleCheckboxMove() {
+            window.console.log('student-row', 'toggle-checkbox-move', 207, 'caught');
+            this.operationCheckboxLabel = 'Move';
+            this.showOperationCheckbox = !this.showOperationCheckbox;
+        },
+
+        'toggle-checkbox-remove': function toggleCheckboxRemove() {
+            window.console.log('student-row', 'toggle-checkbox-remove', 211, 'caught');
+            this.operationCheckboxLabel = 'Remove';
+            this.showOperationCheckbox = !this.showOperationCheckbox;
+        }
+    }
+};
+
+/***/ }),
+/* 1228 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.student-row input {\n  border: none;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1229 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1231)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1227),
+  /* template */
+  __webpack_require__(1230),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/old/student-row.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] student-row.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-43dacba2", Component.options)
+  } else {
+    hotAPI.reload("data-v-43dacba2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1230 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showRow),
+      expression: "showRow"
+    }],
+    staticClass: "panel-block student-row",
+    on: {
+      "toggle-checkbox-delete": _vm.handleToggleCheckboxDelete
+    }
+  }, [_vm._m(0), _vm._v(" "), _c('div', {
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    staticClass: "field"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.firstName),
+      expression: "firstName"
+    }],
+    staticClass: "input",
+    attrs: {
+      "type": "text",
+      "placeholder": "First name",
+      "id": _vm.getInputId('firstName')
+    },
+    domProps: {
+      "value": (_vm.firstName)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.firstName = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.lastName),
+      expression: "lastName"
+    }],
+    staticClass: "input",
+    attrs: {
+      "type": "text",
+      "placeholder": "Last name",
+      "id": _vm.getInputId('lastName')
+    },
+    domProps: {
+      "value": (_vm.lastName)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.lastName = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.identifier),
+      expression: "identifier"
+    }],
+    staticClass: "input",
+    attrs: {
+      "type": "text",
+      "placeholder": "Student id",
+      "id": _vm.getInputId('identifier')
+    },
+    domProps: {
+      "value": (_vm.identifier)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.identifier = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.email),
+      expression: "email"
+    }],
+    staticClass: "input",
+    attrs: {
+      "type": "text",
+      "placeholder": "Email address",
+      "id": _vm.getInputId('email')
+    },
+    domProps: {
+      "value": (_vm.email)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.email = $event.target.value
+      }
+    }
+  })])])]), _vm._v(" "), _c('div', {
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showDeleteOperationArea),
+      expression: "showDeleteOperationArea"
+    }],
+    staticClass: "control delete-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox student-operation-checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "change": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$el.checked) {
+            $$i < 0 && (_vm.isSelected = $$a.concat([$$v]))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Delete")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showRemoveOperationArea),
+      expression: "showRemoveOperationArea"
+    }],
+    staticClass: "control remove-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox student-operation-checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "change": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$el.checked) {
+            $$i < 0 && (_vm.isSelected = $$a.concat([$$v]))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Remove")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showMoveOperationArea),
+      expression: "showMoveOperationArea"
+    }],
+    staticClass: "control move-operation-area"
+  }, [_c('label', {
+    staticClass: "checkbox student-operation-checkbox"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.isSelected),
+      expression: "isSelected"
+    }],
+    staticClass: "checkbox",
+    attrs: {
+      "type": "checkbox",
+      "id": _vm.checkboxId
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.isSelected) ? _vm._i(_vm.isSelected, null) > -1 : (_vm.isSelected)
+    },
+    on: {
+      "change": function($event) {
+        var $$a = _vm.isSelected,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = _vm._i($$a, $$v);
+          if ($$el.checked) {
+            $$i < 0 && (_vm.isSelected = $$a.concat([$$v]))
+          } else {
+            $$i > -1 && (_vm.isSelected = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.isSelected = $$c
+        }
+      }
+    }
+  }), _vm._v("Add")])])])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showGradeInfo),
+      expression: "showGradeInfo"
+    }],
+    staticClass: "field is-horizontal"
+  }, [_c('div', {
+    staticClass: "field-body"
+  }, [_c('div', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.score),
+      expression: "score"
+    }],
+    staticClass: "input",
+    attrs: {
+      "type": "text",
+      "id": _vm.getInputId('score')
+    },
+    domProps: {
+      "value": (_vm.score)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.score = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.grade),
+      expression: "grade"
+    }],
+    staticClass: "input",
+    attrs: {
+      "type": "text",
+      "id": _vm.getInputId('grade')
+    },
+    domProps: {
+      "value": (_vm.grade)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.grade = $event.target.value
+      }
+    }
+  })])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('span', {
+    staticClass: "panel-icon"
+  }, [_c('i', {
+    staticClass: "fa fa-user"
+  })])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-43dacba2", module.exports)
+  }
+}
+
+/***/ }),
+/* 1231 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1228);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("ae3b2a5a", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-43dacba2\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./student-row.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-43dacba2\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./student-row.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1232 */,
+/* 1233 */,
+/* 1234 */,
+/* 1235 */,
+/* 1236 */,
+/* 1237 */,
+/* 1238 */,
+/* 1239 */,
+/* 1240 */,
+/* 1241 */,
+/* 1242 */,
+/* 1243 */,
+/* 1244 */,
+/* 1245 */,
+/* 1246 */,
+/* 1247 */,
+/* 1248 */,
+/* 1249 */,
+/* 1250 */,
+/* 1251 */,
+/* 1252 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+
+    props: [],
+
+    components: {},
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    computed: {},
+
+    methods: {
+        toggleSelectorVisibility: function toggleSelectorVisibility() {
+            this.$store.commit('toggleKumiSelectVisibility');
+            this.$emit('toggled');
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+};
+
+/***/ }),
+/* 1253 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1254 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1256)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1252),
+  /* template */
+  __webpack_require__(1255),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/kumi/kumi-selector-visibility-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] kumi-selector-visibility-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-21f6677d", Component.options)
+  } else {
+    hotAPI.reload("data-v-21f6677d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1255 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button student-move-button is-outlined  is-primary",
+    on: {
+      "click": _vm.toggleSelectorVisibility
+    }
+  }, [_vm._t("label")], 2)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-21f6677d", module.exports)
+  }
+}
+
+/***/ }),
+/* 1256 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1253);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("007135b0", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-21f6677d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./kumi-selector-visibility-button.vue", function() {
+     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-21f6677d\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./kumi-selector-visibility-button.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1257 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Created by adam on 1/24/18.
+ */
+
+var state = {
+
+    /** Whether to display the error modal */
+    isErrorModalVisible: false,
+
+    /** Whether the confirmation dialog is displayed*/
+    isConfirmationModalVisible: false,
+
+    modalText: '',
+
+    modalData: null
+};
+
+var mutations = {
+
+    toggleErrorModal: function toggleErrorModal(state, payload) {
+
+        //set the text if the modal is not visible
+        if (!state.isErrorModalVisible && !_.isUndefined(payload)) state.modalData = payload;
+
+        state.isErrorModalVisible = !state.isErrorModalVisible;
+    },
+
+    toggleConfirmationModal: function toggleConfirmationModal(state, payload) {
+        //set the text if the modal is not visible
+        if (!state.isConfirmationModalVisible && !_.isUndefined(payload)) state.modalData = payload;
+
+        state.isConfirmationModalVisible = !state.isConfirmationModalVisible;
+    },
+
+    setModalData: function setModalData(state, payload) {
+        state.modalData = payload;
+    }
+
+};
+
+var actions = {};
+
+var getters = {
+    /**
+     * Returns the PayloadModal object that has been stored
+     * @param state
+     * @returns {null|*}
+     */
+    getModalData: function getModalData(state) {
+        return state.modalData;
+    },
+
+    /**
+     * Used to control the error modal
+     * @param state
+     * @returns {boolean}
+     */
+    isErrorModalVisible: function isErrorModalVisible(state) {
+        return state.isErrorModalVisible;
+    },
+
+    /**
+     * Used to control the confirmation modal
+     * @param state
+     * @returns {boolean}
+     */
+    isConfirmationModalVisible: function isConfirmationModalVisible(state) {
+        return state.isConfirmationModalVisible;
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1258 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Payload2 = __webpack_require__(1);
+
+var _Payload3 = _interopRequireDefault(_Payload2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * This transports data to the confirmation and error modals
+ */
+var PayloadModal = function (_Payload) {
+    _inherits(PayloadModal, _Payload);
+
+    function PayloadModal() {
+        _classCallCheck(this, PayloadModal);
+
+        /** Text of the associated comment */
+        var _this = _possibleConstructorReturn(this, (PayloadModal.__proto__ || Object.getPrototypeOf(PayloadModal)).call(this));
+
+        _this.text;
+
+        /** One of 'error' or .... */
+        _this.type;
+
+        _this.closingDelay;
+
+        _this.confirmationCallback;
+        return _this;
+    }
+
+    _createClass(PayloadModal, null, [{
+        key: 'factory',
+        value: function factory(params) {
+            var pt = new PayloadModal();
+            return this.fillObject(pt, params);
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['confirmationCallback', 'closingDelay', 'text', 'type'];
+        }
+    }]);
+
+    return PayloadModal;
+}(_Payload3.default);
+
+exports.default = PayloadModal;
+
+/***/ }),
+/* 1259 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _PayloadModal = __webpack_require__(1258);
+
+var _PayloadModal2 = _interopRequireDefault(_PayloadModal);
+
+var _newGradingGetterTypes = __webpack_require__(1217);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _newGradingActionTypes = __webpack_require__(1219);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = {
+
+    computed: {
+
+        /** Whether the error modal is displayed */
+        isErrorModalVisible: function isErrorModalVisible() {
+            return this.$store.getters.isErrorModalVisible;
+        },
+
+        /** Whether the confirmation dialog is displayed*/
+        isConfirmationModalVisible: function isConfirmationModalVisible() {
+            return this.$store.getters.isConfirmationModalVisible;
+        },
+
+        /** Includes kumiSelectorVisible so that anything in the label
+         * can change with the list state
+         */
+        isKumiSelectorVisible: function isKumiSelectorVisible() {
+            return this.$store.getters.isKumiSelectVisible;
+        },
+
+        /**
+         * Array of currently selected groups. When
+         * an operation button is clicked, these will be part of the
+         * payload.
+         */
+        selectedKumis: function selectedKumis() {
+            return this.$store.getters.getSelectedKumis;
+        },
+
+        /**
+         * Array of currently selected students. When
+         * an operation button is clicked, these will be part of the
+         * payload.
+         */
+        selectedStudents: function selectedStudents() {
+            return this.$store.getters.getSelectedStudents;
+        }
+
+    },
+
+    methods: {
+
+        /**
+         * Displays the confirmation window when
+         * the button is clicked after performing
+         * the check on whether the operation is valid
+         */
+        handleClick: function handleClick() {
+            if (this.isOperationValid) {
+                window.console.log('action-buttons.mixin', 'handleClick', 62, this.button.id);
+
+                //open the kumi selector
+                if (this.requiresKumiSelector) this.$store.commit('toggleKumiSelectVisibility');
+
+                if (this.requiresConfirmation) {
+                    this.$store.commit('toggleConfirmationModal', _PayloadModal2.default.factory({
+                        text: this.confirmationModalText,
+                        confirmationCallback: this.handleConfirmation
+                    }));
+                } else {
+                    //for things like adding to groups we don't
+                    //need the user to confirm, so we pretend that
+                    //it is confirmed.
+                    this.handleConfirmation();
+                }
+            } else {
+
+                this.$store.commit('toggleErrorModal', _PayloadModal2.default.factory({
+                    type: 'error',
+                    text: this.errorModalText
+                }));
+
+                // this.isErrorModalVisible = true;
+            }
+        },
+
+        notifyParentOperationIsComplete: function notifyParentOperationIsComplete() {
+            this.$emit('done');
+        },
+
+        /**
+         * Dispatches the action defined in this.actionName
+         * with the payload defined in this.payload
+         */
+        handleConfirmation: function handleConfirmation() {
+            var me = this;
+            //close modal
+            // this.isConfirmationModalVisible = false;
+
+            this.$store.dispatch(this.actionName, this.payload).then(function () {
+                me.resetDisplay();
+            });
+        },
+
+        /**
+         * Called when cancel is clicked
+         */
+        handleCancellation: function handleCancellation() {
+            this.resetDisplay();
+        },
+
+        /**
+         * Resets the selected students and kumis to
+         * default state. Also hides any displayed menus
+         * and clears the pending operation
+         */
+        resetDisplay: function resetDisplay() {
+            //hide the displayed kumi selector
+            if (this.isKumiSelectorVisible) this.$store.commit('toggleKumiSelectVisibility');
+
+            //clear previous selections
+            this.$store.commit('clearSelectedStudents');
+            this.$store.commit('clearSelectedKumis');
+
+            //make sure the modals are closed
+            //modals should be closed by the store controller
+
+            // this.isConfirmationModalVisible = false;
+            // this.isErrorModalVisible = false;
+        }
+
+    }
+};
+
+// import gTypes from '../../../../store/getter-types';
+
+/***/ }),
+/* 1260 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1271)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1261),
+  /* template */
+  __webpack_require__(1269),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/action-buttons/action-button-base.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] action-button-base.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c997b5d4", Component.options)
+  } else {
+    hotAPI.reload("data-v-c997b5d4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1261 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+// import AutoClosingModal from "../../../modals/auto-closing-modal";
+// import ConfirmationModal from "../../../modals/confirmation-modal";
+//
+// export default {
+//     components: {
+//         ConfirmationModal,
+//         AutoClosingModal
+//     },
+
+// mixins : [mixin]
+
+
+// }
+
+
+/***/ }),
+/* 1262 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Student = __webpack_require__(20);
+
+var _Student2 = _interopRequireDefault(_Student);
+
+var _Kumi = __webpack_require__(19);
+
+var _Kumi2 = _interopRequireDefault(_Kumi);
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(4);
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
@@ -108138,13 +109163,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = {
 
-    props: [],
-
-    components: {},
-
     data: function data() {
         return {
             buttonLabel: 'New student',
+
+            buttonStyles: "is-primary is-outlined ",
+
             helpText: '',
 
             events: {
@@ -108158,7 +109182,7 @@ exports.default = {
 
     computed: {
         styling: function styling() {
-            return "is-primary is-outlined ";
+            return this.buttonStyles;
         }
     },
 
@@ -108176,14 +109200,17 @@ exports.default = {
                 //This also will associate with the currently selected
                 //kumi
                 var pl = _Payload2.default.factory({ obj: s, student: s });
-                me.$store.dispatch(aTypes.handleNewStudentStorageAndAssociation, pl);
-                resolve();
+                me.$store.dispatch(aTypes.handleNewStudentStorageAndAssociation, pl).then(function () {
+                    resolve();
+                });
             });
 
+            //Handle tasks once all the above is done
             p.then(function () {
                 me.notifyComplete();
             });
 
+            //Handle any errors
             p.catch(function () {
                 //todo
             });
@@ -108202,10 +109229,78 @@ exports.default = {
 };
 
 /***/ }),
-/* 1218 */
+/* 1263 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)();
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionButtonBase = __webpack_require__(1260);
+
+var _actionButtonBase2 = _interopRequireDefault(_actionButtonBase);
+
+var _actionButtons = __webpack_require__(1259);
+
+var _actionButtons2 = _interopRequireDefault(_actionButtons);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    extends: _actionButtonBase2.default,
+
+    mixins: [_actionButtons2.default],
+
+    data: function data() {
+        return {
+            actionName: 'addStudentsToKumis',
+
+            button: {
+                class: ' student-move-button is-outlined  is-primary',
+                label: 'Add to group',
+                id: 'student-move-button'
+            },
+
+            errorModalText: "Please select 1 or more students ",
+
+            confirmationModalText: " ",
+
+            requiresConfirmation: false,
+
+            requiresKumiSelector: true
+
+        };
+    },
+
+    computed: {
+        payload: function payload() {
+            return {
+                students: this.selectedStudents,
+                kumis: this.selectedKumis
+            };
+        },
+
+        /**
+         * Whether or not the conditions for using this
+         * button are correct
+         * @param testKumis
+         */
+        isOperationValid: function isOperationValid() {
+            if (this.selectedStudents.length === 0 || this.selectedKumis.length === 0) return false;
+            return true;
+        }
+    }
+
+};
+
+/***/ }),
+/* 1264 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
 // imports
 
 
@@ -108216,19 +109311,33 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 1219 */
+/* 1265 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(1221)
+  __webpack_require__(1270)
 }
 var Component = __webpack_require__(3)(
   /* script */
-  __webpack_require__(1217),
+  __webpack_require__(1262),
   /* template */
-  __webpack_require__(1220),
+  __webpack_require__(1268),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -108236,7 +109345,7 @@ var Component = __webpack_require__(3)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/add-student-button.vue"
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/action-buttons/add-student-button.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] add-student-button.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -108247,9 +109356,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-61eda7f8", Component.options)
+    hotAPI.createRecord("data-v-7140d5d1", Component.options)
   } else {
-    hotAPI.reload("data-v-61eda7f8", Component.options)
+    hotAPI.reload("data-v-7140d5d1", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -108260,12 +109369,51 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 1220 */
+/* 1267 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1263),
+  /* template */
+  null,
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/action-buttons/add-students-to-group-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-54dc662a", Component.options)
+  } else {
+    hotAPI.reload("data-v-54dc662a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('a', {
-    staticClass: "button add-student-control",
+    staticClass: "button add-student-button",
     class: _vm.styling,
     on: {
       "click": _vm.addStudent
@@ -108276,28 +109424,52 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-61eda7f8", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-7140d5d1", module.exports)
   }
 }
 
 /***/ }),
-/* 1221 */
+/* 1269 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "button ",
+    class: _vm.button.class,
+    attrs: {
+      "id": _vm.button.id
+    },
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_vm._v(_vm._s(_vm.button.label))])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c997b5d4", module.exports)
+  }
+}
+
+/***/ }),
+/* 1270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(1218);
+var content = __webpack_require__(1264);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("63242b73", content, false);
+var update = __webpack_require__(7)("61dc5a91", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-61eda7f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-student-button.vue", function() {
-     var newContent = require("!!../../../../../../../node_modules/css-loader/index.js!../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-61eda7f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-student-button.vue");
+   module.hot.accept("!!../../../../../../../../node_modules/css-loader/index.js!../../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7140d5d1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-student-button.vue", function() {
+     var newContent = require("!!../../../../../../../../node_modules/css-loader/index.js!../../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7140d5d1\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add-student-button.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -108305,6 +109477,629 @@ if(false) {
  // When the module is disposed, remove the <style> tags
  module.hot.dispose(function() { update(); });
 }
+
+/***/ }),
+/* 1271 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1265);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("3046556f", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../../node_modules/css-loader/index.js!../../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c997b5d4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./action-button-base.vue", function() {
+     var newContent = require("!!../../../../../../../../node_modules/css-loader/index.js!../../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c997b5d4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./action-button-base.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1272 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1273),
+  /* template */
+  null,
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/action-buttons/remove-students-from-roster-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5ce69ffe", Component.options)
+  } else {
+    hotAPI.reload("data-v-5ce69ffe", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1273 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionButtonBase = __webpack_require__(1260);
+
+var _actionButtonBase2 = _interopRequireDefault(_actionButtonBase);
+
+var _actionButtons = __webpack_require__(1259);
+
+var _actionButtons2 = _interopRequireDefault(_actionButtons);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    extends: _actionButtonBase2.default,
+
+    mixins: [_actionButtons2.default],
+
+    data: function data() {
+        return {
+            actionName: 'removeStudentsFromRoster',
+
+            button: {
+                class: ' is-outlined is-danger ',
+                label: 'Remove',
+                id: 'remove-students-from-roster-button'
+            },
+
+            errorModalText: "Please select 1 or more students ",
+
+            confirmationModalText: "This will delete the selected students entirely. All data related to the students will be lost permanently. Are you absolutely sure that's what you want to do? ",
+
+            operation: 'delete',
+
+            requiresConfirmation: true
+        };
+    },
+
+    computed: {
+        payload: function payload() {
+            //we only need the array, not a payload object
+            return this.selectedStudents;
+        },
+
+        /**
+         * Whether or not the conditions for using this
+         * button are correct
+         * @param testKumis
+         */
+        isOperationValid: function isOperationValid() {
+            if (this.selectedStudents.length === 0) return false;
+            return true;
+        }
+    }
+
+};
+
+/***/ }),
+/* 1274 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _removeStudentsFromRosterButton = __webpack_require__(1272);
+
+var _removeStudentsFromRosterButton2 = _interopRequireDefault(_removeStudentsFromRosterButton);
+
+var _addStudentsToGroupButton = __webpack_require__(1267);
+
+var _addStudentsToGroupButton2 = _interopRequireDefault(_addStudentsToGroupButton);
+
+var _removeStudentsFromGroupButton = __webpack_require__(1281);
+
+var _removeStudentsFromGroupButton2 = _interopRequireDefault(_removeStudentsFromGroupButton);
+
+var _kumiSelectorVisibilityButton = __webpack_require__(1254);
+
+var _kumiSelectorVisibilityButton2 = _interopRequireDefault(_kumiSelectorVisibilityButton);
+
+var _autoClosingModal = __webpack_require__(736);
+
+var _autoClosingModal2 = _interopRequireDefault(_autoClosingModal);
+
+var _confirmationModal = __webpack_require__(737);
+
+var _confirmationModal2 = _interopRequireDefault(_confirmationModal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+exports.default = {
+
+    props: [''],
+
+    components: {
+        ConfirmationModal: _confirmationModal2.default,
+        AutoClosingModal: _autoClosingModal2.default,
+        KumiSelectorVisibilityButton: _kumiSelectorVisibilityButton2.default,
+        RemoveStudentsFromGroupButton: _removeStudentsFromGroupButton2.default,
+        AddStudentsToGroupButton: _addStudentsToGroupButton2.default,
+        RemoveStudentsFromRosterButton: _removeStudentsFromRosterButton2.default
+    },
+
+    data: function data() {
+        return {
+            operationType: false
+        };
+    },
+
+    computed: {
+        styling: function styling() {
+            return this.injectableClasses;
+        },
+
+        /** Includes kumiSelectorVisible so that anything in the label
+         * can change with the list state
+         */
+        isKumiSelectorVisible: function isKumiSelectorVisible() {
+            return this.$store.getters.isKumiSelectVisible;
+        }
+
+    }
+};
+
+/***/ }),
+/* 1275 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1276 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1278)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1274),
+  /* template */
+  __webpack_require__(1277),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/action-buttons/student-action-button-parent.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] student-action-button-parent.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2ca45181", Component.options)
+  } else {
+    hotAPI.reload("data-v-2ca45181", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1277 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    class: _vm.styling,
+    attrs: {
+      "id": "student-action-buttons"
+    }
+  }, [(_vm.isKumiSelectorVisible) ? _c('div', {
+    staticClass: "field is-grouped is-fullwidth",
+    attrs: {
+      "id": "confirmationButtonsArea"
+    }
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('kumi-selector-visibility-button', {
+    on: {
+      "toggled": function($event) {
+        _vm.operationType = false
+      }
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "label"
+    },
+    slot: "label"
+  }, [_vm._v("Cancel")])])], 1), _vm._v(" "), (_vm.operationType === 'add') ? _c('p', {
+    staticClass: "control"
+  }, [_c('add-students-to-group-button')], 1) : _vm._e(), _vm._v(" "), (_vm.operationType === 'remove') ? _c('p', {
+    staticClass: "control"
+  }, [_c('remove-students-from-group-button')], 1) : _vm._e()]) : _c('div', {
+    attrs: {
+      "id": "kumi-selector-area"
+    }
+  }, [_c('div', {
+    staticClass: "buttons"
+  }, [_c('kumi-selector-visibility-button', {
+    on: {
+      "toggled": function($event) {
+        _vm.operationType = 'add'
+      }
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "label"
+    },
+    slot: "label"
+  }, [_vm._v("Add to groups")])]), _vm._v(" "), _c('kumi-selector-visibility-button', {
+    on: {
+      "toggled": function($event) {
+        _vm.operationType = 'remove'
+      }
+    }
+  }, [_c('span', {
+    attrs: {
+      "slot": "label"
+    },
+    slot: "label"
+  }, [_vm._v("Remove from groups")])]), _vm._v(" "), _c('remove-students-from-roster-button')], 1)]), _vm._v(" "), _c('auto-closing-modal'), _vm._v(" "), _c('confirmation-modal')], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-2ca45181", module.exports)
+  }
+}
+
+/***/ }),
+/* 1278 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1275);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("6839c8e6", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../../../node_modules/css-loader/index.js!../../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2ca45181\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./student-action-button-parent.vue", function() {
+     var newContent = require("!!../../../../../../../../node_modules/css-loader/index.js!../../../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2ca45181\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./student-action-button-parent.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 1279 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+
+    computed: {
+        /**
+         * Whether or not the modal is presently visible
+         * @returns {*}
+         */
+        isModalVisible: function isModalVisible() {
+            //If the prop is set, use it
+            if (!_.isUndefined(this.isVisible)) return this.isVisible;
+            //use the data in the store
+            return this.$store.getters[this.getterNames.visibility];
+        },
+
+        /**
+         * Used to control the error modal
+         * @param state
+         * @returns {boolean}
+         */
+        isErrorModalVisible: function isErrorModalVisible() {
+            return this.$store.getters.isErrorModalVisible;
+        },
+
+        /**
+         * Used to control the confirmation modal
+         * @param state
+         * @returns {boolean}
+         */
+        isConfirmationModalVisible: function isConfirmationModalVisible() {
+            return this.$store.getters.isConfirmationModalVisible;
+        },
+
+        /**
+         * Gets the PayloadModal object
+         * @returns {*}
+         */
+        modalDataObject: function modalDataObject() {
+            var obj = this.$store.getters.getModalData;
+            if (!_.isUndefined(obj) && !_.isNull(obj)) return obj;
+            return false;
+        },
+
+        /**
+         * Body text for the modal
+         * @returns {string}
+         */
+        modalText: function modalText() {
+            if (this.content) return this.content;
+
+            if (this.modalDataObject) return this.modalDataObject.text;
+
+            /**
+             * The preferred method of passing in
+             * context is via a slot or the modal data in store.
+             * But this will
+             * work for older uses.
+             */
+            if (!_.isUndefined(this.defaults.bodyText)) return this.defaults.bodyText;
+        },
+
+        /**
+         * The type of the modal
+         * This will govern the classes used in the modal
+         * @returns {binding.getOSType}
+         */
+        modalType: function modalType() {
+            //if the prop is set, use that
+            if (_.isUndefined(this.type)) return this.type;
+
+            if (this.modalDataObject) return this.modalDataObject.type;
+        }
+
+    },
+
+    methods: {
+        closeModal: function closeModal() {
+            this.$store.commit(this.mutationNames.toggleVisibility);
+        },
+
+        handleCancellation: function handleCancellation() {
+            window.console.log('modal.mixin', 'handleCancellation', 65, this.modalDataObject);
+            this.$emit('cancel-selected');
+            this.closeModal();
+        },
+
+        handleConfirmation: function handleConfirmation() {
+            window.console.log('modal.mixin', 'handleConfirmation', 70, this.modalDataObject);
+            //hit the callback provided
+            if (this.modalDataObject) this.modalDataObject.confirmationCallback();
+            this.$emit('confirm-selected');
+            this.closeModal();
+        }
+    }
+};
+
+/***/ }),
+/* 1280 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionButtonBase = __webpack_require__(1260);
+
+var _actionButtonBase2 = _interopRequireDefault(_actionButtonBase);
+
+var _actionButtons = __webpack_require__(1259);
+
+var _actionButtons2 = _interopRequireDefault(_actionButtons);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+
+
+exports.default = {
+    extends: _actionButtonBase2.default,
+    mixins: [_actionButtons2.default],
+
+    data: function data() {
+        return {
+            actionName: 'removeStudentsFromRoster',
+
+            button: {
+                class: ' is-outlined is-danger ',
+                label: 'Remove from group',
+                id: 'remove-students-from-group-button'
+            },
+
+            errorModalText: "Please select 1 or more students ",
+
+            confirmationModalText: "Are you sure you want to remove the student from this group? This will not remove them from the exam",
+
+            operation: 'delete',
+
+            requiresConfirmation: true
+
+        };
+    },
+
+    computed: {
+        payload: function payload() {
+            //we only need the array, not a payload object
+            return this.selectedStudents;
+        },
+
+        /**
+         * Whether or not the conditions for using this
+         * button are correct
+         * @param testKumis
+         */
+        isOperationValid: function isOperationValid() {
+            if (this.selectedStudents.length === 0 || this.selectedKumis.length === 0) return false;
+            return true;
+        }
+    }
+
+};
+
+/***/ }),
+/* 1281 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1280),
+  /* template */
+  null,
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/setup/student/action-buttons/remove-students-from-group-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6b11a834", Component.options)
+  } else {
+    hotAPI.reload("data-v-6b11a834", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
 
 /***/ })
 /******/ ]);

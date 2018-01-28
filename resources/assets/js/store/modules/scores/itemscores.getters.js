@@ -1,4 +1,4 @@
-import * as nggTypes from "../newgrading/new-grading-getter-types";
+import * as nggTypes from "../../new-grading-getter-types";
 import { itemScoreGetter } from "./itemscores.helpers";
 
 module.exports = {

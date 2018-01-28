@@ -4,7 +4,7 @@
        v-on:click="removeKumi"
     >
         <span class="icon is-small"><i class="fa fa-recycle" aria-hidden="true"></i></span>
-        <span class="is-small">Remove</span>
+        <span class="is-small">Remove from this exam</span>
         <span class="sr-only">Remove group button</span>
     </a>
 </template>
@@ -27,7 +27,10 @@
 
         data: function () {
             return {
-                styling:'is-outlined is-danger',
+                styles: {
+                    active: 'is-outlined is-danger',
+                    disabled: 'is-disabled'
+                },
 
                 defaults: {}
             }
@@ -36,7 +39,16 @@
         computed : {
             exam : function (  ) {
           return this.$store.getters[gTypes.getActiveExam];
-            }
+            },
+
+            styling : function (  ) {
+              return this.isAssociatedWithActiveExam ? this.styles.active : this.styles.disabled;
+            },
+
+            isAssociatedWithActiveExam: function () {
+                return this.$store.getters.areKumiAndExamAssociated({kumi : this.kumi, exam: this.exam});
+            },
+
         },
 
         methods: {

@@ -1,6 +1,6 @@
-import * as lmTypes from '../legacy-mutation-types'
-import * as laTypes from '../legacy-action-types'
-import Payload from '../../models/Payload'
+import * as lmTypes from '../../legacy-mutation-types'
+import * as laTypes from '../../legacy-action-types'
+import Payload from '../../../models/Payload'
 
 const state = {
     /** Format: { studentIndex : { elementIndex : elementScore},  ... } */

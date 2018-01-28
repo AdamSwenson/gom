@@ -5,9 +5,9 @@
  * Created by adam on 1/12/17.
  */
 import Vue from 'vue';
-import * as mTypes from './new-grading-mutation-types';
-import * as aTypes from './new-grading-action-types';
-import * as gTypes from './new-grading-getter-types';
+import * as mTypes from '../../new-grading-mutation-types';
+import * as aTypes from '../../new-grading-action-types';
+import * as gTypes from '../../new-grading-getter-types';
 
 import Exam from '../../../models/Exam'
 import Payload from '../../../models/Payload'

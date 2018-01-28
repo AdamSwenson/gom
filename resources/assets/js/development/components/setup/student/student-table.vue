@@ -35,8 +35,7 @@
                 <student-table-row v-for="student in sortedStudents"
                                    :key="student.serialNumber"
                                    :student="student"
-                                   v-on:row-selection-event="handleRowSelectionEvent"
-                ></student-table-row>
+                   ></student-table-row>
 
                 </tbody>
 
@@ -109,7 +108,7 @@
                     sortDesc: "fa fa-sort-amount-desc"
                 },
 
-                isModalVisible: false,
+                isErrorModalVisible: false,
 //                selectedStudents: [],
                 sortAsc: true,
                 //The name of the property on the student object
@@ -176,18 +175,18 @@
             },
 
 
-            handleRowSelectionEvent: function ( { obj, isSelected } ) {
-                window.console.log( 'student-table', 'handleRowSelectionEvent', 136, obj, isSelected );
-                if ( isSelected ) {
-                    //The row is newly selected
-                    //Add the student to selectedStudents
-                    this.$store.commit( 'selectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
-                }
-                else {
-                    //it was already selected, so remove it
-                    this.$store.commit( 'deselectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
-                }
-            },
+            // handleRowSelectionEvent: function ( { obj, isSelected } ) {
+            //     window.console.log( 'student-table', 'handleRowSelectionEvent', 136, obj, isSelected );
+            //     if ( isSelected ) {
+            //         //The row is newly selected
+            //         //Add the student to selectedStudents
+            //         this.$store.commit( 'selectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
+            //     }
+            //     else {
+            //         //it was already selected, so remove it
+            //         this.$store.commit( 'deselectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
+            //     }
+            // },
 
 
             toggleSortAscending: function ( shortText ) {

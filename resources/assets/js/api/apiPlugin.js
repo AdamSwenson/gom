@@ -1,6 +1,8 @@
 /**
  * Created by adam on 4/1/17.
  */
+import { associateStudentWithKumi } from "../store/mutation-types";
+
 // require('../development/init-bootstrap-vue');
 // window.console.log( 'apiPlugin', 'vue', 5, Vue );
 
@@ -29,7 +31,7 @@ import * as aTypes from '../store/action-types';
 import * as mTypes from '../store/mutation-types';
 import * as gTypes from '../store/getter-types';
 
-import * as ngmTypes from '../store/modules/newgrading/new-grading-mutation-types';
+import * as ngmTypes from '../store/new-grading-mutation-types';
 
 import Payload from '../models/Payload'
 import Exam from '../models/Exam'
@@ -69,7 +71,7 @@ import {
     createStudentRequest,
     destroyStudent,
     updateStudent,
-    associateStudent,
+    associateStudentWithKumiRequest,
     disassociateStudent
 } from '../api/requests/studentRequests';
 
@@ -139,7 +141,7 @@ export default function ( store ) {
 
         // window.console.log( 'apiPlugin', 'subscription detected mutation', 77, mutation, payload );
 
-        let item = payload ? payload.getStoredObject( store ) : null;
+        let item = !_.isUndefined(payload) ? payload.getStoredObject( store ) : null;
 
         switch ( type ) {
 
@@ -174,18 +176,13 @@ export default function ( store ) {
              */
             case mTypes.addNewItem:
                 //we now do all of this in the action
-                if ( item ) {
-                    // createItem( store, item ).then( function () {
-                        // payload.callback();
-                    // } );
-                }
-                break;
+                 break;
 
             //this is the operation of pushing an item into the array
             case mTypes.setItem:
                 if ( item ) {
                     if ( !item instanceof Exam ) {
-                        let exam = store.getters[gTypes.getActiveExam];
+                        let exam = store.getters[ gTypes.getActiveExam ];
                         Item.setExamId( exam.id );
 
                         item.examId = exam.id;
@@ -257,7 +254,7 @@ export default function ( store ) {
             // ******************** Comments
             case mTypes.updateComment:
                 // window.console.log( 'apiPlugin', 'calling update comment', 140, item );
-                updateComment(item );
+                updateComment( item );
                 break;
 
 
@@ -286,12 +283,9 @@ export default function ( store ) {
              * NB This only associates. Thus the student
              * must have already been created on the server.
              */
-            // case mTypes.associateStudentWithKumi:
-            //     //We use the currently selected kumi if one wasn't set
-            //     //in the payload
-            //     var kumi = !_.isUndefined( payload.kumi ) ? payload.kumi : store.getters.getSelectedKumi;
-            //     associateStudent( store, payload.student, kumi );
-            //     break;
+            case mTypes.associateStudentWithKumi:
+                associateStudentWithKumiRequest( payload.student, payload.kumi );
+                break;
 
 
             // ******************** Notes
@@ -316,15 +310,15 @@ export default function ( store ) {
 
             // ********************  Preferences
             case ngmTypes.updateGradingPreference:
-                setGradePreferences(payload);
+                setGradePreferences( payload );
                 break;
 
             case ngmTypes.updateSetupPreference:
-                setSetupPreferences(payload);
+                setSetupPreferences( payload );
                 break;
 
             case ngmTypes.updateUserPreference:
-                setUserPreferences(payload);
+                setUserPreferences( payload );
                 break;
 
             // ******************** Scores
@@ -332,30 +326,17 @@ export default function ( store ) {
 
             // ******************** Students
             case mTypes.addStudentToRoster:
-                //Remember this now ONLY handles pushing a student into
-                //the roster. So it only sends the request to create a new
-                //student. This does nothing to create an association with a kumi
-                //either on the server or locally.
-                // setSyncStarting( store );
-                // // window.console.log( 'apiPlugin', 'addStudentToRoster', 169, type, payload );
-                // var student = payload.obj;
-                // //Requests the creation of a new student
-                // createStudentRequest( store, student );
-                // setSyncDone( store );
-                // //Assigns them to a particular kumi
-                // // var kumi = store.getters.getSelectedKumi;
-                // // let p = associateStudent( store, student, kumi );
-                // // p.then(()=>{
-                // //
-                // // })
-
+                //now handled in the action itself
                 break;
 
             case mTypes.removeStudentFromRoster:
+                //now handled in the action itself
+
+                //This is now done through the
                 // window.console.log( 'apiPlugin', 'removeStudentFromRoster', 182, payload );
-                var kumi = store.getters.getSelectedKumi;
-                var student = payload.obj;
-                disassociateStudent( student, kumi );
+                // var kumi = payload.kumi; //store.getters.getSelectedKumi;
+                // var student = payload.obj;
+                // disassociateStudent( student, kumi );
                 break;
 
             case mTypes.deleteStudent:

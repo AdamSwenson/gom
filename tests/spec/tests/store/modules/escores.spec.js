@@ -6,7 +6,7 @@ let faker = require( 'faker' );
 import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
 
 //Dependencies
-import * as escores from '../../../../../resources/assets/js/store/modules/escores';
+import * as escores from '../../../../../resources/assets/js/store/modules/legacy/escores';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 import Payload from '../../../../../resources/assets/js/models/Payload'

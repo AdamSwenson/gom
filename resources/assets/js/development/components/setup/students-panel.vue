@@ -37,25 +37,18 @@
              v-show="additionButtonsVisible"
         >
             <div class="buttons">
-                <!--<div class="field is-grouped is-fullwidth">-->
-                <!--<p class="control">-->
-                <add-student-control
-                        v-on:add-student-complete="handleAddStudentComplete"
-                ></add-student-control>
-                <!--</p>-->
 
-                <!--<div class="control">-->
-                <button id="add-students-button"
+                <add-student-control></add-student-control>
+
+                <button id="import-students-button"
                         class="button is-primary is-outlined "
                         v-on:click="toggleFileButtonVisibility"
                 >Import students
                 </button>
-                <!--</div>-->
-
 
                 <new-kumi-control type="button"></new-kumi-control>
 
-                <!--This requires the kumi editing modal to also be included-->
+                <!--This requires the kumi editing modal to also be included on the page-->
                 <edit-kumi-control type="button"></edit-kumi-control>
 
             </div>
@@ -64,31 +57,26 @@
             <kumi-editing-modal></kumi-editing-modal>
         </div>
 
-        <div id="file-input-area"
-             class="panel-block"
-             v-show="fileButtonVisible"
+        <div class="panel-block"
+             id="file-input-area"
+             v-if="fileButtonVisible"
         >
-
             <import-students-control
                     v-on:student-import-complete="handleImportComplete"
             ></import-students-control>
 
         </div>
 
-        <!--<div id="group-management-area" class="panel-block">-->
+        <div class="panel-block"
+             v-if="isKumiSelectorVisible"
+        >
+            <kumi-selector>
+                <label class="label" slot="label"> {{ kumiSelectorLabel }}</label>
+            </kumi-selector>
+        </div>
 
-        <!--</div>-->
-
-
-        <kumi-selector injectable-class="panel-block">
-            <label class="label" slot="label"> {{ kumiSelectorLabel }}</label>
-        </kumi-selector>
-
-        <div id="student-editing-controls-area">
-            <student-action-buttons
-                    injectable-classes="panel-block"
-                    v-on:update-select-label="updateSelectLabel"
-            ></student-action-buttons>
+        <div class="panel-block">
+            <student-action-button-parent></student-action-button-parent>
         </div>
 
     </div>
@@ -123,7 +111,7 @@
     import * as gTypes from '../../../store/getter-types';
 
     //components
-    import StudentRow from './student-row.vue'
+    import StudentRow from '../old/student-row.vue'
     import KumiNameField from './kumi/kumi-name-field.vue';
     import KumiSelector from './kumi/kumi-selector.vue';
     import KumiTabs from './kumi/kumi-tabs.vue';
@@ -133,12 +121,13 @@
     //File importing stuff
     import FileImporter from '../../../store/modules/roster/studentFileImporter';
     import ImportStudentsControl from "./student/import-students-control.vue";
-    import AddStudentControl from "./student/add-student-button.vue";
+    import AddStudentControl from "./student/action-buttons/add-student-button.vue";
 
     import { loadAllStudents } from '../../../api/requests/studentRequests';
     import NewKumiControl from "./kumi/new-kumi-control";
     import EditKumiControl from "./kumi/edit-kumi-control";
     import KumiEditingModal from "./kumi/kumi-editing-modal";
+    import StudentActionButtonParent from "./student/action-buttons/student-action-button-parent";
 
 
     export default {
@@ -146,6 +135,7 @@
         props: [],
 
         components: {
+            StudentActionButtonParent,
             KumiEditingModal,
             EditKumiControl,
             NewKumiControl,
@@ -194,6 +184,15 @@
                 return false;
             },
 
+            /**
+             * Whether the kumi selector is shown or visible.
+             * It will use the value stored
+             * in roster.display.kumiSelectVisible
+             */
+            isKumiSelectorVisible: function () {
+                return this.$store.getters.isKumiSelectVisible;
+            },
+
             students: function () {
                 return this.$store.getters.getStudentsFromRoster;
             },
@@ -217,11 +216,11 @@
                 this.kumiSelectorLabel = evt;
             },
 
-
-            handleAddStudentComplete: function () {
-                window.console.log( 'students-panel', 'handleAddStudentComplete', 223, );
-            },
-
+            //
+            // handleAddStudentComplete: function () {
+            //     // window.console.log( 'students-panel', 'handleAddStudentComplete', 223, );
+            // },
+            //
             /**
              * Handler for the event emitted by the import button
              */

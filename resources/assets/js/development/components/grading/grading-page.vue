@@ -114,15 +114,15 @@
 
 
     import { loadExam } from '../../../api/requests/examRequests';
-    import { loadExamKumi } from '../../../api/requests/kumiRequests';
+    import { loadKumiForExam } from '../../../api/requests/kumiRequests';
     import { loadAllStudents } from '../../../api/requests/studentRequests';
     // import { getItemsForExam, getItemOrderForExam } from '../../../api/requests/itemRequests';
     import Payload from '../../../models/Payload';
     import Exam from '../../../models/Exam';
 
-    import * as ngmTypes from '../../../store/modules/newgrading/new-grading-mutation-types';
-    import * as ngaTypes from '../../../store/modules/newgrading/new-grading-action-types';
-    import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
+    import * as ngmTypes from '../../../store/new-grading-mutation-types';
+    import * as ngaTypes from '../../../store/new-grading-action-types';
+    import * as nggTypes from '../../../store/new-grading-getter-types';
     import * as gTypes from '../../../store/getter-types';
     import * as mTypes from '../../../store/mutation-types';
 

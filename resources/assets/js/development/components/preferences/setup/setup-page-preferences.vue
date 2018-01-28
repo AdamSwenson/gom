@@ -19,7 +19,7 @@
 <script>
     import PreferencesBase from "../preferences-base";
 import Routes from '../../../routes.preferences';
-    import * as ngaTypes from '../../../../store/modules/newgrading/new-grading-action-types';
+    import * as ngaTypes from '../../../../store/new-grading-action-types';
     import preferencesPageMixin from '../preferencesPage.mixin';
 
     export default {

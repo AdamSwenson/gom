@@ -4,10 +4,10 @@
 import Vue from 'vue';
 import * as gTypes from '../../getter-types'
 import * as mTypes from '../../mutation-types'
-import * as ngmTypes from '../../modules/newgrading/new-grading-mutation-types';
+import * as ngmTypes from '../../new-grading-mutation-types';
 import * as aTypes from '../../action-types'
-import * as ngaTypes from '../../modules/newgrading/new-grading-action-types';
-import * as nggTypes from '../../modules/newgrading/new-grading-getter-types';
+import * as ngaTypes from '../../new-grading-action-types';
+import * as nggTypes from '../../new-grading-getter-types';
 
 import scoreRequests from "../../../api/requests/scoreRequests";
 

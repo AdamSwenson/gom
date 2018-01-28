@@ -15,7 +15,7 @@
 
 <script>
     import * as gTypes from '../../../../store/getter-types';
-    import * as nggTypes from '../../../../store/modules/newgrading/new-grading-getter-types';
+    import * as nggTypes from '../../../../store/new-grading-getter-types';
 
     module.exports = {
 

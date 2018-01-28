@@ -23,21 +23,33 @@ const KUMIS_JSON_NAME = 'loadedKumis';
 
 
 import {
-    filterExamAssociations, filterStudentAssociations, filterKumis,
+    filterExamKumiAssociations, filterStudentAssociations, filterKumis,
     getKumiById,
     getKumiBySerialNumber,
     processKumiFromJson
 } from './kumis.helpers'
 
+const checkIfNew = ( state, kumi ) => {
+    return _.findIndex( state.kumis, { id: kumi.id } ) === -1;
+};
+
 module.exports = {
 
     /**
      * Adds a new kumi object to the list of kumis
+     * Since kumis may be loaded at different times, this
+     * silently fails to add duplicates
      * @param state
      * @param payload
      */
     [mTypes.addKumi]: ( state, payload ) => {
-        state.kumis.push( payload.obj );
+        //prevent any duplicates since multiple processes
+        //may load kumis from the server. We do this
+        //check here because there may be other parts of
+        //the actions handling the loading which still need to
+        //happen
+        let kumi = payload.obj;
+        if( checkIfNew(state, kumi)) state.kumis.push( kumi );
     },
 
     /**
@@ -70,7 +82,7 @@ module.exports = {
     [mTypes.disassociateExamFromKumi]: ( state, payload ) => {
         let examId = payload.exam.id;
         let kumiId = payload.kumi.id;
-        let r = filterExamAssociations( state, kumiId, examId );
+        let r = filterExamKumiAssociations( state, kumiId, examId );
         let index = state.examKumiAssociations.indexOf( r[ 0 ] );
         state.examKumiAssociations.splice( index, 1 );
     },
@@ -86,16 +98,21 @@ module.exports = {
         let student = payload.student;
         let kumi = payload.kumi;
 
-        //store on the student object
-        student.associatedKumis.push( kumi );
-        //Now, redundantly store it centrally
-        //Why? No idea.... Not even sure if anything uses
-        //the central store
-        // todo Should check that not duplicating?
-        state.studentKumiAssociations.push( {
-            studentSerialNumber: student.serialNumber,
-            kumiSerialNumber: kumi.serialNumber
-        } );
+        //check if the kumi is already associated
+        if(! student.isInKumiOrKumiList(kumi) ) {
+
+            //store on the student object
+            student.associatedKumis.push( kumi );
+
+            //dev LEGACY
+            //Now, redundantly store it centrally
+            //Why? No idea.... Not even sure if anything uses
+            //the central store
+            state.studentKumiAssociations.push( {
+                studentSerialNumber: student.serialNumber,
+                kumiSerialNumber: kumi.serialNumber
+            } );
+        }
     },
 
     /**
@@ -105,10 +122,17 @@ module.exports = {
     [mTypes.disassociateStudentFromKumi]: ( state, payload ) => {
         let student = payload.student;
         let kumi = payload.kumi;
-        let index = state.studentKumiAssociations.indexOf( r[ 0 ] );
-        state.studentKumiAssociations.splice( index, 1 );
         //remove kumi from array stored in student
-        student.associatedKumis.splice( student.associatedKumis.indexOf( kumi ) );
+        student.associatedKumis.splice( student.associatedKumis.indexOf( kumi ) , 1 );
+
+        //dev legacy
+        //Remove from legacy storage
+        let r = {
+            studentSerialNumber: student.serialNumber,
+            kumiSerialNumber: kumi.serialNumber
+        };
+        let index = state.studentKumiAssociations.indexOf( r );
+        if(index !== -1) state.studentKumiAssociations.splice( index, 1 );
     },
 
 };

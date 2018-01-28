@@ -4,8 +4,19 @@
 
 import IModel from './IModel';
 
+/**
+ * Helper function for checking whether a kumi is
+ * in the student's list of kumis that she is associated with
+ */
+const isInList = ( kumi, listToCheck ) => {
+    // if(_.isUndefined(kumi) || _.isUndefined(kumi.id)) return false;
+    // if(_.isUndefined(listToCheck)) return false;
 
-export default class Student extends IModel{
+    return _.findIndex( listToCheck, { id: kumi.id } ) >= 0;
+};
+
+
+export default class Student extends IModel {
     constructor( studentId = -1 ) {
         super();
         this.email = '';
@@ -15,6 +26,7 @@ export default class Student extends IModel{
         this.lastName = '';
         this.firstName = '';
 
+        /** Kumi objects with which the student is associated */
         this.associatedKumis = [];
 
         //sometimes it will be expeditious just
@@ -47,6 +59,35 @@ export default class Student extends IModel{
         return this.id === -1;
     }
 
+    /**
+     * Given a kumi object or list of kumi objects,
+     * it returns whether or not the student is a member
+     * of that kumi by checking the provided kumi against
+     * the internally stored list of kumis which the student
+     * belongs to.
+     * When a list is provided, it returns true only if
+     * the student is a member of at least one of the kumis
+     * @param kumi
+     * @returns {boolean}
+     */
+    isInKumiOrKumiList( kumiOrKumis ) {
+        //This student belongs to no groups
+        if ( this.associatedKumis.length === 0 ) return false;
+
+        let isIn = false;
+        let me = this;
+
+        //Make sure we have a list to check
+        let kumis = _.isArray( kumiOrKumis ) ? kumiOrKumis : [ kumiOrKumis ];
+        _.forEach( kumis, function ( kumi ) {
+            //if it is in the list of kumis stored on the student,
+            //set our value to true;
+            if ( isInList( kumi, me.associatedKumis ) ) isIn = true;
+        } );
+
+        return isIn;
+    }
+
 
     /**
      * Returns a list of strings which are property
@@ -73,7 +114,7 @@ export default class Student extends IModel{
             last_name: 'lastName',
             first_name: 'firstName',
             student_id: 'id',
-            seconds : 'gradingTime'
+            seconds: 'gradingTime'
         };
 
     }
@@ -81,7 +122,7 @@ export default class Student extends IModel{
 
     static factory( params ) {
         let student = new Student();
-        return this.fillObject(student, params);
+        return this.fillObject( student, params, Student.aliasMap );
     }
 
     /* *************************** Id *************** */
@@ -124,7 +165,7 @@ export default class Student extends IModel{
      * Alias for _id
      */
     get studentId() {
-        return Number( this._id )
+        return Number( this.id )
     };
 
     /**
@@ -132,7 +173,7 @@ export default class Student extends IModel{
      * @param val
      */
     set studentId( val ) {
-        this._id = val;
+        this.id = val;
     }
 
 
@@ -160,14 +201,13 @@ export default class Student extends IModel{
 
     /* *************************** Names ************* */
 
-    get nameLastFirst(){
+    get nameLastFirst() {
         return this.lastName + ', ' + this.firstName;
     }
 
-    get nameFirstLast(){
+    get nameFirstLast() {
         return this.firstName + ' ' + this.lastName;
     }
-
 
 
     /* *************************** Identifier *********** */
@@ -184,9 +224,8 @@ export default class Student extends IModel{
     }
 
 
-
     static checkIfStudent( obj ) {
-        if ( obj instanceof Student) return true;
+        if ( obj instanceof Student ) return true;
 
         if ( obj.kind === 'student' ) return true;
 

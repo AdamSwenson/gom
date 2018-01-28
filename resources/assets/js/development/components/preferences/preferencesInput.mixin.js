@@ -1,7 +1,7 @@
 // import gTypes from '../../../../store/getter-types';
-import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
-import * as ngmTypes from '../../../store/modules/newgrading/new-grading-mutation-types';
-import * as ngaTypes from '../../../store/modules/newgrading/new-grading-action-types';
+import * as nggTypes from '../../../store/new-grading-getter-types';
+import * as ngmTypes from '../../../store/new-grading-mutation-types';
+import * as ngaTypes from '../../../store/new-grading-action-types';
 import Payload from '../../../models/Payload';
 
 import Routes from '../../routes.preferences';

@@ -6,13 +6,19 @@
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 import * as gTypes from '../getter-types'
-import * as ngmTypes from './newgrading/new-grading-mutation-types';
+import * as ngmTypes from '../new-grading-mutation-types';
 
 import Exam from '../../models/Exam'
 import Payload from '../../models/Payload'
 
 import {loadExam  } from '../../api/requests/examRequests';
 // import * as api from '../../api/controller'
+
+
+// const isNew = ( state, exam ) => {
+//     return _.findIndex( state.exams, { id: exam.id } ) === -1;
+// };
+
 
 /**
  * The older version used an index value to do lots of stuff.

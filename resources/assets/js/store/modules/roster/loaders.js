@@ -4,7 +4,7 @@ import * as mTypes from "../../mutation-types";
 
 import { loadStudentsForExam } from "../../../api/requests/studentRequests";
 import Kumi from "../../../models/Kumi";
-import { loadExamKumi } from "../../../api/requests/kumiRequests";
+import { loadKumiForExam } from "../../../api/requests/kumiRequests";
 
 
 module.exports = {
@@ -33,32 +33,37 @@ module.exports = {
                         let payload = Payload.factory( { obj: student, mutateSilently: true } );
                         commit( mTypes.addStudentToRoster, payload );
 
-                        if ( r.kumiId ) {
-                            //if the server sent us the id of the associated kumi
-                            //we are going to look up the client side representation
-                            //and then store it in the student object.
-                            //NB, there might not be a kumi id for any number of reasons,
-                            //including that an existing student is being newly associated with
-                            //a kumi.
-                            //Remember also that kumis are just groups now
-                            let kumi = getters.getKumiById( r.kumiId );
-                            if ( _.isUndefined( kumi ) ) {
-                                //if a kumi object doesn't exist yet with this id
-                                //figure out what the fuck to do.....
-                                //the best thing will probably involve
-                                //having the kumi loader update the kumi id's of
-                                //existing students when it loads. Thus if each
-                                //of them (kumi and student loaders) check and update ids
-                                // when they are done, we should be okay
-                                //todo add promises to help with this
-                            }
+                        if ( r.kumiIds ) {
+                            _.forEach( r.kumiIds, function ( id ) {
+                                //if the server sent us the id of the associated kumi
+                                //we are going to look up the client side representation
+                                //and then store it in the student object.
+                                //NB, there might not be a kumi id for any number of reasons,
+                                //including that an existing student is being newly associated with
+                                //a kumi.
+                                //Remember also that kumis are just groups now
+                                let kumi = getters.getKumiById( id );
 
-                            //Otherwise we are good, so call the mutation
-                            // this will both add the kumi to the student
-                            //and store the relationship centrally
-                            payload.student = student;
-                            payload.kumi = kumi;
-                            commit( mTypes.associateStudentWithKumi, payload )
+                                if ( ! _.isUndefined( kumi ) ) {
+
+                                    //if a kumi object doesn't exist yet with this id
+                                    //figure out what the fuck to do.....
+                                    //This is probably because the kumi is not associated with the exam.
+
+                                    //Otherwise we are good, so call the mutation
+                                    // this will both add the kumi to the student
+                                    //and store the relationship centrally
+                                    payload.student = student;
+                                    payload.kumi = kumi;
+                                    commit( mTypes.associateStudentWithKumi, payload )
+
+                                    //actually the current problem is that we're not properly
+                                    //disassociating the kumi and student
+
+                                }
+
+
+                            } );
                         }
                     } );
                     resolve();
@@ -80,7 +85,7 @@ module.exports = {
          */
         loadKumisForExamFromServer( { state, dispatch, commit, getters }, exam ) {
             return new Promise( function ( resolve, reject ) {
-                let p = loadExamKumi( exam );
+                let p = loadKumiForExam( exam );
                 return p.then( function ( data ) {
                     _.forEach( data, ( d ) => {
                         let k = Kumi.factory( d );

@@ -108,13 +108,5 @@
 
         },
 
-        methods: {},
-
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>

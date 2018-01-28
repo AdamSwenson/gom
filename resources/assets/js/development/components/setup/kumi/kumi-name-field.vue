@@ -1,9 +1,11 @@
 <template>
-        <input type="text"
-               class="input kumi-name-field"
-               v-bind:id="id"
-               v-bind:class="styling"
-               v-model="name"/>
+    <input type="text"
+           class="input kumi-name-field"
+           v-bind:id="id"
+           v-bind:class="styling"
+           v-model="name"
+           v-bind:autofocus="autofocus"
+    >
 
 </template>
 
@@ -25,18 +27,14 @@
     import * as aTypes from '../../../../store/action-types';
     import * as gTypes from '../../../../store/getter-types';
 
-    //todo Adjust styling so that box of input is not visible except when selected
-    export default{
+    export default {
 
         props: [ 'kumi' ],
 
-        components: {},
-
         data: function () {
             return {
-//                isSelected: false,
                 identifier: 'kumi-name-field',
-                inputHighlightClass : 'is-info',
+                inputHighlightClass: 'is-info',
                 defaults: {}
             }
         },
@@ -44,21 +42,20 @@
         computed: {
 
             id: function () {
-                return this.kumi ? this.identifier + '-' + this.serialNumber : '';
+                return this.kumi ? this.identifier + '-' + this.kumi.serialNumber : '';
             },
 
-            exam : function (  ) {
-              return this.$store.getters[gTypes.getActiveExam];
+            exam: function () {
+                return this.$store.getters[ gTypes.getActiveExam ];
             },
 
-            examKumis : function (  ) {
-                let examKumis = this.$store.getters[ gTypes.getKumisForExam ]( this.exam );
-                if ( _.isUndefined( examKumis ) || _.isNull( examKumis ) ) return [];
-                return examKumis;
+            isAssociatedWithActiveExam: function () {
+                return this.$store.getters.areKumiAndExamAssociated( { kumi: this.kumi, exam: this.exam } );
             },
 
-            isAssociatedWithActiveExam : function (  ) {
-                return this.examKumis.indexOf(this.kumi) > -1;
+            autofocus: function () {
+                if ( _.isUndefined( this.kumi ) || _.isNull( this.kumi ) ) return false;
+                return this.kumi.isNew();
             },
 
             name: {
@@ -81,7 +78,6 @@
 
         },
 
-        methods: {
-        }
+        methods: {}
     }
 </script>

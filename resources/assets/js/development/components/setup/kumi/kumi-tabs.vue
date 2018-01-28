@@ -2,10 +2,12 @@
     <div class="kumi-tabs tabs is-boxed">
 
         <ul>
-            <show-all-kumi-control type="tab"
-                                   :is-active="isActive(-1)"
-                                   :is-visible="isAllTabVisible"
-            ></show-all-kumi-control>
+            <li v-bind:class="[isAllTabActive ? 'is-active' : '' ]">
+                <show-all-kumi-control type="tab"
+                                       :is-active="isAllTabActive"
+                                       :is-visible="isAllTabVisible"
+                ></show-all-kumi-control>
+            </li>
 
 
             <kumi-tab v-if="kumiCount > 0"
@@ -13,14 +15,6 @@
                       :kumi="kumi"
                       v-bind:key="kumi.serialNumber"
             ></kumi-tab>
-
-
-            <!--<new-kumi-control type="tab"></new-kumi-control>-->
-
-            <!--<edit-kumi-control type="tab"-->
-                               <!--:is-editable="isEditable"-->
-                               <!--v-on:toggle-kumi-editable="toggleEditable"-->
-            <!--&gt;</edit-kumi-control>-->
 
         </ul>
     </div>
@@ -82,56 +76,51 @@
 
 
         computed: {
+            /**
+             * All kumis associated with the exam
+             */
             kumis: function () {
                 let k = this.$store.getters[ gTypes.getKumisForExam ]( this.exam );
                 if ( !_.isUndefined( k ) && !_.isNull( k ) ) return k;
                 return null;
             },
-            // kumis: function () {
-            //     return this.$store.getters[ gTypes.getKumisForExam ]( this.exam );;
-            //     return this.$store.getters[ gTypes.getAllKumis ];
-            // },
 
+            /**
+             * Returns the number of kumis
+             * This is mainly used to prevent the component from
+             * trying to render non-existent kumis.
+             */
             kumiCount: function () {
                 if ( _.isNull( this.kumis ) || _.isUndefined( this.kumis ) ) return 0;
                 return this.kumis.length;
             },
+
             exam: function () {
                 return this.$store.getters[ gTypes.getActiveExam ];
             },
 
+            /**
+             * List of kumis to filter the displayed students by
+             */
             displayedKumis: function () {
-                return this.$store.getters.getDisplayedKumis;
+                return this.$store.getters.getKumisToFilterStudentsBy;
+            },
+
+            /**
+             * Whether the 'all' tab is selected
+             * @returns {boolean}
+             */
+            isAllTabActive: function () {
+                return this.displayedKumis.length === 0;
             }
 
         },
 
         methods: {
-            showAllKumi: function () {
-                this.$store.commit( 'clearDisplayedKumis' );
-            },
-
-            handleKumiSelection: function ( kumi ) {
-                // window.console.log( 'kumi-tabs', 'handleKumiSelection', 151, kumi );
-                //This could be accidentally called when the area
-                //is open for editing.
-                //Thus we filter any such calls out
-                if ( this.isEditable ) return true;
-
-                this.$store.commit( 'toggleKumi', Payload.factory( { obj: kumi } ) );
-
-            },
-
-            isActive: function ( kumi ) {
-//                return this.$store.getters.isKumiDisplayed(kumi);
-                return this.displayedKumis.indexOf( kumi ) !== -1;
-            },
-
 
             toggleEditable: function () {
                 this.isEditable = !this.isEditable;
             },
-
 
         },
 

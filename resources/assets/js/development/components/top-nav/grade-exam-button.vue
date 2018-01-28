@@ -24,7 +24,7 @@
 
         data: function () {
             return {
-                label : 'Grade it!',
+                label : 'Grade',
                 defaults: {}
             }
         },

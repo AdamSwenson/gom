@@ -224,7 +224,7 @@
             },
 
             isStudentInSelectedKumi: function () {
-                return this.$store.getters.isStudentInSelectedKumi( this.student );
+                return this.$store.getters.isStudentInSelectedKumis( this.student );
             },
 
             /**

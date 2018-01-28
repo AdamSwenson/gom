@@ -10,11 +10,11 @@
 /**
  * Created by adam on 10/7/16.
  */
-import Student from '../../models/Student'
-import Payload from '../../models/Payload'
-import * as mTypes from '../mutation-types'
-import * as lmTypes from '../legacy-mutation-types';
-import * as laTypes from '../legacy-action-types'
+import Student from '../../../models/Student'
+import Payload from '../../../models/Payload'
+import * as mTypes from '../../mutation-types'
+import * as lmTypes from '../../legacy-mutation-types';
+import * as laTypes from '../../legacy-action-types'
 
 
 const state = {

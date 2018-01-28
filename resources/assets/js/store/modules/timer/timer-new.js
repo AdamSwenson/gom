@@ -1,10 +1,10 @@
 /**
  * Created by adam on 10/7/16.
  */
-import * as ngmTypes from './new-grading-mutation-types';
-import * as ngaTypes from './new-grading-action-types';
+import * as ngmTypes from '../../new-grading-mutation-types';
+import * as ngaTypes from '../../new-grading-action-types';
 import Payload from '../../../models/Payload'
-import * as nggTypes from "./new-grading-getter-types";
+import * as nggTypes from "../../new-grading-getter-types";
 
 
 const state = {

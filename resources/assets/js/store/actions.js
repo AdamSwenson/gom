@@ -19,44 +19,49 @@ const EXAM_JSON_NAME = 'loadedExam';
 const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
 const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
 
+
 export default function () {
-    return {
+    return {};
+};
+
 // export const actions = {
 // module.exports = {
-        /**
-         * Creates a new exam on the client, sets
-         * it as the active exam, and requests an
-         * exam id from the server
-         * @param state
-         * @param commit
-         * @param payload
-         */
-        createExam: ( { state, commit }, payload ) => {
-            return new Promise( ( resolve, reject ) => {
-                //instantiate the new exam
-                let exam = Exam.factory( { index: 0 } ); //.factory( {id: id, index: index} );
-                //set it in the items list
-                //this will call the api lister.
-                commit( mTypes.setItem, Payload.factory( { index: 0, obj: exam } ) );
-                //set it as active (in case anything is depending on the older structure)
-                // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
-                resolve()
-            } );
-
-        },
-
-        /**
-         * The payload should contain the exam that is presently set
-         * as the active exam, but with updated properties. This
-         * will replace the exam stored, so that vue can see the change
-         * @param state
-         * @param commit
-         * @param payload
-         */
-        updateExam: ( { state, commit }, payload ) => {
-            //set it as active
-            commit( mTypes.setActiveExam, Payload.factory( { obj: exam } ) );
-        }
+//         /**
+//          * Creates a new exam on the client, sets
+//          * it as the active exam, and requests an
+//          * exam id from the server
+//          * @param state
+//          * @param commit
+//          * @param payload
+//          */
+//         createExam: ( { state, commit }, payload ) => {
+//             return new Promise( ( resolve, reject ) => {
+//                 //instantiate the new exam
+//                 let exam = Exam.factory( { index: 0 } ); //.factory( {id: id, index: index} );
+//                 //set it in the items list
+//                 //this will call the api lister.
+//                 commit( mTypes.setItem, Payload.factory( { index: 0, obj: exam } ) );
+//                 //set it as active (in case anything is depending on the older structure)
+//                 // commit(mTypes.setActiveExam, Payload.factory({obj: exam}));
+//                 resolve()
+//             } );
+//
+//         },
+//
+//         /**
+//          * The payload should contain the exam that is presently set
+//          * as the active exam, but with updated properties. This
+//          * will replace the exam stored, so that vue can see the change
+//          * @param state
+//          * @param commit
+//          * @param payload
+//          */
+//         updateExam: ( { state, commit }, payload ) => {
+//             //set it as active
+//             commit( mTypes.setActiveExam, Payload.factory( { obj: exam } ) );
+//         }
+//
+//
         //,
         //
         // /**
@@ -81,8 +86,8 @@ export default function () {
         //     // } );
         //
         // }
-    }
-};
+//     }
+// };
 
 // export const parseItemData = ( { state, commit, dispatch } ) => {
 //     return new Promise( ( resolve, reject ) => {

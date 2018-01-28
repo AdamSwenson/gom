@@ -1,6 +1,6 @@
 <template>
 
-    <a class="button add-student-control"
+    <a class="button add-student-button"
        v-bind:class="styling"
        v-on:click="addStudent"
     >
@@ -15,23 +15,22 @@
 </style>
 
 <script>
-    import Payload from '../../../../models/Payload';
-    import Student from '../../../../models/Student';
-    import Kumi from '../../../../models/Kumi';
-    import * as mTypes from '../../../../store/mutation-types';
-    import * as aTypes from '../../../../store/action-types';
-    import * as gTypes from '../../../../store/getter-types';
+    import Payload from '../../../../../models/Payload';
+    import Student from '../../../../../models/Student';
+    import Kumi from '../../../../../models/Kumi';
+    import * as mTypes from '../../../../../store/mutation-types';
+    import * as aTypes from '../../../../../store/action-types';
+    import * as gTypes from '../../../../../store/getter-types';
 
 
     export default {
 
-        props: [],
-
-        components: {},
-
         data: function () {
             return {
                 buttonLabel: 'New student',
+
+                buttonStyles: "is-primary is-outlined ",
+
                 helpText: '',
 
                 events: {
@@ -39,13 +38,14 @@
                     addStudentComplete: 'addStudentComplete'
                 },
 
+
                 defaults: {}
             }
         },
 
         computed: {
             styling: function () {
-                return "is-primary is-outlined ";
+                return this.buttonStyles;
             }
         },
 
@@ -64,14 +64,19 @@
                     //This also will associate with the currently selected
                     //kumi
                     let pl = Payload.factory( { obj: s, student: s } );
-                    me.$store.dispatch( aTypes.handleNewStudentStorageAndAssociation, pl );
-                    resolve();
+                    me.$store.dispatch( aTypes.handleNewStudentStorageAndAssociation, pl )
+                        .then( function () {
+                        resolve();
+                    } );
+
                 } );
 
+                //Handle tasks once all the above is done
                 p.then( function () {
                     me.notifyComplete();
                 } );
 
+                //Handle any errors
                 p.catch( function () {
                     //todo
                 } );
@@ -83,7 +88,6 @@
 
             notifyStart: function () {
                 return this.$emit( this.events.addStudentCalled );
-
             }
 
         },

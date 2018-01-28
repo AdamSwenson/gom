@@ -32,7 +32,7 @@
 
         computed: {
             displayedKumis: function () {
-                return this.$store.getters.getDisplayedKumis;
+                return this.$store.getters.getKumisToFilterStudentsBy;
             },
 
             isActive: function () {

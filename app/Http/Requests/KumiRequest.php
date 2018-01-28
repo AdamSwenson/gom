@@ -26,7 +26,7 @@ class KumiRequest extends FormRequest
         return [
             'examId' => 'integer',
             'year' => '',
-            'nickname' => 'string|max:225'
+            'description' => 'string|max:225'
         ];
     }
 }

@@ -31,7 +31,7 @@
     import * as gTypes from '../../../store/getter-types';
     import * as aTypes from '../../../store/action-types';
 
-    import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
+    import * as nggTypes from '../../../store/new-grading-getter-types';
     import ItemStat from '../../../models/ItemStat';
 
     import { getItemScoreSummaryForExam, getItemSummaryStats } from '../../../api/requests/statsRequests';

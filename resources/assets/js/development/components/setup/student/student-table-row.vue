@@ -127,7 +127,7 @@
 
         computed: {
             displayedKumis : function (  ) {
-                return this.$store.getters.getDisplayedKumis;
+                return this.$store.getters.getKumisToFilterStudentsBy;
             },
 
             icon: function () {
@@ -200,7 +200,11 @@
             isRowVisible: function () {
                 if(this.displayedKumis.length === 0) return true;
 
-                return this.$store.getters.isStudentInDisplayedKumi( this.student );
+                if( _.isUndefined(this.student)) return false;
+
+                return this.student.isInKumiOrKumiList(this.displayedKumis);
+                // return this.$store.getters.isStudentInFilterByKumis( this.student );
+
 
             },
 
@@ -268,7 +272,8 @@
              * and calling this
              */
             handleRowSelection: function ( evt ) {
-                window.console.log( 'student-table-row', 'handleRowSelection', 247, this.student, evt );
+                // window.console.log( 'student-table-row', 'handleRowSelection', 247, this.student, evt );
+
                 //toggle the selected state
                 this.$store.commit('toggleStudent', Payload.factory({
                     obj: this.student,

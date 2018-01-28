@@ -19,7 +19,7 @@ import PayloadScore from "../../../../../resources/assets/js/models/PayloadScore
 import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
 import * as gTypes from "../../../../../resources/assets/js/store/getter-types";
 
-import * as nggTypes from "../../../../../resources/assets/js/store/modules/newgrading/new-grading-getter-types";
+import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 import { calculateGradeAssignmentFromItemScore } from "../../../../../resources/assets/js/store/modules/scores/itemLetterGradeHelpers";
 
 

@@ -1,10 +1,10 @@
 /**
  * Created by adam on 10/7/16.
  */
-import * as lmTypes from '../legacy-mutation-types';
-import * as aTypes from '../action-types'
-import * as laTypes from '../legacy-action-types'
-import Payload from '../../models/Payload'
+import * as lmTypes from '../../legacy-mutation-types';
+import * as aTypes from '../../action-types'
+import * as laTypes from '../../legacy-action-types'
+import Payload from '../../../models/Payload'
 
 
 const state = {

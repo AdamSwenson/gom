@@ -3,14 +3,14 @@ require( 'sinon' );
 let faker = require( 'faker' );
 
 //Dependencies
-import * as gTypes from "../../../../../../resources/assets/js/store/modules/newgrading/new-grading-getter-types";
-import * as mTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/modules/newgrading/new-grading-action-types';
+import * as gTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
+import * as mTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
+import * as aTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
 
 import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 //tested object
-import * as Component from '../../../../../../resources/assets/js/store/modules/newgrading/timer-new';
+import * as Component from '../../../../../../resources/assets/js/store/modules/timer/timer-new';
 let obj = Component.default;
 //tested methods
 let { getters, actions, mutations, state } = obj;

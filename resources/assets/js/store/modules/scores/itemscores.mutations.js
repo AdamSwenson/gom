@@ -1,4 +1,4 @@
-import * as ngmTypes from "../newgrading/new-grading-mutation-types";
+import * as ngmTypes from "../../new-grading-mutation-types";
 import Vue from "vue";
 
 import { itemScoreGetter, create } from "./itemscores.helpers";

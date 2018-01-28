@@ -24,6 +24,11 @@
                         <p class="control is-fullwidth">
                             <kumi-name-field :kumi="kumi"></kumi-name-field>
                         </p>
+
+                        <p class="control">
+                            <button class="button ">+</button>
+                        </p>
+
                         <p class="control">
                             <remove-kumi-control :kumi="kumi"></remove-kumi-control>
                         </p>
@@ -32,11 +37,26 @@
 
                 <p class="">Highlighted groups have students related to this exam</p>
 
+                <p>
+                    Removes all associations between an exam and a kumi.
+                    Also removes all student associations (from this roster)
+                    with the kumi
+                   <br>
+                    NB, it does not delete the kumi itself. Nor does it disassociate
+                    any students who weren't on this exam. So if someone had created
+                    a kumi for students needing intervention (which would link them
+                    across exams), it and its relationships to other students
+                    would be unaffected
+                </p>
             </section>
 
             <footer class="modal-card-foot">
-                <new-kumi-control></new-kumi-control>
-                <button class="button" v-on:click="toggleModal">Done</button>
+                <div class="container">
+                    <div class="content has-text-right">
+                        <new-kumi-control type="button"></new-kumi-control>
+                        <button class="button is-success" v-on:click="toggleModal">Done</button>
+                    </div>
+                </div>
             </footer>
         </div>
     </div>

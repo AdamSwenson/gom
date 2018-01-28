@@ -1,10 +1,10 @@
 /**
  * Created by adam on 10/7/16.
  */
-import Question from '../../models/Question';
-import Payload from '../../models/Payload'
-import * as mTypes from '../mutation-types'
-import * as aTypes from '../action-types'
+import Question from '../../../models/Question';
+import Payload from '../../../models/Payload'
+import * as mTypes from '../../mutation-types'
+import * as aTypes from '../../action-types'
 
 const state = {
     /** Integer count of questions on the exam */

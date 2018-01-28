@@ -8,9 +8,9 @@
  * need to be graded and how many have been graded
  */
 
-import * as ngmTypes from './new-grading-mutation-types'
-import * as ngaTypes from './new-grading-action-types'
-import * as nggTypes from './new-grading-getter-types';
+import * as ngmTypes from '../../new-grading-mutation-types'
+import * as ngaTypes from '../../new-grading-action-types'
+import * as nggTypes from '../../new-grading-getter-types';
 import * as gTypes from '../../getter-types';
 
 const getters = {

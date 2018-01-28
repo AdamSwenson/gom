@@ -26,7 +26,7 @@
     import ItemComment from "./item-comment";
     import ItemArea from "./item-area";
 
-    import * as nggTypes from '../../../store/modules/newgrading/new-grading-getter-types';
+    import * as nggTypes from '../../../store/new-grading-getter-types';
     import ItemChart from "./item-chart";
     import GradeArea from "./grade-area";
 

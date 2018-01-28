@@ -22,7 +22,7 @@ class NotesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Note[]|\Illuminate\Database\Eloquent\Collection
      */
     public function index()
     {
@@ -65,6 +65,10 @@ class NotesController extends Controller
         return $exam->notes;
     }
 
+    /**
+     * @param Item $item
+     * @return mixed
+     */
     public function showForItem( Item $item )
     {
         return $item->notes;

@@ -99,12 +99,12 @@
     import * as aTypes from '../store/action-types';
     import * as mTypes from '../store/mutation-types';
     import * as gTypes from '../store/getter-types';
-    import * as ngmTypes from '../store/modules/newgrading/new-grading-mutation-types';
-    import * as ngaTypes from '../store/modules/newgrading/new-grading-action-types';
+    import * as ngmTypes from '../store/new-grading-mutation-types';
+    import * as ngaTypes from '../store/new-grading-action-types';
 
 
     import { updateItemsOrder } from '../api/requests'
-    import { loadExamKumi } from '../api/requests/kumiRequests';
+    import { loadKumiForExam } from '../api/requests/kumiRequests';
     import { loadAllStudents } from '../api/requests/studentRequests';
     import { loadExam } from '../api/requests/examRequests';
     // import { getItemsForExam, getItemOrderForExam } from '../api/requests/itemRequests';

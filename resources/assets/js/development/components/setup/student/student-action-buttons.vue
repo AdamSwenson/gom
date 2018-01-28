@@ -11,16 +11,14 @@
                 <button id="cancel-student-operation-button"
                         class="button is-primary"
                         v-on:click="handleCancellation"
-                >Cancel
-                </button>
+                >Cancel</button>
             </p>
 
             <p class="control">
                 <button id="confirm-student-operation-button"
                         class="button is-danger"
                         v-on:click="handleConfirmation"
-                >Confirm
-                </button>
+                >Confirm</button>
             </p>
         </div>
 
@@ -46,23 +44,30 @@
                 <a id="student-delete-button"
                    class="button student-delete-button is-outlined is-danger"
                    v-on:click="handleDeleteClick"
-                >Delete</a>
+                >Remove from roster</a>
             </p>
 
+            <remove-students-from-roster-button
+                    v-on:done="resetDisplay"
+            ></remove-students-from-roster-button>
 
         </div>
+
         <auto-close-modal
                 :content="messages.noRowsSelected"
-                :show="isModalVisible"
+                :show="isErrorModalVisible"
                 type="error"
-        ></auto-close-modal>
+        >
+            <p slot="modalBody">{{errorModalText }}</p>
+
+        </auto-close-modal>
 
         <confirmation-modal
                 :is-visible="isConfirmationModalVisible"
                 v-on:confirm-selected="handleConfirmation"
                 v-on:cancel-selected="handleCancellation"
         >
-            <p slot="modalBody">Are you super duper sure?</p>
+            <p slot="modalBody">{{ confirmationModalText }}</p>
         </confirmation-modal>
 
     </div>
@@ -80,11 +85,16 @@
      * the relevant action upon them
      */
 
-    import autoCloseModal from '../../helpers/auto-closing-modal.vue';
-
-    import confirmationModal from '../../helpers/confirmation-modal.vue';
+    import autoCloseModal from '../../modals/auto-closing-modal.vue';
+    import confirmationModal from '../../modals/confirmation-modal.vue';
 
     import Payload from '../../../../models/Payload';
+    import Student from '../../../../models/Student';
+    import Kumi from '../../../../models/Kumi';
+    import * as mTypes from '../../../../store/mutation-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as gTypes from '../../../../store/getter-types';
+    import RemoveStudentsFromRosterButton from "./action-buttons/remove-students-from-roster-button";
 
     export default {
 
@@ -92,6 +102,7 @@
         props: [ 'injectableClasses' ],
 
         components: {
+            RemoveStudentsFromRosterButton,
             'auto-close-modal': autoCloseModal,
             'confirmation-modal': confirmationModal
         },
@@ -101,10 +112,27 @@
                 defaults: {
                     componentClass: ''
                 },
-                pendingOperation: false, //what operation we are to perform
+
+                /** The text displayed in the body of the error modal **/
+                errorModalText: '',
+
+                /** Values to use as errorModalText */
+                errorModalTextOptions: {
+                    noSelectedStudents: "Please select 1 or more students ",
+                    noSelectedGroups: "Please select 1 or more groups"
+                },
+
+
+                //what operation we are to perform
+                pendingOperation: false,
 
                 messages: {
                     noRowsSelected: "Please select at least one row by clicking outside of the input areas."
+                },
+
+                modalBodyText: {
+                    remove: "Are you sure you want to remove the student from this group? The student will no longer appear on the exam if they are not part of another group. However, the student's data will not be affected ---you could add the student back",
+                    delete: "This will delete the student entirely. All data related to the student will be lost permanently. Are you absolutely sure that's what you want to do? "
                 },
 
                 selectorLabels: {
@@ -112,7 +140,7 @@
                     remove: "Select groups to remove the selected students from"
                 },
 
-                isModalVisible: false,
+                isErrorModalVisible: false,
 
                 /** Whether the confirmation dialog is displayed*/
                 isConfirmationModalVisible: false
@@ -125,23 +153,64 @@
                 return "Add to group"
             },
 
-            styling: function () {
-                return this.defaults.componentClass + this.injectableClasses;
+            /**
+             * When the action button is clicked, the
+             * confirmation modal displays with this text
+             * in the body.
+             */
+            confirmationModalText: function () {
+                switch ( this.pendingOperation ) {
+                    case 'add':
+                        return '';
+                        break;
+                    case 'remove':
+                        return this.modalBodyText.remove;
+                        break;
+                    case 'delete':
+                        return this.modalBodyText.delete;
+                        break;
+                    default :
+                        return "Are you sure you want to do this?"
+                }
             },
-
-            selectedKumis: function () {
-                return this.$store.getters.getSelectedKumis;
-            },
-
-            selectedStudents: function () {
-                return this.$store.getters.getSelectedStudents;
-            },
-
             /** Includes kumiSelectorVisible so that anything in the label
              * can change with the list state
              */
             kumiSelectorVisible: function () {
                 return this.$store.getters.isKumiSelectVisible;
+            },
+
+            /**
+             * The object which all operations will dispatch
+             * with the actions
+             */
+            payload: function () {
+                return {
+                    students: this.selectedStudents,
+                    kumis: this.selectedKumis
+                };
+            },
+
+            styling: function () {
+                return this.defaults.componentClass + this.injectableClasses;
+            },
+
+            /**
+             * Array of currently selected groups. When
+             * an operation button is clicked, these will be part of the
+             * payload.
+             */
+            selectedKumis: function () {
+                return this.$store.getters.getSelectedKumis;
+            },
+
+            /**
+             * Array of currently selected students. When
+             * an operation button is clicked, these will be part of the
+             * payload.
+             */
+            selectedStudents: function () {
+                return this.$store.getters.getSelectedStudents;
             },
 
             showConfirmationButtons: function () {
@@ -154,11 +223,30 @@
 
         methods: {
 
-            testOperationValidity: function () {
-                if ( this.selectedStudents === 0 ) {
-                    this.isModalVisible = true;
+            /**
+             * Determines whether the operation may be performed.
+             * If not, it displays the warning modal
+             * By default it only checks whether students are selected
+             * If testKumis is true, it checks kumis too
+             */
+            isOperationValid: function ( testKumis = false ) {
+                if ( this.selectedStudents.length === 0 ) {
+                    //Set which error message displays
+                    this.errorModalText = this.errorModalTextOptions.noSelectedStudents;
+                    //Display the warning message
+                    this.isErrorModalVisible = true;
                     return false;
                 }
+
+                if ( testKumis && this.selectedKumis.length === 0 ) {
+                    //Set which error message displays
+                    this.errorModalText = this.errorModalTextOptions.noSelectedGroups;
+                    //Display the warning message
+                    this.isErrorModalVisible = true;
+                    //Return the result of the test
+                    return false;
+                }
+
                 return true;
             },
 
@@ -179,7 +267,7 @@
             handleDeleteClick: function () {
                 window.console.log( 'student-action-buttons', 'handleDeleteClick', 136, );
                 this.pendingOperation = 'delete';
-
+                this.isConfirmationModalVisible = true;
                 //todo confirmation dialog
             },
 
@@ -237,62 +325,80 @@
              */
             addStudentsToGroups: function () {
                 window.console.log( 'student-action-buttons', 'addStudentToGroup', 151, );
-                if ( this.testOperationValidity() ) {
-                    let me = this;
+                if ( !this.isOperationValid() ) return;
+                this.$store.dispatch( 'addStudentsToKumis', this.payload );
+                // let me = this;
+                //
+                // _.forEach( me.selectedKumis, function ( kumi ) {
+                //     _.forEach( me.selectedStudents, function ( student ) {
+                //         me.$store.commit( 'associateStudentWithKumi', Payload.factory( {
+                //             student: student,
+                //             kumi: kumi
+                //         } ) );
+                //     } )
+                // } )
 
-                    _.forEach( me.selectedKumis, function ( kumi ) {
-                        _.forEach( me.selectedStudents, function ( student ) {
-                            me.$store.commit( 'associateStudentWithKumi', Payload.factory( {
-                                student: student,
-                                kumi: kumi
-                            } ) );
-                        } )
-                    } )
-                }
             },
 
 
             removeStudentsFromGroups: function () {
-                //todo make sure this throws an error if no groups are displyed
-                if ( this.testOperationValidity() ) {
-                    //remove the selected students
-                    let me = this;
 
-                    //NB we use the displayed kumi's since it makes no sense
-                    //to have to select them separately. We just work with
-                    //what's on the screen
-                    _.forEach( me.displayedKumis, function ( kumi ) {
-                        _.forEach( me.selectedStudents, function ( student ) {
-                            me.$store.commit( 'disassociateStudentFromKumi', Payload.factory( {
-                                student: student,
-                                kumi: kumi
-                            } ) );
-                        } )
+                if ( !this.isOperationValid() ) return;
+                this.$store.dispatch( 'removeStudentsFromKumis', this.payload );
 
-                    } )
+                //
+                // //remove the selected students
+                // let me = this;
+                //
+                // //NB we use the displayed kumi's since it makes no sense
+                // //to have to select them separately. We just work with
+                // //what's on the screen
+                // _.forEach( me.displayedKumis, function ( kumi ) {
+                //     _.forEach( me.selectedStudents, function ( student ) {
+                //         me.$store.commit( 'disassociateStudentFromKumi', Payload.factory( {
+                //             student: student,
+                //             kumi: kumi
+                //         } ) );
+                //     } )
+                //
+                // } )
 
-                }
+                // }
             },
 
 
             removeStudentsFromRoster: function () {
-                if ( this.testOperationValidity() ) {
-                    //delete the selected students
-                    let me = this;
 
-                    _.forEach( this.selectedStudents, function ( student ) {
-                        me.$store.commit( mTypes.removeStudentFromRoster, Payload.factory( { obj: student } ) );
-                    } );
-                }
+                if ( !this.isOperationValid() ) return;
+
+                this.$store.dispatch( 'removeStudentsFromRoster', this.selectedStudents );
+
+                //
+                // //delete the selected students
+                // let me = this;
+                //
+                // _.forEach( this.selectedStudents, function ( student ) {
+                //     me.$store.commit( mTypes.removeStudentFromRoster, Payload.factory( { obj: student } ) );
+                // } );
+
             },
 
+            /**
+             * Resets the selected students and kumis to
+             * default state. Also hides any displayed menus
+             * and clears the pending operation
+             */
             resetDisplay: function () {
                 //hide the displayed kumi selector
-                if(this.kumiSelectorVisible) this.$store.commit( 'toggleKumiSelectVisibility' );
+                if ( this.kumiSelectorVisible ) this.$store.commit( 'toggleKumiSelectVisibility' );
 
                 //clear previous selections
                 this.$store.commit( 'clearSelectedStudents' );
                 this.$store.commit( 'clearSelectedKumis' );
+
+                //make sure the modals are closed
+                this.isConfirmationModalVisible = false;
+                this.isErrorModalVisible = false;
 
                 //reset the pending operation
                 this.pendingOperation = false;

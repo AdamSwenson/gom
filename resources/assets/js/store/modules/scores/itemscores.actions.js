@@ -1,9 +1,9 @@
 import * as gTypes from "../../getter-types";
 import { getValenceForScore, isSameValence, sliderSettings } from "./commentHelpers";
 import PayloadScore from "../../../models/PayloadScore";
-import * as ngaTypes from "../newgrading/new-grading-action-types";
-import * as nggTypes from "../newgrading/new-grading-getter-types";
-import * as ngmTypes from "../newgrading/new-grading-mutation-types";
+import * as ngaTypes from "../../new-grading-action-types";
+import * as nggTypes from "../../new-grading-getter-types";
+import * as ngmTypes from "../../new-grading-mutation-types";
 import scoreRequests from "../../../api/requests/scoreRequests";
 
 module.exports = {

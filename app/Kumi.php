@@ -38,12 +38,14 @@ class Kumi extends BaseModel
 
     protected $casts = [
         'name' => 'string',
-        'year' => 'integer'
+        'year' => 'integer',
+        'is_roster' => 'boolean'
     ];
 
     protected $fillable = [
         'name',
-        'year'
+        'year',
+        'is_roster' //Whether or not this is a base kumi which each exam has one of
     ];
 
     /**

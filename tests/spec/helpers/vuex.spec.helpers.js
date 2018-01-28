@@ -37,6 +37,7 @@ export const factories = {
         return e;
     },
 
+
     itemFactory: ( index ) => {
         let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
 

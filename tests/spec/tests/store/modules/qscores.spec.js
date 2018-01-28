@@ -5,7 +5,7 @@ let faker = require( 'faker' );
 import {testAction, description, factories, getActiveStudentIndex} from '../../../helpers/vuex.spec.helpers';
 
 //Dependencies
-import * as qscores from '../../../../../resources/assets/js/store/modules/qscores';
+import * as qscores from '../../../../../resources/assets/js/store/modules/legacy/qscores';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 import Payload from '../../../../../resources/assets/js/models/Payload'

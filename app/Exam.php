@@ -88,8 +88,8 @@ class Exam extends BaseModel
     ];
 
 
-
 #----------------------------------------------------------- Item ordering
+
     /**
      * Adds an Item to the exam either with the exam itself
      * or another item as the parent.
@@ -255,8 +255,15 @@ MYSQL;
         return false;
     }
 
-
-
+    /**
+     * Returns the kumi which is marked as roster.
+     * That is the kumi which all students associated with the exam
+     * share.
+     */
+    public function roster()
+    {
+return $this->kumis()->where('is_roster', true)->first();
+    }
 
 #------------------------------------------------------- Queries
 
@@ -619,8 +626,9 @@ MYSQL;
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');
     }
 
-    public function students(){
-         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
+    public function students()
+    {
+        return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
     }
 
     public function tags()

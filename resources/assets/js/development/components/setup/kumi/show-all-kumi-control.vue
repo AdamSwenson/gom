@@ -17,36 +17,34 @@
 
         props: [ 'type', 'isActive' , 'isVisible'],
 
-        components: {},
-
         data: function () {
             return {
-
                 defaults: {}
             }
         },
 
         computed: {
+            /**
+             * List of kumis which we are currently filtering by
+             * @returns {module.exports.getters.getKumisToFilterStudentsBy}
+             */
             displayedKumis: function () {
-                return this.$store.getters.getDisplayedKumis;
+                return this.$store.getters.getKumisToFilterStudentsBy;
             },
+
 
             styling: function () {
                 let out = '';
                 switch ( this.type ) {
                     case  'tab':
                         out += ' tab ';
-
-                        if(this.displayedKumis && this.displayedKumis.length === 0) out += 'is-active';
-
                         break;
+
                     case 'button':
                         out += ' button ';
                         out += 'is-outlined is-primary';
                         break;
                 }
-
-                if ( this.isActive ) out += ' is-active ';
 
                 return out;
             }
@@ -54,9 +52,8 @@
 
         methods: {
             showAllKumi: function () {
-                this.$store.commit( 'clearDisplayedKumis' );
+                this.$store.commit( 'clearKumisToFilterStudentsBy' );
             },
-
         },
 
     }

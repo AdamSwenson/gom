@@ -37,7 +37,8 @@ class KumiController extends Controller
     {
         $kumi = Kumi::create([
             'name' => $request->input('name'),
-            'year' => $request->input('year')
+            'year' => $request->input('year'),
+            'description' => $request->input('description')
         ]);
         if($request->has('examId')){
             $exam = Exam::find($request->input('examId'));
@@ -74,7 +75,8 @@ class KumiController extends Controller
     {
         $kumi->update([
             'name' => $request->input('name'),
-            'year' => $request->input('year')
+            'year' => $request->input('year'),
+            'description' => $request->input('description')
         ]);
         $kumi->save();
 
