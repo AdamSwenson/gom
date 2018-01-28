@@ -1,26 +1,18 @@
 <template>
-    <div class="grade-area">
-        <div class="tile">
-            <div class="table-area">
-                <table class="table is-narrow">
-                    <tbody>
-                    <tr>
-                        <th>Grade</th>
-                        <td>{{letterGrade}}</td>
-                    </tr>
-                    <tr>
-                        <th>Score</th>
-                        <td>{{totalScore}} / {{ maxPossible}}</td>
-                    </tr>
+    <table class="table is-narrow">
+        <tbody>
+        <tr>
+            <th>Grade</th>
+            <td>{{letterGrade}}</td>
+        </tr>
+        <tr>
+            <th>Score</th>
+            <td>{{totalScore}} / {{ maxPossible}}</td>
+        </tr>
 
-                    </tbody>
-                </table>
-            </div>
-            <div class="tile">
-<overall-chart :exam="exam" :student="student"></overall-chart>
-            </div>
-        </div>
-    </div>
+        </tbody>
+    </table>
+
 </template>
 
 <style lang="scss">
@@ -37,14 +29,12 @@
     import { getItemScoreSummaryForExam, getItemSummaryStats } from '../../../api/requests/statsRequests';
 
     import feedbackMixin from './feedback.mixin';
-    import OverallChart from "./overall-chart";
 
     export default {
         mixins: [ feedbackMixin ],
 
         props: [ 'exam', 'student' ],
 
-        components: { OverallChart },
 
         data: function () {
             return {
@@ -68,7 +58,7 @@
                 if ( this.totalScore !== this.placeHolder ) {
                     let ga = me.$store.getters[ gTypes.getGradeAssignmentForScore ]( me.totalScore );
                     return ga;
-                 }
+                }
 
             },
         },
@@ -80,7 +70,7 @@
 
             totalScore: function () {
                 if ( _.isUndefined( this.student ) || _.isNull( this.student ) ) return this.placeHolder;
-                return this.$store.getters[ nggTypes.getTotalScoreForStudent]( this.student );
+                return this.$store.getters[ nggTypes.getTotalScoreForStudent ]( this.student );
             },
 
             maxPossible: function () {

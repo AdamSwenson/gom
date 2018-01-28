@@ -17,24 +17,13 @@
 
     <div id="app"></div>
 
-    {{ method_field('PUT') }}
-
-    {{ method_field('PATCH') }}
-
-    {{ method_field('DELETE') }}
-
     <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
-
     <input type="hidden" id="examId" data="{{ $exam->id }}"/>
-
     <input type="hidden" id="exam" data="{{ $exam->toJson() }}"/>
-    <input type="hidden" id="student" data="{{ $student->toJson() }}"/>
-
     <input type="hidden" id="items" data="{{ collect($itemObjects)->toJson() }}"/>
     <input type="hidden" id="order" data="{{ collect($itemOrder)->toJson() }}"/>
-
-
     <input type="hidden" id="scores" data="{{ $scores->toJson() }}"/>
+    <input type="hidden" id="students" data="{{ collect($student)->toJson() }}"/>
 
 </div>
 
@@ -43,7 +32,5 @@
     window.examId = document.getElementById( 'examId' ).getAttribute( 'data' );
 </script>
 <script src="{{ asset('/js/dev/newest-public-feedback-package.js') }}"></script>
-{{--<script src="http://localhost:35729/livereload.js"></script>--}}
-
 </body>
 </html>

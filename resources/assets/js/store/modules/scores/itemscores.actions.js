@@ -29,43 +29,43 @@ module.exports = {
         } );
     },
 
-    [ngaTypes.loadScoresFromServer]: ( { state, dispatch, commit, getters }, exam ) => {
-        let me = this;
-        return new Promise( function ( resolve, reject ) {
-            // window.console.log( 'itemscores', '', 193, exam, item, student);
-            let p = scoreRequests.getAllScoresForExamRequest( exam );
-
-            p.then( function ( data ) {
-                _.forEach( data, function ( d ) {
-                    let item = getters[ gTypes.getItemById ]( d.item_id );
-                    let student = getters.getStudentFromRosterById( d.student_id );
-                    let score = parseFloat( d.score );
-
-                    //record the score (this will initialize the object too)
-                    commit( ngmTypes.updateScore, PayloadScore.factory( {
-                        exam: exam,
-                        item: item,
-                        student: student,
-                        score: score,
-                        mutateSilently: true
-                    } ) );
-
-                    //record the comment text
-                    commit( ngmTypes.updateText, PayloadScore.factory( {
-                        exam: exam,
-                        item: item,
-                        student: student,
-                        text: d.comment_text,
-                        mutateSilently: true
-                    } ) );
-                } );
-
-                resolve();
-            } );
-
-
-        } );
-    },
+    // [ngaTypes.loadScoresFromServer]: ( { state, dispatch, commit, getters }, exam ) => {
+    //     let me = this;
+    //     return new Promise( function ( resolve, reject ) {
+    //         // window.console.log( 'itemscores', '', 193, exam, item, student);
+    //         let p = scoreRequests.getAllScoresForExamRequest( exam );
+    //
+    //         p.then( function ( data ) {
+    //             _.forEach( data, function ( d ) {
+    //                 let item = getters[ gTypes.getItemById ]( d.item_id );
+    //                 let student = getters.getStudentFromRosterById( d.student_id );
+    //                 let score = parseFloat( d.score );
+    //
+    //                 //record the score (this will initialize the object too)
+    //                 commit( ngmTypes.updateScore, PayloadScore.factory( {
+    //                     exam: exam,
+    //                     item: item,
+    //                     student: student,
+    //                     score: score,
+    //                     mutateSilently: true
+    //                 } ) );
+    //
+    //                 //record the comment text
+    //                 commit( ngmTypes.updateText, PayloadScore.factory( {
+    //                     exam: exam,
+    //                     item: item,
+    //                     student: student,
+    //                     text: d.comment_text,
+    //                     mutateSilently: true
+    //                 } ) );
+    //             } );
+    //
+    //             resolve();
+    //         } );
+    //
+    //
+    //     } );
+    // },
 
     /**
      * This handles saving an item score to the server

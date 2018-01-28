@@ -37534,39 +37534,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 module.exports = {
-    EXAM_JSON_NAME: 'loadedExam',
-    ITEM_ORDER_JSON_NAME: 'loadedItemOrder',
-    ITEM_OBJECT_JSON_NAME: 'loadedItemObjects',
+    EXAM_JSON_NAME: 'exam',
+    ITEM_ORDER_JSON_NAME: 'order',
+    ITEM_OBJECT_JSON_NAME: 'items',
 
-    processItemOrderFromJson: function processItemOrderFromJson(state, orderData) {
-
-        _.forEach(orderData, function (d, i) {
-            var item = function (state, d) {
-                return (0, _itemHelpers.getItem)(state, d.itemId);
-            }(state, d);
-            //if the parent is null it is the exam, and we can skip
-            if (d.parentId === null) return true;
-
-            // these are top level
-            //and should be added as children of the exam.
-            //if the parent is null, we add the exam instead
-            //todo this must be fixed since an item could have the same id as an exam
-            var parentNode = d.parentId === state.items[0].id ? state.itemMap : function (state, d) {
-                var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
-                return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
-            }(state, d);
-
-            var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
-
-            //if an index was specified, splice it in at the index
-            //                 if ( !_.isUndefined( index ) ) {
-            //                     parentNode.children.splice( index, 0, itemNode );
-            //                 }
-            //                 else {
-            //otherwise just push it on the end
-            parentNode.children.push(itemNode);
-        });
-    },
+    //     processItemOrderFromJson: function ( state, orderData ) {
+    //
+    //         _.forEach( orderData, function ( d, i ) {
+    //             let item = (( state, d ) => {
+    //                 return getItem( state, d.itemId )
+    //             })( state, d );
+    //             //if the parent is null it is the exam, and we can skip
+    //             if ( d.parentId === null ) return true;
+    //
+    //             // these are top level
+    //             //and should be added as children of the exam.
+    //             //if the parent is null, we add the exam instead
+    //             //todo this must be fixed since an item could have the same id as an exam
+    //             let parentNode = (d.parentId === state.items[ 0 ].id) ? state.itemMap : (function ( state, d ) {
+    //                 let parentItem = getItem( state, d.parentId );
+    //                 return getNode( state, parentItem.serialNumber );
+    //             })( state, d );
+    //
+    //             let itemNode = new Node( item.serialNumber, parentNode.data );
+    //
+    //
+    // //if an index was specified, splice it in at the index
+    // //                 if ( !_.isUndefined( index ) ) {
+    // //                     parentNode.children.splice( index, 0, itemNode );
+    // //                 }
+    // //                 else {
+    // //otherwise just push it on the end
+    //             parentNode.children.push( itemNode );
+    //         } );
+    //
+    //     },
 
     /**
      * Given a json object containing server representations
@@ -38067,6 +38069,8 @@ var _Kumi2 = _interopRequireDefault(_Kumi);
 
 var _kumiRequests = __webpack_require__(104);
 
+var _JsonHelpers = __webpack_require__(149);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -38090,53 +38094,80 @@ module.exports = {
 
                 var p = (0, _studentRequests.loadStudentsForExam)(exam);
                 p.then(function (data) {
-                    _.forEach(data, function (r) {
-                        // window.console.log( 'studentRequests', 'r', 29, r );
-                        var student = _Student2.default.factory({ r: r });
-                        student.email = r.email;
-                        student.firstName = r.firstName;
-                        student.id = r.id;
-                        student.identifier = !_.isUndefined(r.identifier) ? r.identifier : r.studentIdentifier;
-                        student.lastName = r.lastName;
-
-                        var payload = _Payload2.default.factory({ obj: student, mutateSilently: true });
-                        commit(mTypes.addStudentToRoster, payload);
-
-                        if (r.kumiIds) {
-                            _.forEach(r.kumiIds, function (id) {
-                                //if the server sent us the id of the associated kumi
-                                //we are going to look up the client side representation
-                                //and then store it in the student object.
-                                //NB, there might not be a kumi id for any number of reasons,
-                                //including that an existing student is being newly associated with
-                                //a kumi.
-                                //Remember also that kumis are just groups now
-                                var kumi = getters.getKumiById(id);
-
-                                if (!_.isUndefined(kumi)) {
-
-                                    //if a kumi object doesn't exist yet with this id
-                                    //figure out what the fuck to do.....
-                                    //This is probably because the kumi is not associated with the exam.
-
-                                    //Otherwise we are good, so call the mutation
-                                    // this will both add the kumi to the student
-                                    //and store the relationship centrally
-                                    payload.student = student;
-                                    payload.kumi = kumi;
-                                    commit(mTypes.associateStudentWithKumi, payload);
-
-                                    //actually the current problem is that we're not properly
-                                    //disassociating the kumi and student
-                                }
-                            });
-                        }
+                    dispatch('processAndStoreLoadedStudents', data).then(function () {
+                        resolve();
                     });
+                });
+            });
+        },
+        loadStudentsFromPageJson: function loadStudentsFromPageJson(_ref2, jsonLocations) {
+            var state = _ref2.state,
+                dispatch = _ref2.dispatch,
+                commit = _ref2.commit,
+                getters = _ref2.getters;
+
+            return new Promise(function (resolve, reject) {
+                var studentsData = (0, _JsonHelpers.readJsonFromPageString)(jsonLocations.students);
+                //if we are on the feedback page, this will only have
+                //given us a student, not an array containing students as the
+                //next action expects. So, we wrap it in an array if needed
+                if (!_.isArray(studentsData)) studentsData = [studentsData];
+
+                dispatch('processAndStoreLoadedStudents', studentsData).then(function () {
+                    window.console.log('loaders', 'student data load done', 44);
                     resolve();
                 });
             });
         },
 
+
+        processAndStoreLoadedStudents: function processAndStoreLoadedStudents(_ref3, data) {
+            var state = _ref3.state,
+                dispatch = _ref3.dispatch,
+                commit = _ref3.commit,
+                getters = _ref3.getters;
+
+            return new Promise(function (resolve, reject) {
+                _.forEach(data, function (r) {
+                    // window.console.log( 'studentRequests', 'r', 29, r );
+                    var student = _Student2.default.factory(r);
+
+                    var payload = _Payload2.default.factory({ obj: student, mutateSilently: true });
+                    commit(mTypes.addStudentToRoster, payload);
+
+                    if (r.kumiIds) {
+                        _.forEach(r.kumiIds, function (id) {
+                            //if the server sent us the id of the associated kumi
+                            //we are going to look up the client side representation
+                            //and then store it in the student object.
+                            //NB, there might not be a kumi id for any number of reasons,
+                            //including that an existing student is being newly associated with
+                            //a kumi.
+                            //Remember also that kumis are just groups now
+                            var kumi = getters.getKumiById(id);
+
+                            if (!_.isUndefined(kumi)) {
+
+                                //if a kumi object doesn't exist yet with this id
+                                //figure out what the fuck to do.....
+                                //This is probably because the kumi is not associated with the exam.
+
+                                //Otherwise we are good, so call the mutation
+                                // this will both add the kumi to the student
+                                //and store the relationship centrally
+                                payload.student = student;
+                                payload.kumi = kumi;
+                                commit(mTypes.associateStudentWithKumi, payload);
+
+                                //actually the current problem is that we're not properly
+                                //disassociating the kumi and student
+                            }
+                        });
+                    }
+                });
+                resolve();
+            });
+        },
 
         /**
          * Requests all kumis for the exam
@@ -38149,11 +38180,11 @@ module.exports = {
          * @param exam
          * @returns {Promise<any>}
          */
-        loadKumisForExamFromServer: function loadKumisForExamFromServer(_ref2, exam) {
-            var state = _ref2.state,
-                dispatch = _ref2.dispatch,
-                commit = _ref2.commit,
-                getters = _ref2.getters;
+        loadKumisForExamFromServer: function loadKumisForExamFromServer(_ref4, exam) {
+            var state = _ref4.state,
+                dispatch = _ref4.dispatch,
+                commit = _ref4.commit,
+                getters = _ref4.getters;
 
             return new Promise(function (resolve, reject) {
                 var p = (0, _kumiRequests.loadKumiForExam)(exam);
@@ -38250,54 +38281,15 @@ module.exports = (_module$exports = {
         });
     }
 
-}, _defineProperty(_module$exports, ngaTypes.loadScoresFromServer, function (_ref3, exam) {
+}, _defineProperty(_module$exports, ngaTypes.recordItemScore, function (_ref3, _ref4) {
     var state = _ref3.state,
         dispatch = _ref3.dispatch,
         commit = _ref3.commit,
         getters = _ref3.getters;
-
-    var me = undefined;
-    return new Promise(function (resolve, reject) {
-        // window.console.log( 'itemscores', '', 193, exam, item, student);
-        var p = _scoreRequests2.default.getAllScoresForExamRequest(exam);
-
-        p.then(function (data) {
-            _.forEach(data, function (d) {
-                var item = getters[gTypes.getItemById](d.item_id);
-                var student = getters.getStudentFromRosterById(d.student_id);
-                var score = parseFloat(d.score);
-
-                //record the score (this will initialize the object too)
-                commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
-                    exam: exam,
-                    item: item,
-                    student: student,
-                    score: score,
-                    mutateSilently: true
-                }));
-
-                //record the comment text
-                commit(ngmTypes.updateText, _PayloadScore2.default.factory({
-                    exam: exam,
-                    item: item,
-                    student: student,
-                    text: d.comment_text,
-                    mutateSilently: true
-                }));
-            });
-
-            resolve();
-        });
-    });
-}), _defineProperty(_module$exports, ngaTypes.recordItemScore, function (_ref4, _ref5) {
-    var state = _ref4.state,
-        dispatch = _ref4.dispatch,
-        commit = _ref4.commit,
-        getters = _ref4.getters;
-    var exam = _ref5.exam,
-        item = _ref5.item,
-        student = _ref5.student,
-        score = _ref5.score;
+    var exam = _ref4.exam,
+        item = _ref4.item,
+        student = _ref4.student,
+        score = _ref4.score;
 
     return new Promise(function (resolve, reject) {
 
@@ -38356,15 +38348,15 @@ module.exports = (_module$exports = {
             });
         });
     });
-}), _defineProperty(_module$exports, ngaTypes.recordCommentText, function (_ref6, _ref7) {
-    var state = _ref6.state,
-        dispatch = _ref6.dispatch,
-        commit = _ref6.commit,
-        getters = _ref6.getters;
-    var exam = _ref7.exam,
-        item = _ref7.item,
-        student = _ref7.student,
-        text = _ref7.text;
+}), _defineProperty(_module$exports, ngaTypes.recordCommentText, function (_ref5, _ref6) {
+    var state = _ref5.state,
+        dispatch = _ref5.dispatch,
+        commit = _ref5.commit,
+        getters = _ref5.getters;
+    var exam = _ref6.exam,
+        item = _ref6.item,
+        student = _ref6.student,
+        text = _ref6.text;
 
     return new Promise(function (resolve, reject) {
 
@@ -38383,14 +38375,14 @@ module.exports = (_module$exports = {
         //todo we may need to handle flagging the text as custom here so it won't get overwritten
         resolve();
     });
-}), _defineProperty(_module$exports, ngaTypes.resetItemScore, function (_ref8, _ref9) {
-    var state = _ref8.state,
-        dispatch = _ref8.dispatch,
-        commit = _ref8.commit,
-        getters = _ref8.getters;
-    var exam = _ref9.exam,
-        item = _ref9.item,
-        student = _ref9.student;
+}), _defineProperty(_module$exports, ngaTypes.resetItemScore, function (_ref7, _ref8) {
+    var state = _ref7.state,
+        dispatch = _ref7.dispatch,
+        commit = _ref7.commit,
+        getters = _ref7.getters;
+    var exam = _ref8.exam,
+        item = _ref8.item,
+        student = _ref8.student;
 
     return new Promise(function (resolve, reject) {
 
@@ -38571,10 +38563,6 @@ var create = exports.create = function create(state, exam, item, student) {
 "use strict";
 
 
-var _mutations;
-
-var _templateObject = _taggedTemplateLiteral(['                                                                                                          '], ['                                                                                                          ']);
-
 var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
@@ -38620,10 +38608,6 @@ var _JsonHelpers = __webpack_require__(149);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * Created by adam on 6/22/17.
@@ -38698,190 +38682,200 @@ var standardTimeout = 1000;
 
 module.exports = {
 
-    mutations: (_mutations = {}, _defineProperty(_mutations, mTypes.loadExamAndItemsFromPageData, function (state, payload) {
-        return new Promise(function (resolve, reject) {
+    mutations: {
 
-            if (_.isUndefined(payload)) payload = new _Payload2.default();
+        /**
+         * These are actions which different parts of the gom
+         * call to when they initialize.
+         *
+         */
+        /** This is what gets run when the root instance is mounted for the setup page */
+        // [ mTypes.loadExamAndItemsFromPageData ]: ( state, payload ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //
+        //         if ( _.isUndefined( payload ) ) payload = new Payload();
+        //
+        //         //sort out the element ids
+        //         let objectPageElementId = ITEM_OBJECT_JSON_NAME; //! _.isUndefined(payload.options.elementIds.itemObjects) ? payload.options.elementIds.itemObjects : ITEM_OBJECT_JSON_NAME;
+        //
+        //         let orderPageElementId = ITEM_ORDER_JSON_NAME; //! _.isUndefined(payload.options.elementIds.itemOrder) ? payload.options.elementIds.itemOrder : ITEM_ORDER_JSON_NAME;
+        //
+        //         let examPageElementId = EXAM_JSON_NAME; //! _.isUndefined(payload.options.elementIds.exam) ? payload.options.elementIds.exam : EXAM_JSON_NAME;
+        //
+        //
+        //         // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
+        //         let objectData = readJsonFromPageString( objectPageElementId );
+        //
+        //         let orderData = readJsonFromPageString( orderPageElementId );
+        //
+        //         let examData = readJsonFromPageString( examPageElementId );
+        //
+        //         window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+        //
+        //         //assume everything is there, just load directly
+        //         let exam = Exam.factory( examData );
+        //
+        //         //Initialize the item order store
+        //         //with the exam as its root
+        //         initializeItemsWithExam( state, exam );
+        //
+        //         //load in the item objects
+        //         state.items = processItemObjectsFromJson( objectData );
+        //
+        //
+        //         //load in the order data
+        //         processItemOrderFromJson( state, orderData );
+        //
+        //         resolve();
+        //     } );
+        // },
 
-            //sort out the element ids
-            var objectPageElementId = _JsonHelpers.ITEM_OBJECT_JSON_NAME; //! _.isUndefined(payload.options.elementIds.itemObjects) ? payload.options.elementIds.itemObjects : ITEM_OBJECT_JSON_NAME;
+        // directLoadObjectsFromJson: ( state, payload ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //         window.console.log( 'items', 'directLoadObjectsFromJson', 278, payload );
+        //         // if ( typeof payload.obj !== 'undefined' ) {
+        //         _.forEach( payload.obj, function ( d, i ) {
+        //             let item = Item.factory( d ); //.factory( {id: id, index: index} );
+        //             // state.items.push(item);
+        //             //     //set it in the items list without calling the api listener
+        //             state.commit( mTypes.setItem, Payload.factory( {
+        //                 obj: item,
+        //                 mutateSilently: true
+        //             } ) );
+        //
+        //             //handle any tags
+        //             state.dispatch( 'processItemTags', item );
+        //         } );
+        //         resolve();
+        //         // }
+        //     } );
+        // },
 
-            var orderPageElementId = _JsonHelpers.ITEM_ORDER_JSON_NAME; //! _.isUndefined(payload.options.elementIds.itemOrder) ? payload.options.elementIds.itemOrder : ITEM_ORDER_JSON_NAME;
+        //         directLoadOrderFromJson: ( state, payload ) => {
+        //             return new Promise( function ( resolve, reject ) {
+        //                 _.forEach( payload.obj, function ( d, i ) {
+        //                     // window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
+        //
+        //                     // window.console.log( 'items', 'iii', 335, d );
+        //                     let item = (( state, d ) => {
+        //                         return getItem( state, d.itemId )
+        //                     })( state, d );
+        //                     // window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
+        //                     // window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
+        //                     //if the parent is null, these are top level
+        //                     //and should be added as children of the exam.
+        //                     //if the parent is null, we add the exam instead
+        //                     let parentNode = (d.parentId === null) ? state.itemMap : (( state, d ) => {
+        //                         let parentItem = getItem( state, d.parentId );
+        //                         return getNode( state, parentItem.serialNumber );
+        //                     })( state, d );
+        //
+        //                     let itemNode = new Node( item.serialNumber, parentNode.data );
+        //                     // let index = d.itemOrder;
+        //
+        //                     // window.console.log( 'items', 'direct load itemNode', 256, itemNode );
+        //                     // window.console.log( 'items', 'direct load item', 256, item );
+        //                     // window.console.log( 'items', 'direct load parentNode', 256, parentNode );
+        //
+        //
+        // //if an index was specified, splice it in at the index
+        // //                 if ( !_.isUndefined( index ) ) {
+        // //                     parentNode.children.splice( index, 0, itemNode );
+        // //                 }
+        // //                 else {
+        // //otherwise just push it on the end
+        //                     parentNode.children.push( itemNode );
+        //
+        //                     // }
+        //                 } );
+        //                 resolve();
+        //             } );
+        //         },
 
-            var examPageElementId = _JsonHelpers.EXAM_JSON_NAME; //! _.isUndefined(payload.options.elementIds.exam) ? payload.options.elementIds.exam : EXAM_JSON_NAME;
-
-
-            // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-            var objectData = (0, _JsonHelpers.readJsonFromPageString)(objectPageElementId);
-
-            var orderData = (0, _JsonHelpers.readJsonFromPageString)(orderPageElementId);
-
-            var examData = (0, _JsonHelpers.readJsonFromPageString)(examPageElementId);
-
-            window.console.log('JsonReaders', 'loadData', 46, state, objectData, examData, orderData);
-
-            //assume everything is there, just load directly
-            var exam = _Exam2.default.factory(examData);
-
-            //Initialize the item order store
-            //with the exam as its root
-            (0, _itemHelpers.initializeItemsWithExam)(state, exam);
-
-            //load in the item objects
-            state.items = (0, _JsonHelpers.processItemObjectsFromJson)(objectData);
-
-            //load in the order data
-            (0, _JsonHelpers.processItemOrderFromJson)(state, orderData);
-
-            resolve();
-        });
-    }), _defineProperty(_mutations, 'directLoadObjectsFromJson', function directLoadObjectsFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {
-            window.console.log('items', 'directLoadObjectsFromJson', 278, payload);
-            // if ( typeof payload.obj !== 'undefined' ) {
-            _.forEach(payload.obj, function (d, i) {
-                var item = _Item2.default.factory(d); //.factory( {id: id, index: index} );
-                // state.items.push(item);
-                //     //set it in the items list without calling the api listener
-                state.commit(mTypes.setItem, _Payload2.default.factory({
-                    obj: item,
-                    mutateSilently: true
-                }));
-
-                //handle any tags
-                state.dispatch('processItemTags', item);
-            });
-            resolve();
-            // }
-        });
-    }), _defineProperty(_mutations, 'directLoadOrderFromJson', function directLoadOrderFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {
-            _.forEach(payload.obj, function (d, i) {
-                // window.console.log( 'directLoadOrderFromJson', '', 34, d, i );
-
-                // window.console.log( 'items', 'iii', 335, d );
-                var item = function (state, d) {
-                    return (0, _itemHelpers.getItem)(state, d.itemId);
-                }(state, d);
-                // window.console.log( 'directLoadOrderFromJson', 'state', 259, state );
-                // window.console.log( 'directLoadOrderFromJson', 'item', 259, item );
-                //if the parent is null, these are top level
-                //and should be added as children of the exam.
-                //if the parent is null, we add the exam instead
-                var parentNode = d.parentId === null ? state.itemMap : function (state, d) {
-                    var parentItem = (0, _itemHelpers.getItem)(state, d.parentId);
-                    return (0, _NodeTools.getNode)(state, parentItem.serialNumber);
-                }(state, d);
-
-                var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
-                // let index = d.itemOrder;
-
-                // window.console.log( 'items', 'direct load itemNode', 256, itemNode );
-                // window.console.log( 'items', 'direct load item', 256, item );
-                // window.console.log( 'items', 'direct load parentNode', 256, parentNode );
+        // directLoadStudentsFromJson: ( state, payload ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //
+        //     } );
+        // },
 
 
-                //if an index was specified, splice it in at the index
-                //                 if ( !_.isUndefined( index ) ) {
-                //                     parentNode.children.splice( index, 0, itemNode );
-                //                 }
-                //                 else {
-                //otherwise just push it on the end
-                parentNode.children.push(itemNode);
-
-                // }
-            });
-            resolve();
-        });
-    }), _defineProperty(_mutations, 'directLoadStudentsFromJson', function directLoadStudentsFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {});
-    }), _defineProperty(_mutations, 'directLoadScoresFromJson', function directLoadScoresFromJson(state, payload) {
-        return new Promise(function (resolve, reject) {});
-    }), _mutations),
+        // directLoadScoresFromJson: ( state, payload ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //
+        //     } );
+        // }
+    },
 
     actions: {
-
-        parseExamData: function parseExamData(_ref) {
-            var state = _ref.state,
-                commit = _ref.commit,
-                dispatch = _ref.dispatch,
-                getters = _ref.getters;
-
-            return new Promise(function (resolve, reject) {
-                //Check and see if the server gave us data to start off with.
-                //Grab any preloaded data from the div on the page where the server would've put it
-                var examData = JSON.parse(document.getElementById(_JsonHelpers.EXAM_JSON_NAME).getAttribute('data'));
-                // window.console.log( 'actions', 'parseExamData', 103, examData );
-
-                //there was exam data, load an exam from it
-                if (typeof examData != 'undefined') {
-
-                    //We need to do work on the exam in two places.
-                    //First, we will update the stored object properties.
-                    //Make sure the index is what we expect
-                    examData.index = 0;
-
-                    var examSerialNumber = getters.rootItem; //items.items[ 0 ].serialNumber;
-                    // window.console.log( 'actions', 'esn', 117, examSerialNumber );
-
-                    _Exam2.default.fillableProps.forEach(function (prop) {
-                        // window.console.log( 'actions', 'prop', 119, prop, examData[ prop ] );
-                        if (examData[prop]) {
-                            commit(mTypes.updateItem, _Payload2.default.factory({
-                                mutateSilently: true,
-                                index: 0,
-                                updateProp: prop,
-                                updateVal: examData[prop]
-                            }));
-                        }
-                    });
-                }
-
-                return resolve();
-            });
-        },
-
-        parseItemObjectData: function parseItemObjectData(_ref2) {
-            var state = _ref2.state,
-                commit = _ref2.commit,
-                dispatch = _ref2.dispatch,
-                getters = _ref2.getters;
-
-            return new Promise(function (resolve, reject) {
-
-                //Check and see if the server gave us data to start off with.
-                //Grab any pre loaded data from the div on the page where the server would've put it
-                var data = JSON.parse(document.getElementById(_JsonHelpers.ITEM_OBJECT_JSON_NAME).getAttribute('data'));
-                // window.console.log( 'actions', 'parseItemObjectData', 128, data );
-                if (data.length > 0) {
-                    var pl = _Payload2.default.factory({ obj: data, mutateSilently: true });
-                    commit('directLoadObjectsFromJson', pl);
-                }
-
-                resolve();
-            });
-        },
-
-        parseItemOrderData: function parseItemOrderData(_ref3) {
-            var state = _ref3.state,
-                commit = _ref3.commit,
-                dispatch = _ref3.dispatch,
-                getters = _ref3.getters;
-
-            return new Promise(function (resolve, reject) {
-
-                //The data needs to be in determinate order for this to work
-                var data = JSON.parse(document.getElementById(_JsonHelpers.ITEM_ORDER_JSON_NAME).getAttribute('data'));
-
-                // window.console.log( 'actions', 'parseItemORDERData', 128, data, getters );
-                // if ( data.length > 0 ) {
-                var pl = _Payload2.default.factory({ obj: data, mutateSilently: true });
-                commit('directLoadOrderFromJson', pl);
-                // }
-                resolve();
-            });
-            1(_templateObject);
-        },
+        //
+        // parseExamData: ( { state, commit, dispatch, getters } ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //         //Check and see if the server gave us data to start off with.
+        //         //Grab any preloaded data from the div on the page where the server would've put it
+        //         let examData = JSON.parse( document.getElementById( EXAM_JSON_NAME ).getAttribute( 'data' ) );
+        //         // window.console.log( 'actions', 'parseExamData', 103, examData );
+        //
+        //         //there was exam data, load an exam from it
+        //         if ( typeof examData != 'undefined' ) {
+        //
+        //             //We need to do work on the exam in two places.
+        //             //First, we will update the stored object properties.
+        //             //Make sure the index is what we expect
+        //             examData.index = 0;
+        //
+        //             let examSerialNumber = getters.rootItem; //items.items[ 0 ].serialNumber;
+        //             // window.console.log( 'actions', 'esn', 117, examSerialNumber );
+        //
+        //             Exam.fillableProps.forEach(
+        //                 ( prop ) => {
+        //                     // window.console.log( 'actions', 'prop', 119, prop, examData[ prop ] );
+        //                     if ( examData[ prop ] ) {
+        //                         commit( mTypes.updateItem, Payload.factory( {
+        //                             mutateSilently: true,
+        //                             index: 0,
+        //                             updateProp: prop,
+        //                             updateVal: examData[ prop ]
+        //                         } ) );
+        //                     }
+        //                 } );
+        //         }
+        //
+        //         return resolve();
+        //
+        //     } );
+        // },
+        //
+        // parseItemObjectData: ( { state, commit, dispatch, getters } ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //
+        //         //Check and see if the server gave us data to start off with.
+        //         //Grab any pre loaded data from the div on the page where the server would've put it
+        //         let data = JSON.parse( document.getElementById( ITEM_OBJECT_JSON_NAME ).getAttribute( 'data' ) );
+        //         // window.console.log( 'actions', 'parseItemObjectData', 128, data );
+        //         if ( data.length > 0 ) {
+        //             let pl = Payload.factory( { obj: data, mutateSilently: true } );
+        //             commit( 'directLoadObjectsFromJson', pl );
+        //         }
+        //
+        //         resolve();
+        //     } );
+        // },
+        //
+        // parseItemOrderData: ( { state, commit, dispatch, getters } ) => {
+        //     return new Promise( function ( resolve, reject ) {
+        //
+        //         //The data needs to be in determinate order for this to work
+        //         let data = JSON.parse( document.getElementById( ITEM_ORDER_JSON_NAME ).getAttribute( 'data' ) );
+        //
+        //         // window.console.log( 'actions', 'parseItemORDERData', 128, data, getters );
+        //         // if ( data.length > 0 ) {
+        //         let pl = Payload.factory( { obj: data, mutateSilently: true } );
+        //         commit( 'directLoadOrderFromJson', pl );
+        //         // }
+        //         resolve();
+        //     } );
+        //     1`                                                                                                          `
+        // },
 
         /**
          * The earlier processing of items should have left
@@ -38893,11 +38887,11 @@ module.exports = {
          * @param dispatch
          * @param getters
          */
-        processTagsOutOfLoadedItems: function processTagsOutOfLoadedItems(_ref4) {
-            var state = _ref4.state,
-                commit = _ref4.commit,
-                dispatch = _ref4.dispatch,
-                getters = _ref4.getters;
+        processTagsOutOfLoadedItems: function processTagsOutOfLoadedItems(_ref) {
+            var state = _ref.state,
+                commit = _ref.commit,
+                dispatch = _ref.dispatch,
+                getters = _ref.getters;
 
             var items = getters[gTypes.getAllItems];
             if (_.isUndefined(items) || items.length === 0) return false;
@@ -44238,7 +44232,7 @@ var _escores = __webpack_require__(1221);
 
 var _escores2 = _interopRequireDefault(_escores);
 
-var _exams = __webpack_require__(238);
+var _exams = __webpack_require__(1282);
 
 var _exams2 = _interopRequireDefault(_exams);
 
@@ -45103,229 +45097,7 @@ exports.default = {
 
 /***/ }),
 /* 237 */,
-/* 238 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations, _actions, _getters;
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _getterTypes = __webpack_require__(4);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _newGradingMutationTypes = __webpack_require__(1218);
-
-var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
-
-var _Exam = __webpack_require__(9);
-
-var _Exam2 = _interopRequireDefault(_Exam);
-
-var _Payload = __webpack_require__(1);
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-var _examRequests = __webpack_require__(80);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 1/12/17.
-                                                                                                                                                                                                                   */
-
-// import * as api from '../../api/controller'
-
-
-// const isNew = ( state, exam ) => {
-//     return _.findIndex( state.exams, { id: exam.id } ) === -1;
-// };
-
-
-/**
- * The older version used an index value to do lots of stuff.
- * Given the prospect of using a websocket connection or connecting
- * to canvas or other 3rd party system, it now makes more sense
- * to use the db's id as the primary locator in the store. Thus
- * state.exams has the exam's database id as key and an Exam object
- * as value. That is:
- *      state.exams[Exam.id] = Exam
- *
- * To maintain compatibility, indexMap holds a mapping from the old
- * examIndex to the database id
- *
- * @type {{exams: {}, indexMap: {}}}
- */
-var state = {
-    /**
-     * Object indexed by exam id holding exam objects
-     */
-    exams: {},
-
-    /**
-     * Mapping from older examIndex to new exam id value
-     */
-    indexMap: {}
-
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addExam, function (state, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    if (payload.obj instanceof _Exam2.default) {
-        //push into exams storage
-        state.exams[payload.obj.id] = payload.obj;
-    }
-}), _defineProperty(_mutations, mTypes.addIndexMapping, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-
-    state.indexMap[payload.index] = payload.id;
-}), _defineProperty(_mutations, mTypes.loadExams, function (state, rootState, payload) {
-    _Payload2.default.checkIfPayload(payload);
-    //add exams
-    state.exams = payload.obj;
-}), _mutations);
-
-var actions = (_actions = {
-
-    /**
-     * Loads the exam object for the given id from the server,
-     * sets it as root and as active
-     * @param state
-     * @param dispatch
-     * @param commit
-     * @param getters
-     * @param examId
-     * @returns {Promise<any>}
-     */
-    loadExamFromServer: function loadExamFromServer(_ref, examId) {
-        var state = _ref.state,
-            dispatch = _ref.dispatch,
-            commit = _ref.commit,
-            getters = _ref.getters;
-
-        return new Promise(function (resolve, reject) {
-
-            var p = (0, _examRequests.loadExam)(examId);
-            return p.then(function (data) {
-                var exam = _Exam2.default.factory(data);
-
-                var pl = _Payload2.default.factory({
-                    obj: exam,
-                    mutateSilently: true
-                });
-                //First we save it in the exams list
-                commit(mTypes.addExam, pl);
-                //Now that we have the exam loaded,
-                // we need to do some stuff with it.
-                // NB, since these call mutations, they happen
-                // synchronously, thus no need to wrap in promises
-                // First, we initialize the item store (which holds the
-                // order of the items) with the exam
-                commit(mTypes.initializeItemStorage, pl);
-                //todo consolidate the active exam storage
-                //Then we et the exam as the current exam
-                commit(mTypes.setActiveExam, pl);
-                commit(ngmTypes.setActiveExam, pl);
-                resolve();
-            });
-        });
-    }
-
-}, _defineProperty(_actions, aTypes.addNewExam, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-    var examId = payload.examId,
-        examIndex = payload.examIndex,
-        obj = payload.obj,
-        examObject = payload.examObject;
-
-
-    obj = typeof examObject != 'undefined' ? examObject : obj;
-    //check and see if an exam object has already been passed in
-    if (!obj instanceof _Exam2.default) {
-        //create a new exam
-        var name = payload.name,
-            year = payload.year,
-            term = payload.term;
-
-        var examJson = { name: name, year: year, term: term, examIndex: examIndex };
-        obj = _Exam2.default.factory(examJson);
-    }
-
-    //assemble the expected payload
-    // let out = { examId: examId, examIndex: examIndex, obj: obj };
-    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
-    //Add to the exams store
-    commit(mTypes.addExam, out);
-
-    //Add to the mapping store
-    commit(mTypes.addIndexMapping, out);
-
-    //request that the server create an exam
-    // api.createModel(Exam);
-}), _defineProperty(_actions, aTypes.loadExams, function (state, rootState, payload) {
-    //check if payload has correct structure
-    //todo
-
-    //push each record from the payload into the store
-    for (var i = 0; i < payload.length; i++) {
-        var record = payload[i];
-        //check if record has correct structure
-        //todo
-
-        //add to exams and add index mapping
-        [aTypes.addNewExam](state, rootState, record);
-    }
-}), _actions);
-
-var getters = (_getters = {}, _defineProperty(_getters, gTypes.getExam, function (state, getters, rootState, payload) {
-    return function (payload) {
-        //finds the exam and returns it
-        var lookupByExamId = function lookupByExamId(state, examId) {
-            return state.exams[examId];
-        };
-
-        //Try looking up first by exam Id
-        if (typeof payload.examId != 'undefined') {
-            return lookupByExamId(state, payload.examId);
-        }
-
-        //other lookup methods
-    };
-}), _defineProperty(_getters, gTypes.getAllExams, function (state, getters, payload) {
-    return function (state) {
-        var out = [];
-        var keys = Object.keys(state.exams);
-        for (var i = 0; i < keys.length; i++) {
-            out.push(state.exams[keys[i]]);
-        }
-        return out;
-    }(state);
-}), _getters);
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-/***/ }),
+/* 238 */,
 /* 239 */,
 /* 240 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -46074,12 +45846,57 @@ var mutations = {
 };
 
 var actions = {
-
-    loadItemsFromServer: function loadItemsFromServer(_ref, exam) {
+    /**
+     * Loads item object and item order data from json
+     * representations in the data attributes of page elements.
+     *
+     * Then dispatches processAndStoreLoadedItems to do the actual
+     * processing and storing of the obtained json objects.
+     *
+     * The payload is an object with properties items and order. Those
+     * hold string names of the elements on the page holding the data.
+     *
+     */
+    loadItemsFromPageJson: function loadItemsFromPageJson(_ref, jsonLocations) {
         var state = _ref.state,
             commit = _ref.commit,
             dispatch = _ref.dispatch,
             getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+
+            var objectJson = (0, _JsonHelpers.readJsonFromPageString)(jsonLocations.items);
+            var orderJson = (0, _JsonHelpers.readJsonFromPageString)(jsonLocations.order);
+
+            dispatch('processAndStoreLoadedItems', {
+                itemObjectJson: objectJson,
+                itemOrderJson: orderJson
+            }).then(function () {
+                window.console.log('items.loaders', 'loadItemsFromPageJson', 58, 'done');
+                resolve();
+            });
+        });
+    },
+
+    /**
+     * Requests item object and item order data from the server
+     * for the given exam.
+     *
+     * Then dispatches processAndStoreLoadedItems to do the actual
+     * processing and storing of the obtained json objects.
+     *
+     * @param state
+     * @param commit
+     * @param dispatch
+     * @param getters
+     * @param exam Exam
+     * @returns {Promise<any>}
+     */
+    loadItemsFromServer: function loadItemsFromServer(_ref2, exam) {
+        var state = _ref2.state,
+            commit = _ref2.commit,
+            dispatch = _ref2.dispatch,
+            getters = _ref2.getters;
 
         return new Promise(function (resolve, reject) {
             //Make the request to the server and return the data
@@ -46092,124 +45909,73 @@ var actions = {
                 var objectJson = data.itemObjects;
                 var orderJson = data.itemOrder;
 
-                //Get a list of item objects from the data
-                var items = (0, _JsonHelpers.processItemObjectsFromJson)(objectJson);
-
-                //push the item objects into state.items
-                _.forEach(items, function (item) {
-                    commit(mTypes.addNewItem, _Payload2.default.factory({
-                        obj: item,
-                        mutateSilently: true
-                    }));
+                dispatch('processAndStoreLoadedItems', {
+                    itemObjectJson: objectJson,
+                    itemOrderJson: orderJson
+                }).then(function () {
+                    resolve();
                 });
-
-                //Store the order of the items
-                _.forEach(orderJson, function (d, i) {
-                    //if the parent is null, we are operating on the exam, so we can skip
-                    if (d.parentId === null) return true;
-
-                    var item = getters[gTypes.getItemById](d.itemId);
-                    var parentItem = getters[gTypes.getItemById](d.parentId);
-
-                    //Get or make the new node for the item's position
-                    var parentNode = getters[gTypes.getItemNodeFromOrder](parentItem.serialNumber);
-                    var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
-
-                    //Add the new node to the order store
-                    var pl = _Payload2.default.factory({ objNode: itemNode, parentNode: parentNode });
-                    commit('addNodeAsChild', pl);
-                });
-
-                resolve();
             });
         });
     },
 
     /**
-     * Reads the exam data from the data attribute of a page element
-     * Options object may contain:
-     *      Options.elementIds = { exam : the id of the element the data is located in}
-     * Otherwise, it will use the default element id
+     * Once we have loaded some item data as json objects, from
+     * either the server or a json on the page, this action
+     * handles actually creating the Item objects and saving them
+     * in the correct order.
+     *
+     * It takes as its payload an object with the properties: itemObjectJson
+     * and itemOrderJson
      *
      * @param state
      * @param commit
      * @param dispatch
      * @param getters
-     * @param options
+     * @param objs {itemObjectJson, itemOrderJson}
      * @returns {Promise<any>}
      */
-    loadExamFromPageJson: function loadExamFromPageJson(_ref2, options) {
-        var state = _ref2.state,
-            commit = _ref2.commit,
-            dispatch = _ref2.dispatch,
-            getters = _ref2.getters;
-
-        return new Promise(function (resolve, reject) {
-            //Figure out what element id to use
-            var pageElementId = _JsonHelpers.EXAM_JSON_NAME; //options.elementIds.exam ? options.elementIds.exam : EXAM_JSON_NAME
-
-            //Read the data from the page element and parse it into an object
-            var examJson = (0, _JsonHelpers.readJsonFromPageString)(pageElementId);
-
-            //assume everything is there, just load directly
-            var exam = _Exam2.default.factory(examJson);
-
-            var pl = _Payload2.default.factory({
-                obj: exam,
-                mutateSilently: true
-            });
-            //Now that we have the exam loaded,
-            //we need to do some stuff with it.
-            //NB, since these call mutations, they happen
-            //synchronously, thus no need to wrap in promises
-            //First, we initialize the item store (which holds the
-            //order of the items) with the exam
-            me.$store.commit(mTypes.initializeItemStorage, pl);
-            //Then we et the exam as the current exam
-            me.$store.commit(mTypes.setActiveExam, pl);
-            return exam;
-            if (exam) {
-                var _pl = _Payload2.default.factory({ obj: exam, mutateSilently: true });
-                commit(mTypes.initializeItemStorage, _pl);
-
-                return resolve(exam);
-            }
-        });
-    },
-
-    /**
-     * These are actions which different parts of the gom
-     * call to when they initialize.
-     *
-     */
-    /** This is what gets run when the root instance is mounted for the setup page */
-    loadItemsFromPageData: function loadItemsFromPageData(_ref3, options) {
+    processAndStoreLoadedItems: function processAndStoreLoadedItems(_ref3, objs) {
         var state = _ref3.state,
             commit = _ref3.commit,
             dispatch = _ref3.dispatch,
             getters = _ref3.getters;
 
         return new Promise(function (resolve, reject) {
-            var objectPageElementId = options.elementIds.itemObjects ? options.elementIds.itemObjects : _JsonHelpers.ITEM_OBJECT_JSON_NAME;
+            var itemObjectJson = objs.itemObjectJson,
+                itemOrderJson = objs.itemOrderJson;
 
-            // window.console.log( 'JsonReaders', 'loadInitialData', 40, 'start loading');
-            var objectData = (0, _JsonHelpers.readJsonFromPageString)(_JsonHelpers.ITEM_OBJECT_JSON_NAME);
+            //Get a list of item objects from the data
 
-            var orderData = (0, _JsonHelpers.readJsonFromPageString)(_JsonHelpers.ITEM_ORDER_JSON_NAME);
+            var items = (0, _JsonHelpers.processItemObjectsFromJson)(itemObjectJson);
 
-            var examData = (0, _JsonHelpers.readJsonFromPageString)(_JsonHelpers.EXAM_JSON_NAME);
+            //push the item objects into state.items
+            _.forEach(items, function (item) {
+                commit(mTypes.addNewItem, _Payload2.default.factory({
+                    obj: item,
+                    mutateSilently: true
+                }));
+            });
 
-            // window.console.log( 'JsonReaders', 'loadData', 46, state, objectData, examData, orderData );
+            //Store the order of the items
+            _.forEach(itemOrderJson, function (d, i) {
+                //if the parent is null, we are operating on the exam, so we can skip
+                if (d.parentId === null) return true;
 
-            //load in the item objects
-            (0, _JsonHelpers.processItemObjectsFromJson)(objectData);
+                var item = getters[gTypes.getItemById](d.itemId);
+                var parentItem = getters[gTypes.getItemById](d.parentId);
 
-            //load in the order data
-            (0, _JsonHelpers.processItemOrderFromJson)(state, orderData);
+                //Get or make the new node for the item's position
+                var parentNode = getters[gTypes.getItemNodeFromOrder](parentItem.serialNumber);
+                var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
+
+                //Add the new node to the order store
+                var pl = _Payload2.default.factory({ objNode: itemNode, parentNode: parentNode });
+                commit('addNodeAsChild', pl);
+            });
 
             resolve();
         });
-        // window.console.log( 'JsonReaders', 'setupOnMount', 87, 'READY' );
     }
 
 };
@@ -50277,47 +50043,10 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _vue = __webpack_require__(11);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * Created by adam on 7/7/17.
+                                                                                                                                                                                                                                                                   */
 
-var _vue2 = _interopRequireDefault(_vue);
-
-var _getterTypes = __webpack_require__(4);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _mutationTypes = __webpack_require__(2);
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _newGradingMutationTypes = __webpack_require__(1218);
-
-var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _newGradingActionTypes = __webpack_require__(1219);
-
-var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
-
-var _newGradingGetterTypes = __webpack_require__(1217);
-
-var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
-
-var _scoreRequests = __webpack_require__(112);
-
-var _scoreRequests2 = _interopRequireDefault(_scoreRequests);
-
-var _commentHelpers = __webpack_require__(143);
-
-var _PayloadScore = __webpack_require__(79);
-
-var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
-
-var _ItemScore = __webpack_require__(148);
-
-var _ItemScore2 = _interopRequireDefault(_ItemScore);
 
 var _itemscores = __webpack_require__(159);
 
@@ -50331,20 +50060,27 @@ var _itemscores5 = __webpack_require__(279);
 
 var _itemscores6 = _interopRequireDefault(_itemscores5);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _itemscores7 = __webpack_require__(1287);
+
+var _itemscores8 = _interopRequireDefault(_itemscores7);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var state = {
     //Array of Score objects
     scores: []
-}; /**
-    * Created by adam on 7/7/17.
-    */
+};
+
+var mutations = _extends({}, _itemscores6.default);
+
+var getters = _extends({}, _itemscores4.default);
+
+var actions = _extends({}, _itemscores2.default, _itemscores8.default.actions);
+
 exports.default = {
-    actions: _itemscores2.default,
-    getters: _itemscores4.default,
-    mutations: _itemscores6.default,
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
     state: state
 };
 
@@ -56830,20 +56566,58 @@ var _itemChart = __webpack_require__(493);
 
 var _itemChart2 = _interopRequireDefault(_itemChart);
 
-var _gradeArea = __webpack_require__(728);
+var _gradeTable = __webpack_require__(1290);
 
-var _gradeArea2 = _interopRequireDefault(_gradeArea);
+var _gradeTable2 = _interopRequireDefault(_gradeTable);
+
+var _overallChart = __webpack_require__(730);
+
+var _overallChart2 = _interopRequireDefault(_overallChart);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 
     props: ['exam', 'student'],
 
     components: {
-        GradeArea: _gradeArea2.default,
+        OverallChart: _overallChart2.default,
+        GradeTable: _gradeTable2.default,
         ItemChart: _itemChart2.default,
         ItemArea: _itemArea2.default,
         ItemComment: _itemComment2.default
@@ -56856,6 +56630,11 @@ exports.default = {
     },
 
     computed: {
+
+        examName: function examName() {
+            return this.exam ? this.exam.name : '';
+        },
+
         studentName: function studentName() {
             return !_.isUndefined(this.student) && !_.isNull(this.student) ? this.student.nameFirstLast : '';
         },
@@ -56868,159 +56647,10 @@ exports.default = {
 
     }
 
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
-/* 515 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _getterTypes = __webpack_require__(4);
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
-var _actionTypes = __webpack_require__(6);
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _newGradingGetterTypes = __webpack_require__(1217);
-
-var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
-
-var _ItemStat = __webpack_require__(87);
-
-var _ItemStat2 = _interopRequireDefault(_ItemStat);
-
-var _statsRequests = __webpack_require__(81);
-
-var _feedback = __webpack_require__(146);
-
-var _feedback2 = _interopRequireDefault(_feedback);
-
-var _overallChart = __webpack_require__(730);
-
-var _overallChart2 = _interopRequireDefault(_overallChart);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.default = {
-    mixins: [_feedback2.default],
-
-    props: ['exam', 'student'],
-
-    components: { OverallChart: _overallChart2.default },
-
-    data: function data() {
-        return {
-            placeHolder: '-',
-            defaults: {}
-        };
-    },
-
-    watch: {
-        exam: function exam(newVal, oldVal) {
-            //When the exam gets around to being defined,
-            //this loads the grade assignment schema from
-            //the server.
-            if (_.isUndefined(oldVal)) this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer, this.exam);
-        }
-    },
-
-    asyncComputed: {
-        gradeAssignmentObject: function gradeAssignmentObject() {
-            var me = this;
-            if (this.totalScore !== this.placeHolder) {
-                var ga = me.$store.getters[gTypes.getGradeAssignmentForScore](me.totalScore);
-                return ga;
-            }
-        }
-    },
-
-    computed: {
-        chartDivId: function chartDivId() {
-            return 'overallScoreChart';
-        },
-
-        totalScore: function totalScore() {
-            if (_.isUndefined(this.student) || _.isNull(this.student)) return this.placeHolder;
-            return this.$store.getters[nggTypes.getTotalScoreForStudent](this.student);
-        },
-
-        maxPossible: function maxPossible() {
-            var s = this.$store.getters[gTypes.getMaxPossibleScore];
-            return !_.isUndefined(s) ? s : this.placeHolder;
-        },
-
-        letterGrade: function letterGrade() {
-            if (this.gradeAssignmentObject) return this.gradeAssignmentObject.displayValue;
-
-            return this.placeHolder;
-        }
-
-    }
-
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
+/* 515 */,
 /* 516 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57764,20 +57394,7 @@ exports.push([module.i, "", ""]);
 /* 699 */,
 /* 700 */,
 /* 701 */,
-/* 702 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(5)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
+/* 702 */,
 /* 703 */,
 /* 704 */,
 /* 705 */,
@@ -57859,50 +57476,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 728 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(973)
-}
-var Component = __webpack_require__(3)(
-  /* script */
-  __webpack_require__(515),
-  /* template */
-  __webpack_require__(872),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/feedback/grade-area.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] grade-area.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-85355362", Component.options)
-  } else {
-    hotAPI.reload("data-v-85355362", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 728 */,
 /* 729 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -58155,16 +57729,27 @@ if (false) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "feedback-panel"
-  }, [_c('h4', {
-    staticClass: "title is-4"
-  }, [_vm._v("Feedback for")]), _vm._v(" "), _c('h4', {
-    staticClass: "subtitle is-4"
-  }, [_vm._v(_vm._s(_vm.studentName))]), _vm._v(" "), _c('grade-area', {
+  }, [_c('p', {
+    staticClass: "title has-text-centered"
+  }, [_vm._v(_vm._s(_vm.examName))]), _vm._v(" "), _c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v(_vm._s(_vm.studentName))]), _vm._v(" "), _c('div', {
+    staticClass: "columns"
+  }, [_c('div', {
+    staticClass: "column"
+  }, [_c('grade-table', {
     attrs: {
       "exam": _vm.exam,
       "student": _vm.student
     }
-  }), _vm._v(" "), _vm._l((_vm.topLevelItems), function(i) {
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "column"
+  }, [_c('overall-chart', {
+    attrs: {
+      "exam": _vm.exam,
+      "student": _vm.student
+    }
+  })], 1)]), _vm._v(" "), _vm._l((_vm.topLevelItems), function(i) {
     return _c('div', [_c('item-area', {
       attrs: {
         "exam": _vm.exam,
@@ -58227,36 +57812,7 @@ if (false) {
 /* 869 */,
 /* 870 */,
 /* 871 */,
-/* 872 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "grade-area"
-  }, [_c('div', {
-    staticClass: "tile"
-  }, [_c('div', {
-    staticClass: "table-area"
-  }, [_c('table', {
-    staticClass: "table is-narrow"
-  }, [_c('tbody', [_c('tr', [_c('th', [_vm._v("Grade")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.letterGrade))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Score")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.totalScore) + " / " + _vm._s(_vm.maxPossible))])])])])]), _vm._v(" "), _c('div', {
-    staticClass: "tile"
-  }, [_c('overall-chart', {
-    attrs: {
-      "exam": _vm.exam,
-      "student": _vm.student
-    }
-  })], 1)])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-85355362", module.exports)
-  }
-}
-
-/***/ }),
+/* 872 */,
 /* 873 */,
 /* 874 */,
 /* 875 */,
@@ -58507,32 +58063,7 @@ if(false) {
 /* 970 */,
 /* 971 */,
 /* 972 */,
-/* 973 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(702);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(7)("218de03a", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85355362\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grade-area.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85355362\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grade-area.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
+/* 973 */,
 /* 974 */,
 /* 975 */,
 /* 976 */,
@@ -58717,6 +58248,10 @@ var _mutationTypes = __webpack_require__(2);
 
 var mTypes = _interopRequireWildcard(_mutationTypes);
 
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
 var _feedbackPanel = __webpack_require__(727);
 
 var _feedbackPanel2 = _interopRequireDefault(_feedbackPanel);
@@ -58727,6 +58262,21 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 exports.default = {
 
     props: [],
@@ -58735,107 +58285,43 @@ exports.default = {
 
     data: function data() {
         return {
+            jsonLocations: {
+                exam: 'exam',
+                items: 'items',
+                order: 'order',
+                scores: 'scores',
+                students: 'students'
+            },
+
             defaults: {}
         };
     },
 
     computed: {
         student: function student() {
-            var studentJson = (0, _JsonHelpers.readJsonFromPageString)('student');
-            return _Student2.default.factory(studentJson);
+            var loadedStudents = this.$store.getters[gTypes.getStudentsFromRoster];
+            if (!_.isUndefined(loadedStudents)) return loadedStudents[0];
         },
 
         exam: function exam() {
-            // return this.$store.getters.currentExam;
-            var examJson = (0, _JsonHelpers.readJsonFromPageString)('exam');
-            return _Exam2.default.factory(examJson);
-        },
+            return this.$store.getters.currentExam;
+        }
 
-        itemScoreObjects: function itemScoreObjects() {
-            var itemScoresJson = (0, _JsonHelpers.readJsonFromPageString)('scores');
-            var scores = [];
-            _.forEach(itemScoresJson, function (s) {
-                scores.push(_ItemScore2.default.factory(s));
+    },
+
+    created: function created() {
+        var me = this;
+        me.$store.dispatch('loadStudentsFromPageJson', me.jsonLocations).then(function () {
+            me.$store.dispatch('loadExamFromPageJson', me.jsonLocations).then(function () {
+                me.$store.dispatch('loadItemsFromPageJson', me.jsonLocations).then(function () {
+                    me.$store.dispatch('loadScoresFromPageJson', me.jsonLocations).then(function () {
+                        window.console.log('feedback-page', 'ready');
+                    });
+                });
             });
-            return scores;
-        },
-
-        items: function items() {
-            var o = this.loadItems();
-            return !_.isUndefined(o) ? o : [];
-        },
-
-        order: function order() {
-            // let o = this.loadOrder();
-            // return !_.isUndefined( o ) ? o : [];
-        }
-    },
-
-    methods: {
-        loadOrder: function loadOrder() {
-            var orderJson = (0, _JsonHelpers.readJsonFromPageString)('order');
-            if (!_.isUndefined(this.exam) && !_.isUndefined(this.items)) {
-                var state = {
-                    items: this.items,
-                    //initialize the order store
-                    itemMap: new _Node2.default(this.exam.serialNumber, this.exam.serialNumber)
-                };
-                processItemOrderFromJson(state, orderJson);
-                return state.itemMap;
-            }
-        },
-
-        loadItems: function loadItems() {
-            // this.$store.commit(mTypes.loadExamAndItemsFromPageData);
-            var ims = [];
-            //the exam needs to be the root
-            if (_.isUndefined(this.exam)) return ims;
-            ims.push(this.exam);
-            var itemsJson = (0, _JsonHelpers.readJsonFromPageString)('items');
-            return (0, _JsonHelpers.processItemObjectsFromJson)(itemsJson);
-            // _.forEach(itemsJson, function ( s ){
-            //     ims.push(Item.factory(s));
-            // });
-            // return ims;
-        }
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        this.$store.commit(mTypes.loadExamAndItemsFromPageData, _Payload2.default.factory({
-            options: {
-                elementIds: {
-                    itemObjects: 'items',
-                    itemOrder: 'order',
-                    exam: 'exam'
-                }
-            }
-        }));
+        });
     }
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 /* 1010 */,
@@ -59030,11 +58516,11 @@ module.exports = Component.exports
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: " mainBodyLocator",
+    staticClass: " mainBodyLocator container is-fluid",
     attrs: {
-      "id": "grade-main-page"
+      "id": "feedback-main-page"
     }
-  }, [_c('p', [_vm._v("\n        " + _vm._s(_vm.student.nameFirstLast) + "\n    ")]), _vm._v(" "), _c('p', [_vm._v("\n        " + _vm._s(_vm.exam.name) + "\n    ")]), _vm._v(" "), _c('feedback-panel', {
+  }, [_c('feedback-panel', {
     attrs: {
       "exam": _vm.exam,
       "student": _vm.student
@@ -60538,6 +60024,842 @@ exports.default = {
     mutations: mutations,
     state: state
 };
+
+/***/ }),
+/* 1258 */,
+/* 1259 */,
+/* 1260 */,
+/* 1261 */,
+/* 1262 */,
+/* 1263 */,
+/* 1264 */,
+/* 1265 */,
+/* 1266 */,
+/* 1267 */,
+/* 1268 */,
+/* 1269 */,
+/* 1270 */,
+/* 1271 */,
+/* 1272 */,
+/* 1273 */,
+/* 1274 */,
+/* 1275 */,
+/* 1276 */,
+/* 1277 */,
+/* 1278 */,
+/* 1279 */,
+/* 1280 */,
+/* 1281 */,
+/* 1282 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * Created by adam on 1/12/17.
+                                                                                                                                                                                                                                                                   */
+
+var _exams = __webpack_require__(1284);
+
+var _exams2 = _interopRequireDefault(_exams);
+
+var _exams3 = __webpack_require__(1283);
+
+var _exams4 = _interopRequireDefault(_exams3);
+
+var _exams5 = __webpack_require__(1286);
+
+var _exams6 = _interopRequireDefault(_exams5);
+
+var _exams7 = __webpack_require__(1285);
+
+var _exams8 = _interopRequireDefault(_exams7);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// const isNew = ( state, exam ) => {
+//     return _.findIndex( state.exams, { id: exam.id } ) === -1;
+// };
+
+
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.exams has the exam's database id as key and an Exam object
+ * as value. That is:
+ *      state.exams[Exam.id] = Exam
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * examIndex to the database id
+ *
+ * @type {{exams: {}, indexMap: {}}}
+ */
+var state = {
+    /**
+     * Object indexed by exam id holding exam objects
+     */
+    exams: {},
+
+    /**
+     * Mapping from older examIndex to new exam id value
+     */
+    indexMap: {}
+
+};
+
+var mutations = _extends({}, _exams6.default);
+
+var getters = _extends({}, _exams2.default);
+
+var actions = _extends({}, _exams4.default, _exams8.default.actions);
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+/***/ }),
+/* 1283 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _examRequests = __webpack_require__(80);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 1/12/17.
+                                                                                                                                                                                                                   */
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addNewExam, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+    var examId = payload.examId,
+        examIndex = payload.examIndex,
+        obj = payload.obj,
+        examObject = payload.examObject;
+
+
+    obj = typeof examObject != 'undefined' ? examObject : obj;
+    //check and see if an exam object has already been passed in
+    if (!obj instanceof _Exam2.default) {
+        //create a new exam
+        var name = payload.name,
+            year = payload.year,
+            term = payload.term;
+
+        var examJson = { name: name, year: year, term: term, examIndex: examIndex };
+        obj = _Exam2.default.factory(examJson);
+    }
+
+    //assemble the expected payload
+    // let out = { examId: examId, examIndex: examIndex, obj: obj };
+    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
+    //Add to the exams store
+    commit(mTypes.addExam, out);
+
+    //Add to the mapping store
+    commit(mTypes.addIndexMapping, out);
+
+    //request that the server create an exam
+    // api.createModel(Exam);
+}), _defineProperty(_module$exports, aTypes.loadExams, function (state, rootState, payload) {
+    //check if payload has correct structure
+    //todo
+
+    //push each record from the payload into the store
+    for (var i = 0; i < payload.length; i++) {
+        var record = payload[i];
+        //check if record has correct structure
+        //todo
+
+        //add to exams and add index mapping
+        [aTypes.addNewExam](state, rootState, record);
+    }
+}), _module$exports);
+
+/***/ }),
+/* 1284 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _examRequests = __webpack_require__(80);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 1/12/17.
+                                                                                                                                                                                                                   */
+
+// import * as api from '../../api/controller'
+
+
+// const isNew = ( state, exam ) => {
+//     return _.findIndex( state.exams, { id: exam.id } ) === -1;
+// };
+
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getExam, function (state, getters, rootState, payload) {
+    return function (payload) {
+        //finds the exam and returns it
+        var lookupByExamId = function lookupByExamId(state, examId) {
+            return state.exams[examId];
+        };
+
+        //Try looking up first by exam Id
+        if (typeof payload.examId != 'undefined') {
+            return lookupByExamId(state, payload.examId);
+        }
+
+        //other lookup methods
+    };
+}), _defineProperty(_module$exports, gTypes.getAllExams, function (state, getters, payload) {
+    return function (state) {
+        var out = [];
+        var keys = Object.keys(state.exams);
+        for (var i = 0; i < keys.length; i++) {
+            out.push(state.exams[keys[i]]);
+        }
+        return out;
+    }(state);
+}), _module$exports);
+
+/***/ }),
+/* 1285 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Node = __webpack_require__(32);
+
+var _Node2 = _interopRequireDefault(_Node);
+
+var _NodeTools = __webpack_require__(51);
+
+var _itemHelpers = __webpack_require__(89);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = __webpack_require__(8);
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _examRequests = __webpack_require__(80);
+
+var _JsonHelpers = __webpack_require__(149);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+module.exports = {
+    actions: {
+        /**
+         * Reads the exam data from the data attribute of a page element
+         * Options object may contain:
+         *      Options.elementIds = { exam : the id of the element the data is located in}
+         * Otherwise, it will use the default element id
+         *
+         * @param state
+         * @param commit
+         * @param dispatch
+         * @param getters
+         * @param options
+         * @returns {Promise<any>}
+         */
+        loadExamFromPageJson: function loadExamFromPageJson(_ref, jsonLocations) {
+            var state = _ref.state,
+                commit = _ref.commit,
+                dispatch = _ref.dispatch,
+                getters = _ref.getters;
+
+            window.console.log('exams.loaders', 'loadExamFromPageJson', 39);
+            return new Promise(function (resolve, reject) {
+
+                //Read the data from the page element and parse it into an object
+                var examJson = (0, _JsonHelpers.readJsonFromPageString)(jsonLocations.exam);
+                window.console.log('exams.loaders', '', 43, examJson);
+                dispatch('processAndStoreLoadedExam', examJson).then(function (exam) {
+                    //Once we're done loading the exam
+                    //we set it as the current exam
+                    var pl = _Payload2.default.factory({ obj: exam, mutateSilently: true });
+                    commit(mTypes.setActiveExam, pl);
+                    commit(ngmTypes.setActiveExam, pl);
+
+                    window.console.log('exams.loaders', 'loadExamFromPageJson', 40, 'done');
+
+                    resolve();
+                });
+            });
+        },
+
+        /**
+         * Loads the exam object for the given id from the server,
+         * sets it as root and as active
+         * @param state
+         * @param dispatch
+         * @param commit
+         * @param getters
+         * @param examId
+         * @returns {Promise<any>}
+         */
+        loadExamFromServer: function loadExamFromServer(_ref2, examId) {
+            var state = _ref2.state,
+                dispatch = _ref2.dispatch,
+                commit = _ref2.commit,
+                getters = _ref2.getters;
+
+            return new Promise(function (resolve, reject) {
+                (0, _examRequests.loadExam)(examId).then(function (data) {
+                    dispatch('processAndStoreLoadedExam', data).then(function (exam) {
+                        //Once we're done loading the exam
+                        //we set it as the current exam
+                        var pl = _Payload2.default.factory({ obj: exam, mutateSilently: true });
+                        commit(mTypes.setActiveExam, pl);
+                        commit(ngmTypes.setActiveExam, pl);
+
+                        resolve();
+                    });
+                });
+            });
+        },
+
+        /**
+         * Once we have an object that has been parsed from the json
+         * provided by the server or read from the page, this handles
+         * creating an exam object from that data and adding it to the
+         * store. It also initializes item storage on the exam.
+         *
+         * This does not set the exam as active (since we might want to
+         * use this action to load other exams in the background). However,
+         * it does return the created exam upon resolution. That allows
+         * a calling process to handle setting it as active once it has been
+         * created.
+         *
+         * @param state
+         * @param dispatch
+         * @param commit
+         * @param getters
+         * @param examDataObj
+         * @returns {Promise<any>}
+         */
+        processAndStoreLoadedExam: function processAndStoreLoadedExam(_ref3, examDataObj) {
+            var state = _ref3.state,
+                dispatch = _ref3.dispatch,
+                commit = _ref3.commit,
+                getters = _ref3.getters;
+
+            return new Promise(function (resolve, reject) {
+                var exam = _Exam2.default.factory(examDataObj);
+
+                var pl = _Payload2.default.factory({
+                    obj: exam,
+                    mutateSilently: true
+                });
+                //First we save it in the exams list
+                commit(mTypes.addExam, pl);
+                //Now that we have the exam loaded,
+                // we need to do some stuff with it.
+                // NB, since these call mutations, they happen
+                // synchronously, thus no need to wrap in promises
+                // First, we initialize the item store (which holds the
+                // order of the items) with the exam
+                commit(mTypes.initializeItemStorage, pl);
+
+                resolve(exam);
+            });
+        }
+    }
+};
+
+/***/ }),
+/* 1286 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _module$exports;
+
+var _mutationTypes = __webpack_require__(2);
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _Exam = __webpack_require__(9);
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = __webpack_require__(1);
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 1/12/17.
+                                                                                                                                                                                                                   */
+
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.addExam, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    if (payload.obj instanceof _Exam2.default) {
+        //push into exams storage
+        state.exams[payload.obj.id] = payload.obj;
+    }
+}), _defineProperty(_module$exports, mTypes.addIndexMapping, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    state.indexMap[payload.index] = payload.id;
+}), _defineProperty(_module$exports, mTypes.loadExams, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    //add exams
+    state.exams = payload.obj;
+}), _module$exports);
+
+/***/ }),
+/* 1287 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _actions;
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _commentHelpers = __webpack_require__(143);
+
+var _PayloadScore = __webpack_require__(79);
+
+var _PayloadScore2 = _interopRequireDefault(_PayloadScore);
+
+var _newGradingActionTypes = __webpack_require__(1219);
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(1217);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingMutationTypes = __webpack_require__(1218);
+
+var ngmTypes = _interopRequireWildcard(_newGradingMutationTypes);
+
+var _scoreRequests = __webpack_require__(112);
+
+var _scoreRequests2 = _interopRequireDefault(_scoreRequests);
+
+var _JsonHelpers = __webpack_require__(149);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This handles all means of obtaining item scores from
+ * the server.
+ *
+ * @type {{actions: {processAndStoreLoadedScores: function({state: *, dispatch: *, commit?: *, getters?: *}, *=)}}}
+ */
+module.exports = {
+    actions: (_actions = {}, _defineProperty(_actions, ngaTypes.loadScoresFromServer, function (_ref, exam) {
+        var state = _ref.state,
+            dispatch = _ref.dispatch,
+            commit = _ref.commit,
+            getters = _ref.getters;
+
+        return new Promise(function (resolve, reject) {
+            // window.console.log( 'itemscores', '', 193, exam, item, student);
+            _scoreRequests2.default.getAllScoresForExamRequest(exam).then(function (data) {
+                dispatch('processAndStoreLoadedScores', {
+                    exam: exam,
+                    scoreData: data
+                }).then(function () {
+                    resolve();
+                });
+            });
+        });
+    }), _defineProperty(_actions, "loadScoresFromPageJson", function loadScoresFromPageJson(_ref2, jsonLocations) {
+        var state = _ref2.state,
+            commit = _ref2.commit,
+            dispatch = _ref2.dispatch,
+            getters = _ref2.getters;
+
+        return new Promise(function (resolve, reject) {
+
+            var scoreJson = (0, _JsonHelpers.readJsonFromPageString)(jsonLocations.scores);
+            var exam = getters.getActiveExam;
+            dispatch('processAndStoreLoadedScores', {
+                exam: exam,
+                scoreData: scoreJson
+            }).then(function () {
+                resolve();
+            });
+        });
+    }), _defineProperty(_actions, "processAndStoreLoadedScores", function processAndStoreLoadedScores(_ref3, obj) {
+        var state = _ref3.state,
+            dispatch = _ref3.dispatch,
+            commit = _ref3.commit,
+            getters = _ref3.getters;
+
+        return new Promise(function (resolve, reject) {
+            var exam = obj.exam,
+                scoreData = obj.scoreData;
+
+
+            _.forEach(scoreData, function (d) {
+                var item = getters[gTypes.getItemById](d.item_id);
+                var student = getters.getStudentFromRosterById(d.student_id);
+                var score = parseFloat(d.score);
+
+                //record the score (this will initialize the object too)
+                commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    score: score,
+                    mutateSilently: true
+                }));
+
+                //record the comment text
+                commit(ngmTypes.updateText, _PayloadScore2.default.factory({
+                    exam: exam,
+                    item: item,
+                    student: student,
+                    text: d.comment_text,
+                    mutateSilently: true
+                }));
+            });
+            resolve();
+        });
+    }), _actions)
+
+};
+
+/***/ }),
+/* 1288 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _getterTypes = __webpack_require__(4);
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _actionTypes = __webpack_require__(6);
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _newGradingGetterTypes = __webpack_require__(1217);
+
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _ItemStat = __webpack_require__(87);
+
+var _ItemStat2 = _interopRequireDefault(_ItemStat);
+
+var _statsRequests = __webpack_require__(81);
+
+var _feedback = __webpack_require__(146);
+
+var _feedback2 = _interopRequireDefault(_feedback);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    mixins: [_feedback2.default],
+
+    props: ['exam', 'student'],
+
+    data: function data() {
+        return {
+            placeHolder: '-',
+            defaults: {}
+        };
+    },
+
+    watch: {
+        exam: function exam(newVal, oldVal) {
+            //When the exam gets around to being defined,
+            //this loads the grade assignment schema from
+            //the server.
+            if (_.isUndefined(oldVal)) this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer, this.exam);
+        }
+    },
+
+    asyncComputed: {
+        gradeAssignmentObject: function gradeAssignmentObject() {
+            var me = this;
+            if (this.totalScore !== this.placeHolder) {
+                var ga = me.$store.getters[gTypes.getGradeAssignmentForScore](me.totalScore);
+                return ga;
+            }
+        }
+    },
+
+    computed: {
+        chartDivId: function chartDivId() {
+            return 'overallScoreChart';
+        },
+
+        totalScore: function totalScore() {
+            if (_.isUndefined(this.student) || _.isNull(this.student)) return this.placeHolder;
+            return this.$store.getters[nggTypes.getTotalScoreForStudent](this.student);
+        },
+
+        maxPossible: function maxPossible() {
+            var s = this.$store.getters[gTypes.getMaxPossibleScore];
+            return !_.isUndefined(s) ? s : this.placeHolder;
+        },
+
+        letterGrade: function letterGrade() {
+            if (this.gradeAssignmentObject) return this.gradeAssignmentObject.displayValue;
+
+            return this.placeHolder;
+        }
+
+    }
+
+};
+
+/***/ }),
+/* 1289 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 1290 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(1292)
+}
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(1288),
+  /* template */
+  __webpack_require__(1291),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/feedback/grade-table.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] grade-table.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-fd42aa08", Component.options)
+  } else {
+    hotAPI.reload("data-v-fd42aa08", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 1291 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('table', {
+    staticClass: "table is-narrow"
+  }, [_c('tbody', [_c('tr', [_c('th', [_vm._v("Grade")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.letterGrade))])]), _vm._v(" "), _c('tr', [_c('th', [_vm._v("Score")]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.totalScore) + " / " + _vm._s(_vm.maxPossible))])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-fd42aa08", module.exports)
+  }
+}
+
+/***/ }),
+/* 1292 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(1289);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(7)("c49a4eaa", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-fd42aa08\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grade-table.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-fd42aa08\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./grade-table.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

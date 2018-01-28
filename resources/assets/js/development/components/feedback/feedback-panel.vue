@@ -1,9 +1,18 @@
 <template>
     <div class="feedback-panel">
-        <h4 class="title is-4">Feedback for</h4>
-        <h4 class="subtitle is-4">{{ studentName }}</h4>
+        <p class="title has-text-centered">{{ examName }}</p>
+        <p class="subtitle">{{ studentName }}</p>
 
-        <grade-area :exam="exam" :student="student"></grade-area>
+        <div class="columns">
+            <div class="column">
+                <grade-table :exam="exam" :student="student"></grade-table>
+            </div>
+
+            <div class="column">
+                <overall-chart :exam="exam" :student="student"></overall-chart>
+            </div>
+
+        </div>
 
         <div v-for="i in topLevelItems">
             <item-area
@@ -12,8 +21,7 @@
                     :student="student"
             ></item-area>
         </div>
-
-
+        
     </div>
 
 </template>
@@ -28,14 +36,16 @@
 
     import * as nggTypes from '../../../store/new-grading-getter-types';
     import ItemChart from "./item-chart";
-    import GradeArea from "./grade-area";
+    import GradeTable from "./grade-table";
+    import OverallChart from "./overall-chart";
 
     export default {
 
         props: [ 'exam', 'student' ],
 
         components: {
-            GradeArea,
+            OverallChart,
+            GradeTable,
             ItemChart,
             ItemArea,
             ItemComment
@@ -48,8 +58,13 @@
         },
 
         computed: {
+
+            examName: function () {
+                return this.exam ? this.exam.name : '';
+            },
+
             studentName: function () {
-                return (! _.isUndefined(this.student) && ! _.isNull(this.student)) ? this.student.nameFirstLast : '';
+                return (!_.isUndefined( this.student ) && !_.isNull( this.student )) ? this.student.nameFirstLast : '';
             },
 
             topLevelItems: function () {

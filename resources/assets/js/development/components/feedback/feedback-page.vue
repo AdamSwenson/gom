@@ -1,14 +1,7 @@
 <template>
-    <div id="grade-main-page"
-         class=" mainBodyLocator"
+    <div id="feedback-main-page"
+         class=" mainBodyLocator container is-fluid"
     >
-
-        <p>
-            {{ student.nameFirstLast }}
-        </p>
-        <p>
-            {{ exam.name }}
-        </p>
 
         <feedback-panel :exam="exam" :student="student"></feedback-panel>
 
@@ -28,6 +21,7 @@
     import Item from '../../../models/Item';
     import ItemScore from '../../../models/ItemScore';
     import * as mTypes from '../../../store/mutation-types';
+    import * as gTypes from '../../../store/getter-types';
     import FeedbackPanel from "./feedback-panel";
 
     import { readJsonFromPageString, processItemObjectsFromJson } from '../../../store/utlities/JsonHelpers';
@@ -40,86 +34,45 @@
 
         data: function () {
             return {
+                jsonLocations: {
+                    exam: 'exam',
+                    items: 'items',
+                    order: 'order',
+                    scores: 'scores',
+                    students: 'students',
+                },
+
                 defaults: {}
             }
         },
 
         computed: {
             student: function () {
-                let studentJson = readJsonFromPageString( 'student' );
-                return Student.factory( studentJson );
+                let loadedStudents = this.$store.getters[ gTypes.getStudentsFromRoster ];
+                if(! _.isUndefined(loadedStudents)) return loadedStudents[0];
             },
-
 
             exam: function () {
-                // return this.$store.getters.currentExam;
-                let examJson = readJsonFromPageString( 'exam' );
-                return Exam.factory( examJson );
+                return this.$store.getters.currentExam;
             },
 
-            itemScoreObjects: function () {
-                let itemScoresJson = readJsonFromPageString( 'scores' );
-                let scores = [];
-                _.forEach( itemScoresJson, function ( s ) {
-                    scores.push( ItemScore.factory( s ) );
-                } );
-                return scores;
-            },
-
-            items: function () {
-                let o = this.loadItems();
-                return !_.isUndefined( o ) ? o : [];
-            },
-
-            order: function () {
-                // let o = this.loadOrder();
-                // return !_.isUndefined( o ) ? o : [];
-            }
         },
 
-        methods: {
-            loadOrder: function () {
-                let orderJson = readJsonFromPageString( 'order' );
-                if ( !_.isUndefined( this.exam ) && !_.isUndefined( this.items ) ) {
-                    let state = {
-                        items: this.items,
-                        //initialize the order store
-                        itemMap: new Node( this.exam.serialNumber, this.exam.serialNumber )
-                    };
-                    processItemOrderFromJson( state, orderJson );
-                    return state.itemMap;
-                }
-            },
-
-            loadItems: function () {
-                // this.$store.commit(mTypes.loadExamAndItemsFromPageData);
-                let ims = [];
-                //the exam needs to be the root
-                if ( _.isUndefined( this.exam ) ) return ims;
-                ims.push( this.exam );
-                let itemsJson = readJsonFromPageString( 'items' );
-                return processItemObjectsFromJson( itemsJson );
-                // _.forEach(itemsJson, function ( s ){
-                //     ims.push(Item.factory(s));
-                // });
-                // return ims;
-            }
-        },
-
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-            this.$store.commit( mTypes.loadExamAndItemsFromPageData, Payload.factory( {
-                options: {
-                    elementIds: {
-                        itemObjects: 'items',
-                        itemOrder: 'order',
-                        exam: 'exam'
-                    }
-                }
-            } ));
+        created: function () {
+            let me = this;
+            me.$store.dispatch( 'loadStudentsFromPageJson', me.jsonLocations )
+                .then( function () {
+                me.$store.dispatch( 'loadExamFromPageJson', me.jsonLocations )
+                    .then( function () {
+                        me.$store.dispatch( 'loadItemsFromPageJson', me.jsonLocations )
+                            .then( function () {
+                                me.$store.dispatch( 'loadScoresFromPageJson', me.jsonLocations )
+                                    .then( function () {
+                                    window.console.log( 'feedback-page', 'ready' );
+                                } );
+                            } );
+                    } );
+            } );
         }
-    }
+    };
 </script>

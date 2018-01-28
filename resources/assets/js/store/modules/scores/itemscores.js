@@ -1,33 +1,32 @@
 /**
  * Created by adam on 7/7/17.
  */
-import Vue from 'vue';
-import * as gTypes from '../../getter-types'
-import * as mTypes from '../../mutation-types'
-import * as ngmTypes from '../../new-grading-mutation-types';
-import * as aTypes from '../../action-types'
-import * as ngaTypes from '../../new-grading-action-types';
-import * as nggTypes from '../../new-grading-getter-types';
-
-import scoreRequests from "../../../api/requests/scoreRequests";
-
-import { isSameValence, getValenceForScore, sliderSettings } from "./commentHelpers";
-
-import PayloadScore from '../../../models/PayloadScore';
-import ItemScore from '../../../models/ItemScore';
+import a from './itemscores.actions';
+import g from './itemscores.getters';
+import m from './itemscores.mutations';
+import loaders from './itemscores.loaders';
 
 const state = {
     //Array of Score objects
     scores: []
 };
 
-import actions from './itemscores.actions';
-import getters from './itemscores.getters';
-import mutations from './itemscores.mutations';
+const mutations = {
+    ...m
+};
+
+const getters = {
+    ...g
+};
+
+const actions = {
+    ...a,
+    ...loaders.actions
+};
 
 export default {
     actions,
     getters,
     mutations,
-    state,
-}
+    state
+};
