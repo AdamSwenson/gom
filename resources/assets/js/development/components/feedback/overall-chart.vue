@@ -39,7 +39,8 @@
             return {
                 divId: 'overall-chart',
                 options: {
-                    title: "How you did on compared to the rest of the class",
+                    title: "Total score ",
+
                     // width: 600,
                     // height: 400,
                     bar: { groupWidth: "65%" },
@@ -54,14 +55,8 @@
             preparedData: function ( newVal, oldVal ) {
                 if ( newVal.length >0 ) this.load();
             },
-
-            // totalScore: function ( newVal ) {
-            //     if ( !_.isUndefined( newVal ) ) this.load();
-            // },
-            // totalScoreStats: function ( newVal ) {
-            //     if ( !_.isUndefined( newVal ) ) this.load();
-            // }
         },
+
         asyncComputed: {
             totalScoreStats: function () {
                 if ( ! _.isUndefined( this.exam ) && ! _.isNull( this.exam ) ){
@@ -100,6 +95,8 @@
 
                 return dt;
             },
+
+            // title: function(){}
         },
 
         methods: {

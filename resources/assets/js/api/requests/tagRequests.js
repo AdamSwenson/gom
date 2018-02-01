@@ -310,7 +310,7 @@ module.exports = {
      * @param item
      * @returns {Promise.<T>|*}
      */
-    loadTagsForItemRequest: ( store = null, item ) => {
+    loadTagsForItemRequest: (  item ) => {
         let out = {
             requestVersion: REQUEST_VERSION
         };
@@ -318,16 +318,17 @@ module.exports = {
         return window.axios
             .get( Routes.getTagsForItem( item ) )
             .then( ( response ) => {
-                // window.console.log( 'loadTagsForItemRequest', '', 213, response );
-                if ( !_.isNull( store ) ) {
-                    handleLoadResponse( store, response.data, item );
-                } else {
-                    let tags = [];
-                    _.forEach( response.data, ( t ) => {
-                        tags.push( Tag.factory( t ) );
-                    } );
-                    return tags;
-                }
+                return response.data;
+                // // window.console.log( 'loadTagsForItemRequest', '', 213, response );
+                // if ( !_.isNull( store ) ) {
+                //     handleLoadResponse( store, response.data, item );
+                // } else {
+                //     let tags = [];
+                //     _.forEach( response.data, ( t ) => {
+                //         tags.push( Tag.factory( t ) );
+                //     } );
+                //     return tags;
+                // }
 
             } )
             .catch( function ( error ) {

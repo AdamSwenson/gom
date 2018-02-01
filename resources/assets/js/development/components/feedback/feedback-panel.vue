@@ -21,7 +21,7 @@
                     :student="student"
             ></item-area>
         </div>
-        
+
     </div>
 
 </template>

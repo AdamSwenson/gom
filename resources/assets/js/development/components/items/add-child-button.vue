@@ -19,8 +19,11 @@
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
 
+    import mixin from './item-buttons.mixin';
     export default {
-        props: [ 'serialNumber' ],
+        mixins: [mixin],
+
+        props: ['item' ],
 
         data: function () {
             return {
@@ -34,21 +37,6 @@
         },
 
         computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
-            isExam: function(){
-              return this.item ? this.item.isExam() : false;
-            },
-
-//            node: function () {
-//                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-//            },
-
-//            parentSerialNumber: function () {
-//                return this.node.parent;
-//            },
 
             /**
              * Gets the appropriate base string for the input
@@ -59,12 +47,6 @@
               return this.isExam ? this.identifiers.exam : this.identifiers.item;
             },
 
-            /**
-             * The input's css id
-             */
-            id : function(){
-                return this.identifier + '-' + this.serialNumber;
-            },
 
             /**
              * Injected into the classes of the input
@@ -92,12 +74,5 @@
             }
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-//            console.log( 'itemAddButton', 'ready', this.$store );
-        }
     }
 </script>

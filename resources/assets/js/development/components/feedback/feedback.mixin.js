@@ -3,8 +3,12 @@ import * as nggTypes from '../../../store/new-grading-getter-types';
 module.exports = {
     computed: {
 
+        itemChildren: function () {
+            return this.$store.getters.getItemChildren( this.item );
+        },
+
         scoreObject: function () {
-            if(! this.isReady()) return '';
+            if(! this.isReady()) return false;
             // if(_.isUndefined(this.item) || _.isNull(this.item)) return false;
             // if(_.isUndefined(this.student) || _.isNull(this.student)) return false;
 
@@ -17,7 +21,8 @@ module.exports = {
 
     methods: {
         isReady: function (  ) {
-            if ( _.isUndefined( this.item ) || _.isNull(this.item) || _.isUndefined( this.student ) || _.isNull(this.student) ) return false;
+            if ( _.isUndefined( this.item ) || _.isNull(this.item)) return false;
+            if( _.isUndefined( this.student ) || _.isNull(this.student) ) return false;
             return true;
         },
     }

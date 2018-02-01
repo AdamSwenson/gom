@@ -5,40 +5,42 @@
     >
 
         <div class="card-content">
-            <item-main :serial-number="serialNumber" :is-exam="false"></item-main>
+            <item-main :item="item"
+                       :is-exam="false"
+            ></item-main>
         </div>
 
         <div class="card-content"
              v-bind:id="contentId"
-             v-show="isPaneVisible">
+             v-show="isPaneVisible"
+        >
             <nav-tabs
                     :serial-number="serialNumber"
                     :is-exam="false">
             </nav-tabs>
-            <router-view name="itemPanels"></router-view>
+            <router-view
+                    :item="item"
+                    name="itemPanels"></router-view>
         </div>
 
         <div class="card-footer">
             <div class="columns is-mobile is-multiline is-centered">
 
                 <div class="column is-narrow">
-                    <add-sibling-button
-                            :serial-number="serialNumber">
+                    <add-sibling-button :item="item">
                     </add-sibling-button>
                 </div>
 
                 <div class="column is-narrow">
-                    <add-child-button
-                            :serial-number="serialNumber">
-                    </add-child-button>
+                    <add-child-button :item="item"></add-child-button>
                 </div>
 
                 <div class="column is-narrow">
-                    <item-clone-button :serial-number="serialNumber"></item-clone-button>
+                    <item-clone-button :item="item"></item-clone-button>
                 </div>
 
                 <div class="column is-narrow">
-                    <item-import-button :serial-number="serialNumber"></item-import-button>
+                    <item-import-button :item="item"></item-import-button>
                 </div>
 
                 <div class="column is-narrow">
@@ -47,17 +49,12 @@
                     </public-indicator>
                 </div>
 
-                <!--<div class="column is-narrow">-->
-                    <!--<remove-item-button-->
-                            <!--:serial-number="serialNumber">-->
-                    <!--</remove-item-button>-->
-                <!--</div>-->
             </div>
 
         </div>
 
         <!--This has the class card-footer-->
-        <card-movement-control :serialNumber="serialNumber"></card-movement-control>
+        <card-movement-control :item="item"></card-movement-control>
 
 
         <!--Check whether the item has children, if it does-->

@@ -84,26 +84,15 @@
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'
 
+    import mixin from './item-buttons.mixin';
     export default {
+        mixins: [mixin],
 
-        props: [ 'serialNumber' ],
-
+        props: ['item' ],
 
         data: function () {
             return {
                 defaults: {}
-            }
-        },
-
-        computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-            node: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            },
-            parent: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.node.parent );
             }
         },
 
@@ -157,11 +146,5 @@
             }
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>

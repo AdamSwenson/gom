@@ -68,7 +68,7 @@
      */
     export default {
 
-        props: [ 'serialNumber', 'objectType' ],
+        props: [ 'serialNumber', 'objectType', 'object' ],
 
         components: {
             'tag-menu': tagMenu,
@@ -89,17 +89,27 @@
         asyncComputed: {
             tags: {
                 get () {
-                    let result = [];
-                    if ( this.useCentralStore ) {
-                        result = this.$store.getters[ gTypes.getTagsForObject ]( this.serialNumber );
-                    } else {
-                        result = loadTagsForItemRequest( null, this.object );
-                    }
+                    let me = this;
+                    if(_.isUndefined(this.object)) return [];
 
-                    return result;
+                    this.$store.dispatch('loadTagsForItem', this.object)
+                        .then(function(){
+                        return me.$store.getters[ gTypes.getTagsForObject ]( me.object );
+                    });
+                    //
+                    //
+                    //
+                    // let result = [];
+                    // if ( this.useCentralStore ) {
+                    //     result = this.$store.getters[ gTypes.getTagsForObject ]( this.object );
+                    // } else {
+                    //     result = loadTagsForItemRequest( null, this.object );
+                    // }
+                    //
+                    // return result;
                 },
                 watch() {
-                    this.clickCounter
+                    // this.clickCounter
                 }
             }
         },
@@ -111,30 +121,30 @@
              * exam, etc), this will return that object.
              * If it is free-floating, it will return false
              */
-            object: function () {
-                if ( this.objectType === 'item' || this.objectType instanceof Item ) {
-//                    window.console.log( 'tag-display', 'object', 92, );
-                    return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-                }
-
-                if ( this.serialNumber ) {
-//                    window.console.log( 'tag-display', 'object', 86, this );
-                    switch ( this.objectType ) {
-                        case 'item':
-                            return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-                            break;
-                        case this.objectType instanceof Item:
-//                            window.console.log( 'tag-display', 'object', 92, );
-                            return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-                            break;
-                        //todo exam
-                        //todo student
-                        default:
-                    }
-                }
-                return false;
-            }
-
+//             object: function () {
+//                 if ( this.objectType === 'item' || this.objectType instanceof Item ) {
+// //                    window.console.log( 'tag-display', 'object', 92, );
+//                     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+//                 }
+//
+//                 if ( this.serialNumber ) {
+// //                    window.console.log( 'tag-display', 'object', 86, this );
+//                     switch ( this.objectType ) {
+//                         case 'item':
+//                             return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+//                             break;
+//                         case this.objectType instanceof Item:
+// //                            window.console.log( 'tag-display', 'object', 92, );
+//                             return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+//                             break;
+//                         //todo exam
+//                         //todo student
+//                         default:
+//                     }
+//                 }
+//                 return false;
+//             }
+//
         },
 
         methods: {

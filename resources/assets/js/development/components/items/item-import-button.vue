@@ -25,9 +25,11 @@
 <script>
     import itemSelectModal from './item-selection-modal.vue';
 
+    import mixin from './item-buttons.mixin';
     export default {
+        mixins: [mixin],
 
-        props: [ 'serialNumber' ],
+        props: ['item'],
 
         components: {
             'item-select-modal': itemSelectModal
@@ -40,21 +42,7 @@
             }
         },
 
-        computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
-            node: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            },
-
-            parentSerialNumber: function () {
-                return this.node.parent;
-            },
-
-
-        },
+        computed: {},
 
         methods: {
             handleClick: function () {

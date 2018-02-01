@@ -2,38 +2,32 @@
     <div class="box">
         <h4 class="title is-4">{{ name }}</h4>
 
-        <div class="columns">
+        <!--<div class="columns">-->
 
-            <div class="column comments-area">
+            <div class=" comments-area">
                 <item-comment
                         :item="item"
                         :student="student"
                 ></item-comment>
 
-                <div v-for="e in elements">
-                    <item-comment
-                            :item="e"
-                            :student="student"
-                    ></item-comment>
-                </div>
             </div>
 
-            <div class="column charts-area">
+            <div class=" charts-area">
                 <item-chart
                         :item="item"
                         :exam="exam"
                         :student="student"
                 ></item-chart>
 
-                <div v-for="e in elements">
-                    <item-chart
-                            :item="e"
-                            :exam="exam"
-                            :student="student"
-                    ></item-chart>
-                </div>
-
-            </div>
+                <!--<div v-for="e in elements">-->
+                    <!--<item-chart-->
+                            <!--:item="e"-->
+                            <!--:exam="exam"-->
+                            <!--:student="student"-->
+                    <!--&gt;</item-chart>-->
+                <!--</div>-->
+<!---->
+            <!--</div>-->
         </div>
 
     </div>

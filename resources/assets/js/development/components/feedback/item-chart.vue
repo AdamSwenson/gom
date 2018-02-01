@@ -33,20 +33,33 @@
 
         data: function () {
             return {
-                options: {
-                    title: "How you did on compared to the rest of the class",
-                    // width: 600,
-                    // height: 400,
-                    bar: { groupWidth: "65%" },
-                    legend: { position: "bottom" }
-                },
-                defaults: {}
+
+                defaults: {
+                    options: {
+                        // width: 600,
+                        // height: 400,
+                        bar: { groupWidth: "65%" },
+                        legend: { position: "bottom" },
+                        title: "How you did"
+                    },
+                }
             }
         },
 
         watch: {
-            itemStats: function ( newVal ) {
-                if ( newVal instanceof ItemStat ) {
+            // itemStats: function ( newVal ) {
+            //     if ( newVal instanceof ItemStat ) {
+            //         var me = this;
+            //         this.$nextTick( function () {
+            //             //Load the charts library with a callback
+            //             GoogleCharts.load( (function () {
+            //                 return me.draw
+            //             })() );
+            //         } );
+            //     }
+            // },
+            preparedData: function ( newVal ) {
+                if ( !_.isUndefined( newVal ) && newVal.length > 0 ) {
                     var me = this;
                     this.$nextTick( function () {
                         //Load the charts library with a callback
@@ -56,31 +69,82 @@
                     } );
                 }
             },
-            score: function ( newVal ) {
-                if ( !_.isUndefined( newVal ) ) {
-                    var me = this;
-                    this.$nextTick( function () {
-                        //Load the charts library with a callback
-                        GoogleCharts.load( (function () {
-                            return me.draw
-                        })() );
-                    } );
-                }
-            },
-            historicalStats: function ( newVal ) {
-                if ( !_.isUndefined( newVal ) ) {
-                    var me = this;
-                    this.$nextTick( function () {
-                        //Load the charts library with a callback
-                        GoogleCharts.load( (function () {
-                            return me.draw
-                        })() );
-                    } );
-                }
-            }
+
+            // historicalStats: function ( newVal ) {
+            //     if ( !_.isUndefined( newVal ) ) {
+            //         var me = this;
+            //         this.$nextTick( function () {
+            //             //Load the charts library with a callback
+            //             GoogleCharts.load( (function () {
+            //                 return me.draw
+            //             })() );
+            //         } );
+            //     }
+            // }
         },
 
         asyncComputed: {
+
+            childItemStatsObjects: function () {
+                let me = this;
+                let s = [];
+
+                if ( _.isUndefined( this.itemChildren ) || _.isNull( this.itemChildren ) || this.itemChildren.length === 0 ) return s;
+
+                _.forEach( this.itemChildren, function ( item ) {
+                    me.$store.dispatch( 'loadItemScoreSummaryForExam', { item: item, exam: me.exam } )
+                        .then( function () {
+                            s.push( me.$store.getters.getItemStatsForExam( { exam: me.exam, item: item } ) );
+                        } );
+
+                } );
+
+                return s;
+            },
+
+            childItemScoreObjects: function () {
+                let me = this;
+                let s = [];
+
+                if ( _.isUndefined( this.itemChildren ) || _.isNull( this.itemChildren ) || this.itemChildren.length === 0 ) return s;
+                if ( !this.isReady() ) return s;
+
+                _.forEach( this.itemChildren, function ( item ) {
+
+                    let childScoreObject = me.$store.getters[ nggTypes.getItemScoreObject ]( {
+                        item: item,
+                        student: me.student
+                    } );
+                    s.push( childScoreObject );
+                } );
+                return s;
+            },
+
+
+            preparedData: function () {
+                let dt = [];
+
+                if ( _.isUndefined( this.itemChildren ) || _.isNull( this.itemChildren ) || this.itemChildren.length === 0 ) return dt
+                if ( _.isUndefined( this.childItemStatsObjects ) || _.isNull( this.childItemStatsObjects ) || this.childItemStatsObjects.length === 0 ) return dt
+
+                if ( !this.isReady() ) return dt;
+
+                //Add the parent item
+                dt.push( this.makeChartRow( this.item, this.scoreObject, this.itemStats ) );
+
+                let me = this;
+                //add all the children
+                for (let i = 0; i < this.itemChildren.length; i++) {
+                    let childItem = this.itemChildren[ i ];
+                    let childScore = this.childItemScoreObjects[ i ];
+                    let childStats = this.childItemStatsObjects[ i ];
+
+                    dt.push( me.makeChartRow( childItem, childScore, childStats ) );
+                }
+
+                return dt;
+
+            },
 
             itemStats: function () {
                 let me = this;
@@ -103,40 +167,33 @@
 
         computed: {
             divId: function () {
-                return 'scoreChart' + this.item.id;
+                if ( this.item ) return 'scoreChart' + this.item.id;
             },
 
             score: function () {
                 if ( this.scoreObject ) return this.scoreObject.score;
             },
 
-            preparedData: function () {
-                let dt = [];
-
-                if ( _.isUndefined( this.scoreObject ) || _.isNull( this.scoreObject ) ) return dt
-
-                if ( _.isUndefined( this.itemStats ) || _.isNull( this.itemStats ) ) return dt;
-
-                // if ( _.isUndefined( this.historicalStats ) || _.isNull( this.historicalStats ) ) return dt;
-
-                let d = [
-                    this.item.name,
-                    this.score,
-                    this.itemStats.mean,
-                    // this.historicalStats.mean
-                ];
-                //
-                // if ( !_.isUndefined( this.historicalStats ) ) {
-                //     d.push( this.historicalStats.mean );
-                // }
-                dt.push( d );
-
-                return dt;
-            }
+            options: function () {
+                let opts = this.defaults.options;
+                opts.title = this.itemName;
+                return opts;
+            },
 
         },
 
         methods: {
+            makeChartRow: function ( item, scoreObject, statsObject ) {
+                return [
+                    item.name,
+                    (!_.isUndefined( scoreObject ) && !_.isNull( scoreObject )) ? scoreObject.score : null,
+                    (!_.isUndefined( statsObject ) && !_.isNull( statsObject )) ? statsObject.mean : null
+                    // this.historicalStats.mean
+                ];
+            },
+
+
+
             draw: function () {
                 var me = this;
                 //push into data table as chart is expecting

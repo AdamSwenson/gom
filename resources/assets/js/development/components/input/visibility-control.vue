@@ -40,7 +40,7 @@
      */
     export default {
 
-        props: [ 'serialNumber' ],
+        props: [ 'item' ],
 
         data: function () {
             return {
@@ -59,9 +59,9 @@
         },
 
         computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
+            // item: function () {
+            //     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            // },
 
             //Doing this via computed property so don't have to pass in on route
             isExam: function () {
@@ -133,19 +133,8 @@
             },
 
 
-        }
-        ,
+        },
 
-        directives: {}
-        ,
-
-        events: {}
-        ,
-
-        mounted: function () {
-        }
-        ,
-    }
-    ;
+    };
 
 </script>

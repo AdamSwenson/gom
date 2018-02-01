@@ -17,9 +17,12 @@
 
     import * as aTypes from '../../../store/action-types';
 
+    import mixin from './item-buttons.mixin';
     export default {
+        mixins: [mixin],
 
-        props: [ 'serialNumber' ],
+        props: ['item'],
+
 
         components: {},
 
@@ -30,17 +33,17 @@
         },
 
         computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
-            node: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            },
-
-            parentSerialNumber: function () {
-                return this.node.parent;
-            },
+            // item: function () {
+            //     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            // },
+            //
+            // node: function () {
+            //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+            // },
+            //
+            // parentSerialNumber: function () {
+            //     return this.node.parent;
+            // },
 
         },
 

@@ -3,7 +3,7 @@
            class="input is-large"
            v-bind:placeholder="placeholder"
            v-bind:id="id"
-           v-model="name"
+           v-model.lazy="name"
            v-bind:class="styling"
     >
 

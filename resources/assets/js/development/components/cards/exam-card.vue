@@ -7,7 +7,7 @@
 
         <div class="card-content main-body">
             <item-main
-                    :serial-number="serialNumber"
+                    :item="exam"
                     :is-exam="true"
             ></item-main>
         </div>
@@ -29,8 +29,7 @@
 
                     <div class="column is-narrow">
 
-                        <add-child-button
-                                :serial-number="serialNumber"
+                        <add-child-button :item="exam"
                         ></add-child-button>
                     </div>
 

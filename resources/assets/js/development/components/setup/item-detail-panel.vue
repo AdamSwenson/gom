@@ -2,9 +2,7 @@
     <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
     <div class="item-settings-detail-component">
 
-        <max-score
-                :serial-number="serialNumber"
-        ></max-score>
+        <max-score :item="item"></max-score>
 
         <div class="question-text-area field ">
             <label class="label ">{{ labels.questionText }}</label>
@@ -20,6 +18,7 @@
         </div>
 
         <tag-display
+                :object="item"
                 :serial-number="serialNumber"
                 :object-type="'item'"></tag-display>
     </div>
@@ -61,6 +60,8 @@
     import MaxScore from '../input/max-score-input.vue'
 
     export default {
+        props: ['item'],
+
         components: {
             MaxScore
 //          'tag-menu' : tagMenu
@@ -69,6 +70,7 @@
         data: function () {
             return {
                 serialNumber: _.toInteger( this.$route.params.serialNumber ),
+
 //                active: this.serialNumber,
 
                 showTagMenu: false,
@@ -86,23 +88,31 @@
 
         watch: {
             '$route'( to, from ) {
-//                window.console.log( 'item-detail-panel', '$route', 88, to, from );
-                this.serialNumber = _.toInteger(to.serialNumber);
+                //have to do it this way to keep from
+                //having different item panels display the current item
+                //when more than one panel is open
+                // window.console.log( 'item-detail-panel', '$route', 88, to, from );
+                // this.serialNumber = _.toInteger( to.serialNumber );
             }
         },
 
         computed: {
-            sn: function (  ) {
-              return this.serialNumber;
-            },
+
+// serialNumber : function (  ) {
+            // return _.toInteger( this.$route.params.serialNumber );
+// },
+//             sn: function () {
+//                 return this.serialNumber;
+//             },
+//
             questionNameExample: function () {
                 return "I am the example for the question name";
             },
 
 
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
+            // item: function () {
+            //     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            // },
 
             text: {
                 get: function () {

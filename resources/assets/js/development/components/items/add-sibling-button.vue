@@ -17,8 +17,11 @@
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
 
+    import mixin from './item-buttons.mixin';
     export default {
-        props: [ 'serialNumber', 'type' ],
+        mixins: [mixin],
+
+        props: ['item', 'type' ],
 
         data: function () {
             return {
@@ -27,21 +30,6 @@
         },
 
         computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
-            node: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            },
-
-            parentSerialNumber: function () {
-                return this.node.parent;
-            },
-
-            id : function(){
-              return this.identifier + '-' + this.serialNumber;
-            },
 
             styling: function(){
                 return this.identifier + '-' + this.serialNumber;
@@ -74,12 +62,5 @@
             }
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-//            console.log( 'itemAddButton', 'ready', this.$store );
-        }
     }
 </script>

@@ -68,9 +68,12 @@
     import * as aTypes from '../../../store/action-types'
     import * as mTypes from '../../../store/mutation-types'
 
+    import mixin from './item-buttons.mixin';
     export default {
+        mixins :[ mixin],
+
         components: { ChildrenDisplayControl, ItemName, SettingsButton },
-        props: [ 'serialNumber' ],
+        props: [ 'item' ],
 
         data: function () {
             return {
@@ -95,17 +98,6 @@
         },
 
         computed: {
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
-            isItem: function () {
-                return !this.isExam;
-            },
-
-            isExam: function () {
-                return this.item ? this.item.isExam : false;
-            },
 
             /**
              * Gets the appropriate base string for the input
@@ -116,16 +108,8 @@
                 return this.isExam ? this.identifiers.exam : this.identifiers.item;
             },
 
-            /**
-             * The input's css id
-             */
-            id: function () {
-                return this.identifier + '-' + this.serialNumber;
-            },
-
             position: function () {
                 return this.$store.getters.getDepthOfNode( this.serialNumber ) + 1;
-
             },
 
             displayIndex: function () {
@@ -155,21 +139,8 @@
                 set: function ( v ) {
                 }
             },
-//
 
         },
 
-        methods: {},
-
-        directives: {},
-
-        events: {
-            'toggle-public': function () {
-
-            }
-        },
-
-        mounted: function () {
-        },
     };
 </script>

@@ -50,7 +50,7 @@
     import Item from '../../../models/Item'
 
     export default {
-        props: [ 'index' ],
+        props: [ 'index' , 'item'],
 
         data: function () {
             return {
@@ -76,12 +76,12 @@
 
         computed: {
             serialNumber: function (  ) {
-                return _.toInteger( this.$route.params.serialNumber );
+                return _.toInteger( this.item.serialNumber );
             },
 
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
+            // item: function () {
+            //     return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            // },
 
             maxScoreId: function () {
                 return 'max-score-' + this.index;
@@ -89,20 +89,18 @@
 
             maxScore: {
                 get: function () {
-                    if ( this.item instanceof Item ) {
-                        return this.item.maxScore
-                    }
+                    if ( ! _.isUndefined(this.item)) return this.item.maxScore;
                 },
 
                 set: function ( value ) {
-                    if ( this.item instanceof Item ) {
+                    // if ( this.item instanceof Item ) {
                         let pl = Payload.factory( {
                             obj: this.item,
                             updateProp: 'maxScore',
                             updateVal: _.toInteger( value )
                         } );
                         this.$store.commit( mTypes.updateItem, pl );
-                    }
+                    // }
                 }
             },
 
