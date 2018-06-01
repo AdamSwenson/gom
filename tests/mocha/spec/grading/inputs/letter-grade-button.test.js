@@ -97,9 +97,10 @@ describe( " letter-grade-button ", () => {
             } );
         } );
 
-        it( " displays the expected defaults when the score is null ", () => {
-
-        } );
+        it( " displays the expected defaults when the score is null ")
+        //     , () => {
+        //
+        // } );
 
     } );
 

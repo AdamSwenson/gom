@@ -85,7 +85,7 @@ describe( "comment-setup-panel  ", () => {
             //start by populating the comment text of the item
             //and storing it in the expected object
             _.forEach( Comment.valences, function ( valence ) {
-                let text = Faker.company.bs();
+                let text = faker.company.bs();
                 item.addComment( valence, Comment.factory( { text, valence } ) );
                 expected[ valence ] = text;
             } );
@@ -120,7 +120,7 @@ describe( "comment-setup-panel  ", () => {
         } );
 
         it( " returns true when any one comment is not stock based ", () => {
-            let stock = Faker.company.bs();
+            let stock = faker.company.bs();
 
             _.forEach( Comment.valences, function ( valence ) {
                 if ( valence === 'stock' ) {

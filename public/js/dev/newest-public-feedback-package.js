@@ -33567,38 +33567,6 @@ module.exports = {
     ITEM_ORDER_JSON_NAME: 'order',
     ITEM_OBJECT_JSON_NAME: 'items',
 
-    //     processItemOrderFromJson: function ( state, orderData ) {
-    //
-    //         _.forEach( orderData, function ( d, i ) {
-    //             let item = (( state, d ) => {
-    //                 return getItem( state, d.itemId )
-    //             })( state, d );
-    //             //if the parent is null it is the exam, and we can skip
-    //             if ( d.parentId === null ) return true;
-    //
-    //             // these are top level
-    //             //and should be added as children of the exam.
-    //             //if the parent is null, we add the exam instead
-    //             //todo this must be fixed since an item could have the same id as an exam
-    //             let parentNode = (d.parentId === state.items[ 0 ].id) ? state.itemMap : (function ( state, d ) {
-    //                 let parentItem = getItem( state, d.parentId );
-    //                 return getNode( state, parentItem.serialNumber );
-    //             })( state, d );
-    //
-    //             let itemNode = new Node( item.serialNumber, parentNode.data );
-    //
-    //
-    // //if an index was specified, splice it in at the index
-    // //                 if ( !_.isUndefined( index ) ) {
-    // //                     parentNode.children.splice( index, 0, itemNode );
-    // //                 }
-    // //                 else {
-    // //otherwise just push it on the end
-    //             parentNode.children.push( itemNode );
-    //         } );
-    //
-    //     },
-
     /**
      * Given a json object containing server representations
      * of items, this will return an array of Item objects
@@ -36128,8 +36096,6 @@ module.exports = defaults;
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _apiSettings = __webpack_require__(18);
 
 var _responseHandlers = __webpack_require__(38);
@@ -36155,11 +36121,12 @@ module.exports = {
      * @param item
      * @returns {Promise<T> | *}
      */
-    createItem: function createItem(item) {
+    createItem: function createItem() {
 
-        var toSend = _extends({}, item, {
+        var toSend = {
+
             requestVersion: _apiSettings.REQUEST_VERSION
-        });
+        };
 
         //All IModels have an id of -1 when they are initially created.
         //This is replaced with the real id once one is returned from the server.
@@ -41874,7 +41841,7 @@ module.exports = _extends({}, _examRequests2.default, {
         var payload = {
             examId: exam.id,
             requestVersion: _apiSettings.REQUEST_VERSION,
-            order: ord
+            order: ordering
         };
 
         var route = _apiSettings.Routes.updateItemsOrder(exam);
@@ -43013,11 +42980,11 @@ exports.default = function (store) {
                 (0, _requests.updateItemsOrder)(store);
                 break;
 
-            case mTypes.demoteItem:
+            case 'demote':
                 (0, _requests.updateItemsOrder)(store);
                 break;
 
-            case mTypes.promoteItem:
+            case 'promote':
                 (0, _requests.updateItemsOrder)(store);
                 break;
 
@@ -46412,24 +46379,20 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
         getters = _ref.getters;
 
     return new Promise(function (resolve, reject) {
-        var exam = getters[gTypes.getActiveExam];
 
         if (_.isUndefined(parentSN)) {
+            var exam = getters[gTypes.getActiveExam];
             //we are creating the object on the root
             parentSN = exam.serialNumber;
         }
 
-        var item = new _Item2.default();
-
         //directly create the item on the server
-        var p = (0, _itemRequests.createItem)(item);
-        p.then(function (data) {
-            // window.console.log( 'items', 'data', 207, data );
-            //set the item's id
-            //no need to user a mutation, because
-            //we haven't yet stored the item
-            item.id = data.id;
-            //Speaking of which, we now store the newly created
+        (0, _itemRequests.createItem)().then(function (data) {
+            //create an item from the data returned
+            //this will set the id
+            var item = _Item2.default.factory(data);
+
+            //now store the newly created
             // item in the items list
             var payload = _Payload2.default.factory({
                 obj: item,
@@ -46438,7 +46401,7 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
             });
             commit(mTypes.addNewItem, payload);
 
-            //Now trigger the actions to put the item in the
+            //Trigger the actions to put the item in the
             //proper place in the order
             var p2 = dispatch(aTypes.addItemToOrder, payload);
             p2.then(function () {

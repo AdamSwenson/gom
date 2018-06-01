@@ -19,7 +19,7 @@ import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 let getters = Component;
 
 
-describe.only( "kumi | getters  ", function () {
+describe( "kumi | getters  ", function () {
 
     let gettersStub, students, kumis;
     let numberStudentsAndKumis = 2;

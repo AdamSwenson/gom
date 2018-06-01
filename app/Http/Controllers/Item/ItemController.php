@@ -30,6 +30,9 @@ class ItemController extends Controller
     const EXAM_JSON_NAME = 'loadedExam';
     const ITEM_ORDER_JSON_NAME = 'loadedItemOrder';
     const ITEM_OBJECT_JSON_NAME = 'loadedItemObjects';
+
+    const DEFAULT_MAX_SCORE = 100;
+
     public $type;
     public $exam;
 
@@ -98,27 +101,35 @@ class ItemController extends Controller
     public function store( ItemRequest $request )
     {
 
-        return Item::create();
-
-
-//todo Separate this so that store only handles creation
-        if ( $request->has('id') ) {
-            //find the item
-            $item = Item::find($request->input('id'));
-        }
-        //if we don't have an item yet, create one
-        if ( !isset($item) ) {
-            $item = Item::create();
-        }
-
-        //update its properties
-        $item->update(
-            [
-                'text' => $request->input('text'),
-                'name' => $request->input('name'),
-                'max_score' => $request->input('maxScore')
-            ]);
-        return $item;
+        $item = Item::create();
+$item->max_score = self::DEFAULT_MAX_SCORE;
+$item->save();
+return $item;
+//
+////todo Separate this so that store only handles creation
+//        if ( $request->has('id') ) {
+//            //find the item
+//            $item = Item::find($request->input('id'));
+//        }
+//        //if we don't have an item yet, create one
+//        if ( !isset($item) ) {
+//            $item = Item::create();
+//        }
+//
+//        //check for the max score or use default
+//        $request = self::DEFAULT_MAX_SCORE;
+//        if( $request->has('maxScore') && $request->input('maxScore') >= 0 ){
+//            $maxScore = $request->input('maxScore');
+//        }
+//
+//        //update its properties
+//        $item->update(
+//            [
+//                'text' => $request->input('text'),
+//                'name' => $request->input('name'),
+//                'max_score' => $maxScore
+//            ]);
+//        return $item;
 
 //        return $this->itemRepository->handleStoreAndUpdate($request);
     }
@@ -163,8 +174,6 @@ class ItemController extends Controller
      * Updates the specified resource in storage.
      *
      *
-     * Presently handled by store
-     * @todo Update store so it only handles creation and update handles updates
      * @param Item $item
      * @param ItemRequest|Request $request
      * @return \Illuminate\Http\Response

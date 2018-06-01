@@ -20,7 +20,7 @@ import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 let  mutations = Component;
 
 
-describe.only( "roster | mutations ", function () {
+describe( "roster | mutations ", function () {
 let state, student;
     let payload;
     let gettersStub, students, kumis;

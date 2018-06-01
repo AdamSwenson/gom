@@ -1,7 +1,7 @@
 <template>
     <div class="card-footer">
         <a href="#" class="card-footer-item"
-           v-on:click=" moveLeft"
+           v-on:click="moveLeft"
         >
             <span class="icon"><i class="fa fa-angle-left"></i></span>
             <span>Left</span>

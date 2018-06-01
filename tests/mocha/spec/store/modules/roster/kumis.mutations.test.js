@@ -22,7 +22,7 @@ import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 let  mutations = Component;
 
 
-describe.only( "kumi | mutations ", function () {
+describe( "kumi | mutations ", function () {
     let state, student;
     let payload;
     let gettersStub, students, kumis, kumi;

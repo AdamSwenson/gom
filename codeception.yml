@@ -10,6 +10,7 @@ coverage:
 paths:
     tests: tests
     log: tests/_output
+    output: tests/_output
     data: tests/_data
     support: tests/_support
     envs: tests/_envs
@@ -25,7 +26,7 @@ extensions:
         - Codeception\Extension\Logger
         - Group\Setup
         - Group\Grade
-#        - Codeception\Extension\Phantoman
+        - Codeception\Extension\Phantoman
 
     config:
         Codeception\Extension\Logger:
@@ -34,14 +35,14 @@ extensions:
         Codeception\Extension\Recorder:
           - delete_successful: true
 
-#        Codeception\Extension\Phantoman:
-#          - path: '/usr/local/bin/phantomjs'
-#          - suites: ['acceptance', 'functional']
-#          - webSecurityEnabled: false
-#          - ignoreSslErrors: true
-#          - outputEncoding: 'utf8'
-#          - localToRemoteUrlAccessEnabled: true
-#          - printDebugMessages: true
+        Codeception\Extension\Phantoman:
+          - port: 4445
+          - suites: ['acceptance', 'functional']
+          - webSecurityEnabled: false
+          - ignoreSslErrors: true
+          - outputEncoding: 'utf8'
+          - localToRemoteUrlAccessEnabled: true
+          - printDebugMessages: true
 
 modules:
     enabled:

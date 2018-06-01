@@ -11,12 +11,8 @@ import * as ngaTypes from '../../../../store/new-grading-action-types';
 
 
 module.exports = {
-    computed: {
-        exam: function () {
-            let e = this.$store.getters[ nggTypes.getActiveExam ];
-            return !_.isUndefined( e ) ? e : '';
-        },
 
+    computed: {
         /**
          * The float score value for the
          * student defined as this.student and
@@ -50,7 +46,6 @@ module.exports = {
                 } );
 
             },
-
             /**
              * Update the score in the shared data object and send
              * a request for someone else to record it to the server.
@@ -70,7 +65,15 @@ module.exports = {
                 };
                 this.$store.dispatch( ngaTypes.recordItemScore, pl );
             }
+
+
+    },
+
+        exam: function () {
+            let e = this.$store.getters[ nggTypes.getActiveExam ];
+            return !_.isUndefined( e ) ? e : '';
         },
+
 
         /**
          * The maximum possible score for the question

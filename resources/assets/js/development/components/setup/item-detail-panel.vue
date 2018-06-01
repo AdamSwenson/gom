@@ -12,7 +12,7 @@
                                   class="question-text textarea"
                                   rows="3"
                                   v-bind:placeholder="placeholders.questionText"
-                                  v-model="text">
+                                  v-model.lazy="text">
                         </textarea>
             </p>
         </div>

@@ -192,24 +192,21 @@ const actions = {
      */
     [ aTypes.createItem ]: ( { state, commit, dispatch, getters }, parentSN ) => {
         return new Promise( ( resolve, reject ) => {
-            let exam = getters[ gTypes.getActiveExam ];
 
             if ( _.isUndefined( parentSN ) ) {
+                let exam = getters[ gTypes.getActiveExam ];
                 //we are creating the object on the root
                 parentSN = exam.serialNumber;
             }
 
-            let item = new Item( );
-
             //directly create the item on the server
-            let p = createItem( item );
-            p.then( function ( data ) {
-                // window.console.log( 'items', 'data', 207, data );
-                //set the item's id
-                //no need to user a mutation, because
-                //we haven't yet stored the item
-                item.id = data.id;
-                //Speaking of which, we now store the newly created
+            createItem(  )
+                .then( function ( data ) {
+                    //create an item from the data returned
+                    //this will set the id
+                let item = Item.factory(data);
+
+                //now store the newly created
                 // item in the items list
                 let payload = Payload.factory(
                     {
@@ -219,7 +216,7 @@ const actions = {
                     } );
                 commit( mTypes.addNewItem, payload );
 
-                //Now trigger the actions to put the item in the
+                //Trigger the actions to put the item in the
                 //proper place in the order
                 let p2 = dispatch( aTypes.addItemToOrder, payload );
                 p2.then( function () {

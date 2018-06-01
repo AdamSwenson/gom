@@ -121,13 +121,13 @@ describe( " dashboard-timer ", () => {
     } );
 
     describe( " Starting timer  ", () => {
-        it( "Styling changes", () => {
+        it( "Styling changes") //, () => {
 
-        } );
+        // } );
 
-        it( " Makes expected request to store ", () => {
+        it( " Makes expected request to store ") //, () => {
 
-        } );
+        // } );
 
         it( " Does not request timer start if no student is selected" )
     } );
@@ -135,9 +135,9 @@ describe( " dashboard-timer ", () => {
     describe( " Stopping timer  ", () => {
         it( "Happy path" );
 
-        it( " Makes expected request to store ", () => {
+        it( " Makes expected request to store ") //, () => {
 
-        } );
+        // } );
 
         it( " Does not request timer stop if no student is selected" )
 

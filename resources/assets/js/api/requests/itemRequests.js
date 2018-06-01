@@ -23,14 +23,10 @@ module.exports = {
      * @param item
      * @returns {Promise<T> | *}
      */
-    createItem: ( item) => {
+    createItem: ( ) => {
 
         let toSend = {
-            //we will send the entire
-            // new item. This is in case
-            // we eventually have some defaults for the user
-            // set on the client-side.
-            ...item,
+
             requestVersion: REQUEST_VERSION,
              };
 

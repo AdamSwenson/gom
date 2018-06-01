@@ -30,7 +30,7 @@ localVue.use( Vuex )
 var Component = require( "../../../../../resources/assets/js/development/components/grading/roster/student-search-bar.vue" );
 
 
-describe.only( " student-search-bar ", () => {
+describe( " student-search-bar ", () => {
     let componentDivIdentifier = '';
 
     let getters;

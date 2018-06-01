@@ -93,15 +93,13 @@
                 },
 
                 set: function ( value ) {
-                    // if ( this.item instanceof Item ) {
                         let pl = Payload.factory( {
                             obj: this.item,
                             updateProp: 'maxScore',
                             updateVal: _.toInteger( value )
                         } );
                         this.$store.commit( mTypes.updateItem, pl );
-                    // }
-                }
+                    }
             },
 
             countsInTotal: {

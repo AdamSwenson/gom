@@ -145,7 +145,7 @@ module.exports = {
         let payload = {
             examId: exam.id,
             requestVersion: REQUEST_VERSION,
-            order: ord
+            order: ordering
         };
 
         let route = Routes.updateItemsOrder( exam );

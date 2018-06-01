@@ -234,11 +234,11 @@ export default function ( store ) {
                 updateItemsOrder( store );
                 break;
 
-            case mTypes.demoteItem:
+            case 'demote':
                 updateItemsOrder( store );
                 break;
 
-            case mTypes.promoteItem:
+            case 'promote':
                 updateItemsOrder( store );
                 break;
 
