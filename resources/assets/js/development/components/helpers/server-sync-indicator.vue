@@ -1,6 +1,6 @@
 <template>
     <div id="sync-indicator"
-         class="content"
+         class="server-sync-indicator content"
     >
         <p id="is-syncing-indicator"
            v-if="isSyncing">

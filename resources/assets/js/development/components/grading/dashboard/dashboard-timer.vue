@@ -1,5 +1,5 @@
 <template>
-    <div id="dashboard-timer">
+    <div id="dashboard-timer" class="dashboard-timer">
 
         <table class="table is-narrow">
             <tr>

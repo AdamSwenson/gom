@@ -1,6 +1,6 @@
 <template>
     <a v-bind:id="id"
-            class="button is-primary is-outlined"
+            class="add-sibling-button button is-primary is-outlined"
             v-bind:class="styling"
             v-on:click="add"
     >

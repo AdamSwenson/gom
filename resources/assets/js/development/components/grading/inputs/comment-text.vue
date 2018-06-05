@@ -1,6 +1,6 @@
 <template>
 
-            <textarea class="textarea comment-text-area"
+            <textarea class="comment-text textarea comment-text-area"
                       placeholder="No score for this element"
                       v-bind:rows="numRows"
                       v-model="commentText"
@@ -40,8 +40,8 @@
         },
 
         computed: {
-            exam : function (  ) {
-              return this.$store.getters[ nggTypes.getActiveExam ];
+            exam: function () {
+                return this.$store.getters[ nggTypes.getActiveExam ];
             },
 
             /**
@@ -50,11 +50,11 @@
             commentText: {
                 // cache: false,
                 get: function () {
-                    if(! this.isReady()) return '';
-                    let so = this.$store.getters[nggTypes.getItemScoreObject]({
+                    if ( !this.isReady() ) return '';
+                    let so = this.$store.getters[ nggTypes.getItemScoreObject ]( {
                         item: this.item,
                         student: this.student
-                    });
+                    } );
 
                     if ( !_.isUndefined( so ) ) return so.text;
 
@@ -82,15 +82,15 @@
                 }
             },
 
-            numRows: function (  ) {
+            numRows: function () {
                 return this.isMinimized ? this.defaults.rows.minimized : this.defaults.rows.maximized;
             }
 
         },
 
         methods: {
-            isReady: function (  ) {
-                if ( _.isUndefined( this.item ) || _.isNull(this.item) || _.isUndefined( this.student ) || _.isNull(this.student) ) return false;
+            isReady: function () {
+                if ( _.isUndefined( this.item ) || _.isNull( this.item ) || _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
                 return true;
             },
             /**
@@ -107,11 +107,11 @@
                 this.commentSelector.removeAttribute( 'readonly' );
             },
 
-            maximize: function (  ) {
+            maximize: function () {
                 this.isMinimized = false;
             },
 
-            minimize: function (  ) {
+            minimize: function () {
                 this.isMinimized = true;
             }
 

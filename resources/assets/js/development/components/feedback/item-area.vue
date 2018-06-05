@@ -1,5 +1,5 @@
 <template>
-    <div class="box">
+    <div class="item-area box">
         <h4 class="title is-4">{{ name }}</h4>
 
         <!--<div class="columns">-->

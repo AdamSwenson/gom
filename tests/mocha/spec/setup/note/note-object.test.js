@@ -19,7 +19,7 @@ import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
 //
 //
 // import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
+import * as gTypes from "../../../../../resources/assets/js/store/getter-types";
 // import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 
 
@@ -35,7 +35,7 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;
@@ -44,7 +44,11 @@ describe(  compName , () => {
 
     beforeEach( (  ) => {
 
-        getters = {   };
+        getters = {
+            [gTypes.getNoteBySerialNumber] : function(  ) {
+             return {}
+            }
+        };
 
         mutations = {};
 
@@ -56,7 +60,7 @@ describe(  compName , () => {
         wrapper = shallow( Component, {
             store, localVue
         } );
-
+window.console.log(wrapper)
     } );
 
 

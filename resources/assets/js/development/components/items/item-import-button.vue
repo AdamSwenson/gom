@@ -1,5 +1,5 @@
 <template>
-    <div class="item-import">
+    <div class="item-import-button">
         <a class="button is-primary is-outlined item-import-button"
            v-on:click="handleClick"
         >

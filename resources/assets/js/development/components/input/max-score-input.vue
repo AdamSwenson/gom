@@ -1,12 +1,12 @@
 <template>
     <!-- max grade -->
 
-    <div class="max-score-area">
+    <div class="max-score-input">
         <div class="field">
             <label class="label max-score-label">{{labels.scoreInput}}</label>
             <p class="control">
                 <input type="number"
-                       class="input max-score-input"
+                       class="input max-score-field"
                        v-bind:id="maxScoreId"
                        v-bind:title="title"
                        v-model="maxScore"
@@ -27,7 +27,7 @@
 
 </template>
 <style lang="scss">
-    .max-score-label {
+    .max-score-field {
         text-align: left;
     }
 

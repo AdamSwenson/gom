@@ -1,5 +1,5 @@
 <template>
-    <div class="tabs">
+    <div class="grading-nav-tabs tabs">
         <ul>
             <li v-for="r in questionRoutes"
                 role="presentation"

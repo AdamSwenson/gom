@@ -1,6 +1,6 @@
 <template>
 
-    <div class="questionScoreForm field has-addons">
+    <div class="question-score questionScoreForm field has-addons">
         <label class="label questionScoreLabel"></label>
 
         <!--<letter-grade-button-->

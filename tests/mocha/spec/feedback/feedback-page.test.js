@@ -35,11 +35,12 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;
     let store;
+    let actions
     let wrapper;
 
     beforeEach( (  ) => {
@@ -47,10 +48,16 @@ describe(  compName , () => {
         getters = {   };
 
         mutations = {};
+        actions = {
+            'loadStudentsFromPageJson': (  ) => {
+                return 'j'
+            }
+        }
 
         store = new Vuex.Store( {
             getters,
-            mutations
+            mutations,
+            actions
         } );
 
         wrapper = shallow( Component, {

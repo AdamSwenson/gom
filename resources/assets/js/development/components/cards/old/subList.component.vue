@@ -27,10 +27,10 @@
     var Sortable = require('sortablejs');
 
 
-    import Item from '../../../models/Item'
-    import Payload from '../../../models/Payload'
-    import * as mTypes from '../../../store/mutation-types'
-    import * as gTypes from '../../../store/getter-types'
+    import Item from '../../../../models/Item'
+    import Payload from '../../../../models/Payload'
+    import * as mTypes from '../../../../store/mutation-types'
+    import * as gTypes from '../../../../store/getter-types'
 
     export default{
 

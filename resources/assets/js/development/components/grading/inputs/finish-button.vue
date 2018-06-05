@@ -2,7 +2,7 @@
 
     <!-- save & finish button -->
     <a id="finishButton"
-       class="button is-success "
+       class="finish-button button is-success "
        v-if="isFinishButtonVisible"
        v-on="handleFinishClick"
     >

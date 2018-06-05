@@ -2,7 +2,7 @@
     <li id="navHelp"
         title="Help"
         role="presentation"
-        class="dropdown"
+        class="info-menu dropdown"
     >
         <a class="dropdown-toggle navItem"
            data-toggle="dropdown"

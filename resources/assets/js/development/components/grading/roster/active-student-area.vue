@@ -1,5 +1,5 @@
 <template>
-    <div id="active-student-area">
+    <div id="active-student-area" class="active-student-area">
 
         <span class="has-text-primary">
             {{ studentName }}  {{studentIdentifier }}

@@ -1,6 +1,6 @@
 <template>
     <div
-            class="item-nav-component "
+            class="buttons-depth-control item-nav-component "
             v-on:click="goTo"
     >
         <div class="nav-arrow text-center">

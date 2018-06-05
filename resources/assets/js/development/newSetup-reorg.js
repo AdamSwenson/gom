@@ -62,7 +62,7 @@ Vue.component( 'item-main', itemMain );
 
 
 //Item card list
-import cardList from './components/cards/cardList.component.vue';
+import cardList from './components/cards/old/cardList.component.vue';
 Vue.component( 'card-list', cardList );
 
 import itemAddButton from './components/input/buttons.item.add.component.vue';

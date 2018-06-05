@@ -1,6 +1,6 @@
 <template xmlns="http://www.w3.org/1999/html">
     <nav id="grading-roster"
-         class="panel"
+         class="grading-roster panel "
     >
 
         <div class="panel-heading">

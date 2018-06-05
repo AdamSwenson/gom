@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="item-comment">
     <p v-for="t in childTextParagraphs" class="item-comment">
         {{t}}
     </p>

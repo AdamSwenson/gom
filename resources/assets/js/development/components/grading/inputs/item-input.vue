@@ -1,6 +1,6 @@
 <template>
     <div id="element-input"
-         class=" questionPanel box">
+         class="item-input  questionPanel box">
 
         <div class="level">
             <div class="level-left">

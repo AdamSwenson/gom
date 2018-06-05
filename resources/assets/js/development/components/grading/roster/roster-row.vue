@@ -1,5 +1,5 @@
 <template>
-    <a class="panel-block student-row"
+    <a class="roster-row panel-block student-row"
        v-bind:class="rowStyling"
        v-on:click="handleRowSelection"
        v-if="isRowVisible"

@@ -1,6 +1,6 @@
 <!--This can be used in a modal or other menu to select a different exam to do stuff to-->
 <template>
-    <div class="exams-panel panel">
+    <div class="existing-exams-list exams-panel panel">
         <p class="panel-heading">
             <slot name="heading">Exams</slot>
 

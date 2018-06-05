@@ -1,5 +1,5 @@
 <template>
-    <table class="table is-narrow">
+    <table class="grade-table table is-narrow">
         <tbody>
         <tr>
             <th>Grade</th>

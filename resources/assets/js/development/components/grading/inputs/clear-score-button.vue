@@ -1,5 +1,5 @@
 <template>
-    <a class="button is-primary is-small"
+    <a class="clear-score-button button is-primary is-small"
        v-on:click="handleClick"
     >Reset score</a>
 </template>

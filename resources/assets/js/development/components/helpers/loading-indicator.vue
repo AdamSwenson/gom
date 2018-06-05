@@ -1,6 +1,6 @@
 <template>
 
-    <div class="load-indicator "
+    <div class="loading-indicator "
          v-if="isLoading"
     >
         <div class="has-text-centered">

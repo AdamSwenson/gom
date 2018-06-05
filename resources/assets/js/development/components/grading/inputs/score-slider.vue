@@ -1,7 +1,7 @@
 <template>
     <input v-bind:id="sliderId"
            type="number"
-           class="slider"
+           class="score-slider slider"
            min="0"
            v-bind:max="maxScore"
            v-model="score"

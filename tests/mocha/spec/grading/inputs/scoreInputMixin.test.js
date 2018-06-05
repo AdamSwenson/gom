@@ -4,11 +4,7 @@ var compName = 'scoreInputMixin';
 //The path to the tested component
 var Component = require('../../../../../resources/assets/js/development/components/grading/inputs/scoreInputMixin.js');
 
-
-import { mount, shallow, createLocalVue } from 'vue-test-utils';
 import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
 import moxios from 'moxios';
 import faker from 'faker';
 
@@ -23,46 +19,26 @@ import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
 // import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 
 
-const localVue = createLocalVue();
-
-localVue.use( Vuex )
-// localVue.use( VueRouter );
-
-
-//tested stuff
-
 
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
-
+    let componentDivIdentifier = '.' + compName;
+    let obj;
     let getters;
     let mutations;
     let store;
     let wrapper;
 
     beforeEach( (  ) => {
-
-        getters = {   };
-
-        mutations = {};
-
-        store = new Vuex.Store( {
-            getters,
-            mutations
-        } );
-
-        wrapper = shallow( Component, {
-            store, localVue
-        } );
+        obj = Component
 
     } );
 
 
     describe( " loads into expected default state for testing ", () => {
-        it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+        it( 'loaded instance', () => {
+            expect(obj).not.toBeEmpty()
         } );
     } );
     

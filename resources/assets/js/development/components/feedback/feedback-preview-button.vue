@@ -1,5 +1,5 @@
 <template>
-    <div class="feedback-preview">
+    <div class="feedback-preview-button">
         <a class="button "
            aria-haspopup="true"
            aria-controls="dropdown-menu"

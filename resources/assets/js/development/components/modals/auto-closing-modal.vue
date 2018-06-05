@@ -1,5 +1,5 @@
 <template>
-    <div class="modal"
+    <div class="auto-closing-modal modal"
          v-bind:class="[isModalVisible ? 'is-active' : '' ]"
     >
         <div class="modal-background" v-on:click="closeModal"

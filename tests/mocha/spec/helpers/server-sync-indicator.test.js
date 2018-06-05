@@ -34,7 +34,7 @@ var Component = require( '../../../../resources/assets/js/development/components
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;

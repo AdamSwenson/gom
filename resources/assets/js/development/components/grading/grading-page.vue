@@ -101,17 +101,6 @@
 
 <script>
 
-    import GradingNavTabs from "./nav/grading-nav-tabs.vue";
-    import ActiveStudentArea from './roster/active-student-area.vue';
-    import DashboardCounts from './dashboard/dashboard-counts.vue';
-    import DashboardTimer from './dashboard/dashboard-timer.vue';
-    import GradingRoster from './roster/grading-roster.vue';
-    //navs
-    import TopNavbar from '../top-nav/top-navbar.vue';
-    import BottomNavbar from "../bottom-nav/bottom-navbar";
-    //buttons
-    import FeedbackPreviewButton from "../feedback/feedback-preview-button";
-
 
     import { loadExam } from '../../../api/requests/examRequests';
     import { loadKumiForExam } from '../../../api/requests/kumiRequests';
@@ -125,6 +114,17 @@
     import * as nggTypes from '../../../store/new-grading-getter-types';
     import * as gTypes from '../../../store/getter-types';
     import * as mTypes from '../../../store/mutation-types';
+
+    import GradingNavTabs from "./nav/grading-nav-tabs.vue";
+    import ActiveStudentArea from './roster/active-student-area.vue';
+    import DashboardCounts from './dashboard/dashboard-counts.vue';
+    import DashboardTimer from './dashboard/dashboard-timer.vue';
+    import GradingRoster from './roster/grading-roster.vue';
+    //navs
+    import TopNavbar from '../top-nav/top-navbar.vue';
+    import BottomNavbar from "../bottom-nav/bottom-navbar";
+    //buttons
+    import FeedbackPreviewButton from "../feedback/feedback-preview-button";
 
     import StudentNameVisibility from "./controls/student-name-visibility";
     import HideGradedRows from "./controls/hide-graded-rows";

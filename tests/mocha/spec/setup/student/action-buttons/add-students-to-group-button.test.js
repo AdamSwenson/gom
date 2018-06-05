@@ -35,7 +35,7 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '#student-move-button';
 
     let getters;
     let mutations;

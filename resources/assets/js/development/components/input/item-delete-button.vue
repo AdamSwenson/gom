@@ -2,7 +2,7 @@
 <!--This is not for use in removing items from exams-->
 <!--It is only for use in explicit item management contexts-->
 <template>
-    <button class="button is-danger is-outlined js-remove "
+    <button class="item-delete-button button is-danger is-outlined js-remove "
             v-bind:id="id"
             v-bind:class="styling"
             v-on:click="deleteItem"

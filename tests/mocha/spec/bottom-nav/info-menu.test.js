@@ -34,7 +34,7 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;

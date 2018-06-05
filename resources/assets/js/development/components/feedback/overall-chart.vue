@@ -1,5 +1,5 @@
 <template>
-    <div class="overall-chart-area">
+    <div class="overall-chart">
         <div class="box">
             <!--{{score}}-->
             <!--mean : {{ itemStats ? itemStats.mean : '-' }}-->

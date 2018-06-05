@@ -1,6 +1,6 @@
 <template>
 
-    <div class="tag-display-area">
+    <div class="tag-display">
         <h5>
             <span class="icon is-small">
                 <i class="fa fa-tags" aria-hidden="true"></i>
@@ -37,7 +37,7 @@
 </template>
 
 <style lang="scss">
-    .tag-display-area {
+    .tag-display {
 
     }
 </style>

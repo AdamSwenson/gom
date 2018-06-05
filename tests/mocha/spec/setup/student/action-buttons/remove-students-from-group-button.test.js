@@ -35,7 +35,7 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '#remove-students-from-group-button';
 
     let getters;
     let mutations;

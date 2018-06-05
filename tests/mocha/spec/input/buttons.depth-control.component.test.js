@@ -1,6 +1,6 @@
 
 //The name of the tested component
-var compName = 'buttons.depth-control.component';
+var compName = 'buttons-depth-control';
 //The path to the tested component
 var Component = require('../../../../resources/assets/js/development/components/input/buttons.depth-control.component.vue');
 
@@ -35,7 +35,7 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;

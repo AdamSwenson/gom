@@ -1,6 +1,6 @@
 <template>
 
-    <a class="button "
+    <a class="student-name-visibility button "
        v-bind:id="buttonId"
        v-bind:title="title"
        v-bind:class="styling"

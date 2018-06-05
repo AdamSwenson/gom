@@ -1,5 +1,5 @@
 <template>
-    <div class="card-footer">
+    <div class="card-movement-control card-footer">
         <a href="#" class="card-footer-item"
            v-on:click="moveLeft"
         >

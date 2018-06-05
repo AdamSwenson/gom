@@ -1,5 +1,5 @@
 <template>
-    <a class="public-indicator button is-outlined "
+    <a class="visibility-control public-indicator button is-outlined "
        v-bind:class="displayClass"
        v-on:click="togglePublic"
     >

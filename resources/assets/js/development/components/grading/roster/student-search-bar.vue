@@ -1,6 +1,6 @@
 <template>
 
-    <p class="control has-icons-left search-bar-area">
+    <p class="student-search-bar control has-icons-left search-bar-area">
 
         <input
                 type="text"

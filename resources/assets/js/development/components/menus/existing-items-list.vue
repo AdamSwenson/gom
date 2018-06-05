@@ -1,5 +1,5 @@
 <template>
-    <div class="items-panel panel">
+    <div class="existing-items-list items-panel panel">
         <p class="panel-heading">
             <slot name="heading">Items</slot>
 

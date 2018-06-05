@@ -1,6 +1,5 @@
 <template xmlns="http://www.w3.org/1999/html">
     <div class="card-list-component">
-
         <div class="row outer-card-list">
 
             <ul id='card-list'
@@ -32,7 +31,7 @@
 
 </template>
 <style lang="scss">
-    @import '../../../../sass/development/newSetup';
+    @import '../../../../../sass/development/newSetup';
 
     .card-list-component {
 
@@ -56,12 +55,12 @@
 </style>
 <script>
 
-    import * as aTypes from '../../../store/action-types';
-    import * as mTypes from '../../../store/mutation-types';
-    import * as gTypes from '../../../store/getter-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as mTypes from '../../../../store/mutation-types';
+    import * as gTypes from '../../../../store/getter-types';
 
-    import Payload from '../../../models/Payload'
-    import Item from '../../../models/Item'
+    import Payload from '../../../../models/Payload'
+    import Item from '../../../../models/Item'
     var Sortable = require( 'sortablejs' );
 
     //    import itemCard from './item-card.vue'
