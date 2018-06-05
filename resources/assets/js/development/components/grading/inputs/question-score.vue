@@ -31,7 +31,7 @@
     window.jQuery = jQuery;
     require( 'bootstrap' );
 
-    import letterGradeButton from './letter-grade-button';
+    import letterGradeButton from './letter-grade-button.vue';
     import PayloadScore from '../../../../models/PayloadScore';
     import GradeAssignment from '../../../../models/GradeAssignment';
 

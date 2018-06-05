@@ -12,7 +12,7 @@ localVue.use( VueRouter );
 //tested stuff
 var Component = require( "../../../../resources/assets/js/development/components/helpers/info-button.vue" );
 
-var Item = require( "./../../../../resources/assets/js/models/Item" );
+// var Item = require( "./../../../../resources/assets/js/models/Item" );
 
 
 describe( "info-button  ", () => {

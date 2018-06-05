@@ -3,9 +3,9 @@ require('jsdom-global')();
 
 global.expect = require('expect');
 global._ = require( 'lodash' );
-
+global.vue = require('vue');
 global.sinon = require( 'sinon' );
-
+global.jQuery = require('jquery');
 /**
  * API Methods
 

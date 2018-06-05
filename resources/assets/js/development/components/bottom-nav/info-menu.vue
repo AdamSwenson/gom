@@ -15,26 +15,26 @@
             <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li>
-                <a href="{{ url('help') }}">Help</a>
-            </li>
-            <li>
-                <a href="{{ url('info/faq') }}#faq">FAQ</a>
-            </li>
-            <li role="separator" class="divider"></li>
-            <li>
-                <a href="{{ url('info/instructions') }}">Instructions</a>
-            </li>
-            <li>
-                <a href="{{ url('info/tutorials') }}">Video tutorials</a>
-            </li>
-            <li role="separator" class="divider"></li>
-            <li>
-                <a href="{{ url('contact') }}">Contact</a>
-            </li>
-            <li>
-                <a href="{{ url('about') }}">About</a>
-            </li>
+            <!--<li>-->
+                <!--<a href="{{ url('help') }}">Help</a>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<a href="{{ url('info/faq') }}#faq">FAQ</a>-->
+            <!--</li>-->
+            <!--<li role="separator" class="divider"></li>-->
+            <!--<li>-->
+                <!--<a href="{{ url('info/instructions') }}">Instructions</a>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<a href="{{ url('info/tutorials') }}">Video tutorials</a>-->
+            <!--</li>-->
+            <!--<li role="separator" class="divider"></li>-->
+            <!--<li>-->
+                <!--<a href="{{ url('contact') }}">Contact</a>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<a href="{{ url('about') }}">About</a>-->
+            <!--</li>-->
         </ul>
     </li>
 

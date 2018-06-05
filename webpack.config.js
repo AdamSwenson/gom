@@ -1,10 +1,3 @@
-// let path = require('path');
-// let webpack = require('webpack');
-// let Mix = require('laravel-mix').config;
-// let plugins = require('laravel-mix').plugins;
-//
-
-
 
 let path = require('path');
 let glob = require('glob');
@@ -26,6 +19,7 @@ let dotenv = require('dotenv')
 dotenv.config({
     path: Mix.Paths.root('.env')
 });
+
 
 
 
