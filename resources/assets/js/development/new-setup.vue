@@ -113,7 +113,6 @@
 
     import ExamCard from './components/cards/exam-card.vue'
 
-
     //navigation bars
     import BottomNavbar from '../development/components/bottom-nav/bottom-navbar.vue';
     import TopNavbar from '../development/components/top-nav/top-navbar.vue';

@@ -1,6 +1,4 @@
 <template>
-
-    <!-- save & finish button -->
     <a id="finishButton"
        class="finish-button button is-success "
        v-if="isFinishButtonVisible"

@@ -34,37 +34,14 @@ localVue.use( Vuex )
 
 
 describe(  compName , () => {
-
-    let componentDivIdentifier = '.' + compName;
-
-    let getters;
-    let mutations;
-    let store;
-    let wrapper;
-
+let obj;
     beforeEach( (  ) => {
-
-        getters = {   };
-
-        mutations = {};
-
-        store = new Vuex.Store( {
-            getters,
-            mutations
-        } );
-
-        wrapper = shallow( Component, {
-            store, localVue
-        } );
-
+obj = Component;
     } );
 
 
     describe( " loads into expected default state for testing ", () => {
-        it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
-        } );
-    } );
+       } );
     
     describe(" TESTS NEEDED", () => {
         it('awaits tests')        

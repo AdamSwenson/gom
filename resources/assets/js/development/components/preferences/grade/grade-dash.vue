@@ -1,5 +1,5 @@
 <template>
-    <div class="box connections-area">
+    <div class="grade-dash box connections-area">
 
         <h4 class="title is-4"> Grading dashboard settings</h4>
         <br>
