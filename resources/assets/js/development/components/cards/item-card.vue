@@ -111,21 +111,14 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
-
-    import siblingAddButton from '../items/add-sibling-button.vue'
-
     import AddChildButton from '../items/add-child-button.vue'
-
-
-    import PublicIndicator from '../input/visibility-control.vue'
-
-
+    import itemMain from '../items/item-main.vue';
     import itemCloneButton from '../items/item-clone-button.vue';
     import itemImportButton from '../items/item-import-button.vue';
     import movementControl from '../items/card-movement-control.vue';
-    import itemMain from '../items/item-main.vue';
-
     import navTabs from '../navigation/item-card-navigation-tabs.vue'
+    import PublicIndicator from '../input/visibility-control.vue'
+    import siblingAddButton from '../items/add-sibling-button.vue'
 
 
     export default {
