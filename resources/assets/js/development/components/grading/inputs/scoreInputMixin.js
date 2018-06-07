@@ -25,6 +25,7 @@ module.exports = {
                 if ( !this.isReady() ) return '';
                 // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
 
+                //First we try getting an existing score object
                 let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
                     item: me.item,
                     student: me.student
@@ -34,9 +35,11 @@ module.exports = {
                     return qs.score;
                 }
 
+                //No score object currently exists, so we create one
                 let p = this.$store.dispatch( 'initializeItemScore',
                     { exam: this.exam, item: this.item, student: this.student } );
 
+                //And then return the newly created store object
                 return p.then( function () {
                     qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
                         item: me.item,

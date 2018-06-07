@@ -1,6 +1,5 @@
 <template>
-    <a id="finishButton"
-       class="finish-button button is-success "
+    <a class="finish-button button is-success "
        v-if="isFinishButtonVisible"
        v-on="handleFinishClick"
     >

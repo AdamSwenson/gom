@@ -5,33 +5,13 @@ var compName = 'question-score';
 var Component = require('../../../../../resources/assets/js/development/components/grading/inputs/question-score.vue');
 
 
+require( '../../../injectglobals' );
+
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
-
-
-//tested stuff
-
-
 
 describe(  compName , () => {
 
@@ -39,23 +19,57 @@ describe(  compName , () => {
 
     let getters;
     let mutations;
+    let actions;
     let store;
+    let exam;
+    let student;
+    let score;
+    let scoreObj;
+    let item;
     let wrapper;
 
-    beforeEach( (  ) => {
+    let examGetterStub;
+    let studentGetterStub;
+    let scoreGetterStub;
 
-        getters = {   };
+    beforeEach( () => {
+        score = 95;
 
-        mutations = {};
+        item = factories.itemFactory();
+        item.maxScore = 100;
 
+        exam = factories.examFactory();
+        examGetterStub = sinon.stub();
+        examGetterStub.returns( exam );
+
+        student = factories.studentFactory();
+        studentGetterStub = sinon.stub();
+        studentGetterStub.returns( student );
+
+        scoreObj = factories.itemScoreFactory( exam, item, student, score )
+        scoreGetterStub = sinon.stub();
+        scoreGetterStub.returns( scoreObj );
+
+
+        getters = {
+            [ nggTypes.getItemScoreObject ] : () => scoreGetterStub,
+            [ nggTypes.getActiveExam] : () => examGetterStub
+        };
+
+        actions = {
+            [ ngaTypes.recordCommentText ]: sinon.spy()
+        }
         store = new Vuex.Store( {
+            actions,
             getters,
-            mutations
         } );
 
         wrapper = shallow( Component, {
             store, localVue
         } );
+
+        wrapper.setProps({item, student});
+
 
     } );
 
@@ -66,8 +80,8 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
+    describe(" Popover display -- not currently enabled", () => {
+        // it('awaits tests')
     });
 
 

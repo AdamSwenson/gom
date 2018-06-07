@@ -1,12 +1,12 @@
 <template>
 
-            <textarea class="comment-text textarea comment-text-area"
-                      placeholder="No score for this element"
-                      v-bind:rows="numRows"
-                      v-model="commentText"
-                      v-on:focus="maximize"
-                      v-on:blur="minimize"
-            ></textarea>
+    <textarea class="comment-text textarea"
+              placeholder="No score for this element"
+              v-bind:rows="numRows"
+              v-model="commentText"
+              v-on:focus="maximize"
+              v-on:blur="minimize"
+    ></textarea>
 
 </template>
 
@@ -51,6 +51,7 @@
                 // cache: false,
                 get: function () {
                     if ( !this.isReady() ) return '';
+
                     let so = this.$store.getters[ nggTypes.getItemScoreObject ]( {
                         item: this.item,
                         student: this.student
@@ -60,15 +61,8 @@
 
                     return '';
 
-
-                    //
-                    // //setting this to just this.elementScore prevents missing from displaying comment.
-                    // //when element score was 0.
-                    // //Also led to custom comments being deleted when moved to missing
-                    // if ( this.elementScore != null )
-                    // // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
-                    //     return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
                 },
+
                 set: function ( text ) {
 
                     let pl = {
@@ -93,18 +87,19 @@
                 if ( _.isUndefined( this.item ) || _.isNull( this.item ) || _.isUndefined( this.student ) || _.isNull( this.student ) ) return false;
                 return true;
             },
+
             /**
              * Prevent user from entering text into comment area
              */
             commentAreaDisable: function () {
-                this.commentSelector.setAttribute( 'readonly', 'true' );
+                this.el.setAttribute( 'readonly', 'true' );
             },
 
             /**
              * Allow user to enter text into comment area
              */
             commentAreaEnable: function () {
-                this.commentSelector.removeAttribute( 'readonly' );
+                this.el.removeAttribute( 'readonly' );
             },
 
             maximize: function () {

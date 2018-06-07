@@ -1,35 +1,25 @@
 
 //The name of the tested component
+import sinon from "sinon";
+
 var compName = 'item-delete-button';
 //The path to the tested component
 var Component = require('../../../../resources/assets/js/development/components/input/item-delete-button.vue');
 
+require( '../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
+
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 import moxios from 'moxios';
-import faker from 'faker';
 
 //helpers
-// import { see } from '../../helpers/test-helpers';
 import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
-// import { factories } from '../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
-
-
-//tested stuff
 
 
 
@@ -41,12 +31,26 @@ describe(  compName , () => {
     let mutations;
     let store;
     let wrapper;
+    let item;
+    let spy;
+    let spy2;
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
+        item = factories.itemFactory();
 
-        getters = {   };
+        getters = {
+            [ gTypes.getItemBySerialNumber ]: ( v ) => ( v ) => {
+                return item;
+            }
+        };
 
-        mutations = {};
+        spy = sinon.spy()
+        spy2 = sinon.spy()
+
+        mutations = {
+            toggleChildrenVisibility: spy,
+            toggleExamChildrenVisibility: spy2
+        };
 
         store = new Vuex.Store( {
             getters,
@@ -57,17 +61,26 @@ describe(  compName , () => {
             store, localVue
         } );
 
-    } );
+        wrapper.vm.serialNumber = item.serialNumber;
 
+    } );
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
+
+
+    describe(" methods -- item", () => {
+        it('calls delete for an item');
+
+    });
+
+
+    describe(" methods -- exam", () => {
+        it('calls delete for an exam');
+
     });
 
 

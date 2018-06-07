@@ -1,16 +1,14 @@
 <template>
     <input type="text"
-           class="input is-large"
+           class="item-name-input input is-large"
            v-bind:placeholder="placeholder"
-           v-bind:id="id"
            v-model.lazy="name"
            v-bind:class="styling"
     >
 
-
 </template>
 <style lang="scss">
-    .item-name-component {
+    .item-name-input {
 
         .item-type {
             font-weight: bold;
@@ -59,19 +57,19 @@
             isExam: function () {
                 return this.item ? this.item.isExam() : false;
             },
-
-            node: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            },
-
-            depth: function () {
-                return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-            },
-
-
-            height: function () {
-                return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-            },
+            //
+            // node: function () {
+            //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+            // },
+            //
+            // depth: function () {
+            //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            // },
+            //
+            //
+            // height: function () {
+            //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+            // },
 
             placeholder: function () {
                 if ( this.isExam ) {
@@ -79,9 +77,9 @@
                 }
                 return this.placeholders.item;
             },
-            parentSerialNumber: function () {
-                return this.node.parent;
-            },
+            // parentSerialNumber: function () {
+            //     return this.node.parent;
+            // },
 
             /**
              * Gets the appropriate base string for the input
@@ -91,16 +89,16 @@
             identifier: function () {
                 return this.isExam ? this.identifiers.exam : this.identifiers.item;
             },
-
-            /**
-             * The input's css id
-             */
-            id: function () {
-                if ( this.isExam ) return this.identifier;
-
-                return this.identifier + "-" + this.height + '-' + this.depth;
-            },
-
+            //
+            // /**
+            //  * The input's css id
+            //  */
+            // id: function () {
+            //     if ( this.isExam ) return this.identifier;
+            //
+            //     return this.identifier + "-" + this.height + '-' + this.depth;
+            // },
+            //
             /**
              * Injected into the classes of the input
              * */

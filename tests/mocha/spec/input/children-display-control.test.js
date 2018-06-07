@@ -3,22 +3,16 @@ var compName = 'children-display-control';
 //The path to the tested component
 var Component = require( '../../../../resources/assets/js/development/components/input/children-display-control.vue' );
 
+require( '../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
+
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
 
 //helpers
 // import { see } from '../../helpers/test-helpers';
 import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
-import * as factories from '../../helpers/factories';
-
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-import * as gTypes from "../../../../resources/assets/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 
 import Payload from '../../../../resources/assets/js/models/Payload';
 

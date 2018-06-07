@@ -35,18 +35,31 @@ localVue.use( Vuex )
 
 describe(  compName , () => {
 
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;
     let store;
     let wrapper;
+    let item;
+    let spy;
+    let test;
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
+        item = factories.itemFactory();
 
-        getters = {   };
+        getters = {
+            [ gTypes.getItemBySerialNumber ]: ( v ) => ( v ) => {
+                return item;
+            }
+        };
 
-        mutations = {};
+        spy = sinon.spy()
+
+        mutations = {
+            [ mTypes.updateItem ]: spy
+        };
+
 
         store = new Vuex.Store( {
             getters,
@@ -57,8 +70,12 @@ describe(  compName , () => {
             store, localVue
         } );
 
-    } );
+        test = faker.number;
 
+        wrapper.vm.serialNumber = item.serialNumber;
+        wrapper.vm.item = item;
+
+    } );
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
@@ -66,9 +83,16 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
+    describe(" methods -- item", () => {
+        it('calls show when settings were previously hidden');
+        it('calls hide when settings were previously shown');
     });
 
+
+    describe(" methods -- exam", () => {
+
+        it('calls show when settings were previously hidden');
+        it('calls hide when settings were previously shown');
+    });
 
 });

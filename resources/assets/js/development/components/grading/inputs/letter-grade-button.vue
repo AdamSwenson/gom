@@ -13,6 +13,7 @@
                             v-for="ga in gradeAssignments"
                             :key="ga.displayValue"
                             v-bind:value="ga"
+                            v-bind:data="ga.calcValue"
                     >{{ ga.displayValue  }}</option>
 
                 </select>
@@ -107,7 +108,6 @@
              * @returns {{}}
              */
             gradeAssignments: function () {
-
                 return GradeAssignment.defaults;
                 //this should be reenabled if we allow this component
                 //to be used for entire exams

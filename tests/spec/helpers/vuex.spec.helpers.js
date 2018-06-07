@@ -50,12 +50,12 @@ export const factories = {
         return e;
     },
     
-    itemScoreFactory: (exam, item, student)=>{
+    itemScoreFactory: (exam, item, student, score)=>{
         let e = new ItemScore();
         e.itemId =  _.isUndefined(item) ? faker.random.number() : item.id;
         e.examId =  _.isUndefined(exam) ? faker.random.number() : item.id;
         e.studentId =  _.isUndefined(student) ? faker.random.number() : student.id;
-        e.score = faker.random.number();
+        e.score = _.isUndefined(score) ? faker.random.number(): score;
         e.text = faker.company.bs();
         return e;
     },

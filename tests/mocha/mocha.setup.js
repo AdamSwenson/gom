@@ -1,11 +1,22 @@
 
+
+/*
+Common libraries for tests which don't need to be
+compiled by webpack.
+Stuff which needs compiling should be defined as globals
+in injectglobals.js. Tests needing it should require helpers/injectglobals.
+*/
+
 require('jsdom-global')();
 
 global.expect = require('expect');
 global._ = require( 'lodash' );
 global.vue = require('vue');
+global.Vuex = require('Vuex');
 global.sinon = require( 'sinon' );
 global.jQuery = require('jquery');
+global.moxios = require('moxios');
+
 /**
  * API Methods
 

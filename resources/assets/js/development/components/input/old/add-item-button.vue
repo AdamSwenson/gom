@@ -1,6 +1,5 @@
 <template>
-    <button id="add-item-button"
-            class="btn btn-info"
+    <button class="add-item-button btn btn-info"
             v-on:click="addItem"
     >
         <span class="glyphicon glyphicon-plus"></span>
@@ -11,8 +10,8 @@
 
 </style>
 <script>
-    import * as aTypes from '../../../store/action-types';
-    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as mTypes from '../../../../store/mutation-types';
 
     export default {
         props: ['item', 'index'],

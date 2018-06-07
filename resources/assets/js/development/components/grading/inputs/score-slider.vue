@@ -2,7 +2,7 @@
     <input v-bind:id="sliderId"
            type="number"
            class="score-slider slider"
-           min="0"
+           v-bind:min="minScore"
            v-bind:max="maxScore"
            v-model="score"
     >
@@ -43,9 +43,12 @@
 
         data: function () {
             return {
-                slider: false,
+                minScore : 0,
 
                 numberLabels: sliderSettings.valenceLabels.length,
+
+                //This holds the slider object when it is created
+                slider: false,
 
                 defaults: {}
             }
@@ -79,7 +82,6 @@
 
             valenceCutoffs: function () {
                 if ( _.isUndefined( this.item ) || _.isUndefined( this.item.maxScore ) ) return [];
-                //sliderSettings.valenceCutoffs;
 
                 return makeCutoffsFromMaxScore( this.item.maxScore, this.numberLabels );
             },
@@ -94,7 +96,6 @@
                     // id: Counter()
                 }
             },
-
 
             /**
              * Returns the string id of the slider element

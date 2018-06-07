@@ -1,4 +1,4 @@
-import { factories } from "../../spec/helpers/vuex.spec.helpers";
+// import { factories } from "../../spec/helpers/vuex.spec.helpers";
 
 const faker = require( 'faker' );
 import GradeAssignment from "../../../resources/assets/js/models/GradeAssignment";
@@ -137,12 +137,12 @@ export const itemFactory = ( index ) => {
     return e;
 };
 
-export const itemScoreFactory = ( exam, item, student ) => {
+export const itemScoreFactory = ( exam, item, student, score ) => {
     let e = new ItemScore();
     e.itemId = _.isUndefined( item ) ? faker.random.number() : item.id;
     e.examId = _.isUndefined( exam ) ? faker.random.number() : item.id;
     e.studentId = _.isUndefined( student ) ? faker.random.number() : student.id;
-    e.score = faker.random.number();
+    e.score = _.isUndefined(score) ? faker.random.number(): score;
     e.text = faker.company.bs();
     return e;
 };

@@ -1,8 +1,7 @@
-
 //The name of the tested component
 var compName = 'visibility-control';
 //The path to the tested component
-var Component = require('../../../../resources/assets/js/development/components/input/visibility-control.vue');
+var Component = require( '../../../../resources/assets/js/development/components/input/visibility-control.vue' );
 
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
@@ -32,8 +31,7 @@ localVue.use( Vuex )
 //tested stuff
 
 
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
@@ -41,12 +39,26 @@ describe(  compName , () => {
     let mutations;
     let store;
     let wrapper;
+    let item;
+    let spy;
+    let spy2;
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
+        item = factories.itemFactory();
 
-        getters = {   };
+        getters = {
+            [ gTypes.getItemBySerialNumber ]: ( v ) => ( v ) => {
+                return item;
+            }
+        };
 
-        mutations = {};
+        spy = sinon.spy()
+        spy2 = sinon.spy()
+
+        mutations = {
+            toggleChildrenVisibility: spy,
+            toggleExamChildrenVisibility: spy2
+        };
 
         store = new Vuex.Store( {
             getters,
@@ -57,6 +69,8 @@ describe(  compName , () => {
             store, localVue
         } );
 
+        wrapper.vm.serialNumber = item.serialNumber;
+
     } );
 
 
@@ -65,10 +79,17 @@ describe(  compName , () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( " methods", () => {
+        describe( 'togglePublic ', () => {
+
+            it( 'awaits tests') ;
+            // , () => {
+            //     let expectedAction = aTypes.toggleItemPublic;
+            //     let expectedPl = Payload.factory( { serialNumber: item.serialNumber } );
+            // } );
+        } );
+    } );
 
 
-});
+} );

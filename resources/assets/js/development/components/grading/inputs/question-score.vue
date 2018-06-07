@@ -1,14 +1,10 @@
+
+<!-- This displays the score for the item -->
+
 <template>
 
     <div class="question-score questionScoreForm field has-addons">
         <label class="label questionScoreLabel"></label>
-
-        <!--<letter-grade-button-->
-        <!--:item="item"-->
-        <!--:score="score"-->
-        <!--v-on:selected="handleLetterGradeSelect"-->
-        <!--&gt;</letter-grade-button>-->
-
 
         <p class="control">
             <input v-model="score" lazy
@@ -62,21 +58,6 @@
 
         data: function () {
             return {
-                // /**
-                //  * The string id of the question score field for this question.
-                //  * Does not contain '#'
-                //  * @returns {string}
-                //  */
-                // scoreFieldIdString: "questionScore" + this.questionNumber,
-                //
-                // /**
-                //  * The string id of the max score field for
-                //  * this question.
-                //  * Does not contain '#'
-                //  * @returns {string}
-                //  */
-                // maxScoreFieldIdString: "maxScore" + this.questionNumber,
-
             };
         },
 
@@ -100,17 +81,13 @@
                 return calculateGradeAssignmentFromItemScore( this.score, this.maxScore );
             },
 
-
             minScore: function () {
                 return 0;
             },
 
-
-
             scoreObject: function () {
                 return this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
             },
-
 
         },
 

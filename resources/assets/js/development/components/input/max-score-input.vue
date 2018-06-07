@@ -1,5 +1,4 @@
 <template>
-    <!-- max grade -->
 
     <div class="max-score-input">
         <div class="field">

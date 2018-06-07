@@ -28,17 +28,17 @@ Vue.component( 'tools-dashboard', toolsDashboard );
 
 
 //Item card and parts
-import depthControl from './components/input/buttons.depth-control.component.vue'
-Vue.component( 'depth-control', depthControl );
+// import depthControl from './components/input/buttons.depth-control.component.vue'
+// Vue.component( 'depth-control', depthControl );
 
 // import maxScore from './components/input/max-score-input.vue'
 // Vue.component( 'max-score', maxScore );
 
 import itemNumber from './components/field.item-number.component.vue'
 Vue.component( 'item-number', itemNumber );
-
-import itemAddButton from './components/input/buttons.item.add.component.vue'
-Vue.component( 'item-add-button', itemAddButton );
+//
+// import itemAddButton from './components/input/new-item-button.vue'
+// Vue.component( 'item-add-button', itemAddButton );
 
 import valenceButton from './components/setup/comment/valence-buttons.vue'
 Vue.component( 'valence-button', valenceButton );
