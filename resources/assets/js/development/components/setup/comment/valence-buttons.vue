@@ -21,9 +21,13 @@
     import Comment from '../../../../models/Comment';
 
     export default{
+        props: ['displayedValence'],
 
         data: function () {
             return {
+                events: {
+                    changeValence : 'please-change-valence'
+                },
                 valence: 'stock'
             }
         },
@@ -33,10 +37,10 @@
             valences: function () {
                 return Comment.valences;
             },
-
-            displayedValence: function () {
-                return this.$parent.displayedValence;
-            }
+            //
+            // displayedValence: function () {
+            //     return this.$parent.displayedValence;
+            // }
         },
 
         methods: {
@@ -56,7 +60,7 @@
              */
             setValence: function ( valence ) {
                 this.valence = valence;
-              this.$emit('please-change-valence', valence);
+              this.$emit(this.events.changeValence, valence);
                 //  this.$parent.changeDisplayedValence( valence );
             }
 

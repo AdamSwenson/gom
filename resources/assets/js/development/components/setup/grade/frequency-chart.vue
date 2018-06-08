@@ -1,6 +1,6 @@
 <template>
 
-    <div id="gradeFreqChart"></div>
+    <div id="gradeFreqChart" class="frequency-chart"></div>
 
 </template>
 
@@ -24,7 +24,6 @@
         data: function () {
             return {
                 chartDivId: 'gradeFreqChart',
-
 
                 chartOptions : {
                     chart: { title: 'Grade Distribution' },

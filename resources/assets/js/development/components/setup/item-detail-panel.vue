@@ -1,6 +1,6 @@
 <template>
     <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
-    <div class="item-settings-detail-component">
+    <div class="item-detail-panel">
 
         <max-score :item="item"></max-score>
 
@@ -27,7 +27,7 @@
 
 <style lang="scss">
 
-    .item-settings-detail-component {
+    .item-detail-panel {
 
     }
 

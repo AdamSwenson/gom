@@ -1,6 +1,6 @@
 <template>
 
-    <div id="term-input"
+    <div class="term-input"
     >
         <input-and-selector
                 :options="terms"

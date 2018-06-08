@@ -1,5 +1,5 @@
 <template>
-    <div id="family-input">
+    <div class="family-input">
 
         <input-and-selector :item="exam"
                             item-prop="family"

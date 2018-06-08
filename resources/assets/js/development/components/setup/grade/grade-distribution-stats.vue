@@ -62,32 +62,6 @@
                 return this.$store.getters.getListOfGradeValues;
             },
 
-            examMaxScore: function () {
-
-            },
-
-            totalGraded: function () {
-
-            },
-
-            averageGrade: function () {
-
-            },
-            averageGradeLetter: function () {
-
-            },
-
-            medianGrade: function () {
-
-            },
-
-            medianGradeLetter: function () {
-
-            },
-
-            standardDeviation: function () {
-
-            }
 
         },
 

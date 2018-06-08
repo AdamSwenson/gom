@@ -84,14 +84,17 @@ describe( compName, () => {
 
     describe( " methods ", () => {
         describe( 'processFile', () => {
-            it( 'awaits tests' )
+            it.skip( 'loads file and calls expected mutation', (  ) => {
+
+            } );
 
         } );
         
         describe('notifyParentImportComplete', (  ) => {
             it('emits expected event', (  ) => {
                 wrapper.vm.notifyParentImportComplete();
-                expect(wrapper.emitted[wrapper.vm.events.inputComplete]).toBeTruthy()
+                // window.console.log( 'import-students-control.test', '', 96, wrapper.emitted());
+                expect(wrapper.emitted()[wrapper.vm.events.importComplete]).toBeTruthy()
             })
 
         })

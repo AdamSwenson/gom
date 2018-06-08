@@ -1,5 +1,5 @@
 <template>
-    <div id="year-input">
+    <div class="year-input">
 
         <input-and-selector
                 :item="exam"

@@ -1,7 +1,7 @@
 
 
 <template>
-    <div id="description-input">
+    <div class="description-input">
 
         <input-and-selector :item="exam"
                             item-prop="description"

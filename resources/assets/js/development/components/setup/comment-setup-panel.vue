@@ -29,6 +29,7 @@
         </div>
 
         <valence-buttons
+                :displayed-valence="displayedValence"
                 :serial-number="serialNumber"
                 :is-exam="isExam"
                 v-on:please-change-valence="changeDisplayedValence"

@@ -1,5 +1,5 @@
 <template>
-    <div id="public-name-input">
+    <div class="public-name-input">
 
         <input-and-selector :item="exam"
                             item-prop="publicName"
@@ -48,15 +48,6 @@
         },
 
         methods: {
-            handleValueChange: function ( v ) {
-                // window.console.log( 'year-input', 'handleValueChange', 76, v );
-                // this.$store.commit( mTypes.updateItem, Payload.factory( {
-                //     index: 0,
-                //     updateProp: 'year',
-                //     updateVal: v
-                // } ) );
-
-            }
         },
 
         directives: {},

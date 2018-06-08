@@ -39,9 +39,9 @@ Vue.component( 'item-number', itemNumber );
 //
 // import itemAddButton from './components/input/new-item-button.vue'
 // Vue.component( 'item-add-button', itemAddButton );
-
-import valenceButton from './components/setup/comment/valence-buttons.vue'
-Vue.component( 'valence-button', valenceButton );
+//
+// import valenceButton from './components/setup/comment/valence-buttons.vue'
+// Vue.component( 'valence-button', valenceButton );
 
 import deleteButton from './components/input/item-delete-button.vue'
 Vue.component( 'delete-item-button', deleteButton );

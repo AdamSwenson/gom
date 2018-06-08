@@ -1,5 +1,5 @@
 <template>
-    <div class="cut-off-field">
+    <div class="cutoff-field">
 
         <div class="field has-addons">
             <p class="control">
@@ -57,7 +57,6 @@
         asyncComputed: {},
 
         computed: {
-
 
             letterGrade: function () {
                 return this.grade ? this.grade.displayValue : '';

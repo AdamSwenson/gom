@@ -5,46 +5,44 @@ var compName = 'stat-row';
 var Component = require('../../../../../resources/assets/js/development/components/setup/grade/stat-row.vue');
 
 
-import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
 
-//helpers
-// import { see } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
+import GradeAssignment from '../../../../../resources/assets/js/models/GradeAssignment';
+
+
+require( '../../../injectglobals' );
+import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
+describe( compName, () => {
 
-//tested stuff
-
-
-
-describe(  compName , () => {
-
-    let componentDivIdentifier = '#' + compName;
+    let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;
     let store;
     let wrapper;
 
-    beforeEach( (  ) => {
+    let listOfValues, showLetter, grade;
+    let payload, test;
 
-        getters = {   };
+    beforeEach( () => {
+
+        listOfValues = [];
+        for (let i = 1; i < 100; i++) {
+            listOfValues.push( i );
+        }
+        listOfValues = _.shuffle( listOfValues );
+
+        showLetter = 'Q';
+        grade = new GradeAssignment();
+
+        getters = {
+            [ gTypes.getGradeAssignmentForScore ]: () => ()=> grade
+        };
 
         mutations = {};
 
@@ -54,7 +52,8 @@ describe(  compName , () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue,
+            propsData: { listOfValues, showLetter }
         } );
 
     } );
@@ -62,13 +61,9 @@ describe(  compName , () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
 
 
 });

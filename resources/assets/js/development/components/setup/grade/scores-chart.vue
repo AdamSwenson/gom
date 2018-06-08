@@ -1,5 +1,5 @@
 <template>
-    <div id="scoreChart"></div>
+    <div id="scoreChart" class="scores-chart"></div>
 </template>
 
 <style lang="scss">
@@ -7,7 +7,7 @@
 </style>
 
 <script>
-    import { GoogleCharts } from 'google-charts';
+    import{ GoogleCharts } from 'google-charts';
     import * as gTypes from '../../../../store/getter-types';
 
     export default {

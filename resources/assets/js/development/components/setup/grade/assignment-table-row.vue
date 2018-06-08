@@ -63,6 +63,8 @@
             isInconsistent: function () {
                 let inconsistentList = this.$store.getters[ gTypes.getInconsistentCutOffs ];
                 if ( ! _.isUndefined(inconsistentList) && inconsistentList.indexOf( this.grade ) >= 0 ) return true;
+
+                return false;
             },
 
             letterGrade: function () {

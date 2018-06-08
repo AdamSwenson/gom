@@ -1,5 +1,5 @@
 <template>
-    <tr>
+    <tr class="stat-row">
         <th><slot name="label"></slot></th>
         <td><slot name="value"></slot></td>
     </tr>
