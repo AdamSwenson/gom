@@ -4,71 +4,99 @@ var compName = 'student-table-row';
 //The path to the tested component
 var Component = require('../../../../../resources/assets/js/development/components/setup/student/student-table-row.vue');
 
+import Payload from '../../../../../resources/assets/js/models/Payload';
+
+require( '../../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
-
-//tested stuff
-
-
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
+    let actions;
     let getters;
     let mutations;
     let store;
+    let event;
+
     let wrapper;
 
-    beforeEach( (  ) => {
+    let item, exam, student, students, kumis;
+    let sorter;
 
-        getters = {   };
+    let column, sortedBy;
 
-        mutations = {};
+    beforeEach( () => {
+        kumis = factories.makeKumis(2);
+        student = factories.studentFactory();
+
+        getters = {
+            getKumisToFilterStudentsBy: (  ) => [] //kumis
+        };
+        mutations = {
+            toggleStudent: sinon.spy(),
+            updateStudentInRoster: sinon.spy()
+        }
 
         store = new Vuex.Store( {
-            getters,
-            mutations
+                getters, mutations
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, propsData: { student }
         } );
+
+        // wrapper.setProps( { column, sortedBy } );
 
     } );
 
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
+
+    describe( 'computed properties', function () {
+        // expect(mutations.updateStudentInRoster.calledOnce).toBe(true);
+
+    } );
     
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
+    describe( " methods ", () => {
+
+        describe( "handleRowSelection", () => {
+
+            it( "calls the mutation to toggle selected state", () => {
+
+                wrapper.vm.handleRowSelection();
+                let pl = Payload.factory({
+                    obj: student,
+                    mutateSilently: true
+                });
+
+                //check
+                expect(mutations.toggleStudent.calledOnce).toBe(true);
+                expect(mutations.toggleStudent.args[0][1]).toMatchObject(pl);
+
+            } );
+
+            it( "emits an event to notify any listening parent", () => {
+                wrapper.vm.handleRowSelection();
+                expect( wrapper.emitted()[ wrapper.vm.events.rowToggle ] ).toBeTruthy();
+            } );
+
+            it("fires when the appropriate cell is clicked", (  ) => {
+               wrapper.find('td.' + wrapper.vm.classes.rowSelectionCell).trigger('click');
+                expect(mutations.toggleStudent.calledOnce).toBe(true);
+                // expect(mutations.toggleStudent.args[0][1]).toMatchObject(pl);
+
+            });
+        } );
+
     });
-
-
 });

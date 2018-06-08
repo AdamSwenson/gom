@@ -1,5 +1,5 @@
 <template>
-    <div id="student-table-component">
+    <div class="student-table">
         <div id="student-table-area"
              class="panel-block"
         >
@@ -66,7 +66,6 @@
         props: [ 'students' ],
 
         components: {
-//            'auto-close-modal': autoCloseModal,
             'student-table-row': studentTableRow,
             'header-field': headerField
         },
@@ -130,6 +129,10 @@
             },
 
 
+            /**
+             * The student objects in sorted order as determined
+             * by the value of sortedBy and sortAsc
+             */
             sortedStudents: function () {
                 var me = this;
                 //sort the students by the given property
@@ -175,20 +178,6 @@
             },
 
 
-            // handleRowSelectionEvent: function ( { obj, isSelected } ) {
-            //     window.console.log( 'student-table', 'handleRowSelectionEvent', 136, obj, isSelected );
-            //     if ( isSelected ) {
-            //         //The row is newly selected
-            //         //Add the student to selectedStudents
-            //         this.$store.commit( 'selectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
-            //     }
-            //     else {
-            //         //it was already selected, so remove it
-            //         this.$store.commit( 'deselectStudent', Payload.factory( { obj: obj, mutateSilently: true } ) );
-            //     }
-            // },
-
-
             toggleSortAscending: function ( shortText ) {
                 window.console.log( 'student-table', 'toggleSortAscending', 156, shortText );
                 //toggle sort ascending
@@ -196,7 +185,12 @@
             },
 
             /**
-             * Reorders rows based on the property passed in
+             * Updates the property by which rows should be sorted.
+             * Since sortedStudents is computed, this effectively
+             * calls for the reordering of rows based on the property
+             * passed in.
+             * This is primarily used as the handler for events
+             * emitted by the column headers.
              * @param
              */
             sortRosterBy: function ( shortText ) {

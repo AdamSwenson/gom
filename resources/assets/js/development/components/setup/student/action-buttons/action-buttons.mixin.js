@@ -44,7 +44,7 @@ module.exports = {
          * payload.
          */
         selectedStudents: function () {
-            return this.$store.getters.getSelectedStudents;
+            return this.$store.getters[nggTypes.getSelectedStudents];
         },
 
 
@@ -60,8 +60,7 @@ module.exports = {
          */
         handleClick: function () {
             if ( this.isOperationValid ) {
-                window.console.log( 'action-buttons.mixin', 'handleClick', 62, this.button.id);
-
+                window.console.log( 'action-buttons.mixin', 'handleClick', 62);
 
                 //open the kumi selector
                 if ( this.requiresKumiSelector ) this.$store.commit( 'toggleKumiSelectVisibility' );
@@ -101,14 +100,10 @@ module.exports = {
          */
         handleConfirmation: function () {
             let me = this;
-            //close modal
-            // this.isConfirmationModalVisible = false;
-
             this.$store.dispatch( this.actionName, this.payload )
                 .then( function () {
                     me.resetDisplay();
                 } );
-
         },
 
         /**

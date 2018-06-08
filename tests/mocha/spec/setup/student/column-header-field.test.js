@@ -1,74 +1,82 @@
-
 //The name of the tested component
 var compName = 'column-header-field';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/student/column-header-field.vue');
+var Component = require( '../../../../../resources/assets/js/development/components/setup/student/column-header-field.vue' );
 
+
+require( '../../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
-
-//tested stuff
-
-
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
+    let actions;
     let getters;
     let mutations;
     let store;
+    let event;
+
     let wrapper;
 
-    beforeEach( (  ) => {
+    let item, exam, student, students;
+    let sorter;
 
-        getters = {   };
+    let column, sortedBy;
 
-        mutations = {};
+    beforeEach( () => {
 
         store = new Vuex.Store( {
-            getters,
-            mutations
+            //    getters,
         } );
 
+        column = {
+            shortText: 'dog',
+            longText: 'dog food',
+            studentProperty: 'name',
+        };
+        sortedBy = 'name';
+
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, propsData : { column, sortedBy }
         } );
+
+        // wrapper.setProps( { column, sortedBy } );
 
     } );
 
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( " methods ", () => {
+        it( 'sortRosterBy emits expected event', () => {
+            wrapper.trigger( 'click' );
+            expect( wrapper.emitted()[wrapper.vm.events.sortEvent][0][0] ).toBe(column.shortText);
+        } );
+
+        it( 'toggleSortAscending emits expected event when column.studentProp = sortedBy', () => {
+            wrapper.vm.toggleSortAscending( );
+            expect( wrapper.emitted()[wrapper.vm.events.toggleEvent][0][0] ).toBe(column.shortText);
+        } );
+
+        it( 'toggleSortAscending does not emit an event when column.studentProp != sortedBy', () => {
+            sortedBy = 'tacos';
+            wrapper = shallow( Component, {
+                store, localVue, propsData : { column, sortedBy }
+            } );
+            wrapper.vm.toggleSortAscending(  );
+            expect( wrapper.emitted()[wrapper.vm.events.toggleEvent] ).toBeFalsy();
+        } );
+    } );
 
 
-});
+} );

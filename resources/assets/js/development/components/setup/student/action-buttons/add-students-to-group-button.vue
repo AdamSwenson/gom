@@ -14,7 +14,7 @@
                 button: {
                     class: ' student-move-button is-outlined  is-primary',
                     label: 'Add to group',
-                    id: 'student-move-button'
+                    id: 'add-students-to-group-button'
                 },
 
                 errorModalText: "Please select 1 or more students ",

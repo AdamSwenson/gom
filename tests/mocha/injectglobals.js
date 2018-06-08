@@ -15,5 +15,8 @@ global.ngaTypes = require('../../resources/assets/js/store/new-grading-action-ty
 global.mTypes = require("../../resources/assets/js/store/mutation-types");
 global.ngmTypes = require("../../resources/assets/js/store/new-grading-mutation-types");
 
-
+//models
 global.Payload = require('../../resources/assets/js/models/Payload');
+global.Exam = require('../../resources/assets/js/models/Exam');
+global.Student = require('../../resources/assets/js/models/Student');
+global.Item = require('../../resources/assets/js/models/Item');

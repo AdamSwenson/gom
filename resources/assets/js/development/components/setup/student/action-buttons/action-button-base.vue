@@ -12,18 +12,5 @@
 </style>
 
 <script>
-    // import AutoClosingModal from "../../../modals/auto-closing-modal";
-    // import ConfirmationModal from "../../../modals/confirmation-modal";
-    //
-    // export default {
-    //     components: {
-    //         ConfirmationModal,
-    //         AutoClosingModal
-    //     },
 
-        // mixins : [mixin]
-
-
-
-    // }
 </script>

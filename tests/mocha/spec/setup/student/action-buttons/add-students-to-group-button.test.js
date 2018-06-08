@@ -5,52 +5,55 @@ var compName = 'add-students-to-group-button';
 var Component = require('../../../../../../resources/assets/js/development/components/setup/student/action-buttons/add-students-to-group-button.vue');
 
 
+require( '../../../../injectglobals' );
+import PayloadModal from "../../../../../../resources/assets/js/models/PayloadModal";
+
+
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../../helpers/assertions';
-// import { factories } from '../../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
+describe( compName, () => {
 
-//tested stuff
+    let componentDivIdentifier = '#add-students-to-group-button';
 
-
-
-describe(  compName , () => {
-
-    let componentDivIdentifier = '#student-move-button';
-
-    let getters;
-    let mutations;
+    let actions, getters, mutations;
     let store;
     let wrapper;
 
-    beforeEach( (  ) => {
+    let studentGetterStub;
 
-        getters = {   };
+    let students, kumis;
 
-        mutations = {};
+    let actionName = 'addStudentsToKumis';
+
+    beforeEach( () => {
+        studentGetterStub = sinon.stub();
+        students = [ factories.studentFactory() ];
+        studentGetterStub.returns( students );
+        kumis = factories.makeKumis(2);
+
+        getters = {
+            [ nggTypes.getSelectedStudents ]: () => students,
+            'getSelectedKumis': (  ) => kumis
+
+        };
+
+        mutations = {
+            toggleConfirmationModal: sinon.spy(),
+            toggleErrorModal: sinon.spy(),
+            clearSelectedStudents: sinon.spy(),
+            clearSelectedKumis: sinon.spy()
+        };
+
+        actions = {
+            [ actionName ]: sinon.spy()
+        }
 
         store = new Vuex.Store( {
-            getters,
-            mutations
+            actions, getters, mutations
         } );
 
         wrapper = shallow( Component, {
@@ -61,14 +64,50 @@ describe(  compName , () => {
 
 
     describe( " loads into expected default state for testing ", () => {
-        it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+        it( 'displays the expected component div on first load (actions are tested in mixin)', () => {
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( " when button is clicked ", () => {
+        it( 'does not display the confirmation modal', () => {
+            wrapper.trigger( 'click' );
+            //check
+            expect( mutations.toggleConfirmationModal.callCount ).toBe( 0 );
+        } );
 
 
-});
+        it( ' dispatches the appropriate action', () => {
+            //call
+            wrapper.trigger( 'click' );
+            expect( actions[ actionName ].callCount ).toBe( 1 );
+        } );
+    } );
+
+    describe( " when in an error state ", () => {
+        it( " displays the correct text in the error modal", () => {
+            //set the getter to return an empty list
+            getters[ nggTypes.getSelectedStudents ] = () => [];
+
+            store = new Vuex.Store( {
+                actions, getters, mutations
+            } );
+
+            wrapper = shallow( Component, {
+                store, localVue
+            } );
+
+            //call
+            wrapper.trigger( 'click' );
+
+            //check
+            expect( mutations.toggleErrorModal.callCount ).toBe( 1 );
+            let pl = PayloadModal.factory( {
+                type: 'error',
+                text: wrapper.vm.errorModalText
+            } );
+            expect( mutations.toggleErrorModal.args[ 0 ][ 1 ] ).toMatchObject( pl );
+        } );
+    } );
+
+} );

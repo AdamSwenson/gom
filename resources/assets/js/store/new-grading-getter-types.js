@@ -168,6 +168,14 @@ export const getItemScoreObject =  'getItemScoreObject';
 export const getTotalScoreForStudent = 'getTotalScoreForStudent';
 export const getGradedStudentIds = 'getGradedStudentIds';
 
+
+
+/* ================================================================
+   ================== STUDENTS        =====================
+   ================================================================ */
+export const getSelectedStudents = 'getSelectedStudents';
+
+
 /* ================================================================
    ================== TIMES        =====================
    ================================================================ */

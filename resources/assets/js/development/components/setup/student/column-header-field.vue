@@ -1,6 +1,6 @@
 <template>
 
-    <a class="header-field"
+    <a class="column-header-field"
        v-on:click="sortRosterBy"
        v-bind:class="styling"
     >
@@ -13,7 +13,7 @@
 </template>
 
 <style lang="scss">
-    .header-field {
+    .column-header-field {
 
     }
 </style>
@@ -29,6 +29,10 @@
 
         data: function () {
             return {
+                events: {
+                    sortEvent : 'sort-roster-by',
+                    toggleEvent: 'toggle-asc-clicked'
+                },
                 icons: {
                     defaultSort: "",
 //                    defaultSort: "fa fa-sort",
@@ -67,17 +71,6 @@
                 return this.styles.default;
             },
 
-//
-//            sortIcon: function () {
-//                //if it isn't the selected column, show the default
-//                if ( this.studentProperty !== this.$parent.sortedBy ) return this.icons.defaultSort;
-//
-//                //we are on the selected column
-//                //so we decide whether to show the up or down icon
-//                if ( this.sortAsc ) return this.icons.sortAsc;
-//                return this.icons.sortDesc;
-//            },
-
             studentProperty: function () {
                 return this.column.studentProperty;
             },
@@ -86,16 +79,18 @@
         methods: {
             sortRosterBy: function () {
                 window.console.log( 'column-header-field', 'sortRosterBy', 80, this.column.shortText );
-                this.$emit( 'sort-roster-by', this.column.shortText );
+                this.$emit( this.events.sortEvent, this.column.shortText );
             },
 
             toggleSortAscending: function () {
                 //don't react to clicks unless the column is selected and an icon is displayed
-                if ( this.studentProperty !== this.$parent.sortedBy ) return true;
+                // if ( this.studentProperty !== this.$parent.sortedBy ) return true;
+
+                if ( this.studentProperty !== this.sortedBy ) return true;
 
                 window.console.log( 'column-header-field', 'toggleSortAscending', 85, this.column.shortText );
                 this.sortAsc = !this.sortAsc;
-                this.$emit( 'toggle-asc-clicked', this.column.shortText );
+                this.$emit( this.events.toggleEvent, this.column.shortText );
             }
         }
     }

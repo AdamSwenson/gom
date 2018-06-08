@@ -1,11 +1,15 @@
 <template>
 
-    <tr class="student-row"
+    <tr class="student-table-row"
         v-bind:class="rowStyling"
         v-show="isRowVisible"
     >
 
-        <td v-on:click="handleRowSelection">
+        <td v-on:click="handleRowSelection"
+            class="row-selection-cell"
+        >
+
+            <!--v-bind:class="rowSelectionCell"-->
             <div class="field">
                 <span class="icon">
                     <i class="fa" v-bind:class="icon"></i>
@@ -88,7 +92,7 @@
 </template>
 
 <style lang="scss">
-    .student-row {
+    .student-table-row {
         input {
             border: none;
         }
@@ -115,6 +119,12 @@
 
         data: function () {
             return {
+                classes: {
+                  rowSelectionCell : 'row-selection-cell'
+                },
+                events: {
+                  rowToggle : 'row-selection-event'
+                },
                 defaults: {
                     firstName: '-',
                     lastName: '-',
@@ -208,10 +218,6 @@
 
             },
 
-            selectedStudents : function (  ) {
-                return this.$store.getters.getSelectedStudents;
-            },
-
             isSelected: function(){
                 if(_.isUndefined(this.selectedStudents)) return false;
                 return this.selectedStudents.indexOf(this.student) > -1;
@@ -240,6 +246,11 @@
              */
             rowStyling: function () {
                 if ( this.isSelected ) return 'is-selected';
+            },
+
+
+            selectedStudents : function (  ) {
+                return this.$store.getters.getSelectedStudents;
             },
 
             /**
@@ -281,7 +292,7 @@
                 }));
 
                 //let any interested parent know
-                this.$emit( 'row-selection-event', {
+                this.$emit( this.events.rowToggle, {
                     obj: this.student,
                     isSelected: this.isSelected
                 } );

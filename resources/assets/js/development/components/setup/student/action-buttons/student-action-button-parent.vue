@@ -1,5 +1,6 @@
 <template>
     <div id="student-action-buttons"
+         class="student-action-button-parent"
          v-bind:class="styling"
     >
         <div id="confirmationButtonsArea"

@@ -116,8 +116,8 @@
     import KumiSelector from './kumi/kumi-selector.vue';
     import KumiTabs from './kumi/kumi-tabs.vue';
 
-    import StudentTable from './/student/student-table.vue';
-    import StudentActionButtons from './student/student-action-buttons.vue';
+    import StudentTable from './student/student-table.vue';
+    // import StudentActionButtons from './student/old/student-action-buttons.vue';
     //File importing stuff
     import FileImporter from '../../../store/modules/roster/studentFileImporter';
     import ImportStudentsControl from "./student/import-students-control.vue";
@@ -144,7 +144,7 @@
             'kumi-name': KumiNameField,
             'kumi-selector': KumiSelector,
             'student-table': StudentTable,
-            'student-action-buttons': StudentActionButtons,
+            // 'student-action-buttons': StudentActionButtons,
             'kumi-tabs': KumiTabs
         },
 
