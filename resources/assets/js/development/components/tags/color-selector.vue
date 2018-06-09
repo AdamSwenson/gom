@@ -19,7 +19,7 @@
 
 <script>
 
-    import Tag from '../../../../models/Tag';
+    import Tag from '../../../models/Tag';
 
     export default {
 
@@ -29,6 +29,9 @@
 
         data: function () {
             return {
+                events: {
+                  selectionEvent : 'color-selected'
+                },
                 selectedStyle : '',
                 defaults: {}
             }
@@ -55,7 +58,7 @@
                 let key = Tag.getStyleKey(style);
 //                window.console.log( 'color-selector', 'handleSelection', 49, style , key);
 
-                this.$emit( 'color-selected', key );
+                this.$emit( this.events.selectionEvent, key );
             }
         },
 

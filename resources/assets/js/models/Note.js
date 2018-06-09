@@ -54,16 +54,16 @@ export default class Note extends IModel {
         return style;
     }
 
-    //
-    // static priorityStyles() {
-    //     return {
-    //         0: 'is-dark',
-    //         1: 'is-primary',
-    //         2: 'is-info',
-    //         3: 'is-warning',
-    //         4: 'is-danger'
-    //     };
-    // }
+
+    static priorityStyles() {
+        return {
+            0: 'is-dark',
+            1: 'is-primary',
+            2: 'is-info',
+            3: 'is-warning',
+            4: 'is-danger'
+        };
+    }
 
     /**
      * This is used by the api module to determine what

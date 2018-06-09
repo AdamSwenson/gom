@@ -23,7 +23,7 @@
             <div class="field">
                 <label class="label">Note</label>
                 <div class="control">
-                <textarea class="textarea"
+                <textarea class="note-text textarea"
                           rows="3"
                           v-bind:placeholder="placeholders.noteText"
                           v-model="text"></textarea>
@@ -32,18 +32,7 @@
             </div>
 
         </div>
-        <!--<div class="field">-->
-        <!--<div class="control">-->
-        <!--<button class="button is-outlined"-->
-        <!--v-on:click="handleSave">Save-->
-        <!--</button>-->
-        <!--</div>-->
-        <!--<div class="control">-->
-        <!--<button v-on:click="handleClear"-->
-        <!--class="button is-outlined">Clear-->
-        <!--</button>-->
-        <!--</div>-->
-        <!--</div>-->
+
 
         <div class=" message "
              v-else
@@ -51,13 +40,16 @@
         >
             <div class="message-header">
                 <p>{{ name }}</p>
-                <button class="delete" v-on:click="handleDeleteClick"></button>
+                <button class="delete delete-note"
+                        v-on:click="handleDeleteClick"
+                ></button>
             </div>
 
             <div class="message-body">
                 <div class="note-text-display">
                     {{ text }}
                 </div>
+
                 <div class="level timestampArea">
                     <!-- Left side -->
                     <div class="level-left">
@@ -67,7 +59,7 @@
                                 <p class="heading">Created: {{ creationTimestamp }}</p>
 
                                 <!--<p class="heading">Created: {{ creationTimestamp }}  |  Updated: {{ updatedTimestamp-->
-                                    <!--}}</p>-->
+                                <!--}}</p>-->
 
                             </div>
                         </div>
@@ -101,7 +93,7 @@
 
     export default {
 
-        props: [ 'serialNumber', 'object' ],
+        props: [ 'serialNumber', 'object', 'useCentralStore' ],
 
         components: {},
 
@@ -116,6 +108,7 @@
 //                    4: 'is-danger'
 //                },
 
+                //whether we are able to edit properties of the note
                 isEditable: false,
 
                 noteObject: false,
@@ -132,7 +125,7 @@
         computed: {
 
             creationTimestamp: function () {
-                if(this.note.created_at) return this.note.created_at;
+                if ( this.note.created_at ) return this.note.created_at;
                 return this.note.createdAt;
             },
 
@@ -157,8 +150,6 @@
                             me.$emit( 'note-updated' );
                         } );
                     }
-
-
                 }
             },
 
@@ -168,12 +159,12 @@
             note: function () {
                 //if its in the noteObject spot, it is an instance of Note
                 //so we can just return it
-                if(this.noteObject) return this.noteObject;
+                if ( this.noteObject ) return this.noteObject;
 
                 //However, if we loaded the notes directly, it may just be a json returned from the
                 //server. So we take the object and make a Note which gets stored in noteObject
                 if ( this.object ) {
-                    if(_.isUndefined(this.object.kind)) this.noteObject = Note.factory(this.object);
+                    if ( _.isUndefined( this.object.kind ) ) this.noteObject = Note.factory( this.object );
 //                    if(! this.object instanceof Note) this.object = Note.factory(this.object);
                     return this.noteObject;
                 } else {
@@ -266,13 +257,10 @@
             },
 
             updatedTimestamp: function () {
-                if(this.note.updated_at) return this.note.updated_at;
+                if ( this.note.updated_at ) return this.note.updated_at;
                 return this.note.updatedAt;
             },
 
-            useCentralStore: function () {
-                return this.$parent.useCentralStore;
-            },
 
         },
 

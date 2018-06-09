@@ -58,7 +58,7 @@
         disassociateTagRequest
     } from '../../../../api/requests/tagRequests';
 
-    import tagMenu from '../../menus/tags-menu.vue';
+    import tagMenu from '../tags-menu.vue';
     import tagObject from './tag-object.vue';
 
     /**

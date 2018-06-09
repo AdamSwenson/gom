@@ -7,7 +7,7 @@ import panelItemDetail from './components/setup/item-detail-panel.vue'
 
 import panelNotes from './components/setup/notes-panel.vue';
 import panelStats from './components/setup/stats-panel.vue';
-import panelTags from './components/setup/tags-panel.vue'
+import panelTags from './components/tags/old/tags-panel.vue'
 
 Vue.component( 'panel-comments', panelComments );
 Vue.component( 'panel-notes', panelNotes );

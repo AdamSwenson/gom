@@ -63,9 +63,9 @@ Vue.component( 'item-card', itemCard );
 // Vue.component( 'existing-items-menu', itemList )
 
 
-//Tags
-import tagDisplay from './components/setup/tag/tag-display.vue';
-Vue.component( 'tag-display', tagDisplay );
+// //Tags
+// import tagDisplay from './components/setup/tag/tag-display.vue';
+// Vue.component( 'tag-display', tagDisplay );
 
 //Universal helpers
 import infoButton from './components/helpers/info-button.vue';

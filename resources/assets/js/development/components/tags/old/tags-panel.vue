@@ -11,15 +11,15 @@
 
 </style>
 <script>
-    import * as aTypes from '../../../store/action-types';
-    import * as mTypes from '../../../store/mutation-types';
-    import * as gTypes from '../../../store/getter-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as mTypes from '../../../../store/mutation-types';
+    import * as gTypes from '../../../../store/getter-types';
 
-    import Payload from '../../../models/Payload'
+    import Payload from '../../../../models/Payload'
 
-    import { loadAllUserTagsRequest, loadTagsForItemRequest } from '../../../api/requests/tagRequests';
+    import { loadAllUserTagsRequest, loadTagsForItemRequest } from '../../../../api/requests/tagRequests';
 
-    import tagMenu from '../menus/tags-menu.vue';
+    import tagMenu from '../tags-menu.vue';
 
     /**
      * This is a display area for editing, creating, and

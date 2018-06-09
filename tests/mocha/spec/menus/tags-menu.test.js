@@ -2,7 +2,7 @@
 //The name of the tested component
 var compName = 'tags-menu';
 //The path to the tested component
-var Component = require('../../../../resources/assets/js/development/components/menus/tags-menu.vue');
+var Component = require('../../../../resources/assets/js/development/components/tags/tags-menu.vue');
 
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';

@@ -104,7 +104,7 @@
     import { Routes } from '../../../api/apiSettings';
     import { loadAllUserTagsRequest, createTagRequest, associateTagRequest } from '../../../api/requests/tagRequests';
 
-    import colorSelector from '../setup/tag/color-selector.vue';
+    import colorSelector from './color-selector.vue';
 
     /**
      * This is a menu of all tags existing for the user.
@@ -153,14 +153,14 @@
                 //if true, uses values stored in store.tags
                 //if false, handles and stores all tag related
                 //data internally.
-                useCentralStore: false,
+                useCentralStore: true,
                 defaults: {}
             }
         },
 
         asyncComputed: {
             tags: {
-                get () {
+                get() {
                     //if we are supposed to be using the central store, do that
                     if ( this.useCentralStore ) return this.$store.getters[ gTypes.getAllTags ];
 
@@ -169,6 +169,7 @@
                     if ( _.isUndefined( result ) ) return [];
                     return result;
                 },
+
                 watch() {
                     this.$parent.clickCounter;
                 }
@@ -201,7 +202,6 @@
                 return this.isNewTagInputVisible ? 'Save' : 'New'
             },
 
-
             /**
              * If the menu is attached to an object (item,
              * exam, etc), this will return that object.
@@ -227,7 +227,6 @@
                 }
                 return false;
             }
-
         },
 
         methods: {
@@ -250,8 +249,8 @@
                     case 'students':
                         this.filterTo = taggedObjectType;
                         break;
-                    default:
 
+                    default:
                         this.filterTo = 'all';
                 }
 
@@ -278,12 +277,13 @@
                 this.$emit( 'tag-row-selected', tag )
             },
 
-            handleSearch: function(v){
-                let showKeys = _.findKey(this.tags, function(t) { return _.startsWith(t.name, v); });
+            handleSearch: function ( v ) {
+                let showKeys = _.findKey( this.tags, function ( t ) {
+                    return _.startsWith( t.name, v );
+                } );
             },
 
             saveNewTag: function () {
-
                 let tag = Tag.factory( {
                     name: this.newTagName,
 //                    text: this.newTagText,
@@ -366,19 +366,13 @@
                     default:
                 }
                 return isHighlighted;
-//
-//                //if the menu isn't attached to an object
-//                //nothing should highlight
-//                if ( _.isUndefined( this.serialNumber ) ) return false;
-//
-//                return this.$store.getters.isTagged( this.object, tag );
             },
 
             /**
              * Resets (or sets) the fields which hold
              * the new tag data to their default state.
              */
-            clearNewTag : function (  ) {
+            clearNewTag: function () {
                 //Clean up
                 this.newTagText = '';
                 this.newTagName = '';
@@ -386,13 +380,10 @@
             }
         },
 
-        directives: {}
-        ,
+        directives: {},
 
-        events: {}
-        ,
+        events: {},
 
-        mounted: function () {
-        }
+        mounted: function () {}
     }
 </script>

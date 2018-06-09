@@ -19,6 +19,7 @@
                             v-bind:key="note.serialNumber"
                             :object="note"
                             :serial-number="note.serialNumber"
+                            :use-central-store="useCentralStore"
                             v-on:note-deleted="refreshNotes"
                             v-on:note-updated="refreshNotes"
                     ></note-object>
@@ -113,8 +114,8 @@
 
     import { createNoteRequest, loadNotesForItemRequest } from '../../../api/requests/noteRequests';
 
-    import prioritySelector from './note/priority-selector';
-    import colorSelector from './tag/color-selector.vue';
+    // import prioritySelector from './note/priority-selector';
+    import colorSelector from '../tags/color-selector.vue';
     import loadingIndicator from '../helpers/loading-indicator.vue';
 
 
@@ -123,7 +124,7 @@
 
         components: {
             'note-object': noteObject,
-            'priority-selector': prioritySelector,
+            // 'priority-selector': prioritySelector,
             'color-selector': colorSelector,
             'loading-indicator': loadingIndicator
         },

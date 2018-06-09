@@ -1,13 +1,15 @@
 // import { factories } from "../../spec/helpers/vuex.spec.helpers";
 
 const faker = require( 'faker' );
+import helpers from './test-helpers';
+
 import GradeAssignment from "../../../resources/assets/js/models/GradeAssignment";
-import Kumi from "../../../resources/assets/js/models/Kumi";
-import Question from "../../../resources/assets/js/models/Question";
 import Item from "../../../resources/assets/js/models/Item";
-import Student from "../../../resources/assets/js/models/Student";
 import ItemScore from "../../../resources/assets/js/models/ItemScore";
-import Exam from "../../../resources/assets/js/models/Exam";
+import Kumi from "../../../resources/assets/js/models/Kumi";
+import Note from "../../../resources/assets/js/models/Note";
+import Question from "../../../resources/assets/js/models/Question";
+import Student from "../../../resources/assets/js/models/Student";
 
 
 // Factories
@@ -124,10 +126,10 @@ export const examFactory = ( index ) => {
     return e;
 };
 
-export const kumiFactory = (name, id)=>{
-    name = _.isUndefined(name) ? faker.company.bs() : name;
-    id = _.isUndefined(id) ? faker.random.number() : id;
-    return Kumi.factory( { name , id  } )
+export const kumiFactory = ( name, id ) => {
+    name = _.isUndefined( name ) ? faker.company.bs() : name;
+    id = _.isUndefined( id ) ? faker.random.number() : id;
+    return Kumi.factory( { name, id } )
 };
 
 export const itemFactory = ( index ) => {
@@ -147,9 +149,20 @@ export const itemScoreFactory = ( exam, item, student, score ) => {
     e.itemId = _.isUndefined( item ) ? faker.random.number() : item.id;
     e.examId = _.isUndefined( exam ) ? faker.random.number() : item.id;
     e.studentId = _.isUndefined( student ) ? faker.random.number() : student.id;
-    e.score = _.isUndefined(score) ? faker.random.number(): score;
+    e.score = _.isUndefined( score ) ? faker.random.number() : score;
     e.text = faker.company.bs();
     return e;
+};
+
+export const noteFactory = () => {
+    return Note.factory( {
+        name: faker.company.bsNoun(),
+        text: faker.company.bsNoun(),
+        priority: '',
+        props: {},
+        createdAt: '',
+        associatedItemSerialNumber: faker.random.number()
+    } )
 };
 
 export const studentFactory = ( index ) => {
