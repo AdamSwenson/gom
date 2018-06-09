@@ -1,5 +1,6 @@
 <template>
     <div id="kumi-selection-area"
+         class="kumi-selector"
          v-bind:class="injectableClass"
          v-show="isVisible"
     >

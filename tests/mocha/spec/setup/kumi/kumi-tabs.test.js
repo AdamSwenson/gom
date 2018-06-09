@@ -5,52 +5,41 @@ var compName = 'kumi-tabs';
 var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-tabs.vue');
 
 
+
+require( '../../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
+describe( compName, () => {
 
-//tested stuff
+    let componentDivIdentifier = '.' + compName;
 
+    let getters, mutations, actions, store;
 
-
-describe(  compName , () => {
-
-    let componentDivIdentifier = '#' + compName;
-
-    let getters;
-    let mutations;
-    let store;
     let wrapper;
 
-    beforeEach( (  ) => {
+    let listOfValues, test;
+    let payload, exam, item, kumi, kumis, student, grade;
 
-        getters = {   };
+    beforeEach( () => {
+        kumis = factories.makeKumis(3);
+        exam = factories.examFactory();
+        actions = {}
+
+        getters = {
+            [ gTypes.getKumisForExam ] : (  ) => (  ) => kumis,
+            [ gTypes.getActiveExam] : (  ) => (  ) => exam,
+            getKumisToFilterStudentsBy: (  ) => (  ) => kumis,
+
+        };
 
         mutations = {};
 
         store = new Vuex.Store( {
-            getters,
-            mutations
+            getters, mutations, actions
         } );
 
         wrapper = shallow( Component, {
@@ -62,13 +51,12 @@ describe(  compName , () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( "methods", () => {
+        } )
 
 
-});
+} );

@@ -1,5 +1,5 @@
 <template>
-    <div class="modal"
+    <div class="kumi-editing-modal modal"
          v-bind:class="[isVisible ? 'is-active' : '' ]"
     >
         <div class="modal-background"></div>
@@ -54,7 +54,9 @@
                 <div class="container">
                     <div class="content has-text-right">
                         <new-kumi-control type="button"></new-kumi-control>
-                        <button class="button is-success" v-on:click="toggleModal">Done</button>
+                        <button class="done-button button is-success"
+                                v-on:click="toggleModal"
+                        >Done</button>
                     </div>
                 </div>
             </footer>

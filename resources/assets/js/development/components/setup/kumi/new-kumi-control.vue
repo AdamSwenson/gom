@@ -1,5 +1,5 @@
 <template>
-    <a class="button new-kumi-control"
+    <a class="new-kumi-control button "
        v-bind:class="styling"
        v-on:click="newKumi"
     >
@@ -29,7 +29,7 @@
 
         data: function () {
             return {
-buttonColor : 'is-info',
+                buttonColor : 'is-info',
                 defaults: {}
             }
         },

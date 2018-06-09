@@ -1,6 +1,9 @@
 <template>
-<a class="button student-move-button is-outlined  is-primary" v-on:click="toggleSelectorVisibility"
-> <slot name="label"></slot></a>
+    <a class="kumi-selector-visibility-button button is-outlined  is-primary"
+       v-on:click="toggleSelectorVisibility"
+    >
+        <slot name="label"></slot>
+    </a>
 
 </template>
 
@@ -24,9 +27,9 @@
         computed: {},
 
         methods: {
-            toggleSelectorVisibility: function (  ) {
+            toggleSelectorVisibility: function () {
                 this.$store.commit( 'toggleKumiSelectVisibility' );
-                this.$emit('toggled');
+                this.$emit( 'toggled' );
             }
         },
 

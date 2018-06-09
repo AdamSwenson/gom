@@ -1,6 +1,7 @@
 <template>
 
-    <a v-if="isVisible"
+    <a class="show-all-kumi-control"
+       v-if="isVisible"
        v-on:click="showAllKumi"
        v-bind:class="styling"
     >All</a>
@@ -15,7 +16,7 @@
 
     export default {
 
-        props: [ 'type', 'isActive' , 'isVisible'],
+        props: [ 'type', 'isActive', 'isVisible' ],
 
         data: function () {
             return {

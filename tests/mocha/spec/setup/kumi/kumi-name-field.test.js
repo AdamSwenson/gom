@@ -4,71 +4,68 @@ var compName = 'kumi-name-field';
 //The path to the tested component
 var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-name-field.vue');
 
-
+require( '../../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
+describe( compName, () => {
 
-//tested stuff
+    let componentDivIdentifier = '.' + compName;
 
+    let getters, mutations, actions, store;
 
-
-describe(  compName , () => {
-
-    let componentDivIdentifier = '#' + compName;
-
-    let getters;
-    let mutations;
-    let store;
     let wrapper;
 
-    beforeEach( (  ) => {
+    let payload, exam, item, kumi, student, grade;
 
-        getters = {   };
+    beforeEach( () => {
+        exam = factories.examFactory();
+        kumi = factories.kumiFactory();
 
-        mutations = {};
+        actions = {}
+
+        getters = {
+            areKumiAndExamAssociated: (  ) => (  ) => true,
+        [gTypes.getActiveExam] :(  ) =>  (  ) => exam
+
+
+    };
+
+        mutations = {
+            updateKumi: sinon.spy()
+        };
 
         store = new Vuex.Store( {
-            getters,
-            mutations
+            getters, mutations, actions
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue,
+            propsData: {kumi}
         } );
+
 
     } );
 
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            expect(wrapper.find(componentDivIdentifier).exists()).toBe(true);
+            // assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( "methods", () => {
+        it( " name calls for the correct mutation when edited", () => {
+            let t = 'tacos';
+            helpers.type(wrapper, componentDivIdentifier, t);
+            expect( mutations.updateKumi.calledOnce ).toBe( true );
+        } );
+    } )
 
 
-});
+} );

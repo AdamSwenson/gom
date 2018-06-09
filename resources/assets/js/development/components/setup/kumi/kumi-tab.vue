@@ -1,5 +1,7 @@
 <template>
-    <li v-bind:class="[isActive ? 'is-active' : '' ]">
+    <li class="kumi-tab"
+        v-bind:class="[isActive ? 'is-active' : '' ]"
+    >
         <a v-on:click="handleKumiSelection">
             {{ kumi.name }}
         </a>
@@ -36,7 +38,9 @@
             },
 
             isActive: function () {
-                return this.displayedKumis.indexOf( this.kumi ) !== -1;
+                if (_.isUndefined(this.displayedKumis)) return false;
+
+                return _.indexOf(this.displayedKumis, this.kumi ) !== -1;
             }
         },
 

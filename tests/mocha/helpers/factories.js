@@ -102,7 +102,7 @@ export const makeScoreListServerResponse = () => {
 export const makeKumis = ( number ) => {
     let kumis = [];
     for (let i = 0; i < number; i++) {
-        kumis.push( Kumi.factory( { name: faker.company.bs(), id: faker.random.number() } ) );
+        kumis.push( kumiFactory() );
     }
     return kumis;
 }
@@ -124,6 +124,11 @@ export const examFactory = ( index ) => {
     return e;
 };
 
+export const kumiFactory = (name, id)=>{
+    name = _.isUndefined(name) ? faker.company.bs() : name;
+    id = _.isUndefined(id) ? faker.random.number() : id;
+    return Kumi.factory( { name , id  } )
+};
 
 export const itemFactory = ( index ) => {
     let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );

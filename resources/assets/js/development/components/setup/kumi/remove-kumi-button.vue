@@ -1,5 +1,5 @@
 <template>
-    <a class="button remove-kumi-control"
+    <a class="remove-kumi-button button "
        v-bind:class="styling"
        v-on:click="removeKumi"
     >
@@ -23,7 +23,7 @@
 
     export default {
 
-        props: ['kumi'],
+        props: [ 'kumi' ],
 
         data: function () {
             return {
@@ -36,25 +36,25 @@
             }
         },
 
-        computed : {
-            exam : function (  ) {
-          return this.$store.getters[gTypes.getActiveExam];
+        computed: {
+            exam: function () {
+                return this.$store.getters[ gTypes.getActiveExam ];
             },
 
-            styling : function (  ) {
-              return this.isAssociatedWithActiveExam ? this.styles.active : this.styles.disabled;
+            styling: function () {
+                return this.isAssociatedWithActiveExam ? this.styles.active : this.styles.disabled;
             },
 
             isAssociatedWithActiveExam: function () {
-                return this.$store.getters.areKumiAndExamAssociated({kumi : this.kumi, exam: this.exam});
+                return this.$store.getters.areKumiAndExamAssociated( { kumi: this.kumi, exam: this.exam } );
             },
 
         },
 
         methods: {
 
-            removeKumi: function (  ) {
-                this.$store.dispatch( 'removeKumi', Payload.factory( { kumi: this.kumi, exam : this.exam } ) );
+            removeKumi: function () {
+                this.$store.dispatch( 'removeKumi', Payload.factory( { kumi: this.kumi, exam: this.exam } ) );
             },
         },
 

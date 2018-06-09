@@ -1,6 +1,6 @@
 <template>
     <!--<p>-->
-    <a class="edit-kumi-button button "
+    <a class="edit-kumi-control button "
        v-bind:class="styling"
        v-on:click="toggleModalVisibility"
     >
@@ -33,6 +33,7 @@
     export default {
 
         props: [ 'isEditable', 'type', 'isActive', 'isVisible' ],
+
         components: { KumiEditingModal },
 
         data: function () {
