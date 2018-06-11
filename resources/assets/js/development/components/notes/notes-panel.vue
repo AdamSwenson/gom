@@ -1,7 +1,7 @@
 <!--For adding arbitrary notes visible only to the user with access to the setup page-->
 
 <template>
-    <div class="panel-notes-component">
+    <div class="notes-panel">
 
         <div class="box"
              id="new-note-area">
@@ -96,7 +96,7 @@
 
 <style lang="scss">
 
-    .panel-notes-component {
+    .notes-panel {
         label {
             text-align: left;
         }
@@ -110,7 +110,7 @@
     import Note from '../../../models/Note';
     import Payload from '../../../models/Payload';
 
-    import noteObject from './note/note-object.vue';
+    import noteObject from './note-object.vue';
 
     import { createNoteRequest, loadNotesForItemRequest } from '../../../api/requests/noteRequests';
 
@@ -146,8 +146,6 @@
                     noteText: "Add a new note to your future self here"
                 },
 
-                useCentralStore: false,
-
                 //these are the values of the new tag
                 newNoteName: '',
                 newNoteText: '',
@@ -156,7 +154,7 @@
                 //if true, uses values stored in store.tags
                 //if false, handles and stores all tag related
                 //data internally.
-                useCentralStore: false,
+                useCentralStore: true,
 
                 //just a value to watch, when we need to
                 //reload notes, we increment this.
@@ -222,20 +220,6 @@
                 return this.item ? this.item.isExam() : false;
             },
 
-//            newNoteName: {
-//                get: function () {
-//                    return this.newNote ? this.newNote.name : '';
-//
-//                },
-//                set: function ( v ) {
-//                    let pl = Payload.factory( {
-//                        obj: this.newNote,
-//                        updateProp: 'name',
-//                        updateVal: v
-//                    } );
-//                    this.$store.commit( mTypes.updateNote, pl );
-//                }
-//            },
 
             newNoteButtonLabel: function () {
                 if ( this.isNewNoteVisible ) return "Save";
@@ -251,46 +235,14 @@
                 return this.$store.getters.getNewNote;
             },
 
-//            notes: function () {
-//                let n = this.$store.getters[ gTypes.getNotesForItem ]( this.item );
-//                if ( n.length === 0 ) return n;
-//
-//                return n;
-//                //filter out the note being created, since
-//                //that looks weird. When we hit done, that will
-//                //unset it as the newNote, and the text will display
-//                if ( this.newNote ) {
-//                    let sn = this.newNote.serialNumber;
-//                    return n.filter( ( r ) => {
-//                        if ( r.serialNumber !== sn ) return r;
-//                    } );
-//                }
-//                return [];
-//            },
-
-//            text: {
-//                get: function () {
-//                    return this.newNote ? this.newNote.text : '';
-//                },
-//                set: function ( v ) {
-//                    let pl = Payload.factory( {
-//                        obj: this.newNote,
-//                        updateProp: 'text',
-//                        updateVal: v
-//                    } );
-//                    this.$store.commit( mTypes.updateNote, pl );
-//                }
-//            }
-
         },
 
         methods: {
             addNewNote: function () {
-                window.console.log( 'panel.notes.component', 'addNewNote', 65, );
+                // window.console.log( 'panel.notes.component', 'addNewNote', 65, );
                 if ( this.useCentralStore ) {
                     this.$store.dispatch( "createNewNote", Payload.factory( { obj: this.item } ) );
                 }
-
             },
 
             clearNewNote: function () {

@@ -61,8 +61,8 @@
 <script>
 
     import loadingIndicator from '../helpers/loading-indicator.vue';
-    import statsSummary from './stats/item-summary-stats.vue';
-    import statsScores from './stats/score-list.vue';
+    import statsSummary from '../stats/item-summary-stats.vue';
+    import statsScores from '../stats/score-list.vue';
 
     export default {
         components: {

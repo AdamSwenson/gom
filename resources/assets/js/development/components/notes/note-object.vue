@@ -83,13 +83,13 @@
 </style>
 
 <script>
-    import * as aTypes from '../../../../store/action-types';
-    import * as mTypes from '../../../../store/mutation-types';
-    import * as gTypes from '../../../../store/getter-types';
-    import Note from '../../../../models/Note';
-    import Payload from '../../../../models/Payload';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import * as gTypes from '../../../store/getter-types';
+    import Note from '../../../models/Note';
+    import Payload from '../../../models/Payload';
 
-    import { destroyNoteRequest, updateNoteRequest } from '../../../../api/requests/noteRequests';
+    import { destroyNoteRequest, updateNoteRequest } from '../../../api/requests/noteRequests';
 
     export default {
 

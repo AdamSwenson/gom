@@ -5,8 +5,7 @@ var compName = 'grades-panel';
 var Component = require('../../../../resources/assets/js/development/components/setup/grades-panel.vue');
 
 
-
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 

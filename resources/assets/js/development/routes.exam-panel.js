@@ -8,7 +8,7 @@ import panelGrades from './components/setup/grades-panel.vue'
 import panelStudents from './components/setup/students-panel.vue'
 import panelQuality from './components/setup/quality-control-panel.vue';
 
-import panelNotes from './components/setup/notes-panel.vue';
+import panelNotes from './components/notes/notes-panel.vue';
 
 Vue.component( 'panel-exam-detail', panelExamDetail);
 Vue.component( 'panel-comments', panelComments );

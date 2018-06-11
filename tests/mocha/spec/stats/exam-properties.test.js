@@ -1,6 +1,12 @@
 
+//The name of the tested component
+var compName = 'exam-properties';
+//The path to the tested component
+var Component = require('../../../../resources/assets/js/development/components/stats/exam-properties.vue');
 
-require( '../../../injectglobals' );
+
+
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 const localVue = createLocalVue();
@@ -21,7 +27,12 @@ describe( compName, () => {
     beforeEach( () => {
         actions = {}
 
-        getters = {};
+        getters = {
+            [gTypes.getItemCount]: (  ) => (  ) => 3,
+            [gTypes.getStudentCount]: (  ) => (  ) => 3,
+            [gTypes.getKumiCount]: (  ) => (  ) => 3,
+
+        };
 
         mutations = {};
 
@@ -41,15 +52,6 @@ describe( compName, () => {
             assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-
-    describe("async computed", (  ) => {
-        describe('timeElapsedAjax', (  ) => {
-it.skip('loads correctly ', (  ) => {
-
-});
-        });
-
-    });
 
 
 } );

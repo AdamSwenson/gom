@@ -1,4 +1,3 @@
-
 //The name of the tested component
 var compName = 'kumi-name-field';
 //The path to the tested component

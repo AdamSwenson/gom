@@ -44,10 +44,10 @@
 
     import timeRequests from '../../../api/requests/timeRequests';
     import loadingIndicator from '../helpers/loading-indicator.vue';
-    import timeStats from './stats/time-stats.vue'
-    import statsSummary from './stats/summary-stats-display.vue'
-    import examCounts from './stats/number-graded.vue'
-    import examProperties from './stats/exam-properties.vue'
+    import timeStats from '../stats/time-stats.vue'
+    import statsSummary from '../stats/summary-stats-display.vue'
+    import examCounts from '../stats/number-graded.vue'
+    import examProperties from '../stats/exam-properties.vue'
 
     export default {
         components: {

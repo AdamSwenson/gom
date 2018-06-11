@@ -1,7 +1,7 @@
 <template>
 
 
-    <div class="columns">
+    <div class="stat-display-columns columns">
         <div class="column is-narrow stat-label subtitle">
             <slot name="label"></slot>
         </div>

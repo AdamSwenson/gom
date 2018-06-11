@@ -68,11 +68,11 @@
 
 
 <script>
-    import * as aTypes from '../../../../store/action-types';
-    import * as mTypes from '../../../../store/mutation-types';
-    import Payload from '../../../../models/Payload';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import Payload from '../../../models/Payload';
 
-    import loadingIndicator from '../../helpers/loading-indicator.vue';
+    import loadingIndicator from '../helpers/loading-indicator.vue';
     import statDisplay from './stat-display-columns.vue';
     import StatDisplayTableRow from "./stat-display-table-row.vue";
 

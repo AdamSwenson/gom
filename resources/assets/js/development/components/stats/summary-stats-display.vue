@@ -1,5 +1,5 @@
 <template>
-    <div class="stats-summary ">
+    <div class="summary-stats-display ">
 
         <table class="table is-narrow">
 

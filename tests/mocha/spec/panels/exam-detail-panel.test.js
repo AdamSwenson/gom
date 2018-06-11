@@ -44,7 +44,6 @@ describe( " exam-detail-panel ", () => {
         // import and pass your custom axios instance to this method
         moxios.install()
 
-
         getters = {
             getItemBySerialNumber: ( v ) => ( v ) => {
                 return item;

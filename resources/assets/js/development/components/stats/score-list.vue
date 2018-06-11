@@ -28,8 +28,8 @@
 //    import * as mTypes from '../../../../store/mutation-types';
 //    import Payload from '../../../../models/Payload';
 
-    import statsRequests from '../../../../api/requests/statsRequests';
-    import loadingIndicator from '../../helpers/loading-indicator.vue';
+    import statsRequests from '../../../api/requests/statsRequests';
+    import loadingIndicator from '../helpers/loading-indicator.vue';
 
 
     export default {

@@ -1,7 +1,7 @@
-// import { factories } from "../../spec/helpers/vuex.spec.helpers";
 
 const faker = require( 'faker' );
-import helpers from './test-helpers';
+
+import Exam from "../../../resources/assets/js/models/Exam";
 
 import GradeAssignment from "../../../resources/assets/js/models/GradeAssignment";
 import Item from "../../../resources/assets/js/models/Item";

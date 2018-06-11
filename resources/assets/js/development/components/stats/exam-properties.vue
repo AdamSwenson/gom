@@ -65,13 +65,13 @@
 </style>
 
 <script>
-    import * as aTypes from '../../../../store/action-types';
-    import * as mTypes from '../../../../store/mutation-types';
-    import * as gTypes from '../../../../store/getter-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import * as gTypes from '../../../store/getter-types';
 
-    import Payload from '../../../../models/Payload';
+    import Payload from '../../../models/Payload';
 
-    import loadingIndicator from '../../helpers/loading-indicator.vue';
+    import loadingIndicator from '../helpers/loading-indicator.vue';
     import statDisplay from './stat-display-columns.vue';
     import StatDisplayTableRow from "./stat-display-table-row.vue";
 

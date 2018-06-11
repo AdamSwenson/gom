@@ -47,7 +47,7 @@
     import * as mTypes from '../../../../store/mutation-types';
     import * as gTypes from '../../../../store/getter-types';
 
-    import statDisplay from '../stats/stat-display-columns';
+    import statDisplay from '../../stats/stat-display-columns';
     import statRow from './stat-row';
 
     export default {

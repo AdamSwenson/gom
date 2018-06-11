@@ -1,5 +1,5 @@
 <template>
-    <div class="item-stat-summary"
+    <div class="item-summary-stats"
          v-bind:class="styling"
     >
         <p class="h4">{{ title }}</p>
@@ -58,13 +58,13 @@
 </style>
 <script>
 
-    import * as aTypes from '../../../../store/action-types';
-    import * as mTypes from '../../../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as mTypes from '../../../store/mutation-types';
 
-    import Payload from '../../../../models/Payload';
+    import Payload from '../../../models/Payload';
 
-    import statsRequests from '../../../../api/requests/statsRequests';
-    import loadingIndicator from '../../helpers/loading-indicator.vue';
+    import statsRequests from '../../../api/requests/statsRequests';
+    import loadingIndicator from '../helpers/loading-indicator.vue';
 
     import statsSummary from './summary-stats-display.vue'
 

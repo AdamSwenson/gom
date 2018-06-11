@@ -1,6 +1,12 @@
 
+//The name of the tested component
+var compName = 'summary-stats-display';
+//The path to the tested component
+var Component = require('../../../../resources/assets/js/development/components/stats/summary-stats-display.vue');
 
-require( '../../../injectglobals' );
+
+
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 const localVue = createLocalVue();
@@ -42,14 +48,9 @@ describe( compName, () => {
         } );
     } );
 
-    describe("async computed", (  ) => {
-        describe('timeElapsedAjax', (  ) => {
-it.skip('loads correctly ', (  ) => {
+    describe( "methods", () => {
 
-});
-        });
-
-    });
+    } )
 
 
 } );

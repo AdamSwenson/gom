@@ -34,7 +34,7 @@
     import * as gTypes from '../../../../store/getter-types';
     import Payload from '../../../../models/Payload';
 
-    import statDisplay from '../stats/stat-display-columns';
+    import statDisplay from '../../stats/stat-display-columns';
     import distArea from './dist-area';
 
     export default {

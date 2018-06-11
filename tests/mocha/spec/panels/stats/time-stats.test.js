@@ -23,7 +23,7 @@ import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
 import { makeGradeFrequencyObject } from '../../../helpers/factories';
 
 //tested stuff
-var Component = require( "../../../../../resources/assets/js/development/components/setup/stats/time-stats.vue" );
+var Component = require( "../../../../../resources/assets/js/development/components/stats/time-stats.vue" );
 
 
 describe( "time-stats  ", () => {
