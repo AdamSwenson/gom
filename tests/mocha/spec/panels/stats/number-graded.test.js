@@ -6,7 +6,7 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../../helpers/test-helpers';
+import { assertThatSeeText } from '../../../helpers/assertions';
 
 import Exam from "./../../../../../resources/assets/js/models/Exam";
 import Comment from "./../../../../../resources/assets/js/models/Comment";
@@ -137,9 +137,9 @@ describe( "number-graded  ", () => {
                     expect( updateStub.callCount ).toBe( 2 );
 
                     //should see values on page
-                    see( wrapper, data.numStudents, '.number-graded' );
-                    see( wrapper, data.numGraded, '.number-graded' );
-                    see( wrapper, data.numStudents - data.numGraded, '.number-graded' );
+                    assertThatSeeText( wrapper, data.numStudents, '.number-graded' );
+                    assertThatSeeText( wrapper, data.numGraded, '.number-graded' );
+                    assertThatSeeText( wrapper, data.numStudents - data.numGraded, '.number-graded' );
 
                 } );
             } )

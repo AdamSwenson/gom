@@ -6,7 +6,7 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../../helpers/test-helpers';
+import { assertThatSeeText } from '../../../helpers/assertions';
 import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
 import { factories } from '../../../../spec/helpers/vuex.spec.helpers';
 
@@ -85,7 +85,7 @@ describe( " grading-roster ", function(){
 
         it( " happy path ", () => {
             _.forEach( students, function ( s ) {
-                see( wrapper, s.nameLastFirst, '.student-name' );
+                assertThatSeeText( wrapper, s.nameLastFirst, '.student-name' );
             } );
         } );
     } );

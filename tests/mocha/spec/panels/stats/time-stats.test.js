@@ -6,7 +6,7 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../../helpers/test-helpers';
+import { assertThatSeeText } from '../../../helpers/assertions';
 import Exam from "./../../../../../resources/assets/js/models/Exam";
 import Item from "./../../../../../resources/assets/js/models/Item";
 import Payload from "./../../../../../resources/assets/js/models/Payload";
@@ -136,11 +136,11 @@ describe( "time-stats  ", () => {
                 } )
                     .then( function () {
                     //elapsed time
-                    see( wrapper, data.elapsedSeconds, componentDivIdentifier );
+                    assertThatSeeText( wrapper, data.elapsedSeconds, componentDivIdentifier );
                     //average time
-                    see(wrapper, data.averageSeconds, componentDivIdentifier);
+                    assertThatSeeText(wrapper, data.averageSeconds, componentDivIdentifier);
                     //remaining time
-                    see(wrapper, item.numberRemaining * data.averageSeconds);
+                    assertThatSeeText(wrapper, item.numberRemaining * data.averageSeconds);
                 } );
             } );
         } );

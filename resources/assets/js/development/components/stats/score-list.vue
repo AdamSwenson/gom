@@ -28,6 +28,9 @@
 //    import * as mTypes from '../../../../store/mutation-types';
 //    import Payload from '../../../../models/Payload';
 
+
+   import * as ngaTypes from '../../../store/new-grading-getter-types';
+
     import statsRequests from '../../../api/requests/statsRequests';
     import loadingIndicator from '../helpers/loading-indicator.vue';
 
@@ -89,7 +92,7 @@
 
                 //thus when it is complete, we get them from the store
                 return p.then( function () {
-                    let stats = me.$store.getters.getAnonScoresForItemStats( me.item );
+                    let stats = me.$store.getters[nggTypes.getAnonScoresForItemStats]( me.item );
                     //done loading
                     me.isLoading = false;
                     return _.sortBy( stats, 'score', me.scoreSortOrder );

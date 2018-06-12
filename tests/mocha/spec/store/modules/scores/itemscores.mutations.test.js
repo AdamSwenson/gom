@@ -1,18 +1,22 @@
 //test libraries
+require( '../../../../injectglobals' );
 
-import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-
-let sinon = require( 'sinon' );
-let faker = require( 'faker' );
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
-
-//Dependencies
-import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
-import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
-import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
+const testAction = helpers.testAction;
+const description = helpers.description;
+//
+// import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
+//
+// let sinon = require( 'sinon' );
+// let faker = require( 'faker' );
+//
+// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
+//
+// //Dependencies
+// import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
+// import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
+// import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
+// import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
+// import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
 
 import PayloadScore from '../../../../../../resources/assets/js/models/PayloadScore';
 import ItemScore from '../../../../../../resources/assets/js/models/ItemScore';

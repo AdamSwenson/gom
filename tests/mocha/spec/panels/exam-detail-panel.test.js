@@ -6,7 +6,7 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../helpers/test-helpers';
+import { assertThatSeeText } from '../../helpers/assertions';
 import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
 
 import Item from "./../../../../resources/assets/js/models/Item";
@@ -126,7 +126,7 @@ describe( " exam-detail-panel ", () => {
                 } ).then( function () {
 
                     //should see
-                    see( wrapper, data.elapsedSeconds, '.timeBox' );
+                    assertThatSeeText( wrapper, data.elapsedSeconds, '.timeBox' );
 
                 } );
             } )

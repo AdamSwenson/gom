@@ -1,21 +1,17 @@
-require( 'sinon' );
-let faker = require( 'faker' );
+require( '../../../../injectglobals' );
+
+const testAction = helpers.testAction;
+const description = helpers.description;
 
 //Dependencies
-import * as activeexam from '../../../../../../resources/assets/js/store/modules/newgrading/activeexam-new';
+import * as Component from '../../../../../../resources/assets/js/store/modules/newgrading/activeexam-new';
 
-import * as mTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-
-import Exam from '../../../../../../resources/assets/js/models/Exam';
 import Payload from '../../../../../../resources/assets/js/models/Payload';
 
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 //tested object
-let obj = activeexam.default;
 //tested methods
-let { getters, actions, mutations } = obj;
+let { getters, actions, mutations} = Component.default;
 
 
 const makeMutationPayload = function () {
@@ -35,7 +31,7 @@ export const makeRootState = () => {
 };
 
 
-describe( "store | modules | newgrading |  activeexam | ", function () {
+describe( "activeexam  ", function () {
     let state;
     let rootState;
     let payload;
@@ -72,12 +68,13 @@ describe( "store | modules | newgrading |  activeexam | ", function () {
 
     describe( "actions  ", function () {
 
-        describe( description( aTypes.setExamAsActive ), function () {
+        describe( description( ngaTypes.setExamAsActive ), function () {
             it( "happy path ", function () {
-                let action = actions[ aTypes.setExamAsActive ];
-                testAction( action, exam, state, [
+                // let action = actions[ aTypes.setExamAsActive ];
+
+                testAction( actions[ ngaTypes.setExamAsActive ], exam, state, [
                     {
-                        type: mTypes.setActiveExam,
+                        type: ngmTypes.setActiveExam,
                         payload: Payload.factory( { obj: exam } )
                     }
                 ], { verbose: true } )
@@ -86,13 +83,13 @@ describe( "store | modules | newgrading |  activeexam | ", function () {
 
         } );
 
-        describe( description( aTypes.resetActiveExam ), function () {
+        describe( description( ngaTypes.resetActiveExam ), function () {
             it( "happy path | ", function () {
-                let action = actions[ aTypes.resetActiveExam ];
+                let action = actions[ ngaTypes.resetActiveExam ];
 
                 testAction( action, {}, state, [
                     {
-                        type: mTypes.setActiveExam,
+                        type: ngmTypes.setActiveExam,
                         payload: Payload.factory( { obj: null } )
                     }
                 ], { verbose: true } );
@@ -102,10 +99,10 @@ describe( "store | modules | newgrading |  activeexam | ", function () {
     } );
 
     describe( "getters  ", function () {
-        describe( "getActiveExam | ", function () {
+        describe( nggTypes.getActiveExam, function () {
             it( "happy path ", function () {
                 state.activeExam = exam;
-                expect( getters.getActiveExam( state ) ).toBe( exam );
+                expect( getters[nggTypes.getActiveExam]( state ) ).toBe( exam );
             } );
         } );
     } );

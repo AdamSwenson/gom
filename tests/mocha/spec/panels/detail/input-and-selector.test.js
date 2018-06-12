@@ -9,8 +9,8 @@ import moxios from 'moxios';
 let faker = require( 'faker' );
 
 //helpers
-import { see, type } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
+import { type } from '../../../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed, assertThatSeeText } from '../../../helpers/assertions';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types';
 
@@ -83,7 +83,7 @@ describe( " input-and-selector  ", function () {
 
         it( " displays the expected list of options in the selector  ", () => {
             _.forEach( options, function ( option ) {
-                see( wrapper, option, componentDivId );
+                assertThatSeeText( wrapper, option, componentDivId );
             } )
         } );
 

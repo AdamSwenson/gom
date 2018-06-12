@@ -8,12 +8,23 @@ global.assertions = require('./helpers/assertions');
 //really commonly used stuff
 global.assertExpectedDivIsDisplayed = global.assertions.assertExpectedDivIsDisplayed;
 
-global.gTypes = require('../../resources/assets/js/store/getter-types');
-global.nggTypes = require('../../resources/assets/js/store/new-grading-getter-types');
-global.aTypes = require('../../resources/assets/js/store/action-types');
-global.ngaTypes = require('../../resources/assets/js/store/new-grading-action-types');
-global.mTypes = require("../../resources/assets/js/store/mutation-types");
-global.ngmTypes = require("../../resources/assets/js/store/new-grading-mutation-types");
+import * as gTypes from '../../resources/assets/js/store/getter-types';
+global.gTypes = gTypes;
+
+import * as nggTypes from '../../resources/assets/js/store/new-grading-getter-types';
+global.nggTypes = nggTypes;
+
+import * as aTypes from '../../resources/assets/js/store/action-types';
+global.aTypes =aTypes;
+
+import * as ngaTypes from '../../resources/assets/js/store/new-grading-action-types';
+global.ngaTypes = ngaTypes;
+
+import * as mTypes from "../../resources/assets/js/store/mutation-types";
+global.mTypes = mTypes;
+
+import * as ngmTypes from "../../resources/assets/js/store/new-grading-mutation-types";
+global.ngmTypes = ngmTypes;
 
 //models
 import Payload from '../../resources/assets/js/models/Payload';

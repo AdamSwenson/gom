@@ -1,16 +1,20 @@
+require( '../../../../injectglobals' );
 
-let sinon = require( 'sinon' );
-let faker = require( 'faker' );
-
-//Dependencies
-import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
-import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
+const testAction = helpers.testAction;
+const description = helpers.description;
+//
+// let sinon = require( 'sinon' );
+// let faker = require( 'faker' );
+//
+// //Dependencies
+// import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
+// import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
+// import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
+// import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
+// import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types';
+// import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
+//
+// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 //tested object
 import * as Component from '../../../../../../resources/assets/js/store/modules/roster/roster.mutations';
@@ -72,3 +76,4 @@ let state, student;
     //
     //     Vue.set( state.roster[ idx ], payload.updateProp, payload.updateVal );
     // },
+

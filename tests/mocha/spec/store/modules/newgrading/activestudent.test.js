@@ -1,24 +1,17 @@
-//test libraries
+require( '../../../../injectglobals' );
 
-require( 'sinon' );
-let faker = require( 'faker' );
+const testAction = helpers.testAction;
+const description = helpers.description;
+
 
 //Dependencies
 import * as Component from '../../../../../../resources/assets/js/store/modules/newgrading/activestudent-new';
 
 
-import * as mTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-
-import * as aTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-
 import Payload from '../../../../../../resources/assets/js/models/Payload';
 
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
-
 //tested object
-let obj = Component.default;
-//tested methods
-let { getters, actions, mutations } = obj;
+let { getters, actions, mutations } = Component.default;
 
 
 const makeState = function () {
@@ -83,7 +76,7 @@ const makeExpMut = ( type, payloads ) => {
 };
 
 
-describe( "store | modules | newgrading | activestudent | ", function () {
+describe( " activestudent (new)", function () {
     let state;
     let rootState;
     let payload;
@@ -98,30 +91,30 @@ describe( "store | modules | newgrading | activestudent | ", function () {
         student = factories.studentFactory();
     } );
 
-    describe( "mutations | ", function () {
-        describe( description( mTypes.setActiveStudent ), function () {
+    describe( "mutations  ", function () {
+        describe( description( ngmTypes.setActiveStudent ), function () {
 
             it( "happy path ", function () {
                 state.activeStudent = student;
                 let pl = Payload.factory( { obj: student } );
-                mutations[ mTypes.setActiveStudent ]( state, {}, pl );
+                mutations[ ngmTypes.setActiveStudent ]( state, {}, pl );
                 expect( state.activeStudent ).toBe( student );
             } );
         } );
 
-        describe( description( mTypes.setActiveStudentTime ), function () {
+        describe( description( ngmTypes.setActiveStudentTime ), function () {
             it( "happy path  ", function () {
                 state.activeStudent = student;
                 let time = faker.random.number();
                 let pl = Payload.factory( { num: time } );
 
-                mutations[ mTypes.setActiveStudentTime ]( state, {}, pl );
+                mutations[ ngmTypes.setActiveStudentTime ]( state, {}, pl );
                 expect( state.activeStudent.gradingTime ).toBe( time );
             } );
         } );
     } );
 
-    describe( "actions | ", function () {
+    describe( "actions  ", function () {
 
 
         /**
@@ -135,17 +128,17 @@ describe( "store | modules | newgrading | activestudent | ", function () {
          * @param rootState
          * @param payload
          */
-        describe( aTypes.resetActiveStudent, function () {
+        describe( ngaTypes.resetActiveStudent, function () {
 
             it( "happy path ", () => {
                 let test = factories.studentFactory(); //todo make random
                 let state = makeState(); //{Index: null, Id: null, student: null};
-                let action = active.default.actions[ aTypes.resetActiveStudent ];
+                let action = actions[ ngaTypes.resetActiveStudent ];
                 let expectedPayload = Payload.factory( { obj: null, num: null } );
 
                 let expectedMutations = [
-                    { type: mTypes.setActiveStudent, payload: expectedPayload },
-                    { type: mTypes.setActiveStudentTime, payload: expectedPayload }
+                    { type: ngmTypes.setActiveStudent, payload: expectedPayload },
+                    { type: ngmTypes.setActiveStudentTime, payload: expectedPayload }
                 ];
 
                 testAction( action, test.studentIndex, state, expectedMutations, { verbose: true } );
@@ -154,39 +147,39 @@ describe( "store | modules | newgrading | activestudent | ", function () {
 
         } ),
 
-            describe( aTypes.setStudentAsActive + " | ", function () {
+            describe( ngaTypes.setStudentAsActive + " | ", function () {
                 describe( "Happy paths  | ", function () {
                     it( "input is Student object ", function () {
                         let test = factories.studentFactory(); //todo make random
                         let state = makeState(); //{Index: null, Id: null, student: null};
-                        let action = active.default.actions[ aTypes.setStudentAsActive ];
+                        let action = actions[ ngaTypes.setStudentAsActive ];
 
                         testAction( action, test.studentIndex, state, [
-                                { type: mTypes.setActiveStudent, payload: Payload.factory( { obj: test } ) }
+                                { type: ngmTypes.setActiveStudent, payload: Payload.factory( { obj: test } ) }
                             ],
                             { verbose: true } );
                     } );
                 } );
             } );
 
-        describe( aTypes.setTime + " | ", function () {
-            it( "happy path ", function () {
-                it( "input is Student object ", function () {
-                    let test = faker.random.number();
-                    let state = makeState(); //{Index: null, Id: null, student: null};
-                    let action = active.default.actions[ aTypes.setTime ];
-
-                    testAction( action, test.studentIndex, state, [
-                        { type: mTypes.setActiveStudentTime, payload: Payload.factory( { num: test } ) }
-                    ] );
-                } );
-            } );
-
-        } );
+        // describe( ngaTypes.setTime + " | ", function () {
+        //     it( "happy path ", function () {
+        //         it( "input is Student object ", function () {
+        //             let test = faker.random.number();
+        //             let state = makeState(); //{Index: null, Id: null, student: null};
+        //             let action = active.default.actions[ ngaTypes.setTime ];
+        //
+        //             testAction( action, test.studentIndex, state, [
+        //                 { type: ngmTypes.setActiveStudentTime, payload: Payload.factory( { num: test } ) }
+        //             ] );
+        //         } );
+        //     } );
+        //
+        // } );
 
     } );
 
-    describe( "getters | ", function () {
+    describe( "getters  ", function () {
         beforeEach( function () {
         } );
     } );

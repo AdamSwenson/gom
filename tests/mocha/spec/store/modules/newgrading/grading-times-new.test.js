@@ -1,17 +1,22 @@
 
-require( 'sinon' );
-let faker = require( 'faker' );
+require( '../../../../injectglobals' );
 
-//Dependencies
-import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
+const testAction = helpers.testAction;
+const description = helpers.description;
+//
+// require( 'sinon' );
+// let faker = require( 'faker' );
+//
+// //Dependencies
+// import * as nggTypes from "../../../../../../../resources/assets/js/store/new-grading-getter-types";
+// import * as gTypes from "../../../../../../../resources/assets/js/store/getter-types";
+//
+// import * as ngmTypes from '../../../../../../../resources/assets/js/store/new-grading-mutation-types';
+// import * as ngaTypes from '../../../../../../../resources/assets/js/store/new-grading-action-types';
+//
+// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
-import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
-
-import Payload from '../../../../../../resources/assets/js/models/Payload';
+// import Payload from '../../../../../../../resources/assets/js/models/Payload';
 import PayloadTime from '../../../../../../resources/assets/js/models/PayloadTime';
 
 //tested object

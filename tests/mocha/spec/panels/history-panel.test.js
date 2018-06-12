@@ -6,7 +6,7 @@ import Vuex from 'vuex';
 import moxios from 'moxios';
 
 //helpers
-import { see } from '../../helpers/test-helpers';
+import { assertThatSeeText } from '../../helpers/assertions';
 import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
 
 

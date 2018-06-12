@@ -9,8 +9,8 @@ import moxios from 'moxios';
 let faker = require( 'faker' );
 
 //helpers
-import { see, type } from '../../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
+import { type } from '../../../helpers/test-helpers';
+import { assertExpectedDivIsDisplayed, assertThatSeeText } from '../../../helpers/assertions';
 import {makeGradeFrequencyObject } from '../../../helpers/factories';
 
 import Exam from "./../../../../../resources/assets/js/models/Exam";
@@ -92,7 +92,7 @@ describe( "assignment-table-row  ", function () {
 
         it( " adds the indicators when the row's grade is in the inconsistent list ", () => {
             expect(wrapper.vm.styling).toBe('is-selected');
-            see( wrapper, 'is-selected', componentDivId );
+            assertThatSeeText( wrapper, 'is-selected', componentDivId );
         } );
 
 

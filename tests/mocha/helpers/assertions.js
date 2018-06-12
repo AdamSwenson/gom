@@ -36,6 +36,17 @@ export const assertElementExists = (wrapper, elementSelector) => {
 export const assertPayloadWasCorrect = (spy, expectedPayload, offset=1) =>{
   return expect(spy.args[0][offset]).toMatchObject(expectedPayload);
 };
+/**
+ * Asserts that the specified text is present within
+ * the specified selector or page if no selector is
+ * specified
+ * @param text
+ * @param selector
+ */
+export const assertThatSeeText = ( wrapper, text, selector ) => {
+    let wrap = selector ? wrapper.find( selector ) : wrapper;
+    expect( wrap.html() ).toContain( text );
+};
 
 // /**
 // NOT SURE WHY NOT WORKING. WAS GIVING ERROR : TypeError: wrapper.find(...).isVisible is not a function

@@ -1,20 +1,9 @@
-import sinon from 'sinon';
+require( '../../../../injectglobals' );
 
-let faker = require( 'faker' );
-//
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
-
-
-import moxios from 'moxios';
+const testAction = helpers.testAction;
+const description = helpers.description;
 
 //Dependencies
-//import * as items from '../../../../../resources/assets/js/store/modules/items';
-
-import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
-import * as aTypes from '../../../../../../resources/assets/js/store/action-types'
-import * as gTypes from '../../../../../../resources/assets/js/store/getter-types'
-import Item from '../../../../../../resources/assets/js/models/Item'
-import Payload from '../../../../../../resources/assets/js/models/Payload'
 import GradeAssignment from '../../../../../../resources/assets/js/models/GradeAssignment'
 
 
@@ -23,127 +12,7 @@ var Component = require( '../../../../../../resources/assets/js/store/modules/gr
 let { getters, actions, mutations } = Component.default;
 
 
-const makeFakeServerResponse = () => {
-    return [
-        {
-            displayValue: 'A+',
-            calcValue: 98,
-            minScore: 97,
-            group: 0,
-            ordinal: 0,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'A',
-            calcValue: 95,
-            minScore: 93,
-            group: 0,
-            ordinal: 1,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'A-',
-            calcValue: 92,
-            minScore: 90,
-            group: 0,
-            ordinal: 2,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'B+',
-            calcValue: 88,
-            minScore: 87,
-            group: 0,
-            ordinal: 3,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'B',
-            calcValue: 85,
-            minScore: 83,
-            group: 0,
-            ordinal: 4,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'B-',
-            calcValue: 82,
-            minScore: 80,
-            group: 0,
-            ordinal: 5,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'C+',
-            calcValue: 78,
-            minScore: 77,
-            group: 0,
-            ordinal: 6,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'C',
-            calcValue: 75,
-            minScore: 73,
-            group: 0,
-            ordinal: 7,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'C-',
-            calcValue: 72,
-            minScore: 70,
-            group: 0,
-            ordinal: 8,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'D+',
-            calcValue: 68,
-            minScore: 67,
-            group: 0,
-            ordinal: 9,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'D',
-            calcValue: 65,
-            minScore: 63,
-            group: 0,
-            ordinal: 10,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'D-',
-            calcValue: 62,
-            minScore: 60,
-            group: 0,
-            ordinal: 11,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        },
-        {
-            displayValue: 'F',
-            calcValue: 55,
-            minScore: 50,
-            group: 0,
-            ordinal: 12,
-            id: faker.random.number(),
-            gradeId: faker.random.number()
-        }
-    ];
-};
+const makeFakeServerResponse = helpers.makeFakeServerResponse;
 
 describe ( "gradeAssignments  ", () => {
     let freq;

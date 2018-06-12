@@ -1,18 +1,9 @@
-import sinon from 'sinon';
+require( '../../../../injectglobals' );
 
-let faker = require( 'faker' );
-//
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
-
-
-import moxios from 'moxios';
+const testAction = helpers.testAction;
+const description = helpers.description;
 
 //Dependencies
-//import * as items from '../../../../../resources/assets/js/store/modules/items';
-
-import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
-import * as aTypes from '../../../../../../resources/assets/js/store/action-types'
-import * as gTypes from '../../../../../../resources/assets/js/store/getter-types'
 import Item from '../../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../../resources/assets/js/models/Payload'
 import GradeAssignment from '../../../../../../resources/assets/js/models/GradeAssignment'
@@ -20,13 +11,13 @@ import GradeAssignment from '../../../../../../resources/assets/js/models/GradeA
 
 var Component = require( '../../../../../../resources/assets/js/store/modules/analytics/gradedCounts' );
 
-let { getters, actions, mutations } = Component.default;
+let { getters, actions, mutations, state } = Component.default;
 
 
 describe( "gradedCounts  ", () => {
     let freq;
     let scores;
-    let state;
+    // let state;
     let letters;
 
     beforeEach( () => {
@@ -35,6 +26,8 @@ describe( "gradedCounts  ", () => {
         //will have frequency = 2
         freq = 2;
         scores = [];
+
+
     } );
 
     describe( " test environment is set up correctly ", () => {
@@ -47,11 +40,11 @@ describe( "gradedCounts  ", () => {
 
     describe( " helpers ", () => {
 
-        describe( " sortTotalScores ", () => {
+        describe.skip( " sortTotalScores ", () => {
 
         } );
 
-        describe( " sortGradeAssignments ", () => {
+        describe.skip( " sortGradeAssignments ", () => {
 
         } );
 
@@ -83,7 +76,7 @@ describe( "gradedCounts  ", () => {
         } );
     } );
 
-    describe( "getters", () => {
+    describe.skip( "getters", () => {
         beforeEach( () => {
         } );
 

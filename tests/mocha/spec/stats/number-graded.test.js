@@ -1,5 +1,5 @@
 //The name of the tested component
-import { see } from "../../helpers/test-helpers";
+import { assertThatSeeText } from "../../helpers/assertions";
 
 var compName = 'number-graded';
 //The path to the tested component
@@ -25,7 +25,7 @@ function moxiosTester( data, test ) {
 };
 
 
-describe( compName, () => {
+describe( compName, function () {
 
     let componentDivIdentifier = '.' + compName;
 
@@ -38,18 +38,13 @@ describe( compName, () => {
 
     let responseData;
 
-    beforeEach( () => {
-        // import and pass your custom axios instance to this method
-        moxios.install()
-
-        responseData = {
-            numStudents: helpers.randomInteger(),
-            numGraded: helpers.randomInteger()
-        };
+    beforeEach( function () {
 
         exam = factories.examFactory();
 
-        actions = {}
+        actions = {
+            [ ngaTypes.loadGradingProgress ]: sinon.spy()
+        }
         getters = {};
         mutations = {
             [ mTypes.updateItem ]: sinon.spy()
@@ -59,11 +54,22 @@ describe( compName, () => {
             getters, mutations, actions
         } );
 
-        wrapper = shallow( Component, {
+        //
+        // let route = 'dev/numgraded/exam/' + exam.id;
+        //
+        // moxios.stubRequest( route, {
+        //     status: 200,
+        //     response: [ responseData ]
+        // } );
+        //
+
+        wrapper = mount( Component, {
             store, localVue,
+            // When sync is false, the Vue component is rendered asynchronously.
             sync: false,
             propsData: { exam }
         } );
+
 
     } );
 
@@ -78,57 +84,52 @@ describe( compName, () => {
         } );
     } );
 
-    describe( 'async computed', () => {
+    describe( 'async computed', function () {
 
-        describe( 'examCountsAjax', () => {
-            it( 'loads correctly', () => {
-                expect('cat').toBe(39);
-
-                moxios.wait( function () {
-                    let request = moxios.requests.mostRecent();
-                    request.respondWith( {
-                        status: 200,
-                        response: [ data ]
-                    } ).then( function () {
-                        expect('cat').toBe(39);
-                        expect(true).toBe(false);
-                    } );
-                } )
-
-            } );
-            it( 'updates the total number of students', () => {
+        describe( 'examCountsAjax', function () {
+            it( 'loads and sets isLoading to false', function ( done ) {
 
                 moxios.wait( function () {
-                    let request = moxios.requests.mostRecent();
-                    request.respondWith( {
-                        status: 200,
-                        response: [ responseData ]
-                    } ).then( function () {
-                        //the test
-
-                        let pl = Payload.factory( {
-                            mutateSilently: true,
-                            obj: me.exam,
-                            updateProp: 'numberStudents',
-                            updateVal: _.toInteger( responseData.numStudents )
-                        } );
-
-                        expect(mutations[mTypes.updateItem].callCount).toBe(2);
-// expect(mutations[mTypes.updateItem].args[0][1])
-assertions.assertPayloadWasCorrect(mutations[mTypes.updateItem], pl)
-
-                    } );
-                } )
-            } );
-            it( 'stores the number of graded exams', function () {
-
+                    expect( wrapper.vm.isLoading ).toBe( false );
+                    //could add checks for subordinate html items, if we wanted....
+                    expect( wrapper.html() ).toContain( 'stat-display-table-row' );
+                    done();
+                } );
             } );
 
-            it( 'sets isLoading (which the indicator uses) to false when done', function () {
+            it( 'does not drive adam nuts', function (  ) {
+                // let j = wrapper.vm.examCountsAjax;
+                // j.then(function(){
+                expect( actions[ ngaTypes.loadGradingProgress ].callCount ).toBe( 1 );
+                // done();
+
+                // });
+                //
+                // let pl;
+                // moxios.wait( function () {
+                //     pl = Payload.factory( {
+                //         mutateSilently: true,
+                //         obj: exam,
+                //         updateProp: 'numberStudents',
+                //         updateVal: _.toInteger( responseData.numStudents )
+                //     } );
+                // //
+                // // } )
+                // //     .then( function () {
+                //         //check
+                //         expect( actions[ ngaTypes.loadGradingProgress ].callCount ).toBe( 1 );
+                //
+                //         // assertions.assertPayloadWasCorrect( mutations[ mTypes.updateItem ], pl );
+                //         done();
+                //     } )
+            } );
+
+
+            it.skip( 'sets isLoading (which the indicator uses) to false when done', function () {
 
             } );
 
-            it( 'returns false when the exam is undefined or newly created (id = -1)', function () {
+            it.skip( 'returns false when the exam is undefined or newly created (id = -1)', function () {
                 exam.id = -1
                 wrapper.setProps( { exam } );
                 expect( wrapper.vm.examCountsAjax ).toBe( false );
@@ -140,4 +141,5 @@ assertions.assertPayloadWasCorrect(mutations[mTypes.updateItem], pl)
         } );
     } );
 
-} );
+} )
+;

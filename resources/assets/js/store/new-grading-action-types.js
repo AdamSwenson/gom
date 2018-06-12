@@ -34,8 +34,6 @@ export const loadStandardGrades = 'loadStandardGrades';
 export const updateExamGrade = 'updateExamGrade';
 
 
-
-
 //grade assignments
 export const updateCutoff = 'updateCutoff';
 export const loadGradeAssignmentsFromServerData = 'loadGradeAssignmentsFromServerData';
@@ -55,6 +53,8 @@ export const loadGradePreferencesFromServer = 'loadGradePreferencesFromServer';
 // //roster and kumi
 // export const handleNewStudentStorageAndAssociation = 'handleNewStudentStorageAndAssociation';
 
+//stats and progress (counts of graded)
+export const loadGradingProgress = 'loadGradingProgress';
 
 //students
 export const loadStudents = 'loadStudents';

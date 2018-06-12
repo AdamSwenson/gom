@@ -7,7 +7,7 @@ import moxios from 'moxios';
 
 let faker = require( 'faker' );
 //helpers
-import { see, type } from '../../../helpers/test-helpers';
+import { type } from '../../../helpers/test-helpers';
 
 import Exam from "./../../../../../resources/assets/js/models/Exam";
 import Comment from "./../../../../../resources/assets/js/models/Comment";
@@ -15,6 +15,7 @@ import Payload from "./../../../../../resources/assets/js/models/Payload";
 import * as mTypes from "./../../../../../resources/assets/js/store/mutation-types";
 import * as gTypes from "./../../../../../resources/assets/js/store/getter-types";
 import GradeAssignment from "../../../../../resources/assets/js/models/GradeAssignment";
+import { assertThatSeeText } from "../../../helpers/assertions";
 
 
 const localVue = createLocalVue();

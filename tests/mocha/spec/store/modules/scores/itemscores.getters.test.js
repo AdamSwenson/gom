@@ -1,8 +1,8 @@
 //test libraries
+require( '../../../../injectglobals' );
 
-import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
+//
+// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 
 import getters from '../../../../../../resources/assets/js/store/modules/scores/itemscores.getters';

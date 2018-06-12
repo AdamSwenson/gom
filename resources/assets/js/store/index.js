@@ -83,7 +83,7 @@ import preferences from './modules/preferences/index';
 //timer
 import timerNew from './modules/timer/timer-new';
 import gradingTimesNew from './modules/newgrading/grading-times-new';
-import gradingCountsNew from './modules/newgrading/grading-counts-new';
+import gradingCountsNew from './modules/newgrading/grading-progress';
 //api
 
 

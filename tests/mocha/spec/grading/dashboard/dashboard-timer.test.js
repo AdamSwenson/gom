@@ -7,7 +7,7 @@ import moxios from 'moxios';
 import faker from 'faker';
 
 //helpers
-import { see } from '../../../helpers/test-helpers';
+import { assertThatSeeText } from '../../../helpers/assertions';
 import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
 import { factories } from '../../../../spec/helpers/vuex.spec.helpers';
 
@@ -99,24 +99,24 @@ describe( " dashboard-timer ", () => {
         });
 
         it( " current exam time ", () => {
-            see( wrapper, "02:00", '.current-exam-time' );
+            assertThatSeeText( wrapper, "02:00", '.current-exam-time' );
         } );
 
         it( " remaining exam time ", () => {
             gradingTime = faker.random.number();
             student.gradingTime = gradingTime;
-            see( wrapper, gradingTime, '.remaining-grading-time' );
+            assertThatSeeText( wrapper, gradingTime, '.remaining-grading-time' );
         } );
 
         it( " average exam time ", () => {
             numGraded = 100;
             totalTime = 100;
-            see( wrapper, "01:00", '.average-grading-time' );
+            assertThatSeeText( wrapper, "01:00", '.average-grading-time' );
         } );
 
         it( " total exam time ", () => {
             totalTime = 122;
-            see( wrapper, "02:02", '.total-grading-time' );
+            assertThatSeeText( wrapper, "02:02", '.total-grading-time' );
         } );
     } );
 

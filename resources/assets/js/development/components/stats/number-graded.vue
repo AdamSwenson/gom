@@ -2,8 +2,8 @@
     <div class="number-graded">
         <div class="box">
 
-        <p class="h4">Grading Progress</p>
-              <div v-if="isLoading" class="loadingArea"
+            <p class="h4">Grading Progress</p>
+            <div v-if="isLoading" class="loadingArea"
             >
                 <loading-indicator
                         :is-loading="isLoading"
@@ -70,11 +70,15 @@
 <script>
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
+
+    import * as ngaTypes from '../../../store/new-grading-action-types';
     import Payload from '../../../models/Payload';
 
     import loadingIndicator from '../helpers/loading-indicator.vue';
     import statDisplay from './stat-display-columns.vue';
     import StatDisplayTableRow from "./stat-display-table-row.vue";
+
+    import progressRequests from '../../../api/requests/progressRequests';
 
     export default {
 
@@ -102,33 +106,51 @@
         asyncComputed: {
 
             examCountsAjax: function () {
-                if(_.isUndefined(this.exam) || this.exam.id === -1) return false;
+                if ( _.isUndefined( this.exam ) ) return false;
 
-                let route = 'dev/numgraded/exam/' + this.exam.id;
                 let me = this;
 
-//                if( _.isInteger(me.exam.numberStudents) && _.isInteger(me.exam.numberGraded)) return true;
-
-                this.isLoading = true;
-
-                axios.get( route ).then( ( response ) => {
-                    let pl = Payload.factory( {
-                        mutateSilently: true,
-                        obj: me.exam,
-                        updateProp: 'numberStudents',
-                        updateVal: _.toInteger( response.data.numStudents )
-                    } );
-
-                    //store the number of students on the exam
-                    me.$store.commit( mTypes.updateItem, pl );
-
-                    //store the number of graded exams on the exam
-                    pl.updateProp = 'numberGraded';
-                    pl.updateVal = _.toInteger( response.data.numGraded );
-                    me.$store.commit( mTypes.updateItem, pl );
-
-                    me.isLoading = false;
+                let p = me.$store.dispatch( ngaTypes.loadGradingProgress, me.exam );
+                return p.then( function () {
+                    // resolve();
                 } );
+
+                //
+                // let me = this;
+                // return new Promise( function ( resolve, reject ) {
+                //     //if we don't have an exam, we can't do anything
+                //     if ( _.isUndefined( me.exam ) || me.exam.id === -1 ) {
+                //         reject();
+                //     }
+                //
+                //     me.isLoading = true;
+                //
+                //     me.
+                //
+                //     //request the data from the server
+                //     let p = progressRequests.getGradingProgressForExam( me.exam );
+                //     p.then( function ( data ) {
+                //
+                //         window.console.log( 'number-graded', 'res', 113, data );
+                //         let pl = Payload.factory( {
+                //             mutateSilently: true,
+                //             obj: me.exam,
+                //             updateProp: 'numberStudents',
+                //             updateVal: _.toInteger( data.numStudents )
+                //         } );
+                //
+                //         //store the number of students on the exam
+                //         me.$store.commit( mTypes.updateItem, pl );
+                //
+                //         //store the number of graded exams on the exam
+                //         pl.updateProp = 'numberGraded';
+                //         pl.updateVal = _.toInteger( data.numGraded );
+                //         me.$store.commit( mTypes.updateItem, pl );
+                //
+                //         me.isLoading = false;
+                //         resolve();
+                //     } );
+                // } );
 
             }
         },
@@ -173,11 +195,12 @@
 
         },
 
+        methods: {
+            ...progressRequests,
 
-        formatForDisplay: function ( value ) {
-            return _.round( value );
+            formatForDisplay: function ( value ) {
+                return _.round( value );
+            }
         }
-
-
     }
 </script>

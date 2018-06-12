@@ -1,16 +1,7 @@
+require( '../../../../injectglobals' );
 
-let sinon = require( 'sinon' );
-let faker = require( 'faker' );
-
-//Dependencies
-import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
-import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
+const testAction = helpers.testAction;
+const description = helpers.description;
 
 //tested object
 import * as Component from '../../../../../../resources/assets/js/store/modules/roster/roster.actions';
@@ -25,6 +16,7 @@ describe( "roster | actions ", function () {
     let getters, gettersStub, students, kumis;
     let numberStudentsAndKumis = 2;
     let expectedMutations;
+
     beforeEach( function () {
 
         students = [];
@@ -41,8 +33,6 @@ describe( "roster | actions ", function () {
 
         expectedMutations = [];
     } );
-
-
 
 
     describe( description( "addStudentsToKumis  " ), () => {
@@ -64,51 +54,51 @@ describe( "roster | actions ", function () {
         } );
     } );
 
-} );
+
+    describe( description( " removeStudentsFromKumis " ), () => {
+        it( " happy path ", () => {
 
 
-describe( description( " removeStudentsFromKumis " ), () => {
-    it( " happy path ", () => {
-
-
-        _.forEach( kumis, function ( kumi ) {
-            _.forEach( students, function ( student ) {
-                let pl = {
-                    type: 'disassociateStudentFromKumi',
-                    payload: Payload.factory( { student, kumi } )
-                };
-                expectedMutations.push( pl );
+            _.forEach( kumis, function ( kumi ) {
+                _.forEach( students, function ( student ) {
+                    let pl = {
+                        type: 'disassociateStudentFromKumi',
+                        payload: Payload.factory( { student, kumi } )
+                    };
+                    expectedMutations.push( pl );
+                } );
             } );
+
+            let payload = { students: students, kumis: kumis };
+
+            testAction( actions.removeStudentsFromKumis, payload, {}, expectedMutations, { verbose: false } );
+
         } );
-
-        let payload = { students: students, kumis: kumis };
-
-        testAction( actions.removeStudentsFromKumis, payload, {}, expectedMutations, { verbose: false } );
-
     } );
-} );
 
 
-describe( description( " removeStudentsFromRoster " ), () => {
-    it( " happy path ", () => {
+    describe( description( " removeStudentsFromRoster " ), () => {
+        it( " happy path ", () => {
 
 
-        _.forEach( kumis, function ( kumi ) {
-            _.forEach( students, function ( student ) {
-                let pl = {
-                    type:  mTypes.removeStudentFromRoster,
-                    payload: Payload.factory( { student, kumi } )
-                };
-                expectedMutations.push( pl );
+            _.forEach( kumis, function ( kumi ) {
+                _.forEach( students, function ( student ) {
+                    let pl = {
+                        type: mTypes.removeStudentFromRoster,
+                        payload: Payload.factory( { student, kumi } )
+                    };
+                    expectedMutations.push( pl );
+                } );
             } );
+
+            let payload = { students: students, kumis: kumis };
+
+            testAction( actions.removeStudentsFromRoster, payload, {}, expectedMutations, { verbose: false } );
+
         } );
+    } )
 
-        let payload = { students: students, kumis: kumis };
-
-        testAction( actions.removeStudentsFromRoster, payload, {}, expectedMutations, { verbose: false } );
-
-    } );
-} );
+});
 
 //
 // describe( description( " createStudent " ), () => {

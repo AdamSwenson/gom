@@ -1,9 +1,13 @@
 //test libraries
+require( '../../../../injectglobals' );
 
-let sinon = require( 'sinon' );
-let faker = require( 'faker' );
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
+const testAction = helpers.testAction;
+const description = helpers.description;
+//
+// let sinon = require( 'sinon' );
+// let faker = require( 'faker' );
+//
+// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 //Dependencies
 import GradeAssignment from '../../../../../../resources/assets/js/models/GradeAssignment';

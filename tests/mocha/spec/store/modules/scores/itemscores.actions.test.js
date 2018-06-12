@@ -1,28 +1,19 @@
+require( '../../../../injectglobals' );
+
 //test libraries
-
-import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-
-let sinon = require( 'sinon' );
-let faker = require( 'faker' );
-
-import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
-
+// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
+const description = helpers.description;
+const testAction = helpers.testAction;
 //Dependencies
-import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
-import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
-import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
+// import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types'
+// import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
+// import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
+// import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
+// import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
 
 import PayloadScore from '../../../../../../resources/assets/js/models/PayloadScore';
-import ItemScore from '../../../../../../resources/assets/js/models/ItemScore';
-import Item from '../../../../../../resources/assets/js/models/Item';
-import Student from '../../../../../../resources/assets/js/models/Student';
-import Exam from '../../../../../../resources/assets/js/models/Exam';
-
 
 import actions from '../../../../../../resources/assets/js/store/modules/scores/itemscores.actions';
-
 
 import { itemscores } from "../../../../helpers/state-factories";
 
@@ -352,4 +343,5 @@ describe( "itemscores | actions ", function () {
     } );
 
 } );
+
 

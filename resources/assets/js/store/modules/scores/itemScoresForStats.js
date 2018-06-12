@@ -7,8 +7,12 @@
 
 import Vue from 'vue'
 import * as mTypes from '../../mutation-types'
-import * as aTypes from '../../action-types'
+import * as aTypes from '../../action-types';
 import * as gTypes from '../../getter-types';
+
+import * as nggTypes from '../../new-grading-getter-types';
+
+// require ('../../inject-types');
 
 import Payload from '../../../models/Payload'
 import Kumi from '../../../models/Kumi';
@@ -113,8 +117,6 @@ const actions = {
 const getters = {
 
 
-
-
     /**
      * Returns the item scores without identifying student information
      * for the item
@@ -124,7 +126,7 @@ const getters = {
      * @param item
      * @returns {function(*=)}
      */
-    getAnonScoresForItemStats: ( state, getters, rootState, item ) =>
+    [  nggTypes.getAnonScoresForItemStats]: ( state, getters, rootState, item ) =>
         ( item ) => {
             // window.console.log( 'scoresForStats', 'getStatsForitem', 70, item, state);
 
