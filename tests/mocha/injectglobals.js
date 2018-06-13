@@ -7,7 +7,12 @@ global.assertions = require('./helpers/assertions');
 
 //really commonly used stuff
 global.assertExpectedDivIsDisplayed = global.assertions.assertExpectedDivIsDisplayed;
+//these were imported directly in many older tests, this make it easier
+global.testAction = helpers.testAction;
+global.description = helpers.description;
 
+
+//Overly explict imports.... thought would solve a problem due to something else
 import * as gTypes from '../../resources/assets/js/store/getter-types';
 global.gTypes = gTypes;
 

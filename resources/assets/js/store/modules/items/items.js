@@ -125,7 +125,7 @@ const getters = {
             }
             // window.console.log( 'items', 'recurse', 153, currentNode );
             // step 4
-            let item = getters.getItemBySerialNumber( currentNode.data );
+            let item = getters[gTypes.getItemBySerialNumber]( currentNode.data );
             // holdForIdLoading(item);
             // window.console.log( 'items', 'recurse', 193, 'post hold', item);
             if ( !_.isUndefined( item ) ) {
@@ -362,7 +362,6 @@ const mutations = {
     }
 
 };
-//Object.assign( {}, Objects.mutations, Orderings.mutations ); //Orderings.mutations ); //require( './items.obj.mutations' );
 
 export default {
     actions,

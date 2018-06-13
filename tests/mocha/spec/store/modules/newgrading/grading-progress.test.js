@@ -16,7 +16,7 @@ import * as Component from '../../../../../../resources/assets/js/store/modules/
 
 let obj = Component.default;
 //tested methods
-let { actions } = obj;
+let { actions, getters } = obj;
 
 
 describe( "grading-progress ", function () {

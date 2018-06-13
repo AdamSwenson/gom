@@ -1,11 +1,14 @@
 
-//The name of the tested component
 var compName = 'items.obj.mutations';
 //The path to the tested component
 var Component = require( '../../../../../../resources/assets/js/store/modules/items/items.obj.mutations.js' );
 
-
 require( '../../../../injectglobals' );
+
+import { addNodes, makeState, makeRootState, makeTestPayload, makeMutationPayload } from "../../../../helpers/item-test-helpers";
+
+//tested object
+let mutations = Component;
 
 //tested object
 
@@ -13,27 +16,324 @@ require( '../../../../injectglobals' );
 describe( compName, () => {
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
-    
-    beforeEach( () => {
+    let state, rootState, mutationPayload;
 
+    beforeEach( function () {
+        state = makeState();
+        rootState = makeRootState();
+        payload = makeTestPayload();
+        mutationPayload = makeMutationPayload();
+        item = factories.itemFactory();
+        ;
     } );
 
+    describe( description( mTypes.addItemIndexMapping ), function () {
+        it( "happy path ", function () {
 
-    describe( " actions", () => {
-        it.skip( 'awaits tests', () => {
-             } );
+            //call
+            mutations[ mTypes.addItemIndexMapping ]( state, rootState, mutationPayload );
+
+            //check
+            expect( state.indexMap.get( mutationPayload.index ) ).toBe( mutationPayload.id );
+        } );
+
+        describe.skip( "unhappy paths | ", function () {
+            it( "payload does not contain index  | ", function () {
+                // mutations[ mTypes.setItem ]( state, rootState, payload );
+                // expect( state.items[ payload.obj.id ] ).toBe( payload.obj );
+            } );
+
+            it( "payload does not contain id  | ", function () {
+                // mutations[ mTypes.setItem ]( state, rootState, payload );
+                // expect( state.items[ payload.obj.id ] ).toBe( payload.obj );
+            } );
+        } );
     } );
 
+    describe( description( 'addMappedItem' ), function () {
+        //todo
+    } );
 
-    describe( " getters", () => {
-        it.skip( 'awaits tests', () => {
+    describe( description( mTypes.addNewItem ), function () {
+
+        describe( description( "Happy paths " ), function () {
+
+            //This is the main use case
+            it( "no preexisting value to overwrite ", function () {
+                //let index = 100;
+                //capture starting length, since should change
+                let prevLen = state.items.length;
+                //Make an object which has a higher index than the length
+                //since the index starts at 0, this will give the next whole number as index
+                let index = prevLen;
+                // window.console.log( 'items.mutations.spec', 'index', 72, index );
+                let item = factories.itemFactory( { index: index } );
+                let payload = Payload.factory( { obj: item } );
+
+                //call
+                mutations[ mTypes.addNewItem ]( state, payload );
+                // window.console.log( 'items.mutations.spec', 'state', 101, state );
+
+                //check
+                //make sure expected number is there
+                let newLen = state.items.length;
+                expect( newLen ).toBe( prevLen + 1 );
+                //make sure the new item is who we expect it to be
+                expect( state.items[ index ] ).toBe( item );
+            } );
+
+        } );
+
+        describe( "unhappy paths | ", function () {
+            describe( description( 'payload is NOT Payload' ), function () {
+                it( " payload is Item", function () {
+                    //todo
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( state, item );
+                    //
+                    //     //check
+                    //     expect( state.items[ item.index ] ).toBe( item );
+                    //     // expect( state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
+                } );
+
+                it( " payload is empty", function () {
+                    //todo
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( state, item );
+                    //
+                    //     //check
+                    //     expect( state.items[ item.index ] ).toBe( item );
+                    //     // expect( state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
+                } );
+            } );
         } );
     } );
 
 
-    describe( " mutations ", () => {
-        it.skip( 'awaits tests', () => {
-        } );
+    describe( description( 'cleanupEmptyItems' ), function () {
+        //todo
     } );
+
+    describe( description( 'onUpdate' ), function () {
+        //todo
+    } );
+
+
+    describe( description( mTypes.setItem ), function () {
+        //Two main cases.
+        //(1) Pure insertion -- where there is no pre-existing object
+        // at the index
+        //(2) Overwrite -- object at the index which is overwritten
+
+        describe( description( "Happy paths" ), function () {
+
+            it( "no preexisting value to overwrite ", function () {
+                //let index = 100;
+                //capture starting length, since should change
+                let prevLen = state.items.length;
+                //Make an object which has a higher index than the length
+                //since the index starts at 0, this will give the next whole number as index
+                let index = prevLen;
+                // window.console.log( 'items.mutations.spec', 'index', 72, index );
+                let item = factories.itemFactory(index );
+                let payload = Payload.factory( { obj: item } );
+                // window.console.log( 'items.mutations.spec', 'payload', 156, payload );
+
+                //call
+                mutations[ mTypes.setItem ]( state, payload );
+                // window.console.log( 'items.mutations.spec', 'state', 159, state );
+
+                //check
+                //make sure expected number is there
+                let newLen = state.items.length;
+                expect( newLen ).toBe( prevLen + 1 );
+                //make sure the new item is who we expect it to be
+                expect( state.items[ index ] ).toBe( item );
+
+                //
+                // let payload = Payload.factory( { obj: item } );
+                //
+                // //call
+                // mutations[ mTypes.setItem ]( state, payload );
+                //
+                // //check
+                // expect( state.items[ item.index ] ).toBe( item );
+            } );
+
+            it( "overwrite preexisting value ", function () {
+                let index = 1;
+                let item = factories.itemFactory( index  );
+                let payload = Payload.factory( { obj: item } );
+                //capture starting length, since should change
+                let prevLen = state.items.length;
+
+                //call
+                mutations[ mTypes.setItem ]( state, payload );
+                // window.console.log( 'items.mutations.spec', 'state', 101, state );
+
+                //check
+                //make sure expected number is there
+                let newLen = state.items.length;
+                expect( newLen ).toBe( prevLen );
+                //make sure the new item is who we expect it to be
+                expect( state.items[ index ] ).toBe( item );
+            } );
+        } );
+
+        describe.skip( description( 'Unhappy paths' ), function () {
+            describe( description( 'payload is NOT Payload' ), function () {
+                it( " payload is Item", function () {
+                    //todo
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( state, item );
+                    //
+                    //     //check
+                    //     expect( state.items[ item.index ] ).toBe( item );
+                    //     // expect( state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
+                } );
+
+                it( " payload is empty", function () {
+                    //todo
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( state, item );
+                    //
+                    //     //check
+                    //     expect( state.items[ item.index ] ).toBe( item );
+                    //     // expect( state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
+                } );
+            } );
+
+            it( "payload.obj not Item | ", function () {
+
+                // mutations[ mTypes.setItem ]( state, mutationPayload );
+                // console.log( 'addItems', state.items , mutationPayload.index);
+                // expect( state.items[ mutationPayload.index] ).toBe( mutationPayload.obj );
+                // mutations[ mTypes.setItem ]( state, rootState, payload );
+                // expect( state.items[ payload.obj.id ] ).toBe( payload.obj );
+            } );
+
+        } );
+
+    } );
+
+
+
+    describe( description( mTypes.updateComment ), function () {
+        //todo
+    } );
+
+    describe( description( mTypes.updateItem ), function () {
+
+        describe( "Happy paths  | ", function () {
+            it( "overwrite preexisting value ", function () {
+                let index = 1;
+                let item = factories.itemFactory( { index: index } );
+                let payload = Payload.factory( { index: index, updateProp: 'name', updateVal: item.name } );
+                //capture starting length, since should change
+                let prevLen = state.items.length;
+                // window.console.log( 'items.mutations.spec', 'prev', 67, state, prevLen );
+
+                //call
+                mutations[ mTypes.updateItem ]( state, payload );
+                // window.console.log( 'items.mutations.spec', 'state', 101, state );
+                //check
+                //make sure expected number is there
+                let newLen = state.items.length;
+                expect( newLen ).toBe( prevLen );
+                //make sure the new item is who we expect it to be
+                expect( state.items[ index ].name ).toBe( item.name );
+            } );
+
+        } );
+
+        describe.skip( 'unhappy paths | ', function () {
+            it( "no preexisting value to overwrite", function () {
+                let targetIndex = 2;
+                let item = state[ targetIndex ];
+                let payload = Payload.factory( { obj: item } );
+
+                //call
+                mutations[ mTypes.setItem ]( state, payload );
+
+                //check
+                expect( state.items[ targetIndex ] ).toBe( item );
+            } );
+
+            it( "payload.obj is undefined ", function () {
+                // mutations[ mTypes.setItem ]( state, mutationPayload );
+                // console.log( 'addItems', state.items , mutationPayload.index);
+                // expect( state.items[ mutationPayload.index] ).toBe( mutationPayload.obj );
+                // mutations[ mTypes.setItem ]( state, rootState, payload );
+                // expect( state.items[ payload.obj.id ] ).toBe( payload.obj );
+            } );
+
+            it( "payload is NOT Payload ", function () {
+            } );
+
+            it( "payload is Item", function () {
+                // it( "happy path", function () {
+                //     //call
+                //     mutations[ mTypes.setItem ]( state, item );
+                //
+                //     //check
+                //     expect( state.items[ item.index ] ).toBe( item );
+                //     // expect( state.items[ item.index ] ).toBe( item );
+                // } );
+                //
+                // describe( "unhappy paths | ", function () {
+                // } );
+            } );
+
+        } );
+
+    } );
+
+    describe( description( mTypes.updateItemSilently ), function () {
+        //todo
+    } );
+    describe( description( mTypes.updateOrder ), function () {
+        //todo
+    } );
+
 
 } );
+
+
+// it( "overwrite preexisting value ", function () {
+//     let index = 1;
+//     let item = factories.itemFactory( { index: index } );
+//     let payload = Payload.factory( { obj: item } );
+//     //capture starting length, since should change
+//     let prevLen = state.items.length;
+//     // window.console.log( 'items.mutations.spec', 'prev', 67, state, prevLen );
+//
+//     //call
+//     mutations[ mTypes.addNewItem ]( state, payload );
+//     window.console.log( 'items.mutations.spec', 'state', 101, state );
+//     //check
+//     //make sure expected number is there
+//     let newLen = state.items.length;
+//     expect( newLen ).toBe( prevLen );
+//     //make sure the new item is who we expect it to be
+//     expect( state.items[ index ] ).toBe( item );
+// } );

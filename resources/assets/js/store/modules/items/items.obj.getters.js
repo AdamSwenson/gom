@@ -33,7 +33,6 @@ const isItemsEmpty = ( state ) => {
 
 module.exports = {
 
-
     /**
      * Returns all stored item objects in whatever
      * data structure is housing them.
@@ -50,6 +49,61 @@ module.exports = {
     },
 
     /**
+     * This returns the indexes stored in each item in a list.
+     * NB, these may not correspond with the index of each item's location in state.items
+     * To retrieve the indexes of state.items list holding items, use getAllIndexesList
+     * @param state
+     * @param getters
+     * @param rootState
+     */
+    getAllItemIndexes: ( state, getters, rootState ) => {
+        let out = [];
+        for (let item in state.items) {
+            out.push( item.index );
+        }
+        return out;
+    },
+
+    /**
+     * Returns the list indexes of the items in state.items
+     * NB, This does not return the indexes which are stored in each
+     * item. That is retrieved via getAllItemIndexes
+     * @param state
+     * @param getters
+     * @param rootState
+     * @returns {Array}
+     */
+    getAllIndexesList: function ( state, getters, rootState ) {
+        if ( isItemsEmpty( state ) ) return []
+        // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
+
+        let out = [];
+        for (let [ key, val ] in state.items) {
+            out.push( key );
+        }
+        return out;
+
+        //Leaving this here, in case someday we go back to items being an object
+        // return Object.keys( state.items )
+    },
+
+    /**
+     * Return list of Item objects
+     * @deprecated
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    [ gTypes.getAllItemsList ]: ( state, getters , rootState) => {
+//alias.
+// used to be used when items was different data structure
+//         return this.getAllItems( state, getters );
+        return state.items;
+
+    },
+
+    /**
      * Returns the desired Item object
      * Payload can have any of the following identifiers,
      * used in descending order:
@@ -60,7 +114,7 @@ module.exports = {
      * @param getters
      * @param payload Object containing Item identifier
      */
-    // getItem: ( state, getters ) => ( payload ) => {
+    // getItem: ( state, getters, rootState ) => ( payload ) => {
     [gTypes.getItem ]: function ( state, getters, rootState, payload ) {
         // console.log('getItem', state, payload);
         if ( isItemsEmpty( state ) ) return false;
@@ -74,7 +128,6 @@ module.exports = {
             }
         }
     },
-
 
     /**
      * Returns the item object with the given database id.
@@ -103,7 +156,6 @@ module.exports = {
             return r[ 0 ];
         }( state, id )
     },
-
 
     /**
      * Returns the item object residing at the
@@ -181,63 +233,6 @@ module.exports = {
             } );
             return r[ 0 ];
         })( state, serialNumber )
-    },
-
-
-    /**
-     * This returns the indexes stored in each item in a list.
-     * NB, these may not correspond with the index of each item's location in state.items
-     * To retrieve the indexes of state.items list holding items, use getAllIndexesList
-     * @param state
-     * @param getters
-     * @param rootState
-     */
-    getAllItemIndexes: ( state, getters, rootState ) => {
-        let out = [];
-        for (let item in state.items) {
-            out.push( item.index );
-        }
-        return out;
-    },
-
-    /**
-     * Returns the list indexes of the items in state.items
-     * NB, This does not return the indexes which are stored in each
-     * item. That is retrieved via getAllItemIndexes
-     * @param state
-     * @param getters
-     * @param rootState
-     * @returns {Array}
-     */
-    getAllIndexesList: function ( state, getters, rootState ) {
-        if ( isItemsEmpty( state ) ) return []
-        // [gTypes.getAllIndexesList ]: ( state, getters, rootState, payload ) => {
-
-        let out = [];
-        for (let [ key, val ] in state.items) {
-            out.push( key );
-        }
-        return out;
-
-        //Leaving this here, in case someday we go back to items being an object
-        // return Object.keys( state.items )
-    }
-    ,
-
-    /**
-     * Return list of Item objects
-     * @deprecated
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns []
-     */
-    [ gTypes.getAllItemsList ]: ( state, getters , rootState) => {
-//alias.
-// used to be used when items was different data structure
-//         return this.getAllItems( state, getters );
-        return state.items;
-
     },
 
     /**

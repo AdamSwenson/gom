@@ -38,11 +38,11 @@ export const factories = {
     },
 
 
-    itemFactory: ( index ) => {
+    itemFactory: ( index, id ) => {
         let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
 
         let e = new Item();
-        e.id = faker.random.number();
+        e.id = _.isUndefined(id) ? faker.random.number() : id;
         e.index = idx;
         e.name = faker.company.bsNoun();
         e.text = faker.company.bsNoun();

@@ -30,7 +30,7 @@ module.exports = {
     [mTypes.insertNodeIntoOrder]: ( state, payload ) => {
         return new Promise( ( resolve, reject ) => {
 
-            window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+            // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
 
             let { index, objNode, parentNode } = payload;
 

@@ -1,38 +1,26 @@
-
 //The name of the tested component
 var compName = 'items.order.state';
 //The path to the tested component
 var Component = require( '../../../../../../resources/assets/js/store/modules/items/items.order.state.js' );
 
-
 require( '../../../../injectglobals' );
+import Node from "../../../../../../resources/assets/js/models/Node";
 
-//tested object
-
+let state = Component;
 
 describe( compName, () => {
-    let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
-    
-    beforeEach( () => {
+
+    beforeEach( function () {
 
     } );
 
-
-    describe( " actions", () => {
-        it.skip( 'awaits tests', () => {
-             } );
-    } );
-
-
-    describe( " getters", () => {
-        it.skip( 'awaits tests', () => {
-        } );
-    } );
-
-
-    describe( " mutations ", () => {
-        it.skip( 'awaits tests', () => {
+    describe( description( 'itemMap properties' ), function () {
+        it( "itemMap is expected Node object ", function () {
+            // window.console.log( 'orderings.spec', 'state', 41, state );
+            expect( state.itemMap.data ).toBe( 1 );
+            expect( state.itemMap.parent ).toBe( 1 );
+            expect( state.itemMap.children.length ).toBe( 0 )
+            expect(state.itemMap instanceof Node).toBe(true);
         } );
     } );
 

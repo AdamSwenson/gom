@@ -68,16 +68,6 @@ import actions from './items.obj.actions'
 import getters from './items.obj.getters'
 import state from './items.obj.state'
 
-// let state = require('./items.obj.state')
-// let getters = require('./items.obj.getters')
-// const actions = require( './items.obj.actions' );
-// const mutations = require( './items.obj.mutations' );
-//
-// window.console.log( 'items.obj', 'getters before check ^^^^^^^^^^^^^^^^^^^^^^', 68, getters);
-    //Object.assign( {}, getters_both, objGetters, Orderings.getters );
-// if(typeof getters.default !== 'undefined'){
-//     getters = getters.default;
-// }
 
 
 export default {
