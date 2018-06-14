@@ -117,7 +117,6 @@ const actions = {
         //call the mutation
         commit( ngmTypes.setActiveStudent, pl );
 
-
         //start timer if the preference says to
         if(getters[nggTypes.getGradingPreference]('shouldTimerAutomaticallyStart')){
             dispatch(ngaTypes.startExamTimer);

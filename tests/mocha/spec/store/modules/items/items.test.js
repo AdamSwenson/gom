@@ -13,6 +13,11 @@ import Item from "../../../../../../resources/assets/js/models/Item";
 
 //tested object
 
+import { createLocalVue } from 'vue-test-utils';
+
+const localVue = createLocalVue();
+localVue.use( Vuex )
+
 let { actions, getters, mutations, state } = Component.default;
 
 describe( compName, () => {
@@ -33,7 +38,7 @@ describe( compName, () => {
             } );
 
             describe( description( "Happy path" ), function () {
-                it( "parent defined", function (done) {
+                it( "parent defined", function ( done ) {
 
                     let state = { itemMap: new Node( 0, 0 ) };
                     makeFilledState( state, 5 );
@@ -70,7 +75,7 @@ describe( compName, () => {
 
 
     describe( 'getters (defined in items, not imported)', () => {
-        let rootId, root, parentId;
+        let rootId, root, parentId, store;
 
         beforeEach( function () {
             parent = new Item();
@@ -86,8 +91,13 @@ describe( compName, () => {
             parent = new Node( parentId, rootId );
             root.children.push( parent );
 
-            // expect( root.children.length ).toBe( 1 );
+            getters[ gTypes.getItemBySerialNumber ] = ( state, getters ) => {
+                return factories.itemFactory();
+            };
 
+            store = new Vuex.Store( {
+                state, getters
+            } );
         } );
 
 
@@ -96,9 +106,6 @@ describe( compName, () => {
             it( "happy path", function () {
                 //prep
                 // window.console.log( 'items.spec', 'fs', 98, filledState );
-                getters[gTypes.getItemBySerialNumber] = ( state, getters ) => {
-                    return factories.itemFactory();
-                };
                 //call
                 let result = getters.getOrderForSync( filledState, getters, {} );
                 expect( result ).toBeTruthy();
@@ -127,11 +134,15 @@ describe( compName, () => {
                     expectedIds.push( a.id );
                     state.items.push( a );
                 }
+
+                store = new Vuex.Store( {
+                    state, getters
+                } );
             } );
 
             it( "happy path ", function () {
                 // window.console.log( 'items.spec', 'state', 275, state );
-                let result = getters[ gTypes.getSortedIds ]( state, getters );
+                let result = store.getters[ gTypes.getSortedIds ];
                 var expectedIds = expectedIds;
                 let tester = function ( currentNode ) {
                     // window.console.log( 'items.spec', 'tester', 182, currentNode);
@@ -170,8 +181,12 @@ describe( compName, () => {
                 for (let i = 0; i < numItems; i++) {
                     state.items[ i ] = factories.itemFactory( 1, i );
                 }
+
+                store = new Vuex.Store( {
+                    state, getters
+                } );
                 //call and check
-                expect( getters.canSync( state, getters, {} ) ).toBe( true );
+                expect( store.getters.canSync ).toBe( true );
             } );
 
             it( "one item lacks id", function () {
@@ -183,14 +198,22 @@ describe( compName, () => {
                     ;
                 }
                 state.items.push( new Item() );
+
+                store = new Vuex.Store( {
+                    state, getters
+                } );
                 //call and check
-                expect( getters.canSync( state, getters, {} ) ).toBe( false );
+                expect( store.getters.canSync ).toBe( false );
             } );
             it( "empty items list", function () {
                 //prep
                 state.items = [];
+
+                store = new Vuex.Store( {
+                    state, getters
+                } );
                 //call and check
-                expect( getters.canSync( state, getters, {} ) ).toBe( false );
+                expect( store.getters.canSync ).toBe( false );
             } );
         } );
 

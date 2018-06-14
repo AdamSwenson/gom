@@ -1,6 +1,6 @@
 
 //The name of the tested component
-var compName = 'grading-preferences';
+var compName = 'preferences-grading';
 //The path to the tested component
 var Component = require( '../../../../../../resources/assets/js/store/modules/preferences/grading-preferences.js' );
 

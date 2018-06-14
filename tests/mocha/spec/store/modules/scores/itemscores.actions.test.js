@@ -20,7 +20,7 @@ import { itemscores } from "../../../../helpers/state-factories";
 let { makePopulatedState, makeState } = itemscores;
 
 
-describe( "itemscores | actions ", function () {
+describe( "itemscores.actions ", function () {
     let state;
     let testExam;
     let testItem;

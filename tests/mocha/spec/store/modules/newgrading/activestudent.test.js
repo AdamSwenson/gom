@@ -1,3 +1,5 @@
+import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
+
 require( '../../../../injectglobals' );
 
 const testAction = helpers.testAction;
@@ -9,6 +11,7 @@ import * as Component from '../../../../../../resources/assets/js/store/modules/
 
 
 import Payload from '../../../../../../resources/assets/js/models/Payload';
+import PayloadTime from '../../../../../../resources/assets/js/models/PayloadTime';
 
 //tested object
 let { getters, actions, mutations } = Component.default;
@@ -93,12 +96,11 @@ describe( " activestudent (new)", function () {
 
     describe( "mutations  ", function () {
         describe( description( ngmTypes.setActiveStudent ), function () {
-
             it( "happy path ", function () {
                 state.activeStudent = student;
                 let pl = Payload.factory( { obj: student } );
-                mutations[ ngmTypes.setActiveStudent ]( state, {}, pl );
-                expect( state.activeStudent ).toBe( student );
+                mutations[ ngmTypes.setActiveStudent ]( state, pl );
+                expect( state.activeStudent ).toMatchObject( student );
             } );
         } );
 
@@ -106,16 +108,15 @@ describe( " activestudent (new)", function () {
             it( "happy path  ", function () {
                 state.activeStudent = student;
                 let time = faker.random.number();
-                let pl = Payload.factory( { num: time } );
+                let pl = PayloadTime.factory( { time: time } );
 
-                mutations[ ngmTypes.setActiveStudentTime ]( state, {}, pl );
-                expect( state.activeStudent.gradingTime ).toBe( time );
+                mutations[ ngmTypes.setActiveStudentTime ]( state, pl );
+                expect( student.gradingTime ).toBe( time );
             } );
         } );
     } );
 
     describe( "actions  ", function () {
-
 
         /**
          * This is the omnibus handler for resetting
@@ -130,7 +131,7 @@ describe( " activestudent (new)", function () {
          */
         describe( ngaTypes.resetActiveStudent, function () {
 
-            it( "happy path ", () => {
+            it( "happy path ", ( done ) => {
                 let test = factories.studentFactory(); //todo make random
                 let state = makeState(); //{Index: null, Id: null, student: null};
                 let action = actions[ ngaTypes.resetActiveStudent ];
@@ -142,25 +143,27 @@ describe( " activestudent (new)", function () {
                 ];
 
                 testAction( action, test.studentIndex, state, expectedMutations, { verbose: true } );
-
+                done();
             } );
 
-        } ),
+        } );
 
-            describe( ngaTypes.setStudentAsActive + " | ", function () {
-                describe( "Happy paths  | ", function () {
-                    it( "input is Student object ", function () {
-                        let test = factories.studentFactory(); //todo make random
-                        let state = makeState(); //{Index: null, Id: null, student: null};
-                        let action = actions[ ngaTypes.setStudentAsActive ];
+        describe( ngaTypes.setStudentAsActive, function () {
+            it( "sets student as active when input is Student object ", function () {
+                let student = factories.studentFactory();
+                let state = makeState(); //{Index: null, Id: null, student: null};
+                let action = actions[ ngaTypes.setStudentAsActive ];
+                let expMutations = [ {
+                    type: ngmTypes.setActiveStudent,
+                    payload: Payload.factory( { obj: student, mutateSilently: true } )
+                } ];
 
-                        testAction( action, test.studentIndex, state, [
-                                { type: ngmTypes.setActiveStudent, payload: Payload.factory( { obj: test } ) }
-                            ],
-                            { verbose: true } );
-                    } );
-                } );
+                getters[ nggTypes.getGradingPreference ] = () => {
+                    return false;
+                }
+                testAction( action, student, state, expMutations, { getters, verbose: true } );
             } );
+        } );
 
         // describe( ngaTypes.setTime + " | ", function () {
         //     it( "happy path ", function () {

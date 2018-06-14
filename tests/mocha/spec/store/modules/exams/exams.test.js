@@ -8,20 +8,25 @@ var Component = require( '../../../../../../resources/assets/js/store/modules/ex
 require( '../../../../injectglobals' );
 
 //tested object
+let obj = Component.default;
 
 describe( compName, () => {
-    let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
-    
-    beforeEach( () => {
 
+    describe( " has expected methods ", () => {
+        it( 'actions', () => {
+            expect(_.has(obj, 'actions')).toBe(true);
+        } );
+        it( 'getters', () => {
+            expect(_.has(obj, 'getters')).toBe(true);
+        } );
+        it( 'mutations', () => {
+            expect(_.has(obj, 'mutations')).toBe(true);
+        } );
+        it( 'state', () => {
+            expect(_.has(obj, 'state')).toBe(true);
+        } );
     } );
 
-
-    describe( " actions", () => {
-        it.skip( 'awaits tests', () => {
-             } );
-    } );
 
 
 } );

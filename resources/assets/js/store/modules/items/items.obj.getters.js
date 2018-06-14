@@ -44,7 +44,7 @@ module.exports = {
      * @returns []
      */
     // getAllItems: ( state, getters, rootState ) => {
-    [gTypes.getAllItems]: function ( state, getters, rootState ) {
+    [ gTypes.getAllItems ]: function ( state, getters, rootState ) {
         return state.items;
     },
 
@@ -95,7 +95,7 @@ module.exports = {
      * @param payload
      * @returns []
      */
-    [ gTypes.getAllItemsList ]: ( state, getters , rootState) => {
+    [ gTypes.getAllItemsList ]: ( state, getters, rootState ) => {
 //alias.
 // used to be used when items was different data structure
 //         return this.getAllItems( state, getters );
@@ -114,8 +114,8 @@ module.exports = {
      * @param getters
      * @param payload Object containing Item identifier
      */
-    // getItem: ( state, getters, rootState ) => ( payload ) => {
-    [gTypes.getItem ]: function ( state, getters, rootState, payload ) {
+    [ gTypes.getItem ]: ( state, getters, rootState ) => ( payload ) => {
+        // [gTypes.getItem ]: function ( state, getters, rootState, payload ) {
         // console.log('getItem', state, payload);
         if ( isItemsEmpty( state ) ) return false;
         if ( Payload.checkIfPayload( payload ) ) {
@@ -144,7 +144,7 @@ module.exports = {
      * @param index
      */
     // getItemById: ( state, getters ) => ( id ) => {
-    [gTypes.getItemById]: ( state, getters, rootState, id ) => (id) => {
+    [ gTypes.getItemById ]: ( state, getters, rootState, id ) => ( id ) => {
         // [gTypes.getItemById]: function ( state, getters, rootState, id ) {
         // window.console.log( 'items', 'getItemById', 148, state, id );
         return function ( state, id ) {
@@ -169,7 +169,7 @@ module.exports = {
      * @param index
      */
     // [gTypes.getItemByIndex]: function ( state, getters, rootState, index ) {
-    [gTypes.getItemByIndex]: ( state, getters, rootState, index)=> (index) => {
+    [ gTypes.getItemByIndex ]: ( state, getters, rootState, index ) => ( index ) => {
 
         // [gTypes.getItemByIndex]: ( state, getters, rootState, index) => {
         // [gTypes.getItemByIndex]: function ( state, getters, index ) {
@@ -221,19 +221,19 @@ module.exports = {
      * @param state
      * @param getters
      */
-    [gTypes.getItemBySerialNumber]: ( state, getters, rootState, serialNumber ) =>
-        (serialNumber) => {
-    // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
-        // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
-        return (function ( state, serialNumber ) {
-            var r = state.items.filter( function ( i ) {
-                if ( i.serialNumber === serialNumber ) {
-                    return i;
-                }
-            } );
-            return r[ 0 ];
-        })( state, serialNumber )
-    },
+    [ gTypes.getItemBySerialNumber ]: ( state, getters, rootState, serialNumber ) =>
+        ( serialNumber ) => {
+            // [gTypes.getItemBySerialNumber]: function ( state, getters, rootState, serialNumber ) {
+            // window.console.log( 'items', gTypes.getItemBySerialNumber, 248, serialNumber, state );
+            return (function ( state, serialNumber ) {
+                var r = state.items.filter( function ( i ) {
+                    if ( i.serialNumber === serialNumber ) {
+                        return i;
+                    }
+                } );
+                return r[ 0 ];
+            })( state, serialNumber )
+        },
 
     /**
      * Returns the current count of items
@@ -242,7 +242,7 @@ module.exports = {
      * @param payload
      * @returns {Number}
      */
-    [ gTypes.getItemCount ]: function ( state, getters , rootState) {
+    [ gTypes.getItemCount ]: function ( state, getters, rootState ) {
 
         return state.items.length;
     },

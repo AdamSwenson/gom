@@ -31,7 +31,7 @@ export const makeRootState = () => {
 };
 
 
-describe( "activeexam  ", function () {
+describe( "activeexam (new)", function () {
     let state;
     let rootState;
     let payload;

@@ -39,7 +39,7 @@ module.exports  = {
      * @param rootState
      * @param payload Array with keys: examIndex, examId
      */
-    [ mTypes.addIndexMapping ]: ( state, rootState, payload ) => {
+    [ mTypes.addIndexMapping ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
 
         state.indexMap[ payload.index ] = payload.id;
@@ -52,7 +52,7 @@ module.exports  = {
      * @param rootState
      * @param payload
      */
-    [ mTypes.loadExams ]: ( state, rootState, payload ) => {
+    [ mTypes.loadExams ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
         //add exams
         state.exams = payload.obj;

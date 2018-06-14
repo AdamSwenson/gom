@@ -16,7 +16,7 @@ import { itemscores } from "../../../../helpers/state-factories";
 let { makePopulatedState, makeState } = itemscores;
 
 
-describe( "itemscores | getters ", function () {
+describe( "itemscores.getters ", function () {
     let state;
     let testExam;
     let testItem;

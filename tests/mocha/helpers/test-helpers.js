@@ -3,7 +3,7 @@
  * to assist in running mocha tests
  */
 
-let faker= require('faker');
+let faker = require( 'faker' );
 
 
 /**
@@ -15,8 +15,6 @@ export const type = ( wrapper, selector, text ) => {
     wrapper.find( selector ).element.value = text;
     wrapper.find( selector ).trigger( 'input' );
 };
-
-
 
 
 /**
@@ -39,7 +37,6 @@ export const description = ( text ) => {
     return ` ${text} `;
     // return `${text} | `;
 };
-
 
 
 export const makeFakeServerResponse = () => {
@@ -178,7 +175,7 @@ export const makeFakeServerResponse = () => {
  */
 export const testAction = ( action, payload, state, expectedMutations, ...kwargs ) => {
     let count = 0
-    let {verbose = false, getters={} } = kwargs[0];
+    let { verbose = false, getters = {} } = kwargs[ 0 ];
     // if ( typeof kwargs[ 0 ] != 'undefined' && typeof kwargs[ 0 ][ 'verbose' ] != 'undefined' ) {
     //     verbose = kwargs[ 0 ].verbose;
     // }
@@ -188,16 +185,22 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
     }
 
     // window.console.log( 'vuex.spec.helpers', 'getters', 115, getters);
-    const dispatch =(type, payload)=>{};
+    const dispatch = ( type, payload ) => {
+    };
 
     // mock commit
     const commit = ( type, payload ) => {
-        const mutation = expectedMutations[ count ]
-        expect( mutation.type ).toBe( type )
-        if ( payload ) {
+        const mutation = expectedMutations[ count ];
+        //check that the mutation name was correct
+        expect( mutation.type ).toBe( type );
+
+        //if the expected payload was set, check it
+        if ( _.has( mutation, 'payload' ) ) {
             if ( verbose ) {
                 console.log( 'mutation', mutation, 'payload', payload );
             }
+
+
 
             if ( typeof mutation.payload == 'object' ) {
                 if ( verbose ) {
@@ -212,18 +215,21 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
 
                 //check have same values for properties
                 for (let prop in mutation.payload) {
-                    if ( verbose ) {
-                        console.log( 'checking prop', prop, 'expected payload', payload, 'expected payload value', payload[ prop ], 'actual payload', mutation.payload[ prop ] );
+                    //we're not going to check that the serial numbers match
+                    //because that prevents us from testing actions which create
+                    //new objects
+                    if ( prop != 'serialNumber' ) {
+                        if ( verbose ) {
+                            console.log( 'checking prop', prop, 'expected payload', payload, 'expected payload value', payload[ prop ], 'actual payload', mutation.payload[ prop ] );
 
+                        }
+                        expect( mutation.payload[ prop ] ).toBe( payload[ prop ] );
                     }
-                    expect( mutation.payload[ prop ] ).toBe( payload[ prop ] );
                 }
             }
 
-            else {
-                if ( verbose ) {
-                    console.log( 'type not object', typeof mutation.payload );
-                }
+            else { //payload wasn't an object, so we just check for equality
+                if ( verbose ) {console.log( 'type not object', typeof mutation.payload );}
                 expect( mutation.payload ).toBe( payload )
             }
 

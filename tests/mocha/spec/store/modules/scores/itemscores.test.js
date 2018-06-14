@@ -8,31 +8,23 @@ var Component = require( '../../../../../../resources/assets/js/store/modules/sc
 require( '../../../../injectglobals' );
 
 //tested object
-let { getters, actions, mutations, store } = Component.default;
+let obj = Component.default;
 
 describe( compName, () => {
-    let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
-    
-    beforeEach( () => {
-
-    } );
 
 
-    describe( " actions", () => {
-        it.skip( 'awaits tests', () => {
-             } );
-    } );
-
-
-    describe( " getters", () => {
-        it.skip( 'awaits tests', () => {
+    describe( " has expected properties ", () => {
+        it( 'actions', () => {
+            expect(_.has(obj, 'actions')).toBe(true);
         } );
-    } );
-
-
-    describe( " mutations ", () => {
-        it.skip( 'awaits tests', () => {
+        it( 'getters', () => {
+            expect(_.has(obj, 'getters')).toBe(true);
+        } );
+        it( 'mutations', () => {
+            expect(_.has(obj, 'mutations')).toBe(true);
+        } );
+        it( 'state', () => {
+            expect(_.has(obj, 'state')).toBe(true);
         } );
     } );
 
