@@ -2,10 +2,10 @@
 //The name of the tested component
 var compName = 'kumi-editing-modal';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-editing-modal.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/kumi-editing-modal.vue');
 
 
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 

@@ -1,11 +1,15 @@
 
 //The name of the tested component
-var compName = 'kumi-selector-visibility-button';
+var compName = 'edit-kumi-control';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-selector-visibility-button.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/edit-kumi-control.vue');
 
 
-require( '../../../injectglobals' );
+
+import GradeAssignment from '../../../../resources/assets/js/models/GradeAssignment';
+
+
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 
@@ -31,7 +35,7 @@ describe( compName, () => {
         };
 
         mutations = {
-            toggleKumiSelectVisibility: sinon.spy()
+            toggleEditKumiModal: sinon.spy()
         };
 
         store = new Vuex.Store( {
@@ -48,15 +52,14 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            expect(wrapper.find(componentDivIdentifier).exists()).toBe(true);
-            // assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
 
     describe("methods", (  ) => {
-        it(" calls for the correct mutation when done is clicked", (  ) => {
-            wrapper.find(componentDivIdentifier).trigger('click');
-            expect(mutations.toggleKumiSelectVisibility.calledOnce).toBe(true);
+        it("calls for the correct mutation when clicked", (  ) => {
+            wrapper.trigger('click');
+            expect(mutations.toggleEditKumiModal.calledOnce).toBe(true);
         });
     })
 

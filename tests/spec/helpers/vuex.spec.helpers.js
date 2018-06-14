@@ -60,11 +60,11 @@ export const factories = {
         return e;
     },
 
-    studentFactory: ( index ) => {
+    studentFactory: ( index , id, identifier) => {
         let s = new Student( faker.random.number() );
         s.email = faker.internet.email();
         s.studentIndex = index ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-        s.studentIdentifier = faker.random.number();
+        s.studentIdentifier = _.isUndefined(identifier) ? faker.random.number() : identifier;
         s.lastName = faker.name.lastName();
         s.firstName = faker.name.firstName();
         return s;

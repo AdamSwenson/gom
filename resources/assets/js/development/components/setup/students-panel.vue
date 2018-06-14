@@ -112,9 +112,9 @@
 
     //components
     import StudentRow from '../old/student-row.vue'
-    import KumiNameField from './kumi/kumi-name-field.vue';
-    import KumiSelector from './kumi/kumi-selector.vue';
-    import KumiTabs from './kumi/kumi-tabs.vue';
+    import KumiNameField from '../kumi/kumi-name-field.vue';
+    import KumiSelector from '../kumi/kumi-selector.vue';
+    import KumiTabs from '../kumi/kumi-tabs.vue';
 
     import StudentTable from './student/student-table.vue';
     // import StudentActionButtons from './student/old/student-action-buttons.vue';
@@ -124,9 +124,9 @@
     import AddStudentControl from "./student/action-buttons/add-student-button.vue";
 
     import { loadAllStudents } from '../../../api/requests/studentRequests';
-    import NewKumiControl from "./kumi/new-kumi-control";
-    import EditKumiControl from "./kumi/edit-kumi-control";
-    import KumiEditingModal from "./kumi/kumi-editing-modal";
+    import NewKumiControl from "../kumi/new-kumi-control";
+    import EditKumiControl from "../kumi/edit-kumi-control";
+    import KumiEditingModal from "../kumi/kumi-editing-modal";
     import StudentActionButtonParent from "./student/action-buttons/student-action-button-parent";
 
 

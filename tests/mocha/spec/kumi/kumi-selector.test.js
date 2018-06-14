@@ -1,15 +1,9 @@
-
 //The name of the tested component
-var compName = 'edit-kumi-control';
+var compName = 'kumi-selector';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/edit-kumi-control.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/kumi-selector.vue');
 
-
-
-import GradeAssignment from '../../../../../resources/assets/js/models/GradeAssignment';
-
-
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 
@@ -25,17 +19,21 @@ describe( compName, () => {
     let mutations;
     let store;
     let wrapper;
+    let kumis;
 
     let listOfValues, showLetter, grade;
     let payload, test;
 
     beforeEach( () => {
-
+kumis = factories.makeKumis(4);
         getters = {
+            [gTypes.getAllKumis]: (  ) => kumis,
+            getSelectedKumis: (  ) => kumis,
+            isKumiSelectVisible: (  ) => true
         };
 
         mutations = {
-            toggleEditKumiModal: sinon.spy()
+            selectKumi: sinon.spy()
         };
 
         store = new Vuex.Store( {
@@ -57,9 +55,11 @@ describe( compName, () => {
     } );
 
     describe("methods", (  ) => {
-        it("calls for the correct mutation when clicked", (  ) => {
-            wrapper.trigger('click');
-            expect(mutations.toggleEditKumiModal.calledOnce).toBe(true);
+        it(" calls for the correct mutation when an option is selected", (  ) => {
+            wrapper.findAll('option').at(1).element.selected = true;
+            wrapper.find('select').trigger('change');
+            //check
+            expect(mutations.selectKumi.calledOnce).toBe(true);
         });
     })
 

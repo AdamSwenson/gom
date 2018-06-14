@@ -61,7 +61,7 @@
     import RemoveStudentsFromRosterButton from "./remove-students-from-roster-button";
     import AddStudentsToGroupButton from "./add-students-to-group-button";
     import RemoveStudentsFromGroupButton from "./remove-students-from-group-button";
-    import KumiSelectorVisibilityButton from "../../kumi/kumi-selector-visibility-button";
+    import KumiSelectorVisibilityButton from "../../../kumi/kumi-selector-visibility-button";
     import AutoClosingModal from "../../../modals/auto-closing-modal";
     import ConfirmationModal from "../../../modals/confirmation-modal";
 

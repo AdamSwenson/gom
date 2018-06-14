@@ -34,7 +34,7 @@ const checkIfNew = ( state, kumi ) => {
 };
 
 module.exports = {
-
+// ------------------ kumi properties
     /**
      * Adds a new kumi object to the list of kumis
      * Since kumis may be loaded at different times, this
@@ -63,33 +63,39 @@ module.exports = {
         Vue.set( kumi, payload.updateProp, payload.updateVal );
      },
 
+    // -------------------------- exam - kumi
     /**
      * Adds an exam to the list of exams the
      * kumi is associated with
      * @param examId
      */
     [mTypes.associateExamWithKumi] : ( state, payload ) => {
-//todo Should check that not duplicating?
-        let examId = payload.exam.id;
-        let kumiId = payload.kumi.id;
-        state.examKumiAssociations.push( { examId: examId, kumiId: kumiId } );
+        let mp =  { examId: payload.exam.id, kumiId:  payload.kumi.id };
+        ///check that not already present in the list
+        //using the lodash function because allows to look up the whole object
+        let index = _.findIndex(state.examKumiAssociations, mp);
+        if(index === -1){
+            state.examKumiAssociations.push(mp );
+        }
     },
+
 
     /**
      * Removes the association between a kumi and exam
      * @param examId
      */
     [mTypes.disassociateExamFromKumi]: ( state, payload ) => {
-        let examId = payload.exam.id;
-        let kumiId = payload.kumi.id;
-        let r = filterExamKumiAssociations( state, kumiId, examId );
-        let index = state.examKumiAssociations.indexOf( r[ 0 ] );
+        let mp =  { examId: payload.exam.id, kumiId:  payload.kumi.id };
+        //using the lodash function because allows to look up the whole object
+        let index = _.findIndex(state, mp );
         state.examKumiAssociations.splice( index, 1 );
     },
 
+
+    //--------------- student - kumi
     /**
      * Creates a relationship between a student and a group (kumi)
-     *
+     * These get used by the roster actions
      * @param state
      * @param kumiId
      * @param studentId
@@ -115,8 +121,10 @@ module.exports = {
         }
     },
 
+
     /**
      * Removes the association between the student and a group
+     * These get used by the roster actions
      * @param studentId
      */
     [mTypes.disassociateStudentFromKumi]: ( state, payload ) => {

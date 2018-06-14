@@ -2,49 +2,80 @@ require( '../../../../injectglobals' );
 
 const testAction = helpers.testAction;
 const description = helpers.description;
-//
-// let sinon = require( 'sinon' );
-// let faker = require( 'faker' );
-//
-// //Dependencies
-// import * as nggTypes from "../../../../../../resources/assets/js/store/new-grading-getter-types";
-// import * as ngmTypes from '../../../../../../resources/assets/js/store/new-grading-mutation-types';
-// import * as ngaTypes from '../../../../../../resources/assets/js/store/new-grading-action-types';
-// import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
-// import * as mTypes from '../../../../../../resources/assets/js/store/mutation-types';
-// import * as aTypes from '../../../../../../resources/assets/js/store/action-types';
-//
-// import { testAction, description, factories } from '../../../../../spec/helpers/vuex.spec.helpers';
 
 //tested object
-import * as Component from '../../../../../../resources/assets/js/store/modules/roster/kumis.getters';
+import getters from '../../../../../../resources/assets/js/store/modules/roster/kumis.getters';
+
 import Payload from "../../../../../../resources/assets/js/models/Payload";
 import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 
-let getters = Component;
+// let getters = Component;
+
+import { createLocalVue } from 'vue-test-utils';
+const localVue = createLocalVue();
+localVue.use( Vuex )
 
 
-describe( "kumi | getters  ", function () {
+describe( "kumi.getters  ", function () {
 
-    let gettersStub, students, kumis;
+    let gettersStub, students, kumis, exam, kumi, state;
     let numberStudentsAndKumis = 2;
     let expectedMutations;
+    let store;
+
     beforeEach( function () {
+        state = {
+            kumis: [],
+            studentKumiAssociations: [],
+            examKumiAssociations: []
+        };
 
-        students = [];
-        kumis = [];
-        for (let i = 0; i < numberStudentsAndKumis; i++) {
-            students.push( factories.studentFactory() );
-            kumis.push( Kumi.factory( { name: faker.company.bs() } ) );
-        }
-        // //set up getter
-        // getters = {};
-        // gettersStub = sinon.stub();
-        // gettersStub.returns( kumis[ 0 ] );
-        // getters.getRootKumi = gettersStub;
+        exam = factories.examFactory();
+        kumi = factories.kumiFactory();
 
-        expectedMutations = [];
+        students = factories.makeStudents(numberStudentsAndKumis);
+        kumis = factories.makeKumis(numberStudentsAndKumis);
+
+        store = new Vuex.Store({
+            state, getters
+        });
     } );
+
+    describe('areKumiAndExamAssociated', (  ) => {
+        it('returns true when associated', (  ) => {
+            state.examKumiAssociations.push({
+                examId: exam.id,
+                kumiId: kumi.id
+            });
+            expect(state.examKumiAssociations.length).toBe(1);
+
+            store = new Vuex.Store({
+                state, getters
+            });
+
+            //call
+            let result = store.getters.areKumiAndExamAssociated({ exam, kumi});
+            expect(result).toBe(true);
+
+        });
+        it('returns false when not associated', (  ) => {
+            let numKumis = 3;
+            let kumis = factories.makeKumis(numKumis);
+            _.forEach(kumis, function(k){
+                let ex = factories.examFactory();
+                let o = {examId: ex.id, kumiId: k.id};
+                state.examKumiAssociations.push(o);
+            });
+            expect(state.examKumiAssociations.length).toBe(numKumis);
+
+            store = new Vuex.Store({
+                state, getters
+            });
+            //call
+            let result = store.getters.areKumiAndExamAssociated( { exam, kumi});
+            expect(result).toBe(false);
+        });
+    });
 
     describe( description( "getRootKumi" ), () => {
         it( "happy path", () => {
@@ -61,10 +92,45 @@ describe( "kumi | getters  ", function () {
     } );
 
 
+    describe( 'getKumiBySerialNumber', function () {
+        it.skip( 'happy path', () => {
+
+        } );
+    } );
+
+    describe( 'getKumiById', function () {
+        it.skip( 'happy path', () => {
+
+        } );
+    } );
+
+    describe( gTypes.getKumisForExam, function () {
+        it.skip( 'happy path', () => {
+
+        } );
+    } );
+
+    describe( 'getKumiExams', function () {
+        it.skip( 'happy path', () => {
+
+        } );
+    } );
+
+    describe( 'getStudentsForKumi', function () {
+        it.skip( 'happy path', () => {
+
+        } );
+    } );
+
+    describe( gTypes.getKumiCount, function () {
+        it.skip( 'happy path', () => {
+
+        } );
+    } );
+
 } );
 
-
-//
+//de
 //     getKumiBySerialNumber: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {
 //         return getKumiBySerialNumber( state, serialNumber );
 //     },

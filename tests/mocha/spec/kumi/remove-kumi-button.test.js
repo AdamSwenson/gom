@@ -1,10 +1,10 @@
 
-var compName = 'kumi-tab';
+var compName = 'remove-kumi-button';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-tab.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/remove-kumi-button.vue');
 
 
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 const localVue = createLocalVue();
@@ -12,7 +12,7 @@ const localVue = createLocalVue();
 localVue.use( Vuex )
 
 describe( compName, () => {
-    kumi = factories.kumiFactory();
+
     let componentDivIdentifier = '.' + compName;
 
     let getters, mutations, actions, store;
@@ -24,22 +24,24 @@ describe( compName, () => {
 
     beforeEach( () => {
         kumi = factories.kumiFactory();
-        actions = {}
+
+        actions = {
+            removeKumi: sinon.spy()
+        }
 
         getters = {
-            getKumisToFilterStudentsBy: (  ) => (  ) => [kumi]
+            areKumiAndExamAssociated: (  ) => (  ) => true
         };
 
         mutations = {
-            toggleKumi: sinon.spy()
-        };
+             };
 
         store = new Vuex.Store( {
             getters, mutations, actions
         } );
 
         wrapper = shallow( Component, {
-            store, localVue, propsData: { kumi }
+            store, localVue, propsData: { isVisible: true }
         } );
 
     } );
@@ -47,14 +49,15 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
+            expect( wrapper.find( componentDivIdentifier ).exists() ).toBe( true );
             assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
 
     describe( "methods", () => {
         it( " calls for the correct mutation when clicked", () => {
-            wrapper.find('a').trigger('click');
-            expect(mutations.toggleKumi.calledOnce).toBe(true);
+            wrapper.find( componentDivIdentifier ).trigger( 'click' );
+            expect( actions.removeKumi.calledOnce ).toBe( true );
         } );
     } )
 

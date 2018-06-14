@@ -19,7 +19,7 @@ import Payload from '../../../models/Payload';
 import Kumi from '../../../models/Kumi';
 import Student from '../../../models/Student';
 
-import { createKumiRequest, disassociateKumiAndExam } from '../../../api/requests/kumiRequests';
+import { createKumiRequest, associateKumi, disassociateKumiAndExam } from '../../../api/requests/kumiRequests';
 import { disassociateStudent } from "../../../api/requests/studentRequests";
 
 const KUMIS_JSON_NAME = 'loadedKumis';
@@ -46,11 +46,22 @@ module.exports = {
             let kumi = new Kumi();
             createKumiRequest( kumi, exam )
                 .then( function ( data ) {
+                    // window.console.log( 'kumis.actions', 'data', 49, data );
                     kumi.id = data.id;
                     commit( mTypes.addKumi, Payload.factory( {
                         obj: kumi,
                         mutateSilently: true
                     } ) );
+                    //the createKumiRequest included the exam id,
+                    // so the server has already associated the kumi
+                    // with the exam. Thus we now associate it with the exam
+                    // in the store
+                    commit(mTypes.associateExamWithKumi, Payload.factory( {
+                        kumi: kumi,
+                        exam: exam,
+                        mutateSilently: true
+                    } ) );
+
                     resolve( kumi );
                 } );
         } );
@@ -92,8 +103,9 @@ module.exports = {
 
             //Otherwise we ask the server to remove any relationship for each one
             dispatch( 'removeStudentsFromKumis',
+                //todo is this a mistake? shouldn't it be students?
                 Payload.factory( {
-                        students: student,
+                        students: students,
                         kumis: [ kumi ]
                     } ) ).then( function () {
                 resolve();

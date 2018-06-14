@@ -1,10 +1,12 @@
 
-var compName = 'remove-kumi-button';
+//The name of the tested component
+var compName = 'kumi-tabs';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/remove-kumi-button.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/kumi-tabs.vue');
 
 
-require( '../../../injectglobals' );
+
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 const localVue = createLocalVue();
@@ -20,28 +22,28 @@ describe( compName, () => {
     let wrapper;
 
     let listOfValues, test;
-    let payload, exam, item, kumi, student, grade;
+    let payload, exam, item, kumi, kumis, student, grade;
 
     beforeEach( () => {
-        kumi = factories.kumiFactory();
-
-        actions = {
-            removeKumi: sinon.spy()
-        }
+        kumis = factories.makeKumis(3);
+        exam = factories.examFactory();
+        actions = {}
 
         getters = {
-            areKumiAndExamAssociated: (  ) => (  ) => true
+            [ gTypes.getKumisForExam ] : (  ) => (  ) => kumis,
+            [ gTypes.getActiveExam] : (  ) => (  ) => exam,
+            getKumisToFilterStudentsBy: (  ) => (  ) => kumis,
+
         };
 
-        mutations = {
-             };
+        mutations = {};
 
         store = new Vuex.Store( {
             getters, mutations, actions
         } );
 
         wrapper = shallow( Component, {
-            store, localVue, propsData: { isVisible: true }
+            store, localVue
         } );
 
     } );
@@ -49,17 +51,12 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            expect( wrapper.find( componentDivIdentifier ).exists() ).toBe( true );
             assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
 
     describe( "methods", () => {
-        it( " calls for the correct mutation when clicked", () => {
-            wrapper.find( componentDivIdentifier ).trigger( 'click' );
-            expect( actions.removeKumi.calledOnce ).toBe( true );
-        } );
-    } )
+        } )
 
 
 } );

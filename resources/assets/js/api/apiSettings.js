@@ -51,6 +51,9 @@ export const Routes = {
     associateKumi: ( kumi, exam ) => {
         return KUMI_BASE_ROUTE + '/' + kumi.id + 'exam/' + exam.id + '/new';
     },
+    disassociateKumi: ( kumi, exam ) => {
+        return KUMI_BASE_ROUTE +  '/' + kumi.id + '/exam/' + exam.id;
+    },
     createKumi: () => {
         return KUMI_BASE_ROUTE;
     },

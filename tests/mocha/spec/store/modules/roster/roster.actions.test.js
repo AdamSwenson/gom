@@ -11,7 +11,7 @@ import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 let actions = Component;
 
 
-describe( "roster | actions ", function () {
+describe( "roster.actions ", function () {
 
     let getters, gettersStub, students, kumis;
     let numberStudentsAndKumis = 2;

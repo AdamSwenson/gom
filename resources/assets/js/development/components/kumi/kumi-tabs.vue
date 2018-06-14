@@ -26,14 +26,14 @@
 
 <script>
     import KumiNameField from './kumi-name-field.vue';
-    import Payload from "../../../../models/Payload";
-    import Kumi from "../../../../models/Kumi";
+    import Payload from "../../../models/Payload";
+    import Kumi from "../../../models/Kumi";
     import EditKumiControl from "./edit-kumi-control.vue";
     import NewKumiControl from "./new-kumi-control.vue";
     import ShowAllKumiControl from "./show-all-kumi-control.vue";
-    import * as mTypes from '../../../../store/mutation-types';
-    import * as aTypes from '../../../../store/action-types';
-    import * as gTypes from '../../../../store/getter-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as gTypes from '../../../store/getter-types';
     import KumiTab from "./kumi-tab";
 
 

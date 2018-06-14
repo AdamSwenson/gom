@@ -1,3 +1,5 @@
+import * as mTypes from "../../../../../../resources/assets/js/store/mutation-types";
+
 require( '../../../../injectglobals' );
 
 const testAction = helpers.testAction;
@@ -21,59 +23,98 @@ import * as Component from '../../../../../../resources/assets/js/store/modules/
 import Payload from "../../../../../../resources/assets/js/models/Payload";
 import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 
-let  mutations = Component;
+let mutations = Component;
 
 
-describe( "roster | mutations ", function () {
-let state, student;
+describe( "roster.mutations ", function () {
+    let state, student;
     let payload;
     let gettersStub, students, kumis;
     let numberStudentsAndKumis = 2;
     let expectedMutations;
 
     beforeEach( function () {
-    state= {
-        roster : []
-    };
-    student = factories.studentFactory();
+        state = {
+            roster: []
+        };
+        student = factories.studentFactory();
     } );
 
     describe( description( mTypes.addStudentToRoster ), () => {
-        it( "Adds student to roster when student doesn't already exist in roster" , (  ) => {
-            payload = Payload.factory({obj: student});
+        it( "Adds student to roster when student doesn't already exist in roster", () => {
+            payload = Payload.factory( { obj: student } );
             //call
-            mutations[mTypes.addStudentToRoster](state, payload );
+            mutations[ mTypes.addStudentToRoster ]( state, payload );
             //check
-            expect(state.roster.length).toBe(1);
-            expect(state.roster[0]).toBe(student);
-        });
+            expect( state.roster.length ).toBe( 1 );
+            expect( state.roster[ 0 ] ).toBe( student );
+        } );
 
-        it( "Does not add student to roster when student is already in roster", (  ) => {
-            payload = Payload.factory({obj: student});
-            state.roster.push(student);
+        it( "Does not add student to roster when student is already in roster", () => {
+            payload = Payload.factory( { obj: student } );
+            state.roster.push( student );
             //call
-            mutations[mTypes.addStudentToRoster](state, payload );
+            mutations[ mTypes.addStudentToRoster ]( state, payload );
             //check
-            expect(state.roster.length).toBe(1);
-            expect(state.roster[0]).toBe(student);
+            expect( state.roster.length ).toBe( 1 );
+            expect( state.roster[ 0 ] ).toBe( student );
         } );
     } );
-});
-    //
-    // /**
-    //  * This updates the properties of a currently existing
-    //  * student object
-    //  * It is named this to avoid confusion with updateStudent which
-    //  * the old version uses
-    //  * @param state
-    //  * @param payload
-    //  */
-    // [mTypes.updateStudentInRoster] : ( state, payload ) => {
-    //     // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
-    //     Payload.checkIfPayload( payload );
-    //     let student = payload.obj;
-    //     let idx = state.roster.indexOf( student );
-    //
-    //     Vue.set( state.roster[ idx ], payload.updateProp, payload.updateVal );
-    // },
+
+    describe( mTypes.deleteStudent, function () {
+        it( 'removes student ', function () {
+
+
+            state.roster.push( student );
+            payload = Payload.factory( { obj: student } );
+            //call
+            mutations[ mTypes.removeStudentFromRoster ]( state, payload );
+            //check
+            expect( state.roster.indexOf( student ) ).toBe( -1 );
+        } );
+    } );
+
+    describe( mTypes.removeStudentFromRoster, function () {
+        it( 'removes student', () => {
+            state.roster.push( student );
+            payload = Payload.factory( { obj: student } );
+            //call
+            mutations[ mTypes.removeStudentFromRoster ]( state, payload );
+            //check
+            expect( state.roster.indexOf( student ) ).toBe( -1 );
+        } );
+    } );
+
+    describe( mTypes.updateStudentInRoster, function () {
+        it( 'updates values on student object', () => {
+            state.roster.push( student );
+            let test = 'taco';
+            payload = Payload.factory( { obj: student, updateProp: 'firstName', updateVal: test } );
+            //call
+            mutations[ mTypes.updateStudentInRoster ]( state, payload );
+            //check
+            expect( student.firstName ).toBe( test );
+
+        } );
+
+    } );
+
+} );
+//
+// /**
+//  * This updates the properties of a currently existing
+//  * student object
+//  * It is named this to avoid confusion with updateStudent which
+//  * the old version uses
+//  * @param state
+//  * @param payload
+//  */
+// [mTypes.updateStudentInRoster] : ( state, payload ) => {
+//     // window.console.log( 'roster', 'updateStudentInRoster', 60, payload);
+//     Payload.checkIfPayload( payload );
+//     let student = payload.obj;
+//     let idx = state.roster.indexOf( student );
+//
+//     Vue.set( state.roster[ idx ], payload.updateProp, payload.updateVal );
+// },
 

@@ -1,6 +1,20 @@
 import Kumi from "../../../models/Kumi";
 import Payload from "../../../models/Payload";
 
+
+/**
+ * Tests whether the given exam and kumi are associated
+ * @param state
+ * @param exam
+ * @param kumi
+ * @returns {boolean}
+ */
+export function areKumiAndExamAssociated( state, exam, kumi ){
+    return _.findIndex(state.examKumiAssociations, {examId: exam.id, kumiId: kumi.id}) > -1
+
+}
+
+
 /**
  * Returns objects with examId, kumiId as keys
  *

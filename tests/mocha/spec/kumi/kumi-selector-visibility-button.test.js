@@ -1,9 +1,11 @@
-//The name of the tested component
-var compName = 'kumi-selector';
-//The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-selector.vue');
 
-require( '../../../injectglobals' );
+//The name of the tested component
+var compName = 'kumi-selector-visibility-button';
+//The path to the tested component
+var Component = require('../../../../resources/assets/js/development/components/kumi/kumi-selector-visibility-button.vue');
+
+
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 
@@ -19,21 +21,17 @@ describe( compName, () => {
     let mutations;
     let store;
     let wrapper;
-    let kumis;
 
     let listOfValues, showLetter, grade;
     let payload, test;
 
     beforeEach( () => {
-kumis = factories.makeKumis(4);
+
         getters = {
-            [gTypes.getAllKumis]: (  ) => kumis,
-            getSelectedKumis: (  ) => kumis,
-            isKumiSelectVisible: (  ) => true
         };
 
         mutations = {
-            selectKumi: sinon.spy()
+            toggleKumiSelectVisibility: sinon.spy()
         };
 
         store = new Vuex.Store( {
@@ -50,16 +48,15 @@ kumis = factories.makeKumis(4);
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            expect(wrapper.find(componentDivIdentifier).exists()).toBe(true);
+            // assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
 
     describe("methods", (  ) => {
-        it(" calls for the correct mutation when an option is selected", (  ) => {
-            wrapper.findAll('option').at(1).element.selected = true;
-            wrapper.find('select').trigger('change');
-            //check
-            expect(mutations.selectKumi.calledOnce).toBe(true);
+        it(" calls for the correct mutation when done is clicked", (  ) => {
+            wrapper.find(componentDivIdentifier).trigger('click');
+            expect(mutations.toggleKumiSelectVisibility.calledOnce).toBe(true);
         });
     })
 

@@ -2,7 +2,7 @@
 
     <button class="settings-display-control button is-info is-outlined is-large"
             v-on:click="toggleVis"
-            v-bind:id="id">
+            v-bind:id="serialNumber">
 
        <span class="icon is-large">
            <i class="fa fa-cogs" aria-hidden="true"></i>

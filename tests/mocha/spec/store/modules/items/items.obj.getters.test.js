@@ -2,7 +2,7 @@
 //The name of the tested component
 var compName = 'items.obj.getters';
 //The path to the tested component
-var Component = require( '../../../../../../resources/assets/js/store/modules/items/items.obj.getters.js' );
+import getters from  '../../../../../../resources/assets/js/store/modules/items/items.obj.getters.js' ;
 
 
 require( '../../../../injectglobals' );
@@ -14,19 +14,28 @@ import {
     makeTestPayload
 } from "../../../../helpers/item-test-helpers";
 
-const getters = Component;
+
+import { createLocalVue } from 'vue-test-utils';
+const localVue = createLocalVue();
+localVue.use( Vuex )
+
 
 describe( compName, () => {
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
     let state, rootState, mutationPayload, numItems, filledState, testItemIndex;
+    let store;
 
     beforeEach( () => {
+
         state = makeState();
         rootState = makeRootState();
         payload = makeTestPayload();
         mutationPayload = makeMutationPayload();
         item = factories.itemFactory();
+        store = new Vuex.Store({
+            state, getters
+        });
 
     } );
 
@@ -44,7 +53,7 @@ describe( compName, () => {
                 //call and check
                 for (let i = 0; i < numItems; i++) {
                     //call
-                    let result = getters[ gTypes.getItem ]( state, getters, state, Payload.factory( { id: i } ) );
+                    let result = store.getters[ gTypes.getItem ]( Payload.factory( { id: i } ) );
                     // result = result();
                     // let result = getters.getItemByIndex( state, {}, {}, i );
                     //check
@@ -67,7 +76,7 @@ describe( compName, () => {
                 //call and check
                 for (let i = 0; i < numItems; i++) {
                     //call
-                    let result = getters[ gTypes.getItem ]( state, getters, {}, Payload.factory( { index: i } ) );
+                    let result = store.getters[ gTypes.getItem ]( Payload.factory( { index: i } ) );
                     // let result = getters.getItemByIndex( state, {}, {}, i );
                     //check
                     expect( result ).toBe( state.items[ i ] );
@@ -90,7 +99,7 @@ describe( compName, () => {
             //call and check
             for (let i = 0; i < numItems; i++) {
                 //call
-                let result = getters.getItemById( state, {}, {}, i );
+                let result = store.getters.getItemById( i );
                 // let result = getters.getItemByIndex( state, {}, {}, i );
                 //check
                 expect( result ).toBe( state.items[ i ] );
@@ -111,7 +120,7 @@ describe( compName, () => {
             //call and check
             for (let i = 0; i < numItems; i++) {
                 //call
-                let result = getters.getItemByIndex( state, getters, {}, i );
+                let result = store.getters.getItemByIndex(  i );
                 // let result = getters.getItemByIndex( state, {}, {}, i );
                 //check
                 expect( result ).toBe( state.items[ i ] );
@@ -133,7 +142,7 @@ describe( compName, () => {
             //pick a random object to use for the text
             let testObj = faker.random.arrayElement( state.items );
             //call
-            let result = getters[ gTypes.getItemBySerialNumber ]( state, {}, {}, testObj.serialNumber );
+            let result = store.getters[ gTypes.getItemBySerialNumber ](  testObj.serialNumber );
             //check
             expect( result ).toBe( testObj );
             expect( result.serialNumber ).toBe( testObj.serialNumber );
@@ -151,7 +160,7 @@ describe( compName, () => {
     describe( description( gTypes.getAllItems ), function () {
         it( "happy path | ", function () {
             //call
-            let result = getters[ gTypes.getAllItems ]( state, {}, {} );
+            let result = store.getters[ gTypes.getAllItems ];
 
             //check
             for (let i = 0; i < result.length; i++) {
@@ -166,7 +175,7 @@ describe( compName, () => {
         it( "happy path | ", function () {
             // window.console.log( 'items.spec', 'ss', 290, state );
             //call
-            let result = getters[ gTypes.getAllItemsList ]( state, getters );
+            let result = store.getters[ gTypes.getAllItemsList ];
 
             //check
             for (let i = 0; i < result.length; i++) {
@@ -186,7 +195,7 @@ describe( compName, () => {
                 state.items[ i ] = factories.itemFactory( i, i );
             }
             //call
-            let result = getters[ gTypes.getItemCount ]( state, {} );
+            let result = store.getters[ gTypes.getItemCount ];
             //check
             expect( result ).toBe( numItems );
         } );

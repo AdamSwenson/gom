@@ -17,7 +17,6 @@ import * as mTypes from '../../mutation-types';
 
 module.exports = {
 
-
     state: {
 
         /** The students whose rows have been selected */

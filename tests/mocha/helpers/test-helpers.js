@@ -168,6 +168,8 @@ export const makeFakeServerResponse = () => {
 /**
  * helper for testing action with expected mutations
  * see https://vuex.vuejs.org/en/testing.html
+ *
+ * expectedMutations should be a list of objects {type: xxxx, payload: xxxx}
  * @param action
  * @param payload
  * @param state

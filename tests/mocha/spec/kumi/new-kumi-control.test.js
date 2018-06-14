@@ -2,9 +2,9 @@
 //The name of the tested component
 var compName = 'new-kumi-control';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/new-kumi-control.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/new-kumi-control.vue');
 
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 

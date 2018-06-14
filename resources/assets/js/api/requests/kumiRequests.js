@@ -107,30 +107,28 @@ module.exports = {
             } );
 
     },
-
-    associateKumi: ( store, kumi, exam ) => {
-        // let route = 'dev/kumis/' + kumi.id + 'exam/' + exam.id + '/new';
-        if ( Payload.checkIfPayload( kumi ) ) {
-            kumi = kumi.obj; //in case someone sent a payload object
-        }
-
-        let toSend = {
-            ...kumi,
-            requestVersion: REQUEST_VERSION,
-        };
-
-        window.axios
-            .post( Routes.associateKumi( kumi, exam ), toSend )
-            .then( ( response ) => {
-                // window.console.log( 'kumiRequests', 'associateKumi', 28, response );
-            } )
-            .catch( function ( error ) {
-                //todo add response handling
-                window.console.log( 'kumiRequests--associateKumi', 'ERROR', 39, error );
-                // errorHandling( error );
-            } );
-
-    },
+    //
+    // associateKumi: ( kumi, exam ) => {
+    //     // let route = 'dev/kumis/' + kumi.id + 'exam/' + exam.id + '/new';
+    //
+    //     let toSend = {
+    //         ...kumi,
+    //         ...exam,
+    //         requestVersion: REQUEST_VERSION,
+    //     };
+    //
+    //     window.axios
+    //         .post( Routes.associateKumi( kumi, exam ), toSend )
+    //         .then( ( response ) => {
+    //             // window.console.log( 'kumiRequests', 'associateKumi', 28, response );
+    //         } )
+    //         .catch( function ( error ) {
+    //             //todo add response handling
+    //             window.console.log( 'kumiRequests--associateKumi', 'ERROR', 39, error );
+    //             // errorHandling( error );
+    //         } );
+    //
+    // },
 
     /**
      * Requests the server creates a new kumi for the
@@ -189,7 +187,8 @@ module.exports = {
     },
 
     disassociateKumiAndExam: ( kumi, exam ) => {
-        let to = 'dev/kumis/' + kumi.id + '/exam/' + exam.id;
+        let to = Routes.disassociateKumi(kumi, exam);
+        // let to = 'dev/kumis/' + kumi.id + '/exam/' + exam.id;
         return window.axios
             .delete( to )
             .then( ( response ) => {

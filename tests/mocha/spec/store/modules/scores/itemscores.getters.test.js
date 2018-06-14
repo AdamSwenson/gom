@@ -7,6 +7,10 @@ require( '../../../../injectglobals' );
 
 import getters from '../../../../../../resources/assets/js/store/modules/scores/itemscores.getters';
 
+import { createLocalVue } from 'vue-test-utils';
+const localVue = createLocalVue();
+localVue.use( Vuex )
+
 
 import { itemscores } from "../../../../helpers/state-factories";
 let { makePopulatedState, makeState } = itemscores;
@@ -19,6 +23,7 @@ describe( "itemscores | getters ", function () {
     let testStudent;
     let testScore;
     let testText;
+    let store;
 
     beforeEach( function () {
         testExam = factories.examFactory();
@@ -26,17 +31,25 @@ describe( "itemscores | getters ", function () {
         testStudent = factories.studentFactory();
         testScore = faker.random.number();
         testText = faker.company.bs();
+
+
+        state = makePopulatedState();
+        store = new Vuex.Store({
+            state, getters
+        });
+
+
     } );
 
     describe( nggTypes.getItemScoreObject, function () {
         it( "happy path ", function () {
-            state = makePopulatedState();
 
             let testObj = state.scores[ 1 ];
             let payload = { item: { id: testObj.itemId }, student: { id: testObj.studentId } };
 
             return (function(){
-                let result = (function(){ return getters[ nggTypes.getItemScoreObject ]( state, {}, {}, payload );})();
+                let result = store.getters[nggTypes.getItemScoreObject](payload);
+                //(function(){ return getters[ nggTypes.getItemScoreObject ]( state, {}, {}, payload );})();
                 expect( result.examId ).toBe( testObj.examId );
                 expect( result.itemId ).toBe( testObj.itemId );
                 expect( result.studentId ).toBe( testObj.studentId );

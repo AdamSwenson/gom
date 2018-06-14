@@ -1,9 +1,9 @@
 //The name of the tested component
 var compName = 'kumi-name-field';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-name-field.vue');
+var Component = require('../../../../resources/assets/js/development/components/kumi/kumi-name-field.vue');
 
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 

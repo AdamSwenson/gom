@@ -1,4 +1,3 @@
-
 //The name of the tested component
 var compName = 'studentFileImporter';
 //The path to the tested component
@@ -13,26 +12,36 @@ require( '../../../../injectglobals' );
 describe( compName, () => {
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
-    
+
     beforeEach( () => {
 
     } );
+    describe( 'utilities', () => {
+
+        it.skip( 'browserSupportFileUpload', () => {
+
+        } );
+
+        it.skip( 'firstRowContainsTitles', () => {
+
+        } );
 
 
-    describe( " actions", () => {
-        it.skip( 'awaits tests', () => {
-             } );
-    } );
+        it.skip( '    guessColumnDataByTitles', () => {
 
+        } );
 
-    describe( " getters", () => {
-        it.skip( 'awaits tests', () => {
+        it.skip( 'guessColumnDataByContent', () => {
+
+        } );
+
+        it.skip( 'filterHeaderRows', () => {
+
         } );
     } );
 
-
-    describe( " mutations ", () => {
-        it.skip( 'awaits tests', () => {
+    describe( " actions", () => {
+        it.skip( 'importStudentsFromFile', () => {
         } );
     } );
 

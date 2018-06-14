@@ -1,21 +1,27 @@
 
-//The name of the tested component
 var compName = 'tags.getters';
 //The path to the tested component
-var Component = require( '../../../../../../resources/assets/js/store/modules/tags/tags.getters.js' );
+import getters from  '../../../../../../resources/assets/js/store/modules/tags/tags.getters.js' ;
 
 
 require( '../../../../injectglobals' );
 
 //tested object
 
+import { createLocalVue } from 'vue-test-utils';
+const localVue = createLocalVue();
+localVue.use( Vuex )
+
 
 describe( compName, () => {
     let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
+    let store, state, payload, exam, item, kumi, kumis, student, grade;
     
     beforeEach( () => {
-
+        state = {};
+        store = new Vuex.Store({
+            state, getters
+        });
     } );
 
 

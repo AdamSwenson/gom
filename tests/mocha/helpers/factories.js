@@ -109,6 +109,14 @@ export const makeKumis = ( number ) => {
     return kumis;
 }
 
+export const makeStudents = ( number ) => {
+    let students = [];
+    for (let i = 0; i < number; i++) {
+        students.push( studentFactory() );
+    }
+    return students;
+}
+
 
 /**
  * Returns an Exam instance with random id and index

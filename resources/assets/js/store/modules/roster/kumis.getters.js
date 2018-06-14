@@ -23,7 +23,7 @@ const KUMIS_JSON_NAME = 'loadedKumis';
 
 
 import {
-    filterExamKumiAssociations, filterStudentAssociations, filterKumis,
+    areKumiAndExamAssociated, filterExamKumiAssociations, filterStudentAssociations, filterKumis,
     getKumiById,
     getKumiBySerialNumber,
     processKumiFromJson
@@ -33,13 +33,11 @@ import {
 module.exports = {
 
     areKumiAndExamAssociated: ( state, getters, rootState, objs ) => ( objs ) => {
+        // return (function(state, objs) {
         let { exam, kumi } = objs;
-        let r = state.examKumiAssociations.filter( ( i ) => {
-            if ( i.examId === exam.id && i.kumiId === kumi.id ) {
-                return i;
-            }
-        } );
-        return r.length > 0;
+
+        return areKumiAndExamAssociated( state, exam, kumi )
+        // })(state, objs)
     },
 
     getKumiBySerialNumber: ( state, getters, rootState, serialNumber ) => ( serialNumber ) => {

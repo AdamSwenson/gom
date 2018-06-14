@@ -1,9 +1,11 @@
-
 var compName = 'items.order.getters';
 //The path to the tested component
-var Component = require( '../../../../../../resources/assets/js/store/modules/items/items.order.getters.js' );
+import getters from  '../../../../../../resources/assets/js/store/modules/items/items.order.getters.js' ;
 
 require( '../../../../injectglobals' );
+import { createLocalVue } from 'vue-test-utils';
+const localVue = createLocalVue();
+localVue.use( Vuex )
 
 
 import Item from '../../../../../../resources/assets/js/models/Item'
@@ -14,7 +16,6 @@ import { traverseDF, traverseBF, getSerialNumber } from '../../../../../../resou
 import { addNodes } from "../../../../helpers/item-test-helpers";
 
 //tested object
-let getters = Component;
 
 const testAction = helpers.testAction;
 const description = helpers.description;
@@ -30,26 +31,30 @@ const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
 describe( compName, () => {
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
-    let numItems, filledState, testItemIndex;
+    let numItems, testItemIndex, store, state;
 
     beforeEach( () => {
         numItems = 5;
         testItemIndex = faker.random.number( { min: 0, max: numItems - 1 } );
-        filledState = { itemMap: new Node( 0, 0 ) };
-        addNodes( filledState.itemMap, numItems );
-        for (let n of filledState.itemMap.children) {
+        state = { itemMap: new Node( 0, 0 ) };
+        addNodes( state.itemMap, numItems );
+        for (let n of state.itemMap.children) {
             addNodes( n, numItems );
         }
+        store = new Vuex.Store({
+            state, getters
+        });
+
 
     } );
 
     describe( description( gTypes.getItemNodeFromOrder ), function () {
         it( "happy path ", function () {
             //prep
-            let targetNode = filledState.itemMap.children[ testItemIndex ];
+            let targetNode = state.itemMap.children[ testItemIndex ];
             // window.console.log( 'orderings.spec', 'target', 133,targetNode );
             //call
-            let result = getters[gTypes.getItemNodeFromOrder]( filledState, getters, {}, targetNode.data );
+            let result = store.getters[gTypes.getItemNodeFromOrder]( targetNode.data );
 
             // window.console.log( 'orderings.spec', 'result', 136, result);
             //check
@@ -60,9 +65,9 @@ describe( compName, () => {
 
     describe( description( gTypes.getItemMapCopy ), function () {
         it( "happy path ", function () {
-            let test = filledState.itemMap;
-            let result = getters[ gTypes.getItemMapCopy ]( filledState, {} );
-            // window.console.log( 'orderings.spec', 'result', 139, filledState, result, test );
+            let test = state.itemMap;
+            let result = store.getters[ gTypes.getItemMapCopy ];
+            // window.console.log( 'orderings.spec', 'result', 139, state, result, test );
 
             //todo rewrite recursively to check  all children
             for (let i = 0; i < test.children.length; i++) {
@@ -89,9 +94,9 @@ describe( compName, () => {
         describe( description( "Happy paths" ), function () {
             it( "exam", function () {
                 //prep
-                let targetSerialNumber = filledState.itemMap.data;
+                let targetSerialNumber = state.itemMap.data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( filledState, getters,  {}, targetSerialNumber );
+                let result = store.getters[ gTypes.getHeightOfNode ](  targetSerialNumber );
                 //check
                 //At the exam1 level, so the result should be 0
                 expect( result ).toBe( 0 );
@@ -100,9 +105,9 @@ describe( compName, () => {
             it( "question", function () {
                 //this is the question number
                 //prep
-                let targetSerialNumber = filledState.itemMap.children[ testItemIndex ].data;
+                let targetSerialNumber = state.itemMap.children[ testItemIndex ].data;
                 //call
-                let result = getters[ gTypes.getDepthOfNode ]( filledState, getters,  {}, targetSerialNumber );
+                let result = store.getters[ gTypes.getDepthOfNode ](  targetSerialNumber );
                 //check
                 //At the question level,
                 expect( result ).toBe( testItemIndex );
@@ -111,13 +116,13 @@ describe( compName, () => {
 
             it( "element", function () {
                 //prep
-                let targetSerialNumber = filledState
+                let targetSerialNumber = state
                     .itemMap
                     .children[ testItemIndex ]
                     .children[ testItemIndex ]
                     .data;
                 //call
-                let result = getters[ gTypes.getDepthOfNode ]( filledState, getters, {},  targetSerialNumber );
+                let result = store.getters[ gTypes.getDepthOfNode ](  targetSerialNumber );
                 //check
                 expect( result ).toBe( testItemIndex );
             } );
@@ -130,9 +135,9 @@ describe( compName, () => {
 
             it( "exam", function () {
                 //prep
-                let targetSerialNumber = filledState.itemMap.data;
+                let targetSerialNumber = state.itemMap.data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( filledState, getters,  {}, targetSerialNumber );
+                let result = store.getters[ gTypes.getHeightOfNode ](  targetSerialNumber );
                 //check
                 //At the exam1 level, so the result should be 0
                 expect( result ).toBe( 0 );
@@ -140,9 +145,9 @@ describe( compName, () => {
 
             it( "question", function () {
                 //prep
-                let targetSerialNumber = filledState.itemMap.children[ testItemIndex ].data;
+                let targetSerialNumber = state.itemMap.children[ testItemIndex ].data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( filledState, getters,  {}, targetSerialNumber );
+                let result = store.getters[ gTypes.getHeightOfNode ](  targetSerialNumber );
                 //check
                 //At the exam1 level, so the result should be 0
                 expect( result ).toBe( 1 );
@@ -151,13 +156,13 @@ describe( compName, () => {
 
             it( "element", function () {
                 //prep
-                let targetSerialNumber = filledState
+                let targetSerialNumber = state
                     .itemMap
                     .children[ testItemIndex ]
                     .children[ testItemIndex ]
                     .data;
                 //call
-                let result = getters[ gTypes.getHeightOfNode ]( filledState, getters, {},  targetSerialNumber );
+                let result = store.getters[ gTypes.getHeightOfNode ](targetSerialNumber );
                 //check
                 //At the element level, so the result should be 0
                 expect( result ).toBe( 2 );

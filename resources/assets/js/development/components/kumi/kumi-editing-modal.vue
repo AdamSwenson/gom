@@ -1,4 +1,4 @@
-<template>
+µ<template>
     <div class="kumi-editing-modal modal"
          v-bind:class="[isVisible ? 'is-active' : '' ]"
     >
@@ -26,34 +26,36 @@
                         </p>
 
                         <p class="control">
-                            <button class="button ">+</button>
-                        </p>
-
-                        <p class="control">
                             <remove-kumi-control :kumi="kumi"></remove-kumi-control>
                         </p>
                     </div>
                 </div>
+                <div class="content has-text-right">
+                    <new-kumi-control type="button"></new-kumi-control>
+                </div>
 
-                <p class="">Highlighted groups have students related to this exam</p>
+                <div class="content">
+                    <p class="">[developer notes to self] <br/>
+                    Highlighted groups have students related to this exam</p>
 
                 <p>
                     Removes all associations between an exam and a kumi.
                     Also removes all student associations (from this roster)
                     with the kumi
-                   <br>
+                </p>
+                <p>
                     NB, it does not delete the kumi itself. Nor does it disassociate
                     any students who weren't on this exam. So if someone had created
                     a kumi for students needing intervention (which would link them
                     across exams), it and its relationships to other students
                     would be unaffected
                 </p>
+                </div>
             </section>
 
             <footer class="modal-card-foot">
                 <div class="container">
                     <div class="content has-text-right">
-                        <new-kumi-control type="button"></new-kumi-control>
                         <button class="done-button button is-success"
                                 v-on:click="toggleModal"
                         >Done</button>
@@ -69,9 +71,9 @@
 </style>
 
 <script>
-    import * as mTypes from '../../../../store/mutation-types';
-    import * as aTypes from '../../../../store/action-types';
-    import * as gTypes from '../../../../store/getter-types';
+    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as gTypes from '../../../store/getter-types';
     import KumiNameField from "./kumi-name-field";
     import RemoveKumiControl from "./remove-kumi-button";
     import NewKumiControl from "./new-kumi-control";

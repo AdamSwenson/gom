@@ -1,12 +1,10 @@
-
 //The name of the tested component
-var compName = 'kumi-tabs';
+var compName = 'show-all-kumi-control';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/setup/kumi/kumi-tabs.vue');
+var Component = require( '../../../../resources/assets/js/development/components/kumi/show-all-kumi-control.vue' );
 
 
-
-require( '../../../injectglobals' );
+require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 const localVue = createLocalVue();
@@ -22,28 +20,23 @@ describe( compName, () => {
     let wrapper;
 
     let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
+    let payload, exam, item, kumi, student, grade;
 
     beforeEach( () => {
-        kumis = factories.makeKumis(3);
-        exam = factories.examFactory();
         actions = {}
 
-        getters = {
-            [ gTypes.getKumisForExam ] : (  ) => (  ) => kumis,
-            [ gTypes.getActiveExam] : (  ) => (  ) => exam,
-            getKumisToFilterStudentsBy: (  ) => (  ) => kumis,
+        getters = {};
 
+        mutations = {
+            clearKumisToFilterStudentsBy: sinon.spy()
         };
-
-        mutations = {};
 
         store = new Vuex.Store( {
             getters, mutations, actions
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, propsData: { isVisible: true }
         } );
 
     } );
@@ -51,12 +44,17 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
+            expect( wrapper.find( componentDivIdentifier ).exists() ).toBe( true );
             assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
 
     describe( "methods", () => {
-        } )
+        it( " calls for the correct mutation when clicked", () => {
+            wrapper.find( componentDivIdentifier ).trigger( 'click' );
+            expect( mutations.clearKumisToFilterStudentsBy.calledOnce ).toBe( true );
+        } );
+    } )
 
 
 } );

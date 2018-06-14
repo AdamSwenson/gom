@@ -25,7 +25,7 @@ import Kumi from "../../../../../../resources/assets/js/models/Kumi";
 let { state, getters, mutations } = Component;
 
 
-describe( "kumi | display   ", function () {
+describe( "kumi.display   ", function () {
 
     let payload;
     let gettersStub, students, kumis;

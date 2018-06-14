@@ -49,11 +49,11 @@
 </style>
 
 <script>
-    import Payload from '../../../../models/Payload'
-    import Kumi from '../../../../models/Kumi'
-    import * as mTypes from '../../../../store/mutation-types';
-    import * as aTypes from '../../../../store/action-types';
-    import * as gTypes from '../../../../store/getter-types';
+    import Payload from '../../../models/Payload'
+    import Kumi from '../../../models/Kumi'
+    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../store/action-types';
+    import * as gTypes from '../../../store/getter-types';
 
     //todo Adjust styling so that box of input is not visible except when selected
     export default {
