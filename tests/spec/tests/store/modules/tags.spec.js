@@ -37,11 +37,11 @@ describe( "store.modules.tags | ", function () {
     } );
 
     describe( description( "mutations" ), function () {
-        describe( description( mTypes.createTag ), function () {
+        describe( description( mTypes.addTag ), function () {
             it( 'happy path', function () {
                 let pl = Payload.factory( { obj: Tag.factory() } );
                 //call
-                mutations[ mTypes.createTag ]( state, pl );
+                mutations[ mTypes.addTag ]( state, pl );
                 //check
                 expect( state.tags[ 0 ] ).toBe( pl.obj );
             } );
@@ -116,7 +116,7 @@ describe( "store.modules.tags | ", function () {
                     let tag, itemObject;
                     let expectedMutations = [
                         {
-                            type: mTypes.createTag,
+                            type: mTypes.addTag,
                             payload: {
                                 obj: tag,
                                 mutateSilently: true

@@ -152,7 +152,15 @@ const actions = {
                 commit( 'addNodeAsChild', pl );
             } );
 
-            resolve();
+            //Each loaded item has a tags list which contains
+            //bare data objects. This action replaces the
+            //data objects with Tag objects from the central store
+            let pm = dispatch('processItemTags');
+            pm.then( (  ) => {
+                resolve();
+            });
+
+
         } );
     },
 

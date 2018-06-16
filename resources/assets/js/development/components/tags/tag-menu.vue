@@ -1,5 +1,5 @@
 <template>
-    <div class="tags-menu panel">
+    <div class="tag-menu panel">
 
         <div class="panel-heading">
             Tags
@@ -101,8 +101,6 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
-    import { Routes } from '../../../api/apiSettings';
-    import { loadAllUserTagsRequest, createTagRequest, associateTagRequest } from '../../../api/requests/tagRequests';
 
     import colorSelector from './color-selector.vue';
 
@@ -112,16 +110,12 @@
      * removing tags.
      *
      * It is normally used to select or remove tags from an object,
-     * though it need not be.
+     * though it could be used as an object-independent panel for
+     * adding or deleting tags globally.
      */
     export default {
 
-        /**
-         * objectSerialNumber : if this is displaying / managing
-         *                      the tags associated with something,
-         *                      this is the identifier of that something.
-         */
-        props: [ 'objectSerialNumber', 'objectType' ],
+        props: [ 'object', ],
 
         components: {
             'color-selector': colorSelector
@@ -159,19 +153,25 @@
         },
 
         asyncComputed: {
+            //We need to load all tags associated with the user from the server
+            //We can't just iterate through all existing items because the user
+            //might have created tags in another exam which have not been used here.
             tags: {
                 get() {
-                    //if we are supposed to be using the central store, do that
-                    if ( this.useCentralStore ) return this.$store.getters[ gTypes.getAllTags ];
+                    let me = this;
+                    // return this.$store.getters[ gTypes.getAllTags ];
 
-                    //otherwise, and by default, load from the server
-                    let result = loadAllUserTagsRequest();
-                    if ( _.isUndefined( result ) ) return [];
-                    return result;
+                    // if(this.$store.getters[ gTypes.getAllTags ].length === 0) {
+                    let p = me.$store.dispatch( 'loadAllUserTagsFromServer' );
+                    return p.then( function () {
+                        // window.console.log( 'tag-menu', 'loaded tags', 161, );
+                        return me.$store.getters[ gTypes.getAllTags ];
+                    } );
+                    // }
                 },
 
                 watch() {
-                    this.$parent.clickCounter;
+                    // this.$parent.clickCounter;
                 }
             }
         },
@@ -202,31 +202,6 @@
                 return this.isNewTagInputVisible ? 'Save' : 'New'
             },
 
-            /**
-             * If the menu is attached to an object (item,
-             * exam, etc), this will return that object.
-             * If it is free-floating, it will return false
-             */
-            object: function () {
-                if ( this.objectSerialNumber ) {
-//                    if ( this.objectType instanceof Object ) {
-//                        return this.objectType;
-//                    }
-
-                    switch ( this.objectType ) {
-                        case this.objectType.kind === 'item':
-                            return this.$store.getters.getItemBySerialNumber( this.objectSerialNumber );
-                            break;
-                        case 'item':
-                            return this.$store.getters.getItemBySerialNumber( this.objectSerialNumber );
-                            break;
-                        //todo exam
-                        //todo student
-                        default:
-                    }
-                }
-                return false;
-            }
         },
 
         methods: {
@@ -283,39 +258,6 @@
                 } );
             },
 
-            saveNewTag: function () {
-                let tag = Tag.factory( {
-                    name: this.newTagName,
-//                    text: this.newTagText,
-                    props: {
-                        priority: this.priority
-                    }
-                } );
-
-                if ( this.useCentralStore ) {
-                    window.console.log( 'tags-menu', 'saveNewTag', 323, 'using central store' );
-                    this.$store.dispatch( 'createAndAssociateTag', Payload.factory( { obj: this.object, tag: tag } ) );
-                    //This will tell parent to reload from dv
-                    this.$emit( 'new-tag-saved', tag );
-                }
-                else {
-                    //this is the default option
-                    let me = this;
-                    let obj = this.object;
-                    //sends request to create a new tag
-                    let p = createTagRequest( null, tag );
-                    p.then( function () {
-                        //once that has been successful, sends
-                        //request to associate the tag with the object
-                        let p2 = associateTagRequest( null, tag, obj );
-                        p2.then( function () {
-                            //This will tell parent to reload from dv
-                            me.$emit( 'new-tag-saved', tag );
-                        } );
-                    } );
-                }
-            },
-
             handleEditClick: function () {
                 this.isEditable = !this.isEditable;
             },
@@ -334,11 +276,50 @@
                 this.isNewTagInputVisible = !this.isNewTagInputVisible;
             },
 
+
+            saveNewTag: function () {
+                let tag = Tag.factory( {
+                    name: this.newTagName,
+//                    text: this.newTagText,
+                    props: {
+                        priority: this.priority
+                    }
+                } );
+
+
+                this.$store.dispatch( 'createAndAssociateTag', Payload.factory( { obj: this.object, tag: tag } ) );
+
+                this.$emit( 'new-tag-saved', tag );
+
+
+                // Trying to do it this way creates an error where it claims:
+                // TypeError: tag.styleString is not a function
+                // at VueComponent.styling (new-setup-package.js:18506)
+                // at new-setup-package.js:69564
+
+                // window.console.log( 'tag-menu', 'saveNewTag', 288, tag);
+                // let me = this;
+                // let pl = Payload.factory( { obj: this.object, tag: tag });
+                // let p = this.$store.dispatch( 'createTag',  pl );
+                // p.then( function(  ){
+                //     let p2 = this.$store.dispatch( 'associateTag', pl );
+                //     p2.then( function(  ) {
+                //         this.$emit( 'new-tag-saved', tag );
+                //         window.console.log( 'tag-menu', 'new-tag-saved', 295, );
+                //     });
+                //
+                // });
+
+
+            },
+
+
             /**
              * Returns a boolean of whether to display
              * the row containing the tag
              */
             isDisplayed: function ( tag ) {
+
                 if ( this.filterTo === 'all' ) return true;
 
                 if ( tag[ this.filterTo ].length > 0 ) return true;
@@ -355,16 +336,16 @@
              * @param tagSerialNumber
              */
             isHighlighted: function ( tag ) {
-                let isHighlighted = false;
-                switch ( this.objectType ) {
-                    case 'item':
-                        if ( tag.items.length === 0 ) isHighlighted = false;
-                        _.forEach( tag.items, ( i ) => {
-                            if ( i.id === this.object.id ) isHighlighted = true;
-                        } );
-                        break;
-                    default:
-                }
+                let isHighlighted = tag.isTagged( this.object );
+                // switch ( this.object ) {
+                //     case this.object instanceof Item.constructor:
+                //         if ( tag.isTagged(this.object)) isHighlighted = false;
+                //         _.forEach( tag.items, ( i ) => {
+                //             if ( i.id === this.object.id ) isHighlighted = true;
+                //         } );
+                //         break;
+                //     default:
+                // }
                 return isHighlighted;
             },
 
@@ -384,6 +365,7 @@
 
         events: {},
 
-        mounted: function () {}
+        mounted: function () {
+        }
     }
 </script>

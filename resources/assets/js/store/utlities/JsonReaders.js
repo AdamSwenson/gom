@@ -294,26 +294,26 @@ module.exports = {
         //     } );
         //     1`                                                                                                          `
         // },
-
-        /**
-         * The earlier processing of items should have left
-         * each item with a tags object from the db.
-         * We need to extract those and match them with the
-         * rest of the client tab management
-         * @param state
-         * @param commit
-         * @param dispatch
-         * @param getters
-         */
-        processTagsOutOfLoadedItems: ( { state, commit, dispatch, getters } ) => {
-            let items = getters[ gTypes.getAllItems ];
-            if ( _.isUndefined( items ) || items.length === 0 ) return false;
-
-            _.forEach( items, function ( item ) {
-                dispatch( 'processItemTags', item );
-            } );
-
-        }
+        //
+        // /**
+        //  * The earlier processing of items should have left
+        //  * each item with a tags object from the db.
+        //  * We need to extract those and match them with the
+        //  * rest of the client tab management
+        //  * @param state
+        //  * @param commit
+        //  * @param dispatch
+        //  * @param getters
+        //  */
+        // processTagsOutOfLoadedItems: ( { state, commit, dispatch, getters } ) => {
+        //     let items = getters[ gTypes.getAllItems ];
+        //     if ( _.isUndefined( items ) || items.length === 0 ) return false;
+        //
+        //     _.forEach( items, function ( item ) {
+        //         dispatch( 'processItemTags', item );
+        //     } );
+        //
+        // }
 
     }
 };

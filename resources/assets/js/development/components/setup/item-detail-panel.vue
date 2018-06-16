@@ -19,8 +19,7 @@
 
         <tag-display
                 :object="item"
-                :serial-number="serialNumber"
-                :object-type="'item'"></tag-display>
+        ></tag-display>
     </div>
 
 </template>
@@ -56,6 +55,7 @@
     import Item from '../../../models/Item'
 
     //    import tagMenu from '../menus/tags-menu.vue';
+import tagDisplay from '../tags/tag-display.vue';
 
     import MaxScore from '../input/max-score-input.vue'
 
@@ -63,7 +63,8 @@
         props: ['item'],
 
         components: {
-            MaxScore
+            MaxScore,
+            tagDisplay
 //          'tag-menu' : tagMenu
         },
 

@@ -19,7 +19,7 @@
 
     import { loadAllUserTagsRequest, loadTagsForItemRequest } from '../../../../api/requests/tagRequests';
 
-    import tagMenu from '../tags-menu.vue';
+    import tagMenu from '../tag-menu.vue';
 
     /**
      * This is a display area for editing, creating, and

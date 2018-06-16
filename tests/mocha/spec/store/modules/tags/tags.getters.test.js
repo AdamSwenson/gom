@@ -25,7 +25,7 @@ describe( compName, () => {
     } );
 
 
-    describe( " actions", () => {
+    describe(gTypes.getTagsForObject, () => {
         it.skip( 'awaits tests', () => {
              } );
     } );

@@ -352,11 +352,11 @@ export default function ( store ) {
 
 
             // ******************** Tags
-            case mTypes.createTag :
-                // window.console.log( 'apiPlugin', mTypes.createTag, 299, );
-                createTagRequest( store, payload.obj );
-                break;
-
+            // case mTypes.addTag :
+            //     // window.console.log( 'apiPlugin', mTypes.createTag, 299, );
+            //     createTagRequest( store, payload.obj );
+            //     break;
+            //
             case mTypes.updateTag:
                 // window.console.log( 'apiPlugin', mTypes.updateTag, 'payload', 271, payload );
                 //make a copy so vuex won't be mad
@@ -372,11 +372,11 @@ export default function ( store ) {
                 destroyTagRequest( store, payload.obj );
                 break;
 
-            case mTypes.associateTag:
-                // window.console.log( 'apiPlugin', mTypes.associateTag, 323, payload );
-                associateTagRequest( store, payload.tag, payload.obj );
-                break;
-
+            // case mTypes.associateTag:
+            //     // window.console.log( 'apiPlugin', mTypes.associateTag, 323, payload );
+            //     associateTagRequest( store, payload.tag, payload.obj );
+            //     break;
+            //
             case mTypes.disassociateTag:
                 // window.console.log( 'apiPlugin', mTypes.disassociateTag, 323, );
                 disassociateTagRequest( store, payload.tag, payload.obj );

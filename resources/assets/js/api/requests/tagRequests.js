@@ -60,7 +60,7 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
             tag.props = r.props;
             tag.name = r.name;
             let payload = Payload.factory( { obj: tag, mutateSilently: true } );
-            store.commit( mTypes.createTag, payload );
+            store.commit( mTypes.addTag, payload );
         }
 
         if ( !_.isUndefined( r.items ) ) {
@@ -94,11 +94,14 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
 
 module.exports = {
 
-    associateTagRequest: ( store = null, tag, object ) => {
+    associateTagRequest: (  tag, object ) => {
         let out = {
             requestVersion: REQUEST_VERSION
         };
         // window.console.log( 'tagRequests', 'associateTagRequest', 100, tag, object );
+        if (_.isUndefined(tag) || _.isUndefined(object)) return new Promise(function ( resolve, reject ) {
+            resolve();
+        });
 
         if ( object.kind === 'item' ) {
             return window.axios
@@ -107,7 +110,7 @@ module.exports = {
                     //Push the object's id into the
                     //list on the tag. This way it will show up and filter
                     //as expected
-                    tag.items.push(object.id);
+                    return response.data;
                 } )
                 .catch( function ( error ) {
                     errorHandling( error );
@@ -162,6 +165,7 @@ module.exports = {
             requestVersion: REQUEST_VERSION
         };
         // window.console.log( 'tagRequests', 'disassociateTagRequest', 161, tag, object );
+        if (_.isUndefined(tag) || _.isUndefined(object)) return false;
 
         if ( object.kind === 'item' ) {
             // window.console.log( 'tagRequests', 'disassociateTagRequest', 174, 'is item' );
@@ -221,8 +225,8 @@ module.exports = {
         }
     },
 
-    createTagRequest: ( store=null, tag ) => {
-        window.console.log( 'tagRequests', 'createTagRequest', tag );
+    createTagRequest: ( tag ) => {
+        // window.console.log( 'tagRequests', 'createTagRequest', tag );
         let out = {
             requestVersion: REQUEST_VERSION,
             ...tag
@@ -231,16 +235,7 @@ module.exports = {
         return window.axios
             .post( Routes.createTag(), out )
             .then( ( response ) => {
-                // if ( response.data.length > 0 ) {
-                if(! _.isNull(store)){
-                    handleCreateResponse( store, tag, response.data );
-                }else{
-                    if(response.data.id){
-                        tag.id = response.data.id;
-                    }
-                }
-
-                // }
+                return response.data;
             } )
             .catch( function ( error ) {
                 errorHandling( error );
@@ -281,17 +276,7 @@ module.exports = {
         return window.axios
             .get( Routes.getAllUserTags() )
             .then( ( response ) => {
-                // window.console.log( 'loadAllUserTagsRequest', '', 195, response );
-                if ( !_.isNull( store ) ) {
-                    handleLoadResponse( store, response.data );
-                }
-                else {
-                    let tags = [];
-                    _.forEach( response.data, ( t ) => {
-                        tags.push( Tag.factory( t ) );
-                    } );
-                    return tags;
-                }
+                return response.data;
             } )
             .catch( function ( error ) {
                 // window.console.log( 'examRequests', 'ERROR', 39, error );
@@ -319,17 +304,6 @@ module.exports = {
             .get( Routes.getTagsForItem( item ) )
             .then( ( response ) => {
                 return response.data;
-                // // window.console.log( 'loadTagsForItemRequest', '', 213, response );
-                // if ( !_.isNull( store ) ) {
-                //     handleLoadResponse( store, response.data, item );
-                // } else {
-                //     let tags = [];
-                //     _.forEach( response.data, ( t ) => {
-                //         tags.push( Tag.factory( t ) );
-                //     } );
-                //     return tags;
-                // }
-
             } )
             .catch( function ( error ) {
                 // window.console.log( 'examRequests', 'ERROR', 39, error );

@@ -21,13 +21,14 @@ const state = {
      * the serial number (key) corresponds to. If that is
      * needed, it should be handled elsewhere
      */
-    associations: {}
+    // associations: {}
 };
 
 
 
 const mutations = {
-    ...m
+    ...m,
+    ...loaders.mutations
 };
 
 const getters = {

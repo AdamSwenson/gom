@@ -28,6 +28,9 @@
 <script>
     export default {
 
+        /**
+         * The instance of models/Tag to display
+         */
         props: [ 'object' ],
 
         components: {},

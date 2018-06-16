@@ -1,3 +1,4 @@
+import Tag from "../../../resources/assets/js/models/Tag";
 
 const faker = require( 'faker' );
 
@@ -10,6 +11,8 @@ import Kumi from "../../../resources/assets/js/models/Kumi";
 import Note from "../../../resources/assets/js/models/Note";
 import Question from "../../../resources/assets/js/models/Question";
 import Student from "../../../resources/assets/js/models/Student";
+import Payload from "../../../resources/assets/js/models/Payload";
+import * as mTypes from "../../../resources/assets/js/store/mutation-types";
 
 
 // Factories
@@ -117,6 +120,15 @@ export const makeStudents = ( number ) => {
     return students;
 }
 
+export const makeTags = ( number ) => {
+    let tags = [];
+    for (let i = 0; i < number; i++) {
+        tags.push( tagFactory() );
+    }
+    return tags;
+}
+
+
 
 /**
  * Returns an Exam instance with random id and index
@@ -173,15 +185,6 @@ export const noteFactory = () => {
     } )
 };
 
-export const studentFactory = ( index ) => {
-    let s = new Student( faker.random.number() );
-    s.email = faker.internet.email();
-    s.studentIndex = index ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-    s.studentIdentifier = faker.random.number();
-    s.lastName = faker.name.lastName();
-    s.firstName = faker.name.firstName();
-    return s;
-};
 
 export const questionFactory = ( index ) => {
     let question = new Question( index );
@@ -192,6 +195,28 @@ export const questionFactory = ( index ) => {
     question.content = faker.hacker.phrase();
     return question;
 };
+
+
+export const studentFactory = ( index ) => {
+    let s = new Student( faker.random.number() );
+    s.email = faker.internet.email();
+    s.studentIndex = index ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+    s.studentIdentifier = faker.random.number();
+    s.lastName = faker.name.lastName();
+    s.firstName = faker.name.firstName();
+    return s;
+};
+
+
+export const tagFactory = (  id, text, name) => {
+    let tag = new Tag();
+    tag.id = _.isUndefined(id) ? faker.random.number() : id;
+    tag.text = _.isUndefined(text)? faker.hacker.phrase() : text;
+    tag.props = {};
+    tag.name = _.isUndefined(name)? faker.hacker.phrase() : name;
+    return tag;
+};
+
 
 
 // /

@@ -14,51 +14,62 @@ import Student from '../../../models/Student'
 
 import Tag from '../../../models/Tag'
 
-
+import {
+    associateTagRequest,
+    createTagRequest,
+    disassociateTagRequest,
+    loadAllUserTagsRequest,
+    loadTagsForItemRequest,
+} from '../../../api/requests/tagRequests';
 
 module.exports = {
-
     /**
-     * When an item is loaded, it has an object of
-     * tags from the db. These need to be matched up
-     * with the client storage of tags
+     * Creates a relationship between an existing tag and existing taggable
+     * object
      * @param state
      * @param dispatch
      * @param commit
      * @param getters
-     * @param itemObject
+     * @returns {Promise<any>}
      */
-    processItemTags: ( { state, dispatch, commit, getters }, itemObject ) => {
-        if ( itemObject.tags.length === 0 ) return true;
-
-        _.forEach( itemObject.tags, function ( r ) {
-            // window.console.log( 'tagRequests', 'r', 29, r );
-
-            //make sure we don't already have a tag
-            //object
-            let tag = getters.getTagById( r.id );
-            // window.console.log( 'tagRequests', 'tag', 55, tag);
-
-            //if the tag doesn't already exist
-            //we create it
-            if ( _.isUndefined( tag ) ) {
-                tag = Tag.factory( { r } );
-                tag.id = r.id;
-                tag.text = r.text;
-                tag.props = r.props;
-                tag.name = r.name;
-                let payload = Payload.factory( { obj: tag, mutateSilently: true } );
-                commit( mTypes.createTag, payload );
-            }
-
-            //now we associate the item with the tag
-            commit( mTypes.associateTag, Payload.factory( {
-                obj: itemObject,
-                tag: tag,
-                mutateSilently: true
-            } ) );
+    associateTag: ( { state, dispatch, commit, getters }, { tag, obj } ) => {
+        return new Promise( function ( resolve, reject ) {
+            // send request to server to associate the tag with the object
+            associateTagRequest( tag, obj )
+                .then( function () {
+                    let pl = Payload.factory( { obj, tag } );
+                    //create the association locally
+                    commit( mTypes.associateTag, pl );
+                    resolve();
+                } );
         } );
+    },
 
+    /**
+     * Takes a newly created tag object and creates a record in the server.
+     * The server returns an id, which we add to the tag before pushing
+     * it into our central store.
+     * The promise returns the tag object, with id
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @returns {Promise<any>}
+     */
+    createTag: ( { state, dispatch, commit, getters }, tag ) => {
+        return new Promise( function ( resolve, reject ) {
+            //sends request to create a new tag
+            let p2 = createTagRequest( tag );
+            p2.then( function ( data ) {
+                //set the id from the server
+                tag.id = data.id;
+                //once it has been created on the server,
+                //save it on the client (with id)
+                let payload = Payload.factory( { obj: tag, mutateSilently: true } );
+                commit( mTypes.addTag, payload )
+                resolve( tag );
+            } );
+        } );
     },
 
     /**
@@ -71,37 +82,18 @@ module.exports = {
      * @param payload
      */
     createAndAssociateTag: ( { state, dispatch, commit, getters }, payload ) => {
-        let sendRequest = ( object, tag ) => {
-            window.console.log( 'tags', 'sendRequest', 170, );
-            //If the menu is attached to an object, create an association
-            if ( object ) {
-                commit( mTypes.associateTag, Payload.factory( {
-                    obj: object,
-                    tag: tag
-                } ) );
-            }
-        };
+        return new Promise( function ( resolve, reject ) {
+            let { tag, obj } = payload;
 
-        let { obj, tag } = payload;
-
-        let p = commit( mTypes.createTag, Payload.factory( { obj: tag } ) );
-
-        // p.then( ( object, tag ) => {
-        if ( tag.id > -1 ) {
-            window.console.log( 'tags', 'createAndAssociateTag', 183, 'id set', obj, tag );
-            sendRequest( obj, tag );
-        }
-        else {
-            setTimeout( function () {
-                window.console.log( 'tags', 'not set', 188, obj, tag );
-                sendRequest( obj, tag )
-            }, 5000 )
-
-        }
-
-
-        // } );
-
-    }
+            dispatch( 'createTag', tag )
+                .then( function ( tag ) {
+                    dispatch( 'associateTag', payload )
+                        .then( function () {
+                            resolve( tag );
+                        } );
+                } );
+        } );
+    },
 
 };
+

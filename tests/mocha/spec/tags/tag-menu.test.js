@@ -1,12 +1,15 @@
 //The name of the tested component
-import { factories } from "../../../spec/helpers/vuex.spec.helpers";
-
-var compName = 'tags-menu';
+var compName = 'tag-menu';
 //The path to the tested component
-var Component = require( '../../../../resources/assets/js/development/components/tags/tags-menu.vue' );
+var Component = require( '../../../../resources/assets/js/development/components/tags/tag-menu.vue' );
 
 require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
+
+
+import requests, { loadTagsForItemRequest } from '../../../../resources/assets/js/api/requests/tagRequests';
+//tested object
+
 
 const localVue = createLocalVue();
 
@@ -21,17 +24,27 @@ describe( compName, () => {
     let wrapper;
 
     let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
+    let payload, exam, item, kumi, kumis, student, grade, tag, tags, numTags, requestStub;
+
+    requestStub = sinon.stub( requests, 'loadAllUserTagsRequest' );
+    requestStub.resolves( tags );
 
     beforeEach( () => {
+        numTags = 5;
         item = factories.itemFactory();
+        tags = factories.makeTags(5);
+
         actions = {
-            createAndAssociateTag: sinon.spy()
+            loadAllUserTagsFromServer: sinon.stub(),
+            createAndAssociateTag: sinon.stub()
         }
+        actions.loadAllUserTagsFromServer.resolves(true);
 
         getters = {
-            getItemBySerialNumber: (  ) => (  ) => item
+            getItemBySerialNumber: (  ) => (  ) => item,
+            [gTypes.getAllTags] : sinon.stub()
         };
+        getters[gTypes.getAllTags].returns(tags);
 
         mutations = {};
 
@@ -41,9 +54,9 @@ describe( compName, () => {
 
         wrapper = shallow( Component, {
             store, localVue, propsData: {
-                objectSerialNumber: 939,
-                objectType: 'item'
-            }
+                object : item
+            },
+            sync: false
         } );
 
     } );
@@ -57,8 +70,10 @@ describe( compName, () => {
 
     describe( 'async computed properties', () => {
         describe( "tags", () => {
-            it.skip( "retrieves the tags async", () => {
-
+            it( "dispatches the expected action ", (done) => {
+                expect(actions.loadAllUserTagsFromServer.callCount).toBe(1);
+                expect(wrapper.vm.tags).toBe(tags);
+                done();
             } );
         } )
     } );
@@ -66,13 +81,6 @@ describe( compName, () => {
     describe( "methods", () => {
         describe( 'filterDisplayedTagsBy', () => {} );
 
-        describe( 'saveNewTag', () => {
-            it( 'dispatches expected action', () => {
-                wrapper.vm.saveNewTag();
-                expect( actions.createAndAssociateTag.calledOnce ).toBe( true );
-            } );
-
-        } );
         describe( 'handleNewClick', () => {
             it( 'dispatches actions when clicked', () => {
                 wrapper.setData({isNewTagInputVisible: true});
@@ -90,7 +98,23 @@ describe( compName, () => {
                 expect(wrapper.vm.isNewTagInputVisible).toBe(false);
             } );
 
-        } )
+        } );
+
+        describe( 'filterDisplayedTagsBy', function () {
+
+        } );
+
+        describe( 'handleSearch', function () {
+
+        } );
+
+        describe( 'saveNewTag', () => {
+            it( 'dispatches expected action', () => {
+                wrapper.vm.saveNewTag();
+                expect( actions.createAndAssociateTag.calledOnce ).toBe( true );
+            } );
+
+        } );
 
     } )
 

@@ -23,6 +23,8 @@ dotenv.config({
     path: Mix.Paths.root('.env')
 });
 
+module.exports.mode = 'development';
+
 
 
 

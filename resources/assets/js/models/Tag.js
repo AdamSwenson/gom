@@ -58,23 +58,7 @@ export default class Tag extends IModel {
 
     }
 
-    // static get styleMap() {
-    //     //making this 1-indexed because
-    //     //some problem arises when trying to
-    //     //retrieve a key of 0
-    //     return {
-    //         1: 'is-primary',
-    //         2: 'is-info',
-    //         3: 'is-warning',
-    //         4: 'is-danger',
-    //         5: 'is-black',
-    //         6: 'is-light',
-    //         7: 'is-success',
-    //         8: 'is-white',
-    //         9: 'is-dark',
-    //
-    //     }
-    // }
+    //NB, styleMap is stored on parent. Not sure why I did that....
 
     /**
      * Given the string style returns the numeric key
@@ -91,12 +75,29 @@ export default class Tag extends IModel {
         return _.toNumber( key );
     }
 
+    /**
+     * Utility for determining whether this tag is
+     * associated with the provided object
+     *
+     * @param object
+     * @returns {boolean}
+     */
+    isTagged( object ) {
+        if ( object.tags.length === 0 ) return false;
+        return _.findIndex( object.tags, this ) > -1;
+    }
 
     styleString() {
         let map = Tag.styleMap;
-        let style = map[ this.priority ];
-        // window.console.log( 'Tag', 'styleString', 88, this.priority, style, map);
-        return style;
+        try {
+            if(_.isUndefined(this.props) || _.isNull(this.props)) return '';
+            let style = map[ this.props.priority ];
+            // window.console.log( 'Tag', 'styleString', 88, this.priority, style, map);
+            return style;
+        } catch(err) {
+            window.console.log( 'Tag', 'styleString', 98, err);
+            return map[ 1 ];
+        }
     }
 
     get priority() {
@@ -143,7 +144,6 @@ export default class Tag extends IModel {
 
     static get aliasMap() {
         return {};
-
     }
 
 

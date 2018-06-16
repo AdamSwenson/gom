@@ -76,17 +76,19 @@ module.exports = {
         },
 
     getTagById: ( state, getters, rootState, id ) => ( id ) => {
+        let tags = getters[gTypes.getAllTags];
         // let serialNumber = (function ( state, id ) {
-        var r = state.tags.filter( function ( i ) {
+        var r = tags.filter( function ( i ) {
             if ( i.id === id ) {
                 return i;
             }
         } );
+        return r[0];
         // return r[ 0 ];
         // })( state, id );
-        let serialNumber = r[ 0 ];
+        // let serialNumber = r[ 0 ];
         // window.console.log( 'tags', 'getTagById', 244, r, serialNumber);
-        return getTagBySerialNumber( state, serialNumber );
+        // return getTagBySerialNumber( state, serialNumber );
     },
 
     [ gTypes.getAllTags ]: ( state, getters, rootState ) => {

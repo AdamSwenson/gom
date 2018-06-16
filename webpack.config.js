@@ -20,6 +20,7 @@ dotenv.config({
     path: Mix.Paths.root('.env')
 });
 
+module.exports.mode = process.env.NODE_ENV;
 
 
 

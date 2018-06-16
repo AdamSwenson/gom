@@ -8,6 +8,9 @@ import Exam from '../../../resources/assets/js/models/Exam';
 import Student from '../../../resources/assets/js/models/Student';
 import Question from '../../../resources/assets/js/models/Question';
 import ItemScore from '../../../resources/assets/js/models/ItemScore';
+import Tag from "../../../resources/assets/js/models/Tag";
+import Payload from "../../../resources/assets/js/models/Payload";
+import * as mTypes from "../../../resources/assets/js/store/mutation-types";
 
 
 let faker = require( 'faker' );

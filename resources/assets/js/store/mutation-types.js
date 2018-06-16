@@ -122,7 +122,7 @@ export const removeItemScore = 'removeItemScore';
 //tags
 export const updateTag = 'updateTag';
 export const destroyTag = 'destroyTag';
-export const createTag = 'createTag';
+export const addTag = 'addTag';
 export const associateTag = 'associateTag';
 export const disassociateTag = 'disassociateTag';
 
