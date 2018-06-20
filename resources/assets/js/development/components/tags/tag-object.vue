@@ -1,24 +1,45 @@
 <template>
-    <div class="tag-object"
-    >
-        <div v-on:click.stop="toggleTextDisplay" class="control">
-            <div class="tags has-addons">
-                <span class="tag is-rounded"
-                      v-bind:class="styling"
-                >{{name}}</span>
-                <!--<a class="tag is-delete  is-small" v-on:click="handleDeleteClick(tag)"></a>-->
-            </div>
-        </div>
 
-        <div v-if="isTextVisible"
-             class="notification is-primary"
-        >
-            <button class="delete" v-on:click="toggleTextDisplay"></button>
-            <p>{{text}}</p>
-        </div>
-
-    </div
+    <div class="control tag-object"
+         v-if="isVisible"
     >
+        <div class="tags has-addons">
+
+            <a
+                    class="tag is-rounded"
+                    v-bind:class="styling"
+                    v-on:click="handleClick"
+            >{{name}}</a>
+
+            <a
+                    class="tag is-rounded is-delete"
+                    v-if="showRemove"
+                    v-on:click="handleRemove"
+            ></a>
+        </div>
+    </div>
+    <!--</div>-->
+
+    <!--<div class="tag-object"-->
+    <!--&gt;-->
+    <!--<div v-on:click.stop="toggleTextDisplay" class="control">-->
+    <!--<div class="tags has-addons">-->
+    <!--<span class="tag is-rounded"-->
+    <!--v-bind:class="styling"-->
+    <!--&gt;{{name}}</span>-->
+    <!--&lt;!&ndash;<a class="tag is-delete  is-small" v-on:click="handleDeleteClick(tag)"></a>&ndash;&gt;-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--<div v-if="isTextVisible"-->
+    <!--class="notification is-primary"-->
+    <!--&gt;-->
+    <!--<button class="delete" v-on:click="toggleTextDisplay"></button>-->
+    <!--<p>{{text}}</p>-->
+    <!--</div>-->
+
+    <!--</div-->
+    <!--&gt;-->
 </template>
 
 <style lang="scss">
@@ -31,13 +52,12 @@
         /**
          * The instance of models/Tag to display
          */
-        props: [ 'object' ],
+        props: [ 'tag', 'isVisible', 'showRemove' ],
 
         components: {},
 
         data: function () {
             return {
-                isTextVisible: false,
                 defaults: {}
             }
         },
@@ -46,27 +66,26 @@
 
             styling: function () {
                 let out = '';
-                out += this.priority;
+                out += this.priorityStyling;
+
                 //other additions to style
                 //can be added here
                 return out;
             },
 
             name: function () {
-                return this.object.name;
+                return this.tag.name;
             },
 
             text: function () {
-                return this.object.text;
+                return this.tag.text;
             },
 
-            priority: function () {
-                if(! _.isUndefined(this.object.priority) && this.object.priority){
-               return this.object.styleString();
+            priorityStyling: function () {
+                if ( !_.isUndefined( this.tag.priority ) && this.tag.priority ) {
+                    return this.tag.styleString();
                 }
-//                if ( Object.keys( this.object.props ).indexOf( 'priority' ) > -1 ) {
-//                    return this.object.props.priority;
-//                }
+
                 return 'is-primary';
             }
         },
@@ -76,6 +95,14 @@
             toggleTextDisplay: function () {
                 window.console.log( 'tag-object', 'toggleTextDisplay', 71, );
                 this.isTextVisible = !this.isTextVisible;
+            },
+
+            handleClick: function () {
+                this.$emit( 'tag-clicked', this.tag );
+            },
+
+            handleRemove: function () {
+                this.$emit( 'remove-clicked', this.tag );
             }
         },
 

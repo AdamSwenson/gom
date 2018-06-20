@@ -8031,7 +8031,7 @@ exports.default = {
             return identifier + '-' + this.serialNumber;
         },
 
-        handleDeleteClick: function handleDeleteClick() {
+        handleRemoveClick: function handleRemoveClick() {
             window.console.log('note-area', 'handleDeleteClick', 190, this.note);
 
             if (this.useCentralStore) {
@@ -17297,42 +17297,9 @@ exports.default = {
             //it is intrinsically meaningless
             clickCounter: 0,
             useCentralStore: true,
-            defaults: {}
+            defaults: {},
+            isEditable: false
         };
-    },
-
-    asyncComputed: {
-        // tags: {
-        //     get() {
-        //         if ( _.isUndefined( this.object ) ) return [];
-        //         return this.object.tags;
-        //     }
-        // },
-        // tags: {
-        //     get() {
-        //         if ( _.isUndefined( this.object ) ) return [];
-        //         return this.object.tags;
-        //
-        //         // this.$store.dispatch('loadTagsForItem', this.object)
-        //         //     .then(function(){
-        //         //     return me.$store.getters[ gTypes.getTagsForObject ]( me.object );
-        //         // });
-        //         //
-        //         //
-        //         //
-        //         // let result = [];
-        //         // if ( this.useCentralStore ) {
-        //         //     result = this.$store.getters[ gTypes.getTagsForObject ]( this.object );
-        //         // } else {
-        //         //     result = loadTagsForItemRequest( null, this.object );
-        //         // }
-        //         //
-        //         // return result;
-        //     },
-        //     watch() {
-        //         // this.clickCounter
-        //     }
-        // }
     },
 
     computed: {
@@ -17352,6 +17319,7 @@ exports.default = {
     methods: {
         handleEditClick: function handleEditClick() {
             this.showTagMenu = !this.showTagMenu;
+            this.isEditable = !this.isEditable;
         },
 
         /**
@@ -17359,13 +17327,17 @@ exports.default = {
          * from the item. It does not the call to delete
          * the tag from the database
          */
-        handleDeleteClick: function handleDeleteClick(tag) {
-
+        handleRemoveClick: function handleRemoveClick(tag) {
+            window.console.log('tag-display', 'handleDeleteClick', 114, tag);
             // window.console.log( 'tag-display', 'handleDeleteClick', 40, tag );
             if (this.object && tag.isTagged(this.object)) {
                 //remove the tag
                 this.$store.commit(mTypes.disassociateTag, _Payload2.default.factory({ obj: this.object, tag: tag }));
             }
+        },
+
+        handleSelection: function handleSelection(tag) {
+            window.console.log('tag-display', 'handleSelection', 123, tag);
         },
 
         /**
@@ -17399,7 +17371,7 @@ exports.default = {
         },
 
         handleNewTagSavedEvent: function handleNewTagSavedEvent(tag) {
-            window.console.log('tag-display', 'handleNewTagSavedEvent', 221, tag);
+            // window.console.log( 'tag-display', 'handleNewTagSavedEvent', 221, tag );
         }
 
     },
@@ -17412,6 +17384,10 @@ exports.default = {
 
     mounted: function mounted() {}
 }; //
+//
+//
+//
+//
 //
 //
 //
@@ -17560,23 +17536,19 @@ exports.default = {
         //We need to load all tags associated with the user from the server
         //We can't just iterate through all existing items because the user
         //might have created tags in another exam which have not been used here.
-        tags: {
-            get: function get() {
-                var me = this;
-                // return this.$store.getters[ gTypes.getAllTags ];
+        tags: function tags() {
+            var me = this;
+            // return this.$store.getters[ gTypes.getAllTags ];
 
-                // if(this.$store.getters[ gTypes.getAllTags ].length === 0) {
-                var p = me.$store.dispatch('loadAllUserTagsFromServer');
-                return p.then(function () {
-                    // window.console.log( 'tag-menu', 'loaded tags', 161, );
-                    return me.$store.getters[gTypes.getAllTags];
-                });
-                // }
-            },
-            watch: function watch() {
-                // this.$parent.clickCounter;
-            }
+            // if(this.$store.getters[ gTypes.getAllTags ].length === 0) {
+            var p = me.$store.dispatch('loadAllUserTagsFromServer');
+            return p.then(function () {
+                // window.console.log( 'tag-menu', 'loaded tags', 161, );
+                return me.$store.getters[gTypes.getAllTags];
+            });
+            // }
         }
+
     },
 
     computed: {
@@ -17646,6 +17618,10 @@ exports.default = {
             this.priority = styleKey;
         },
 
+        /**
+         * When the row is clicked, it emits an event
+         * so that the parent can decide what action to take
+         */
         handleRowClick: function handleRowClick(tag) {
             //                if(this.isHighlighted(tag)){
             //                    this.$emit( 'tag-row-deselected', tag )
@@ -17855,6 +17831,30 @@ exports.default = {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 
@@ -17898,19 +17898,39 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 
     /**
      * The instance of models/Tag to display
      */
-    props: ['object'],
+    props: ['tag', 'isVisible', 'showRemove'],
 
     components: {},
 
     data: function data() {
         return {
-            isTextVisible: false,
             defaults: {}
         };
     },
@@ -17919,27 +17939,26 @@ exports.default = {
 
         styling: function styling() {
             var out = '';
-            out += this.priority;
+            out += this.priorityStyling;
+
             //other additions to style
             //can be added here
             return out;
         },
 
         name: function name() {
-            return this.object.name;
+            return this.tag.name;
         },
 
         text: function text() {
-            return this.object.text;
+            return this.tag.text;
         },
 
-        priority: function priority() {
-            if (!_.isUndefined(this.object.priority) && this.object.priority) {
-                return this.object.styleString();
+        priorityStyling: function priorityStyling() {
+            if (!_.isUndefined(this.tag.priority) && this.tag.priority) {
+                return this.tag.styleString();
             }
-            //                if ( Object.keys( this.object.props ).indexOf( 'priority' ) > -1 ) {
-            //                    return this.object.props.priority;
-            //                }
+
             return 'is-primary';
         }
     },
@@ -17949,6 +17968,14 @@ exports.default = {
         toggleTextDisplay: function toggleTextDisplay() {
             window.console.log('tag-object', 'toggleTextDisplay', 71);
             this.isTextVisible = !this.isTextVisible;
+        },
+
+        handleClick: function handleClick() {
+            this.$emit('tag-clicked', this.tag);
+        },
+
+        handleRemove: function handleRemove() {
+            this.$emit('remove-clicked', this.tag);
         }
     },
 
@@ -63822,29 +63849,22 @@ if (false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "tag-object"
-  }, [_c('div', {
-    staticClass: "control",
-    on: {
-      "click": function($event) {
-        $event.stopPropagation();
-        return _vm.toggleTextDisplay($event)
-      }
-    }
+  return (_vm.isVisible) ? _c('div', {
+    staticClass: "control tag-object"
   }, [_c('div', {
     staticClass: "tags has-addons"
-  }, [_c('span', {
+  }, [_c('a', {
     staticClass: "tag is-rounded",
-    class: _vm.styling
-  }, [_vm._v(_vm._s(_vm.name))])])]), _vm._v(" "), (_vm.isTextVisible) ? _c('div', {
-    staticClass: "notification is-primary"
-  }, [_c('button', {
-    staticClass: "delete",
+    class: _vm.styling,
     on: {
-      "click": _vm.toggleTextDisplay
+      "click": _vm.handleClick
     }
-  }), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.text))])]) : _vm._e()])
+  }, [_vm._v(_vm._s(_vm.name))]), _vm._v(" "), (_vm.showRemove) ? _c('a', {
+    staticClass: "tag is-rounded is-delete",
+    on: {
+      "click": _vm.handleRemove
+    }
+  }) : _vm._e()])]) : _vm._e()
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -64948,7 +64968,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return (_vm.isReady) ? _c('tag-object', {
       key: tag.serialNumber,
       attrs: {
-        "object": tag
+        "tag": tag,
+        "isVisible": true,
+        "showRemove": _vm.isEditable
+      },
+      on: {
+        "tag-clicked": _vm.handleSelection,
+        "remove-clicked": _vm.handleRemoveClick
       }
     }) : _vm._e()
   }), _vm._v(" "), _c('div', {
@@ -64987,7 +65013,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "tags has-addons"
   }, [_c('span', {
-    staticClass: "tag is-rounded is-info is-small edit-tag-button"
+    staticClass: "tag is-info is-small edit-tag-button"
   }, [_vm._v("Edit Tags")])])
 }]}
 module.exports.render._withStripped = true
@@ -66485,18 +66511,28 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }
     }, [_vm._v(_vm._s(v))])
-  })), _vm._v(" "), _vm._l((_vm.tags), function(tag) {
-    return (_vm.isDisplayed(tag)) ? _c('a', {
+  })), _vm._v(" "), _c('div', {
+    staticClass: "panel-block is-fullwidth"
+  }, [_c('div', {
+    staticClass: "field is-grouped is-grouped-multiline"
+  }, _vm._l((_vm.tags), function(tag) {
+    return (_vm.isDisplayed(tag)) ? _c('div', {
       key: tag.serialNumber,
-      staticClass: "panel-block tag-menu-row",
+      staticClass: "control"
+    }, [_c('div', {
+      staticClass: "tags has-addons"
+    }, [_c('a', {
+      staticClass: "tag is-link",
       class: _vm.styling(tag),
       on: {
         "click": function($event) {
           _vm.handleRowClick(tag)
         }
       }
-    }, [_vm._m(1, true), _vm._v(" "), _c('span', [_vm._v("\n            " + _vm._s(tag.name) + "\n        ")]), _vm._v(" "), _vm._t("default")], 2) : _vm._e()
-  }), _vm._v(" "), _c('div', {
+    }, [_vm._v(_vm._s(tag.name))]), _vm._v(" "), _c('a', {
+      staticClass: "tag is-delete"
+    })])]) : _vm._e()
+  }))]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -66507,6 +66543,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "new-tag-input-area"
     }
+  }, [_c('div', {
+    staticClass: "tile is-ancestor"
+  }, [_c('div', {
+    staticClass: "tile"
   }, [_c('div', {
     staticClass: "field"
   }, [_c('label', {
@@ -66536,7 +66576,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })]), _vm._v(" "), _c('p', {
     staticClass: "help"
-  }, [_vm._v("The text you want to see in the tag")])]), _vm._v(" "), _c('div', {
+  }, [_vm._v("The text you want to see in the tag")])])]), _vm._v(" "), _c('div', {
+    staticClass: "tile"
+  }, [_c('div', {
     staticClass: "field"
   }, [_c('label', {
     staticClass: "label"
@@ -66548,7 +66590,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })], 1), _vm._v(" "), _c('p', {
     staticClass: "help"
-  })])]), _vm._v(" "), _c('div', {
+  })])])])]), _vm._v(" "), _c('div', {
     staticClass: "panel-block new-tag-button-area"
   }, [_c('a', {
     staticClass: "button new-tag-button  is-fullwidth",
@@ -66556,7 +66598,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.handleNewClick
     }
-  }, [_vm._v(_vm._s(_vm.newTagButtonLabel) + "\n        ")])])], 2)
+  }, [_vm._v(_vm._s(_vm.newTagButtonLabel) + "\n        ")])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "panel-block tag-search-area"
@@ -66573,12 +66615,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('i', {
     staticClass: "fa fa-search"
   })])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "panel-icon"
-  }, [_c('i', {
-    staticClass: "fa fa-tag"
-  })])
 }]}
 module.exports.render._withStripped = true
 if (false) {}

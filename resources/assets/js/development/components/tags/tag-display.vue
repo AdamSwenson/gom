@@ -14,13 +14,17 @@
                     v-if="isReady"
                     v-for="tag in tags"
                     v-bind:key="tag.serialNumber"
-                    :object="tag"
+                    :tag="tag"
+                    :isVisible="true"
+                    :showRemove="isEditable"
+                    v-on:tag-clicked="handleSelection"
+                    v-on:remove-clicked="handleRemoveClick"
             ></tag-object>
 
             <div class="tag-object">
                 <div v-on:click="handleEditClick" class="control">
                     <div class="tags has-addons">
-                        <span class="tag is-rounded is-info is-small edit-tag-button"
+                        <span class="tag is-info is-small edit-tag-button"
                         >Edit Tags</span>
                     </div>
                 </div>
@@ -78,42 +82,9 @@
                 //it is intrinsically meaningless
                 clickCounter: 0,
                 useCentralStore: true,
-                defaults: {}
+                defaults: {},
+                isEditable: false
             }
-        },
-
-        asyncComputed: {
-            // tags: {
-            //     get() {
-            //         if ( _.isUndefined( this.object ) ) return [];
-            //         return this.object.tags;
-            //     }
-            // },
-            // tags: {
-            //     get() {
-            //         if ( _.isUndefined( this.object ) ) return [];
-            //         return this.object.tags;
-            //
-            //         // this.$store.dispatch('loadTagsForItem', this.object)
-            //         //     .then(function(){
-            //         //     return me.$store.getters[ gTypes.getTagsForObject ]( me.object );
-            //         // });
-            //         //
-            //         //
-            //         //
-            //         // let result = [];
-            //         // if ( this.useCentralStore ) {
-            //         //     result = this.$store.getters[ gTypes.getTagsForObject ]( this.object );
-            //         // } else {
-            //         //     result = loadTagsForItemRequest( null, this.object );
-            //         // }
-            //         //
-            //         // return result;
-            //     },
-            //     watch() {
-            //         // this.clickCounter
-            //     }
-            // }
         },
 
         computed: {
@@ -133,6 +104,7 @@
         methods: {
             handleEditClick: function () {
                 this.showTagMenu = !this.showTagMenu;
+                this.isEditable = !this.isEditable;
             },
 
             /**
@@ -140,13 +112,17 @@
              * from the item. It does not the call to delete
              * the tag from the database
              */
-            handleDeleteClick: function ( tag ) {
-
+            handleRemoveClick: function ( tag ) {
+                window.console.log( 'tag-display', 'handleDeleteClick', 114, tag);
                 // window.console.log( 'tag-display', 'handleDeleteClick', 40, tag );
                 if ( this.object && tag.isTagged( this.object ) ) {
                     //remove the tag
                     this.$store.commit( mTypes.disassociateTag, Payload.factory( { obj: this.object, tag: tag } ) );
                 }
+            },
+
+            handleSelection: function(tag){
+                window.console.log( 'tag-display', 'handleSelection', 123, tag);
             },
 
             /**
@@ -182,7 +158,7 @@
 
 
             handleNewTagSavedEvent: function ( tag ) {
-                window.console.log( 'tag-display', 'handleNewTagSavedEvent', 221, tag );
+                // window.console.log( 'tag-display', 'handleNewTagSavedEvent', 221, tag );
             },
 
         },

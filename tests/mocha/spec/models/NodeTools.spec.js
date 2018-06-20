@@ -1,8 +1,5 @@
-require( 'jasmine-jquery' );
-require( 'sinon' );
-let faker = require( 'faker' );
 
-import { testAction, description, factories } from '../../helpers/vuex.spec.helpers';
+require( '../../injectglobals' );
 
 import {
     addNodes,
@@ -10,7 +7,7 @@ import {
     makeRootState,
     makeTestPayload,
     makeMutationPayload
-} from '../../helpers/items.tests.helpers'
+} from '../../helpers/item-test-helpers'
 
 
 //Dependencies

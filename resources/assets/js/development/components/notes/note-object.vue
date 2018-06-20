@@ -269,7 +269,7 @@
                 return identifier + '-' + this.serialNumber;
             },
 
-            handleDeleteClick: function () {
+            handleRemoveClick: function () {
                 window.console.log( 'note-area', 'handleDeleteClick', 190, this.note );
 
                 if ( this.useCentralStore ) {

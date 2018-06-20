@@ -74,49 +74,7 @@ export default class Item extends IModel {
 
     }
 
-
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        return [
-            'displayText',
-            'name',
-            'commentText',
-            'text',
-            'tags',
-            //for exam
-
-        ].concat( super.fillableProps );
-    };
-
-    /**
-     * These are the properties which get copied when we
-     * clone an item
-     * @returns {Array.<string>}
-     */
-    static get clonableProps() {
-        return [
-            'displayText',
-            'name',
-            'commentText',
-            'text',
-            'tags'
-        ];
-    };
-
-
-    get idx() {
-        return this.idxStore.split( separator );
-    } //[ this.index,  this.depth];}
-
-    set idx( index ) {
-        this.idxStore = Item.buildKeyFromIdx( index );
-    }
-
-
+    /* ------------------------ Methods -------------------- */
     /**
      * Take either a string or array input and convert
      * it into the key used to store ordering.
@@ -137,95 +95,6 @@ export default class Item extends IModel {
         }
     }
 
-    /**
-     * Tells whether the item has a valid id and thus can
-     * be synced with the server.
-     * @returns {boolean}
-     */
-    canSync() {
-        if ( this.id >= 0 ) return true;
-        return false;
-    }
-
-
-    isNew() {
-        return this.id === -1;
-    }
-
-
-    /**
-     * utility for determining which of the older types
-     * this item belongs to
-     */
-    determineType() {
-        return this.depth > 0 ? 'element' : 'question';
-    }
-
-
-    addComment( valence, comment ) {
-        // this.comments.push( comment );
-        // Vue.set(this.comments, valence, comment );
-        this.comments.set( valence, comment );
-    }
-
-    getStockComment() {
-        return this.getComment( 'stock' );
-    }
-
-    getComment( valence ) {
-        return this.comments.get( valence );
-    }
-
-    getEmptyComments() {
-        let out = [];
-        for (let [ valence, comment ] of this.comments.entries()) {
-            if ( comment.isEmpty() ) out.push( comment );
-        }
-        return out;
-    }
-
-    /**
-     * Whether all comments for the item are empty;
-     */
-    get isEveryCommentEmpty (  ) {
-        return _.size(this.getEmptyComments()) === _.size(Comment.valences);
-    }
-
-
-    /**
-     * When loading comments into an item
-     * from ajax or on page load, use this
-     * to do it.
-     *
-     * @param jsonComments
-     */
-    loadCommentsFromJson( jsonComments ) {
-        if ( Object.keys( jsonComments ).length > 0 ) {
-            var me = this;
-            _.forEach( jsonComments, ( row ) => {
-                let comment = Comment.factory( row );
-                comment.text = row.body;
-                me.addComment( comment.valence, comment );
-            } );
-        }
-    }
-
-
-
-    //----------------- ordering
-    promote() {
-        if ( this.depth > 0 ) {
-            this.depth -= 1;
-        }
-    }
-
-    demote() {
-        this.depth += 1;
-    }
-
-    static setExamId( id ) {
-        Item.examId = id;
-    }
 
     /**
      * Returns the relationship (if any) of the item represented by
@@ -274,25 +143,55 @@ export default class Item extends IModel {
 
     }
 
-    //
-    //
-    // /* *************************** Max score *************** */
-    // get maxScore() {
-    //     return this._maxScore ? Number( this._maxScore ) : null;
-    // };
-    //
-    // set maxScore( score ) {
-    //     this._maxScore = score;
-    // };
+    static factory( params ) {
+        let obj = new Item();
+        return this.fillObject( obj, params, Item.aliasMap );
+    }
 
 
-    /* *************************** Public *************** */
+    //-----------------  comments
+    addComment( valence, comment ) {
+        // this.comments.push( comment );
+        // Vue.set(this.comments, valence, comment );
+        this.comments.set( valence, comment );
+    }
+
     /**
-     * Getter for whether this can currently appear in student-viewable outputs
-     * @returns {boolean|*}
+     * When loading comments into an item
+     * from ajax or on page load, use this
+     * to do it.
+     *
+     * @param jsonComments
      */
-    isPublic() {
-        return this.publicity;
+    loadCommentsFromJson( jsonComments ) {
+        if ( Object.keys( jsonComments ).length > 0 ) {
+            var me = this;
+            _.forEach( jsonComments, ( row ) => {
+                let comment = Comment.factory( row );
+                comment.text = row.body;
+                me.addComment( comment.valence, comment );
+            } );
+        }
+    }
+
+
+    //----------------- ordering
+    promote() {
+        if ( this.depth > 0 ) {
+            this.depth -= 1;
+        }
+    }
+
+    demote() {
+        this.depth += 1;
+    }
+
+
+    //----------------- Publicity
+    togglePublic() {
+        // console.log('Item', 'CALLED', 'togglePublic', this._public);
+        this.publicity = !this.publicity;
+        // console.log(this._public);
     }
 
     /**
@@ -309,44 +208,111 @@ export default class Item extends IModel {
         this.publicity = false;
     }
 
-    togglePublic() {
-        // console.log('Item', 'CALLED', 'togglePublic', this._public);
-        this.publicity = !this.publicity;
-        // console.log(this._public);
+
+    /* ------------------------ Status queries  -------------------- */
+    /**
+     * Tells whether the item has a valid id and thus can
+     * be synced with the server.
+     * Valid ids are assumed to be numbers starting with 0
+     * @returns {boolean}
+     */
+    canSync() {
+        return this.id >= 0 ;
+    }
+
+    static checkIfItem( obj ) {
+        //received payload object case
+        if ( obj instanceof Item ) return true;
+
+        if ( obj.kind === 'item' ) return true;
+
+        return false;
+    }
+
+    /**
+     * utility for determining which of the older types
+     * this item belongs to
+     */
+    determineType() {
+        return this.depth > 0 ? 'element' : 'question';
+    }
+
+    isNew() {
+        return this.id === -1;
+    }
+
+    /**
+     * Getter for whether this can currently appear in student-viewable outputs
+     * @returns {boolean|*}
+     */
+    isPublic() {
+        return this.publicity;
     }
 
 
-    /* *************************** Type *************** */
+    /* ------------------------ Getters and setters -------------------- */
+
+    //----------------- Comments
+    getComment( valence ) {
+        return this.comments.get( valence );
+    }
+
+    getEmptyComments() {
+        let out = [];
+        for (let [ valence, comment ] of this.comments.entries()) {
+            if ( comment.isEmpty() ) out.push( comment );
+        }
+        return out;
+    }
+
+    getStockComment() {
+        return this.getComment( 'stock' );
+    }
 
     /**
-     * The role played by the item
+     * Whether all comments for the item are empty;
      */
-    get type() {
-        return this.determineType();
+    get isEveryCommentEmpty() {
+        return _.size( this.getEmptyComments() ) === _.size( Comment.valences );
     }
 
 
+    //----------------- Intrinsic properties of item
     /**
-     * Returns a list of fields which may
-     * be used to look up an exam from the store
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
      */
-    static identifiers() {
+    static get fillableProps() {
         return [
-            'id',
-            'index'
-        ]
-    }
+            'displayText',
+            'name',
+            'commentText',
+            'text',
+            'tags',
+            //for exam
 
+        ].concat( super.fillableProps );
+    };
 
     /**
-     * This is used by the api module to determine what
-     * requests to send to the server
-     * @returns {string}
+     * These are the properties which get copied when we
+     * clone an item
+     * @returns {Array.<string>}
      */
-    static className() {
-        return 'item';
-    }
+    static get clonableProps() {
+        return [
+            'displayText',
+            'name',
+            'commentText',
+            'text',
+            'tags'
+        ];
+    };
 
+    static setExamId( id ) {
+        Item.examId = id;
+    }
 
     static get aliasMap() {
         return {
@@ -359,20 +325,55 @@ export default class Item extends IModel {
 
     }
 
+    /**
+     * This is used by the api module to determine what
+     * requests to send to the server
+     * @returns {string}
+     */
+    static className() {
+        return 'item';
+    }
 
-    static factory( params ) {
-        let obj = new Item();
-        return this.fillObject( obj, params, Item.aliasMap );
+    /**
+     * Returns a list of fields which may
+     * be used to look up an exam from the store
+     */
+    static identifiers() {
+        return [
+            'id',
+            'index'
+        ]
+    }
+
+    //----------------- Ordering
+    get idx() {
+        return this.idxStore.split( separator );
+    } //[ this.index,  this.depth];}
+
+    set idx( index ) {
+        this.idxStore = Item.buildKeyFromIdx( index );
+    }
+
+    //----------------- Type and role of item
+    /**
+     * The role played by the item
+     */
+    get type() {
+        return this.determineType();
     }
 
 
-    static checkIfItem( obj ) {
-        //received payload object case
-        if ( obj instanceof Item ) return true;
 
-        if ( obj.kind === 'item' ) return true;
+};
+    //
+    //
+    // /* *************************** Max score *************** */
+    // get maxScore() {
+    //     return this._maxScore ? Number( this._maxScore ) : null;
+    // };
+    //
+    // set maxScore( score ) {
+    //     this._maxScore = score;
+    // };
 
-        return false;
-    }
 
-}

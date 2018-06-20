@@ -22,51 +22,75 @@
             >{{v}}</a>
         </div>
 
+        <div class="panel-block is-fullwidth">
+            <div class="field is-grouped is-grouped-multiline">
+                <div v-for="tag in tags"
+                     v-bind:key="tag.serialNumber"
+                     v-if="isDisplayed(tag)"
+                     class="control"
 
-        <a class="panel-block tag-menu-row"
-           v-for="tag in tags"
-           v-on:click="handleRowClick(tag)"
-           v-bind:key="tag.serialNumber"
-           v-bind:class="styling(tag)"
-           v-if="isDisplayed(tag)"
-        >
-            <span class="panel-icon">
-                <i class="fa fa-tag"></i>
-            </span>
+                >
+                    <div class="tags has-addons">
+                        <a class="tag is-link"
+                           v-bind:class="styling(tag)"
+                           v-on:click="handleRowClick(tag)"
+                        >{{tag.name}}</a>
+                        <a class="tag is-delete"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<a class="panel-block tag-menu-row"-->
+        <!--v-for="tag in tags"-->
+        <!--v-on:click="handleRowClick(tag)"-->
+        <!--v-bind:key="tag.serialNumber"-->
+        <!--v-bind:class="styling(tag)"-->
+        <!--v-if="isDisplayed(tag)"-->
+        <!--&gt;-->
+        <!--<span class="panel-icon">-->
+        <!--<i class="fa fa-tag"></i>-->
+        <!--</span>-->
 
-            <span>
-                {{tag.name}}
-            </span>
+        <!--<span>-->
+        <!--{{tag.name}}-->
+        <!--</span>-->
 
-            <slot></slot>
-        </a>
+        <!--<slot></slot>-->
+        <!--</a>-->
 
 
         <div id="new-tag-input-area"
              class="panel-block is-fullwidth"
              v-show="isNewTagInputVisible"
         >
-            <div class="field">
-                <label class="label">Tag</label>
-                <div class="control">
-                    <input type="text"
-                           id="new-tag-name"
-                           class="input"
-                           v-model="newTagName">
-                </div>
-                <p class="help">The text you want to see in the tag</p>
-            </div>
 
-            <div class="field">
-                <label class="label">Color</label>
-                <div class="control">
-                    <color-selector
-                            v-on:color-selected="handleColorSelection"
-                    ></color-selector>
-                </div>
-                <p class="help"></p>
-            </div>
+            <div class="tile is-ancestor">
 
+                    <div class="tile">
+                        <div class="field">
+                            <label class="label">Tag</label>
+                            <div class="control">
+                                <input type="text"
+                                       id="new-tag-name"
+                                       class="input"
+                                       v-model="newTagName">
+                            </div>
+                            <p class="help">The text you want to see in the tag</p>
+                        </div>
+                    </div>
+
+                    <div class="tile">
+                        <div class="field">
+                            <label class="label">Color</label>
+                            <div class="control">
+                                <color-selector
+                                        v-on:color-selected="handleColorSelection"
+                                ></color-selector>
+                            </div>
+                            <p class="help"></p>
+                        </div>
+                    </div>
+            </div>
         </div>
 
 
@@ -156,24 +180,20 @@
             //We need to load all tags associated with the user from the server
             //We can't just iterate through all existing items because the user
             //might have created tags in another exam which have not been used here.
-            tags: {
-                get() {
-                    let me = this;
-                    // return this.$store.getters[ gTypes.getAllTags ];
+            tags: function () {
+                let me = this;
+                // return this.$store.getters[ gTypes.getAllTags ];
 
-                    // if(this.$store.getters[ gTypes.getAllTags ].length === 0) {
-                    let p = me.$store.dispatch( 'loadAllUserTagsFromServer' );
-                    return p.then( function () {
-                        // window.console.log( 'tag-menu', 'loaded tags', 161, );
-                        return me.$store.getters[ gTypes.getAllTags ];
-                    } );
-                    // }
-                },
+                // if(this.$store.getters[ gTypes.getAllTags ].length === 0) {
+                let p = me.$store.dispatch( 'loadAllUserTagsFromServer' );
+                return p.then( function () {
+                    // window.console.log( 'tag-menu', 'loaded tags', 161, );
+                    return me.$store.getters[ gTypes.getAllTags ];
+                } );
+                // }
+            },
 
-                watch() {
-                    // this.$parent.clickCounter;
-                }
-            }
+
         },
 
 
@@ -245,6 +265,10 @@
                 this.priority = styleKey;
             },
 
+            /**
+             * When the row is clicked, it emits an event
+             * so that the parent can decide what action to take
+             */
             handleRowClick: function ( tag ) {
 //                if(this.isHighlighted(tag)){
 //                    this.$emit( 'tag-row-deselected', tag )

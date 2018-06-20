@@ -3,6 +3,7 @@ import Tag from "../../../resources/assets/js/models/Tag";
 const faker = require( 'faker' );
 
 import Exam from "../../../resources/assets/js/models/Exam";
+import Comment from "../../../resources/assets/js/models/Comment";
 
 import GradeAssignment from "../../../resources/assets/js/models/GradeAssignment";
 import Item from "../../../resources/assets/js/models/Item";
@@ -17,6 +18,128 @@ import * as mTypes from "../../../resources/assets/js/store/mutation-types";
 
 // Factories
 
+/* ------------- Create multiple objects ------------------- */
+export const makeKumis = ( number ) => {
+    let kumis = [];
+    for (let i = 0; i < number; i++) {
+        kumis.push( kumiFactory() );
+    }
+    return kumis;
+}
+
+export const makeStudents = ( number ) => {
+    let students = [];
+    for (let i = 0; i < number; i++) {
+        students.push( studentFactory() );
+    }
+    return students;
+}
+
+export const makeTags = ( number ) => {
+    let tags = [];
+    for (let i = 0; i < number; i++) {
+        tags.push( tagFactory() );
+    }
+    return tags;
+}
+
+
+/* ------------- Factories ------------------- */
+/**
+ * Returns an Exam instance with random id and index
+ * @returns {Exam}
+ */
+export const examFactory = ( index ) => {
+    let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+
+    let e = new Exam();
+    e.id = faker.random.number();
+    e.index = idx;
+    e.name = faker.company.bsNoun();
+    e.year = 2013;
+    e.term = faker.company.bs();
+    return e;
+};
+
+export const commentFactory = ( id, index, text, valence ) => {
+    let e = new Comment();
+    e.id = _.isUndefined( id ) ? faker.random.number() : id;
+    e.index = _.isUndefined( index ) ? faker.random.number() : index;
+    e.text = _.isUndefined( text) ? faker.company.bs() : text;
+    e.valence = _.isUndefined( valence) ? faker.random.arrayElement(Comment.valences) : valence;
+    return e;
+}
+
+export const kumiFactory = ( name, id ) => {
+    name = _.isUndefined( name ) ? faker.company.bs() : name;
+    id = _.isUndefined( id ) ? faker.random.number() : id;
+    return Kumi.factory( { name, id } )
+};
+
+export const itemFactory = ( index ) => {
+    let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+
+    let e = new Item();
+    e.id = faker.random.number();
+    e.index = idx;
+    e.name = faker.company.bsNoun();
+    e.text = faker.company.bsNoun();
+    e.maxScore = faker.random.number();
+    return e;
+};
+
+export const itemScoreFactory = ( exam, item, student, score ) => {
+    let e = new ItemScore();
+    e.itemId = _.isUndefined( item ) ? faker.random.number() : item.id;
+    e.examId = _.isUndefined( exam ) ? faker.random.number() : item.id;
+    e.studentId = _.isUndefined( student ) ? faker.random.number() : student.id;
+    e.score = _.isUndefined( score ) ? faker.random.number() : score;
+    e.text = faker.company.bs();
+    return e;
+};
+
+export const noteFactory = () => {
+    return Note.factory( {
+        name: faker.company.bsNoun(),
+        text: faker.company.bsNoun(),
+        priority: '',
+        props: {},
+        createdAt: '',
+        associatedItemSerialNumber: faker.random.number()
+    } )
+};
+
+export const questionFactory = ( index ) => {
+    let question = new Question( index );
+    question.questionName = faker.hacker.phrase();
+    question.questionNumber = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+    question.questionAssignmentId = faker.random.number();
+    question.maxScore = faker.random.number();
+    question.content = faker.hacker.phrase();
+    return question;
+};
+
+export const studentFactory = ( index ) => {
+    let s = new Student( faker.random.number() );
+    s.email = faker.internet.email();
+    s.studentIndex = index ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+    s.studentIdentifier = faker.random.number();
+    s.lastName = faker.name.lastName();
+    s.firstName = faker.name.firstName();
+    return s;
+};
+
+export const tagFactory = (  id, text, name) => {
+    let tag = new Tag();
+    tag.id = _.isUndefined(id) ? faker.random.number() : id;
+    tag.text = _.isUndefined(text)? faker.hacker.phrase() : text;
+    tag.props = {};
+    tag.name = _.isUndefined(name)? faker.hacker.phrase() : name;
+    return tag;
+};
+
+
+/* ------------ Other --------------------------- */
 export const makeGradeFrequencyObject = () => {
     let testFreqs = {};
     _.forEach( GradeAssignment.defaults, function ( ga ) {
@@ -102,121 +225,5 @@ export const makeScoreListServerResponse = () => {
     } ];
 
 };
-
-
-export const makeKumis = ( number ) => {
-    let kumis = [];
-    for (let i = 0; i < number; i++) {
-        kumis.push( kumiFactory() );
-    }
-    return kumis;
-}
-
-export const makeStudents = ( number ) => {
-    let students = [];
-    for (let i = 0; i < number; i++) {
-        students.push( studentFactory() );
-    }
-    return students;
-}
-
-export const makeTags = ( number ) => {
-    let tags = [];
-    for (let i = 0; i < number; i++) {
-        tags.push( tagFactory() );
-    }
-    return tags;
-}
-
-
-
-/**
- * Returns an Exam instance with random id and index
- * @returns {Exam}
- */
-export const examFactory = ( index ) => {
-    let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-
-    let e = new Exam();
-    e.id = faker.random.number();
-    e.index = idx;
-    e.name = faker.company.bsNoun();
-    e.year = 2013;
-    e.term = faker.company.bs();
-    return e;
-};
-
-export const kumiFactory = ( name, id ) => {
-    name = _.isUndefined( name ) ? faker.company.bs() : name;
-    id = _.isUndefined( id ) ? faker.random.number() : id;
-    return Kumi.factory( { name, id } )
-};
-
-export const itemFactory = ( index ) => {
-    let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-
-    let e = new Item();
-    e.id = faker.random.number();
-    e.index = idx;
-    e.name = faker.company.bsNoun();
-    e.text = faker.company.bsNoun();
-    e.maxScore = faker.random.number();
-    return e;
-};
-
-export const itemScoreFactory = ( exam, item, student, score ) => {
-    let e = new ItemScore();
-    e.itemId = _.isUndefined( item ) ? faker.random.number() : item.id;
-    e.examId = _.isUndefined( exam ) ? faker.random.number() : item.id;
-    e.studentId = _.isUndefined( student ) ? faker.random.number() : student.id;
-    e.score = _.isUndefined( score ) ? faker.random.number() : score;
-    e.text = faker.company.bs();
-    return e;
-};
-
-export const noteFactory = () => {
-    return Note.factory( {
-        name: faker.company.bsNoun(),
-        text: faker.company.bsNoun(),
-        priority: '',
-        props: {},
-        createdAt: '',
-        associatedItemSerialNumber: faker.random.number()
-    } )
-};
-
-
-export const questionFactory = ( index ) => {
-    let question = new Question( index );
-    question.questionName = faker.hacker.phrase();
-    question.questionNumber = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-    question.questionAssignmentId = faker.random.number();
-    question.maxScore = faker.random.number();
-    question.content = faker.hacker.phrase();
-    return question;
-};
-
-
-export const studentFactory = ( index ) => {
-    let s = new Student( faker.random.number() );
-    s.email = faker.internet.email();
-    s.studentIndex = index ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
-    s.studentIdentifier = faker.random.number();
-    s.lastName = faker.name.lastName();
-    s.firstName = faker.name.firstName();
-    return s;
-};
-
-
-export const tagFactory = (  id, text, name) => {
-    let tag = new Tag();
-    tag.id = _.isUndefined(id) ? faker.random.number() : id;
-    tag.text = _.isUndefined(text)? faker.hacker.phrase() : text;
-    tag.props = {};
-    tag.name = _.isUndefined(name)? faker.hacker.phrase() : name;
-    return tag;
-};
-
-
 
 // /

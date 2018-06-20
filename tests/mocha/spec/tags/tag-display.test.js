@@ -107,7 +107,7 @@ describe( compName, () => {
         describe( 'handleDeleteClick', function () {
             it( 'commits correct mutation', () => {
                 let t = tags[ 1 ];
-                wrapper.vm.handleDeleteClick( t );
+                wrapper.vm.handleRemoveClick( t );
                 expect( mutations[ mTypes.disassociateTag ].callCount ).toBe( 1 );
             } );
         } );

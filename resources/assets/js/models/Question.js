@@ -25,7 +25,7 @@ export default class Question extends Item{
      * @returns {*}
      */
     get questionId() {
-        return this._id;
+        return this.id;
     }
 
     /**
@@ -33,7 +33,7 @@ export default class Question extends Item{
      * @param v
      */
     set questionId( v ) {
-        this._id = v;
+        this.id = v;
     }
 
 

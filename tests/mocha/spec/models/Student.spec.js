@@ -1,21 +1,19 @@
-//test libraries
-require( 'jasmine-jquery' );
-require( 'sinon' );
 
-var Faker = require( 'faker' );
+require( '../../injectglobals' );
 
+const Faker = global.faker;
 //tested stuff
 import Student from  "../../../../resources/assets/js/models/Student" ;
 
 
-describe( "models Student | ", function () {
+describe( "Student", function () {
 
     beforeEach( function () {
 //runs before each test
     } );
 
 
-    describe( "factory | ", function () {
+    describe( "factory  ", function () {
         beforeEach( function () {
             this.studentId = Faker.random.number();
             this.studentIndex = Faker.random.number();
@@ -41,14 +39,12 @@ describe( "models Student | ", function () {
         } );
 
         it( "has id ", function () {
-            window.console.log( this.student );
             expect( this.student.studentId ).toBe( this.studentId );
         } );
 
         it( "properties ", function () {
             let me = this;
-            $.each( this.dataJson, function ( k, v ) {
-                window.console.log(k, v);
+            _.forEach( this.dataJson, function ( k, v ) {
                 expect( me.student[ k ] ).toBe( me.dataJson[ k ] );
             } );
         } );

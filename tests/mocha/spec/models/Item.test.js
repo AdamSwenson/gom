@@ -1,10 +1,12 @@
-var $ = require( 'jquery' );
-window.$ = $;
-//test libraries
-require( 'jasmine-jquery' );
-require( 'sinon' );
+require( '../../injectglobals' );
 
-const faker = require( 'faker' );
+import {
+    addNodes,
+    makeState,
+    makeRootState,
+    makeTestPayload,
+    makeMutationPayload
+} from '../../helpers/item-test-helpers'
 
 //tested stuff
 import Item from "../../../../resources/assets/js/models/Item.js" ;
@@ -14,30 +16,34 @@ describe( " Item ", function () {
 
     let itemId, itemIndex, name, dataJson, item, object;
 
-    describe( 'tests of serial counter', function () {
-        //otherwise the starting count of the serial
-        //will be non-deterministic, since the first
-        //time it is called on this page, it will count 1
-        describe( 'Serial numbering', function () {
-            it( "Items have consecutive serial numbers, starting at 1", function () {
-                let results = [];
-                let number = 10;
-                for (var i = 0; i < number; i++) {
-                    results.push( new Item() );
-                }
+    describe( 'Serial numbering', function () {
 
-                expect( results.length ).toBe( number );
-                window.console.log( 'Item.spec', 'results', 39, results );
-                let c = 1;
-                for (let i = 0; i < results.length; i++) {
-                    let item = results[ i ];
+        it( "Items have increasing serial numbers", function () {
+            //Note that we're not assuming that they are consecutive
+            //since the tests run async. That's fine because nothing depends
+            //on the order of serial numbers.
+            let results = [];
+            let number = 10;
+            for (var i = 0; i < number; i++) {
+                results.push( new Item() );
+            }
 
+            //check
+            expect( results.length ).toBe( number );
+            let prevSN = 0;
+
+            for (let i = 0; i < results.length; i++) {
+                let item = results[ i ];
+                window.console.log( 'Item.test', 'pr', 32, prevSN, item.serialNumber);
+
+                if (i > 0){
                     expect( item instanceof Item ).toBe( true );
-                    expect( item.serialNumber ).toBe( c );
-                    c += 1;
+                    expect( item.serialNumber > prevSN ).toBe( true );
                 }
-            } );
+                prevSN = item.serialNumber;
+            }
         } );
+
 
     } );
 
@@ -55,7 +61,7 @@ describe( " Item ", function () {
         } );
 
         it( "Returns true when id is > 0", function () {
-            let id = faker.random.number;
+            let id = faker.random.number();
             let item = Item.factory( { id: id } );
             expect( item.id ).toBe( id );
             expect( item.canSync() ).toBe( true );
@@ -63,16 +69,44 @@ describe( " Item ", function () {
 
     } );
 
-    describe( 'all other tests', function () {
+
+    describe( "comment stuff ", function () {
+        let comment;
+        beforeEach( () => {
+            item = new Item();
+            comment = factories.commentFactory();
+        } );
+
+        it( "addComment adds comment at correct valence", function () {
+            //call
+            item.addComment( comment.valence, comment );
+
+            //check
+            expect( item.comments.get( comment.valence ) ).toMatchObject( comment );
+        } );
+
+        it( "getStockComment returns the stock comment ", function () {
+            //call
+            let result = item.getStockComment();
+
+            //check
+            expect( result.isStock() ).toBe( true );
+            expect( result.valence ).toBe( 'stock' );
+        } );
+
+
+    } );
+
+    describe( "factory  ", function () {
 
         beforeEach( function () {
-            ItemId = faker.random.number();
-            ItemIndex = faker.random.number();
+            itemId = faker.random.number();
+            itemIndex = faker.random.number();
             name = faker.random.number();
 
             dataJson = {
-                id: ItemId,
-                index: ItemIndex,
+                id: itemId,
+                index: itemIndex,
                 name: name,
 
             }
@@ -80,100 +114,25 @@ describe( " Item ", function () {
             object = item;
         } );
 
-
-        describe( "getters and setters | ", () => {
-            xit( "happy path | ", () => {
-                //todo
-            } );
-        } );
-
-        describe( "comment stuff ", function () {
-            it( "initializeComment  ", function () {
-                let itm = new Item();
-                expect( itm.comments.size ).toBe( 0 );
-                //call
-                itm.initializeComments();
-                //check
-                expect( itm.comments.size ).toBe( Comment.valences.length );
-                //iterate to make sure one of each
-            } );
-
-            it( "addComment ", function () {
-                let itm = new Item();
-                let comment = new Comment();
-                expect( itm.comments.size ).toBe( 0 );
-
-                //call
-                itm.addComment( comment );
-
-                //check
-                expect( itm.comments.size ).toBe( 1 );
-            } );
-
-            it( "getStockComment ", function () {
-                let itm = new Item();
-                itm.initializeComments();
-
-                expect( itm.comments.size ).toBe( 5 );
-
-                //call
-                let result = itm.getStockComment();
-
-                //check
-                expect( result.isStock() ).toBe( true );
-                expect( result.valence ).toBe( 'stock' );
-
-            } );
-
-            it( "no stock set | ", function () {
-                //todo
-            } );
-
-            it( "multiple stocks set | ", function () {
-                //todo
-            } );
-        } );
-
-        it( "getValencedComment ", function () {
-            // getValencedComment( valence ) {
-            //
-            // }                 //todo
-        } );
-
-    } );
-
-
-    describe( "factory | ", function () {
-        beforeEach( function () {
-
-        } );
-
         it( "isObject ", function () {
-            expect( typeof Item ).toBe( 'object' );
+            expect( typeof item ).toBe( 'object' );
         } );
 
         it( "is Item ", function () {
-            expect( Item instanceof Item ).toBe( true );
+            expect( item instanceof Item ).toBe( true );
         } );
 
         it( "has id ", function () {
-            window.console.log( Item );
-            expect( Item.id ).toBe( ItemId );
+            // window.console.log( Item );
+            expect( item.id ).toBe( itemId );
         } );
 
         it( "properties ", function () {
-            let me = this;
-            $.each( dataJson, function ( k, v ) {
-                window.console.log( k, v );
-                expect( me.Item[ k ] ).toBe( me.dataJson[ k ] );
+            _.forEach( dataJson, function ( k, v ) {
+                expect( item[ k ] ).toBe( dataJson[ k ] );
             } );
         } );
 
     } );
 
-    // describe("factory | ", () => {
-    //     xit("happy path | ", () => {
-    //         //todo
-    //     });
-    // });
 } );
