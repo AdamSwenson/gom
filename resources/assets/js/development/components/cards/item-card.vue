@@ -1,5 +1,5 @@
 <template xmlns="http://www.w3.org/1999/html">
-    <div class="item-card-component card"
+    <div class="item-card card"
          v-bind:id="id"
          v-bind:class="styling"
     >
@@ -73,7 +73,7 @@
 
 <style lang="scss">
 
-    .item-card-component {
+    .item-card {
         margin-top: 2em;
 
         border-bottom: solid;
