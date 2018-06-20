@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span class="select-exam-button">
     <a class="button select-exam-button is-warning is-outlined"
        v-on:click="handleClick"
     >

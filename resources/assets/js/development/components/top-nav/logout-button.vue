@@ -1,5 +1,5 @@
 <template>
-    <p class="field">
+    <p class="logout-button field">
         <a class="button logout-button is-info is-outlined"
            v-on:click="handleClick"
         ><span class="icon "><i class="fa fa-power-off" aria-hidden="true"></i></span></a></p>

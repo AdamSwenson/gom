@@ -4,13 +4,9 @@ var compName = 'preference-modal';
 //The path to the tested component
 var Component = require('../../../../resources/assets/js/development/components/preferences/preference-modal.vue');
 
+require( '../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
 
 //helpers
 // import { see } from '../../../helpers/test-helpers';

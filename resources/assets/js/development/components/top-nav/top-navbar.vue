@@ -1,5 +1,5 @@
 <template>
-    <div class="exam-selection-bar">
+    <div class="top-navbar exam-selection-bar">
         <nav class="level is-mobile">
             <!-- Left side -->
             <div class="level-left">

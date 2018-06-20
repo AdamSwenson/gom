@@ -1,6 +1,6 @@
 <template>
-    <p class="field">
-        <a class="button backup-button is-info is-outlined"
+    <p class="backup-button field">
+        <a class="button  is-info is-outlined"
            v-on:click="handleClick"
         ><span class="icon "><i class="fa fa-power-off" aria-hidden="true"></i></span></a></p>
 

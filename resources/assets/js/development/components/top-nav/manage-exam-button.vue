@@ -1,6 +1,6 @@
 <template>
-    <p class="field">
-        <a class="button grade-exam-button is-success is-outlined"
+    <p class="manage-exam-button field">
+        <a class="button  is-success is-outlined"
            v-on:click="handleClick"
         >
         <span class="icon is-small">

@@ -1,5 +1,5 @@
 <template>
-    <a class="button grade-exam-button is-success is-outlined"
+    <a class="grade-exam-button button is-success is-outlined"
        v-on:click="handleClick"
     >
         <span class="icon is-small">

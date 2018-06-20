@@ -1,5 +1,5 @@
 <template>
-    <div class="modal"
+    <div class="exam-selection-modal modal"
          v-bind:class="[isVisible ? 'is-active' : '' ]"
     >
         <div class="modal-background"></div>

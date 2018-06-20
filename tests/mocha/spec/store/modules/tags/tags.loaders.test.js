@@ -17,11 +17,11 @@ describe( compName, () => {
     let expectedMutations, action, store, state;
     let tag, obj, tags, numTags, commit, dispatch, getters, requestStub, requestStub2;
 
-    requestStub = sinon.stub( requests, 'loadAllUserTagsRequest' );
-    requestStub.resolves( tags );
-
-    requestStub2 = sinon.stub( requests, 'loadTagsForItemRequest' );
-    requestStub2.resolves( tags );
+    // requestStub = sinon.stub( requests, 'loadAllUserTagsRequest' );
+    // requestStub.resolves( tags );
+    //
+    // requestStub2 = sinon.stub( requests, 'loadTagsForItemRequest' );
+    // requestStub2.resolves( tags );
 
 
     beforeEach( () => {
@@ -33,13 +33,13 @@ describe( compName, () => {
 
     } );
 
-    describe( 'loadAllUserTagsFromServer', () => {
+    describe.skip( 'loadAllUserTagsFromServer', () => {
         beforeEach( () => {
 
         } );
         afterEach( () => {
-            requestStub.reset();
-            requestStub2.reset();
+            // requestStub.reset();
+            // requestStub2.reset();
         } );
 
         it( 'creates tag objects when getter returns no preexisting objects', function ( done ) {
