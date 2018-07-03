@@ -17,6 +17,7 @@ describe( compName, () => {
     let componentDivIdentifier = '.' + compName;
 
     let getters, mutations, actions, store;
+    let $route = { params: {}};
 
     let wrapper;
 
@@ -26,7 +27,10 @@ describe( compName, () => {
     beforeEach( () => {
         actions = {}
 
-        getters = {};
+        getters = {
+            getItemBySerialNumber: (  ) =>(  ) => factories.itemFactory()
+
+        };
 
         mutations = {};
 
@@ -35,7 +39,7 @@ describe( compName, () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, mocks:{$route}
         } );
 
     } );

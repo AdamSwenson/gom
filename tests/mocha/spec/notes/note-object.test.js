@@ -25,8 +25,8 @@ describe( compName, () => {
     beforeEach( () => {
         note = factories.noteFactory();
         actions = {};
-
-        getters = {};
+        getters = {  getItemBySerialNumber : (  ) =>(  ) => factories.itemFactory()
+        };
 
         mutations = {
             [ mTypes.updateNote ]: sinon.spy(),

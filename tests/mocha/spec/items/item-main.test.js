@@ -1,8 +1,7 @@
-
 //The name of the tested component
 var compName = 'item-main';
 //The path to the tested component
-var Component = require('../../../../resources/assets/js/development/components/items/item-main.vue');
+var Component = require( '../../../../resources/assets/js/development/components/items/item-main.vue' );
 
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
@@ -32,19 +31,23 @@ localVue.use( Vuex )
 //tested stuff
 
 
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
     let getters;
     let mutations;
     let store;
-    let wrapper;
+    let wrapper, item;
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
+        item = factories.itemFactory();
 
-        getters = {   };
+        getters = {
+            getDepthOfNode: () => () => 3
+
+
+        };
 
         mutations = {};
 
@@ -52,9 +55,9 @@ describe(  compName , () => {
             getters,
             mutations
         } );
-
+        let $parent = { displayIndex: 4 };
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, propsData: { item }, mocks: { $parent }
         } );
 
     } );
@@ -65,10 +68,10 @@ describe(  compName , () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe.skip( " TESTS NEEDED", () => {
+        it( 'awaits tests' )
+    } );
 
 
-});
+} );

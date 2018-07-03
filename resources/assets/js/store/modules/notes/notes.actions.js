@@ -14,18 +14,52 @@ import Exam from '../../../models/Exam'
 
 import Note from '../../../models/Note'
 
+import { loadNotesForItemRequest } from '../../../api/requests/noteRequests';
 
-module.exports  = {
+
+module.exports = {
     createNewNote: ( { state, dispatch, commit, getters }, payload ) => {
-        let itm = payload.obj;
-        if ( typeof itm !== 'undefined' ) {
-            if ( itm instanceof Item || itm instanceof Exam ) {
-                let note = Note.factory( { associatedItemSerialNumber: itm.serialNumber } );
-                let pl =  Payload.factory( { obj: note } );
-                commit( 'createNote',pl );
-                commit("setNewNote", pl);
+        return new Promise( function ( resolve, reject ) {
+            let itm = payload.obj;
+            if ( typeof itm !== 'undefined' ) {
+                if ( itm instanceof Item || itm instanceof Exam ) {
+                    let note = Note.factory( { associatedItemSerialNumber: itm.serialNumber } );
+                    let pl = Payload.factory( { obj: note } );
+                    commit( 'createNote', pl );
+                    commit( "setNewNote", pl );
+                    resolve();
+                }
             }
-        }
+            reject('bad item')
+        } );
+    },
+
+    loadNotes: ( { state, dispatch, commit, getters }, payload ) => {
+        return new Promise( function ( resolve, reject ) {
+            let itm = payload.obj;
+            if ( typeof itm !== 'undefined' ) {
+
+                let p = loadNotesForItemRequest( itm );
+                return p.then( function ( data ) {
+                    _.forEach( data, function ( r ) {
+                        // window.console.log( 'noteRequests', 'r', 29, r );
+                        let note = Note.factory( r );
+                        // note.id = r.id;
+                        // note.text = r.text;
+                        // note.priority = r.priority;
+                        // note.props = r.props;
+                        // note.updatedAt = r.updated_at;
+                        // note.createdAt = r.created_at;
+                        // note.name = r.name;
+                        note.associatedItemSerialNumber = itm.serialNumber;
+                        let payload = Payload.factory( { obj: note, mutateSilently: true } );
+                        commit( 'createNote', payload );
+                    } );
+                    resolve();
+                } );
+            }
+            reject( 'item undefined' );
+        } );
     }
 
 

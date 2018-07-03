@@ -109,7 +109,7 @@
 
                 me.isLoading = true;
 
-                let p = timeRequests.getTotalGradingTime( this.exam );
+                let p = this.getTotalGradingTime( this.exam );
 
                 return p.then( function ( data ) {
                     let pl = Payload.factory( {
@@ -182,6 +182,8 @@
         },
 
         methods: {
+            //makes it easier to stub for testing
+            ...timeRequests,
 
             /**
              * Applies any formatting necessary to the value

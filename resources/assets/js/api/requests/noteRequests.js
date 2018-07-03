@@ -47,29 +47,29 @@ const handleCreateResponse = ( store, note, data ) => {
 
 };
 
-/**
- * Process the result of a response where we need to
- * insert new notes into store
- * @param store
- * @param response
- */
-const handleLoadResponse = ( store, itemOrExam, data ) => {
-    _.forEach( data, function ( r ) {
-        // window.console.log( 'noteRequests', 'r', 29, r );
-        let note = Note.factory( { r } );
-        note.id = r.id;
-        note.text = r.text;
-        note.priority = r.priority;
-        note.props = r.props;
-        note.updatedAt = r.updated_at;
-        note.createdAt = r.created_at;
-        note.name = r.name;
-        note.associatedItemSerialNumber = itemOrExam.serialNumber;
-        let payload = Payload.factory( { obj: note, mutateSilently: true } );
-        store.commit( 'createNote', payload );
-    } );
-
-};
+// /**
+//  * Process the result of a response where we need to
+//  * insert new notes into store
+//  * @param store
+//  * @param response
+//  */
+// const handleLoadResponse = ( store, itemOrExam, data ) => {
+//     _.forEach( data, function ( r ) {
+//         // window.console.log( 'noteRequests', 'r', 29, r );
+//         let note = Note.factory( { r } );
+//         note.id = r.id;
+//         note.text = r.text;
+//         note.priority = r.priority;
+//         note.props = r.props;
+//         note.updatedAt = r.updated_at;
+//         note.createdAt = r.created_at;
+//         note.name = r.name;
+//         note.associatedItemSerialNumber = itemOrExam.serialNumber;
+//         let payload = Payload.factory( { obj: note, mutateSilently: true } );
+//         store.commit( 'createNote', payload );
+//     } );
+//
+// };
 
 
 module.exports = {
@@ -112,40 +112,35 @@ module.exports = {
         }
     },
 
-    destroyNoteRequest: (store=null, note ) => {
-            let out = {
-                requestVersion: REQUEST_VERSION,
-                ...note
-            };
+    destroyNoteRequest: ( store = null, note ) => {
+        let out = {
+            requestVersion: REQUEST_VERSION,
+            ...note
+        };
 
-            return window.axios
-                .delete( Routes.destroyNote( note ), out )
-                .then( ( response ) => {
-                    if ( response.data.length > 0 ) {
-                        // this.$store.commit(mTypes.destroyNote, Payload.factory({obj: note}));
-                        // handleUpdateResponse( response );
-                    }
-                } )
-                .catch( function ( error ) {
-                    errorHandling( error );
-                } );
+        return window.axios
+            .delete( Routes.destroyNote( note ), out )
+            .then( ( response ) => {
+                if ( response.data.length > 0 ) {
+                    // this.$store.commit(mTypes.destroyNote, Payload.factory({obj: note}));
+                    // handleUpdateResponse( response );
+                }
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
 
-        },
+    },
 
-    loadNotesForItemRequest: ( store = null, item ) => {
+    loadNotesForItemRequest: ( item ) => {
         let out = {
             requestVersion: REQUEST_VERSION
         };
-
-        //Request is for every student belonging to the user
+        let route = item.isExam() ? Routes.getNotesForExam( item ) : Routes.getNotesForItem( item )
         return window.axios
-            .get( Routes.getNotesForItem( item ) )
+            .get( route )
             .then( ( response ) => {
-                // window.console.log( 'studentRequests', '', 28, response );
-                if ( _.isNull( store ) ) return response.data;
-
-                handleLoadResponse( store, item, response.data );
-
+                return response.data
             } )
             .catch( function ( error ) {
                 window.console.log( 'examRequests', 'ERROR', 39, error );

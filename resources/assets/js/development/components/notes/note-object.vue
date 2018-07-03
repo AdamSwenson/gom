@@ -39,7 +39,7 @@
              v-bind:class="priorityClass"
         >
             <div class="message-header">
-                <p>{{ name }}</p>
+                <p>{{ note.name }}</p>
                 <button class="delete delete-note"
                         v-on:click="handleDeleteClick"
                 ></button>
@@ -47,7 +47,7 @@
 
             <div class="message-body">
                 <div class="note-text-display">
-                    {{ text }}
+                    {{ note.text }}
                 </div>
 
                 <div class="level timestampArea">
@@ -93,7 +93,7 @@
 
     export default {
 
-        props: [ 'serialNumber', 'object', 'useCentralStore' ],
+        props: [ 'note', 'serialNumber', 'object', 'useCentralStore' ],
 
         components: {},
 
@@ -133,45 +133,45 @@
                 get: function () {
                     return this.note.name;
                 },
-                set: function ( v ) {
-                    if ( this.useCentralStore ) {
-                        let pl = Payload.factory( {
-                            obj: this.note,
-                            updateProp: 'name',
-                            updateVal: v
-                        } );
-                        this.$store.commit( mTypes.updateNote, pl );
-                    }
-                    else {
-                        this.note.name = v;
-                        let me = this;
-                        let p = updateNoteRequest( null, this.note );
-                        p.then( function () {
-                            me.$emit( 'note-updated' );
-                        } );
-                    }
-                }
+                // set: function ( v ) {
+                //     if ( this.useCentralStore ) {
+                //         let pl = Payload.factory( {
+                //             obj: this.note,
+                //             updateProp: 'name',
+                //             updateVal: v
+                //         } );
+                //         this.$store.commit( mTypes.updateNote, pl );
+                //     }
+                //     else {
+                //         this.note.name = v;
+                //         let me = this;
+                //         let p = updateNoteRequest( null, this.note );
+                //         p.then( function () {
+                //             me.$emit( 'note-updated' );
+                //         } );
+                //     }
+                // }
             },
 
             /**
              * The actual note object
              */
-            note: function () {
-                //if its in the noteObject spot, it is an instance of Note
-                //so we can just return it
-                if ( this.noteObject ) return this.noteObject;
-
-                //However, if we loaded the notes directly, it may just be a json returned from the
-                //server. So we take the object and make a Note which gets stored in noteObject
-                if ( this.object ) {
-                    if ( _.isUndefined( this.object.kind ) ) this.noteObject = Note.factory( this.object );
-//                    if(! this.object instanceof Note) this.object = Note.factory(this.object);
-                    return this.noteObject;
-                } else {
-                    return this.$store.getters[ gTypes.getNoteBySerialNumber ]( this.serialNumber );
-                }
-
-            },
+//             note: function () {
+//                 //if its in the noteObject spot, it is an instance of Note
+//                 //so we can just return it
+//                 if ( this.noteObject ) return this.noteObject;
+//
+//                 //However, if we loaded the notes directly, it may just be a json returned from the
+//                 //server. So we take the object and make a Note which gets stored in noteObject
+//                 if ( this.object ) {
+//                     if ( _.isUndefined( this.object.kind ) ) this.noteObject = Note.factory( this.object );
+// //                    if(! this.object instanceof Note) this.object = Note.factory(this.object);
+//                     return this.noteObject;
+//                 } else {
+//                     return this.$store.getters[ gTypes.getNoteBySerialNumber ]( this.serialNumber );
+//                 }
+//
+//             },
 
             priorityClass: function () {
                 return this.note.styleString();
@@ -184,24 +184,24 @@
                 get: function () {
                     return this.note.priority;
                 },
-                set: function ( v ) {
-                    if ( this.useCentralStore ) {
-
-                        let pl = Payload.factory( {
-                            obj: this.note,
-                            updateProp: 'priority',
-                            updateVal: v
-                        } );
-                        this.$store.commit( mTypes.updateNote, pl );
-                    } else {
-                        this.note.priority = v;
-                        let me = this;
-                        let p = updateNoteRequest( null, this.note );
-                        p.then( function () {
-                            me.$emit( 'note-updated' );
-                        } );
-                    }
-                }
+                // set: function ( v ) {
+                //     if ( this.useCentralStore ) {
+                //
+                //         let pl = Payload.factory( {
+                //             obj: this.note,
+                //             updateProp: 'priority',
+                //             updateVal: v
+                //         } );
+                //         this.$store.commit( mTypes.updateNote, pl );
+                //     } else {
+                //         this.note.priority = v;
+                //         let me = this;
+                //         let p = updateNoteRequest( null, this.note );
+                //         p.then( function () {
+                //             me.$emit( 'note-updated' );
+                //         } );
+                //     }
+                // }
             },
 
             props: {
@@ -235,25 +235,25 @@
                 get: function () {
                     return this.note.text;
                 },
-                set: function ( v ) {
-                    if ( this.useCentralStore ) {
-
-                        let pl = Payload.factory( {
-                            obj: this.note,
-                            updateProp: 'text',
-                            updateVal: v
-                        } );
-                        this.$store.commit( mTypes.updateNote, pl );
-                    }
-                    else {
-                        this.note.text = v;
-                        let me = this;
-                        let p = updateNoteRequest( null, this.note );
-                        p.then( function () {
-                            me.$emit( 'note-updated' );
-                        } );
-                    }
-                }
+                // set: function ( v ) {
+                //     if ( this.useCentralStore ) {
+                //
+                //         let pl = Payload.factory( {
+                //             obj: this.note,
+                //             updateProp: 'text',
+                //             updateVal: v
+                //         } );
+                //         this.$store.commit( mTypes.updateNote, pl );
+                //     }
+                //     else {
+                //         this.note.text = v;
+                //         let me = this;
+                //         let p = updateNoteRequest( null, this.note );
+                //         p.then( function () {
+                //             me.$emit( 'note-updated' );
+                //         } );
+                //     }
+                // }
             },
 
             updatedTimestamp: function () {
@@ -269,7 +269,7 @@
                 return identifier + '-' + this.serialNumber;
             },
 
-            handleRemoveClick: function () {
+            handleDeleteClick: function () {
                 window.console.log( 'note-area', 'handleDeleteClick', 190, this.note );
 
                 if ( this.useCentralStore ) {

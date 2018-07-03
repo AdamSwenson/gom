@@ -1,6 +1,6 @@
 <template>
 
-    <div class="preferences-body">
+    <div class="preferences-base">
         <div class="tabs">
             <ul>
                 <li v-for="t in tabs"

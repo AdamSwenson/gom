@@ -1,6 +1,6 @@
 <template>
 
-    <div id="quality-control-panel">
+    <div class="quality-control-panel">
         <div class="box">
         <div class="top-area ">
             <p class="title">

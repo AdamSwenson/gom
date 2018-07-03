@@ -110,10 +110,11 @@
 
                 let me = this;
 
+                //This will update the values stored on the exam object
+                //thus the exam object need be an async computed property
                 let p = me.$store.dispatch( ngaTypes.loadGradingProgress, me.exam );
                 return p.then( function () {
-                    // resolve();
-                } );
+                     } );
 
                 //
                 // let me = this;

@@ -1,5 +1,5 @@
 <template>
-    <div class="box connections-area">
+    <div class="setup-structure box connections-area">
 
 
         <h4 class="title is-4">Setup structure preferences</h4>

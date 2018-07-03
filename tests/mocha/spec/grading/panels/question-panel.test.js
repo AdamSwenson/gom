@@ -36,6 +36,7 @@ localVue.use( Vuex )
 describe(  compName , () => {
 
     let componentDivIdentifier = '.' + compName;
+    let $route = { params: {}};
 
     let getters;
     let mutations;
@@ -44,7 +45,11 @@ describe(  compName , () => {
 
     beforeEach( (  ) => {
 
-        getters = {   };
+        getters = {
+            getItemChildren : (  ) => (  ) => [],
+            getItemBySerialNumber: (  ) =>(  ) => factories.itemFactory()
+
+        };
 
         mutations = {};
 
@@ -54,7 +59,7 @@ describe(  compName , () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, mocks: {$route}
         } );
 
     } );
@@ -66,7 +71,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

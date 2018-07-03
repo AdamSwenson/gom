@@ -45,6 +45,8 @@ describe(  compName , () => {
     beforeEach( (  ) => {
 
         getters = {
+        getDepthOfNode : (  ) => (  ) => 4,
+
             [nggTypes.getGradedStudentIds] : function (  ) {
                 return [1, 3]
 
@@ -57,9 +59,9 @@ describe(  compName , () => {
             getters,
             mutations
         } );
-
+let student = factories.studentFactory();
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, propsData: {student}
         } );
 
     } );
@@ -71,7 +73,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

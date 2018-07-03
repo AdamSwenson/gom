@@ -35,19 +35,19 @@
 
 </style>
 <script>
-    import * as aTypes from '../../../store/action-types';
-    import * as mTypes from '../../../store/mutation-types';
+    import * as aTypes from '../../../../store/action-types';
+    import * as mTypes from '../../../../store/mutation-types';
 
-    import * as gTypes from '../../../store/getter-types';
+    import * as gTypes from '../../../../store/getter-types';
 
-    import Payload from '../../../models/Payload';
+    import Payload from '../../../../models/Payload';
 
-    import timeRequests from '../../../api/requests/timeRequests';
-    import loadingIndicator from '../helpers/loading-indicator.vue';
-    import timeStats from '../stats/time-stats.vue'
-    import statsSummary from '../stats/summary-stats-display.vue'
-    import examCounts from '../stats/number-graded.vue'
-    import examProperties from '../stats/exam-properties.vue'
+    import timeRequests from '../../../../api/requests/timeRequests';
+    import loadingIndicator from '../../helpers/loading-indicator.vue';
+    import timeStats from '../../stats/time-stats.vue'
+    import statsSummary from '../../stats/summary-stats-display.vue'
+    import examCounts from '../../stats/number-graded.vue'
+    import examProperties from '../../stats/exam-properties.vue'
 
     export default {
         components: {

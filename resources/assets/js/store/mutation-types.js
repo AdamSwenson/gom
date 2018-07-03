@@ -107,7 +107,8 @@ export const initializeItemStorage = 'initializeItemStorage';
 export const updateNote = 'updateNote';
 export const destroyNote = 'destroyNote';
 export const createNote = 'createNote';
-
+export const setNewNote = 'setNewNote';
+export const resetNewNote = 'resetNewNote';
 
 //requests
 export const startRequest = 'startRequest';

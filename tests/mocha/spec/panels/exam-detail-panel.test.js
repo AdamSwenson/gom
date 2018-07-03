@@ -42,7 +42,7 @@ describe( " exam-detail-panel ", () => {
         routeSerialNumber = item.serialNumber;
 
         // import and pass your custom axios instance to this method
-        moxios.install()
+        // moxios.install()
 
         getters = {
             getItemBySerialNumber: ( v ) => ( v ) => {
@@ -79,7 +79,7 @@ describe( " exam-detail-panel ", () => {
 
     afterEach( function () {
         // import and pass your custom axios instance to this method
-        moxios.uninstall()
+        // moxios.uninstall()
     } )
 
     describe( " loads into expected default state for testing ", () => {
@@ -89,83 +89,4 @@ describe( " exam-detail-panel ", () => {
 
     } );
 
-
-    //
-    // describe( " loading indicator  ", () => {
-    //
-    //     it( " loading indicator displays and time-list is hidden when isTimeLoading is true  ", () => {
-    //         wrapper.vm.isTimeLoading = true;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( true );
-    //         expect( wrapper.contains( '.time-list' ) ).toBe( false );
-    //     });
-    //
-    //     it( " loading indicator is hidden and time-list is visibile when isTimeLoading is false  ", () => {
-    //         //not loading; should see list of exams
-    //         wrapper.vm.isTimeLoading = false;
-    //         wrapper.update();
-    //         expect( wrapper.contains( '.load-indicator ' ) ).toBe( false );
-    //         expect( wrapper.contains( '.time-list' ) ).toBe( true );
-    //     } );
-    // } );
-
-    describe( " displays expected data after loading async   ", () => {
-        let expected = {};
-
-        it( " happy path ", () => {
-            let data = {
-                elapsedSeconds:
-                    590.86,
-            };
-
-            moxios.wait( function () {
-                let request = moxios.requests.mostRecent();
-                request.respondWith( {
-                    status: 200,
-                    response: [ data ]
-                } ).then( function () {
-
-                    //should see
-                    assertThatSeeText( wrapper, data.elapsedSeconds, '.timeBox' );
-
-                } );
-            } )
-        } )
-    } );
 } );
-
-
-//
-//     beforeEach(  ()=> {
-// //runs before each test
-// //         let component = mount( commentPanel );
-//
-//     })
-
-// wrapper.vm // the mounted Vue instance
-
-
-//
-// describe( "computed properties ", () => {
-//
-//     it( 'displays the expected default on first load',  ()=> {
-//        // let component = mount( commentPanel );
-//
-//         expect( wrapper.vm.displayed ).toBe( 'stock' )
-//
-//         expect( true ).toBe( true );
-//     } );
-//
-// } );
-//
-// describe(  "methods" , function () {
-//     beforeEach( function () {
-//         let component = mount( commentPanel );
-//
-//     } );
-//
-//     it( 'prePopulateComments | ', function () {
-//         expect( true ).toBe( true );
-//     } );
-// } );
-// } );

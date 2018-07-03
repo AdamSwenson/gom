@@ -47,6 +47,24 @@ class NotesController extends Controller
         return $note;
     }
 
+
+    /**
+     * Store a newly created note with the exam in storage.
+     *
+     * @param Exam $exam
+     * @param NoteRequest|Request $request
+     * @return Note|\Illuminate\Database\Eloquent\Model
+     */
+    public function storeForExam( Exam $exam, NoteRequest $request )
+    {
+        $note = Note::create($request->all());
+        $note->save();
+        $exam->save();
+        $exam->notes()->attach($note->id);
+        $exam->save();
+        return $note;
+    }
+
     /**
      * Display the specified resource.
      *

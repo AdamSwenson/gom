@@ -76,7 +76,10 @@ export default class Note extends IModel {
 
 
     static get aliasMap() {
-        return {};
+        return {
+            created_at : 'createdAt',
+            updated_at: 'updatedAt'
+        };
 
     }
 

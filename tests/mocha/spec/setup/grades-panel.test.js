@@ -16,6 +16,7 @@ localVue.use( Vuex )
 describe(  compName , () => {
 
     let componentDivIdentifier = '.' + compName;
+    let $route = { params: {}};
 
     let getters;
     let mutations;
@@ -45,7 +46,7 @@ describe(  compName , () => {
 
         wrapper = shallow( Component, {
             store, localVue,
-            propsData: {item, itemProp}
+            propsData: {item, itemProp}, mocks:{$route}
         } );
 
     } );

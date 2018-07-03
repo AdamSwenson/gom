@@ -137,48 +137,6 @@
                 return true;
             },
 
-            // term: {
-            //     get: function () {
-            //         let exam = this.getExam();
-            //         if ( exam && typeof exam.term !== 'undefined' ) {
-            //             return exam.term;
-            //         }
-            //
-            //     },
-            //     //Sets the term
-            //     //Note, the input box allows the entered
-            //     //value not to be one of the standard values
-            //     //this is by design.
-            //     //We are not being too prescriptive, remember?
-            //     set: function ( v ) {
-            //         this.$store.commit( mTypes.updateItem, Payload.factory( {
-            //             index: 0,
-            //             updateProp: 'term',
-            //             updateVal: v
-            //         } ) );
-            //     }
-            // },
-            // year: {
-            //     get: function () {
-            //         let exam = this.getExam();
-            //         if ( exam && typeof exam.year !== 'undefined' ) {
-            //             return exam.year;
-            //         }
-            //     },
-            //     set: function ( v ) {
-            //         this.$store.commit( mTypes.updateItem, Payload.factory( {
-            //             index: 0,
-            //             updateProp: 'year',
-            //             updateVal: v
-            //         } ) );
-            //
-            //     }
-            // },
-            //
-            // years: function () {
-            //     return [ 2017, 2018 ];
-            // },
-
         },
 
         methods: {},

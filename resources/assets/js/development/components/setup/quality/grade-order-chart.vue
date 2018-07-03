@@ -1,6 +1,6 @@
 <template>
 
-    <div id="scoresOrderArea">
+    <div id="scoresOrderArea" class="grade-order-chart">
         <div class="quality-description ">
 
             <p class="subtitle">Framing effects</p>

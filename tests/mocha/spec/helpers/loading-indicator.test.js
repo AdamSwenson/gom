@@ -52,7 +52,7 @@ describe(  compName , () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, propsData : {isLoading: true}
         } );
 
     } );
@@ -64,7 +64,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

@@ -3,45 +3,45 @@
 
         <table class="table is-narrow">
 
-        <stat-display-table-row>
-            <div slot="label">Average</div>
-            <div slot="value">{{meanDisplay}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">Average</div>
+                <div slot="value">{{meanDisplay}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">Median</div>
-            <div slot="value">{{medianDisplay}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">Median</div>
+                <div slot="value">{{medianDisplay}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">SD</div>
-            <div slot="value">{{sdDisplay}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">SD</div>
+                <div slot="value">{{sdDisplay}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">Count</div>
-            <div slot="value">{{countDisplay}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">Count</div>
+                <div slot="value">{{countDisplay}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">Max</div>
-            <div slot="value">{{maxDisplay}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">Max</div>
+                <div slot="value">{{maxDisplay}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">Min</div>
-            <div slot="value">{{minDisplay}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">Min</div>
+                <div slot="value">{{minDisplay}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">25th</div>
-            <div slot="value">{{percentile25Display}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">25th</div>
+                <div slot="value">{{percentile25Display}}</div>
+            </stat-display-table-row>
 
-        <stat-display-table-row>
-            <div slot="label">75th</div>
-            <div slot="value">{{percentile75Display}}</div>
-        </stat-display-table-row>
+            <stat-display-table-row>
+                <div slot="label">75th</div>
+                <div slot="value">{{percentile75Display}}</div>
+            </stat-display-table-row>
         </table>
     </div>
 
@@ -108,11 +108,11 @@
 
             countDisplay: function () {
                 return this.formatForDisplay( this.number );
-},
+            },
 
             percentile25Display: function () {
                 return this.formatForDisplay( this.percentile25 );
-       },
+            },
 
             percentile75Display: function () {
                 return this.formatForDisplay( this.percentile75 );

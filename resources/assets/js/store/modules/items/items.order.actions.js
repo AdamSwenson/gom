@@ -34,9 +34,8 @@ module.exports = {
             // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
             let newNode = new Node( toAddSerialNumber, parentSerialNumber );
-            let parentNode = getters.getItemNodeFromOrder( parentSerialNumber );
+            let parentNode = getters[gTypes.getItemNodeFromOrder]( parentSerialNumber );
             // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
-
             let pl = Payload.factory( {
                 objNode: newNode,
                 parentNode: parentNode,
@@ -45,14 +44,16 @@ module.exports = {
             } );
             window.console.log( 'items.order.actions', 'pl', 47, pl );
 
+            //push it into local ordering
             commit( mTypes.insertNodeIntoOrder, pl );
 
             let ordering = getters.getOrderForSync;
-            let p = updateItemsOrder(exam, ordering);
 
-            p.then(function (  ) {
+            //send to server
+            updateItemsOrder(exam, ordering)
+                .then(function (  ) {
                 resolve();
-            })
+            });
 
 
         } );

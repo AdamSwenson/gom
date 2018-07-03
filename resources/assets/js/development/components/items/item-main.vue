@@ -1,4 +1,4 @@
-<template>
+µ<template>
 
     <div class="item-main field has-addons">
 
@@ -115,8 +115,8 @@
             displayIndex: function () {
                 if ( this.isExam ) return 'Exam';
                 let idx = this.position + 1;
-                let parentIdx = this.$parent.displayIndex;
-                if ( parentIdx ) return `${parentIdx} - ${idx}`;
+                // let parentIdx = this.$parent.displayIndex;
+                // if ( parentIdx ) return `${parentIdx} - ${idx}`;
                 return idx;
 
 //                return this.$store.getters.getDepthOfNode(this.serialNumber) + 1;

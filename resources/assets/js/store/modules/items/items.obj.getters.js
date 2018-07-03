@@ -24,10 +24,7 @@ const buildKey = ( idx ) => {
 };
 
 const isItemsEmpty = ( state ) => {
-    if ( state.items.length > 0 ) {
-        return false;
-    }
-    return true;
+    return state.items.length === 0;
 };
 
 
@@ -119,12 +116,16 @@ module.exports = {
         // console.log('getItem', state, payload);
         if ( isItemsEmpty( state ) ) return false;
         if ( Payload.checkIfPayload( payload ) ) {
-            let { index, id } = payload;
-            if ( typeof index !== 'undefined' ) {
-                return getters[ gTypes.getItemByIndex ]( state, getters, index );
+            window.console.log( 'items.obj.getters', 'pay', 119, payload);
+            // let { index, id } = payload;
+            if ( typeof payload.index !== 'undefined' ) {
+                return getters[ gTypes.getItemByIndex ]( payload.index );
+                // return getters[ gTypes.getItemByIndex ]( state, getters, payload.index );
             }
-            if ( typeof id !== 'undefined' ) {
-                return getters[ gTypes.getItemById ]( state, getters, id );
+
+            if ( typeof payload.id !== 'undefined' ) {
+                return getters[ gTypes.getItemById ](payload.id );
+                // return getters[ gTypes.getItemById ]( state, getters, payload.id );
             }
         }
     },

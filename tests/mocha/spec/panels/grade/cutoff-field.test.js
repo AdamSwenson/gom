@@ -29,7 +29,7 @@ var Component = require( "../../../../../resources/assets/js/development/compone
 
 
 describe( "cutoff-field  ", function () {
-    let componentDivId = '.cut-off-field';
+    let componentDivId = '.cutoff-field';
     let getters;
     let mutations;
     let store;

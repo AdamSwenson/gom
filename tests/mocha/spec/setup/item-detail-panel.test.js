@@ -24,6 +24,7 @@ describe(  compName , () => {
 
     let item, itemProp;
     let payload, test;
+    let $route = { params: {}};
 
     beforeEach( (  ) => {
         item = factories.itemFactory();
@@ -45,7 +46,7 @@ describe(  compName , () => {
 
         wrapper = shallow( Component, {
             store, localVue,
-            propsData: {item, itemProp}
+            propsData: {item, itemProp}, mocks:{$route}
         } );
 
     } );

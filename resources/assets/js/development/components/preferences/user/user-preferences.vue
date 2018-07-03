@@ -25,16 +25,17 @@
     import * as ngmTypes from '../../../../store/new-grading-mutation-types';
 
     import preferencesPageMixin from '../preferencesPage.mixin';
+
     export default {
-mixins : [preferencesPageMixin],
+        mixins: [ preferencesPageMixin ],
         props: [],
 
         components: { PreferencesBase },
 
         data: function () {
             return {
-                routeGroup : 'user',
-                loadAction : ngaTypes.loadUserPreferencesFromServer
+                routeGroup: 'user',
+                loadAction: ngaTypes.loadUserPreferencesFromServer
                 // defaultRoute: 'prefs-account',
             }
         },

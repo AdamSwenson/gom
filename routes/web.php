@@ -231,7 +231,7 @@ Route::delete('dev/kumis/{kumi}/exam/{exam}', 'Roster\KumiController@disassociat
    ============================= */
 Route::post('dev/notes/item/{item}', 'Notes\NotesController@store');
 Route::get('dev/notes/item/{item}', 'Notes\NotesController@showForItem');
-Route::post('dev/notes/exam/{exam}', 'Notes\NotesController@store');
+Route::post('dev/notes/exam/{exam}', 'Notes\NotesController@storeForExam');
 Route::get('dev/notes/exam/{exam}', 'Notes\NotesController@showForExam');
 Route::resource('dev/notes', 'Notes\NotesController');
 

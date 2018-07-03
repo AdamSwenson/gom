@@ -4,6 +4,7 @@ var compName = 'quality-control-panel';
 //The path to the tested component
 var Component = require('../../../../resources/assets/js/development/components/setup/quality-control-panel.vue');
 
+let $route = { params: {}};
 
 
 require( '../../injectglobals' );
@@ -36,7 +37,7 @@ describe( compName, () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, mocks:{$route}
         } );
 
     } );

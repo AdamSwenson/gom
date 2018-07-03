@@ -34,6 +34,10 @@ global.ngmTypes = ngmTypes;
 //models
 import Payload from '../../resources/assets/js/models/Payload';
 global.Payload = Payload; //doing it this way somehow helps it be available to tests
+
+import Comment from '../../resources/assets/js/models/Comment';
+global.Comment = Comment;
+
 // global.Payload = require('../../resources/assets/js/models/Payload');
 global.Exam = require('../../resources/assets/js/models/Exam');
 

@@ -43,10 +43,20 @@ module.exports  = {
         state.notes.splice( idx, 1 );
     },
 
-    setNewNote: (state, payload)=>{
+   [mTypes.setNewNote] : (state, payload)=>{
         let note = payload.obj;
         state.newNoteSerialNumber = note.serialNumber;
+    },
+
+    /**
+     * Set the new note back to default value
+     * @param state
+     * @param payload
+     */
+    [mTypes.resetNewNote] : (state, payload)=>{
+        state.newNoteSerialNumber = -1;
     }
+
 
 };
 

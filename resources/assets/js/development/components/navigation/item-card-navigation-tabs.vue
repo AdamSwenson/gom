@@ -1,6 +1,6 @@
 <template>
 
-    <nav class="nav-edit-tabs-component tabs is-centered"
+    <nav class="item-card-navigation-tabs nav-edit-tabs-component tabs is-centered"
     >
         <ul v-bind:id="id">
             <li v-if="isExam" role="presentation">

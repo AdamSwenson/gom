@@ -13,6 +13,7 @@ global.expect = require('expect');
 global._ = require( 'lodash' );
 global.vue = require('vue');
 global.Vuex = require('Vuex');
+global.VueRouter = require('vue-router');
 global.sinon = require( 'sinon' );
 global.jQuery = require('jquery');
 global.moxios = require('moxios');

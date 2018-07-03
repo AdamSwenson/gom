@@ -43,7 +43,7 @@ obj = Component;
     describe( " loads into expected default state for testing ", () => {
        } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

@@ -12,6 +12,7 @@ const localVue = createLocalVue();
 localVue.use( Vuex )
 
 describe( compName, () => {
+    let $route = { params: {}};
 
     let componentDivIdentifier = '.' + compName;
 
@@ -34,7 +35,7 @@ describe( compName, () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, mocks:{$route}
         } );
 
     } );

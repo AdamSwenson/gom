@@ -46,7 +46,7 @@ describe(  compName , () => {
         it( 'validity check');
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

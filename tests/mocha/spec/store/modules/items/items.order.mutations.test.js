@@ -1,3 +1,5 @@
+import Payload from "../../../../../../resources/assets/js/models/Payload";
+
 var compName = 'items.order.mutations';
 //The path to the tested component
 var Component = require( '../../../../../../resources/assets/js/store/modules/items/items.order.mutations.js' );
@@ -181,22 +183,22 @@ describe( compName, () => {
 
     describe( description( mTypes.insertNodeIntoOrder ), function () {
 
-        describe( description( 'happy paths' ), function () {
-
-            it( "no index set", function ( done ) {
-                //Should just push onto the end of the parent's children
-                //array
+            it( "it pushes the node onto the end of the parent's children list when no index is provided", function (  ) {
 
                 let parent = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
                 let numChildren = parent.children.length;
                 let toAddSerial = faker.random.number();
 
                 let toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
-                let payload = { obj: toAdd, parent: parent };
+
+                let payload = Payload.factory( {
+                    objNode: toAdd,
+                    parentNode: parent,
+                    mutateSilently: true
+                } );
 
                 //call
                 mutations[ mTypes.insertNodeIntoOrder ]( filledState, payload );
-                // window.console.log( 'orderings.spec', 'add', 76, filledState );
 
                 //check
                 let result = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
@@ -209,11 +211,9 @@ describe( compName, () => {
                 expect( added ).toBe( toAdd );
                 // explicitly check that it has the parent's isn set properly
                 expect( added.parent ).toBe( parent.data );
-//mutation returns promise, so need to call done
-                done();
             } );
 
-            it( "index set", function ( done ) {
+            it( "pushes the node into correct location when an index is provided", function (  ) {
                 //Should splice into particular location of
                 // the parent's children array
                 let parent = filledState.itemMap.children[ testItemIndex ];//.children[ testItemIndex ];
@@ -222,13 +222,20 @@ describe( compName, () => {
                 let toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
                 let index = faker.random.number( { min: 0, max: parent.children.length - 1 } )
 
+                let payload = Payload.factory( {
+                    objNode: toAdd,
+                    parentNode: parent,
+                    index: index,
+                    mutateSilently: true
+                } );
+
                 //call
-                let payload = { index: index, obj: toAdd, parent: parent };
                 mutations[ mTypes.insertNodeIntoOrder ]( filledState, payload );
+
                 // window.console.log( 'orderings.spec', 'add', 76, filledState );
 
                 //check
-                let result = filledState.itemMap.children[ testItemIndex ];//children[ testItemIndex ];
+                let result = filledState.itemMap.children[ testItemIndex ][index];//children[ testItemIndex ];
                 //parent properties are unchanged (other than children)
                 expect( result.data ).toBe( parent.data );
                 expect( result.parent ).toBe( parent.parent );
@@ -240,8 +247,7 @@ describe( compName, () => {
                 expect( added.children.length ).toBe( toAdd.children.length );
                 // explicitly check that it has the parent's isn set properly
                 expect( added.parent ).toBe( parent.data );
-                done()
-            } );
+
 
         } );
 

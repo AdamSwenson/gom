@@ -42,7 +42,6 @@ describe( compName, () => {
 
                     let state = { itemMap: new Node( 0, 0 ) };
                     makeFilledState( state, 5 );
-                    window.console.log( 'items.spec', 'ff', 56, state );
                     //prep
                     let parent = state.itemMap.children[ 1 ]; //has to be a parent
                     let payload = parent.data; //has to be a parent
@@ -74,26 +73,29 @@ describe( compName, () => {
     } );
 
 
-    describe( 'getters (defined in items, not imported)', () => {
+    describe( 'getters (defined in items.js, not imported)', () => {
         let rootId, root, parentId, store;
 
         beforeEach( function () {
+            item = factories.itemFactory();
+            exam = factories.examFactory();
+
             parent = new Item();
             filledState = {
                 items: [ parent ],
                 itemMap: new Node( parent.serialNumber, parent.serialNumber )
             };
             makeFilledState( filledState, 5 );
-            rootId = 1;
-            parentId = 2;
-            root = new Node( rootId, rootId );
-            state = { itemMap: root };
-            parent = new Node( parentId, rootId );
-            root.children.push( parent );
 
-            getters[ gTypes.getItemBySerialNumber ] = ( state, getters ) => {
-                return factories.itemFactory();
-            };
+            // rootId = 1;
+            // parentId = 2;
+            // root = new Node( rootId, rootId );
+            // state = { itemMap: root };
+            // parent = new Node( parentId, rootId );
+            // root.children.push( parent );
+
+            getters[ gTypes.getActiveExam ] = (  ) => (  ) =>  exam;
+            getters[gTypes.getItemBySerialNumber] = (  ) => (  ) => item;
 
             store = new Vuex.Store( {
                 state, getters
@@ -104,10 +106,8 @@ describe( compName, () => {
         describe( 'getOrderForSync ', function () {
 
             it( "happy path", function () {
-                //prep
-                // window.console.log( 'items.spec', 'fs', 98, filledState );
                 //call
-                let result = getters.getOrderForSync( filledState, getters, {} );
+                let result = store.getters.getOrderForSync;
                 expect( result ).toBeTruthy();
             } );
         } );
@@ -121,6 +121,7 @@ describe( compName, () => {
                 addNodes( state.itemMap, numItems );
                 for (let n of state.itemMap.children) {
                     addNodes( n, numItems );
+                    state.items.push(factories.itemFactory())
                 }
 
                 let serialNumbers = addNodes.isns;
@@ -135,12 +136,15 @@ describe( compName, () => {
                     state.items.push( a );
                 }
 
+                getters[gTypes.getItemMapCopy] = (  ) => () => state.itemMap;
+
+
                 store = new Vuex.Store( {
                     state, getters
                 } );
             } );
 
-            it( "happy path ", function () {
+            it( "returns a list of ids in sorted order ", function () {
                 // window.console.log( 'items.spec', 'state', 275, state );
                 let result = store.getters[ gTypes.getSortedIds ];
                 var expectedIds = expectedIds;

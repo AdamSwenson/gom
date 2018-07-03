@@ -26,11 +26,8 @@ import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
-
-
-//tested stuff
-
+localVue.use( VueRouter );
+const router = new VueRouter()
 
 
 describe(  compName , () => {
@@ -40,9 +37,11 @@ describe(  compName , () => {
     let getters;
     let mutations;
     let store;
-    let wrapper;
+    let $route = { params : { serialNumber: null }};
+    let wrapper, item;
 
     beforeEach( (  ) => {
+item = factories.itemFactory();
 
         getters = {   };
 
@@ -51,11 +50,18 @@ describe(  compName , () => {
         store = new Vuex.Store( {
             getters,
             mutations
+        });
+
+        // $route.params.serialNumber = item.serialNumber;
+let $router = new VueRouter();
+        wrapper = shallow( Component, {
+            store, localVue, router
+            // stubs: [ 'router-link', 'router-view' ],
+            // mocks: {
+            //     $route
+            // }
         } );
 
-        wrapper = shallow( Component, {
-            store, localVue
-        } );
 
     } );
 
@@ -66,7 +72,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

@@ -27,37 +27,33 @@ const checkExpectedType = ( toBeSet ) => {
 
 module.exports = {
 
-    [mTypes.insertNodeIntoOrder]: ( state, payload ) => {
-        return new Promise( ( resolve, reject ) => {
-
-            // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
-
+    [ mTypes.insertNodeIntoOrder ]: ( state, payload ) => {
+        let obj, parent, index;
+        // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+        try {
+            //the payload may have the data stored as either objNode or obj
+            //and parentNode or parent.
             let { index, objNode, parentNode } = payload;
+            checkExpectedType( parentNode )
+            checkExpectedType( objNode )
+            obj = objNode;
+            parent = parentNode;
+        } catch (e) {
+            obj = payload.obj;
+            parent = payload.parent;
+        }
 
-            //type check
-            if ( !( checkExpectedType( parentNode ) && checkExpectedType( objNode )) ) {
-                //Try out the un type checked properties to see if they have
-                //nodes
-                let { obj, parent } = payload;
-                //if not, oh well
-                return false;
-            }
-
-            //if an index was specified, splice it in at the index
-            if ( !_.isUndefined( index ) ) {
-                parentNode.children.splice( index, 0, objNode );
-                return resolve();
-            }
-
+        //if an index was specified, splice it in at the index
+        if ( !_.isUndefined( index ) ) {
+            parent.children.splice( index, 0, obj );
+        }else{
             //otherwise just push it on the end
-            parentNode.children.push( objNode );
-            return resolve();
-        } );
-
+            parent.children.push( obj );
+        }
     },
 
 
-    [mTypes.removeNodeFromOrder]: ( state, payload ) => {
+    [ mTypes.removeNodeFromOrder ]: ( state, payload ) => {
         let { obj, parent } = payload;
         //Merge its children into its parent's children
         parent.children.concat( obj.children );
@@ -74,12 +70,12 @@ module.exports = {
         //
         // //make sure it is not the last item already
         // if ( parentNode.children.length !== currentIndex + 1 ) {
-            //We first pop the item out so that its successor
-            //slides down and occupies its current index
-            parentNode.children.splice( currentIndex, 1 );
-            //Now we push it in at  its
-            //original position + 1
-            parentNode.children.splice( currentIndex - 1, 0, objNode );
+        //We first pop the item out so that its successor
+        //slides down and occupies its current index
+        parentNode.children.splice( currentIndex, 1 );
+        //Now we push it in at  its
+        //original position + 1
+        parentNode.children.splice( currentIndex - 1, 0, objNode );
         // }
     },
 
@@ -96,7 +92,7 @@ module.exports = {
         let currentIndex = parentNode.children.indexOf( objNode )
         //check whether at the end of the children list
         //if so, ignore the call
-     //   if ( currentIndex === 0 ) return true;
+        //   if ( currentIndex === 0 ) return true;
 
         //We first pop the item out so that its successor
         //slides down and occupies its current index
@@ -121,11 +117,11 @@ module.exports = {
 
             //check that we aren't at the question level
             // if ( grandParent ) {
-                //add to grandparent
-                grandParent.children.push( objNode );
+            //add to grandparent
+            grandParent.children.push( objNode );
 
-                //remove from parent's children list
-                parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
+            //remove from parent's children list
+            parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
             // }
         }
 
@@ -136,11 +132,11 @@ module.exports = {
         let { objNode, parentNode } = payload;
         let currentIndex = parentNode.children.indexOf( objNode );
         //get the node who will become parent
-        let newParent = parentNode.children[currentIndex - 1];
+        let newParent = parentNode.children[ currentIndex - 1 ];
         //remove from parent
         parentNode.children.splice( currentIndex, 1 ); //remove it
         //push it in to its former older sibling's children
-        newParent.children.push( objNode);
+        newParent.children.push( objNode );
     },
 
     //

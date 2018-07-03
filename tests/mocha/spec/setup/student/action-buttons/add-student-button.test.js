@@ -1,8 +1,7 @@
-
 //The name of the tested component
 var compName = 'add-student-button';
 //The path to the tested component
-var Component = require('../../../../../../resources/assets/js/development/components/setup/student/action-buttons/add-student-button.vue');
+var Component = require( '../../../../../../resources/assets/js/development/components/setup/student/action-buttons/add-student-button.vue' );
 
 
 require( '../../../../injectglobals' );
@@ -84,24 +83,32 @@ describe( compName, () => {
             assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" methods ", () => {
-        it('addStudent', (  ) => {
-            wrapper.find(componentDivIdentifier).trigger('click');
 
-            //check
-            let act = actions[ aTypes.handleNewStudentStorageAndAssociation ];
+    describe( " methods | addStudent", () => {
+        let act;
+        beforeEach( () => {
+            wrapper.find( componentDivIdentifier ).trigger( 'click' );
+            act = actions[ aTypes.handleNewStudentStorageAndAssociation ];
+        } );
+
+        it( 'dispatches correct action', ( done ) => {
             expect( act.callCount ).toBe( 1 );
+            done();
+        } );
+        it( 'contains expected payload', ( done ) => {
             let resultPl = act.args[ 0 ][ 1 ];
-            expect( resultPl ).toBeInstanceOf( Payload.constructor );
-            expect(resultPl.obj).toBeInstanceOf( Student.constructor);
-            expect(resultPl.student).toBeInstanceOf(Student.constructor);
-
-            expect(wrapper.emitted().addStudentCalled).toBeTruthy();
+            expect( resultPl ).toBeInstanceOf( Payload );
+            expect( resultPl.obj ).toBeInstanceOf( Student.constructor );
+            expect( resultPl.student ).toBeInstanceOf( Student.constructor );
+            done();
+        } );
+        it( 'emits expected events', (done) => {
+            expect( wrapper.emitted().addStudentCalled ).toBeTruthy();
             //todo are notifications used? if so, test async so can catch this
-            // expect(wrapper.emitted().addStudentComplete).toBeTruthy();
-        });
-    });
+            // expect( wrapper.emitted().addStudentComplete ).toBeTruthy();
+            done();
+        } );
+    } );
 
 
-});
+} );

@@ -37,9 +37,7 @@ describe( "grading-progress ", function () {
             beforeEach( function () {
                 getterStub = sinon.stub();
                 getterStub.returns( testTotalExams );
-                getters[ gTypes.getStudentCount ] = (function () {
-                    return getterStub();
-                })();
+                getters[ gTypes.getStudentsFromRoster ] = (  ) => (  ) => getterStub;
             } );
 
             it( " returns the expected count ", () => {
@@ -154,7 +152,7 @@ describe( "grading-progress ", function () {
                     { type: mTypes.updateItem, payload: expectedPayload2 }
                 ];
 
-                helpers.testAction( action, test, {}, expectedMutations, { verbose: true } );
+                helpers.testAction( action, test, {}, expectedMutations, { verbose: false } );
                 done();
 
 

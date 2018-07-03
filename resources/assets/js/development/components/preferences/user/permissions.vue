@@ -1,5 +1,5 @@
 <template>
-    <div class="box account-area">
+    <div class="permissions box account-area">
 
         <h4 class="title is-4">Manage permissions</h4>
 

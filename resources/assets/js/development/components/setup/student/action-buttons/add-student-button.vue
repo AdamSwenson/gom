@@ -1,6 +1,6 @@
 <template>
 
-    <a class="button add-student-button"
+    <a class="add-student-button button "
        v-bind:class="styling"
        v-on:click="addStudent"
     >

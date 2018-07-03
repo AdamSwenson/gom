@@ -1,60 +1,57 @@
-
 //The name of the tested component
 var compName = 'grade-page-preferences';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/preferences/grade/grade-page-preferences.vue');
+var Component = require( '../../../../../resources/assets/js/development/components/preferences/grade/grade-page-preferences.vue' );
+
+var Mixin = require( '../../../../../resources/assets/js/development/components/preferences/preferencesPage.mixin' );
 
 
-import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../../helpers/test-helpers';
+require( '../../../injectglobals' );
 import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
+import { mount, shallow, createLocalVue, RouterLinkStub } from 'vue-test-utils';
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
+// localVue.use(VueRouter);
 
-
-//tested stuff
-
-
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
-    let getters;
+    let getters, actions;
     let mutations;
     let store;
     let wrapper;
+    let $route = { params: { serialNumber: null }, path: 'taco' };
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
 
-        getters = {   };
+        actions = {
+            [ ngaTypes.loadGradePreferencesFromServer ]: () => () => sinon.spy()
+        };
 
+        $route.params.serialNumber = factories.itemFactory().serialNumber;
+
+        let stub = sinon.stub( Mixin.methods, 'loadDefaultRoute' );
         mutations = {};
 
         store = new Vuex.Store( {
-            getters,
+            actions,
             mutations
         } );
-
+// let $router = {push: sinon.spy()};
+        const mixin = {};
+        const router = new VueRouter()
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, router,
+            mixins: [ Mixin ],
+            // stubs: RouterLinkStub,
+            // stubs: [ 'router-link', 'router-view' ],
+            mocks: {
+                $route,
+                // $router
+            }
         } );
 
     } );
@@ -65,10 +62,10 @@ describe(  compName , () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe.skip( " TESTS NEEDED", () => {
+        it( 'awaits tests' )
+    } );
 
 
-});
+} );

@@ -44,7 +44,8 @@ describe(  compName , () => {
 
     beforeEach( (  ) => {
 
-        getters = {   };
+        getters = { [nggTypes.getUserPreference]: (  ) => (  ) => true
+        };
 
         mutations = {};
 
@@ -66,7 +67,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

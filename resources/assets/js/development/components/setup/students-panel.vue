@@ -1,5 +1,5 @@
 <template>
-    <div class="add-students-panel panel">
+    <div class="students-panel panel">
         <p class="panel-heading">
             <span class="mainHeading">Manage roster</span>
             <br/>
@@ -86,7 +86,7 @@
 
 <style lang="scss">
 
-    .add-students-panel {
+    .students-panel {
 
         .mainHeading {
 

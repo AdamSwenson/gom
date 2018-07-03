@@ -31335,8 +31335,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "item-comment"
   }, _vm._l((_vm.childTextParagraphs), function(t) {
     return _c('p', {
-      staticClass: "item-comment"
-    }, [_vm._v("\n    " + _vm._s(t) + "\n")])
+      staticClass: "item-comment-para"
+    }, [_vm._v("\n        " + _vm._s(t) + "\n    ")])
   }))
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -31401,7 +31401,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: " mainBodyLocator container is-fluid",
+    staticClass: "feedback-page mainBodyLocator container is-fluid",
     attrs: {
       "id": "feedback-main-page"
     }
@@ -45849,28 +45849,30 @@ var handleCreateResponse = function handleCreateResponse(store, note, data) {
     store.commit('updateNote', payload);
 };
 
-/**
- * Process the result of a response where we need to
- * insert new notes into store
- * @param store
- * @param response
- */
-var handleLoadResponse = function handleLoadResponse(store, itemOrExam, data) {
-    _.forEach(data, function (r) {
-        // window.console.log( 'noteRequests', 'r', 29, r );
-        var note = _Note2.default.factory({ r: r });
-        note.id = r.id;
-        note.text = r.text;
-        note.priority = r.priority;
-        note.props = r.props;
-        note.updatedAt = r.updated_at;
-        note.createdAt = r.created_at;
-        note.name = r.name;
-        note.associatedItemSerialNumber = itemOrExam.serialNumber;
-        var payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
-        store.commit('createNote', payload);
-    });
-};
+// /**
+//  * Process the result of a response where we need to
+//  * insert new notes into store
+//  * @param store
+//  * @param response
+//  */
+// const handleLoadResponse = ( store, itemOrExam, data ) => {
+//     _.forEach( data, function ( r ) {
+//         // window.console.log( 'noteRequests', 'r', 29, r );
+//         let note = Note.factory( { r } );
+//         note.id = r.id;
+//         note.text = r.text;
+//         note.priority = r.priority;
+//         note.props = r.props;
+//         note.updatedAt = r.updated_at;
+//         note.createdAt = r.created_at;
+//         note.name = r.name;
+//         note.associatedItemSerialNumber = itemOrExam.serialNumber;
+//         let payload = Payload.factory( { obj: note, mutateSilently: true } );
+//         store.commit( 'createNote', payload );
+//     } );
+//
+// };
+
 
 module.exports = {
 
@@ -45926,20 +45928,13 @@ module.exports = {
         });
     },
 
-    loadNotesForItemRequest: function loadNotesForItemRequest() {
-        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        var item = arguments[1];
-
+    loadNotesForItemRequest: function loadNotesForItemRequest(item) {
         var out = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
-
-        //Request is for every student belonging to the user
-        return window.axios.get(_apiSettings.Routes.getNotesForItem(item)).then(function (response) {
-            // window.console.log( 'studentRequests', '', 28, response );
-            if (_.isNull(store)) return response.data;
-
-            handleLoadResponse(store, item, response.data);
+        var route = item.isExam() ? _apiSettings.Routes.getNotesForExam(item) : _apiSettings.Routes.getNotesForItem(item);
+        return window.axios.get(route).then(function (response) {
+            return response.data;
         }).catch(function (error) {
             window.console.log('examRequests', 'ERROR', 39, error);
             (0, _responseHandlers.errorHandling)(error);
@@ -46491,11 +46486,12 @@ module.exports = {
      * @param student
      * @returns {Promise.<T>|*}
      */
-    getItemScoresForStats: function getItemScoresForStats(store, item) {
+    getItemScoresForStats: function getItemScoresForStats(item) {
 
         return window.axios.get('dev/stats/item/' + item.id).then(function (response) {
+            return response.data;
             // window.console.log( 'statsRequests---getItemStats', 69, response );
-            store.dispatch('processScoreForStatsResponse', response);
+            // store.dispatch( 'processScoreForStatsResponse', response );
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
@@ -48218,10 +48214,6 @@ var Comment = function (_IModel) {
                 // iModel.comments = {};
             }
             //Set the expected structure
-            // if (Object.keys(iModel.comments).length === 0) {
-            //     Comment.valences.forEach(function (c) {
-            //         iModel.addComment(c, Comment.factory({valence: c}));
-            //     });
             if (iModel.comments.size === 0) {
                 Comment.valences.forEach(function (c) {
                     iModel.addComment(c, Comment.factory({ valence: c }));
@@ -49036,25 +49028,115 @@ var Item = function (_IModel) {
         return _this;
     }
 
+    /* ------------------------ Methods -------------------- */
     /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
+     * Take either a string or array input and convert
+     * it into the key used to store ordering.
+     * Returns the key.
+     * @param index
      */
 
 
     _createClass(Item, [{
-        key: 'canSync',
+        key: 'addComment',
 
 
+        //-----------------  comments
+        value: function addComment(valence, comment) {
+            // this.comments.push( comment );
+            // Vue.set(this.comments, valence, comment );
+            this.comments.set(valence, comment);
+        }
+
+        /**
+         * When loading comments into an item
+         * from ajax or on page load, use this
+         * to do it.
+         *
+         * @param jsonComments
+         */
+
+    }, {
+        key: 'loadCommentsFromJson',
+        value: function loadCommentsFromJson(jsonComments) {
+            if (Object.keys(jsonComments).length > 0) {
+                var me = this;
+                _.forEach(jsonComments, function (row) {
+                    var comment = _Comment2.default.factory(row);
+                    comment.text = row.body;
+                    me.addComment(comment.valence, comment);
+                });
+            }
+        }
+
+        //----------------- ordering
+
+    }, {
+        key: 'promote',
+        value: function promote() {
+            if (this.depth > 0) {
+                this.depth -= 1;
+            }
+        }
+    }, {
+        key: 'demote',
+        value: function demote() {
+            this.depth += 1;
+        }
+
+        //----------------- Publicity
+
+    }, {
+        key: 'togglePublic',
+        value: function togglePublic() {
+            // console.log('Item', 'CALLED', 'togglePublic', this._public);
+            this.publicity = !this.publicity;
+            // console.log(this._public);
+        }
+
+        /**
+         * Makes able to appear in student-viewable outputs
+         */
+
+    }, {
+        key: 'makePublic',
+        value: function makePublic() {
+            this.publicity = true;
+        }
+
+        /**
+         * Makes no longer visible to students
+         */
+
+    }, {
+        key: 'hide',
+        value: function hide() {
+            this.publicity = false;
+        }
+
+        /* ------------------------ Status queries  -------------------- */
         /**
          * Tells whether the item has a valid id and thus can
          * be synced with the server.
+         * Valid ids are assumed to be numbers starting with 0
          * @returns {boolean}
          */
+
+    }, {
+        key: 'canSync',
         value: function canSync() {
-            if (this.id >= 0) return true;
-            return false;
+            return this.id >= 0;
+        }
+    }, {
+        key: 'determineType',
+
+
+        /**
+         * utility for determining which of the older types
+         * this item belongs to
+         */
+        value: function determineType() {
+            return this.depth > 0 ? 'element' : 'question';
         }
     }, {
         key: 'isNew',
@@ -49063,27 +49145,20 @@ var Item = function (_IModel) {
         }
 
         /**
-         * utility for determining which of the older types
-         * this item belongs to
+         * Getter for whether this can currently appear in student-viewable outputs
+         * @returns {boolean|*}
          */
 
     }, {
-        key: 'determineType',
-        value: function determineType() {
-            return this.depth > 0 ? 'element' : 'question';
+        key: 'isPublic',
+        value: function isPublic() {
+            return this.publicity;
         }
-    }, {
-        key: 'addComment',
-        value: function addComment(valence, comment) {
-            // this.comments.push( comment );
-            // Vue.set(this.comments, valence, comment );
-            this.comments.set(valence, comment);
-        }
-    }, {
-        key: 'getStockComment',
-        value: function getStockComment() {
-            return this.getComment('stock');
-        }
+
+        /* ------------------------ Getters and setters -------------------- */
+
+        //----------------- Comments
+
     }, {
         key: 'getComment',
         value: function getComment(valence) {
@@ -49122,107 +49197,34 @@ var Item = function (_IModel) {
 
             return out;
         }
+    }, {
+        key: 'getStockComment',
+        value: function getStockComment() {
+            return this.getComment('stock');
+        }
 
         /**
          * Whether all comments for the item are empty;
          */
 
     }, {
-        key: 'loadCommentsFromJson',
+        key: 'isEveryCommentEmpty',
+        get: function get() {
+            return _.size(this.getEmptyComments()) === _.size(_Comment2.default.valences);
+        }
 
-
+        //----------------- Intrinsic properties of item
         /**
-         * When loading comments into an item
-         * from ajax or on page load, use this
-         * to do it.
-         *
-         * @param jsonComments
-         */
-        value: function loadCommentsFromJson(jsonComments) {
-            if (Object.keys(jsonComments).length > 0) {
-                var me = this;
-                _.forEach(jsonComments, function (row) {
-                    var comment = _Comment2.default.factory(row);
-                    comment.text = row.body;
-                    me.addComment(comment.valence, comment);
-                });
-            }
-        }
-
-        //----------------- ordering
-
-    }, {
-        key: 'promote',
-        value: function promote() {
-            if (this.depth > 0) {
-                this.depth -= 1;
-            }
-        }
-    }, {
-        key: 'demote',
-        value: function demote() {
-            this.depth += 1;
-        }
-    }, {
-        key: 'isPublic',
-
-
-        //
-        //
-        // /* *************************** Max score *************** */
-        // get maxScore() {
-        //     return this._maxScore ? Number( this._maxScore ) : null;
-        // };
-        //
-        // set maxScore( score ) {
-        //     this._maxScore = score;
-        // };
-
-
-        /* *************************** Public *************** */
-        /**
-         * Getter for whether this can currently appear in student-viewable outputs
-         * @returns {boolean|*}
-         */
-        value: function isPublic() {
-            return this.publicity;
-        }
-
-        /**
-         * Makes able to appear in student-viewable outputs
-         */
-
-    }, {
-        key: 'makePublic',
-        value: function makePublic() {
-            this.publicity = true;
-        }
-
-        /**
-         * Makes no longer visible to students
-         */
-
-    }, {
-        key: 'hide',
-        value: function hide() {
-            this.publicity = false;
-        }
-    }, {
-        key: 'togglePublic',
-        value: function togglePublic() {
-            // console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this.publicity = !this.publicity;
-            // console.log(this._public);
-        }
-
-        /* *************************** Type *************** */
-
-        /**
-         * The role played by the item
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
          */
 
     }, {
         key: 'idx',
+
+
+        //----------------- Ordering
         get: function get() {
             return this.idxStore.split(separator);
         } //[ this.index,  this.depth];}
@@ -49232,29 +49234,16 @@ var Item = function (_IModel) {
             this.idxStore = Item.buildKeyFromIdx(index);
         }
 
+        //----------------- Type and role of item
         /**
-         * Take either a string or array input and convert
-         * it into the key used to store ordering.
-         * Returns the key.
-         * @param index
+         * The role played by the item
          */
 
-    }, {
-        key: 'isEveryCommentEmpty',
-        get: function get() {
-            return _.size(this.getEmptyComments()) === _.size(_Comment2.default.valences);
-        }
     }, {
         key: 'type',
         get: function get() {
             return this.determineType();
         }
-
-        /**
-         * Returns a list of fields which may
-         * be used to look up an exam from the store
-         */
-
     }], [{
         key: 'buildKeyFromIdx',
         value: function buildKeyFromIdx(index) {
@@ -49269,11 +49258,6 @@ var Item = function (_IModel) {
             if (_.isArray(index)) {
                 return index.join(separator);
             }
-        }
-    }, {
-        key: 'setExamId',
-        value: function setExamId(id) {
-            Item.examId = id;
         }
 
         /**
@@ -49322,23 +49306,6 @@ var Item = function (_IModel) {
             if (idx1.length !== idx2.length) {}
         }
     }, {
-        key: 'identifiers',
-        value: function identifiers() {
-            return ['id', 'index'];
-        }
-
-        /**
-         * This is used by the api module to determine what
-         * requests to send to the server
-         * @returns {string}
-         */
-
-    }, {
-        key: 'className',
-        value: function className() {
-            return 'item';
-        }
-    }, {
         key: 'factory',
         value: function factory(params) {
             var obj = new Item();
@@ -49353,6 +49320,34 @@ var Item = function (_IModel) {
             if (obj.kind === 'item') return true;
 
             return false;
+        }
+    }, {
+        key: 'setExamId',
+        value: function setExamId(id) {
+            Item.examId = id;
+        }
+    }, {
+        key: 'className',
+
+
+        /**
+         * This is used by the api module to determine what
+         * requests to send to the server
+         * @returns {string}
+         */
+        value: function className() {
+            return 'item';
+        }
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }, {
+        key: 'identifiers',
+        value: function identifiers() {
+            return ['id', 'index'];
         }
     }, {
         key: 'fillableProps',
@@ -49388,6 +49383,17 @@ var Item = function (_IModel) {
 }(_IModel3.default);
 
 exports.default = Item;
+;
+//
+//
+// /* *************************** Max score *************** */
+// get maxScore() {
+//     return this._maxScore ? Number( this._maxScore ) : null;
+// };
+//
+// set maxScore( score ) {
+//     this._maxScore = score;
+// };
 
 /***/ }),
 
@@ -49951,7 +49957,10 @@ var Note = function (_IModel) {
     }, {
         key: 'aliasMap',
         get: function get() {
-            return {};
+            return {
+                created_at: 'createdAt',
+                updated_at: 'updatedAt'
+            };
         }
     }]);
 
@@ -50121,23 +50130,24 @@ var Payload = function (_IModel) {
         }
 
         /*  ************************* Identifier values ************************* */
-
-    }, {
-        key: 'id',
-        get: function get() {
-            return this._id;
-        }
+        // get id() {
+        //     return this._id;
+        // }
 
         /**
          * Retrieve the index where it is possible
          * different fields could have different values.
          * This enforces the order of precedence between the fields
          */
-        ,
-        set: function set(val) {
-            //todo numeric check
-            this._id = val;
-        }
+
+    }, {
+        key: 'index2',
+
+        //
+        // set id( val ) {
+        //     //todo numeric check
+        //     this._id = val;
+        // }
 
         //
         // get index() {
@@ -50149,8 +50159,6 @@ var Payload = function (_IModel) {
         //     this._index = val;
         // }
 
-    }, {
-        key: 'index2',
         get: function get() {
             return this._index2;
         },
@@ -50489,7 +50497,7 @@ var Question = function (_Item) {
     _createClass(Question, [{
         key: 'questionId',
         get: function get() {
-            return this._id;
+            return this.id;
         }
 
         /**
@@ -50498,7 +50506,7 @@ var Question = function (_Item) {
          */
         ,
         set: function set(v) {
-            this._id = v;
+            this.id = v;
         }
 
         /* *************************** Index ************* */
@@ -54902,10 +54910,7 @@ var buildKey = function buildKey(idx) {
 };
 
 var isItemsEmpty = function isItemsEmpty(state) {
-    if (state.items.length > 0) {
-        return false;
-    }
-    return true;
+    return state.items.length === 0;
 };
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getAllItems, function (state, getters, rootState) {
@@ -54944,14 +54949,16 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         // console.log('getItem', state, payload);
         if (isItemsEmpty(state)) return false;
         if (_Payload2.default.checkIfPayload(payload)) {
-            var index = payload.index,
-                id = payload.id;
-
-            if (typeof index !== 'undefined') {
-                return getters[gTypes.getItemByIndex](state, getters, index);
+            window.console.log('items.obj.getters', 'pay', 119, payload);
+            // let { index, id } = payload;
+            if (typeof payload.index !== 'undefined') {
+                return getters[gTypes.getItemByIndex](payload.index);
+                // return getters[ gTypes.getItemByIndex ]( state, getters, payload.index );
             }
-            if (typeof id !== 'undefined') {
-                return getters[gTypes.getItemById](state, getters, id);
+
+            if (typeof payload.id !== 'undefined') {
+                return getters[gTypes.getItemById](payload.id);
+                // return getters[ gTypes.getItemById ]( state, getters, payload.id );
             }
         }
     };
@@ -55590,9 +55597,8 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
         var newNode = new _Node2.default(toAddSerialNumber, parentSerialNumber);
-        var parentNode = getters.getItemNodeFromOrder(parentSerialNumber);
+        var parentNode = getters[gTypes.getItemNodeFromOrder](parentSerialNumber);
         // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
-
         var pl = _Payload2.default.factory({
             objNode: newNode,
             parentNode: parentNode,
@@ -55601,12 +55607,13 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         });
         window.console.log('items.order.actions', 'pl', 47, pl);
 
+        //push it into local ordering
         commit(mTypes.insertNodeIntoOrder, pl);
 
         var ordering = getters.getOrderForSync;
-        var p = (0, _itemRequests.updateItemsOrder)(exam, ordering);
 
-        p.then(function () {
+        //send to server
+        (0, _itemRequests.updateItemsOrder)(exam, ordering).then(function () {
             resolve();
         });
     });
@@ -55910,36 +55917,33 @@ var checkExpectedType = function checkExpectedType(toBeSet) {
 };
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
-    return new Promise(function (resolve, reject) {
-
-        // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
-
-        var index = payload.index,
+    var obj = void 0,
+        parent = void 0,
+        index = void 0;
+    // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+    try {
+        //the payload may have the data stored as either objNode or obj
+        //and parentNode or parent.
+        var _index = payload.index,
             objNode = payload.objNode,
             parentNode = payload.parentNode;
 
-        //type check
+        checkExpectedType(parentNode);
+        checkExpectedType(objNode);
+        obj = objNode;
+        parent = parentNode;
+    } catch (e) {
+        obj = payload.obj;
+        parent = payload.parent;
+    }
 
-        if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
-            //Try out the un type checked properties to see if they have
-            //nodes
-            var obj = payload.obj,
-                parent = payload.parent;
-            //if not, oh well
-
-            return false;
-        }
-
-        //if an index was specified, splice it in at the index
-        if (!_.isUndefined(index)) {
-            parentNode.children.splice(index, 0, objNode);
-            return resolve();
-        }
-
+    //if an index was specified, splice it in at the index
+    if (!_.isUndefined(index)) {
+        parent.children.splice(index, 0, obj);
+    } else {
         //otherwise just push it on the end
-        parentNode.children.push(objNode);
-        return resolve();
-    });
+        parent.children.push(obj);
+    }
 }), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
     var obj = payload.obj,
         parent = payload.parent;
@@ -57689,13 +57693,11 @@ var _Note = __webpack_require__(/*! ../../../models/Note */ "./resources/assets/
 
 var _Note2 = _interopRequireDefault(_Note);
 
+var _noteRequests = __webpack_require__(/*! ../../../api/requests/noteRequests */ "./resources/assets/js/api/requests/noteRequests.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Created by adam on 7/31/17.
- */
 
 module.exports = {
     createNewNote: function createNewNote(_ref, payload) {
@@ -57704,18 +57706,57 @@ module.exports = {
             commit = _ref.commit,
             getters = _ref.getters;
 
-        var itm = payload.obj;
-        if (typeof itm !== 'undefined') {
-            if (itm instanceof _Item2.default || itm instanceof _Exam2.default) {
-                var note = _Note2.default.factory({ associatedItemSerialNumber: itm.serialNumber });
-                var pl = _Payload2.default.factory({ obj: note });
-                commit('createNote', pl);
-                commit("setNewNote", pl);
+        return new Promise(function (resolve, reject) {
+            var itm = payload.obj;
+            if (typeof itm !== 'undefined') {
+                if (itm instanceof _Item2.default || itm instanceof _Exam2.default) {
+                    var note = _Note2.default.factory({ associatedItemSerialNumber: itm.serialNumber });
+                    var pl = _Payload2.default.factory({ obj: note });
+                    commit('createNote', pl);
+                    commit("setNewNote", pl);
+                    resolve();
+                }
             }
-        }
+            reject('bad item');
+        });
+    },
+
+    loadNotes: function loadNotes(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
+
+        return new Promise(function (resolve, reject) {
+            var itm = payload.obj;
+            if (typeof itm !== 'undefined') {
+
+                var p = (0, _noteRequests.loadNotesForItemRequest)(itm);
+                return p.then(function (data) {
+                    _.forEach(data, function (r) {
+                        // window.console.log( 'noteRequests', 'r', 29, r );
+                        var note = _Note2.default.factory(r);
+                        // note.id = r.id;
+                        // note.text = r.text;
+                        // note.priority = r.priority;
+                        // note.props = r.props;
+                        // note.updatedAt = r.updated_at;
+                        // note.createdAt = r.created_at;
+                        // note.name = r.name;
+                        note.associatedItemSerialNumber = itm.serialNumber;
+                        var payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
+                        commit('createNote', payload);
+                    });
+                    resolve();
+                });
+            }
+            reject('item undefined');
+        });
     }
 
-};
+}; /**
+    * Created by adam on 7/31/17.
+    */
 
 /***/ }),
 
@@ -57797,6 +57838,7 @@ module.exports = (_module$exports = {
 }, _defineProperty(_module$exports, gTypes.getNoteBySerialNumber, function (state, getters, rootState, serialNumber) {
     return function (serialNumber) {
         return function (state, serialNumber) {
+            // window.console.log( 'notes.getters', 'state.notes', 50, state);
             var r = state.notes.filter(function (i) {
                 if (i.serialNumber === serialNumber) {
                     return i;
@@ -57850,6 +57892,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var state = {
     notes: [],
+    newNote: false,
     newNoteSerialNumber: -1
 
 };
@@ -57944,9 +57987,11 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     var idx = _.findIndex(state.notes, payload.obj);
     window.console.log('notes', 'destroyNote', 45, idx);
     state.notes.splice(idx, 1);
-}), _defineProperty(_module$exports, 'setNewNote', function setNewNote(state, payload) {
+}), _defineProperty(_module$exports, mTypes.setNewNote, function (state, payload) {
     var note = payload.obj;
     state.newNoteSerialNumber = note.serialNumber;
+}), _defineProperty(_module$exports, mTypes.resetNewNote, function (state, payload) {
+    state.newNoteSerialNumber = -1;
 }), _module$exports);
 
 /***/ }),
@@ -60758,7 +60803,7 @@ var mutations = {
 
 var actions = {
 
-    processScoreForStatsResponse: function processScoreForStatsResponse(_ref, axiosResponse) {
+    processScoreForStatsResponse: function processScoreForStatsResponse(_ref, data) {
         var state = _ref.state,
             dispatch = _ref.dispatch,
             commit = _ref.commit,
@@ -60767,8 +60812,8 @@ var actions = {
         // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
         return new Promise(function (resolve) {
             var stats = [];
-            if (!_.isUndefined(axiosResponse.data) && axiosResponse.data.length > 0) {
-                _.forEach(axiosResponse.data, function (r) {
+            if (!_.isUndefined(data) && data.length > 0) {
+                _.forEach(data, function (r) {
                     var kumiIds = r.kumis.forEach(function (k) {
                         return k.id;
                     });
@@ -62526,6 +62571,8 @@ var initializeItemStorage = exports.initializeItemStorage = 'initializeItemStora
 var updateNote = exports.updateNote = 'updateNote';
 var destroyNote = exports.destroyNote = 'destroyNote';
 var createNote = exports.createNote = 'createNote';
+var setNewNote = exports.setNewNote = 'setNewNote';
+var resetNewNote = exports.resetNewNote = 'resetNewNote';
 
 //requests
 var startRequest = exports.startRequest = 'startRequest';

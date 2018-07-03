@@ -1,6 +1,6 @@
 <template xmlns="http://www.w3.org/1999/html">
 
-    <div id="timeScoreScatterArea">
+    <div id="timeScoreScatterArea" class="time-score-scatter">
         <div class="quality-description ">
             <p class="subtitle">Time - score scatterplot</p>
             <p>To help keep you motivated, the gradeomatic recorded how long you spent grading each exam. You can use

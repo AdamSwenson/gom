@@ -56,6 +56,8 @@
              * The identifier of the student currently being graded
              */
             studentIdentifier: function () {
+                if(_.isUndefined(this.activeStudent)) return '';
+
                 return !_.isNull( this.activeStudent ) ? this.activeStudent.studentIdentifier : '';
             },
 

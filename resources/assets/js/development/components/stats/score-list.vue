@@ -88,10 +88,12 @@
 
                 //this loads the scores into store
                 //and returns a promise
-                let p = this.getItemScoresForStats( this.$store, this.item );
+                let p = this.getItemScoresForStats( this.item );
 
                 //thus when it is complete, we get them from the store
-                return p.then( function () {
+                return p.then( function (data) {
+                    this.$store.dispatch( 'processScoreForStatsResponse', data );
+
                     let stats = me.$store.getters[nggTypes.getAnonScoresForItemStats]( me.item );
                     //done loading
                     me.isLoading = false;

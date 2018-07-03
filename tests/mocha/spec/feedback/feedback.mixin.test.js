@@ -39,7 +39,7 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'loads object', () => {
-            expect( obj ).not.toBeEmpty();
+            expect( _.isEmpty(obj) ).toBe(false);
         } );
     } );
 

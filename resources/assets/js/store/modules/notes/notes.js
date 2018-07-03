@@ -7,6 +7,7 @@ import m from "./notes.mutations";
 
 const state = {
     notes: [],
+    newNote : false,
     newNoteSerialNumber: -1,
 
 };

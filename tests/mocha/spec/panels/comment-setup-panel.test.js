@@ -1,13 +1,6 @@
-import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-// import Vue from 'vue';
-import Item from "./../../../../resources/assets/js/models/Item";
-import Comment from "./../../../../resources/assets/js/models/Comment";
-import Payload from "./../../../../resources/assets/js/models/Payload";
-import * as mTypes from "./../../../../resources/assets/js/store/mutation-types";
 
+require('../../injectglobals');
+import { mount, shallow, createLocalVue } from 'vue-test-utils';
 
 const localVue = createLocalVue();
 
@@ -25,35 +18,45 @@ describe( "comment-setup-panel  ", () => {
     let mutations;
     let store;
     let item;
-    let $route = { params: { serialNumber: null } };
+    let $route = { params: { serialNumber: null }, path: 'taco' };
     let wrapper;
-    let routeSerialNumber;
+    let routeSerialNumber, $parent;
     let testTextString = "test text for ";
 
 
+    beforeEach( () => {
+        item = factories.itemFactory();
+        routeSerialNumber = item.serialNumber;
+
+        getters = {
+            getItemBySerialNumber: ( v ) => ( v ) => item
+        };
+
+        mutations = {
+            [ mTypes.updateComment ]: sinon.spy()
+        };
+
+        store = new Vuex.Store( {
+            getters,
+            mutations
+        } );
+
+        $route.params.serialNumber = item.serialNumber;
+        $parent = { serialNumber: item.serialNumber};
+
+
+        wrapper = shallow( Component, {
+            store, localVue,
+            stubs: [ 'router-link', 'router-view' ],
+            mocks: {
+                $route,
+                $parent
+            }
+        } );
+    } );
+
     describe( " loads into expected default state for testing ", () => {
 
-        beforeEach( () => {
-            item = new Item();
-            routeSerialNumber = item.serialNumber;
-            setupForItem( item );
-        } );
-
-        it( " test has been set up properly ", () => {
-            expect( store.getters.getItemBySerialNumber() ).toBe( item );
-        } );
-
-        // it( 'has the serial number passed in as a prop ', () => {
-        //
-        // $route.params.serialNumber= ()=> 99;
-        //
-        // let wrapper = shallow( Component, {
-        //     store, localVue,
-        //     stubs: ['router-link', 'router-view'],
-        //     mocks: {
-        //         $route
-        //     }
-        // } );
         //
         // // wrapper.setProps( { dataSerialNumber: item.serialNumber } );
         // expect( wrapper.vm.serialNumber).toBe( 99 );
@@ -80,7 +83,19 @@ describe( "comment-setup-panel  ", () => {
         let expected = {};
 
         beforeEach( () => {
-            item = new Item();
+            item = factories.itemFactory();
+
+            getters = {
+                getItemBySerialNumber: ( v ) => ( v ) => item
+            };
+
+
+            store = new Vuex.Store( {
+                getters,
+                mutations
+            } );
+
+            $route.params.serialNumber = item.serialNumber;
 
             //start by populating the comment text of the item
             //and storing it in the expected object
@@ -90,7 +105,16 @@ describe( "comment-setup-panel  ", () => {
                 expected[ valence ] = text;
             } );
 
-            setupForItem( item );
+            wrapper = shallow( Component, {
+                store, localVue,
+                stubs: [ 'router-link', 'router-view' ],
+                mocks: {
+                    $route,
+                    $parent
+                }
+            } );
+
+            // setupForItem( item );
 
         } );
 
@@ -116,13 +140,12 @@ describe( "comment-setup-panel  ", () => {
 
     describe( " haveCommentsBeenCustomized behaves properly", () => {
         beforeEach( () => {
-            item = new Item();
         } );
 
         it( " returns true when any one comment is not stock based ", () => {
             let stock = faker.company.bs();
 
-            _.forEach( Comment.valences, function ( valence ) {
+            _.forEach( global.Comment.valences, function ( valence ) {
                 if ( valence === 'stock' ) {
                     item.addComment( valence, Comment.factory( { valence: valence, text: stock } ) );
                 } else {
@@ -136,12 +159,12 @@ describe( "comment-setup-panel  ", () => {
             //choose one valence randomly
             //and update its text
             let toChange = getRandomNonStockValence();
-            let comment = Comment.factory( { valence: toChange, text: Faker.company.bs() } );
+            let comment = Comment.factory( { valence: toChange, text: faker.company.bs() } );
             item.addComment( toChange, comment );
             //check that it worked
             expect( item.getComment( toChange ) ).toBe( comment );
 
-            setupForItem( item );
+            // setupForItem( item );
 
             wrapper.update();
 
@@ -156,7 +179,7 @@ describe( "comment-setup-panel  ", () => {
         } );
 
         it( " returns false when all comments are stock-based ", () => {
-            let stock = Faker.company.bs();
+            let stock = faker.company.bs();
             _.forEach( Comment.valences, function ( valence ) {
                 if ( valence !== 'stock' ) {
                     item.addComment( valence, Comment.factory( { text: Comment.makePrePopulatedContent( valence, stock ) } ) );
@@ -169,13 +192,13 @@ describe( "comment-setup-panel  ", () => {
     describe( " prepopulation and handling of user edited text ", () => {
 
         beforeEach( () => {
-            item = new Item();
-            setupForItem( item );
+            item = factories.itemFactory();
+            // setupForItem( item );
         } );
 
 
         it( " updates the stored comments with prepopulated content when the stock comment is populated ", () => {
-            let newText = Faker.company.bs();
+            let newText = faker.company.bs();
             type( '.comment-text', newText );
 
             // Since the component has not been installed normally
@@ -220,14 +243,14 @@ describe( "comment-setup-panel  ", () => {
             } );
         } );
 
-        it( " refuses to prepopulate from stock when shouldPrePopulate is false  ", (  ) => {
+        it( " refuses to prepopulate from stock when shouldPrePopulate is false  ", () => {
 
             //set var to false
             wrapper.vm.shouldPrePopulate = false;
             wrapper.update();
 
             //enter in text
-            let newText = Faker.company.bs();
+            let newText = faker.company.bs();
             type( '.comment-text', newText );
 
             // Since the component has not been installed normally
@@ -246,74 +269,74 @@ describe( "comment-setup-panel  ", () => {
 
     } );
 
+    //keeping the below in scope....
+/**
+ * Creates the store and mounts the
+ * component for the given item
+ * @param item
+ */
+let setupForItem = ( item ) => {
 
-    /**
-     * Creates the store and mounts the
-     * component for the given item
-     * @param item
-     */
-    let setupForItem = ( item ) => {
-
-        getters = {
-            getItemBySerialNumber: ( v ) => ( v ) => {
-                return item;
-            }
-        };
-
-        mutations = {
-            [mTypes.updateComment]: sinon.spy()
-        };
-
-        store = new Vuex.Store( {
-            getters,
-            mutations
-        } );
-
-        $route.params.serialNumber = item.serialNumber;
-
-
-        wrapper = shallow( Component, {
-            store, localVue,
-            stubs: [ 'router-link', 'router-view' ],
-            mocks: {
-                $route
-            }
-        } );
-
+    getters = {
+        getItemBySerialNumber: ( v ) => ( v ) => {
+            return item;
+        }
     };
 
-
-    /**
-     * Types the text into the field identified by selector
-     * @param selector
-     * @param text
-     */
-    let type = ( selector, text ) => {
-        wrapper.find( selector ).element.value = text;
-        wrapper.find( selector ).trigger( 'input' );
+    mutations = {
+        [ mTypes.updateComment ]: sinon.spy()
     };
 
-    /**
-     * Asserts that the specified text is present within
-     * the specified selector or page if no selector is
-     * specified
-     * @param text
-     * @param selector
-     */
-    let see = ( text, selector ) => {
-        let wrap = selector ? wrapper.find( selector ) : wrapper;
-        expect( wrap.html() ).toContain( text );
-    };
+    store = new Vuex.Store( {
+        getters,
+        mutations
+    } );
 
-    /**
-     * Returns a random element from the Comment.valences
-     * array with the exception of stock, which it never returns.
-     * @returns string
-     */
-    let getRandomNonStockValence = () => {
-        return _.take( _.shuffle( _.drop( Comment.valences ) ) )[ 0 ];
+    $route.params.serialNumber = item.serialNumber;
 
-    }
+
+    wrapper = shallow( Component, {
+        store, localVue,
+        stubs: [ 'router-link', 'router-view' ],
+        mocks: {
+            $route
+        }
+    } );
+
+};
+
+
+/**
+ * Types the text into the field identified by selector
+ * @param selector
+ * @param text
+ */
+let type = ( selector, text ) => {
+    wrapper.find( selector ).element.value = text;
+    wrapper.find( selector ).trigger( 'input' );
+};
+
+/**
+ * Asserts that the specified text is present within
+ * the specified selector or page if no selector is
+ * specified
+ * @param text
+ * @param selector
+ */
+let see = ( text, selector ) => {
+    let wrap = selector ? wrapper.find( selector ) : wrapper;
+    expect( wrap.html() ).toContain( text );
+};
+
+/**
+ * Returns a random element from the Comment.valences
+ * array with the exception of stock, which it never returns.
+ * @returns string
+ */
+let getRandomNonStockValence = () => {
+    return _.take( _.shuffle( _.drop( Comment.valences ) ) )[ 0 ];
+
+}
 
 } )
 ;

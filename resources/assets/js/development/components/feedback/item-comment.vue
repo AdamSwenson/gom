@@ -1,8 +1,8 @@
 <template>
     <div class="item-comment">
-    <p v-for="t in childTextParagraphs" class="item-comment">
-        {{t}}
-    </p>
+        <p v-for="t in childTextParagraphs" class="item-comment-para">
+            {{t}}
+        </p>
     </div>
 </template>
 
@@ -15,8 +15,8 @@
 
     import feedbackMixin from './feedback.mixin';
 
-    const buildText = function( store, student, item, paragraph ){
-        return (function( store, student, item, paragraph ) {
+    const buildText = function ( store, student, item, paragraph ) {
+        return (function ( store, student, item, paragraph ) {
             console.log( 'item-comment', 'buildText', 17, paragraph );
             //add the present item's text
             let so = store.getters[ nggTypes.getItemScoreObject ]( {
@@ -37,7 +37,7 @@
                 //and recurse....
                 buildText( store, student, child, paragraph );
             } );
-        })(store, student, item, paragraph );
+        })( store, student, item, paragraph );
     }
 
 
@@ -53,7 +53,7 @@
             }
         },
 
-        asyncComputed : {
+        asyncComputed: {
             childItemScoreObjects: function () {
                 let me = this;
                 let s = [];
@@ -79,10 +79,10 @@
 
             childTextParagraphs: function () {
                 let t = [];
-                if( _.isUndefined(this.childItemScoreObjects) || _.isNull(this.childItemScoreObjects) || this.childItemScoreObjects.length === 0) return t;
-                _.forEach(this.childItemScoreObjects, function(score){
-                    if(! _.isUndefined(score))   t.push(score.text);
-                });
+                if ( _.isUndefined( this.childItemScoreObjects ) || _.isNull( this.childItemScoreObjects ) || this.childItemScoreObjects.length === 0 ) return t;
+                _.forEach( this.childItemScoreObjects, function ( score ) {
+                    if ( !_.isUndefined( score ) ) t.push( score.text );
+                } );
                 // buildText( this.$store, this.student, this.item, t );
                 return t;
             }

@@ -47,6 +47,7 @@ module.exports  = {
         [gTypes.getNoteBySerialNumber]: ( state, getters, rootState, serialNumber ) =>
             ( serialNumber ) => {
                 return (function ( state, serialNumber ) {
+                    // window.console.log( 'notes.getters', 'state.notes', 50, state);
                     var r = state.notes.filter( function ( i ) {
                         if ( i.serialNumber === serialNumber ) {
                             return i;

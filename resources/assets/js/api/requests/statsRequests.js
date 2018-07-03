@@ -47,13 +47,14 @@ module.exports = {
      * @param student
      * @returns {Promise.<T>|*}
      */
-    getItemScoresForStats: ( store, item ) => {
+    getItemScoresForStats: ( item ) => {
 
         return window.axios
             .get( 'dev/stats/item/' + item.id )
             .then( ( response ) => {
+                return response.data;
                 // window.console.log( 'statsRequests---getItemStats', 69, response );
-                store.dispatch( 'processScoreForStatsResponse', response );
+                // store.dispatch( 'processScoreForStatsResponse', response );
             } )
             .catch( function ( error ) {
                 errorHandling( error );

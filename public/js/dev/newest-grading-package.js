@@ -5272,6 +5272,8 @@ module.exports = {
          * The identifier of the student currently being graded
          */
         studentIdentifier: function studentIdentifier() {
+            if (_.isUndefined(this.activeStudent)) return '';
+
             return !_.isNull(this.activeStudent) ? this.activeStudent.studentIdentifier : '';
         },
 
@@ -7734,6 +7736,212 @@ exports.default = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/notes/new-note.vue":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/notes/new-note.vue ***!
+  \************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _actionTypes = __webpack_require__(/*! ../../../store/action-types */ "./resources/assets/js/store/action-types.js");
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = __webpack_require__(/*! ../../../store/mutation-types */ "./resources/assets/js/store/mutation-types.js");
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(/*! ../../../store/getter-types */ "./resources/assets/js/store/getter-types.js");
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Note = __webpack_require__(/*! ../../../models/Note */ "./resources/assets/js/models/Note.js");
+
+var _Note2 = _interopRequireDefault(_Note);
+
+var _Payload = __webpack_require__(/*! ../../../models/Payload */ "./resources/assets/js/models/Payload.js");
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _noteObject = __webpack_require__(/*! ./note-object.vue */ "./resources/assets/js/development/components/notes/note-object.vue");
+
+var _noteObject2 = _interopRequireDefault(_noteObject);
+
+var _noteRequests = __webpack_require__(/*! ../../../api/requests/noteRequests */ "./resources/assets/js/api/requests/noteRequests.js");
+
+var _colorSelector = __webpack_require__(/*! ../tags/color-selector.vue */ "./resources/assets/js/development/components/tags/color-selector.vue");
+
+var _colorSelector2 = _interopRequireDefault(_colorSelector);
+
+var _loadingIndicator = __webpack_require__(/*! ../helpers/loading-indicator.vue */ "./resources/assets/js/development/components/helpers/loading-indicator.vue");
+
+var _loadingIndicator2 = _interopRequireDefault(_loadingIndicator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// import prioritySelector from './note/priority-selector';
+exports.default = {
+    name: "edit-note",
+
+    // props : ['is-visible'],
+    components: {
+        'note-object': _noteObject2.default,
+        // 'priority-selector': prioritySelector,
+        colorSelector: _colorSelector2.default,
+        loadingIndicator: _loadingIndicator2.default
+    },
+
+    data: function data() {
+        return {
+            placeholders: {
+                noteText: "Add a new note to your future self here"
+            }
+        };
+    },
+
+    computed: {
+
+        /**
+         * The note object to edit
+         * @returns {getNewNote|module.exports.getNewNote}
+         */
+        note: function note() {
+            //returns either false or the serial number of the new note
+            var n = this.$store.getters.getNewNote;
+            if (n) {
+                return n;
+            }
+        },
+
+        noteName: {
+            get: function get() {
+                if (this.note) return this.note.name;
+                return '';
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'name',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        },
+
+        noteText: {
+            get: function get() {
+                if (this.note) return this.note.text;
+                return '';
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'text',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
+            }
+        },
+
+        isVisible: function isVisible() {
+            if (this.note) return true;
+        }
+
+    },
+    methods: {
+
+        handleClearClick: function handleClearClick() {
+            this.newNoteName = '';
+            this.newNoteText = '';
+            this.newNotePriority = 0;
+        },
+
+        /**
+         * Doesn't actually save, since have been doing so already
+         */
+        handleSaveClick: function handleSaveClick() {
+            this.$store.commit(mTypes.resetNewNote);
+            this.$emit('note-added');
+        },
+
+        handlePrioritySelection: function handlePrioritySelection(priority) {
+            window.console.log('notes-panel', 'handlePrioritySelection', 297, priority);
+            var pl = _Payload2.default.factory({
+                obj: this.note,
+                updateProp: 'priority',
+                updateVal: priority
+            });
+            this.$store.commit(mTypes.updateNote, pl);
+        }
+
+    }
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/notes/note-object.vue":
 /*!***************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/notes/note-object.vue ***!
@@ -7861,7 +8069,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 exports.default = {
 
-    props: ['serialNumber', 'object', 'useCentralStore'],
+    props: ['note', 'serialNumber', 'object', 'useCentralStore'],
 
     components: {},
 
@@ -7900,44 +8108,46 @@ exports.default = {
         name: {
             get: function get() {
                 return this.note.name;
-            },
-            set: function set(v) {
-                if (this.useCentralStore) {
-                    var pl = _Payload2.default.factory({
-                        obj: this.note,
-                        updateProp: 'name',
-                        updateVal: v
-                    });
-                    this.$store.commit(mTypes.updateNote, pl);
-                } else {
-                    this.note.name = v;
-                    var me = this;
-                    var p = (0, _noteRequests.updateNoteRequest)(null, this.note);
-                    p.then(function () {
-                        me.$emit('note-updated');
-                    });
-                }
             }
+            // set: function ( v ) {
+            //     if ( this.useCentralStore ) {
+            //         let pl = Payload.factory( {
+            //             obj: this.note,
+            //             updateProp: 'name',
+            //             updateVal: v
+            //         } );
+            //         this.$store.commit( mTypes.updateNote, pl );
+            //     }
+            //     else {
+            //         this.note.name = v;
+            //         let me = this;
+            //         let p = updateNoteRequest( null, this.note );
+            //         p.then( function () {
+            //             me.$emit( 'note-updated' );
+            //         } );
+            //     }
+            // }
         },
 
         /**
          * The actual note object
          */
-        note: function note() {
-            //if its in the noteObject spot, it is an instance of Note
-            //so we can just return it
-            if (this.noteObject) return this.noteObject;
-
-            //However, if we loaded the notes directly, it may just be a json returned from the
-            //server. So we take the object and make a Note which gets stored in noteObject
-            if (this.object) {
-                if (_.isUndefined(this.object.kind)) this.noteObject = _Note2.default.factory(this.object);
-                //                    if(! this.object instanceof Note) this.object = Note.factory(this.object);
-                return this.noteObject;
-            } else {
-                return this.$store.getters[gTypes.getNoteBySerialNumber](this.serialNumber);
-            }
-        },
+        //             note: function () {
+        //                 //if its in the noteObject spot, it is an instance of Note
+        //                 //so we can just return it
+        //                 if ( this.noteObject ) return this.noteObject;
+        //
+        //                 //However, if we loaded the notes directly, it may just be a json returned from the
+        //                 //server. So we take the object and make a Note which gets stored in noteObject
+        //                 if ( this.object ) {
+        //                     if ( _.isUndefined( this.object.kind ) ) this.noteObject = Note.factory( this.object );
+        // //                    if(! this.object instanceof Note) this.object = Note.factory(this.object);
+        //                     return this.noteObject;
+        //                 } else {
+        //                     return this.$store.getters[ gTypes.getNoteBySerialNumber ]( this.serialNumber );
+        //                 }
+        //
+        //             },
 
         priorityClass: function priorityClass() {
             return this.note.styleString();
@@ -7949,25 +8159,25 @@ exports.default = {
         priority: {
             get: function get() {
                 return this.note.priority;
-            },
-            set: function set(v) {
-                if (this.useCentralStore) {
-
-                    var pl = _Payload2.default.factory({
-                        obj: this.note,
-                        updateProp: 'priority',
-                        updateVal: v
-                    });
-                    this.$store.commit(mTypes.updateNote, pl);
-                } else {
-                    this.note.priority = v;
-                    var me = this;
-                    var p = (0, _noteRequests.updateNoteRequest)(null, this.note);
-                    p.then(function () {
-                        me.$emit('note-updated');
-                    });
-                }
             }
+            // set: function ( v ) {
+            //     if ( this.useCentralStore ) {
+            //
+            //         let pl = Payload.factory( {
+            //             obj: this.note,
+            //             updateProp: 'priority',
+            //             updateVal: v
+            //         } );
+            //         this.$store.commit( mTypes.updateNote, pl );
+            //     } else {
+            //         this.note.priority = v;
+            //         let me = this;
+            //         let p = updateNoteRequest( null, this.note );
+            //         p.then( function () {
+            //             me.$emit( 'note-updated' );
+            //         } );
+            //     }
+            // }
         },
 
         props: {
@@ -7998,25 +8208,26 @@ exports.default = {
         text: {
             get: function get() {
                 return this.note.text;
-            },
-            set: function set(v) {
-                if (this.useCentralStore) {
-
-                    var pl = _Payload2.default.factory({
-                        obj: this.note,
-                        updateProp: 'text',
-                        updateVal: v
-                    });
-                    this.$store.commit(mTypes.updateNote, pl);
-                } else {
-                    this.note.text = v;
-                    var me = this;
-                    var p = (0, _noteRequests.updateNoteRequest)(null, this.note);
-                    p.then(function () {
-                        me.$emit('note-updated');
-                    });
-                }
             }
+            // set: function ( v ) {
+            //     if ( this.useCentralStore ) {
+            //
+            //         let pl = Payload.factory( {
+            //             obj: this.note,
+            //             updateProp: 'text',
+            //             updateVal: v
+            //         } );
+            //         this.$store.commit( mTypes.updateNote, pl );
+            //     }
+            //     else {
+            //         this.note.text = v;
+            //         let me = this;
+            //         let p = updateNoteRequest( null, this.note );
+            //         p.then( function () {
+            //             me.$emit( 'note-updated' );
+            //         } );
+            //     }
+            // }
         },
 
         updatedTimestamp: function updatedTimestamp() {
@@ -8031,7 +8242,7 @@ exports.default = {
             return identifier + '-' + this.serialNumber;
         },
 
-        handleRemoveClick: function handleRemoveClick() {
+        handleDeleteClick: function handleDeleteClick() {
             window.console.log('note-area', 'handleDeleteClick', 190, this.note);
 
             if (this.useCentralStore) {
@@ -8098,15 +8309,75 @@ var _loadingIndicator = __webpack_require__(/*! ../helpers/loading-indicator.vue
 
 var _loadingIndicator2 = _interopRequireDefault(_loadingIndicator);
 
+var _newNote = __webpack_require__(/*! ./new-note */ "./resources/assets/js/development/components/notes/new-note.vue");
+
+var _newNote2 = _interopRequireDefault(_newNote);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-// import prioritySelector from './note/priority-selector';
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 exports.default = {
     //        props: ['serialNumber'], //the serial number of the note
 
     components: {
+        editNote: _newNote2.default,
         'note-object': _noteObject2.default,
         // 'priority-selector': prioritySelector,
         'color-selector': _colorSelector2.default,
@@ -8117,18 +8388,18 @@ exports.default = {
         return {
             isLoading: false,
 
-            isNewNoteVisible: false,
+            // isNewNoteVisible: false,
 
             //whether to show the create new note button
-            isNewButtonVisible: true,
+            // isNewButtonVisible: true,
 
             //                note: new Note(),
             //The serial number of the item the notes belong to
             itemSerialNumber: _.toInteger(this.$route.params.serialNumber),
 
-            placeholders: {
-                noteText: "Add a new note to your future self here"
-            },
+            // placeholders: {
+            //     noteText: "Add a new note to your future self here"
+            // },
 
             //these are the values of the new tag
             newNoteName: '',
@@ -8156,33 +8427,21 @@ exports.default = {
     asyncComputed: {
         notes: {
             get: function get() {
+
                 var me = this;
-                var result = [];
-                if (this.useCentralStore) {
-                    result = this.$store.getters[gTypes.getNotesForItem](this.item);
-                    if (result.length === 0) return result;
+                // Set the loading icon displayed
+                this.isLoading = true;
+                // //get the data from the server
+                var p = me.$store.dispatch('loadNotes', _Payload2.default.factory({ obj: me.item }));
 
-                    //filter out the note being created, since
-                    //that looks weird. When we hit done, that will
-                    //unset it as the newNote, and the text will display
-                    if (this.newNote) {
-                        var sn = this.newNote.serialNumber;
-                        return result.filter(function (r) {
-                            if (r.serialNumber !== sn) return r;
-                        });
-                    }
-                } else {
-
-                    //load it from the server
-                    this.isLoading = true;
-                    var p = (0, _noteRequests.loadNotesForItemRequest)(null, this.item);
-                    return p.then(function (data) {
-                        me.isLoading = false;
-                        return data;
-                    });
-                }
+                return p.then(function () {
+                    me.isLoading = false;
+                    return me.$store.getters[gTypes.getNotesForItem](me.item);
+                });
             },
+
             watch: function watch() {
+                //reloads from server when updated
                 this.loadTrigger;
             }
         }
@@ -8201,6 +8460,11 @@ exports.default = {
             return this.item ? this.item.isExam() : false;
         },
 
+        isNewButtonVisible: function isNewButtonVisible() {
+            var n = this.$store.getters.getNewNote;
+            return !_.isObject(n);
+        },
+
         newNoteButtonLabel: function newNoteButtonLabel() {
             if (this.isNewNoteVisible) return "Save";
             return this.labels.buttons.newNote;
@@ -8209,51 +8473,13 @@ exports.default = {
         newNoteButtonStyling: function newNoteButtonStyling() {
             if (this.isNewNoteVisible) return "is-primary";
             return "is-success";
-        },
-
-        newNote: function newNote() {
-            return this.$store.getters.getNewNote;
         }
 
     },
 
     methods: {
-        addNewNote: function addNewNote() {
-            // window.console.log( 'panel.notes.component', 'addNewNote', 65, );
-            if (this.useCentralStore) {
-                this.$store.dispatch("createNewNote", _Payload2.default.factory({ obj: this.item }));
-            }
-        },
-
-        clearNewNote: function clearNewNote() {
-            this.newNoteName = '';
-            this.newNoteText = '';
-            this.newNotePriority = 0;
-        },
-
-        saveNewNote: function saveNewNote() {
-            var note = _Note2.default.factory({
-                associatedObject: this.item,
-                name: this.newNoteName,
-                text: this.newNoteText,
-                priority: this.newNotePriority
-            });
-            var me = this;
-            var p = (0, _noteRequests.createNoteRequest)(null, note);
-            p.then(function () {
-                me.refreshNotes();
-                me.toggleNewNote();
-                me.clearNewNote();
-            });
-        },
-
-        handlePrioritySelection: function handlePrioritySelection(priority) {
-            window.console.log('notes-panel', 'handlePrioritySelection', 297, priority);
-            this.newNotePriority = priority;
-        },
-
-        initializeNote: function initializeNote() {
-            if (this.isNewNoteVisible) this.addNewNote();
+        createNewNote: function createNewNote() {
+            this.$store.dispatch("createNewNote", _Payload2.default.factory({ obj: this.item }));
         },
 
         refreshNotes: function refreshNotes() {
@@ -8262,123 +8488,12 @@ exports.default = {
 
         getId: function getId(identifier) {
             return identifier + '-' + this.serialNumber;
-        },
-
-        toggleNewNote: function toggleNewNote() {
-            this.isNewNoteVisible = !this.isNewNoteVisible;
-            this.isNewButtonVisible = !this.isNewButtonVisible;
-            if (this.useCentralStore && this.isNewNoteVisible) {
-                //if the note is now open,
-                //initialize the fields
-                this.initializeNote();
-            }
         }
     }
 
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
+
+// import prioritySelector from './note/priority-selector';
 
 /***/ }),
 
@@ -10003,6 +10118,7 @@ exports.default = {
 
     data: function data() {
         return {
+            updateMutationName: '',
             defaults: {}
         };
     },
@@ -11677,48 +11793,6 @@ exports.default = {
         isExam: function isExam() {
             return true;
         }
-
-        // term: {
-        //     get: function () {
-        //         let exam = this.getExam();
-        //         if ( exam && typeof exam.term !== 'undefined' ) {
-        //             return exam.term;
-        //         }
-        //
-        //     },
-        //     //Sets the term
-        //     //Note, the input box allows the entered
-        //     //value not to be one of the standard values
-        //     //this is by design.
-        //     //We are not being too prescriptive, remember?
-        //     set: function ( v ) {
-        //         this.$store.commit( mTypes.updateItem, Payload.factory( {
-        //             index: 0,
-        //             updateProp: 'term',
-        //             updateVal: v
-        //         } ) );
-        //     }
-        // },
-        // year: {
-        //     get: function () {
-        //         let exam = this.getExam();
-        //         if ( exam && typeof exam.year !== 'undefined' ) {
-        //             return exam.year;
-        //         }
-        //     },
-        //     set: function ( v ) {
-        //         this.$store.commit( mTypes.updateItem, Payload.factory( {
-        //             index: 0,
-        //             updateProp: 'year',
-        //             updateVal: v
-        //         } ) );
-        //
-        //     }
-        // },
-        //
-        // years: function () {
-        //     return [ 2017, 2018 ];
-        // },
 
     },
 
@@ -16271,10 +16345,10 @@ exports.default = {
 
             var me = this;
 
+            //This will update the values stored on the exam object
+            //thus the exam object need be an async computed property
             var p = me.$store.dispatch(ngaTypes.loadGradingProgress, me.exam);
-            return p.then(function () {
-                // resolve();
-            });
+            return p.then(function () {});
 
             //
             // let me = this;
@@ -16475,10 +16549,12 @@ exports.default = {
 
             //this loads the scores into store
             //and returns a promise
-            var p = this.getItemScoresForStats(this.$store, this.item);
+            var p = this.getItemScoresForStats(this.item);
 
             //thus when it is complete, we get them from the store
-            return p.then(function () {
+            return p.then(function (data) {
+                this.$store.dispatch('processScoreForStatsResponse', data);
+
                 var stats = me.$store.getters[nggTypes.getAnonScoresForItemStats](me.item);
                 //done loading
                 me.isLoading = false;
@@ -16800,6 +16876,75 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 var _actionTypes = __webpack_require__(/*! ../../../store/action-types */ "./resources/assets/js/store/action-types.js");
 
 var aTypes = _interopRequireWildcard(_actionTypes);
@@ -16862,7 +17007,7 @@ exports.default = {
 
             me.isLoading = true;
 
-            var p = _timeRequests2.default.getTotalGradingTime(this.exam);
+            var p = this.getTotalGradingTime(this.exam);
 
             return p.then(function (data) {
                 var pl = _Payload2.default.factory({
@@ -16930,7 +17075,7 @@ exports.default = {
 
     },
 
-    methods: {
+    methods: _extends({}, _timeRequests2.default, {
 
         /**
          * Applies any formatting necessary to the value
@@ -16949,76 +17094,9 @@ exports.default = {
             if (seconds < 3600) return date.toISOString().substr(14, 5);else return date.toISOString().substr(11, 8);
         }
 
-    }
+    })
 
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 
@@ -31997,6 +32075,25 @@ exports.push([module.i, "", ""]);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-115568bb\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/notes/new-note.vue":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-115568bb","scoped":true,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/notes/new-note.vue ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-122cf58d\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/preferences/grade/grade-page-preferences.vue":
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-122cf58d","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/preferences/grade/grade-page-preferences.vue ***!
@@ -33567,7 +33664,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "\n.add-students-panel .smallHeading {\n  font-size: small;\n}\n", ""]);
+exports.push([module.i, "\n.students-panel .smallHeading {\n  font-size: small;\n}\n", ""]);
 
 // exports
 
@@ -61805,7 +61902,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _vm._m(0)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "box connections-area"
+    staticClass: "setup-structure box connections-area"
   }, [_c('h4', {
     staticClass: "title is-4"
   }, [_vm._v("Setup structure preferences")]), _vm._v(" "), _c('p')])
@@ -61921,7 +62018,9 @@ if (false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', [_c('a', {
+  return _c('span', {
+    staticClass: "select-exam-button"
+  }, [_c('a', {
     staticClass: "button select-exam-button is-warning is-outlined",
     on: {
       "click": _vm.handleClick
@@ -61953,8 +62052,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "item-comment"
   }, _vm._l((_vm.childTextParagraphs), function(t) {
     return _c('p', {
-      staticClass: "item-comment"
-    }, [_vm._v("\n    " + _vm._s(t) + "\n")])
+      staticClass: "item-comment-para"
+    }, [_vm._v("\n        " + _vm._s(t) + "\n    ")])
   }))
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -62142,6 +62241,109 @@ if (false) {}
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-115568bb\",\"hasScoped\":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/notes/new-note.vue":
+/*!*********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-115568bb","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/notes/new-note.vue ***!
+  \*********************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isVisible),
+      expression: "isVisible"
+    }],
+    staticClass: "edit-note"
+  }, [_c('h5', {
+    staticClass: "title is-5"
+  }, [_vm._v("Remind your future self...")]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('label', {
+    staticClass: "label"
+  }, [_vm._v("Title")]), _vm._v(" "), _c('div', {
+    staticClass: "control"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.noteName),
+      expression: "noteName"
+    }],
+    staticClass: "new-note-name",
+    attrs: {
+      "type": "text",
+      "lazy": ""
+    },
+    domProps: {
+      "value": (_vm.noteName)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.noteName = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "field"
+  }, [_c('div', {
+    staticClass: "control"
+  }, [_c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.noteText),
+      expression: "noteText"
+    }],
+    staticClass: "new-note-text textarea",
+    attrs: {
+      "id": "new-note-text",
+      "rows": "3",
+      "placeholder": _vm.placeholders.noteText,
+      "lazy": ""
+    },
+    domProps: {
+      "value": (_vm.noteText)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.noteText = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  })]), _vm._v(" "), _c('color-selector', {
+    on: {
+      "color-selected": _vm.handlePrioritySelection
+    }
+  }), _vm._v(" "), _c('div', {
+    staticClass: "field is-grouped"
+  }, [_c('p', {
+    staticClass: "control"
+  }, [_c('a', {
+    staticClass: "button save-note-button is-success",
+    on: {
+      "click": _vm.handleSaveClick
+    }
+  }, [_vm._v("Save")])]), _vm._v(" "), _c('p', {
+    staticClass: "control"
+  }, [_c('a', {
+    staticClass: "button clear-note-button is-warning",
+    on: {
+      "click": _vm.handleClearClick
+    }
+  }, [_vm._v("Clear")])])])], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-122cf58d\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/preferences/grade/grade-page-preferences.vue":
 /*!************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-122cf58d","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/preferences/grade/grade-page-preferences.vue ***!
@@ -62151,7 +62353,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "grade-preferences"
+    staticClass: "grade-page-preferences"
   }, [_c('preferences-base', {
     attrs: {
       "tabs": _vm.routes,
@@ -62526,9 +62728,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    attrs: {
-      "id": "quality-control-panel"
-    }
+    staticClass: "quality-control-panel"
   }, [_c('div', {
     staticClass: "box"
   }, [_vm._m(0), _vm._v(" "), _c('div', {
@@ -62711,7 +62911,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('note-object', {
       key: note.serialNumber,
       attrs: {
-        "object": note,
+        "note": note,
         "serial-number": note.serialNumber,
         "use-central-store": _vm.useCentralStore
       },
@@ -62720,93 +62920,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "note-updated": _vm.refreshNotes
       }
     })
-  })) : _vm._e()]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isNewNoteVisible),
-      expression: "isNewNoteVisible"
-    }],
-    staticClass: "new-note-input-area "
-  }, [_c('h5', {
-    staticClass: "title is-5"
-  }, [_vm._v("Remind your future self...")]), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('label', {
-    staticClass: "label"
-  }, [_vm._v("Title")]), _vm._v(" "), _c('div', {
-    staticClass: "control"
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.newNoteName),
-      expression: "newNoteName"
-    }],
-    attrs: {
-      "type": "text",
-      "id": _vm.getId('new-note-title')
-    },
-    domProps: {
-      "value": (_vm.newNoteName)
-    },
+  })) : _vm._e()]), _vm._v(" "), _c('edit-note', {
     on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.newNoteName = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('p', {
-    staticClass: "help"
-  })]), _vm._v(" "), _c('div', {
-    staticClass: "field"
-  }, [_c('div', {
-    staticClass: "control"
-  }, [_c('textarea', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.newNoteText),
-      expression: "newNoteText"
-    }],
-    staticClass: "textarea",
-    attrs: {
-      "id": "new-note-text",
-      "rows": "3",
-      "placeholder": _vm.placeholders.noteText
-    },
-    domProps: {
-      "value": (_vm.newNoteText)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.newNoteText = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('p', {
-    staticClass: "help"
-  })]), _vm._v(" "), _c('color-selector', {
-    on: {
-      "priority-selected": _vm.handlePrioritySelection
+      "note-added": _vm.refreshNotes
     }
   }), _vm._v(" "), _c('div', {
-    staticClass: "field is-grouped"
-  }, [_c('p', {
-    staticClass: "control"
-  }, [_c('a', {
-    staticClass: "button save-note-button is-success",
-    on: {
-      "click": _vm.saveNewNote
-    }
-  }, [_vm._v("Save")])]), _vm._v(" "), _c('p', {
-    staticClass: "control"
-  }, [_c('a', {
-    staticClass: "button clear-note-button is-warning",
-    on: {
-      "click": _vm.clearNewNote
-    }
-  }, [_vm._v("Clear")])])])], 1), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -62820,9 +62938,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "button new-note-button is-fullwidth",
     class: _vm.newNoteButtonStyling,
     on: {
-      "click": _vm.toggleNewNote
+      "click": _vm.createNewNote
     }
-  }, [_vm._v(_vm._s(_vm.newNoteButtonLabel) + "\n                ")])])])])])
+  }, [_vm._v(_vm._s(_vm.newNoteButtonLabel) + "\n                ")])])])], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -62838,7 +62956,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "exam-selection-bar"
+    staticClass: "top-navbar exam-selection-bar"
   }, [_c('nav', {
     staticClass: "level is-mobile"
   }, [_c('div', {
@@ -63951,7 +64069,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     class: _vm.priorityClass
   }, [_c('div', {
     staticClass: "message-header"
-  }, [_c('p', [_vm._v(_vm._s(_vm.name))]), _vm._v(" "), _c('button', {
+  }, [_c('p', [_vm._v(_vm._s(_vm.note.name))]), _vm._v(" "), _c('button', {
     staticClass: "delete delete-note",
     on: {
       "click": _vm.handleDeleteClick
@@ -63960,7 +64078,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "message-body"
   }, [_c('div', {
     staticClass: "note-text-display"
-  }, [_vm._v("\n                " + _vm._s(_vm.text) + "\n            ")]), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n                " + _vm._s(_vm.note.text) + "\n            ")]), _vm._v(" "), _c('div', {
     staticClass: "level timestampArea"
   }, [_c('div', {
     staticClass: "level-left"
@@ -64186,7 +64304,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('a', {
-    staticClass: "button grade-exam-button is-success is-outlined",
+    staticClass: "grade-exam-button button is-success is-outlined",
     on: {
       "click": _vm.handleClick
     }
@@ -64217,6 +64335,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _vm._m(0)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
+    staticClass: "time-score-scatter",
     attrs: {
       "id": "timeScoreScatterArea"
     }
@@ -64590,7 +64709,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _vm._m(0)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "box account-area"
+    staticClass: "permissions box account-area"
   }, [_c('h4', {
     staticClass: "title is-4"
   }, [_vm._v("Manage permissions")]), _vm._v(" "), _c('p', [_vm._v("\n        Add TA's and other graders\n    ")]), _vm._v(" "), _c('p', [_vm._v("\n        Add non-grading observers\n    ")])])
@@ -65030,7 +65149,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('p', {
-    staticClass: "field"
+    staticClass: "logout-button field"
   }, [_c('a', {
     staticClass: "button logout-button is-info is-outlined",
     on: {
@@ -65192,7 +65311,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "setup-preferences"
+    staticClass: "setup-page-preferences"
   }, [_c('preferences-base', {
     attrs: {
       "tabs": _vm.routes,
@@ -65628,7 +65747,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: " questionPanel box",
+    staticClass: " question-panel box",
     attrs: {
       "id": "questionPanel"
     }
@@ -65845,7 +65964,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "preferences-body"
+    staticClass: "preferences-base"
   }, [_c('div', {
     staticClass: "tabs"
   }, [_c('ul', _vm._l((_vm.tabs), function(t) {
@@ -65876,7 +65995,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('a', {
-    staticClass: "button add-student-button",
+    staticClass: "add-student-button button ",
     class: _vm.styling,
     on: {
       "click": _vm.addStudent
@@ -66049,7 +66168,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "modal",
+    staticClass: "exam-selection-modal modal",
     class: [_vm.isVisible ? 'is-active' : '']
   }, [_c('div', {
     staticClass: "modal-background"
@@ -66879,7 +66998,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "add-students-panel panel"
+    staticClass: "students-panel panel"
   }, [_vm._m(0), _vm._v(" "), (_vm.showSearch) ? _c('div', {
     staticClass: "panel-block",
     attrs: {
@@ -67275,9 +67394,9 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('p', {
-    staticClass: "field"
+    staticClass: "manage-exam-button field"
   }, [_c('a', {
-    staticClass: "button grade-exam-button is-success is-outlined",
+    staticClass: "button  is-success is-outlined",
     on: {
       "click": _vm.handleClick
     }
@@ -67533,6 +67652,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _vm._m(0)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
+    staticClass: "grade-order-chart",
     attrs: {
       "id": "scoresOrderArea"
     }
@@ -67670,6 +67790,26 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("7aa3b921", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-115568bb\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/notes/new-note.vue":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-115568bb","scoped":true,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/notes/new-note.vue ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-115568bb","scoped":true,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./new-note.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-115568bb\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/notes/new-note.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("0fad387c", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -87105,28 +87245,30 @@ var handleCreateResponse = function handleCreateResponse(store, note, data) {
     store.commit('updateNote', payload);
 };
 
-/**
- * Process the result of a response where we need to
- * insert new notes into store
- * @param store
- * @param response
- */
-var handleLoadResponse = function handleLoadResponse(store, itemOrExam, data) {
-    _.forEach(data, function (r) {
-        // window.console.log( 'noteRequests', 'r', 29, r );
-        var note = _Note2.default.factory({ r: r });
-        note.id = r.id;
-        note.text = r.text;
-        note.priority = r.priority;
-        note.props = r.props;
-        note.updatedAt = r.updated_at;
-        note.createdAt = r.created_at;
-        note.name = r.name;
-        note.associatedItemSerialNumber = itemOrExam.serialNumber;
-        var payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
-        store.commit('createNote', payload);
-    });
-};
+// /**
+//  * Process the result of a response where we need to
+//  * insert new notes into store
+//  * @param store
+//  * @param response
+//  */
+// const handleLoadResponse = ( store, itemOrExam, data ) => {
+//     _.forEach( data, function ( r ) {
+//         // window.console.log( 'noteRequests', 'r', 29, r );
+//         let note = Note.factory( { r } );
+//         note.id = r.id;
+//         note.text = r.text;
+//         note.priority = r.priority;
+//         note.props = r.props;
+//         note.updatedAt = r.updated_at;
+//         note.createdAt = r.created_at;
+//         note.name = r.name;
+//         note.associatedItemSerialNumber = itemOrExam.serialNumber;
+//         let payload = Payload.factory( { obj: note, mutateSilently: true } );
+//         store.commit( 'createNote', payload );
+//     } );
+//
+// };
+
 
 module.exports = {
 
@@ -87182,20 +87324,13 @@ module.exports = {
         });
     },
 
-    loadNotesForItemRequest: function loadNotesForItemRequest() {
-        var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        var item = arguments[1];
-
+    loadNotesForItemRequest: function loadNotesForItemRequest(item) {
         var out = {
             requestVersion: _apiSettings.REQUEST_VERSION
         };
-
-        //Request is for every student belonging to the user
-        return window.axios.get(_apiSettings.Routes.getNotesForItem(item)).then(function (response) {
-            // window.console.log( 'studentRequests', '', 28, response );
-            if (_.isNull(store)) return response.data;
-
-            handleLoadResponse(store, item, response.data);
+        var route = item.isExam() ? _apiSettings.Routes.getNotesForExam(item) : _apiSettings.Routes.getNotesForItem(item);
+        return window.axios.get(route).then(function (response) {
+            return response.data;
         }).catch(function (error) {
             window.console.log('examRequests', 'ERROR', 39, error);
             (0, _responseHandlers.errorHandling)(error);
@@ -87747,11 +87882,12 @@ module.exports = {
      * @param student
      * @returns {Promise.<T>|*}
      */
-    getItemScoresForStats: function getItemScoresForStats(store, item) {
+    getItemScoresForStats: function getItemScoresForStats(item) {
 
         return window.axios.get('dev/stats/item/' + item.id).then(function (response) {
+            return response.data;
             // window.console.log( 'statsRequests---getItemStats', 69, response );
-            store.dispatch('processScoreForStatsResponse', response);
+            // store.dispatch( 'processScoreForStatsResponse', response );
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
         });
@@ -90799,6 +90935,42 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./resources/assets/js/development/components/notes/new-note.vue":
+/*!***********************************************************************!*\
+  !*** ./resources/assets/js/development/components/notes/new-note.vue ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-loader/node_modules/vue-style-loader!css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-115568bb","scoped":true,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./new-note.vue */ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-115568bb\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/notes/new-note.vue")
+}
+var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./new-note.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/notes/new-note.vue"),
+  /* template */
+  __webpack_require__(/*! !../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-115568bb","hasScoped":true}!../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./new-note.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-115568bb\",\"hasScoped\":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/notes/new-note.vue"),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  "data-v-115568bb",
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/notes/new-note.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] new-note.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/assets/js/development/components/notes/note-object.vue":
 /*!**************************************************************************!*\
   !*** ./resources/assets/js/development/components/notes/note-object.vue ***!
@@ -91185,14 +91357,13 @@ var _Payload = __webpack_require__(/*! ../../../models/Payload */ "./resources/a
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
-var _routes = __webpack_require__(/*! ../../routes.preferences */ "./resources/assets/js/development/routes.preferences.js");
-
-var _routes2 = _interopRequireDefault(_routes);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+// import Routes from '../../routes.preferences';
+
+// import gTypes from '../../../../store/getter-types';
 module.exports = {
 
     computed: {},
@@ -91210,7 +91381,7 @@ module.exports = {
             this.$store.commit(this.updateMutationName, pl);
         }
     }
-}; // import gTypes from '../../../../store/getter-types';
+};
 
 /***/ }),
 
@@ -97668,10 +97839,6 @@ var Comment = function (_IModel) {
                 // iModel.comments = {};
             }
             //Set the expected structure
-            // if (Object.keys(iModel.comments).length === 0) {
-            //     Comment.valences.forEach(function (c) {
-            //         iModel.addComment(c, Comment.factory({valence: c}));
-            //     });
             if (iModel.comments.size === 0) {
                 Comment.valences.forEach(function (c) {
                     iModel.addComment(c, Comment.factory({ valence: c }));
@@ -98486,25 +98653,115 @@ var Item = function (_IModel) {
         return _this;
     }
 
+    /* ------------------------ Methods -------------------- */
     /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
+     * Take either a string or array input and convert
+     * it into the key used to store ordering.
+     * Returns the key.
+     * @param index
      */
 
 
     _createClass(Item, [{
-        key: 'canSync',
+        key: 'addComment',
 
 
+        //-----------------  comments
+        value: function addComment(valence, comment) {
+            // this.comments.push( comment );
+            // Vue.set(this.comments, valence, comment );
+            this.comments.set(valence, comment);
+        }
+
+        /**
+         * When loading comments into an item
+         * from ajax or on page load, use this
+         * to do it.
+         *
+         * @param jsonComments
+         */
+
+    }, {
+        key: 'loadCommentsFromJson',
+        value: function loadCommentsFromJson(jsonComments) {
+            if (Object.keys(jsonComments).length > 0) {
+                var me = this;
+                _.forEach(jsonComments, function (row) {
+                    var comment = _Comment2.default.factory(row);
+                    comment.text = row.body;
+                    me.addComment(comment.valence, comment);
+                });
+            }
+        }
+
+        //----------------- ordering
+
+    }, {
+        key: 'promote',
+        value: function promote() {
+            if (this.depth > 0) {
+                this.depth -= 1;
+            }
+        }
+    }, {
+        key: 'demote',
+        value: function demote() {
+            this.depth += 1;
+        }
+
+        //----------------- Publicity
+
+    }, {
+        key: 'togglePublic',
+        value: function togglePublic() {
+            // console.log('Item', 'CALLED', 'togglePublic', this._public);
+            this.publicity = !this.publicity;
+            // console.log(this._public);
+        }
+
+        /**
+         * Makes able to appear in student-viewable outputs
+         */
+
+    }, {
+        key: 'makePublic',
+        value: function makePublic() {
+            this.publicity = true;
+        }
+
+        /**
+         * Makes no longer visible to students
+         */
+
+    }, {
+        key: 'hide',
+        value: function hide() {
+            this.publicity = false;
+        }
+
+        /* ------------------------ Status queries  -------------------- */
         /**
          * Tells whether the item has a valid id and thus can
          * be synced with the server.
+         * Valid ids are assumed to be numbers starting with 0
          * @returns {boolean}
          */
+
+    }, {
+        key: 'canSync',
         value: function canSync() {
-            if (this.id >= 0) return true;
-            return false;
+            return this.id >= 0;
+        }
+    }, {
+        key: 'determineType',
+
+
+        /**
+         * utility for determining which of the older types
+         * this item belongs to
+         */
+        value: function determineType() {
+            return this.depth > 0 ? 'element' : 'question';
         }
     }, {
         key: 'isNew',
@@ -98513,27 +98770,20 @@ var Item = function (_IModel) {
         }
 
         /**
-         * utility for determining which of the older types
-         * this item belongs to
+         * Getter for whether this can currently appear in student-viewable outputs
+         * @returns {boolean|*}
          */
 
     }, {
-        key: 'determineType',
-        value: function determineType() {
-            return this.depth > 0 ? 'element' : 'question';
+        key: 'isPublic',
+        value: function isPublic() {
+            return this.publicity;
         }
-    }, {
-        key: 'addComment',
-        value: function addComment(valence, comment) {
-            // this.comments.push( comment );
-            // Vue.set(this.comments, valence, comment );
-            this.comments.set(valence, comment);
-        }
-    }, {
-        key: 'getStockComment',
-        value: function getStockComment() {
-            return this.getComment('stock');
-        }
+
+        /* ------------------------ Getters and setters -------------------- */
+
+        //----------------- Comments
+
     }, {
         key: 'getComment',
         value: function getComment(valence) {
@@ -98572,107 +98822,34 @@ var Item = function (_IModel) {
 
             return out;
         }
+    }, {
+        key: 'getStockComment',
+        value: function getStockComment() {
+            return this.getComment('stock');
+        }
 
         /**
          * Whether all comments for the item are empty;
          */
 
     }, {
-        key: 'loadCommentsFromJson',
+        key: 'isEveryCommentEmpty',
+        get: function get() {
+            return _.size(this.getEmptyComments()) === _.size(_Comment2.default.valences);
+        }
 
-
+        //----------------- Intrinsic properties of item
         /**
-         * When loading comments into an item
-         * from ajax or on page load, use this
-         * to do it.
-         *
-         * @param jsonComments
-         */
-        value: function loadCommentsFromJson(jsonComments) {
-            if (Object.keys(jsonComments).length > 0) {
-                var me = this;
-                _.forEach(jsonComments, function (row) {
-                    var comment = _Comment2.default.factory(row);
-                    comment.text = row.body;
-                    me.addComment(comment.valence, comment);
-                });
-            }
-        }
-
-        //----------------- ordering
-
-    }, {
-        key: 'promote',
-        value: function promote() {
-            if (this.depth > 0) {
-                this.depth -= 1;
-            }
-        }
-    }, {
-        key: 'demote',
-        value: function demote() {
-            this.depth += 1;
-        }
-    }, {
-        key: 'isPublic',
-
-
-        //
-        //
-        // /* *************************** Max score *************** */
-        // get maxScore() {
-        //     return this._maxScore ? Number( this._maxScore ) : null;
-        // };
-        //
-        // set maxScore( score ) {
-        //     this._maxScore = score;
-        // };
-
-
-        /* *************************** Public *************** */
-        /**
-         * Getter for whether this can currently appear in student-viewable outputs
-         * @returns {boolean|*}
-         */
-        value: function isPublic() {
-            return this.publicity;
-        }
-
-        /**
-         * Makes able to appear in student-viewable outputs
-         */
-
-    }, {
-        key: 'makePublic',
-        value: function makePublic() {
-            this.publicity = true;
-        }
-
-        /**
-         * Makes no longer visible to students
-         */
-
-    }, {
-        key: 'hide',
-        value: function hide() {
-            this.publicity = false;
-        }
-    }, {
-        key: 'togglePublic',
-        value: function togglePublic() {
-            // console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this.publicity = !this.publicity;
-            // console.log(this._public);
-        }
-
-        /* *************************** Type *************** */
-
-        /**
-         * The role played by the item
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
          */
 
     }, {
         key: 'idx',
+
+
+        //----------------- Ordering
         get: function get() {
             return this.idxStore.split(separator);
         } //[ this.index,  this.depth];}
@@ -98682,29 +98859,16 @@ var Item = function (_IModel) {
             this.idxStore = Item.buildKeyFromIdx(index);
         }
 
+        //----------------- Type and role of item
         /**
-         * Take either a string or array input and convert
-         * it into the key used to store ordering.
-         * Returns the key.
-         * @param index
+         * The role played by the item
          */
 
-    }, {
-        key: 'isEveryCommentEmpty',
-        get: function get() {
-            return _.size(this.getEmptyComments()) === _.size(_Comment2.default.valences);
-        }
     }, {
         key: 'type',
         get: function get() {
             return this.determineType();
         }
-
-        /**
-         * Returns a list of fields which may
-         * be used to look up an exam from the store
-         */
-
     }], [{
         key: 'buildKeyFromIdx',
         value: function buildKeyFromIdx(index) {
@@ -98719,11 +98883,6 @@ var Item = function (_IModel) {
             if (_.isArray(index)) {
                 return index.join(separator);
             }
-        }
-    }, {
-        key: 'setExamId',
-        value: function setExamId(id) {
-            Item.examId = id;
         }
 
         /**
@@ -98772,23 +98931,6 @@ var Item = function (_IModel) {
             if (idx1.length !== idx2.length) {}
         }
     }, {
-        key: 'identifiers',
-        value: function identifiers() {
-            return ['id', 'index'];
-        }
-
-        /**
-         * This is used by the api module to determine what
-         * requests to send to the server
-         * @returns {string}
-         */
-
-    }, {
-        key: 'className',
-        value: function className() {
-            return 'item';
-        }
-    }, {
         key: 'factory',
         value: function factory(params) {
             var obj = new Item();
@@ -98803,6 +98945,34 @@ var Item = function (_IModel) {
             if (obj.kind === 'item') return true;
 
             return false;
+        }
+    }, {
+        key: 'setExamId',
+        value: function setExamId(id) {
+            Item.examId = id;
+        }
+    }, {
+        key: 'className',
+
+
+        /**
+         * This is used by the api module to determine what
+         * requests to send to the server
+         * @returns {string}
+         */
+        value: function className() {
+            return 'item';
+        }
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }, {
+        key: 'identifiers',
+        value: function identifiers() {
+            return ['id', 'index'];
         }
     }, {
         key: 'fillableProps',
@@ -98838,6 +99008,17 @@ var Item = function (_IModel) {
 }(_IModel3.default);
 
 exports.default = Item;
+;
+//
+//
+// /* *************************** Max score *************** */
+// get maxScore() {
+//     return this._maxScore ? Number( this._maxScore ) : null;
+// };
+//
+// set maxScore( score ) {
+//     this._maxScore = score;
+// };
 
 /***/ }),
 
@@ -99401,7 +99582,10 @@ var Note = function (_IModel) {
     }, {
         key: 'aliasMap',
         get: function get() {
-            return {};
+            return {
+                created_at: 'createdAt',
+                updated_at: 'updatedAt'
+            };
         }
     }]);
 
@@ -99571,23 +99755,24 @@ var Payload = function (_IModel) {
         }
 
         /*  ************************* Identifier values ************************* */
-
-    }, {
-        key: 'id',
-        get: function get() {
-            return this._id;
-        }
+        // get id() {
+        //     return this._id;
+        // }
 
         /**
          * Retrieve the index where it is possible
          * different fields could have different values.
          * This enforces the order of precedence between the fields
          */
-        ,
-        set: function set(val) {
-            //todo numeric check
-            this._id = val;
-        }
+
+    }, {
+        key: 'index2',
+
+        //
+        // set id( val ) {
+        //     //todo numeric check
+        //     this._id = val;
+        // }
 
         //
         // get index() {
@@ -99599,8 +99784,6 @@ var Payload = function (_IModel) {
         //     this._index = val;
         // }
 
-    }, {
-        key: 'index2',
         get: function get() {
             return this._index2;
         },
@@ -100010,7 +100193,7 @@ var Question = function (_Item) {
     _createClass(Question, [{
         key: 'questionId',
         get: function get() {
-            return this._id;
+            return this.id;
         }
 
         /**
@@ -100019,7 +100202,7 @@ var Question = function (_Item) {
          */
         ,
         set: function set(v) {
-            this._id = v;
+            this.id = v;
         }
 
         /* *************************** Index ************* */
@@ -104423,10 +104606,7 @@ var buildKey = function buildKey(idx) {
 };
 
 var isItemsEmpty = function isItemsEmpty(state) {
-    if (state.items.length > 0) {
-        return false;
-    }
-    return true;
+    return state.items.length === 0;
 };
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getAllItems, function (state, getters, rootState) {
@@ -104465,14 +104645,16 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.
         // console.log('getItem', state, payload);
         if (isItemsEmpty(state)) return false;
         if (_Payload2.default.checkIfPayload(payload)) {
-            var index = payload.index,
-                id = payload.id;
-
-            if (typeof index !== 'undefined') {
-                return getters[gTypes.getItemByIndex](state, getters, index);
+            window.console.log('items.obj.getters', 'pay', 119, payload);
+            // let { index, id } = payload;
+            if (typeof payload.index !== 'undefined') {
+                return getters[gTypes.getItemByIndex](payload.index);
+                // return getters[ gTypes.getItemByIndex ]( state, getters, payload.index );
             }
-            if (typeof id !== 'undefined') {
-                return getters[gTypes.getItemById](state, getters, id);
+
+            if (typeof payload.id !== 'undefined') {
+                return getters[gTypes.getItemById](payload.id);
+                // return getters[ gTypes.getItemById ]( state, getters, payload.id );
             }
         }
     };
@@ -105111,9 +105293,8 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
         var newNode = new _Node2.default(toAddSerialNumber, parentSerialNumber);
-        var parentNode = getters.getItemNodeFromOrder(parentSerialNumber);
+        var parentNode = getters[gTypes.getItemNodeFromOrder](parentSerialNumber);
         // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
-
         var pl = _Payload2.default.factory({
             objNode: newNode,
             parentNode: parentNode,
@@ -105122,12 +105303,13 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         });
         window.console.log('items.order.actions', 'pl', 47, pl);
 
+        //push it into local ordering
         commit(mTypes.insertNodeIntoOrder, pl);
 
         var ordering = getters.getOrderForSync;
-        var p = (0, _itemRequests.updateItemsOrder)(exam, ordering);
 
-        p.then(function () {
+        //send to server
+        (0, _itemRequests.updateItemsOrder)(exam, ordering).then(function () {
             resolve();
         });
     });
@@ -105431,36 +105613,33 @@ var checkExpectedType = function checkExpectedType(toBeSet) {
 };
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.insertNodeIntoOrder, function (state, payload) {
-    return new Promise(function (resolve, reject) {
-
-        // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
-
-        var index = payload.index,
+    var obj = void 0,
+        parent = void 0,
+        index = void 0;
+    // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
+    try {
+        //the payload may have the data stored as either objNode or obj
+        //and parentNode or parent.
+        var _index = payload.index,
             objNode = payload.objNode,
             parentNode = payload.parentNode;
 
-        //type check
+        checkExpectedType(parentNode);
+        checkExpectedType(objNode);
+        obj = objNode;
+        parent = parentNode;
+    } catch (e) {
+        obj = payload.obj;
+        parent = payload.parent;
+    }
 
-        if (!(checkExpectedType(parentNode) && checkExpectedType(objNode))) {
-            //Try out the un type checked properties to see if they have
-            //nodes
-            var obj = payload.obj,
-                parent = payload.parent;
-            //if not, oh well
-
-            return false;
-        }
-
-        //if an index was specified, splice it in at the index
-        if (!_.isUndefined(index)) {
-            parentNode.children.splice(index, 0, objNode);
-            return resolve();
-        }
-
+    //if an index was specified, splice it in at the index
+    if (!_.isUndefined(index)) {
+        parent.children.splice(index, 0, obj);
+    } else {
         //otherwise just push it on the end
-        parentNode.children.push(objNode);
-        return resolve();
-    });
+        parent.children.push(obj);
+    }
 }), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
     var obj = payload.obj,
         parent = payload.parent;
@@ -107210,13 +107389,11 @@ var _Note = __webpack_require__(/*! ../../../models/Note */ "./resources/assets/
 
 var _Note2 = _interopRequireDefault(_Note);
 
+var _noteRequests = __webpack_require__(/*! ../../../api/requests/noteRequests */ "./resources/assets/js/api/requests/noteRequests.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Created by adam on 7/31/17.
- */
 
 module.exports = {
     createNewNote: function createNewNote(_ref, payload) {
@@ -107225,18 +107402,57 @@ module.exports = {
             commit = _ref.commit,
             getters = _ref.getters;
 
-        var itm = payload.obj;
-        if (typeof itm !== 'undefined') {
-            if (itm instanceof _Item2.default || itm instanceof _Exam2.default) {
-                var note = _Note2.default.factory({ associatedItemSerialNumber: itm.serialNumber });
-                var pl = _Payload2.default.factory({ obj: note });
-                commit('createNote', pl);
-                commit("setNewNote", pl);
+        return new Promise(function (resolve, reject) {
+            var itm = payload.obj;
+            if (typeof itm !== 'undefined') {
+                if (itm instanceof _Item2.default || itm instanceof _Exam2.default) {
+                    var note = _Note2.default.factory({ associatedItemSerialNumber: itm.serialNumber });
+                    var pl = _Payload2.default.factory({ obj: note });
+                    commit('createNote', pl);
+                    commit("setNewNote", pl);
+                    resolve();
+                }
             }
-        }
+            reject('bad item');
+        });
+    },
+
+    loadNotes: function loadNotes(_ref2, payload) {
+        var state = _ref2.state,
+            dispatch = _ref2.dispatch,
+            commit = _ref2.commit,
+            getters = _ref2.getters;
+
+        return new Promise(function (resolve, reject) {
+            var itm = payload.obj;
+            if (typeof itm !== 'undefined') {
+
+                var p = (0, _noteRequests.loadNotesForItemRequest)(itm);
+                return p.then(function (data) {
+                    _.forEach(data, function (r) {
+                        // window.console.log( 'noteRequests', 'r', 29, r );
+                        var note = _Note2.default.factory(r);
+                        // note.id = r.id;
+                        // note.text = r.text;
+                        // note.priority = r.priority;
+                        // note.props = r.props;
+                        // note.updatedAt = r.updated_at;
+                        // note.createdAt = r.created_at;
+                        // note.name = r.name;
+                        note.associatedItemSerialNumber = itm.serialNumber;
+                        var payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
+                        commit('createNote', payload);
+                    });
+                    resolve();
+                });
+            }
+            reject('item undefined');
+        });
     }
 
-};
+}; /**
+    * Created by adam on 7/31/17.
+    */
 
 /***/ }),
 
@@ -107318,6 +107534,7 @@ module.exports = (_module$exports = {
 }, _defineProperty(_module$exports, gTypes.getNoteBySerialNumber, function (state, getters, rootState, serialNumber) {
     return function (serialNumber) {
         return function (state, serialNumber) {
+            // window.console.log( 'notes.getters', 'state.notes', 50, state);
             var r = state.notes.filter(function (i) {
                 if (i.serialNumber === serialNumber) {
                     return i;
@@ -107371,6 +107588,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var state = {
     notes: [],
+    newNote: false,
     newNoteSerialNumber: -1
 
 };
@@ -107465,9 +107683,11 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     var idx = _.findIndex(state.notes, payload.obj);
     window.console.log('notes', 'destroyNote', 45, idx);
     state.notes.splice(idx, 1);
-}), _defineProperty(_module$exports, 'setNewNote', function setNewNote(state, payload) {
+}), _defineProperty(_module$exports, mTypes.setNewNote, function (state, payload) {
     var note = payload.obj;
     state.newNoteSerialNumber = note.serialNumber;
+}), _defineProperty(_module$exports, mTypes.resetNewNote, function (state, payload) {
+    state.newNoteSerialNumber = -1;
 }), _module$exports);
 
 /***/ }),
@@ -110412,7 +110632,7 @@ var mutations = {
 
 var actions = {
 
-    processScoreForStatsResponse: function processScoreForStatsResponse(_ref, axiosResponse) {
+    processScoreForStatsResponse: function processScoreForStatsResponse(_ref, data) {
         var state = _ref.state,
             dispatch = _ref.dispatch,
             commit = _ref.commit,
@@ -110421,8 +110641,8 @@ var actions = {
         // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
         return new Promise(function (resolve) {
             var stats = [];
-            if (!_.isUndefined(axiosResponse.data) && axiosResponse.data.length > 0) {
-                _.forEach(axiosResponse.data, function (r) {
+            if (!_.isUndefined(data) && data.length > 0) {
+                _.forEach(data, function (r) {
                     var kumiIds = r.kumis.forEach(function (k) {
                         return k.id;
                     });
@@ -112180,6 +112400,8 @@ var initializeItemStorage = exports.initializeItemStorage = 'initializeItemStora
 var updateNote = exports.updateNote = 'updateNote';
 var destroyNote = exports.destroyNote = 'destroyNote';
 var createNote = exports.createNote = 'createNote';
+var setNewNote = exports.setNewNote = 'setNewNote';
+var resetNewNote = exports.resetNewNote = 'resetNewNote';
 
 //requests
 var startRequest = exports.startRequest = 'startRequest';

@@ -1,6 +1,6 @@
 <template>
     <div id="feedback-main-page"
-         class=" mainBodyLocator container is-fluid"
+         class="feedback-page mainBodyLocator container is-fluid"
     >
 
         <feedback-panel :exam="exam" :student="student"></feedback-panel>

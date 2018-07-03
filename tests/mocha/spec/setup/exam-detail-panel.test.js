@@ -22,11 +22,15 @@ describe( compName, () => {
 
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
+    let $route = { params: {}};
 
     beforeEach( () => {
         actions = {}
 
-        getters = {};
+        getters = {
+            getItemBySerialNumber: (  ) =>(  ) => factories.itemFactory()
+        };
+
 
         mutations = {};
 
@@ -35,7 +39,7 @@ describe( compName, () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, mocks : {$route}
         } );
 
     } );

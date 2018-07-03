@@ -26,7 +26,6 @@ import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
 
 //tested stuff
@@ -66,7 +65,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

@@ -1,6 +1,6 @@
 <template>
 
-    <div class="grade-preferences">
+    <div class="grade-page-preferences">
         <preferences-base
                 :tabs="routes"
                 default-route="defaultRoute"

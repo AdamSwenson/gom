@@ -1,18 +1,11 @@
+
+require ('../../../injectglobals');
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-
-//test libraries
-import moxios from 'moxios';
-
-let faker = require( 'faker' );
 
 //helpers
 import { type } from '../../../helpers/test-helpers';
 import { assertExpectedDivIsDisplayed, assertThatSeeText } from '../../../helpers/assertions';
 
-import * as mTypes from '../../../../../resources/assets/js/store/mutation-types';
 
 import Exam from "./../../../../../resources/assets/js/models/Exam";
 import Payload from "../../../../../resources/assets/js/models/Payload";

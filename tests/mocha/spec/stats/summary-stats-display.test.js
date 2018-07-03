@@ -4,8 +4,6 @@ var compName = 'summary-stats-display';
 //The path to the tested component
 var Component = require('../../../../resources/assets/js/development/components/stats/summary-stats-display.vue');
 
-
-
 require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 

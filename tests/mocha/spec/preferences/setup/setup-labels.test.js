@@ -44,7 +44,9 @@ describe(  compName , () => {
 
     beforeEach( (  ) => {
 
-        getters = {   };
+        getters = {
+        [nggTypes.getSetupPreference]: (  ) => (  ) => sinon.spy()
+        };
 
         mutations = {};
 
@@ -66,7 +68,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

@@ -17,7 +17,7 @@
                     <note-object
                             v-for="note in notes"
                             v-bind:key="note.serialNumber"
-                            :object="note"
+                            :note="note"
                             :serial-number="note.serialNumber"
                             :use-central-store="useCentralStore"
                             v-on:note-deleted="refreshNotes"
@@ -27,63 +27,14 @@
 
             </div>
 
-            <div class="new-note-input-area "
-                 v-show="isNewNoteVisible"
-            >
-                <h5 class="title is-5">Remind your future self...</h5>
+            <edit-note v-on:note-added="refreshNotes"></edit-note>
 
-                <div class="field">
-                    <label class="label">Title</label>
-                    <div class="control">
-                        <input type="text"
-                               v-bind:id="getId('new-note-title')"
-                               v-model="newNoteName">
-                    </div>
-                    <p class="help"></p>
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                        <textarea id="new-note-text"
-                                  class="textarea"
-                                  rows="3"
-                                  v-bind:placeholder="placeholders.noteText"
-                                  v-model="newNoteText">
-                        </textarea>
-                    </div>
-                    <p class="help"></p>
-                </div>
-
-                <color-selector
-                        v-on:priority-selected="handlePrioritySelection"
-                ></color-selector>
-                <!--<priority-selector-->
-                <!--v-on:priority-selected="handlePrioritySelection"-->
-                <!--&gt;</priority-selector>-->
-
-
-                <div class="field is-grouped">
-
-                    <p class="control">
-                        <a class="button save-note-button is-success"
-                           v-on:click="saveNewNote"
-                        >Save</a>
-                    </p>
-
-                    <p class="control">
-                        <a class="button clear-note-button is-warning"
-                           v-on:click="clearNewNote"
-                        >Clear</a>
-                    </p>
-                </div>
-
-            </div>
 
             <div class="field" v-show="isNewButtonVisible">
                 <div class="control">
                     <button class="button new-note-button is-fullwidth"
                             v-bind:class="newNoteButtonStyling"
-                            v-on:click="toggleNewNote"
+                            v-on:click="createNewNote"
                     >{{ newNoteButtonLabel }}
                     </button>
                 </div>
@@ -117,12 +68,14 @@
     // import prioritySelector from './note/priority-selector';
     import colorSelector from '../tags/color-selector.vue';
     import loadingIndicator from '../helpers/loading-indicator.vue';
+    import editNote from './new-note';
 
 
     export default {
 //        props: ['serialNumber'], //the serial number of the note
 
         components: {
+            editNote,
             'note-object': noteObject,
             // 'priority-selector': prioritySelector,
             'color-selector': colorSelector,
@@ -133,18 +86,18 @@
             return {
                 isLoading: false,
 
-                isNewNoteVisible: false,
+                // isNewNoteVisible: false,
 
                 //whether to show the create new note button
-                isNewButtonVisible: true,
+                // isNewButtonVisible: true,
 
 //                note: new Note(),
                 //The serial number of the item the notes belong to
                 itemSerialNumber: _.toInteger( this.$route.params.serialNumber ),
 
-                placeholders: {
-                    noteText: "Add a new note to your future self here"
-                },
+                // placeholders: {
+                //     noteText: "Add a new note to your future self here"
+                // },
 
                 //these are the values of the new tag
                 newNoteName: '',
@@ -171,36 +124,22 @@
 
         asyncComputed: {
             notes: {
-                get() {
+                get: function () {
+
                     let me = this;
-                    let result = [];
-                    if ( this.useCentralStore ) {
-                        result = this.$store.getters[ gTypes.getNotesForItem ]( this.item );
-                        if ( result.length === 0 ) return result;
+                    // Set the loading icon displayed
+                    this.isLoading = true;
+                    // //get the data from the server
+                    let p = me.$store.dispatch( 'loadNotes', Payload.factory( { obj: me.item } ) );
 
-                        //filter out the note being created, since
-                        //that looks weird. When we hit done, that will
-                        //unset it as the newNote, and the text will display
-                        if ( this.newNote ) {
-                            let sn = this.newNote.serialNumber;
-                            return result.filter( ( r ) => {
-                                if ( r.serialNumber !== sn ) return r;
-                            } );
-                        }
-
-                    } else {
-
-                        //load it from the server
-                        this.isLoading = true;
-                        let p = loadNotesForItemRequest( null, this.item );
-                        return p.then( function ( data ) {
-                            me.isLoading = false;
-                            return data;
-                        } );
-                    }
+                    return p.then( function () {
+                        me.isLoading = false;
+                        return me.$store.getters[ gTypes.getNotesForItem ]( me.item );
+                    } );
                 },
 
                 watch() {
+                    //reloads from server when updated
                     this.loadTrigger;
                 }
             }
@@ -220,6 +159,10 @@
                 return this.item ? this.item.isExam() : false;
             },
 
+            isNewButtonVisible: function () {
+                let n = this.$store.getters.getNewNote;
+                return !_.isObject( n );
+            },
 
             newNoteButtonLabel: function () {
                 if ( this.isNewNoteVisible ) return "Save";
@@ -231,50 +174,13 @@
                 return "is-success";
             },
 
-            newNote: function () {
-                return this.$store.getters.getNewNote;
-            },
-
         },
 
         methods: {
-            addNewNote: function () {
-                // window.console.log( 'panel.notes.component', 'addNewNote', 65, );
-                if ( this.useCentralStore ) {
-                    this.$store.dispatch( "createNewNote", Payload.factory( { obj: this.item } ) );
-                }
-            },
-
-            clearNewNote: function () {
-                this.newNoteName = '';
-                this.newNoteText = '';
-                this.newNotePriority = 0;
-            },
-
-            saveNewNote: function () {
-                let note = Note.factory( {
-                    associatedObject: this.item,
-                    name: this.newNoteName,
-                    text: this.newNoteText,
-                    priority: this.newNotePriority
-                } );
-                let me = this;
-                let p = createNoteRequest( null, note );
-                p.then( function () {
-                    me.refreshNotes();
-                    me.toggleNewNote();
-                    me.clearNewNote();
-                } );
-            },
-
-            handlePrioritySelection: function ( priority ) {
-                window.console.log( 'notes-panel', 'handlePrioritySelection', 297, priority );
-                this.newNotePriority = priority;
-            },
-
-            initializeNote: function () {
-                if ( this.isNewNoteVisible ) this.addNewNote();
-            },
+            createNewNote: function () {
+                this.$store.dispatch( "createNewNote", Payload.factory( { obj: this.item } ) );
+            }
+            ,
 
             refreshNotes: function () {
                 this.loadTrigger += 1;
@@ -283,17 +189,8 @@
             getId: function ( identifier ) {
                 return identifier + '-' + this.serialNumber;
             },
-
-            toggleNewNote: function () {
-                this.isNewNoteVisible = !this.isNewNoteVisible;
-                this.isNewButtonVisible = !this.isNewButtonVisible;
-                if ( this.useCentralStore && this.isNewNoteVisible ) {
-                    //if the note is now open,
-                    //initialize the fields
-                    this.initializeNote();
-                }
-            }
         },
+        
 
     }
 </script>

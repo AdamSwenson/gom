@@ -1,6 +1,6 @@
 <template>
 
-    <div class="setup-preferences">
+    <div class="setup-page-preferences">
         <preferences-base
                 :tabs="routes"
                 default-route="defaultRoute"

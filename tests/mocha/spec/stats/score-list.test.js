@@ -1,59 +1,136 @@
-
-//The name of the tested component
-var compName = 'score-list';
-//The path to the tested component
-var Component = require('../../../../resources/assets/js/development/components/stats/score-list.vue');
-
-
-
 require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
+
+//helpers
+// import { see } from '../../helpers/test-helpers';
+
+import Item from "../../../../resources/assets/js/models/Item";
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
 
-describe( compName, () => {
+import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
+import { makeScoreListServerResponse } from '../../helpers/factories';
 
-    let componentDivIdentifier = '.' + compName;
+//tested stuff
+var Component = require( "../../../../resources/assets/js/development/components/stats/score-list.vue" );
 
-    let getters, mutations, actions, store;
 
+describe( "score-list   ", () => {
+    let componentDivId = '.score-list';
+    let getters, actions;
+    let mutations;
+    let store;
+    let item;
+    let $route = { params: { serialNumber: null } };
     let wrapper;
-
-    let listOfValues, test;
-    let payload, exam, item, kumi, kumis, student, grade;
+    let routeSerialNumber;
+    let scoreListAjaxResponse;
+    let stub;
 
     beforeEach( () => {
-        actions = {}
+        item = new Item();
+        routeSerialNumber = item.serialNumber;
 
-        getters = {};
+        scoreListAjaxResponse = makeScoreListServerResponse();
+        stub = sinon.stub();
+        stub.resolves( scoreListAjaxResponse );
 
-        mutations = {};
+        getters = {
+            getItemBySerialNumber: ( v ) => ( v ) => {
+                return item;
+            },
+            [ nggTypes.getAnonScoresForItemStats ]: () => () => scoreListAjaxResponse
+        };
+        actions = {
+            processScoreForStatsResponse: sinon.spy()
+        };
+
+        mutations = {
+            getAnonScoresForItemStats: sinon.spy()
+        };
 
         store = new Vuex.Store( {
-            getters, mutations, actions
+            getters,
+            actions,
+            mutations
         } );
+
+        $route.params.serialNumber = item.serialNumber;
+
 
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue,
+            stubs: [ 'router-link', 'router-view' ],
+            mocks: {
+                $route
+            }
         } );
+
+        wrapper.setMethods( { getItemScoresForStats: stub } );
 
     } );
 
+    afterEach( function () {
+        // import and pass your custom axios instance to this method
+        // moxios.uninstall()
+    } )
 
     describe( " loads into expected default state for testing ", () => {
+
         it( 'displays the expected component div on first load', () => {
-            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertExpectedDivIsDisplayed( wrapper, componentDivId );
+        } );
+
+    } );
+
+
+    describe( " displays expected data after loading  async   ", () => {
+        let expected = {};
+        let getItemScoresForStats;
+
+        it( " displays the list of scores  ", ( done ) => {
+            wrapper.setProps( {
+                item: item
+            } );
+            expect( actions.processScoreForStatsResponse.callCount ).toBe( 1 );
+            done();
+
+            // getItemScoresForStats = sinon.stub();
+            // getItemScoresForStats.returns( scoreListAjaxResponse );
+            //
+            // moxios.wait( function () {
+            //     let request = moxios.requests.mostRecent();
+            //
+            //     request
+            //         .respondWith( {
+            //             status: 200,
+            //             response: [ summaryForItem ]
+            //         } )
+            //         .then( function () {
+            //check that values were set from axios response
+            // expect( wrapper.vm.scores ).toBe( scoreListAjaxResponse );
+            //check that the spy was called
+            // expect( getItemScoresForStats.callCount ).toBe( 1 );
+
+            // } );
+            // } );
+
+
         } );
     } );
 
-    describe('async computed', (  ) => {
-        it.skip('async loads scores', (  ) => {
-
-        });
-
-    });
-
-
-} );
+    /**
+     * Asserts that the specified text is present within
+     * the specified selector or page if no selector is
+     * specified
+     * @param text
+     * @param selector
+     */
+    let see = ( text, selector ) => {
+        let wrap = selector ? wrapper.find( selector ) : wrapper;
+        expect( wrap.html() ).toContain( text );
+    };
+} )
+;

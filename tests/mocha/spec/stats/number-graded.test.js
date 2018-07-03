@@ -7,6 +7,8 @@ var Component = require( '../../../../resources/assets/js/development/components
 
 require( '../../injectglobals' );
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
+import Payload from "../../../../resources/assets/js/models/Payload";
+import sinon from "sinon";
 
 const localVue = createLocalVue();
 
@@ -35,16 +37,20 @@ describe( compName, function () {
 
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
+    let $route = { params: { serialNumber: null } };
 
     let responseData;
+    let updateStub = sinon.stub();
 
     beforeEach( function () {
 
         exam = factories.examFactory();
 
         actions = {
-            [ ngaTypes.loadGradingProgress ]: sinon.spy()
+            [ ngaTypes.loadGradingProgress ]: sinon.stub()
         }
+        actions[ ngaTypes.loadGradingProgress ].resolves( true );
+
         getters = {};
         mutations = {
             [ mTypes.updateItem ]: sinon.spy()
@@ -63,8 +69,14 @@ describe( compName, function () {
         // } );
         //
 
-        wrapper = mount( Component, {
+        $route.params.serialNumber = exam.serialNumber;
+
+        wrapper = shallow( Component, {
             store, localVue,
+            stubs: [ 'router-link', 'router-view' ],
+            mocks: {
+                $route
+            },
             // When sync is false, the Vue component is rendered asynchronously.
             sync: false,
             propsData: { exam }
@@ -74,7 +86,7 @@ describe( compName, function () {
     } );
 
     afterEach( function () {
-        moxios.uninstall()
+        // moxios.uninstall()
     } )
 
 
@@ -87,41 +99,11 @@ describe( compName, function () {
     describe( 'async computed', function () {
 
         describe( 'examCountsAjax', function () {
-            it( 'loads and sets isLoading to false', function ( done ) {
 
-                moxios.wait( function () {
-                    expect( wrapper.vm.isLoading ).toBe( false );
-                    //could add checks for subordinate html items, if we wanted....
-                    expect( wrapper.html() ).toContain( 'stat-display-table-row' );
-                    done();
-                } );
-            } );
-
-            it( 'does not drive adam nuts', function (  ) {
-                // let j = wrapper.vm.examCountsAjax;
-                // j.then(function(){
+            it( 'does not drive adam nuts', function ( done ) {
+                let r = wrapper.vm.examCountsAjax;
                 expect( actions[ ngaTypes.loadGradingProgress ].callCount ).toBe( 1 );
-                // done();
-
-                // });
-                //
-                // let pl;
-                // moxios.wait( function () {
-                //     pl = Payload.factory( {
-                //         mutateSilently: true,
-                //         obj: exam,
-                //         updateProp: 'numberStudents',
-                //         updateVal: _.toInteger( responseData.numStudents )
-                //     } );
-                // //
-                // // } )
-                // //     .then( function () {
-                //         //check
-                //         expect( actions[ ngaTypes.loadGradingProgress ].callCount ).toBe( 1 );
-                //
-                //         // assertions.assertPayloadWasCorrect( mutations[ mTypes.updateItem ], pl );
-                //         done();
-                //     } )
+                done();
             } );
 
 
@@ -141,5 +123,72 @@ describe( compName, function () {
         } );
     } );
 
-} )
-;
+
+    describe( " loading indicator  ", () => {
+
+        it( " loading indicator displays and data is hidden when isLoading is true  ", ( done ) => {
+            wrapper.vm.isLoading = true;
+            wrapper.update();
+            expect( wrapper.contains( '.loadingArea ' ) ).toBe( true );
+            expect( wrapper.contains( '.number-graded-list' ) ).toBe( false );
+            done();
+        } );
+
+        it( " loading indicator is hidden and data is visible when isLoading is false  ", ( done ) => {
+            //not loading; should see list of exams
+            wrapper.vm.isLoading = false;
+            wrapper.update();
+            expect( wrapper.contains( '.loadingArea ' ) ).toBe( false );
+            expect( wrapper.contains( '.number-graded-list' ) ).toBe( true );
+            done();
+        } );
+    } );
+
+
+} );
+
+// describe( " displays expected data after loading async   ", () => {
+//     let expected = {};
+//
+//     it( " happy path ", ( done ) => {
+//         let data = {
+//             numStudents: 590,
+//             numGraded: 400
+//         };
+//
+//         updateStub.withArgs( Payload.factory( {
+//             mutateSilently: true,
+//             obj: exam,
+//             updateProp: 'numberStudents',
+//             updateVal: data.numStudents
+//         } ) ).returns( data.numStudents );
+//
+//
+//         updateStub.withArgs( Payload.factory( {
+//             mutateSilently: true,
+//             obj: exam,
+//             updateProp: 'numberGraded',
+//             updateVal: data.numGraded
+//         } ) ).returns( data.numGraded );
+//
+//         // updateStub.onCall( 1 ).returns( data.numGraded );
+//
+//         moxios.wait( function () {
+//             let request = moxios.requests.mostRecent()
+//             request.respondWith( {
+//                 status: 200,
+//                 response: [ data ]
+//             } ).then( function () {
+//                 //check that mutation was called as expected
+//                 expect( updateStub.callCount ).toBe( 2 );
+//
+//                 //should see values on page
+//                 assertThatSeeText( wrapper, data.numStudents, '.number-graded' );
+//                 assertThatSeeText( wrapper, data.numGraded, '.number-graded' );
+//                 assertThatSeeText( wrapper, data.numStudents - data.numGraded, '.number-graded' );
+//                 done();
+//
+//             } );
+//         } )
+//     } )
+// } );

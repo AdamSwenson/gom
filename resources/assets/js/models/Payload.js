@@ -139,9 +139,9 @@ export default class Payload extends IModel{
     }
 
     /*  ************************* Identifier values ************************* */
-    get id() {
-        return this._id;
-    }
+    // get id() {
+    //     return this._id;
+    // }
 
     /**
      * Retrieve the index where it is possible
@@ -159,11 +159,11 @@ export default class Payload extends IModel{
             }
         }
     }
-
-    set id( val ) {
-        //todo numeric check
-        this._id = val;
-    }
+    //
+    // set id( val ) {
+    //     //todo numeric check
+    //     this._id = val;
+    // }
 
     //
     // get index() {

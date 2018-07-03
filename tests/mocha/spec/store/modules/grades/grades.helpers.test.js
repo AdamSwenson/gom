@@ -6,6 +6,7 @@ import {
 import GradeAssignment from '../../../../../../resources/assets/js/models/GradeAssignment'
 
 require( '../../../../injectglobals' );
+const makeFakeServerResponse = helpers.makeFakeServerResponse;
 
 const testAction = helpers.testAction;
 const description = helpers.description;
@@ -14,7 +15,6 @@ const description = helpers.description;
 import * as helpers from '../../../../../../resources/assets/js/store/modules/grades/grades.helpers' ;
 
 
-const makeFakeServerResponse = helpers.makeFakeServerResponse;
 
 describe( "grades.helpers  ", () => {
     let freq;

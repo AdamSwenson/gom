@@ -63,12 +63,12 @@ const mutations = {
 
 const actions = {
 
-    processScoreForStatsResponse: ( { state, dispatch, commit, getters }, axiosResponse ) => {
+    processScoreForStatsResponse: ( { state, dispatch, commit, getters }, data ) => {
         // window.console.log( 'scoresForStats', 'processAxiosResponse', 48, axiosResponse );
         return new Promise( function ( resolve ) {
             let stats = [];
-            if ( !_.isUndefined( axiosResponse.data ) && axiosResponse.data.length > 0 ) {
-                _.forEach( axiosResponse.data, function ( r ) {
+            if ( !_.isUndefined( data ) && data.length > 0 ) {
+                _.forEach( data, function ( r ) {
                     let kumiIds = r.kumis.forEach( function ( k ) {
                         return k.id;
                     } );

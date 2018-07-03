@@ -24,7 +24,10 @@ describe( compName, () => {
     let payload, exam, item, kumi, kumis, student, grade;
 
     beforeEach( () => {
-        actions = {}
+        actions = {
+            loadKumisForExamFromServer: sinon.spy(),
+            loadStudentsFromServer: sinon.spy()
+        }
 
         getters = {};
 

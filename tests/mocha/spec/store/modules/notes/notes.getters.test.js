@@ -23,6 +23,7 @@ describe( compName, () => {
             notes: [],
             newNoteSerialNumber: -1,
         };
+
         item = factories.itemFactory();
         exam = factories.examFactory();
 

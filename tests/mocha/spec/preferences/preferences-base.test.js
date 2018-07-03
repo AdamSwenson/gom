@@ -5,33 +5,15 @@ var compName = 'preferences-base';
 var Component = require('../../../../resources/assets/js/development/components/preferences/preferences-base.vue');
 
 
-import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
+require('../../injectglobals');
 
-//helpers
-// import { see } from '../../../helpers/test-helpers';
+import { mount, shallow, createLocalVue } from 'vue-test-utils';
 import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
-// import { factories } from '../../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 
 
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
-
-
-//tested stuff
-
-
 
 describe(  compName , () => {
 
@@ -53,8 +35,10 @@ describe(  compName , () => {
             mutations
         } );
 
+        let $router = {push: sinon.spy()};
+
         wrapper = shallow( Component, {
-            store, localVue
+            store, localVue, mocks: { $router }
         } );
 
     } );
@@ -66,7 +50,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 

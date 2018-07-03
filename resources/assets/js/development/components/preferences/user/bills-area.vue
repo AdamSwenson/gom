@@ -30,6 +30,7 @@
 
         data: function () {
             return {
+                updateMutationName : '',
                 defaults: {}
             }
         },

@@ -49,9 +49,8 @@ describe(  compName , () => {
 
         mutations = {};
         actions = {
-            'loadStudentsFromPageJson': (  ) => {
-                return 'j'
-            }
+            loadExamFromPageJson: sinon.spy(),
+            loadStudentsFromPageJson: sinon.spy()
         }
 
         store = new Vuex.Store( {
@@ -73,7 +72,7 @@ describe(  compName , () => {
         } );
     } );
     
-    describe(" TESTS NEEDED", () => {
+    describe.skip(" TESTS NEEDED", () => {
         it('awaits tests')        
     });
 
