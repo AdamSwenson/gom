@@ -8199,16 +8199,8 @@ exports.default = {
 
         handleDeleteClick: function handleDeleteClick() {
             window.console.log('note-area', 'handleDeleteClick', 190, this.note);
-
-            if (this.useCentralStore) {
-                this.$store.commit(mTypes.destroyNote, _Payload2.default.factory({ obj: this.note }));
-            } else {
-                var me = this;
-                var p = (0, _noteRequests.destroyNoteRequest)(null, this.note);
-                p.then(function () {
-                    me.$emit('note-deleted');
-                });
-            }
+            this.$store.commit(mTypes.destroyNote, _Payload2.default.factory({ obj: this.note }));
+            this.$emit('note-deleted');
         }
     }
 
@@ -8373,9 +8365,11 @@ exports.default = {
             },
 
             watch: function watch() {
-                //reloads from server when updated
+                //reloads from server when this value
+                //is updated in response to an event
                 this.loadTrigger;
             }
+
         }
     },
 

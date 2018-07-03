@@ -115,10 +115,12 @@
                     } );
                 },
 
-                watch() {
-                    //reloads from server when updated
+                watch: function() {
+                    //reloads from server when this value
+                    //is updated in response to an event
                     this.loadTrigger;
                 }
+
             }
         },
 

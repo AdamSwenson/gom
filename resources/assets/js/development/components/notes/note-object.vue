@@ -141,7 +141,7 @@
                     } );
                     this.$store.commit( mTypes.updateNote, pl );
                 }
-                   },
+            },
 
             /**
              * The actual note object
@@ -178,65 +178,57 @@
                         updateVal: v
                     } );
                     this.$store.commit( mTypes.updateNote, pl );
-                    }
-                },
-
-                props: {
-                    get: function () {
-                        return this.note.props;
-                    },
-                    set: function ( v ) {
-                        let pl = Payload.factory( {
-                            obj: this.note,
-                            updateProp: 'props',
-                            updateVal: v
-                        } );
-                        this.$store.commit( mTypes.updateNote, pl );
-                    }
-                },
-
-                text: {
-                    get: function () {
-                        return this.note.text;
-                    },
-                    set: function ( v ) {
-                            let pl = Payload.factory( {
-                                obj: this.note,
-                                updateProp: 'text',
-                                updateVal: v
-                            } );
-                            this.$store.commit( mTypes.updateNote, pl );
-                        }
-                },
-
-                updatedTimestamp: function () {
-                    if ( this.note.updated_at ) return this.note.updated_at;
-                    return this.note.updatedAt;
-                },
-
-
-            },
-
-            methods: {
-                getId: function ( identifier ) {
-                    return identifier + '-' + this.serialNumber;
-                },
-
-                handleDeleteClick: function () {
-                    window.console.log( 'note-area', 'handleDeleteClick', 190, this.note );
-
-                    if ( this.useCentralStore ) {
-                        this.$store.commit( mTypes.destroyNote, Payload.factory( { obj: this.note } ) );
-                    } else {
-                        let me = this;
-                        let p = destroyNoteRequest( null, this.note );
-                        p.then( function () {
-                            me.$emit( 'note-deleted' );
-                        } );
-                    }
                 }
             },
 
+            props: {
+                get: function () {
+                    return this.note.props;
+                },
+                set: function ( v ) {
+                    let pl = Payload.factory( {
+                        obj: this.note,
+                        updateProp: 'props',
+                        updateVal: v
+                    } );
+                    this.$store.commit( mTypes.updateNote, pl );
+                }
+            },
 
-        }
+            text: {
+                get: function () {
+                    return this.note.text;
+                },
+                set: function ( v ) {
+                    let pl = Payload.factory( {
+                        obj: this.note,
+                        updateProp: 'text',
+                        updateVal: v
+                    } );
+                    this.$store.commit( mTypes.updateNote, pl );
+                }
+            },
+
+            updatedTimestamp: function () {
+                if ( this.note.updated_at ) return this.note.updated_at;
+                return this.note.updatedAt;
+            },
+
+
+        },
+
+        methods: {
+            getId: function ( identifier ) {
+                return identifier + '-' + this.serialNumber;
+            },
+
+            handleDeleteClick: function () {
+                window.console.log( 'note-area', 'handleDeleteClick', 190, this.note );
+                this.$store.commit( mTypes.destroyNote, Payload.factory( { obj: this.note } ) );
+                this.$emit( 'note-deleted' );
+            }
+        },
+
+
+    }
 </script>
