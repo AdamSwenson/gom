@@ -66,20 +66,13 @@ describe( compName, () => {
 
 
     describe( "methods", () => {
-        describe( 'addNewNote', () => {
+        describe( 'createNewNote', () => {
             it( " calls for the correct action when called programmatically", () => {
-                wrapper.vm.addNewNote();
+                wrapper.vm.createNewNote();
                 expect( actions.createNewNote.calledOnce ).toBeTruthy();
             } );
         } );
 
-        describe( 'saveNewNote', () => {
-            it.skip( " calls for the correct mutation when called programmatically", () => {
-            } );
-        } );
-
-        describe( 'clearNewNote', () => {
-        } );
 
 
     } )

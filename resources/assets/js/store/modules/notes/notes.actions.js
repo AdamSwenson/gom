@@ -42,18 +42,13 @@ module.exports = {
                 let p = loadNotesForItemRequest( itm );
                 return p.then( function ( data ) {
                     _.forEach( data, function ( r ) {
-                        // window.console.log( 'noteRequests', 'r', 29, r );
-                        let note = Note.factory( r );
-                        // note.id = r.id;
-                        // note.text = r.text;
-                        // note.priority = r.priority;
-                        // note.props = r.props;
-                        // note.updatedAt = r.updated_at;
-                        // note.createdAt = r.created_at;
-                        // note.name = r.name;
-                        note.associatedItemSerialNumber = itm.serialNumber;
-                        let payload = Payload.factory( { obj: note, mutateSilently: true } );
-                        commit( 'createNote', payload );
+                        let j =  getters[gTypes.getNoteById](r.id)
+                        if(_.isUndefined(j)){
+                            let note = Note.factory( r );
+                            note.associatedItemSerialNumber = itm.serialNumber;
+                            let payload = Payload.factory( { obj: note, mutateSilently: true } );
+                            commit( 'createNote', payload );
+                        }
                     } );
                     resolve();
                 } );

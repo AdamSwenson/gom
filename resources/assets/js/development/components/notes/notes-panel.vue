@@ -18,8 +18,6 @@
                             v-for="note in notes"
                             v-bind:key="note.serialNumber"
                             :note="note"
-                            :serial-number="note.serialNumber"
-                            :use-central-store="useCentralStore"
                             v-on:note-deleted="refreshNotes"
                             v-on:note-updated="refreshNotes"
                     ></note-object>
@@ -76,38 +74,17 @@
 
         components: {
             editNote,
-            'note-object': noteObject,
-            // 'priority-selector': prioritySelector,
-            'color-selector': colorSelector,
-            'loading-indicator': loadingIndicator
+            noteObject,
+            colorSelector,
+            loadingIndicator
         },
 
         data: function () {
             return {
                 isLoading: false,
 
-                // isNewNoteVisible: false,
-
-                //whether to show the create new note button
-                // isNewButtonVisible: true,
-
-//                note: new Note(),
                 //The serial number of the item the notes belong to
                 itemSerialNumber: _.toInteger( this.$route.params.serialNumber ),
-
-                // placeholders: {
-                //     noteText: "Add a new note to your future self here"
-                // },
-
-                //these are the values of the new tag
-                newNoteName: '',
-                newNoteText: '',
-                newNotePriority: 1,
-
-                //if true, uses values stored in store.tags
-                //if false, handles and stores all tag related
-                //data internally.
-                useCentralStore: true,
 
                 //just a value to watch, when we need to
                 //reload notes, we increment this.
@@ -179,18 +156,14 @@
         methods: {
             createNewNote: function () {
                 this.$store.dispatch( "createNewNote", Payload.factory( { obj: this.item } ) );
-            }
-            ,
+            },
 
             refreshNotes: function () {
                 this.loadTrigger += 1;
             },
 
-            getId: function ( identifier ) {
-                return identifier + '-' + this.serialNumber;
-            },
         },
-        
+
 
     }
 </script>

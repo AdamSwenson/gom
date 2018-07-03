@@ -93,7 +93,7 @@
 
     export default {
 
-        props: [ 'note', 'serialNumber', 'object', 'useCentralStore' ],
+        props: [ 'note' ],
 
         components: {},
 
@@ -133,25 +133,15 @@
                 get: function () {
                     return this.note.name;
                 },
-                // set: function ( v ) {
-                //     if ( this.useCentralStore ) {
-                //         let pl = Payload.factory( {
-                //             obj: this.note,
-                //             updateProp: 'name',
-                //             updateVal: v
-                //         } );
-                //         this.$store.commit( mTypes.updateNote, pl );
-                //     }
-                //     else {
-                //         this.note.name = v;
-                //         let me = this;
-                //         let p = updateNoteRequest( null, this.note );
-                //         p.then( function () {
-                //             me.$emit( 'note-updated' );
-                //         } );
-                //     }
-                // }
-            },
+                set: function ( v ) {
+                    let pl = Payload.factory( {
+                        obj: this.note,
+                        updateProp: 'name',
+                        updateVal: v
+                    } );
+                    this.$store.commit( mTypes.updateNote, pl );
+                }
+                   },
 
             /**
              * The actual note object
@@ -175,42 +165,27 @@
 
             priorityClass: function () {
                 return this.note.styleString();
-//                if ( this.note.priority ) {
-//                    return this.styleMap[ this.note.priority ];
-//                }
             },
 
             priority: {
                 get: function () {
                     return this.note.priority;
                 },
-                // set: function ( v ) {
-                //     if ( this.useCentralStore ) {
-                //
-                //         let pl = Payload.factory( {
-                //             obj: this.note,
-                //             updateProp: 'priority',
-                //             updateVal: v
-                //         } );
-                //         this.$store.commit( mTypes.updateNote, pl );
-                //     } else {
-                //         this.note.priority = v;
-                //         let me = this;
-                //         let p = updateNoteRequest( null, this.note );
-                //         p.then( function () {
-                //             me.$emit( 'note-updated' );
-                //         } );
-                //     }
-                // }
-            },
-
-            props: {
-                get: function () {
-                    return this.note.props;
-                },
                 set: function ( v ) {
-                    if ( this.useCentralStore ) {
+                    let pl = Payload.factory( {
+                        obj: this.note,
+                        updateProp: 'priority',
+                        updateVal: v
+                    } );
+                    this.$store.commit( mTypes.updateNote, pl );
+                    }
+                },
 
+                props: {
+                    get: function () {
+                        return this.note.props;
+                    },
+                    set: function ( v ) {
                         let pl = Payload.factory( {
                             obj: this.note,
                             updateProp: 'props',
@@ -218,72 +193,50 @@
                         } );
                         this.$store.commit( mTypes.updateNote, pl );
                     }
-                    else {
-                        this.note.props = v;
+                },
+
+                text: {
+                    get: function () {
+                        return this.note.text;
+                    },
+                    set: function ( v ) {
+                            let pl = Payload.factory( {
+                                obj: this.note,
+                                updateProp: 'text',
+                                updateVal: v
+                            } );
+                            this.$store.commit( mTypes.updateNote, pl );
+                        }
+                },
+
+                updatedTimestamp: function () {
+                    if ( this.note.updated_at ) return this.note.updated_at;
+                    return this.note.updatedAt;
+                },
+
+
+            },
+
+            methods: {
+                getId: function ( identifier ) {
+                    return identifier + '-' + this.serialNumber;
+                },
+
+                handleDeleteClick: function () {
+                    window.console.log( 'note-area', 'handleDeleteClick', 190, this.note );
+
+                    if ( this.useCentralStore ) {
+                        this.$store.commit( mTypes.destroyNote, Payload.factory( { obj: this.note } ) );
+                    } else {
                         let me = this;
-                        let p = updateNoteRequest( null, this.note );
+                        let p = destroyNoteRequest( null, this.note );
                         p.then( function () {
-                            me.$emit( 'note-updated' );
+                            me.$emit( 'note-deleted' );
                         } );
                     }
                 }
-
-
-            },
-
-            text: {
-                get: function () {
-                    return this.note.text;
-                },
-                // set: function ( v ) {
-                //     if ( this.useCentralStore ) {
-                //
-                //         let pl = Payload.factory( {
-                //             obj: this.note,
-                //             updateProp: 'text',
-                //             updateVal: v
-                //         } );
-                //         this.$store.commit( mTypes.updateNote, pl );
-                //     }
-                //     else {
-                //         this.note.text = v;
-                //         let me = this;
-                //         let p = updateNoteRequest( null, this.note );
-                //         p.then( function () {
-                //             me.$emit( 'note-updated' );
-                //         } );
-                //     }
-                // }
-            },
-
-            updatedTimestamp: function () {
-                if ( this.note.updated_at ) return this.note.updated_at;
-                return this.note.updatedAt;
             },
 
 
-        },
-
-        methods: {
-            getId: function ( identifier ) {
-                return identifier + '-' + this.serialNumber;
-            },
-
-            handleDeleteClick: function () {
-                window.console.log( 'note-area', 'handleDeleteClick', 190, this.note );
-
-                if ( this.useCentralStore ) {
-                    this.$store.commit( mTypes.destroyNote, Payload.factory( { obj: this.note } ) );
-                } else {
-                    let me = this;
-                    let p = destroyNoteRequest( null, this.note );
-                    p.then( function () {
-                        me.$emit( 'note-deleted' );
-                    } );
-                }
-            }
-        },
-
-
-    }
+        }
 </script>

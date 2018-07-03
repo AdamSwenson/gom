@@ -25,12 +25,13 @@ describe( compName, () => {
     beforeEach( () => {
         note = factories.noteFactory();
         actions = {};
-        getters = {  getItemBySerialNumber : (  ) =>(  ) => factories.itemFactory()
+        getters = {
+            getItemBySerialNumber: () => () => factories.itemFactory()
         };
 
         mutations = {
             [ mTypes.updateNote ]: sinon.spy(),
-            [mTypes.destroyNote] : sinon.spy()
+            [ mTypes.destroyNote ]: sinon.spy()
         };
 
         store = new Vuex.Store( {
@@ -42,10 +43,12 @@ describe( compName, () => {
             propsData: {
                 serialNumber: 8763,
                 useCentralStore: true,
-                object: note }
+                object: note,
+                note: note
+            }
         } );
 
-        wrapper.setData({isEditable: true})
+        wrapper.setData( { isEditable: true } )
     } );
 
 
@@ -86,19 +89,19 @@ describe( compName, () => {
                 // helpers.type( wrapper, '.note-text', text );
                 // // check
                 expect( mutations[ mTypes.updateNote ].calledOnce ).toBe( true );
-            });
+            } );
         } );
 
     } )
 
     describe( "methods", () => {
 
-        it( "calls for correct mutation when delete clicked" , () => {
-            wrapper.setData({isEditable: false})
+        it( "calls for correct mutation when delete clicked", () => {
+            wrapper.setData( { isEditable: false } )
 
-            wrapper.find('.delete-note').trigger( 'click' );
+            wrapper.find( '.delete-note' ).trigger( 'click' );
             expect( mutations[ mTypes.destroyNote ].calledOnce ).toBe( true );
-        })
+        } )
     } )
 
 

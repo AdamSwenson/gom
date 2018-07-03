@@ -51944,6 +51944,7 @@ var getListOfGradeValues = exports.getListOfGradeValues = 'getListOfGradeValues'
    ================================================================ */
 var getNotesForItem = exports.getNotesForItem = 'getNotesForItem';
 var getNoteBySerialNumber = exports.getNoteBySerialNumber = 'getNoteBySerialNumber';
+var getNoteById = exports.getNoteById = '.getNoteById';
 
 /* ================================================================
    ================== ROSTER                  =====================
@@ -57734,18 +57735,13 @@ module.exports = {
                 var p = (0, _noteRequests.loadNotesForItemRequest)(itm);
                 return p.then(function (data) {
                     _.forEach(data, function (r) {
-                        // window.console.log( 'noteRequests', 'r', 29, r );
-                        var note = _Note2.default.factory(r);
-                        // note.id = r.id;
-                        // note.text = r.text;
-                        // note.priority = r.priority;
-                        // note.props = r.props;
-                        // note.updatedAt = r.updated_at;
-                        // note.createdAt = r.created_at;
-                        // note.name = r.name;
-                        note.associatedItemSerialNumber = itm.serialNumber;
-                        var payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
-                        commit('createNote', payload);
+                        var j = getters[gTypes.getNoteById](r.id);
+                        if (_.isUndefined(j)) {
+                            var note = _Note2.default.factory(r);
+                            note.associatedItemSerialNumber = itm.serialNumber;
+                            var _payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
+                            commit('createNote', _payload);
+                        }
                     });
                     resolve();
                 });
@@ -57846,6 +57842,18 @@ module.exports = (_module$exports = {
             });
             return r[0];
         }(state, serialNumber);
+    };
+}), _defineProperty(_module$exports, gTypes.getNoteById, function (state, getters, rootState, id) {
+    return function (id) {
+        return function (state, id) {
+            // window.console.log( 'notes.getters', 'state.notes', 50, state);
+            var r = state.notes.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, id);
     };
 }), _defineProperty(_module$exports, 'getNewNote', function getNewNote(state, getters, rootState) {
     if (state.newNoteSerialNumber === -1) return false;

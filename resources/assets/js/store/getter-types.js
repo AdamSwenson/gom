@@ -153,6 +153,7 @@ export const getListOfGradeValues = 'getListOfGradeValues';
    ================================================================ */
 export const getNotesForItem = 'getNotesForItem';
 export const getNoteBySerialNumber = 'getNoteBySerialNumber';
+export const getNoteById = '.getNoteById';
 
 
 /* ================================================================

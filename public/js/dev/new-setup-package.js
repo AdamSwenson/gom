@@ -8937,7 +8937,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 exports.default = {
 
-    props: ['note', 'serialNumber', 'object', 'useCentralStore'],
+    props: ['note'],
 
     components: {},
 
@@ -8976,25 +8976,15 @@ exports.default = {
         name: {
             get: function get() {
                 return this.note.name;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'name',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
             }
-            // set: function ( v ) {
-            //     if ( this.useCentralStore ) {
-            //         let pl = Payload.factory( {
-            //             obj: this.note,
-            //             updateProp: 'name',
-            //             updateVal: v
-            //         } );
-            //         this.$store.commit( mTypes.updateNote, pl );
-            //     }
-            //     else {
-            //         this.note.name = v;
-            //         let me = this;
-            //         let p = updateNoteRequest( null, this.note );
-            //         p.then( function () {
-            //             me.$emit( 'note-updated' );
-            //         } );
-            //     }
-            // }
         },
 
         /**
@@ -9019,33 +9009,20 @@ exports.default = {
 
         priorityClass: function priorityClass() {
             return this.note.styleString();
-            //                if ( this.note.priority ) {
-            //                    return this.styleMap[ this.note.priority ];
-            //                }
         },
 
         priority: {
             get: function get() {
                 return this.note.priority;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'priority',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
             }
-            // set: function ( v ) {
-            //     if ( this.useCentralStore ) {
-            //
-            //         let pl = Payload.factory( {
-            //             obj: this.note,
-            //             updateProp: 'priority',
-            //             updateVal: v
-            //         } );
-            //         this.$store.commit( mTypes.updateNote, pl );
-            //     } else {
-            //         this.note.priority = v;
-            //         let me = this;
-            //         let p = updateNoteRequest( null, this.note );
-            //         p.then( function () {
-            //             me.$emit( 'note-updated' );
-            //         } );
-            //     }
-            // }
         },
 
         props: {
@@ -9053,49 +9030,27 @@ exports.default = {
                 return this.note.props;
             },
             set: function set(v) {
-                if (this.useCentralStore) {
-
-                    var pl = _Payload2.default.factory({
-                        obj: this.note,
-                        updateProp: 'props',
-                        updateVal: v
-                    });
-                    this.$store.commit(mTypes.updateNote, pl);
-                } else {
-                    this.note.props = v;
-                    var me = this;
-                    var p = (0, _noteRequests.updateNoteRequest)(null, this.note);
-                    p.then(function () {
-                        me.$emit('note-updated');
-                    });
-                }
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'props',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
             }
-
         },
 
         text: {
             get: function get() {
                 return this.note.text;
+            },
+            set: function set(v) {
+                var pl = _Payload2.default.factory({
+                    obj: this.note,
+                    updateProp: 'text',
+                    updateVal: v
+                });
+                this.$store.commit(mTypes.updateNote, pl);
             }
-            // set: function ( v ) {
-            //     if ( this.useCentralStore ) {
-            //
-            //         let pl = Payload.factory( {
-            //             obj: this.note,
-            //             updateProp: 'text',
-            //             updateVal: v
-            //         } );
-            //         this.$store.commit( mTypes.updateNote, pl );
-            //     }
-            //     else {
-            //         this.note.text = v;
-            //         let me = this;
-            //         let p = updateNoteRequest( null, this.note );
-            //         p.then( function () {
-            //             me.$emit( 'note-updated' );
-            //         } );
-            //     }
-            // }
         },
 
         updatedTimestamp: function updatedTimestamp() {
@@ -9238,46 +9193,23 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
-//
-//
 
 exports.default = {
     //        props: ['serialNumber'], //the serial number of the note
 
     components: {
         editNote: _newNote2.default,
-        'note-object': _noteObject2.default,
-        // 'priority-selector': prioritySelector,
-        'color-selector': _colorSelector2.default,
-        'loading-indicator': _loadingIndicator2.default
+        noteObject: _noteObject2.default,
+        colorSelector: _colorSelector2.default,
+        loadingIndicator: _loadingIndicator2.default
     },
 
     data: function data() {
         return {
             isLoading: false,
 
-            // isNewNoteVisible: false,
-
-            //whether to show the create new note button
-            // isNewButtonVisible: true,
-
-            //                note: new Note(),
             //The serial number of the item the notes belong to
             itemSerialNumber: _.toInteger(this.$route.params.serialNumber),
-
-            // placeholders: {
-            //     noteText: "Add a new note to your future self here"
-            // },
-
-            //these are the values of the new tag
-            newNoteName: '',
-            newNoteText: '',
-            newNotePriority: 1,
-
-            //if true, uses values stored in store.tags
-            //if false, handles and stores all tag related
-            //data internally.
-            useCentralStore: true,
 
             //just a value to watch, when we need to
             //reload notes, we increment this.
@@ -9352,11 +9284,8 @@ exports.default = {
 
         refreshNotes: function refreshNotes() {
             this.loadTrigger += 1;
-        },
-
-        getId: function getId(identifier) {
-            return identifier + '-' + this.serialNumber;
         }
+
     }
 
 };
@@ -65099,9 +65028,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('note-object', {
       key: note.serialNumber,
       attrs: {
-        "note": note,
-        "serial-number": note.serialNumber,
-        "use-central-store": _vm.useCentralStore
+        "note": note
       },
       on: {
         "note-deleted": _vm.refreshNotes,
@@ -103191,6 +103118,7 @@ var getListOfGradeValues = exports.getListOfGradeValues = 'getListOfGradeValues'
    ================================================================ */
 var getNotesForItem = exports.getNotesForItem = 'getNotesForItem';
 var getNoteBySerialNumber = exports.getNoteBySerialNumber = 'getNoteBySerialNumber';
+var getNoteById = exports.getNoteById = '.getNoteById';
 
 /* ================================================================
    ================== ROSTER                  =====================
@@ -108981,18 +108909,13 @@ module.exports = {
                 var p = (0, _noteRequests.loadNotesForItemRequest)(itm);
                 return p.then(function (data) {
                     _.forEach(data, function (r) {
-                        // window.console.log( 'noteRequests', 'r', 29, r );
-                        var note = _Note2.default.factory(r);
-                        // note.id = r.id;
-                        // note.text = r.text;
-                        // note.priority = r.priority;
-                        // note.props = r.props;
-                        // note.updatedAt = r.updated_at;
-                        // note.createdAt = r.created_at;
-                        // note.name = r.name;
-                        note.associatedItemSerialNumber = itm.serialNumber;
-                        var payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
-                        commit('createNote', payload);
+                        var j = getters[gTypes.getNoteById](r.id);
+                        if (_.isUndefined(j)) {
+                            var note = _Note2.default.factory(r);
+                            note.associatedItemSerialNumber = itm.serialNumber;
+                            var _payload = _Payload2.default.factory({ obj: note, mutateSilently: true });
+                            commit('createNote', _payload);
+                        }
                     });
                     resolve();
                 });
@@ -109093,6 +109016,18 @@ module.exports = (_module$exports = {
             });
             return r[0];
         }(state, serialNumber);
+    };
+}), _defineProperty(_module$exports, gTypes.getNoteById, function (state, getters, rootState, id) {
+    return function (id) {
+        return function (state, id) {
+            // window.console.log( 'notes.getters', 'state.notes', 50, state);
+            var r = state.notes.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return r[0];
+        }(state, id);
     };
 }), _defineProperty(_module$exports, 'getNewNote', function getNewNote(state, getters, rootState) {
     if (state.newNoteSerialNumber === -1) return false;

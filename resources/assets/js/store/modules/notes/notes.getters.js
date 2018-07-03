@@ -56,6 +56,18 @@ module.exports  = {
                     return r[ 0 ];
                 })( state, serialNumber )
             },
+    [gTypes.getNoteById]: ( state, getters, rootState, id ) =>
+        ( id ) => {
+            return (function ( state, id ) {
+                // window.console.log( 'notes.getters', 'state.notes', 50, state);
+                var r = state.notes.filter( function ( i ) {
+                    if ( i.id === id ) {
+                        return i;
+                    }
+                } );
+                return r[ 0 ];
+            })( state, id )
+        },
 
         getNewNote: ( state, getters, rootState ) => {
             if ( state.newNoteSerialNumber === -1 ) return false;
