@@ -105422,7 +105422,7 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
         }
         return currentNode;
     };
-    // window.console.log( 'items', 'getSortedIds', 123, map);
+
     // //transform to ids
     //map is the exam represented as a Node object
     // Doing this depth first
@@ -105477,8 +105477,6 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
             }
         }
     })(map);
-    // }
-    // window.console.log( 'items', 'getOrderForSync', 147, out);
     return out;
 }), _defineProperty(_extends2, 'canSync', function canSync(state, getters, rootState) {
     if (state.items.length === 0) return false;
@@ -105532,7 +105530,6 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
             });
         });
     });
-    // })( state, commit, dispatch, getters, parentSN );
 }), _defineProperty(_extends3, aTypes.cloneItem, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit,
@@ -105590,27 +105587,6 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
         getters = _ref4.getters;
 
     dispatch(aTypes.removeItemFromOrder, payload);
-    //
-    // return (function ( state, commit, dispatch, getters, payload ) {
-    //     //obj is an object
-    //     let { obj } = payload;
-    //
-    //     let pl = Payload.factory( { obj: obj } );
-    //     // window.console.log( 'items', 'cloneItem payload', 234, pl);
-    //
-    //     dispatch( aTypes.addItemToOrder, pl );
-    //     //the item will not have been stored in the regular items array
-    //     //instead it is loaded asynchronously.
-    //     //So we need to push it into the main array
-    //     pl.mutateSilently = true;
-    //     commit( mTypes.addNewItem, pl );
-    //
-    // })( state, commit, dispatch, getters, payload );
-    //
-    // //remove from order
-    // [ aTypes.removeItem ]
-    //
-    // //remove from objects
 }), _defineProperty(_extends3, aTypes.deleteItem, function () {}), _extends3));
 
 var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, _JsonReaders2.default.mutations, _items6.default.mutations, _defineProperty({}, mTypes.initializeItemStorage, function (store, payload) {
@@ -105927,26 +105903,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 // const actions = {
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addOlderSibling, function (_ref, payload) {
-    var state = _ref.state,
-        dispatch = _ref.dispatch,
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.cleanupItems, function (_ref) {
+    var dispatch = _ref.dispatch,
         commit = _ref.commit,
         getters = _ref.getters;
-
-    //add item at same depth with same parent but with lower index
-    window.console.log('items', 'addOlderSibling', 283, payload);
-}), _defineProperty(_module$exports, aTypes.addYoungerSibling, function (_ref2, payload) {
-    var state = _ref2.state,
-        dispatch = _ref2.dispatch,
-        commit = _ref2.commit,
-        getters = _ref2.getters;
-
-    //add item at same depth with same parent but with higher index
-    window.console.log('items', 'addYoungerSibling', 288, payload);
-}), _defineProperty(_module$exports, aTypes.cleanupItems, function (_ref3) {
-    var dispatch = _ref3.dispatch,
-        commit = _ref3.commit,
-        getters = _ref3.getters;
 
 
     var p = new Promise(function (resolve, reject) {
@@ -105960,41 +105920,11 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
             resolve();
         });
     });
-}), _defineProperty(_module$exports, aTypes.deleteItem, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-    console.log(aTypes.deleteItem, state, commit, payload);
-    //check if payload has correct structure
-    var index = payload.index,
-        id = payload.id;
-    //remove from page
-
-    //reorder index
-
-    //call to server to delete
-
-    //confirm
-
-    //if fail, put back on page with message
-
-    //reorder index
-    //todo write
-}), _defineProperty(_module$exports, aTypes.demoteItem, function (_ref5, payload) {
-    var state = _ref5.state,
-        dispatch = _ref5.dispatch,
-        commit = _ref5.commit,
-        getters = _ref5.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.demote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_module$exports, aTypes.onUpdate, function (_ref6, event) {
-    var state = _ref6.state,
-        dispatch = _ref6.dispatch,
-        commit = _ref6.commit,
-        getters = _ref6.getters;
+}), _defineProperty(_module$exports, aTypes.onUpdate, function (_ref2, event) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
 
     var p = new Promise(function (resolve, reject) {
         commit(aTypes.onUpdate, event);
@@ -106007,21 +105937,11 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
             resolve();
         });
     });
-}), _defineProperty(_module$exports, aTypes.promoteItem, function (_ref7, payload) {
-    var state = _ref7.state,
-        dispatch = _ref7.dispatch,
-        commit = _ref7.commit,
-        getters = _ref7.getters;
-    var index = payload.index;
-
-    var item = getters.getItemByIndex(index);
-    item.promote();
-    commit(mTypes.setItem, _Payload2.default.factory({ obj: item }));
-}), _defineProperty(_module$exports, aTypes.toggleItemPublic, function (_ref8, payload) {
-    var state = _ref8.state,
-        dispatch = _ref8.dispatch,
-        commit = _ref8.commit,
-        getters = _ref8.getters;
+}), _defineProperty(_module$exports, aTypes.toggleItemPublic, function (_ref3, payload) {
+    var state = _ref3.state,
+        dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
 
     window.console.log('items', 'toggleItemPublic', 365, payload);
 
@@ -106035,6 +105955,94 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         }));
     }
 }), _module$exports);
+
+//
+// [aTypes.addOlderSibling]: ( { state, dispatch, commit, getters }, payload ) => {
+//     //add item at same depth with same parent but with lower index
+//     window.console.log( 'items', 'addOlderSibling', 283, payload );
+// },
+//
+// [aTypes.addYoungerSibling]: ( { state, dispatch, commit, getters }, payload ) => {
+//     //add item at same depth with same parent but with higher index
+//     window.console.log( 'items', 'addYoungerSibling', 288, payload );
+// },
+
+
+// /**
+//  * Handles the removal of an item
+//  * { dispatch, commit, getters, rootGetters }
+//  * @param state
+//  * @param commit
+//  */
+// [aTypes.deleteItem]: ( { state, commit }, payload ) => {
+//     console.log( aTypes.deleteItem, state, commit, payload );
+//     //check if payload has correct structure
+//     let { index, id } = payload;
+//     //remove from page
+//
+//     //reorder index
+//
+//     //call to server to delete
+//
+//     //confirm
+//
+//     //if fail, put back on page with message
+//
+//     //reorder index
+//     //todo write
+// },
+
+// /**
+//  * Makes an item into a child of others by
+//  * increasing its depth
+//  * @param state
+//  * @param payload
+//  */
+// [ aTypes.demoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
+//     let { index } = payload;
+//     let item = getters.getItemByIndex( index );
+//     item.demote();
+//     commit( mTypes.setItem, Payload.factory( { obj: item } ) )
+// },
+
+
+// /**
+//  * Makes an item into sibling of others by decreasing
+//  * its depth
+//  * @param state
+//  * @param payload
+//  */
+// [ aTypes.promoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
+//     let { index } = payload;
+//     let item = getters.getItemByIndex( index );
+//     item.promote();
+//     commit( mTypes.setItem, Payload.factory( { obj: item } ) )
+// },
+
+
+// /**
+//  * Consume a json object and populate the Items store
+//  * by pushing Items into it.
+//  * { dispatch, commit, getters, rootGetters }
+//  * @param state
+//  * @param rootState
+//  * @param payload
+//  */
+// [aTypes.loadItems]: ( state, rootState, payload ) => {
+//     //check if payload has correct structure
+//     //todo
+//
+//     //push each record from the payload into the store
+//     for (let i = 0; i < payload.length; i++) {
+//         let record = payload[ i ];
+//         //check if record has correct structure
+//         //todo
+//
+//         //add to Items and add index mapping
+//         [ aTypes.addNewItem ](state, rootState, record);
+//     }
+// },
+//
 
 //
 // export default {
@@ -106828,11 +106836,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         getters = _ref3.getters;
 
     return new Promise(function (resolve, reject) {
-        window.console.log('items.order.actions', aTypes.updateItemOrder, 31, payload);
-        // let serialNumber = payload.obj.serialNumber;
-
-        // payload.objNode = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-        // payload.parentNode = getters[ gTypes.getItemNodeFromOrder ]( payload.objNode.parent );
+        // window.console.log( 'items.order.actions', aTypes.updateItemOrder, 31, payload );
 
         //fire the mutation whose name was passed in as type
         commit(payload.type, payload);
@@ -107176,8 +107180,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     try {
         //the payload may have the data stored as either objNode or obj
         //and parentNode or parent.
-        var _index = payload.index,
-            objNode = payload.objNode,
+        var objNode = payload.objNode,
             parentNode = payload.parentNode;
 
         checkExpectedType(parentNode);
@@ -107189,8 +107192,16 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         parent = payload.parent;
     }
 
+    //Set the index if it was provided
+    if (!_.isUndefined(payload.index)) index = payload.index;
+
+    //The parent's serial number was probably already set on the
+    //object when it was created. However, if we are reusing
+    //an existing node, we need to update the value
+    obj.parent = parent.data;
+
     //if an index was specified, splice it in at the index
-    if (!_.isUndefined(index)) {
+    if (index) {
         parent.children.splice(index, 0, obj);
     } else {
         //otherwise just push it on the end
@@ -107270,27 +107281,56 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 }), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
     var objNode = payload.objNode,
         obj = payload.obj;
-    // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
-    //     objNode = new Node(obj.serialNumber, obj.serialNumber);
-    // }
-    //
-    // if(_.isUndefined(state.itemMap)){
-    //     //we can just put it in
-    //     state.itemMap = objNode;
-    //  }
-    // else{
+
     //we can just directly update the existing node's serial numbers
 
     state.itemMap.parent = obj.serialNumber;
     state.itemMap.data = obj.serialNumber;
-    // }
-    //if it already exists, we need to merge the children
-    //of the existing exam node into the new node
-    //
-    //         else if((! _.isUndefined(state.itemMap.children)) && state.itemMap.children.length > 0){
-    //             state.itemMap.parent = children
-    // ;        }
 }), _module$exports);
+/*
+ // addMappedItem: ( state, idx, toAdd ) => {
+ //     state.orderMap.set( idx, toAdd );
+ // },
+  //these should probably be methods on node
+ //or maybe not since that would make it harder
+ //to remove a child without also removing its
+ //children (if we want that to be an option)
+ //         addChild: ( state, idx, idToAdd ) => {
+ //             let child = [ idToAdd, [] ];
+ //             let itm = orderList[ 0 ];
+ //             //idx is a tuple stored as an array
+ //             for (let i = 0; i < idx.length; i++) {
+ //                 itm = itm[ 1 ][ i ]
+ //             }
+ //             let children = itm[ 1 ];
+ //             children.push( child );
+ //             Vue.set( itm, 1, children );
+ //             //
+ //             //
+ //             // let item = getItemFromList(state.orderList,  idx);
+ //             // if (! _.isEmpty(item)){
+ //             //     let maxIndex = _.last( Object.keys(item.children));
+ //             //     item.children
+ //             // }
+ //
+ //             // let item = getItemFromOrder(state.order,  idx);
+ // // if (! _.isEmpty(item)){
+ // //     let maxIndex = _.last( Object.keys(item.children));
+ // //     item.children
+ // // }
+ //
+ //         },
+ //
+ //         addParent: ( state, existing, toAdd ) => {
+ //
+ //         //
+ //         },
+ // addOlderSibling: ( state, existing, toAdd ) => {
+ // },
+ // addYoungerSibling: ( state, existing, toAdd ) => {
+ // },
+ */
+//
 
 /***/ }),
 

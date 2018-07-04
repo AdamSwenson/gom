@@ -11,17 +11,6 @@ import Exam from '../../../models/Exam'
 
 // const actions = {
 module.exports = {
-
-    [aTypes.addOlderSibling]: ( { state, dispatch, commit, getters }, payload ) => {
-        //add item at same depth with same parent but with lower index
-        window.console.log( 'items', 'addOlderSibling', 283, payload );
-    },
-
-    [aTypes.addYoungerSibling]: ( { state, dispatch, commit, getters }, payload ) => {
-        //add item at same depth with same parent but with higher index
-        window.console.log( 'items', 'addYoungerSibling', 288, payload );
-    },
-
     /**
      * Runs the various maintenance operations on the item store.
      * It will delete any empty slots and then make sure
@@ -47,42 +36,7 @@ module.exports = {
 
     },
 
-    /**
-     * Handles the removal of an item
-     * { dispatch, commit, getters, rootGetters }
-     * @param state
-     * @param commit
-     */
-    [aTypes.deleteItem]: ( { state, commit }, payload ) => {
-        console.log( aTypes.deleteItem, state, commit, payload );
-        //check if payload has correct structure
-        let { index, id } = payload;
-        //remove from page
 
-        //reorder index
-
-        //call to server to delete
-
-        //confirm
-
-        //if fail, put back on page with message
-
-        //reorder index
-        //todo write
-    },
-
-    /**
-     * Makes an item into a child of others by
-     * increasing its depth
-     * @param state
-     * @param payload
-     */
-    [ aTypes.demoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index } = payload;
-        let item = getters.getItemByIndex( index );
-        item.demote();
-        commit( mTypes.setItem, Payload.factory( { obj: item } ) )
-    },
 
     [aTypes.onUpdate]: ( { state, dispatch, commit, getters }, event ) => {
         let p = new Promise( ( resolve, reject ) => {
@@ -100,18 +54,6 @@ module.exports = {
 
     },
 
-    /**
-     * Makes an item into sibling of others by decreasing
-     * its depth
-     * @param state
-     * @param payload
-     */
-    [ aTypes.promoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
-        let { index } = payload;
-        let item = getters.getItemByIndex( index );
-        item.promote();
-        commit( mTypes.setItem, Payload.factory( { obj: item } ) )
-    },
 
     [ aTypes.toggleItemPublic ]: ( { state, dispatch, commit, getters }, payload ) => {
         window.console.log( 'items', 'toggleItemPublic', 365, payload );
@@ -127,16 +69,80 @@ module.exports = {
 
         }
     }
+};
+
+    //
+    // [aTypes.addOlderSibling]: ( { state, dispatch, commit, getters }, payload ) => {
+    //     //add item at same depth with same parent but with lower index
+    //     window.console.log( 'items', 'addOlderSibling', 283, payload );
+    // },
+    //
+    // [aTypes.addYoungerSibling]: ( { state, dispatch, commit, getters }, payload ) => {
+    //     //add item at same depth with same parent but with higher index
+    //     window.console.log( 'items', 'addYoungerSibling', 288, payload );
+    // },
 
 
-    /**
-     * Consume a json object and populate the Items store
-     * by pushing Items into it.
-     * { dispatch, commit, getters, rootGetters }
-     * @param state
-     * @param rootState
-     * @param payload
-     */
+    // /**
+    //  * Handles the removal of an item
+    //  * { dispatch, commit, getters, rootGetters }
+    //  * @param state
+    //  * @param commit
+    //  */
+    // [aTypes.deleteItem]: ( { state, commit }, payload ) => {
+    //     console.log( aTypes.deleteItem, state, commit, payload );
+    //     //check if payload has correct structure
+    //     let { index, id } = payload;
+    //     //remove from page
+    //
+    //     //reorder index
+    //
+    //     //call to server to delete
+    //
+    //     //confirm
+    //
+    //     //if fail, put back on page with message
+    //
+    //     //reorder index
+    //     //todo write
+    // },
+
+    // /**
+    //  * Makes an item into a child of others by
+    //  * increasing its depth
+    //  * @param state
+    //  * @param payload
+    //  */
+    // [ aTypes.demoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
+    //     let { index } = payload;
+    //     let item = getters.getItemByIndex( index );
+    //     item.demote();
+    //     commit( mTypes.setItem, Payload.factory( { obj: item } ) )
+    // },
+
+
+    // /**
+    //  * Makes an item into sibling of others by decreasing
+    //  * its depth
+    //  * @param state
+    //  * @param payload
+    //  */
+    // [ aTypes.promoteItem ]: ( { state, dispatch, commit, getters }, payload ) => {
+    //     let { index } = payload;
+    //     let item = getters.getItemByIndex( index );
+    //     item.promote();
+    //     commit( mTypes.setItem, Payload.factory( { obj: item } ) )
+    // },
+
+
+    // /**
+    //  * Consume a json object and populate the Items store
+    //  * by pushing Items into it.
+    //  * { dispatch, commit, getters, rootGetters }
+    //  * @param state
+    //  * @param rootState
+    //  * @param payload
+    //  */
     // [aTypes.loadItems]: ( state, rootState, payload ) => {
     //     //check if payload has correct structure
     //     //todo
@@ -152,7 +158,6 @@ module.exports = {
     //     }
     // },
 //
-};
 
 //
 // export default {

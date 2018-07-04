@@ -126,7 +126,7 @@ describe( compName, () => {
     } );
 
     describe( description( "demote" ), function () {
-        it( "happy path", function () {
+        it( "makes the node into the child of its immediately older sibiling", function () {
             //prep
             let c1 = new Node( 4, parentId );
             let c2 = new Node( 5, parentId );
@@ -154,7 +154,7 @@ describe( compName, () => {
 
     describe( description( mTypes.removeNodeFromOrder ), function () {
 
-        it( "happy path", function () {
+        it( "removes the node from the itemMap but does not delete the data associated with it", function () {
 
             let parent = filledState.itemMap.children[ testItemIndex ];//.children[ testItemIndex ];
             let numChildren = parent.children.length;
@@ -167,8 +167,7 @@ describe( compName, () => {
             // window.console.log( 'orderings.spec', 'add', 76, filledState );
 
             //check
-            let result = filledState.itemMap.children[ testItemIndex ];//.children[ testItemIndex ];
-            ;
+            let result = filledState.itemMap.children[ testItemIndex ];
             //parent is unchanged other than children
             expect( parent.data ).toBe( result.data );
             expect( parent.parent ).toBe( result.parent );
@@ -188,7 +187,6 @@ describe( compName, () => {
                 let parent = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
                 let numChildren = parent.children.length;
                 let toAddSerial = faker.random.number();
-
                 let toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
 
                 let payload = Payload.factory( {
@@ -232,10 +230,9 @@ describe( compName, () => {
                 //call
                 mutations[ mTypes.insertNodeIntoOrder ]( filledState, payload );
 
-                // window.console.log( 'orderings.spec', 'add', 76, filledState );
-
                 //check
-                let result = filledState.itemMap.children[ testItemIndex ][index];//children[ testItemIndex ];
+                let result = filledState.itemMap.children[ testItemIndex ];
+
                 //parent properties are unchanged (other than children)
                 expect( result.data ).toBe( parent.data );
                 expect( result.parent ).toBe( parent.parent );

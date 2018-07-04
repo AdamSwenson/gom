@@ -19,47 +19,8 @@ describe( compName, () => {
 
     beforeEach( () => {
         getters = {};
-        getters[ 'getItemByIndex' ] = ( args ) => {};
-    } );
-
-    describe.skip( description( aTypes.addOlderSibling ), function () {
-        //todo
-        it( "happy path  ", function () {
-
-            let state = [];
-            state[ 0 ] = { index: 0 };
-            state[ 1 ] = { index: 1 };
-            //leaves a hole at state[2]
-            state[ 3 ] = { index: 3 };
-
-            let action = actions[ aTypes.cleanupItems ];
-            let expectedMutations = [
-                { type: 'cleanupEmptyItems' },
-                { type: mTypes.updateOrder, }
-            ];
-
-            testAction( action, {}, state, expectedMutations, { verbose: false } );
-        } );
-    } );
-
-    describe.skip( description( aTypes.addYoungerSibling ), function () {
-        //todo
-        it( "happy path  ", function () {
-
-            let state = [];
-            state[ 0 ] = { index: 0 };
-            state[ 1 ] = { index: 1 };
-            //leaves a hole at state[2]
-            state[ 3 ] = { index: 3 };
-
-            let action = actions[ aTypes.cleanupItems ];
-            let expectedMutations = [
-                { type: 'cleanupEmptyItems' },
-                { type: mTypes.updateOrder, }
-            ];
-
-            testAction( action, {}, state, expectedMutations, { verbose: false } );
-        } );
+        getters[ 'getItemByIndex' ] = ( args ) => {
+        };
     } );
 
     describe( description( aTypes.cleanupItems ), function () {
@@ -86,47 +47,11 @@ describe( compName, () => {
 
     describe( description( aTypes.deleteItem ), function () {
         //todo
-        it.skip('happy path', (  ) => {
+        it.skip( 'happy path', () => {
 
-        })
+        } )
     } );
 
-    describe( description( aTypes.demoteItem ), function () {
-        it( "happy path  ", function () {
-            let state = makeState();
-            //let index = faker.random.arrayElement(state.items.keys());
-            let index = 1;
-            let item = state.items[ index ];
-
-            //we can use the same object as both the input and
-            //expected result because the tested process returns a
-            //different token that has the same props
-            let payload = Payload.factory( { index: index } );
-
-            //create a spy for the item that will be retrieved and promoted
-            let spyItem = sinon.mock( item );
-            spyItem.expects( 'demote' ).once();
-
-            //now create a spy for the getters object it expects
-            let spyGetter = sinon.mock( getters, 'getItemByIndex' );
-            spyGetter.expects( 'getItemByIndex' ).withArgs( index ).returns( item );
-
-            //Expected endpoint
-            let action = actions[ aTypes.demoteItem ];
-            let expectedPayload = Payload.factory( { obj: item } );
-            let expectedMutations = [
-                { type: mTypes.setItem, payload: expectedPayload }
-            ];
-
-            //Checks that the appropriate mutations are called
-            testAction( action, payload, state, expectedMutations, { verbose: false, getters: getters } );
-
-            //check that the promote method was called on the spy
-            expect( spyItem.verify() ).toBe( true );
-            expect( spyGetter.verify() ).toBe( true );
-        } );
-
-    } );
 
     describe( description( aTypes.onUpdate ), function () {
         it( "happy path  ", function () {
@@ -140,54 +65,9 @@ describe( compName, () => {
 
             testAction( action, event, state, expectedMutations, { verbose: false } );
         } );
-
-
-    } );
-
-    describe( description( aTypes.promoteItem ), function () {
-
-        it( "happy path  ", function () {
-            let state = makeState();
-            //let index = faker.random.arrayElement(state.items.keys());
-            let index = 1;
-            let item = state.items[ index ];
-
-            //we can use the same object as both the input and
-            //expected result because the tested process returns a
-            //different token that has the same props
-            let payload = Payload.factory( { index: index } );
-
-            //create a spy for the item that will be retrieved and promoted
-            // let item = state.items[ index ];
-            // window.console.log( 'items.actions.spec', 'item', 164, item );
-            let spyItem = sinon.mock( item );
-            spyItem.expects( 'promote' ).once();
-            // //replace the original with the spy
-            // state.items[index] = item;
-
-            //now create a spy for the getters object it expects
-            let spyGetter = sinon.mock( getters, 'getItemByIndex' );
-            spyGetter.expects( 'getItemByIndex' ).withArgs( index ).returns( item );
-
-            //Expected endpoint
-            let action = actions[ aTypes.promoteItem ];
-            let expectedPayload = Payload.factory( { obj: item } );
-            let expectedMutations = [
-                { type: mTypes.setItem, payload: expectedPayload }
-            ];
-
-            //Checks that the appropriate mutations are called
-            testAction( action, payload, state, expectedMutations, { verbose: false, getters: getters } );
-
-            //check that the promote method was called on the spy
-            expect( spyItem.verify() ).toBe( true );
-            expect( spyGetter.verify() ).toBe( true );
-        } );
-
     } );
 
     describe( description( aTypes.toggleItemPublic ), function () {
-
         it( "happy path  ", function () {
             let state = makeState();
             // let item = faker.random.arrayElement(state.items);
@@ -219,16 +99,129 @@ describe( compName, () => {
             //check that the promote method was called on the spy
             expect( spyGetter.verify() ).toBe( true );
         } );
-
-
-        describe( description( 'error path | payload is not Payload' ), function () {
-//todo
-
-        } );
-
     } );
 
+
 } );
+
+// describe.skip( description( aTypes.addOlderSibling ), function () {
+//     //todo
+//     it( "happy path  ", function () {
+//
+//         let state = [];
+//         state[ 0 ] = { index: 0 };
+//         state[ 1 ] = { index: 1 };
+//         //leaves a hole at state[2]
+//         state[ 3 ] = { index: 3 };
+//
+//         let action = actions[ aTypes.cleanupItems ];
+//         let expectedMutations = [
+//             { type: 'cleanupEmptyItems' },
+//             { type: mTypes.updateOrder, }
+//         ];
+//
+//         testAction( action, {}, state, expectedMutations, { verbose: false } );
+//     } );
+// } );
+
+// describe.skip( description( aTypes.addYoungerSibling ), function () {
+//     //todo
+//     it( "happy path  ", function () {
+//
+//         let state = [];
+//         state[ 0 ] = { index: 0 };
+//         state[ 1 ] = { index: 1 };
+//         //leaves a hole at state[2]
+//         state[ 3 ] = { index: 3 };
+//
+//         let action = actions[ aTypes.cleanupItems ];
+//         let expectedMutations = [
+//             { type: 'cleanupEmptyItems' },
+//             { type: mTypes.updateOrder, }
+//         ];
+//
+//         testAction( action, {}, state, expectedMutations, { verbose: false } );
+//     } );
+// } );
+
+// describe( description( aTypes.demoteItem ), function () {
+//     it( "happy path  ", function () {
+//         let state = makeState();
+//         //let index = faker.random.arrayElement(state.items.keys());
+//         let index = 1;
+//         let item = state.items[ index ];
+//
+//         //we can use the same object as both the input and
+//         //expected result because the tested process returns a
+//         //different token that has the same props
+//         let payload = Payload.factory( { index: index } );
+//
+//         //create a spy for the item that will be retrieved and promoted
+//         let spyItem = sinon.mock( item );
+//         spyItem.expects( 'demote' ).once();
+//
+//         //now create a spy for the getters object it expects
+//         let spyGetter = sinon.mock( getters, 'getItemByIndex' );
+//         spyGetter.expects( 'getItemByIndex' ).withArgs( index ).returns( item );
+//
+//         //Expected endpoint
+//         let action = actions[ aTypes.demoteItem ];
+//         let expectedPayload = Payload.factory( { obj: item } );
+//         let expectedMutations = [
+//             { type: mTypes.setItem, payload: expectedPayload }
+//         ];
+//
+//         //Checks that the appropriate mutations are called
+//         testAction( action, payload, state, expectedMutations, { verbose: false, getters: getters } );
+//
+//         //check that the promote method was called on the spy
+//         expect( spyItem.verify() ).toBe( true );
+//         expect( spyGetter.verify() ).toBe( true );
+//     } );
+//
+// } );
+
+// describe( description( aTypes.promoteItem ), function () {
+//
+//     it( "happy path  ", function () {
+//         let state = makeState();
+//         //let index = faker.random.arrayElement(state.items.keys());
+//         let index = 1;
+//         let item = state.items[ index ];
+//
+//         //we can use the same object as both the input and
+//         //expected result because the tested process returns a
+//         //different token that has the same props
+//         let payload = Payload.factory( { index: index } );
+//
+//         //create a spy for the item that will be retrieved and promoted
+//         // let item = state.items[ index ];
+//         // window.console.log( 'items.actions.spec', 'item', 164, item );
+//         let spyItem = sinon.mock( item );
+//         spyItem.expects( 'promote' ).once();
+//         // //replace the original with the spy
+//         // state.items[index] = item;
+//
+//         //now create a spy for the getters object it expects
+//         let spyGetter = sinon.mock( getters, 'getItemByIndex' );
+//         spyGetter.expects( 'getItemByIndex' ).withArgs( index ).returns( item );
+//
+//         //Expected endpoint
+//         let action = actions[ aTypes.promoteItem ];
+//         let expectedPayload = Payload.factory( { obj: item } );
+//         let expectedMutations = [
+//             { type: mTypes.setItem, payload: expectedPayload }
+//         ];
+//
+//         //Checks that the appropriate mutations are called
+//         testAction( action, payload, state, expectedMutations, { verbose: false, getters: getters } );
+//
+//         //check that the promote method was called on the spy
+//         expect( spyItem.verify() ).toBe( true );
+//         expect( spyGetter.verify() ).toBe( true );
+//     } );
+//
+// } );
 
 
 // describe( description( aTypes.createItem ), function () {

@@ -27,13 +27,18 @@ const checkExpectedType = ( toBeSet ) => {
 
 module.exports = {
 
+    /**
+     * Pushes a node into the order.
+     * @param state
+     * @param payload
+     */
     [ mTypes.insertNodeIntoOrder ]: ( state, payload ) => {
         let obj, parent, index;
         // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
         try {
             //the payload may have the data stored as either objNode or obj
             //and parentNode or parent.
-            let { index, objNode, parentNode } = payload;
+            let { objNode, parentNode } = payload;
             checkExpectedType( parentNode )
             checkExpectedType( objNode )
             obj = objNode;
@@ -43,18 +48,26 @@ module.exports = {
             parent = payload.parent;
         }
 
+        //Set the index if it was provided
+        if(!_.isUndefined(payload.index)) index = payload.index;
+
+        //The parent's serial number was probably already set on the
+        //object when it was created. However, if we are reusing
+        //an existing node, we need to update the value
+        obj.parent = parent.data;
+
         //if an index was specified, splice it in at the index
-        if ( !_.isUndefined( index ) ) {
+        if (  index  ) {
             parent.children.splice( index, 0, obj );
         } else {
             //otherwise just push it on the end
             parent.children.push( obj );
         }
-    },
+      },
 
 
     [ mTypes.removeNodeFromOrder ]: ( state, payload ) => {
-        window.console.log( 'items.order.mutations', 'removenode', 57, payload);
+        window.console.log( 'items.order.mutations', 'removenode', 57, payload );
         let { obj, parent } = payload;
         //Merge its children into its parent's children
         parent.children.concat( obj.children );
@@ -111,20 +124,25 @@ module.exports = {
      */
     promote: ( state, payload ) => {
         // window.console.log( 'items.order.mutations', 'promote', 113, payload);
-            let { objNode, parentNode } = payload;
-            //get parent's parent
-            if ( parentNode instanceof Node ) {
-                //add the node to the grand parent's list of children
-                //thus making it a sibling of the parent
-                let grandParent = getNode( state, parentNode.parent );
-                grandParent.children.push( objNode );
-                //update the node so that its parent is now the grandparent
-                Vue.set(objNode, 'parent', grandParent.data)
-                //finally, remove the node from its former parent's children list
-                parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
-            }
+        let { objNode, parentNode } = payload;
+        //get parent's parent
+        if ( parentNode instanceof Node ) {
+            //add the node to the grand parent's list of children
+            //thus making it a sibling of the parent
+            let grandParent = getNode( state, parentNode.parent );
+            grandParent.children.push( objNode );
+            //update the node so that its parent is now the grandparent
+            Vue.set( objNode, 'parent', grandParent.data )
+            //finally, remove the node from its former parent's children list
+            parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
+        }
     },
 
+    /**
+     * Makes the item a child of its immediately elder sibling
+     * @param state
+     * @param payload
+     */
     demote: ( state, payload ) => {
         let { objNode, parentNode } = payload;
         let currentIndex = parentNode.children.indexOf( objNode );
@@ -135,7 +153,7 @@ module.exports = {
         //add to the new parent's children
         newParent.children.push( objNode );
         //set the new parent on the object node
-        Vue.set(objNode, 'parent', newParent.data);
+        Vue.set( objNode, 'parent', newParent.data );
     },
 
     //
@@ -150,26 +168,14 @@ module.exports = {
 
     setRootNode: ( state, payload ) => {
         let { objNode, obj } = payload;
-        // if ( _.isUndefined(objNode) && obj instanceof Exam ) {
-        //     objNode = new Node(obj.serialNumber, obj.serialNumber);
-        // }
-        //
-        // if(_.isUndefined(state.itemMap)){
-        //     //we can just put it in
-        //     state.itemMap = objNode;
-        //  }
-        // else{
+
         //we can just directly update the existing node's serial numbers
         state.itemMap.parent = obj.serialNumber;
         state.itemMap.data = obj.serialNumber;
-        // }
-        //if it already exists, we need to merge the children
-        //of the existing exam node into the new node
-//
-//         else if((! _.isUndefined(state.itemMap.children)) && state.itemMap.children.length > 0){
-//             state.itemMap.parent = children
-// ;        }
+
     }
+
+};
     /*
      // addMappedItem: ( state, idx, toAdd ) => {
      //     state.orderMap.set( idx, toAdd );
@@ -215,4 +221,3 @@ module.exports = {
      // },
      */
 //
-};

@@ -87,7 +87,7 @@ const getters = {
             }
             return currentNode;
         };
-        // window.console.log( 'items', 'getSortedIds', 123, map);
+
         // //transform to ids
         //map is the exam represented as a Node object
         // Doing this depth first
@@ -125,13 +125,13 @@ const getters = {
             }
             // window.console.log( 'items', 'recurse', 153, currentNode );
             // step 4
-            let item = getters[gTypes.getItemBySerialNumber]( currentNode.data );
+            let item = getters[ gTypes.getItemBySerialNumber ]( currentNode.data );
             // holdForIdLoading(item);
             // window.console.log( 'items', 'recurse', 193, 'post hold', item);
             if ( !_.isUndefined( item ) ) {
-                let exam = item.isExam() ? item : getters[gTypes.getActiveExam];
+                let exam = item.isExam() ? item : getters[ gTypes.getActiveExam ];
                 let parent = getters.getItemBySerialNumber( currentNode.parent );
-                if(parent) {
+                if ( parent ) {
                     out.push( {
                         examId: exam.id,
                         itemId: item.id,
@@ -141,10 +141,7 @@ const getters = {
                     } );
                 }
             }
-
         })( map );
-        // }
-        // window.console.log( 'items', 'getOrderForSync', 147, out);
         return out;
     },
 
@@ -201,35 +198,34 @@ const actions = {
             }
 
             //directly create the item on the server
-            createItem(  )
+            createItem()
                 .then( function ( data ) {
                     //create an item from the data returned
                     //this will set the id
-                let item = Item.factory(data);
+                    let item = Item.factory( data );
 
-                //now store the newly created
-                // item in the items list
-                let payload = Payload.factory(
-                    {
-                        obj: item,
-                        parent: parentSN, //this way we can reuse the payload
-                        mutateSilently: true
+                    //now store the newly created
+                    // item in the items list
+                    let payload = Payload.factory(
+                        {
+                            obj: item,
+                            parent: parentSN, //this way we can reuse the payload
+                            mutateSilently: true
+                        } );
+                    commit( mTypes.addNewItem, payload );
+
+                    //Trigger the actions to put the item in the
+                    //proper place in the order
+                    let p2 = dispatch( aTypes.addItemToOrder, payload );
+                    p2.then( function () {
+                        //and we're done
+                        resolve();
                     } );
-                commit( mTypes.addNewItem, payload );
 
-                //Trigger the actions to put the item in the
-                //proper place in the order
-                let p2 = dispatch( aTypes.addItemToOrder, payload );
-                p2.then( function () {
-                    //and we're done
-                    resolve();
                 } );
-
-            } );
 
 
         } );
-        // })( state, commit, dispatch, getters, parentSN );
 
     },
 
@@ -295,28 +291,7 @@ const actions = {
      * The item and all associated score data remain intact.
      */
     [ aTypes.removeItem ]: ( { state, commit, dispatch, getters }, payload ) => {
-        dispatch( aTypes.removeItemFromOrder , payload);
-        //
-        // return (function ( state, commit, dispatch, getters, payload ) {
-        //     //obj is an object
-        //     let { obj } = payload;
-        //
-        //     let pl = Payload.factory( { obj: obj } );
-        //     // window.console.log( 'items', 'cloneItem payload', 234, pl);
-        //
-        //     dispatch( aTypes.addItemToOrder, pl );
-        //     //the item will not have been stored in the regular items array
-        //     //instead it is loaded asynchronously.
-        //     //So we need to push it into the main array
-        //     pl.mutateSilently = true;
-        //     commit( mTypes.addNewItem, pl );
-        //
-        // })( state, commit, dispatch, getters, payload );
-        //
-        // //remove from order
-        // [ aTypes.removeItem ]
-        //
-        // //remove from objects
+        dispatch( aTypes.removeItemFromOrder, payload );
     },
 
     /**
@@ -326,6 +301,7 @@ const actions = {
      * the exam. That is done by removeItem
      */
     [ aTypes.deleteItem ]: () => {
+
     },
 
 

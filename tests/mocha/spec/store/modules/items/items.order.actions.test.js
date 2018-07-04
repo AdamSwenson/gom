@@ -10,7 +10,7 @@ import Item from '../../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../../resources/assets/js/models/Node'
 
-import { updateItemsOrder } from '../../../../../../resources/assets/js/api/requests/itemRequests';
+import Requests  from '../../../../../../resources/assets/js/api/requests/itemRequests';
 
 import { traverseDF, traverseBF, getSerialNumber } from '../../../../../../resources/assets/js/models/NodeTools'
 import { addNodes } from "../../../../helpers/item-test-helpers";
@@ -21,6 +21,8 @@ let actions = Component;
 const testAction = helpers.testAction;
 const description = helpers.description;
 
+// let m = sinon.stub(  Requests, 'updateItemsOrder' );
+// m.resolves(true);
 
 describe( compName, () => {
     let listOfValues, test;
@@ -28,6 +30,7 @@ describe( compName, () => {
     let numItems, filledState, testItemIndex;
 
     beforeEach( () => {
+
         exam = factories.examFactory();
         numItems = 5;
         testItemIndex = faker.random.number( { min: 0, max: numItems - 1 } );
@@ -42,7 +45,6 @@ describe( compName, () => {
 
     describe( aTypes.addItemToOrder, function () {
         it( "adds item to end of list when no index provided", function ( done ) {
-            let m = sinon.mock( updateItemsOrder );
             let parent = filledState.itemMap.children[ testItemIndex ];
             let getters = {
                 [ gTypes.getItemNodeFromOrder ]: () => {
@@ -68,7 +70,6 @@ describe( compName, () => {
         } );
 
         it( "adds the node at the specified index ", function ( done ) {
-            let m = sinon.mock( updateItemsOrder );
 
             let parent = filledState.itemMap.children[ testItemIndex ];
             let getters = {

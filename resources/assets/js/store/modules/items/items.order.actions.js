@@ -56,24 +56,10 @@ module.exports = {
                 } );
         } );
     },
-    //
-    // let f = function ( currentNode ) {
-    //     window.console.log( 'items.order.actions', 'f', 44, currentNode.data, parentSerialNumber);
-    //     if ( currentNode.data === parentSerialNumber ) {
-    //         // let pl = Payload.factory( { obj: n, parent: currentNode } );
-    //         //
-    //         // window.console.log( 'items.order.actions', 'found it', 44, currentNode.data, parentSerialNumber);
-    //         // commit( mTypes.insertNodeIntoOrder, pl );
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // let parentNode = traverseDF( state.itemMap, f );
 
 
     /**
-     * Emancipates an item from its parent.
+     * Removes an item from the exam
      * That is, it removes the association between an item
      * and its parent with the result that the item is no
      * longer present on the exam.
@@ -88,13 +74,24 @@ module.exports = {
         commit( mTypes.removeNodeFromOrder, pl );
     },
 
+    /**
+     * Handles all changes in item ordering.
+     * payload should contain a key `type` with
+     * one of the values:
+     *      promote
+     *      demote
+     *      increasePosition
+     *      decreasePosition
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     * @returns {Promise<any>}
+     */
     [ aTypes.updateItemOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
         return new Promise( function ( resolve, reject ) {
-            window.console.log( 'items.order.actions', aTypes.updateItemOrder, 31, payload );
-            // let serialNumber = payload.obj.serialNumber;
-
-            // payload.objNode = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-            // payload.parentNode = getters[ gTypes.getItemNodeFromOrder ]( payload.objNode.parent );
+            // window.console.log( 'items.order.actions', aTypes.updateItemOrder, 31, payload );
 
             //fire the mutation whose name was passed in as type
             commit( payload.type, payload );
