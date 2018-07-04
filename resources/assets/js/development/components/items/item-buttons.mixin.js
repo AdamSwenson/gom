@@ -13,6 +13,7 @@ module.exports = {
 
 
         serialNumber: function () {
+            return this.item.serialNumber;
             return this.item ? this.item.serialNumber : null;
         },
 

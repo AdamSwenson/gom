@@ -14,6 +14,7 @@ import Item from "../../../../../../resources/assets/js/models/Item";
 //tested object
 
 import { createLocalVue } from 'vue-test-utils';
+import { itemFactory } from "../../../../helpers/factories";
 
 const localVue = createLocalVue();
 localVue.use( Vuex )
@@ -80,7 +81,7 @@ describe( compName, () => {
             item = factories.itemFactory();
             exam = factories.examFactory();
 
-            parent = new Item();
+            parent = itemFactory();
             filledState = {
                 items: [ parent ],
                 itemMap: new Node( parent.serialNumber, parent.serialNumber )
@@ -95,10 +96,10 @@ describe( compName, () => {
             // root.children.push( parent );
 
             getters[ gTypes.getActiveExam ] = (  ) => (  ) =>  exam;
-            getters[gTypes.getItemBySerialNumber] = (  ) => (  ) => item;
+            // getters[gTypes.getItemBySerialNumber] = (  ) => (  ) => item;
 
             store = new Vuex.Store( {
-                state, getters
+                state: filledState, getters
             } );
         } );
 
@@ -114,40 +115,45 @@ describe( compName, () => {
 
 
         describe( gTypes.getSortedIds, function () {
-            beforeEach( function () {
-                numItems = 5;
-                expectedIds = [];
-                state.itemMap = new Node( 0, 0 );
-                addNodes( state.itemMap, numItems );
-                for (let n of state.itemMap.children) {
-                    addNodes( n, numItems );
-                    state.items.push(factories.itemFactory())
-                }
-
-                let serialNumbers = addNodes.isns;
-
-                // window.console.log( 'items.spec', 'serialNumbers', 259, serialNumbers );
-                //Now make corresponding items for the items array
-                for (let i = 0; i < serialNumbers.length; i++) {
-                    let a = new Item();
-                    a.serialNumber = serialNumbers[ i ];
-                    a.id = 2 * a.serialNumber;
-                    expectedIds.push( a.id );
-                    state.items.push( a );
-                }
-
-                getters[gTypes.getItemMapCopy] = (  ) => () => state.itemMap;
-
-
-                store = new Vuex.Store( {
-                    state, getters
-                } );
-            } );
+            // beforeEach( function () {
+            //     numItems = 5;
+            //     expectedIds = [];
+            //     state.itemMap = new Node( 0, 0 );
+            //     let newItems = addNodes( state.itemMap, numItems );
+            //     state.items += newItems;
+            //     for (let n of state.itemMap.children) {
+            //         let moreNewItems = addNodes( n, numItems );
+            //         //this created items and pushed their serial numbers into
+            //         //the itemMap. We thus need to add the id to the state
+            //         state.items += moreNewItems;
+            //     }
+            //
+            //     // let serialNumbers = addNodes.isns;
+            //     //
+            //     // // window.console.log( 'items.spec', 'serialNumbers', 259, serialNumbers );
+            //     // //Now make corresponding items for the items array
+            //     // for (let i = 0; i < serialNumbers.length; i++) {
+            //     //     let a = new Item();
+            //     //     a.serialNumber = serialNumbers[ i ];
+            //     //     a.id = 2 * a.serialNumber;
+            //     //     expectedIds.push( a.id );
+            //     //     state.items.push( a );
+            //     // }
+            //
+            //     getters[gTypes.getItemMapCopy] = (  ) => () => state.itemMap;
+            //
+            //     store = new Vuex.Store( {
+            //         state, getters
+            //     } );
+            // } );
 
             it( "returns a list of ids in sorted order ", function () {
                 // window.console.log( 'items.spec', 'state', 275, state );
                 let result = store.getters[ gTypes.getSortedIds ];
-                var expectedIds = expectedIds;
+                var expectedIds = [];
+                _.forEach(filledState.items, function ( item ) {
+                    expectedIds.push(item);
+                })
                 let tester = function ( currentNode ) {
                     // window.console.log( 'items.spec', 'tester', 182, currentNode);
                     //ignore the exam1

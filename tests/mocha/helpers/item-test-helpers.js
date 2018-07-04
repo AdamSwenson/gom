@@ -13,16 +13,28 @@ import Item from '../../../resources/assets/js/models/Item';
 
 import Node from '../../../resources/assets/js/models/Node';
 
+/**
+ * This creates items and pushes their serial numbers into
+ * child nodes of the parent.
+ * It returns the new item objects so that we
+ * can manually add them to the state's item list, if
+ * needed.
+ * @param parentNode
+ * @param number
+ * @returns {Array}
+ */
 export const addNodes = ( parentNode, number ) => {
     if ( ! addNodes.isns) addNodes.isns = [];
     let id = parentNode.data;
+    let createdItems = []
     for (let i = 0; i < number; i++) {
-        let it = new Item();
+        let it = factories.itemFactory();
+        createdItems.push(it);
         let o = new Node( it.serialNumber, id );
         addNodes.isns.push(it.serialNumber);
         parentNode.children.push( o )
     }
-
+    return createdItems;
 };
 
 export const makeState = ( n = 5 ) => {
@@ -38,10 +50,17 @@ export const makeState = ( n = 5 ) => {
 };
 
 export const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
-    addNodes( state.itemMap, numItems );
+    let newItems = addNodes( state.itemMap, numItems );
+    //this created items and pushed their serial numbers into
+    //the itemMap. It returns the item objects so that
+    // we can add them to the state's item list
+    state.items += newItems;
     for (let n of state.itemMap.children) {
-        addNodes( n, numItems );
+        let moreNewItems = addNodes( n, numItems );
+
+        state.items += moreNewItems;
     }
+
 };
 
 export const makeRootState = function () {

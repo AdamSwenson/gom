@@ -1,20 +1,20 @@
 <template>
     <div class="card-movement-control card-footer">
-        <a href="#" class="card-footer-item"
+        <a href="#" class="move-left-control card-footer-item"
            v-on:click="moveLeft"
         >
             <span class="icon"><i class="fa fa-angle-left"></i></span>
             <span>Left</span>
         </a>
 
-        <a href="#" class="card-footer-item"
+        <a href="#" class="move-up-control card-footer-item"
            v-on:click="moveUp"
         >
             <span class="icon"><i class="fa fa-angle-up"></i></span>
             <span>Up</span>
         </a>
 
-        <a href="#" class="card-footer-item"
+        <a href="#" class="remove-control card-footer-item"
            v-on:click="remove"
         >
             <span class="icon is-small has-text-danger ">
@@ -23,13 +23,13 @@
             <span class="has-text-danger">Remove</span>
         </a>
 
-        <a href="#" class="card-footer-item"
+        <a href="#" class="move-down-control card-footer-item"
            v-on:click=" moveDown"
         >
             <span class="icon"><i class="fa fa-angle-down"></i></span>
             <span>Down</span>
         </a>
-        <a href="#" class="card-footer-item"
+        <a href="#" class="move-right-control card-footer-item"
            v-on:click=" moveRight"
         >
             <span>Right</span>
@@ -83,12 +83,14 @@
 <script>
     import Item from '../../../models/Item'
     import Payload from '../../../models/Payload'
+    import * as aTypes from '../../../store/action-types';
 
     import mixin from './item-buttons.mixin';
-    export default {
-        mixins: [mixin],
 
-        props: ['item' ],
+    export default {
+        mixins: [ mixin ],
+
+        props: [ 'item' ],
 
         data: function () {
             return {
@@ -100,8 +102,11 @@
             //increases position relative to siblings
             moveUp: function () {
                 window.console.log( 'card-movement-control', 'moveUp', 65, );
-                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
-                this.$store.commit( 'increasePosition', payload )
+                let payload = Payload.factory( {
+                    objNode: this.node, parentNode: this.parent, type: 'increasePosition'
+                } );
+                this.$store.dispatch(aTypes.updateItemOrder, payload);
+                // this.$store.commit( 'increasePosition', payload )
             },
 
             /**
@@ -109,8 +114,12 @@
              */
             moveDown: function () {
                 window.console.log( 'card-movement-control', 'moveDown', 69, );
-                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
-                this.$store.commit( 'decreasePosition', payload )
+                let payload = Payload.factory( {
+                    objNode: this.node, parentNode: this.parent,  type: 'decreasePosition'
+                } );
+                this.$store.dispatch(aTypes.updateItemOrder, payload);
+                // this.$store.commit( 'decreasePosition', payload )
+
             },
 
             /**
@@ -120,28 +129,31 @@
 
                 let payload = Payload.factory( {
                     objNode: this.node,
-                    parentNode: this.parent
+                    parentNode: this.parent,
+                    type: 'promote'
                 } );
 
                 window.console.log( 'card-movement-control', 'moveLeft', 72, payload );
-
-                this.$store.commit( 'promote', payload )
+                this.$store.dispatch(aTypes.updateItemOrder, payload);
+                // this.$store.commit( 'promote', payload )
 
             },
             /**
              * Makes into child of its immediate sibling
              */
             moveRight: function () {
-                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent } );
+                let payload = Payload.factory( { objNode: this.node, parentNode: this.parent , type: 'demote'} );
                 window.console.log( 'card-movement-control', 'moveRight', 75, payload );
 
-                this.$store.commit( 'demote', payload )
+                this.$store.dispatch(aTypes.updateItemOrder, payload);
+
+                // this.$store.commit( 'demote', payload )
 
             },
 
             remove: function () {
-                window.console.log( 'card-movement-control', 'remove', 151, this.item );
-                this.$store.dispatch( aTypes.removeItem, { obj: this.item } );
+                // window.console.log( 'card-movement-control', 'remove', 151, this.item );
+                this.$store.dispatch( aTypes.removeItemFromOrder, { obj: this.item } );
 
             }
         },

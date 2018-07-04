@@ -61,7 +61,7 @@ export const addYoungerSibling = 'addYoungerSibling';
 export const onUpdate = 'onUpdate';
 export const addItemToOrder = 'addItemToOrder';
 export const removeItemFromOrder = 'removeItemFromOrder';
-
+export const updateItemOrder = 'updateItemOrder';
 
 //questions
 export const loadMaxQuestionScores = 'loadMaxQuestionScores';

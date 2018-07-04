@@ -54,6 +54,8 @@ export default class Payload extends IModel{
 
         this.tag;
 
+        this.type;
+
         /** The name of the property to update */
         this.updateProp;
         /** The new value to set the property in updateProp */
@@ -118,7 +120,7 @@ export default class Payload extends IModel{
             'obj', 'parent',
             'objNode', 'parentNode',
             'serialNumber', 'str', 'stamp', 'student',
-            'tag',
+            'tag', 'type',
             'updateProp', 'updateVal',
             'updateValence',
         ];

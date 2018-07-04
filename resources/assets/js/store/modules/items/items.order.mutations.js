@@ -46,7 +46,7 @@ module.exports = {
         //if an index was specified, splice it in at the index
         if ( !_.isUndefined( index ) ) {
             parent.children.splice( index, 0, obj );
-        }else{
+        } else {
             //otherwise just push it on the end
             parent.children.push( obj );
         }
@@ -54,6 +54,7 @@ module.exports = {
 
 
     [ mTypes.removeNodeFromOrder ]: ( state, payload ) => {
+        window.console.log( 'items.order.mutations', 'removenode', 57, payload);
         let { obj, parent } = payload;
         //Merge its children into its parent's children
         parent.children.concat( obj.children );
@@ -109,22 +110,21 @@ module.exports = {
      * @param payload
      */
     promote: ( state, payload ) => {
-        //where it makes no sense to promote
-        let { objNode, parentNode } = payload;
-        //get parent's parent
-        if ( parentNode instanceof Node ) {
-            let grandParent = getNode( state, parentNode.parent );
+        window.console.log( 'items.order.mutations', 'promote', 113, payload);
+            let { objNode, parentNode } = payload;
+            //get parent's parent
+            if ( parentNode instanceof Node ) {
+                //add the node to the grand parent's list of children
+                //thus making it a sibling of the parent
+                let grandParent = getNode( state, parentNode.parent );
+                grandParent.children.push( objNode );
 
-            //check that we aren't at the question level
-            // if ( grandParent ) {
-            //add to grandparent
-            grandParent.children.push( objNode );
+                //update the node so that its parent is now the grandparent
+                Vue.set(objNode, 'parent', grandParent.data)
 
-            //remove from parent's children list
-            parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
-            // }
-        }
-
+                //finally, remove the node from its former parent's children list
+                parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
+            }
 
     },
 

@@ -5532,11 +5532,100 @@ var _Payload = __webpack_require__(/*! ../../../models/Payload */ "./resources/a
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
+var _actionTypes = __webpack_require__(/*! ../../../store/action-types */ "./resources/assets/js/store/action-types.js");
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
 var _itemButtons = __webpack_require__(/*! ./item-buttons.mixin */ "./resources/assets/js/development/components/items/item-buttons.mixin.js");
 
 var _itemButtons2 = _interopRequireDefault(_itemButtons);
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     mixins: [_itemButtons2.default],
@@ -5553,8 +5642,11 @@ exports.default = {
         //increases position relative to siblings
         moveUp: function moveUp() {
             window.console.log('card-movement-control', 'moveUp', 65);
-            var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent });
-            this.$store.commit('increasePosition', payload);
+            var payload = _Payload2.default.factory({
+                objNode: this.node, parentNode: this.parent, type: 'increasePosition'
+            });
+            this.$store.dispatch(aTypes.updateItemOrder, payload);
+            // this.$store.commit( 'increasePosition', payload )
         },
 
         /**
@@ -5562,8 +5654,11 @@ exports.default = {
          */
         moveDown: function moveDown() {
             window.console.log('card-movement-control', 'moveDown', 69);
-            var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent });
-            this.$store.commit('decreasePosition', payload);
+            var payload = _Payload2.default.factory({
+                objNode: this.node, parentNode: this.parent, type: 'decreasePosition'
+            });
+            this.$store.dispatch(aTypes.updateItemOrder, payload);
+            // this.$store.commit( 'decreasePosition', payload )
         },
 
         /**
@@ -5573,111 +5668,33 @@ exports.default = {
 
             var payload = _Payload2.default.factory({
                 objNode: this.node,
-                parentNode: this.parent
+                parentNode: this.parent,
+                type: 'promote'
             });
 
             window.console.log('card-movement-control', 'moveLeft', 72, payload);
-
-            this.$store.commit('promote', payload);
+            this.$store.dispatch(aTypes.updateItemOrder, payload);
+            // this.$store.commit( 'promote', payload )
         },
         /**
          * Makes into child of its immediate sibling
          */
         moveRight: function moveRight() {
-            var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent });
+            var payload = _Payload2.default.factory({ objNode: this.node, parentNode: this.parent, type: 'demote' });
             window.console.log('card-movement-control', 'moveRight', 75, payload);
 
-            this.$store.commit('demote', payload);
+            this.$store.dispatch(aTypes.updateItemOrder, payload);
+
+            // this.$store.commit( 'demote', payload )
         },
 
         remove: function remove() {
-            window.console.log('card-movement-control', 'remove', 151, this.item);
-            this.$store.dispatch(aTypes.removeItem, { obj: this.item });
+            // window.console.log( 'card-movement-control', 'remove', 151, this.item );
+            this.$store.dispatch(aTypes.removeItemFromOrder, { obj: this.item });
         }
     }
 
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 
@@ -65836,7 +65853,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "card-movement-control card-footer"
   }, [_c('a', {
-    staticClass: "card-footer-item",
+    staticClass: "move-left-control card-footer-item",
     attrs: {
       "href": "#"
     },
@@ -65844,7 +65861,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.moveLeft
     }
   }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v("Left")])]), _vm._v(" "), _c('a', {
-    staticClass: "card-footer-item",
+    staticClass: "move-up-control card-footer-item",
     attrs: {
       "href": "#"
     },
@@ -65852,7 +65869,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.moveUp
     }
   }, [_vm._m(1), _vm._v(" "), _c('span', [_vm._v("Up")])]), _vm._v(" "), _c('a', {
-    staticClass: "card-footer-item",
+    staticClass: "remove-control card-footer-item",
     attrs: {
       "href": "#"
     },
@@ -65862,7 +65879,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._m(2), _vm._v(" "), _c('span', {
     staticClass: "has-text-danger"
   }, [_vm._v("Remove")])]), _vm._v(" "), _c('a', {
-    staticClass: "card-footer-item",
+    staticClass: "move-down-control card-footer-item",
     attrs: {
       "href": "#"
     },
@@ -65870,7 +65887,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "click": _vm.moveDown
     }
   }, [_vm._m(3), _vm._v(" "), _c('span', [_vm._v("Down")])]), _vm._v(" "), _c('a', {
-    staticClass: "card-footer-item",
+    staticClass: "move-right-control card-footer-item",
     attrs: {
       "href": "#"
     },
@@ -88361,23 +88378,23 @@ exports.default = function (store) {
 
             case mTypes.updateOrder:
                 // window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );
-                (0, _requests.updateItemsOrder)(store);
+                // updateItemsOrder( store );
                 break;
 
             case 'demote':
-                (0, _requests.updateItemsOrder)(store);
+                // updateItemsOrder( store );
                 break;
 
             case 'promote':
-                (0, _requests.updateItemsOrder)(store);
+                // updateItemsOrder( store );
                 break;
 
             case 'increasePosition':
-                (0, _requests.updateItemsOrder)(store);
+                // updateItemsOrder( store );
                 break;
 
             case 'decreasePosition':
-                (0, _requests.updateItemsOrder)(store);
+                // updateItemsOrder( store );
                 break;
 
             // ******************** Comments
@@ -93007,6 +93024,7 @@ module.exports = {
         },
 
         serialNumber: function serialNumber() {
+            return this.item.serialNumber;
             return this.item ? this.item.serialNumber : null;
         },
 
@@ -101156,6 +101174,8 @@ var Payload = function (_IModel) {
 
         _this.tag;
 
+        _this.type;
+
         /** The name of the property to update */
         _this.updateProp;
         /** The new value to set the property in updateProp */
@@ -101373,7 +101393,7 @@ var Payload = function (_IModel) {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['array', 'callback', 'exam', 'kumi', 'id', 'index', 'num', 'mutateSilently', 'options', 'obj', 'parent', 'objNode', 'parentNode', 'serialNumber', 'str', 'stamp', 'student', 'tag', 'updateProp', 'updateVal', 'updateValence'];
+            return ['array', 'callback', 'exam', 'kumi', 'id', 'index', 'num', 'mutateSilently', 'options', 'obj', 'parent', 'objNode', 'parentNode', 'serialNumber', 'str', 'stamp', 'student', 'tag', 'type', 'updateProp', 'updateVal', 'updateValence'];
         }
     }, {
         key: 'aliasMap',
@@ -102328,6 +102348,7 @@ var addYoungerSibling = exports.addYoungerSibling = 'addYoungerSibling';
 var onUpdate = exports.onUpdate = 'onUpdate';
 var addItemToOrder = exports.addItemToOrder = 'addItemToOrder';
 var removeItemFromOrder = exports.removeItemFromOrder = 'removeItemFromOrder';
+var updateItemOrder = exports.updateItemOrder = 'updateItemOrder';
 
 //questions
 var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
@@ -105420,7 +105441,7 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
     return map;
 }), _defineProperty(_extends2, 'getOrderForSync', function getOrderForSync(state, getters) {
     var out = [];
-    var map = getters[gTypes.getItemMapCopy];
+    var map = state.itemMap; //getters.getItemMap;
     // window.console.log( 'items', 'getOrderForSync', 162, map );
 
     if (_.isUndefined(map) || map.length === 0) return false;
@@ -105457,6 +105478,7 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
         }
     })(map);
     // }
+    // window.console.log( 'items', 'getOrderForSync', 147, out);
     return out;
 }), _defineProperty(_extends2, 'canSync', function canSync(state, getters, rootState) {
     if (state.items.length === 0) return false;
@@ -105567,26 +105589,28 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
         dispatch = _ref4.dispatch,
         getters = _ref4.getters;
 
-    return function (state, commit, dispatch, getters, payload) {
-        //obj is an object
-        var obj = payload.obj;
-
-
-        var pl = _Payload2.default.factory({ obj: obj });
-        // window.console.log( 'items', 'cloneItem payload', 234, pl);
-
-        dispatch(aTypes.addItemToOrder, pl);
-        //the item will not have been stored in the regular items array
-        //instead it is loaded asynchronously.
-        //So we need to push it into the main array
-        pl.mutateSilently = true;
-        commit(mTypes.addNewItem, pl);
-    }(state, commit, dispatch, getters, payload);
-
-    //remove from order
-    [aTypes.removeItem];
-
-    //remove from objects
+    dispatch(aTypes.removeItemFromOrder, payload);
+    //
+    // return (function ( state, commit, dispatch, getters, payload ) {
+    //     //obj is an object
+    //     let { obj } = payload;
+    //
+    //     let pl = Payload.factory( { obj: obj } );
+    //     // window.console.log( 'items', 'cloneItem payload', 234, pl);
+    //
+    //     dispatch( aTypes.addItemToOrder, pl );
+    //     //the item will not have been stored in the regular items array
+    //     //instead it is loaded asynchronously.
+    //     //So we need to push it into the main array
+    //     pl.mutateSilently = true;
+    //     commit( mTypes.addNewItem, pl );
+    //
+    // })( state, commit, dispatch, getters, payload );
+    //
+    // //remove from order
+    // [ aTypes.removeItem ]
+    //
+    // //remove from objects
 }), _defineProperty(_extends3, aTypes.deleteItem, function () {}), _extends3));
 
 var mutations = _extends({}, _items2.default.mutations, _items4.default.mutations, _JsonReaders2.default.mutations, _items6.default.mutations, _defineProperty({}, mTypes.initializeItemStorage, function (store, payload) {
@@ -106750,7 +106774,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 
     return new Promise(function (resolve, reject) {
 
-        window.console.log('items.order.actions', aTypes.addItemToOrder, 31, payload);
+        // window.console.log( 'items.order.actions', aTypes.addItemToOrder, 31, payload );
 
         var obj = payload.obj,
             parent = payload.parent,
@@ -106774,7 +106798,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
             index: index,
             mutateSilently: mutateSilently
         });
-        window.console.log('items.order.actions', 'pl', 47, pl);
+        // window.console.log( 'items.order.actions', 'pl', 47, pl );
 
         //push it into local ordering
         commit(mTypes.insertNodeIntoOrder, pl);
@@ -106791,14 +106815,68 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         dispatch = _ref2.dispatch,
         commit = _ref2.commit,
         getters = _ref2.getters;
-    var serialNumber = payload.serialNumber;
-    // let  serialNumber = getSerialNumber(payload);
 
+    var serialNumber = payload.obj.serialNumber;
     var toRemove = getters[gTypes.getItemNodeFromOrder](serialNumber);
     var parent = getters[gTypes.getItemNodeFromOrder](toRemove.parent);
     var pl = _Payload2.default.factory({ obj: toRemove, parent: parent });
     commit(mTypes.removeNodeFromOrder, pl);
+}), _defineProperty(_module$exports, aTypes.updateItemOrder, function (_ref3, payload) {
+    var state = _ref3.state,
+        dispatch = _ref3.dispatch,
+        commit = _ref3.commit,
+        getters = _ref3.getters;
+
+    return new Promise(function (resolve, reject) {
+        window.console.log('items.order.actions', aTypes.updateItemOrder, 31, payload);
+        // let serialNumber = payload.obj.serialNumber;
+
+        // payload.objNode = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
+        // payload.parentNode = getters[ gTypes.getItemNodeFromOrder ]( payload.objNode.parent );
+
+        //fire the mutation whose name was passed in as type
+        commit(payload.type, payload);
+
+        var ordering = getters.getOrderForSync;
+        var exam = getters[gTypes.getActiveExam];
+
+        //send to server
+        (0, _itemRequests.updateItemsOrder)(exam, ordering).then(function () {
+            resolve();
+        });
+    });
 }), _module$exports);
+//
+//
+//
+// let exam = getters[gTypes.getActiveExam];
+//
+// //Sort out whether obj and parent are nodes or items
+// let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber; // getSerialNumber( obj );
+// let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
+// // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
+//
+// let newNode = new Node( toAddSerialNumber, parentSerialNumber );
+// let parentNode = getters[gTypes.getItemNodeFromOrder]( parentSerialNumber );
+// // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
+// let pl = Payload.factory( {
+//     objNode: newNode,
+//     parentNode: parentNode,
+//     index: index,
+//     mutateSilently: mutateSilently
+// } );
+// window.console.log( 'items.order.actions', 'pl', 47, pl );
+//
+// //push it into local ordering
+// commit( mTypes.insertNodeIntoOrder, pl );
+//
+// let ordering = getters.getOrderForSync;
+//
+// //send to server
+// updateItemsOrder(exam, ordering)
+//     .then(function (  ) {
+//         resolve();
+//     });
 
 /***/ }),
 
@@ -106857,8 +106935,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var _ = window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 var Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
-    return Object.assign(new _Node2.default(), state.itemMap); // ['parent','data', 'dataType', 'children']);
+module.exports = (_module$exports = {
+    getItemMap: function getItemMap(state, getters) {
+        return state.itemMap;
+    }
+
+}, _defineProperty(_module$exports, gTypes.getItemMapCopy, function (state, getters) {
+    return Object.assign(new _Node2.default(), getters.getItemMap); // ['parent','data', 'dataType', 'children']);
 }), _defineProperty(_module$exports, gTypes.getItemNodeFromOrder, function (state, getters, rootState, serialNumber) {
     return function (serialNumber) {
 
@@ -107114,6 +107197,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         parent.children.push(obj);
     }
 }), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
+    window.console.log('items.order.mutations', 'removenode', 57, payload);
     var obj = payload.obj,
         parent = payload.parent;
     //Merge its children into its parent's children
@@ -107155,22 +107239,22 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     parentNode.children.splice(currentIndex, 1); //remove it
     parentNode.children.splice(currentIndex + 1, 0, objNode); //push it in
 }), _defineProperty(_module$exports, 'promote', function promote(state, payload) {
-    //where it makes no sense to promote
+    window.console.log('items.order.mutations', 'promote', 113, payload);
     var objNode = payload.objNode,
         parentNode = payload.parentNode;
     //get parent's parent
 
     if (parentNode instanceof _Node2.default) {
+        //add the node to the grand parent's list of children
+        //thus making it a sibling of the parent
         var grandParent = (0, _NodeTools.getNode)(state, parentNode.parent);
-
-        //check that we aren't at the question level
-        // if ( grandParent ) {
-        //add to grandparent
         grandParent.children.push(objNode);
 
-        //remove from parent's children list
+        //update the node so that its parent is now the grandparent
+        Vue.set(objNode, 'parent', grandParent.data);
+
+        //finally, remove the node from its former parent's children list
         parentNode.children.splice(parentNode.children.indexOf(objNode), 1);
-        // }
     }
 }), _defineProperty(_module$exports, 'demote', function demote(state, payload) {
     var objNode = payload.objNode,

@@ -17,6 +17,9 @@ import Node from '../../../models/Node'
 import { traverseDF, traverseBF, getSerialNumber, getNode } from '../../../models/NodeTools'
 
 module.exports = {
+    getItemMap : ( state, getters ) => {
+        return state.itemMap;
+    },
 
     /**
      * Returns the children array of
@@ -26,7 +29,7 @@ module.exports = {
      * @returns {Node}
      */
     [ gTypes.getItemMapCopy ]: ( state, getters ) => {
-        return Object.assign( new Node(), state.itemMap );// ['parent','data', 'dataType', 'children']);
+        return Object.assign( new Node(), getters.getItemMap );// ['parent','data', 'dataType', 'children']);
     },
 
     /**

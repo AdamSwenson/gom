@@ -231,23 +231,23 @@ export default function ( store ) {
 
             case mTypes.updateOrder:
                 // window.console.log( 'apiPlugin', 'updateOrder', 315, type, payload );
-                updateItemsOrder( store );
+                // updateItemsOrder( store );
                 break;
 
             case 'demote':
-                updateItemsOrder( store );
+                // updateItemsOrder( store );
                 break;
 
             case 'promote':
-                updateItemsOrder( store );
+                // updateItemsOrder( store );
                 break;
 
             case 'increasePosition':
-                updateItemsOrder( store );
+                // updateItemsOrder( store );
                 break;
 
             case 'decreasePosition':
-                updateItemsOrder( store );
+                // updateItemsOrder( store );
                 break;
 
 

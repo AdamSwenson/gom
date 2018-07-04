@@ -108,7 +108,7 @@ const getters = {
 
     getOrderForSync: ( state, getters ) => {
         let out = [];
-        let map = getters[ gTypes.getItemMapCopy ];
+        let map = state.itemMap; //getters.getItemMap;
         // window.console.log( 'items', 'getOrderForSync', 162, map );
 
         if ( _.isUndefined( map ) || map.length === 0 ) return false;
@@ -144,6 +144,7 @@ const getters = {
 
         })( map );
         // }
+        // window.console.log( 'items', 'getOrderForSync', 147, out);
         return out;
     },
 
@@ -294,26 +295,28 @@ const actions = {
      * The item and all associated score data remain intact.
      */
     [ aTypes.removeItem ]: ( { state, commit, dispatch, getters }, payload ) => {
-        return (function ( state, commit, dispatch, getters, payload ) {
-            //obj is an object
-            let { obj } = payload;
-
-            let pl = Payload.factory( { obj: obj } );
-            // window.console.log( 'items', 'cloneItem payload', 234, pl);
-
-            dispatch( aTypes.addItemToOrder, pl );
-            //the item will not have been stored in the regular items array
-            //instead it is loaded asynchronously.
-            //So we need to push it into the main array
-            pl.mutateSilently = true;
-            commit( mTypes.addNewItem, pl );
-
-        })( state, commit, dispatch, getters, payload );
-
-        //remove from order
-        [ aTypes.removeItem ]
-
-        //remove from objects
+        dispatch( aTypes.removeItemFromOrder , payload);
+        //
+        // return (function ( state, commit, dispatch, getters, payload ) {
+        //     //obj is an object
+        //     let { obj } = payload;
+        //
+        //     let pl = Payload.factory( { obj: obj } );
+        //     // window.console.log( 'items', 'cloneItem payload', 234, pl);
+        //
+        //     dispatch( aTypes.addItemToOrder, pl );
+        //     //the item will not have been stored in the regular items array
+        //     //instead it is loaded asynchronously.
+        //     //So we need to push it into the main array
+        //     pl.mutateSilently = true;
+        //     commit( mTypes.addNewItem, pl );
+        //
+        // })( state, commit, dispatch, getters, payload );
+        //
+        // //remove from order
+        // [ aTypes.removeItem ]
+        //
+        // //remove from objects
     },
 
     /**

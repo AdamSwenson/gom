@@ -1,4 +1,3 @@
-
 //The name of the tested component
 var compName = 'items.order.actions';
 //The path to the tested component
@@ -10,6 +9,8 @@ require( '../../../../injectglobals' );
 import Item from '../../../../../../resources/assets/js/models/Item'
 import Payload from '../../../../../../resources/assets/js/models/Payload'
 import Node from '../../../../../../resources/assets/js/models/Node'
+
+import { updateItemsOrder } from '../../../../../../resources/assets/js/api/requests/itemRequests';
 
 import { traverseDF, traverseBF, getSerialNumber } from '../../../../../../resources/assets/js/models/NodeTools'
 import { addNodes } from "../../../../helpers/item-test-helpers";
@@ -25,110 +26,175 @@ describe( compName, () => {
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
     let numItems, filledState, testItemIndex;
-    
+
     beforeEach( () => {
-            numItems = 5;
-            testItemIndex = faker.random.number( { min: 0, max: numItems - 1 } );
-            filledState = { itemMap: new Node( 0, 0 ) };
-            addNodes( filledState.itemMap, numItems );
-            for (let n of filledState.itemMap.children) {
-                addNodes( n, numItems );
-            }
-            window.console.log( 'orderings.spec', 'filledState', 34, filledState );
-        } );
+        exam = factories.examFactory();
+        numItems = 5;
+        testItemIndex = faker.random.number( { min: 0, max: numItems - 1 } );
+        filledState = { itemMap: new Node( 0, 0 ) };
+        addNodes( filledState.itemMap, numItems );
+        for (let n of filledState.itemMap.children) {
+            addNodes( n, numItems );
+        }
+        // window.console.log( 'orderings.spec', 'filledState', 34, filledState );
+    } );
 
 
-        describe( aTypes.addItemToOrder , function () {
-            describe( description( "happy paths" ), function () {
-                it( "no index", function () {
-                    let parent = filledState.itemMap.children[ testItemIndex ];
-                    let getters = {
-                        [ gTypes.getItemNodeFromOrder ]: () => {
-                        }
-                    };
-                    let toAdd = new Item();
+    describe( aTypes.addItemToOrder, function () {
+        it( "adds item to end of list when no index provided", function ( done ) {
+            let m = sinon.mock( updateItemsOrder );
+            let parent = filledState.itemMap.children[ testItemIndex ];
+            let getters = {
+                [ gTypes.getItemNodeFromOrder ]: () => {
+                }
+            };
+            let toAdd = new Item();
 
-                    //Expected endpoint
-                    let expectedPayload = Payload.factory( { parent: parent, obj: toAdd } );
+            //Expected endpoint
+            let expectedPayload = Payload.factory( { parent: parent, obj: toAdd } );
 
-                    let expectedMutations = [
-                        { type: mTypes.insertNodeIntoOrder, payload: expectedPayload }
-                    ];
-                    // let payload = toRemove.serialNumber;
-                    let payload = Payload.factory( { obj: toAdd, parent: parent } );
+            let expectedMutations = [
+                { type: mTypes.insertNodeIntoOrder, payload: expectedPayload }
+            ];
+            // let payload = toRemove.serialNumber;
+            let payload = Payload.factory( { obj: toAdd, parent: parent } );
 
-                    //Checks that the appropriate mutations are called
-                    testAction( actions[ aTypes.addItemToOrder ], payload, filledState, expectedMutations, {
-                        verbose: true,
-                        getters: getters
-                    } );
-                } );
-
-                it( "with index", function () {
-                    let parent = filledState.itemMap.children[ testItemIndex ];
-                    let getters = {
-                        [ gTypes.getItemNodeFromOrder ]: () => {
-                        }
-                    };
-                    let toAdd = new Item();
-                    let index = faker.random.number();
-
-                    //Expected endpoint
-                    let expectedPayload = Payload.factory( { parent: parent, obj: toAdd, index: index } );
-
-                    let expectedMutations = [
-                        { type: mTypes.insertNodeIntoOrder, payload: expectedPayload }
-                    ];
-
-                    // let payload = toRemove.serialNumber;
-                    let payload = Payload.factory( {
-                        index: index,
-                        obj: toAdd,
-                        parent: parent
-                    } );
-
-                    //Checks that the appropriate mutations are called
-                    testAction( actions[ aTypes.addItemToOrder ], payload, filledState, expectedMutations, {
-                        verbose: true,
-                        getters: getters
-                    } );
-                } );
+            //Checks that the appropriate mutations are called
+            testAction( actions[ aTypes.addItemToOrder ], payload, filledState, expectedMutations, {
+                verbose: false,
+                getters: getters
             } );
+            done();
         } );
 
-        describe( description( aTypes.removeItemFromOrder ), function () {
-            describe( description( "happy paths" ), function () {
-                it( "by serial number", function () {
-                    let toRemove = filledState.itemMap.children[ testItemIndex ];
-                    let parent = filledState.itemMap;
-                    let getters = {
-                        [ gTypes.getItemNodeFromOrder ]: () => {
-                        }
-                    };
+        it( "adds the node at the specified index ", function ( done ) {
+            let m = sinon.mock( updateItemsOrder );
 
-                    // //now create a spy for the getters object it expects
-                    let spyGetter = sinon.mock( getters, gTypes.getItemNodeFromOrder );
-                    spyGetter.expects( gTypes.getItemNodeFromOrder ).withArgs( toRemove.data ).returns( toRemove );
-                    spyGetter.expects( gTypes.getItemNodeFromOrder ).withArgs( toRemove.parent ).returns( parent );
+            let parent = filledState.itemMap.children[ testItemIndex ];
+            let getters = {
+                [ gTypes.getItemNodeFromOrder ]: () => {
+                }
+            };
+            let toAdd = new Item();
+            let index = faker.random.number();
 
-                    //Expected endpoint
-                    let expectedPayload = Payload.factory( { parent: parent, obj: toRemove } );
+            //Expected endpoint
+            let expectedPayload = Payload.factory( { parent: parent, obj: toAdd, index: index } );
 
-                    let expectedMutations = [
-                        { type: mTypes.removeNodeFromOrder, payload: expectedPayload }
-                    ];
-                    // let payload = toRemove.serialNumber;
-                    let payload = Payload.factory( { serialNumber: toRemove.data } );
+            let expectedMutations = [
+                { type: mTypes.insertNodeIntoOrder, payload: expectedPayload }
+            ];
 
-                    //Checks that the appropriate mutations are called
-                    testAction( actions[ aTypes.removeItemFromOrder ], payload, filledState, expectedMutations, {
-                        verbose: true,
-                        getters: getters
-                    } );
-
-                    //check that the method was called on the spy
-                    expect( spyGetter.verify() ).toBe( true );
-                } );
+            // let payload = toRemove.serialNumber;
+            let payload = Payload.factory( {
+                index: index,
+                obj: toAdd,
+                parent: parent
             } );
+
+            //Checks that the appropriate mutations are called
+            testAction( actions[ aTypes.addItemToOrder ], payload, filledState, expectedMutations, {
+                verbose: false,
+                getters: getters
+            } );
+            done();
         } );
+
+    } );
+
+    describe( description( aTypes.removeItemFromOrder ), function () {
+        it( "removes the node from the itemMap", function () {
+            let toRemove = filledState.itemMap.children[ testItemIndex ];
+            let parent = filledState.itemMap;
+            let spyGetter = sinon.stub();
+            spyGetter.onCall(0).returns(toRemove);
+            spyGetter.onCall(1).returns(parent);
+
+            let getters = {
+                [ gTypes.getItemNodeFromOrder ]: () =>  spyGetter// new Node()
+            };
+            //
+             //
+            // // //now create a spy for the getters object it expects
+            // let spyGetter = sinon.mock( getters, gTypes.getItemNodeFromOrder );
+            // spyGetter.expects( gTypes.getItemNodeFromOrder )
+            //     .withArgs( toRemove.data )
+            //     .returns( toRemove );
+            // spyGetter.expects( gTypes.getItemNodeFromOrder )
+            //     .withArgs( toRemove.parent )
+            //     .returns( parent );
+
+            //Expected endpoint
+            let expectedPayload = Payload.factory( { parent: parent, obj: toRemove } );
+            let expectedMutations = [
+                { type: mTypes.removeNodeFromOrder, payload: expectedPayload }
+            ];
+
+            let payload = Payload.factory( { obj: toRemove } );
+
+            //Checks that the appropriate mutations are called
+            testAction( actions[ aTypes.removeItemFromOrder ], payload, filledState, expectedMutations, {
+                verbose: false,
+                getters: getters
+            } );
+
+            //check that the method was called on the spy
+            // expect( spyGetter.verify() ).toBe( true );
+
+        } );
+    } );
+
+    describe( description( aTypes.updateItemOrder ), function () {
+        it( "it dispatches appropriate methods", function ( done ) {
+            let node = new Node( 2, 2 );
+            let toRemove = filledState.itemMap.children[ testItemIndex ];
+            let parent = filledState.itemMap;
+            let getters = {
+                [ gTypes.getItemNodeFromOrder ]: () => node,
+                getOrderForSync: () => () => {
+                },
+                [ gTypes.getActiveExam ]: () => () => exam
+            };
+
+
+            let payloadType = 'promote';
+
+            let expectedPayload = Payload.factory( { parent: parent, obj: toRemove, type: payloadType } );
+
+            let expectedMutations = [
+                { type: payloadType, payload: expectedPayload }
+            ];
+
+
+            testAction( actions[ aTypes.updateItemOrder ], payload, filledState, expectedMutations, {
+                verbose: false,
+                getters: getters
+            } );
+            done();
+        } );
+    } );
 } );
+
+//
+// // //now create a spy for the getters object it expects
+// let spyGetter = sinon.mock( getters, gTypes.getItemNodeFromOrder );
+// spyGetter.expects( gTypes.getItemNodeFromOrder ).withArgs( toRemove.data ).returns( toRemove );
+// spyGetter.expects( gTypes.getItemNodeFromOrder ).withArgs( toRemove.parent ).returns( parent );
+//
+// //Expected endpoint
+// let expectedPayload = Payload.factory( { parent: parent, obj: toRemove } );
+//
+// let expectedMutations = [
+//     { type: mTypes.removeNodeFromOrder, payload: expectedPayload }
+// ];
+// // let payload = toRemove.serialNumber;
+// let payload = Payload.factory( { serialNumber: toRemove.data } );
+//
+// //Checks that the appropriate mutations are called
+// testAction( actions[ aTypes.removeItemFromOrder ], payload, filledState, expectedMutations, {
+//     verbose: true,
+//     getters: getters
+// } );
+//
+// //check that the method was called on the spy
+// expect( spyGetter.verify() ).toBe( true );

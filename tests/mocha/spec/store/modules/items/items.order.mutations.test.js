@@ -97,7 +97,7 @@ describe( compName, () => {
 
 
     describe( description( "promote" ), function () {
-        it( "happy path", function () {
+        it( "takes a child node and makes it siblings with it's former parent", function () {
             //prep
             let c1 = new Node( 4, parentId );
             let c2 = new Node( 5, parentId );
