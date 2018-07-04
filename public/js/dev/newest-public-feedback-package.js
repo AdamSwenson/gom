@@ -56053,7 +56053,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     parentNode.children.splice(currentIndex, 1); //remove it
     parentNode.children.splice(currentIndex + 1, 0, objNode); //push it in
 }), _defineProperty(_module$exports, 'promote', function promote(state, payload) {
-    window.console.log('items.order.mutations', 'promote', 113, payload);
+    // window.console.log( 'items.order.mutations', 'promote', 113, payload);
     var objNode = payload.objNode,
         parentNode = payload.parentNode;
     //get parent's parent
@@ -56063,10 +56063,8 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         //thus making it a sibling of the parent
         var grandParent = (0, _NodeTools.getNode)(state, parentNode.parent);
         grandParent.children.push(objNode);
-
         //update the node so that its parent is now the grandparent
         Vue.set(objNode, 'parent', grandParent.data);
-
         //finally, remove the node from its former parent's children list
         parentNode.children.splice(parentNode.children.indexOf(objNode), 1);
     }
@@ -56077,10 +56075,12 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     var currentIndex = parentNode.children.indexOf(objNode);
     //get the node who will become parent
     var newParent = parentNode.children[currentIndex - 1];
-    //remove from parent
-    parentNode.children.splice(currentIndex, 1); //remove it
-    //push it in to its former older sibling's children
+    //remove from old parent
+    parentNode.children.splice(currentIndex, 1);
+    //add to the new parent's children
     newParent.children.push(objNode);
+    //set the new parent on the object node
+    Vue.set(objNode, 'parent', newParent.data);
 }), _defineProperty(_module$exports, 'setRootNode', function setRootNode(state, payload) {
     var objNode = payload.objNode,
         obj = payload.obj;

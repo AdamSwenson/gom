@@ -110,7 +110,7 @@ module.exports = {
      * @param payload
      */
     promote: ( state, payload ) => {
-        window.console.log( 'items.order.mutations', 'promote', 113, payload);
+        // window.console.log( 'items.order.mutations', 'promote', 113, payload);
             let { objNode, parentNode } = payload;
             //get parent's parent
             if ( parentNode instanceof Node ) {
@@ -118,14 +118,11 @@ module.exports = {
                 //thus making it a sibling of the parent
                 let grandParent = getNode( state, parentNode.parent );
                 grandParent.children.push( objNode );
-
                 //update the node so that its parent is now the grandparent
                 Vue.set(objNode, 'parent', grandParent.data)
-
                 //finally, remove the node from its former parent's children list
                 parentNode.children.splice( parentNode.children.indexOf( objNode ), 1 );
             }
-
     },
 
     demote: ( state, payload ) => {
@@ -133,10 +130,12 @@ module.exports = {
         let currentIndex = parentNode.children.indexOf( objNode );
         //get the node who will become parent
         let newParent = parentNode.children[ currentIndex - 1 ];
-        //remove from parent
-        parentNode.children.splice( currentIndex, 1 ); //remove it
-        //push it in to its former older sibling's children
+        //remove from old parent
+        parentNode.children.splice( currentIndex, 1 );
+        //add to the new parent's children
         newParent.children.push( objNode );
+        //set the new parent on the object node
+        Vue.set(objNode, 'parent', newParent.data);
     },
 
     //
