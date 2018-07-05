@@ -47,7 +47,7 @@
 
                 numberLabels: sliderSettings.valenceLabels.length,
 
-                //This holds the slider object when it is created
+                //This holds the slider object once it is created
                 slider: false,
 
                 defaults: {}

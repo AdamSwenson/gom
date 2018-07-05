@@ -11,10 +11,6 @@ import { mount, shallow, createLocalVue } from 'vue-test-utils';
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
-
-
-//tested stuff
 
 
 describe( compName, () => {
@@ -77,7 +73,7 @@ describe( compName, () => {
             mutations
         } );
 
-        wrapper = shallow( Component, {
+        wrapper = mount( Component, {
             store, localVue,
             attachToDocument: true,
             sync: false

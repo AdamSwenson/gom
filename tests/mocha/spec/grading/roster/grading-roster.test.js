@@ -1,23 +1,24 @@
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-// import Vue from 'vue';
-import moxios from 'moxios';
-
-//helpers
-import { assertThatSeeText } from '../../../helpers/assertions';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
-import { factories } from '../../../../spec/helpers/vuex.spec.helpers';
-
-
-import Exam from "../../../../../resources/assets/js/models/Exam";
-import Comment from "../../../../../resources/assets/js/models/Comment";
-import Payload from "../../../../../resources/assets/js/models/Payload";
-import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-import * as gTypes from "../../../../../resources/assets/js/store/getter-types";
-
-import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
+require('../../../injectglobals');
+// import sinon from 'sinon';
+// import VueRouter from 'vue-router';
+// import Vuex from 'vuex';
+// // import Vue from 'vue';
+// import moxios from 'moxios';
+//
+// //helpers
+// import { assertThatSeeText } from '../../../helpers/assertions';
+// import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
+// import { factories } from '../../../../spec/helpers/vuex.spec.helpers';
+//
+//
+// import Exam from "../../../../../resources/assets/js/models/Exam";
+// import Comment from "../../../../../resources/assets/js/models/Comment";
+// import Payload from "../../../../../resources/assets/js/models/Payload";
+// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
+// import * as gTypes from "../../../../../resources/assets/js/store/getter-types";
+//
+// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
 
 
 const localVue = createLocalVue();
@@ -46,17 +47,16 @@ describe( " grading-roster ", function(){
 
     beforeEach( () => {
         numStudents = 10;
-        for (let i = 0; i < numStudents; i++) {
-            students.push( factories.studentFactory( i ) );
-        }
+        students = factories.makeStudents(numStudents);
 
         getters = {
-            [ gTypes.getStudentsFromRoster ]: ( v ) => ( v ) => {
-                return students;
-            },
-            [ nggTypes.areStudentNamesVisible ]: ( v ) => ( v ) => {
-                return visibility;
-            },
+            [nggTypes.getActiveStudent]: (  ) => (  ) => students[0],
+            [ gTypes.getStudentsFromRoster ]: ( v ) => ( v ) => students,
+            getSortedStudents: (  ) => (  ) => students,
+            [ nggTypes.areStudentNamesVisible ]: ( v ) => ( v ) => visibility,
+            getSortedBy : (  ) => (  ) => 'lastName',
+            getSortAsc: (  ) => (  ) => true
+
         };
 
         mutations = {};
@@ -66,7 +66,7 @@ describe( " grading-roster ", function(){
             mutations
         } );
 
-        wrapper = shallow( Component, {
+        wrapper = mount( Component, {
             store, localVue
         } );
 
@@ -84,24 +84,36 @@ describe( " grading-roster ", function(){
         let expected = {};
 
         it( " happy path ", () => {
+            // window.console.log( 'grading-roster.test', 'f', 83, wrapper.vm.students);
             _.forEach( students, function ( s ) {
-                assertThatSeeText( wrapper, s.nameLastFirst, '.student-name' );
+                // window.console.log( 'grading-roster.test', 's', 84, s.nameLastFirst);
+                assertions.assertThatSeeText( wrapper, s.nameLastFirst , '.student-name');
             } );
         } );
     } );
 
     describe( " actions on row click  ", () => {
-        it( "when a row is clicked, it notifies the central store" );
+        it.skip( "when a row is clicked, it notifies the central store" , (  ) => {
+            
+        });
     } );
 
     describe( " Toggling student name visibility works as expected ", () => {
-        it( " shows student names when visibility is on " );
-        it( " does not show student names when visibility is off" );
+        it.skip( " shows student names when visibility is on " , (  ) => {
+            
+        });
+        it.skip( " does not show student names when visibility is off" , (  ) => {
+            
+        });
     } );
 
     describe( " Graded and ungraded students have appropriate row styling", () => {
-        it( "properly displays the expected styling" );
-        it( "updates the style when a student becomes graded " );
+        it.skip( "properly displays the expected styling" , (  ) => {
+            
+        });
+        it.skip( "updates the style when a student becomes graded ", (  ) => {
+
+        } );
     } );
 } );
 

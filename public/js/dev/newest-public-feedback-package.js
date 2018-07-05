@@ -13474,9 +13474,12 @@ module.exports = function() {
 /*!****************************************************!*\
   !*** ./node_modules/google-charts/googleCharts.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: GoogleCharts */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GoogleCharts", function() { return GoogleCharts; });
 const loadScript = Symbol('loadScript');
 
 class googleCharts {
@@ -13514,6 +13517,7 @@ class googleCharts {
         })
     }
 }
+
 let GoogleCharts = new googleCharts();
 
 if (false) {}

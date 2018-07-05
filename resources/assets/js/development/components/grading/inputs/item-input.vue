@@ -49,9 +49,9 @@
                         :student="student"
                 ></score-slider>
             </div>
-<div class="level-item">
-    <clear-score-button :item="item" :student="student"></clear-score-button>
-</div>
+            <div class="level-item">
+                <clear-score-button :item="item" :student="student"></clear-score-button>
+            </div>
         </div>
 
     </div>
@@ -102,11 +102,11 @@
                 }
                 return '';
             },
+
             student: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
                 return !_.isUndefined( s ) ? s : ''
             },
-
 
             /**
              * Returns the styling for the heading, which

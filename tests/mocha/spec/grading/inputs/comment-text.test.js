@@ -101,7 +101,6 @@ describe(  compName , () => {
 
                 //check
                 expect(wrapper.vm.commentText).toBe(scoreObj.text);
-
             });
         });
 

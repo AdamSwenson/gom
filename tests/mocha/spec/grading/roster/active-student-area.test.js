@@ -1,24 +1,18 @@
-
 //The name of the tested component
 var compName = 'active-student-area';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/grading/roster/active-student-area.vue');
+var Component = require( '../../../../../resources/assets/js/development/components/grading/roster/active-student-area.vue' );
 
-require('../../../injectglobals');
+require( '../../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import { assertExpectedDivIsDisplayed } from '../../../helpers/assertions';
+
 const localVue = createLocalVue();
 
 localVue.use( Vuex )
-// localVue.use( VueRouter );
 
 
-//tested stuff
-
-
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
@@ -26,10 +20,15 @@ describe(  compName , () => {
     let mutations;
     let store;
     let wrapper;
+    let student;
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
+        student = factories.studentFactory();
 
-        getters = {   };
+        getters = {
+            [ gTypes.getActiveStudent ]: () => () => student,
+            [ gTypes.areStudentNamesVisible ]: () => () => true
+        };
 
         mutations = {};
 
@@ -39,7 +38,7 @@ describe(  compName , () => {
         } );
 
         wrapper = shallow( Component, {
-            store, localVue, mocks: {$parent : sinon.stub()}
+            store, localVue, mocks: { $parent: sinon.stub() }
         } );
 
     } );
@@ -50,10 +49,26 @@ describe(  compName , () => {
             assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe.skip(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( " Displays student info ", () => {
+        it( ' shows name when name visibility is on ', (  ) => {
+            assertions.assertThatSeeText(wrapper, student.nameFirstLast);
+        } );
+
+        it(" doesn't show name when blind grading is on ", (  ) => {
+            getters[gTypes.areStudentNamesVisible] = (  ) => (  ) => false;
+            store = new Vuex.Store( {
+                getters,
+                mutations
+            } );
+
+            wrapper = shallow( Component, {
+                store, localVue, mocks: { $parent: sinon.stub() }
+            } );
+
+            expect( wrapper.html() ).not.toContain( student.nameFirstLast );
+        });
+    } );
 
 
-});
+} );
