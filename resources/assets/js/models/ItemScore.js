@@ -7,9 +7,22 @@ export default class ItemScore  {
         this.examId;
         this.itemId;
         this.studentId;
-        this.score = null;
+        this._score = null;
         this.commentText;
         this.isCustomText = false;
+    }
+
+    /**
+     * The float score
+     * @returns {*}
+     */
+    get score(){
+        if(_.isNull(this._score) || _.isUndefined(this._score)) return this._score;
+        return _.toNumber(this._score);
+    }
+
+    set score(v){
+        this._score = v;
     }
 
 

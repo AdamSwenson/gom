@@ -12,6 +12,7 @@ import * as ngaTypes from '../../../../store/new-grading-action-types';
 
 module.exports = {
 
+
     computed: {
         /**
          * The float score value for the
@@ -23,7 +24,6 @@ module.exports = {
                 let me = this;
 
                 if ( !this.isReady() ) return '';
-                // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
 
                 //First we try getting an existing score object
                 let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
@@ -35,9 +35,11 @@ module.exports = {
                     return qs.score;
                 }
 
-                //No score object currently exists, so we create one
+                //No score object currently exists for the student on
+                //this item, so we create one
                 let p = this.$store.dispatch( 'initializeItemScore',
-                    { exam: this.exam, item: this.item, student: this.student } );
+                    { exam: this.exam, item: this.item, student: this.student }
+                    );
 
                 //And then return the newly created store object
                 return p.then( function () {
@@ -49,6 +51,7 @@ module.exports = {
                 } );
 
             },
+
             /**
              * Update the score in the shared data object and send
              * a request for someone else to record it to the server.
@@ -68,9 +71,8 @@ module.exports = {
                 };
                 this.$store.dispatch( ngaTypes.recordItemScore, pl );
             }
+        },
 
-
-    },
 
         exam: function () {
             let e = this.$store.getters[ nggTypes.getActiveExam ];

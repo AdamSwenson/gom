@@ -1,8 +1,7 @@
-
 //The name of the tested component
 var compName = 'comment-text';
 //The path to the tested component
-var Component = require('../../../../../resources/assets/js/development/components/grading/inputs/comment-text.vue');
+var Component = require( '../../../../../resources/assets/js/development/components/grading/inputs/comment-text.vue' );
 
 require( '../../../injectglobals' );
 
@@ -12,7 +11,7 @@ const localVue = createLocalVue();
 
 localVue.use( Vuex )
 
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
@@ -51,13 +50,13 @@ describe(  compName , () => {
 
 
         getters = {
-            [ nggTypes.getItemScoreObject ] : () => scoreGetterStub,
-            [ nggTypes.getActiveExam] : () => examGetterStub
-           };
+            [ nggTypes.getItemScoreObject ]: () => scoreGetterStub,
+            [ nggTypes.getActiveExam ]: () => examGetterStub
+        };
 
         actions = {
             [ ngaTypes.recordCommentText ]: sinon.spy()
-        }
+        };
         store = new Vuex.Store( {
             actions,
             getters,
@@ -73,58 +72,58 @@ describe(  compName , () => {
                 store, localVue
             } );
 
-            wrapper.setProps({item, student});
+            wrapper.setProps( { item, student } );
 
-            expect(wrapper.vm.isReady()).toBe(true);
-            // assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            expect( wrapper.vm.isReady() ).toBe( true );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe(" computed", () => {
 
-        describe('commentText -- get ', () => {
-            it(" returns an empty string if the item score object is undefined. ", (  ) => {
+    describe( " computed properties", () => {
+
+        describe( 'commentText -- get ', () => {
+            it( " returns an empty string if the item score object is undefined. ", () => {
                 wrapper = shallow( Component, {
                     store, localVue
                 } );
-                wrapper.setProps({item, student});
+                wrapper.setProps( { item, student } );
 
-                expect(wrapper.vm.commentText).toBe('');
-            });
+                expect( wrapper.vm.commentText ).toBe( '' );
+            } );
 
-            it(" returns the relevant text if the item score object is defined ", () => {
-                scoreGetterStub.returns(scoreObj);
+            it( " returns the relevant text if the item score object is defined ", () => {
+                scoreGetterStub.returns( scoreObj );
                 wrapper = shallow( Component, {
                     store, localVue
                 } );
-                wrapper.setProps({item, student});
+                wrapper.setProps( { item, student } );
 
                 //check
-                expect(wrapper.vm.commentText).toBe(scoreObj.text);
-            });
-        });
+                expect( wrapper.vm.commentText ).toBe( scoreObj.text );
+            } );
+        } );
 
-        describe('commentText -- set ', (  ) => {
-            it(" dispatches the appropriate action ", (  ) => {
+        describe( 'commentText -- set ', () => {
+            it( " dispatches the appropriate action ", () => {
                 wrapper = shallow( Component, {
                     store, localVue
                 } );
 
-                wrapper.setProps({item, student});
+                wrapper.setProps( { item, student } );
 
                 //call
                 //nb just using scoreObj as a shortcut to random text
-                let input = wrapper.find(componentDivIdentifier);
-                    input.element.value = scoreObj.text;
-                    input.trigger('input');
+                let input = wrapper.find( componentDivIdentifier );
+                input.element.value = scoreObj.text;
+                input.trigger( 'input' );
 
                 //check
-                expect(actions[ngaTypes.recordCommentText].callCount).toBe(1);
+                expect( actions[ ngaTypes.recordCommentText ].callCount ).toBe( 1 );
 
-            });
+            } );
 
-        });
-    });
+        } );
+    } );
 
 
-});
+} );

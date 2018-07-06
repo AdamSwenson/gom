@@ -21,13 +21,16 @@ describe( compName, () => {
     let store;
     let wrapper;
     let student;
+    let studentGetterStub;
 
     beforeEach( () => {
         student = factories.studentFactory();
+        studentGetterStub = sinon.stub();
+        studentGetterStub.returns( student );
 
         getters = {
-            [ gTypes.getActiveStudent ]: () => () => student,
-            [ gTypes.areStudentNamesVisible ]: () => () => true
+            [ nggTypes.getActiveStudent ]: () => (  ) => student,
+            [ nggTypes.areStudentNamesVisible ]: () => () => true
         };
 
         mutations = {};
@@ -37,8 +40,8 @@ describe( compName, () => {
             mutations
         } );
 
-        wrapper = shallow( Component, {
-            store, localVue, mocks: { $parent: sinon.stub() }
+        wrapper = mount( Component, {
+            store, localVue
         } );
 
     } );
@@ -46,16 +49,23 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertElementExists(wrapper, '.active-student-name');
+            assertions.assertElementExists(wrapper, '.active-student-id');
         } );
+
+        it("has the correct computed properties", (  ) => {
+            expect(wrapper.vm.isStudentNameVisible).toEqual(true);
+           expect(wrapper.vm.activeStudent).toMatchObject(student);
+        });
     } );
 
     describe( " Displays student info ", () => {
         it( ' shows name when name visibility is on ', (  ) => {
-            assertions.assertThatSeeText(wrapper, student.nameFirstLast);
+            assertions.assertThatSeeText(wrapper, student.nameFirstLast, '.active-student-name');
         } );
 
-        it(" doesn't show name when blind grading is on ", (  ) => {
+        it(" shows only the id when blind grading is on ", (  ) => {
             getters[gTypes.areStudentNamesVisible] = (  ) => (  ) => false;
             store = new Vuex.Store( {
                 getters,
@@ -66,7 +76,9 @@ describe( compName, () => {
                 store, localVue, mocks: { $parent: sinon.stub() }
             } );
 
-            expect( wrapper.html() ).not.toContain( student.nameFirstLast );
+
+            expect( wrapper.find('.active-student-id').text() ).toContain( student.studentIdentifier );
+            expect( wrapper.find('.active-student-name').text() ).not.toContain( student.nameFirstLast );
         });
     } );
 

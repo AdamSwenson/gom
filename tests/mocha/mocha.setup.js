@@ -12,6 +12,8 @@ require('jsdom-global')();
 global.expect = require('expect');
 global._ = require( 'lodash' );
 global.vue = require('vue');
+// import VueRouter from 'vue-router';
+// global.VueRouter = VueRouter;
 global.Vuex = require('Vuex');
 global.VueRouter = require('vue-router');
 global.sinon = require( 'sinon' );

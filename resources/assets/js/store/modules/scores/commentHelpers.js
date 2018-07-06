@@ -78,6 +78,7 @@ export const getValenceIndex = ( score, cutoffs ) => {
             break;
         }
     }
+    window.console.log( 'commentHelpers', 'getValenceIndex', 81, score, cutoffs, valence);
     //return the set valence. If made it all the way to 0, the default will be returned.
     return valence;
 }

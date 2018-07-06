@@ -77,6 +77,7 @@
 
     export default {
         props: [ 'item', 'level' ],
+
         components: {
             ClearScoreButton,
             CommentText,

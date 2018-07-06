@@ -43,7 +43,7 @@
 
         data: function () {
             return {
-                minScore : 0,
+                minScore: 0,
 
                 numberLabels: sliderSettings.valenceLabels.length,
 
@@ -53,22 +53,70 @@
                 defaults: {}
             }
         },
-        watch: {
-            score : function ( newVal ) {
-                if(this.slider) this.slider.setValue(newVal);
 
+        asyncComputed: {
+            /**
+             * This is a secondary representation of the score
+             * for the slider. However, it only exists as a workaround
+             * for strange behavior that arises when createSlider gets called
+             * before the scores have finished loading.
+             */
+            sliderScore: {
+                get() {
+                    let me = this;
+
+                    if ( !this.isReady() ) return '';
+
+                    //First we try getting an existing score object
+                    let qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
+                        item: me.item,
+                        student: me.student
+                    } );
+
+                    if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) {
+                        if ( !me.slider ) {
+                            //if the slider doesn't exist yet, we make it
+                            me.createSlider( qs.score );
+                        }
+
+                        return qs.score;
+                    }
+
+                    //No score object currently exists, so we create one
+                    let p = this.$store.dispatch( 'initializeItemScore',
+                        { exam: this.exam, item: this.item, student: this.student } );
+
+                    //And then return the newly created store object
+                    return p.then( function () {
+                        qs = me.$store.getters[ nggTypes.getItemScoreObject ]( {
+                            item: me.item,
+                            student: me.student
+                        } );
+
+                        //Now we can create the slider, if we did it before,
+                        //things would not go well (See GOM-344)
+                        if ( !me.slider ) {
+                            me.createSlider( qs.score );
+                        }
+                        return qs.score;
+                    } );
+                }
             },
-            valenceCutoffs: function ( newVal ) {
-                var me = this;
-                //
-                // if (newVal.length === this.numberLabels ){
-                //     window.console.log( 'score-slider', 'valenceCutoffs', 51, newVal);
-                //     this.$nextTick( function () {
-                //         window.console.log( 'score-slider', 'nt', 53, );
-                //         this.createSlider();
-                //     } );
 
-                // }
+        },
+
+        watch: {
+            /**
+             * Updates the position of the slider if the score changes
+             * through external means.
+             *
+             * NB, this is the real value of the item score.
+             * It is not watching the sliderScore --that's just a
+             * separate property that helps prevent the problems that arise
+             * if the slider is created before we have a value from the server.
+             */
+            score: function ( newVal ) {
+                if ( this.slider ) this.setSliderScore( newVal  );
             }
         },
 
@@ -123,7 +171,15 @@
             handleElementSliderStopEvent: function ( slideEvt, callback ) {
                 // window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
                 //store the new element score in the data object
-                this.score = slideEvt.value;
+                // this.score = slideEvt.value;
+
+                let pl = {
+                    exam: this.exam,
+                    item: this.item,
+                    student: this.student,
+                    score: slideEvt.value
+                };
+                this.$store.dispatch( ngaTypes.recordItemScore, pl );
 
                 if ( typeof callback != 'undefined' ) {
                     return callback();
@@ -132,30 +188,29 @@
             },
 
             setSliderScore: function ( score ) {
-                this.slider.setValue( score, {triggerSlideEvent : false} );
+                this.slider.setValue( score, { triggerSlideEvent: false } );
                 // this.slider.refresh();
             },
 
-            createSlider: function () {
+            createSlider: function ( initialScore  ) {
+                //only create it if it doesn't already exist
+                if ( this.slider ) return true;
+
                 let me = this;
 
-                //todo fix async loading of slider and remove this workaround
-                setTimeout( function () {
-                    me.slider = new Slider( me.$el, me.settings );
-                    me.setSliderScore( this.score );
+                me.slider = new Slider( me.$el, me.settings );
+                me.setSliderScore( initialScore );
 
-                    // window.console.log( 'score-slider', 'createSlider', 193, mySlider.getValue() );
+                /* ----------------- slider listeners --------------- */
+                /* When an element slider stops movement,
+             update element score and text (if necessary),
+             then save score, text and time
+             *  */
+                jQuery( me.$el ).on( 'slideStop', function ( slideEvt ) {
+                    me.handleElementSliderStopEvent( slideEvt );
+                } );
 
-                    /* ----------------- slider listeners --------------- */
-                    /* When an element slider stops movement,
-                     update element score and text (if necessary),
-                     then save score, text and time
-                     *  */
-                    jQuery( me.$el ).on( 'slideStop', function ( slideEvt ) {
-                        me.handleElementSliderStopEvent( slideEvt );
-                    } );
-
-                }, 2000 );
+                // }, 2000 );
             },
         },
 
@@ -166,7 +221,7 @@
         mounted: function () {
             let me = this;
             me.$nextTick( function () {
-                me.createSlider();
+                // me.createSlider()
             } );
 
         }

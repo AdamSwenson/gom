@@ -173,7 +173,7 @@ module.exports = function xhrAdapter(config) {
       var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
       var response = {
         data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
         status: request.status === 1223 ? 204 : request.status,
         statusText: request.status === 1223 ? 'No Content' : request.statusText,
         headers: responseHeaders,
@@ -191,7 +191,7 @@ module.exports = function xhrAdapter(config) {
     request.onerror = function handleError() {
       // Real errors are hidden from us by the browser
       // onerror should only fire if it's a network error
-      reject(createError('Network Error', config));
+      reject(createError('Network Error', config, null, request));
 
       // Clean up request
       request = null;
@@ -199,7 +199,8 @@ module.exports = function xhrAdapter(config) {
 
     // Handle timeout
     request.ontimeout = function handleTimeout() {
-      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED'));
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
+        request));
 
       // Clean up request
       request = null;
@@ -244,7 +245,9 @@ module.exports = function xhrAdapter(config) {
       try {
         request.responseType = config.responseType;
       } catch (e) {
-        if (request.responseType !== 'json') {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
           throw e;
         }
       }
@@ -481,8 +484,6 @@ var defaults = __webpack_require__(/*! ./../defaults */ "./node_modules/axios/li
 var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
 var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ "./node_modules/axios/lib/core/InterceptorManager.js");
 var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ "./node_modules/axios/lib/core/dispatchRequest.js");
-var isAbsoluteURL = __webpack_require__(/*! ./../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
-var combineURLs = __webpack_require__(/*! ./../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
 
 /**
  * Create a new instance of Axios
@@ -511,12 +512,8 @@ Axios.prototype.request = function request(config) {
     }, arguments[1]);
   }
 
-  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
-
-  // Support baseURL config
-  if (config.baseURL && !isAbsoluteURL(config.url)) {
-    config.url = combineURLs(config.baseURL, config.url);
-  }
+  config = utils.merge(defaults, {method: 'get'}, this.defaults, config);
+  config.method = config.method.toLowerCase();
 
   // Hook up interceptors middleware
   var chain = [dispatchRequest, undefined];
@@ -538,7 +535,7 @@ Axios.prototype.request = function request(config) {
 };
 
 // Provide aliases for supported request methods
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
   /*eslint func-names:0*/
   Axios.prototype[method] = function(url, config) {
     return this.request(utils.merge(config || {}, {
@@ -641,17 +638,18 @@ module.exports = InterceptorManager;
 var enhanceError = __webpack_require__(/*! ./enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
 
 /**
- * Create an Error with the specified message, config, error code, and response.
+ * Create an Error with the specified message, config, error code, request and response.
  *
  * @param {string} message The error message.
  * @param {Object} config The config.
  * @param {string} [code] The error code (for example, 'ECONNABORTED').
- @ @param {Object} [response] The response.
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
  * @returns {Error} The created error.
  */
-module.exports = function createError(message, config, code, response) {
+module.exports = function createError(message, config, code, request, response) {
   var error = new Error(message);
-  return enhanceError(error, config, code, response);
+  return enhanceError(error, config, code, request, response);
 };
 
 
@@ -671,6 +669,8 @@ var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/util
 var transformData = __webpack_require__(/*! ./transformData */ "./node_modules/axios/lib/core/transformData.js");
 var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
 var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults.js");
+var isAbsoluteURL = __webpack_require__(/*! ./../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
+var combineURLs = __webpack_require__(/*! ./../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -689,6 +689,11 @@ function throwIfCancellationRequested(config) {
  */
 module.exports = function dispatchRequest(config) {
   throwIfCancellationRequested(config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
 
   // Ensure headers exist
   config.headers = config.headers || {};
@@ -764,14 +769,16 @@ module.exports = function dispatchRequest(config) {
  * @param {Error} error The error to update.
  * @param {Object} config The config.
  * @param {string} [code] The error code (for example, 'ECONNABORTED').
- @ @param {Object} [response] The response.
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
  * @returns {Error} The error.
  */
-module.exports = function enhanceError(error, config, code, response) {
+module.exports = function enhanceError(error, config, code, request, response) {
   error.config = config;
   if (code) {
     error.code = code;
   }
+  error.request = request;
   error.response = response;
   return error;
 };
@@ -808,6 +815,7 @@ module.exports = function settle(resolve, reject, response) {
       'Request failed with status code ' + response.status,
       response.config,
       null,
+      response.request,
       response
     ));
   }
@@ -861,7 +869,6 @@ module.exports = function transformData(data, headers, fns) {
 var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
 var normalizeHeaderName = __webpack_require__(/*! ./helpers/normalizeHeaderName */ "./node_modules/axios/lib/helpers/normalizeHeaderName.js");
 
-var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
 };
@@ -891,6 +898,7 @@ var defaults = {
     normalizeHeaderName(headers, 'Content-Type');
     if (utils.isFormData(data) ||
       utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
       utils.isStream(data) ||
       utils.isFile(data) ||
       utils.isBlob(data)
@@ -914,7 +922,6 @@ var defaults = {
   transformResponse: [function transformResponse(data) {
     /*eslint no-param-reassign:0*/
     if (typeof data === 'string') {
-      data = data.replace(PROTECTION_PREFIX, '');
       try {
         data = JSON.parse(data);
       } catch (e) { /* Ignore */ }
@@ -922,6 +929,10 @@ var defaults = {
     return data;
   }],
 
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
   timeout: 0,
 
   xsrfCookieName: 'XSRF-TOKEN',
@@ -940,7 +951,7 @@ defaults.headers = {
   }
 };
 
-utils.forEach(['delete', 'get', 'head'], function forEachMehtodNoData(method) {
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
   defaults.headers[method] = {};
 });
 
@@ -1076,9 +1087,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
       if (utils.isArray(val)) {
         key = key + '[]';
-      }
-
-      if (!utils.isArray(val)) {
+      } else {
         val = [val];
       }
 
@@ -1123,7 +1132,9 @@ module.exports = function buildURL(url, params, paramsSerializer) {
  * @returns {string} The combined URL
  */
 module.exports = function combineURLs(baseURL, relativeURL) {
-  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '');
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
 };
 
 
@@ -1336,6 +1347,15 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
 
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
 /**
  * Parse headers into an object
  *
@@ -1363,7 +1383,14 @@ module.exports = function parseHeaders(headers) {
     val = utils.trim(line.substr(i + 1));
 
     if (key) {
-      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
     }
   });
 
@@ -1423,6 +1450,7 @@ module.exports = function spread(callback) {
 
 
 var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+var isBuffer = __webpack_require__(/*! is-buffer */ "./node_modules/is-buffer/index.js");
 
 /*global toString:true*/
 
@@ -1597,13 +1625,15 @@ function trim(str) {
  *  typeof document -> undefined
  *
  * react-native:
- *  typeof document.createElement -> undefined
+ *  navigator.product -> 'ReactNative'
  */
 function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return false;
+  }
   return (
     typeof window !== 'undefined' &&
-    typeof document !== 'undefined' &&
-    typeof document.createElement === 'function'
+    typeof document !== 'undefined'
   );
 }
 
@@ -1626,7 +1656,7 @@ function forEach(obj, fn) {
   }
 
   // Force an array if not already something iterable
-  if (typeof obj !== 'object' && !isArray(obj)) {
+  if (typeof obj !== 'object') {
     /*eslint no-param-reassign:0*/
     obj = [obj];
   }
@@ -1701,6 +1731,7 @@ function extend(a, b, thisArg) {
 module.exports = {
   isArray: isArray,
   isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
   isFormData: isFormData,
   isArrayBufferView: isArrayBufferView,
   isString: isString,
@@ -3061,13 +3092,26 @@ var _newGradingGetterTypes = __webpack_require__(/*! ../../../../store/new-gradi
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
 
-var _getterTypes = __webpack_require__(/*! ../../../../store/getter-types */ "./resources/assets/js/store/getter-types.js");
-
-var gTypes = _interopRequireWildcard(_getterTypes);
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 
@@ -3164,22 +3208,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 
@@ -3306,6 +3335,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 exports.default = {
     props: ['item', 'level'],
+
     components: (_components = {
         ClearScoreButton: _clearScoreButton2.default,
         CommentText: _commentText2.default,
@@ -3804,21 +3834,69 @@ exports.default = {
             defaults: {}
         };
     },
-    watch: {
-        score: function score(newVal) {
-            if (this.slider) this.slider.setValue(newVal);
-        },
-        valenceCutoffs: function valenceCutoffs(newVal) {
-            var me = this;
-            //
-            // if (newVal.length === this.numberLabels ){
-            //     window.console.log( 'score-slider', 'valenceCutoffs', 51, newVal);
-            //     this.$nextTick( function () {
-            //         window.console.log( 'score-slider', 'nt', 53, );
-            //         this.createSlider();
-            //     } );
 
-            // }
+    asyncComputed: {
+        /**
+         * This is a secondary representation of the score
+         * for the slider. However, it only exists as a workaround
+         * for strange behavior that arises when createSlider gets called
+         * before the scores have finished loading.
+         */
+        sliderScore: {
+            get: function get() {
+                var me = this;
+
+                if (!this.isReady()) return '';
+
+                //First we try getting an existing score object
+                var qs = me.$store.getters[nggTypes.getItemScoreObject]({
+                    item: me.item,
+                    student: me.student
+                });
+
+                if (!_.isUndefined(qs) && !_.isNull(qs)) {
+                    if (!me.slider) {
+                        //if the slider doesn't exist yet, we make it
+                        me.createSlider(qs.score);
+                    }
+
+                    return qs.score;
+                }
+
+                //No score object currently exists, so we create one
+                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
+
+                //And then return the newly created store object
+                return p.then(function () {
+                    qs = me.$store.getters[nggTypes.getItemScoreObject]({
+                        item: me.item,
+                        student: me.student
+                    });
+
+                    //Now we can create the slider, if we did it before,
+                    //things would not go well (See GOM-344)
+                    if (!me.slider) {
+                        me.createSlider(qs.score);
+                    }
+                    return qs.score;
+                });
+            }
+        }
+
+    },
+
+    watch: {
+        /**
+         * Updates the position of the slider if the score changes
+         * through external means.
+         *
+         * NB, this is the real value of the item score.
+         * It is not watching the sliderScore --that's just a
+         * separate property that helps prevent the problems that arise
+         * if the slider is created before we have a value from the server.
+         */
+        score: function score(newVal) {
+            if (this.slider) this.setSliderScore(newVal);
         }
     },
 
@@ -3873,7 +3951,15 @@ exports.default = {
         handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
             // window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
             //store the new element score in the data object
-            this.score = slideEvt.value;
+            // this.score = slideEvt.value;
+
+            var pl = {
+                exam: this.exam,
+                item: this.item,
+                student: this.student,
+                score: slideEvt.value
+            };
+            this.$store.dispatch(ngaTypes.recordItemScore, pl);
 
             if (typeof callback != 'undefined') {
                 return callback();
@@ -3885,25 +3971,25 @@ exports.default = {
             // this.slider.refresh();
         },
 
-        createSlider: function createSlider() {
+        createSlider: function createSlider(initialScore) {
+            //only create it if it doesn't already exist
+            if (this.slider) return true;
+
             var me = this;
 
-            //todo fix async loading of slider and remove this workaround
-            setTimeout(function () {
-                me.slider = new Slider(me.$el, me.settings);
-                me.setSliderScore(this.score);
+            me.slider = new Slider(me.$el, me.settings);
+            me.setSliderScore(initialScore);
 
-                // window.console.log( 'score-slider', 'createSlider', 193, mySlider.getValue() );
+            /* ----------------- slider listeners --------------- */
+            /* When an element slider stops movement,
+            update element score and text (if necessary),
+            then save score, text and time
+            *  */
+            jQuery(me.$el).on('slideStop', function (slideEvt) {
+                me.handleElementSliderStopEvent(slideEvt);
+            });
 
-                /* ----------------- slider listeners --------------- */
-                /* When an element slider stops movement,
-                 update element score and text (if necessary),
-                 then save score, text and time
-                 *  */
-                jQuery(me.$el).on('slideStop', function (slideEvt) {
-                    me.handleElementSliderStopEvent(slideEvt);
-                });
-            }, 2000);
+            // }, 2000 );
         }
     },
 
@@ -3914,7 +4000,7 @@ exports.default = {
     mounted: function mounted() {
         var me = this;
         me.$nextTick(function () {
-            me.createSlider();
+            // me.createSlider()
         });
     }
 };
@@ -36277,6 +36363,38 @@ class googleCharts {
 let GoogleCharts = new googleCharts();
 
 if (false) {}
+
+/***/ }),
+
+/***/ "./node_modules/is-buffer/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/is-buffer/index.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/*!
+ * Determine if an object is a Buffer
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+module.exports = function (obj) {
+  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+}
+
+function isBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+}
+
 
 /***/ }),
 
@@ -92458,7 +92576,6 @@ module.exports = {
                 var me = this;
 
                 if (!this.isReady()) return '';
-                // let qs = this.$store.getters.getItemScoreObject( this.item.id, this.student.id );
 
                 //First we try getting an existing score object
                 var qs = me.$store.getters[nggTypes.getItemScoreObject]({
@@ -92470,7 +92587,8 @@ module.exports = {
                     return qs.score;
                 }
 
-                //No score object currently exists, so we create one
+                //No score object currently exists for the student on
+                //this item, so we create one
                 var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
 
                 //And then return the newly created store object
@@ -92482,6 +92600,7 @@ module.exports = {
                     return qs.score;
                 });
             },
+
             /**
              * Update the score in the shared data object and send
              * a request for someone else to record it to the server.
@@ -92501,7 +92620,6 @@ module.exports = {
                 };
                 this.$store.dispatch(ngaTypes.recordItemScore, pl);
             }
-
         },
 
         exam: function exam() {
@@ -100552,12 +100670,27 @@ var ItemScore = function () {
         this.examId;
         this.itemId;
         this.studentId;
-        this.score = null;
+        this._score = null;
         this.commentText;
         this.isCustomText = false;
     }
 
-    _createClass(ItemScore, null, [{
+    /**
+     * The float score
+     * @returns {*}
+     */
+
+
+    _createClass(ItemScore, [{
+        key: "score",
+        get: function get() {
+            if (_.isNull(this._score) || _.isUndefined(this._score)) return this._score;
+            return _.toNumber(this._score);
+        },
+        set: function set(v) {
+            this._score = v;
+        }
+    }], [{
         key: "factory",
         value: function factory(params) {
             var p = new ItemScore();
@@ -111947,6 +112080,7 @@ var getValenceIndex = exports.getValenceIndex = function getValenceIndex(score, 
             break;
         }
     }
+    window.console.log('commentHelpers', 'getValenceIndex', 81, score, cutoffs, valence);
     //return the set valence. If made it all the way to 0, the default will be returned.
     return valence;
 };
