@@ -21,6 +21,16 @@
 
     </div>
 </template>
+
+
+<style lang="scss">
+.question-score {
+    input{
+        width: 6em
+    }
+}
+</style>
+
 <script>
 
     var jQuery = require( 'jquery' );
@@ -66,7 +76,9 @@
                 if ( _.isUndefined( newVal ) || _.isUndefined( oldVal ) ) return false;
                 if ( newVal === oldVal ) return false;
 
-                //todo To renable the grade popover, this is where you do it
+                window.console.log( 'question-score', 'score', 79, this.displayedGradeAssignment, this.maxScore, newVal);
+
+                //todo To renable the grade popover, this is where you do it. Note the problem may be that score needs to be loaded async (as with the sliders)
                 // this.showGradePopOver( this.displayedGradeAssignment, this.maxScore, newVal );
             }
         },
@@ -150,5 +162,5 @@
         },
 
 
-    }
-    ;</script>
+    };
+</script>

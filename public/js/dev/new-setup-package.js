@@ -3337,7 +3337,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 exports.default = {
     props: ['item', 'level'],
@@ -3646,6 +3645,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 var jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
@@ -3668,7 +3677,9 @@ exports.default = {
             if (_.isUndefined(newVal) || _.isUndefined(oldVal)) return false;
             if (newVal === oldVal) return false;
 
-            //todo To renable the grade popover, this is where you do it
+            window.console.log('question-score', 'score', 79, this.displayedGradeAssignment, this.maxScore, newVal);
+
+            //todo To renable the grade popover, this is where you do it. Note the problem may be that score needs to be loaded async (as with the sliders)
             // this.showGradePopOver( this.displayedGradeAssignment, this.maxScore, newVal );
         }
     },
@@ -34755,6 +34766,25 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 // module
 exports.push([module.i, "\n#progress-dashboard h5 {\n  text-align: right;\n  vertical-align: top;\n  /*text-shadow : 0 2px 3px rgba(0,0,0,.8);*/\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-357c7598\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-357c7598","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
+// imports
+
+
+// module
+exports.push([module.i, "\n.question-score input {\n  width: 6em;\n}\n", ""]);
 
 // exports
 
@@ -66895,10 +66925,7 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "item-input  questionPanel box",
-    attrs: {
-      "id": "element-input"
-    }
+    staticClass: "item-input  questionPanel box"
   }, [_c('div', {
     staticClass: "level"
   }, [_c('div', {
@@ -74671,6 +74698,26 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("28f938b1", content, false);
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-357c7598\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-357c7598","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader!../../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-357c7598","scoped":false,"hasInlineConfig":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./question-score.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-357c7598\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("2593473e", content, false);
 // Hot Module Replacement
 if(false) {}
 
@@ -92494,13 +92541,17 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-357c7598","scoped":false,"hasInlineConfig":true}!sass-loader!../../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./question-score.vue */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-357c7598\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue")
+}
 var Component = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
   /* script */
   __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./question-score.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue"),
   /* template */
   __webpack_require__(/*! !../../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-357c7598","hasScoped":false}!../../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./question-score.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-357c7598\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/grading/inputs/question-score.vue"),
   /* styles */
-  null,
+  injectStyle,
   /* scopeId */
   null,
   /* moduleIdentifier (server only) */
