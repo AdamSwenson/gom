@@ -61,6 +61,11 @@ describe( compName, () => {
             actions,
             getters,
         } );
+        wrapper = shallow( Component, {
+            store, localVue
+        } );
+
+        wrapper.setProps( { item, student } );
 
 
     } );
@@ -68,26 +73,14 @@ describe( compName, () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            wrapper = shallow( Component, {
-                store, localVue
-            } );
-
-            wrapper.setProps( { item, student } );
-
             expect( wrapper.vm.isReady() ).toBe( true );
-            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
-        } );
+         } );
     } );
 
     describe( " computed properties", () => {
 
         describe( 'commentText -- get ', () => {
             it( " returns an empty string if the item score object is undefined. ", () => {
-                wrapper = shallow( Component, {
-                    store, localVue
-                } );
-                wrapper.setProps( { item, student } );
-
                 expect( wrapper.vm.commentText ).toBe( '' );
             } );
 
@@ -105,11 +98,6 @@ describe( compName, () => {
 
         describe( 'commentText -- set ', () => {
             it( " dispatches the appropriate action ", () => {
-                wrapper = shallow( Component, {
-                    store, localVue
-                } );
-
-                wrapper.setProps( { item, student } );
 
                 //call
                 //nb just using scoreObj as a shortcut to random text

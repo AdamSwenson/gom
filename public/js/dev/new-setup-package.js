@@ -3113,6 +3113,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 
+
 exports.default = {
 
     props: ['item', 'student'],
@@ -3158,7 +3159,6 @@ exports.default = {
             },
 
             set: function set(text) {
-
                 var pl = {
                     exam: this.exam,
                     item: this.item,
@@ -3170,6 +3170,9 @@ exports.default = {
             }
         },
 
+        /**
+         * How many rows of the text area to display
+         */
         numRows: function numRows() {
             return this.isMinimized ? this.defaults.rows.minimized : this.defaults.rows.maximized;
         }
@@ -3186,14 +3189,14 @@ exports.default = {
          * Prevent user from entering text into comment area
          */
         commentAreaDisable: function commentAreaDisable() {
-            this.el.setAttribute('readonly', 'true');
+            this.$el.setAttribute('readonly', 'true');
         },
 
         /**
          * Allow user to enter text into comment area
          */
         commentAreaEnable: function commentAreaEnable() {
-            this.el.removeAttribute('readonly');
+            this.$el.removeAttribute('readonly');
         },
 
         maximize: function maximize() {
@@ -3856,10 +3859,11 @@ exports.default = {
         },
 
         /**
-         * This is a secondary representation of the score
-         * for the slider. However, it only exists as a workaround
-         * for strange behavior that arises when createSlider gets called
-         * before the scores have finished loading.
+         * We can't use the score property defined in the mixin since the
+         * data the slider needs will be loaded asynchronously.
+         * Thus this loads the score data async.
+         * We watch the regular computed data in case another process (synchronously)
+         * updates the score and we need to correspondingly move the slider
          */
         sliderScore: {
             get: function get() {
@@ -3878,7 +3882,9 @@ exports.default = {
                 }
 
                 //No score object currently exists, so we create one
-                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
+                var p = this.$store.dispatch('initializeItemScore', {
+                    exam: this.exam, item: this.item, student: this.student
+                });
 
                 //And then return the newly created store object
                 return p.then(function () {
@@ -3887,11 +3893,6 @@ exports.default = {
                         student: me.student
                     });
 
-                    //Now we can create the slider, if we did it before,
-                    //things would not go well (See GOM-344)
-                    if (!me.slider) {
-                        // me.createSlider( qs.score );
-                    }
                     return qs.score;
                 });
             }
@@ -3901,13 +3902,8 @@ exports.default = {
 
     watch: {
         /**
-         * Updates the position of the slider if the score changes
+         * Updates the position of the slider if the score (synchronously) changes
          * through external means.
-         *
-         * NB, this is the real value of the item score.
-         * It is not watching the sliderScore --that's just a
-         * separate property that helps prevent the problems that arise
-         * if the slider is created before we have a value from the server.
          */
         score: function score(newVal) {
             if (this.slider) this.setSliderScore(newVal);
@@ -3979,7 +3975,7 @@ exports.default = {
             };
             this.$store.dispatch(ngaTypes.recordItemScore, pl);
 
-            if (typeof callback != 'undefined') {
+            if (!_.isUndefined(callback)) {
                 return callback();
             }
         },

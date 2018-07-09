@@ -74,10 +74,11 @@
 
 
             /**
-             * This is a secondary representation of the score
-             * for the slider. However, it only exists as a workaround
-             * for strange behavior that arises when createSlider gets called
-             * before the scores have finished loading.
+             * We can't use the score property defined in the mixin since the
+             * data the slider needs will be loaded asynchronously.
+             * Thus this loads the score data async.
+             * We watch the regular computed data in case another process (synchronously)
+             * updates the score and we need to correspondingly move the slider
              */
             sliderScore: {
                 get() {
@@ -96,8 +97,9 @@
                     }
 
                     //No score object currently exists, so we create one
-                    let p = this.$store.dispatch( 'initializeItemScore',
-                        { exam: this.exam, item: this.item, student: this.student } );
+                    let p = this.$store.dispatch( 'initializeItemScore', {
+                        exam: this.exam, item: this.item, student: this.student
+                    } );
 
                     //And then return the newly created store object
                     return p.then( function () {
@@ -106,11 +108,6 @@
                             student: me.student
                         } );
 
-                        //Now we can create the slider, if we did it before,
-                        //things would not go well (See GOM-344)
-                        if ( !me.slider ) {
-                            // me.createSlider( qs.score );
-                        }
                         return qs.score;
                     } );
                 }
@@ -120,13 +117,8 @@
 
         watch: {
             /**
-             * Updates the position of the slider if the score changes
+             * Updates the position of the slider if the score (synchronously) changes
              * through external means.
-             *
-             * NB, this is the real value of the item score.
-             * It is not watching the sliderScore --that's just a
-             * separate property that helps prevent the problems that arise
-             * if the slider is created before we have a value from the server.
              */
             score: function ( newVal ) {
                 if ( this.slider ) this.setSliderScore( newVal );
@@ -135,7 +127,6 @@
         },
 
         computed: {
-
 
             //maxScore , score, and exam are defined in the mixin
 
@@ -189,7 +180,7 @@
             handleElementSliderStopEvent: function ( slideEvt, callback ) {
                 // window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
                 //store the new element score in the data object
-                let score = Number(slideEvt.value);
+                let score = Number( slideEvt.value );
 
                 let pl = {
                     exam: this.exam,
@@ -199,10 +190,9 @@
                 };
                 this.$store.dispatch( ngaTypes.recordItemScore, pl );
 
-                if ( typeof callback != 'undefined' ) {
+                if ( ! _.isUndefined(callback) ) {
                     return callback();
                 }
-
             },
 
             /**
@@ -224,10 +214,10 @@
                 let me = this;
 
                 //Set the pre-existing score, if it exists
-                if(! _.isUndefined(this.sliderScore) && !_.isNull(this.sliderScore)){
+                if ( !_.isUndefined( this.sliderScore ) && !_.isNull( this.sliderScore ) ) {
                     initialScore = this.sliderScore;
                 }
-                else{
+                else {
                     //Or, for the times I feel like it should be in the middle initially
                     // let initialScore = this.maxScore / 2;
                     initialScore = 0;

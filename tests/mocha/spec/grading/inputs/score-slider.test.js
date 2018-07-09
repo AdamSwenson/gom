@@ -54,6 +54,7 @@ describe( compName, () => {
 
 
         getters = {
+            isReadyToRock : (  ) => (  ) => true,
             [ nggTypes.getItemScoreObject ]: () => scoreGetterStub,
             [ nggTypes.getActiveExam ]: function () {
                 return exam;
@@ -77,9 +78,8 @@ describe( compName, () => {
             store, localVue,
             attachToDocument: true,
             sync: false,
-
+            propsData: {item}
         } );
-        wrapper.setProps( {item});
 
     } );
 
@@ -104,8 +104,8 @@ describe( compName, () => {
     } );
 
     describe( ' methods ', () => {
-        describe(" createSlider ", (  ) => {
-            it.skip(" sets the slider's initial value to 0 when the pre-existing score is undefined", (  done) => {
+        describe.skip(" createSlider ", (  ) => {
+            it(" sets the slider's initial value to 0 when the pre-existing score is undefined", (  done) => {
                 let spy = sinon.stub();
                 spy.resolves(true);
                 getters[nggTypes.getItemScoreObject] = (  ) => (  ) => undefined;
@@ -128,8 +128,9 @@ describe( compName, () => {
                 let spy3 = sinon.spy();
                 wrapper.setMethods({setSliderScore: spy3});
                 //check
-                // expect(spy.callCount).toBe(1);
-                expect(spy3.args[0[0]]).toBe(0);
+                expect(spy.callCount).toBe(1);
+                window.console.log( 'score-slider.test', 'c', 132, spy.args);
+                // expect(spy3.args[0[0]]).toBe(0);
                 done();
 
             });
@@ -139,7 +140,7 @@ describe( compName, () => {
             });
         })
 
-        it( " handleElementSliderStopEvent behaves as expected ", () => {
+        it( " handleElementSliderStopEvent dispatches correct action ", () => {
             let test = 74;
 
             let pl = {
@@ -175,8 +176,5 @@ describe( compName, () => {
         } );
     } );
 
-    describe( " async loading ", () => {
-        it( 'awaits tests' );
-    } );
 
 } );

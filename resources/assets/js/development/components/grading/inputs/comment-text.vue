@@ -15,6 +15,7 @@
 </style>
 
 <script>
+
     import PayloadScore from '../../../../models/PayloadScore';
     import * as ngmTypes from '../../../../store/new-grading-mutation-types';
     import * as ngaTypes from '../../../../store/new-grading-action-types';
@@ -23,6 +24,7 @@
     export default {
 
         props: [ 'item', 'student' ],
+
 
         components: {},
 
@@ -66,7 +68,6 @@
                 },
 
                 set: function ( text ) {
-
                     let pl = {
                         exam: this.exam,
                         item: this.item,
@@ -78,6 +79,9 @@
                 }
             },
 
+            /**
+             * How many rows of the text area to display
+             */
             numRows: function () {
                 return this.isMinimized ? this.defaults.rows.minimized : this.defaults.rows.maximized;
             }
@@ -94,14 +98,14 @@
              * Prevent user from entering text into comment area
              */
             commentAreaDisable: function () {
-                this.el.setAttribute( 'readonly', 'true' );
+                this.$el.setAttribute( 'readonly', 'true' );
             },
 
             /**
              * Allow user to enter text into comment area
              */
             commentAreaEnable: function () {
-                this.el.removeAttribute( 'readonly' );
+                this.$el.removeAttribute( 'readonly' );
             },
 
             maximize: function () {
